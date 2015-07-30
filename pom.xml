@@ -27,6 +27,18 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>2.4</version>
                 <executions>
@@ -59,9 +71,6 @@
                             <resources>
                                 <resource>
                                     <directory>src/main/resources/config</directory>
-                                    <includes>
-                                        <include>heroku.yaml</include>
-                                    </includes>
                                 </resource>
                             </resources>
                         </configuration>
@@ -97,12 +106,24 @@
                                         implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>uk.gov.pay.broker.app.BrokerApplication</mainClass>
+                                    <mainClass>uk.gov.pay.api.app.PublicApi</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <configuration>
+                    <mainClass>uk.gov.pay.api.app.PublicApi</mainClass>
+                    <arguments>
+                        <argument>server</argument>
+                        <argument>src/main/resources/config.yaml</argument>
+                    </arguments>
+                </configuration>
             </plugin>
         </plugins>
     </build>
