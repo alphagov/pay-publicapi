@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.is;
 public class PingTest {
 
     @Rule
-    public DropwizardAppRule<Configuration> app = new DropwizardAppRule<>(PublicApi.class, resourceFilePath("test-config.yaml"));
+    public DropwizardAppRule<Configuration> app = new DropwizardAppRule<>(PublicApi.class, resourceFilePath("config/test-config.yaml"));
 
     @Test
     public void testPing() {

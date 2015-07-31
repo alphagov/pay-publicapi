@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.gov.pay</groupId>
     <version>0.1-SNAPSHOT</version>
-    <artifactId>publicapi</artifactId>
+    <artifactId>pay-publicapi</artifactId>
 
     <properties>
         <dropwizard.version>0.8.1</dropwizard.version>
@@ -146,7 +146,7 @@
                     <mainClass>uk.gov.pay.api.app.PublicApi</mainClass>
                     <arguments>
                         <argument>server</argument>
-                        <argument>src/main/resources/config.yaml</argument>
+                        <argument>src/main/resources/config/config.yaml</argument>
                     </arguments>
                 </configuration>
             </plugin>
