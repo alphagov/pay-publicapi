@@ -1,2 +1,17 @@
+server:
+  applicationConnectors:
+    - type: http
+      port: 9010
+  adminConnectors:
+    - type: http
+      port: 9011
+
 logging:
-  level: INFO
+    level: INFO
+    appenders:
+      - type: console
+        threshold: ALL
+        timeZone: UTC
+        target: stdout
+        logFormat: "[%thread] %highlight(%-5level) %cyan(%logger{15}) - %msg %n"
+
