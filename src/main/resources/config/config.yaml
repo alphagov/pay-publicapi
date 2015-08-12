@@ -1,2 +1,4 @@
 logging:
   level: INFO
+
+connectorUrl: ${CONNECTOR_URL}
