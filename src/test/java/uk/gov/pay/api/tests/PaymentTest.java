@@ -56,7 +56,7 @@ public class PaymentTest {
                                 .withHeader("Content-Type", "application/json")
                                 .withBody(
                                         jsonStringBuilder()
-                                                .add("pay_id", "TEST_PAY_ID")
+                                                .add("charge_id", "TEST_PAY_ID")
                                                 .build()
                                 )
                 );
