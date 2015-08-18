@@ -6,6 +6,17 @@ server:
     - type: http
       port: 9011
 
+jerseyClient:
+    timeout: 500ms
+    connectionTimeout: 500ms
+    timeToLive: 1h
+    cookiesEnabled: false
+    maxConnections: 1024
+    maxConnectionsPerRoute: 1024
+    keepAlive: 0ms
+    retries: 0
+    userAgent: publicapi
+
 logging:
     level: INFO
     appenders:
@@ -15,3 +26,4 @@ logging:
         target: stdout
         logFormat: "[%thread] %highlight(%-5level) %cyan(%logger{15}) - %msg %n"
 
+connectorUrl: http://connector.url/
