@@ -44,7 +44,7 @@ public class Payments {
                         JsonNode.class
                 );
 
-        String payId = connectorResponse.get("pay_id").asText();
+        String payId = connectorResponse.get("charge_id").asText();
 
         String responsePayload = jsonStringBuilder()
                 .add("pay_id", payId)
