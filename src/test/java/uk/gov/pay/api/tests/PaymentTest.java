@@ -17,11 +17,11 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
-import static javax.ws.rs.HttpMethod.GET;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static uk.gov.pay.api.utils.ConnectorMockClient.CONNECTOR_MOCK_CHARGE_PATH;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
+import static uk.gov.pay.api.utils.LinksAssert.assertSelfLink;
 
 public class PaymentTest {
     private static final String TEST_CHARGE_ID = "TEST_CHARGE_ID";
@@ -66,10 +66,9 @@ public class PaymentTest {
         assertThat(paymentId, is(TEST_CHARGE_ID));
 
         String paymentUrl = "http://localhost:" + app.getLocalPort() + "/payments/" + paymentId;
-        response.header(HttpHeaders.LOCATION, is(paymentUrl));
-        response.body("links.find {links -> links.rel == 'self' }.href", is(paymentUrl));
-        response.body("links.find {links -> links.rel == 'self' }.method", is(GET));
 
+        response.header(HttpHeaders.LOCATION, is(paymentUrl));
+        assertSelfLink(response, paymentUrl);
         connectorMock.verifyCreateCharge(amount, GATEWAY_ACCOUNT_ID);
     }
 

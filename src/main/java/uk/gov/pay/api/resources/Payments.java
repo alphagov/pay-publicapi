@@ -14,6 +14,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -55,11 +56,9 @@ public class Payments {
             return fieldsMissingResponse(logger, missingFields.get());
         }
 
-        String connectorRequestPayload = buildChargeRequest(node);
-        Response connectorResponse = client
-                .target(connectorUrl)
+        Response connectorResponse = client.target(connectorUrl)
                 .request()
-                .post(json(connectorRequestPayload));
+                .post(buildChargeRequest(node));
 
         if (!connectorResponse.hasEntity()) {
             return badRequestResponse(logger, "Connector response contains no payload!");
@@ -96,14 +95,14 @@ public class Payments {
         return Response.created(newLocation).entity(response).build();
     }
 
-    private String buildChargeRequest(JsonNode request) {
+    private Entity buildChargeRequest(JsonNode request) {
         int amount = request.get("amount").asInt();
         String gatewayAccountId = request.get("gateway_account").asText();
 
-        return jsonStringBuilder()
+        return json(jsonStringBuilder()
                 .add("amount", amount)
                 .add("gateway_account", gatewayAccountId)
-                .build();
+                .build());
     }
 
     @GET
