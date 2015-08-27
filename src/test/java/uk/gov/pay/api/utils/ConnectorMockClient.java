@@ -28,11 +28,11 @@ public class ConnectorMockClient {
         this.baseUrl = baseUrl;
     }
 
-    private String createChargePayload(long amount, long gatewayAccountId) {
+    private String createChargePayload(long amount, String gatewayAccountId) {
         return jsonString("amount", amount, "gateway_account", gatewayAccountId);
     }
 
-    private String createChargeResponse(long amount, long chargeId) {
+    private String createChargeResponse(long amount, String chargeId) {
         return jsonStringBuilder()
                 .add("charge_id", chargeId)
                 .add("amount", amount)
@@ -43,11 +43,11 @@ public class ConnectorMockClient {
                 .build();
     }
 
-    private String chargeLocation(long chargeId) {
+    private String chargeLocation(String chargeId) {
         return baseUrl + CONNECTOR_MOCK_CHARGE_PATH + "/" + chargeId;
     }
 
-    public void respondOk_whenCreateCharge(long amount, long gatewayAccountId, long chargeId) {
+    public void respondOk_whenCreateCharge(long amount, String gatewayAccountId, String chargeId) {
         whenCreateCharge(amount, gatewayAccountId)
                 .respond(response()
                         .withStatusCode(CREATED_201)
@@ -56,7 +56,7 @@ public class ConnectorMockClient {
                         .withBody(createChargeResponse(amount, chargeId)));
     }
 
-    public void respondUnknownGateway_whenCreateCharge(long amount, int gatewayAccountId, String errorMsg) {
+    public void respondUnknownGateway_whenCreateCharge(long amount, String gatewayAccountId, String errorMsg) {
         whenCreateCharge(amount, gatewayAccountId)
                 .respond(response()
                         .withStatusCode(BAD_REQUEST_400)
@@ -64,7 +64,7 @@ public class ConnectorMockClient {
                         .withBody(jsonString("message", errorMsg)));
     }
 
-    public void respondOk_withEmptyBody(long amount, long gatewayAccountId, long chargeId) {
+    public void respondOk_withEmptyBody(long amount, String gatewayAccountId, String chargeId) {
         whenCreateCharge(amount, gatewayAccountId)
                 .respond(response()
                         .withStatusCode(CREATED_201)
@@ -72,7 +72,7 @@ public class ConnectorMockClient {
                         .withHeader(LOCATION, chargeLocation(chargeId)));
     }
 
-    public void respondWithChargeFound(long amount, long chargeId) {
+    public void respondWithChargeFound(long amount, String chargeId) {
         whenGetCharge(chargeId)
                 .respond(response()
                         .withStatusCode(OK_200)
@@ -80,7 +80,7 @@ public class ConnectorMockClient {
                         .withBody(createChargeResponse(amount, chargeId)));
     }
 
-    public void respondChargeNotFound(long chargeId, String errorMsg) {
+    public void respondChargeNotFound(String chargeId, String errorMsg) {
         whenGetCharge(chargeId)
                 .respond(response()
                         .withStatusCode(NOT_FOUND_404)
@@ -88,7 +88,7 @@ public class ConnectorMockClient {
                         .withBody(jsonString("message", errorMsg)));
     }
 
-    private ForwardChainExpectation whenCreateCharge(long amount, long gatewayAccountId) {
+    private ForwardChainExpectation whenCreateCharge(long amount, String gatewayAccountId) {
         return mockClient.when(request()
                         .withMethod(POST)
                         .withPath(CONNECTOR_MOCK_CHARGE_PATH)
@@ -97,14 +97,14 @@ public class ConnectorMockClient {
         );
     }
 
-    private ForwardChainExpectation whenGetCharge(long chargeId) {
+    private ForwardChainExpectation whenGetCharge(String chargeId) {
         return mockClient.when(request()
                         .withMethod(GET)
                         .withPath(CONNECTOR_MOCK_CHARGE_PATH + "/" + chargeId)
         );
     }
 
-    public void verifyCreateCharge(long amount, long gatewayAccountId) {
+    public void verifyCreateCharge(long amount, String gatewayAccountId) {
         mockClient.verify(request()
                         .withMethod(POST)
                         .withPath(CONNECTOR_MOCK_CHARGE_PATH)

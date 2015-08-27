@@ -17,7 +17,6 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static uk.gov.pay.api.utils.ConnectorMockClient.CONNECTOR_MOCK_CHARGE_PATH;
@@ -25,8 +24,9 @@ import static uk.gov.pay.api.utils.JsonStringBuilder.jsonString;
 import static uk.gov.pay.api.utils.LinksAssert.assertSelfLink;
 
 public class PaymentTest {
-    private static final long TEST_CHARGE_ID = 2341231434l;
-    private static final long GATEWAY_ACCOUNT_ID = 322121;
+    private static final String TEST_CHARGE_ID = "ch_ab2341da231434l";
+    private static final long TEST_AMOUNT = 20032123132120l;
+    private static final String GATEWAY_ACCOUNT_ID = "gw_32adf21bds3aac21";
 
     @Rule
     public MockServerRule connectorMockRule = new MockServerRule(this);
@@ -54,43 +54,41 @@ public class PaymentTest {
     }
 
     @Test
-    public void createCharge() {
-        int amount = 12345;
-        connectorMock.respondOk_whenCreateCharge(amount, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID);
+    public void createPayment() {
+        connectorMock.respondOk_whenCreateCharge(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID);
 
-        ValidatableResponse response = postPaymentResponse(chargePayload(amount, GATEWAY_ACCOUNT_ID))
+        ValidatableResponse response = postPaymentResponse(paymentPayload(TEST_AMOUNT, GATEWAY_ACCOUNT_ID))
                 .statusCode(201)
                 .contentType(JSON)
                 .log().all()
-                .body("amount", equalTo(amount));
+                .body("amount", is(TEST_AMOUNT));
 
-        Long paymentId = response.extract().path("payment_id");
+        String paymentId = response.extract().path("payment_id");
         assertThat(paymentId, is(TEST_CHARGE_ID));
 
         String paymentUrl = "http://localhost:" + app.getLocalPort() + "/payments/" + paymentId;
 
         response.header(HttpHeaders.LOCATION, is(paymentUrl));
         assertSelfLink(response, paymentUrl);
-        connectorMock.verifyCreateCharge(amount, GATEWAY_ACCOUNT_ID);
+        connectorMock.verifyCreateCharge(TEST_AMOUNT, GATEWAY_ACCOUNT_ID);
     }
 
     @Test
-    public void createCharge_responseWith4xx_whenInvalidGatewayAccount() {
-        long amount = 12345;
-        int invalidGatewayAccountId = 2323;
+    public void createPayment_responseWith4xx_whenInvalidGatewayAccount() {
+        String invalidGatewayAccountId = "ada2dfa323";
         String errorMessage = "something went wrong";
-        connectorMock.respondUnknownGateway_whenCreateCharge(amount, invalidGatewayAccountId, errorMessage);
+        connectorMock.respondUnknownGateway_whenCreateCharge(TEST_AMOUNT, invalidGatewayAccountId, errorMessage);
 
-        postPaymentResponse(chargePayload(amount, invalidGatewayAccountId))
+        postPaymentResponse(paymentPayload(TEST_AMOUNT, invalidGatewayAccountId))
                 .statusCode(400)
                 .contentType(JSON)
                 .body("message", is(errorMessage));
 
-        connectorMock.verifyCreateCharge(amount, invalidGatewayAccountId);
+        connectorMock.verifyCreateCharge(TEST_AMOUNT, invalidGatewayAccountId);
     }
 
     @Test
-    public void createCharge_responseWith4xx_whenFieldsMissing() {
+    public void createPayment_responseWith4xx_whenFieldsMissing() {
         postPaymentResponse("{}")
                 .statusCode(400)
                 .contentType(JSON)
@@ -98,41 +96,49 @@ public class PaymentTest {
     }
 
     @Test
-    public void createCharge_responseWith4xx_whenConnectorResponseEmpty() {
-        long amount = 12345;
-        connectorMock.respondOk_withEmptyBody(amount, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID);
+    public void createPayment_responseWith4xx_whenConnectorResponseEmpty() {
+        connectorMock.respondOk_withEmptyBody(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID);
 
-        postPaymentResponse(chargePayload(amount, GATEWAY_ACCOUNT_ID))
+        postPaymentResponse(paymentPayload(TEST_AMOUNT, GATEWAY_ACCOUNT_ID))
                 .statusCode(400)
                 .contentType(JSON)
                 .body("message", is("Connector response contains no payload!"));
     }
 
     @Test
-    public void getCharge_ReturnsCharge() {
-        int amount = 12345;
-        connectorMock.respondWithChargeFound(amount, TEST_CHARGE_ID);
+    public void getPayment_ReturnsPayment() {
+        connectorMock.respondWithChargeFound(TEST_AMOUNT, TEST_CHARGE_ID);
 
         ValidatableResponse response = getPaymentResponse(TEST_CHARGE_ID)
                 .statusCode(200)
                 .contentType(JSON)
                 .body("payment_id", is(TEST_CHARGE_ID))
-                .body("amount", is(amount));
+                .body("amount", is(TEST_AMOUNT));
 
         String paymentUrl = "http://localhost:" + app.getLocalPort() + "/payments/" + TEST_CHARGE_ID;
         assertSelfLink(response, paymentUrl);
     }
 
     @Test
-    public void getCharge_InvalidChargeId() {
-        long paymentId = 23112;
+    public void getPayment_InvalidPaymentId() {
+        String invalidPaymentId = "ds2af2afd3df112";
         String errorMessage = "backend-error-message";
-        connectorMock.respondChargeNotFound(paymentId, errorMessage);
+        connectorMock.respondChargeNotFound(invalidPaymentId, errorMessage);
 
-        getPaymentResponse(paymentId)
+        getPaymentResponse(invalidPaymentId)
                 .statusCode(404)
                 .contentType(JSON)
                 .body("message", is(errorMessage));
+    }
+
+    private String paymentPayload(long amount, String gatewayAccountId) {
+        return jsonString("amount", amount, "gateway_account", gatewayAccountId);
+    }
+
+    private ValidatableResponse getPaymentResponse(String paymentId) {
+        return given().port(app.getLocalPort())
+                .get("/payments/" + paymentId)
+                .then();
     }
 
     private ValidatableResponse postPaymentResponse(String payload) {
@@ -140,16 +146,6 @@ public class PaymentTest {
                 .body(payload)
                 .contentType(JSON)
                 .post("/payments")
-                .then();
-    }
-
-    private String chargePayload(long amount, long gatewayAccountId) {
-        return jsonString("amount", amount, "gateway_account", gatewayAccountId);
-    }
-
-    private ValidatableResponse getPaymentResponse(long paymentId) {
-        return given().port(app.getLocalPort())
-                .get("/payments/" + paymentId)
                 .then();
     }
 }

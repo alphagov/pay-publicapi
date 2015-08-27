@@ -53,7 +53,9 @@ public class Payments {
     @GET
     @Path(PAYMENT_BY_ID)
     @Produces(APPLICATION_JSON)
-    public Response getCharge(@PathParam("paymentId") long chargeId, @Context UriInfo uriInfo) {
+    public Response getCharge(@PathParam("paymentId") String chargeId, @Context UriInfo uriInfo) {
+        logger.info("received get payment request: [ {} ]", chargeId);
+
         Response connectorResponse = client.target(connectorUrl + "/" + chargeId)
                 .request()
                 .get();
@@ -68,6 +70,8 @@ public class Payments {
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     public Response createNewPayment(JsonNode node, @Context UriInfo uriInfo) throws IOException {
+        logger.info("received create payment request: [ {} ]", node);
+
         Optional<List<String>> missingFields = checkMissingFields(node);
         if (missingFields.isPresent()) {
             return fieldsMissingResponse(logger, missingFields.get());
@@ -93,7 +97,7 @@ public class Payments {
         if (connectorResponse.getStatus() == okStatus) {
             URI newLocation = uriInfo.getBaseUriBuilder()
                     .path(PAYMENT_BY_ID)
-                    .build(payload.get("charge_id").asLong());
+                    .build(payload.get("charge_id").asText());
 
             LinksResponse response = createPaymentResponse(payload)
                     .addSelfLink(newLocation.toString());
@@ -120,7 +124,7 @@ public class Payments {
 
     private Entity buildChargeRequest(JsonNode request) {
         long amount = request.get("amount").asLong();
-        long gatewayAccountId = request.get("gateway_account").asLong();
+        String gatewayAccountId = request.get("gateway_account").asText();
 
         return json(jsonString("amount", amount, "gateway_account", gatewayAccountId));
     }
