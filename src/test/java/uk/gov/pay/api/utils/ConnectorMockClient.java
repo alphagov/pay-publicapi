@@ -29,7 +29,7 @@ public class ConnectorMockClient {
     }
 
     private String createChargePayload(long amount, String gatewayAccountId) {
-        return jsonString("amount", amount, "gateway_account", gatewayAccountId);
+        return jsonString("amount", amount, "gateway_account_id", gatewayAccountId);
     }
 
     private String createChargeResponse(long amount, String chargeId) {

@@ -96,7 +96,7 @@ public class PaymentTest {
         postPaymentResponse("{}")
                 .statusCode(400)
                 .contentType(JSON)
-                .body("message", is("Field(s) missing: [amount, gateway_account]"));
+                .body("message", is("Field(s) missing: [amount, gateway_account_id]"));
     }
 
     @Test
@@ -135,7 +135,7 @@ public class PaymentTest {
     }
 
     private String paymentPayload(long amount, String gatewayAccountId) {
-        return jsonString("amount", amount, "gateway_account", gatewayAccountId);
+        return jsonString("amount", amount, "gateway_account_id", gatewayAccountId);
     }
 
     private ValidatableResponse getPaymentResponse(String paymentId) {

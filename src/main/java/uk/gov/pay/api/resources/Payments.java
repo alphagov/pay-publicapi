@@ -36,10 +36,15 @@ import static uk.gov.pay.api.utils.ResponseUtil.notFoundResponse;
 
 @Path("/")
 public class Payments {
-    public static final String PAYMENTS_PATH = "/v1/payments";
-    public static final String PAYMENT_BY_ID = "/v1/payments/{paymentId}";
+    private static final String PAYMENT_KEY = "paymentId";
+    private static final String AMOUNT_KEY = "amount";
+    private static final String GATEWAY_ACCOUNT_KEY = "gateway_account_id";
+    private static final String CHARGE_KEY = "charge_id";
 
-    private static final String[] REQUIRED_FIELDS = {"amount", "gateway_account"};
+    private static final String[] REQUIRED_FIELDS = {AMOUNT_KEY, GATEWAY_ACCOUNT_KEY};
+
+    public static final String PAYMENTS_PATH = "/v1/payments";
+    public static final String PAYMENT_BY_ID = "/v1/payments/{" + PAYMENT_KEY + "}";
 
     private final Logger logger = LoggerFactory.getLogger(Payments.class);
     private final Client client;
@@ -53,7 +58,7 @@ public class Payments {
     @GET
     @Path(PAYMENT_BY_ID)
     @Produces(APPLICATION_JSON)
-    public Response getCharge(@PathParam("paymentId") String chargeId, @Context UriInfo uriInfo) {
+    public Response getCharge(@PathParam(PAYMENT_KEY) String chargeId, @Context UriInfo uriInfo) {
         logger.info("received get payment request: [ {} ]", chargeId);
 
         Response connectorResponse = client.target(connectorUrl + "/" + chargeId)
@@ -97,7 +102,7 @@ public class Payments {
         if (connectorResponse.getStatus() == okStatus) {
             URI newLocation = uriInfo.getBaseUriBuilder()
                     .path(PAYMENT_BY_ID)
-                    .build(payload.get("charge_id").asText());
+                    .build(payload.get(CHARGE_KEY).asText());
 
             LinksResponse response = createPaymentResponse(payload)
                     .addSelfLink(newLocation.toString());
@@ -123,11 +128,9 @@ public class Payments {
     }
 
     private Entity buildChargeRequest(JsonNode request) {
-        long amount = request.get("amount").asLong();
-        String gatewayAccountId = request.get("gateway_account").asText();
+        long amount = request.get(AMOUNT_KEY).asLong();
+        String gatewayAccountId = request.get(GATEWAY_ACCOUNT_KEY).asText();
 
-        return json(jsonString("amount", amount, "gateway_account", gatewayAccountId));
+        return json(jsonString(AMOUNT_KEY, amount, GATEWAY_ACCOUNT_KEY, gatewayAccountId));
     }
-
-
 }
