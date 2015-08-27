@@ -60,7 +60,6 @@ public class PaymentTest {
         ValidatableResponse response = postPaymentResponse(paymentPayload(TEST_AMOUNT, GATEWAY_ACCOUNT_ID))
                 .statusCode(201)
                 .contentType(JSON)
-                .log().all()
                 .body("amount", is(TEST_AMOUNT));
 
         String paymentId = response.extract().path("payment_id");
