@@ -27,6 +27,7 @@ public class PaymentTest {
     private static final String TEST_CHARGE_ID = "ch_ab2341da231434l";
     private static final long TEST_AMOUNT = 20032123132120l;
     private static final String GATEWAY_ACCOUNT_ID = "gw_32adf21bds3aac21";
+    public static final String PAYMENTS_PATH = "/v1/payments/";
 
     @Rule
     public MockServerRule connectorMockRule = new MockServerRule(this);
@@ -40,17 +41,21 @@ public class PaymentTest {
             , resourceFilePath("config/test-config.yaml")
             , config("connectorUrl", connectorMockChargeUrl()));
 
-    private String connectorMockChargeUrl() {
-        return baseUrl() + CONNECTOR_MOCK_CHARGE_PATH;
+    private String connectorBaseUrl() {
+        return "http://localhost:" + connectorMockRule.getHttpPort();
     }
 
-    private String baseUrl() {
-        return "http://localhost:" + connectorMockRule.getHttpPort();
+    private String connectorMockChargeUrl() {
+        return connectorBaseUrl() + CONNECTOR_MOCK_CHARGE_PATH;
+    }
+
+    private String paymentLocationFor(String chargeId) {
+        return "http://localhost:" + app.getLocalPort() + PAYMENTS_PATH + chargeId;
     }
 
     @Before
     public void setup() {
-        connectorMock = new ConnectorMockClient(mockServerClient, baseUrl());
+        connectorMock = new ConnectorMockClient(mockServerClient, connectorBaseUrl());
     }
 
     @Test
@@ -65,7 +70,7 @@ public class PaymentTest {
         String paymentId = response.extract().path("payment_id");
         assertThat(paymentId, is(TEST_CHARGE_ID));
 
-        String paymentUrl = "http://localhost:" + app.getLocalPort() + "/payments/" + paymentId;
+        String paymentUrl = paymentLocationFor(paymentId);
 
         response.header(HttpHeaders.LOCATION, is(paymentUrl));
         assertSelfLink(response, paymentUrl);
@@ -114,8 +119,7 @@ public class PaymentTest {
                 .body("payment_id", is(TEST_CHARGE_ID))
                 .body("amount", is(TEST_AMOUNT));
 
-        String paymentUrl = "http://localhost:" + app.getLocalPort() + "/payments/" + TEST_CHARGE_ID;
-        assertSelfLink(response, paymentUrl);
+        assertSelfLink(response, paymentLocationFor(TEST_CHARGE_ID));
     }
 
     @Test
@@ -136,7 +140,7 @@ public class PaymentTest {
 
     private ValidatableResponse getPaymentResponse(String paymentId) {
         return given().port(app.getLocalPort())
-                .get("/payments/" + paymentId)
+                .get(PAYMENTS_PATH + paymentId)
                 .then();
     }
 
@@ -144,7 +148,7 @@ public class PaymentTest {
         return given().port(app.getLocalPort())
                 .body(payload)
                 .contentType(JSON)
-                .post("/payments")
+                .post(PAYMENTS_PATH)
                 .then();
     }
 }

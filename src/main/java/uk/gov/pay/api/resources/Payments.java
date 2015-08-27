@@ -36,8 +36,8 @@ import static uk.gov.pay.api.utils.ResponseUtil.notFoundResponse;
 
 @Path("/")
 public class Payments {
-    public static final String PAYMENTS_PATH = "/payments";
-    public static final String PAYMENT_BY_ID = "/payments/{paymentId}";
+    public static final String PAYMENTS_PATH = "/v1/payments";
+    public static final String PAYMENT_BY_ID = "/v1/payments/{paymentId}";
 
     private static final String[] REQUIRED_FIELDS = {"amount", "gateway_account"};
 
