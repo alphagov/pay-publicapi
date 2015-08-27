@@ -8,6 +8,8 @@ The Payments Public API in Java (Dropwizard)
 |[`/v1/payments`](#post-v1payments)                      | POST   |  creates a payment                 |
 |[`/v1/payments/{paymentId}`](#get-v1paymentspaymentId)  | GET    |  returns a payment by ID           |
 
+
+
 ### POST /v1/payments
 
 This endpoint creates a new payment.
@@ -31,9 +33,8 @@ Content-Type: application/json
 | `amount`                 | X | Amount to pay in pence                           |
 | `gateway_account_id`     | X | ID of the gateway account to use for the payment |
 
-#### Response examples
 
-##### Payment created
+#### Payment created response
 
 ```
 HTTP/1.1 201 Created
@@ -62,7 +63,7 @@ Content-Type: application/json
 | `amount`               | Amount to pay in pence                    |
 | `status`               | Current status of the payment             |
 
-##### Payment creation failed
+#### Payment creation failed
 
 ```
 HTTP/1.1 400 Bad Request
@@ -90,7 +91,6 @@ Returns a payment by ID.
 
 ```
 GET /v1/payments/ab2341da231434
-
 ```
 
 #### Payment response
