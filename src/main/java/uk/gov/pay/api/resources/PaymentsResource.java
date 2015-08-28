@@ -48,11 +48,11 @@ public class PaymentsResource {
 
     private final Logger logger = LoggerFactory.getLogger(PaymentsResource.class);
     private final Client client;
-    private final String connectorUrl;
+    private final String chargeUrl;
 
-    public PaymentsResource(Client client, String connectorUrl) {
+    public PaymentsResource(Client client, String chargeUrl) {
         this.client = client;
-        this.connectorUrl = connectorUrl;
+        this.chargeUrl = chargeUrl;
     }
 
     @GET
@@ -61,7 +61,7 @@ public class PaymentsResource {
     public Response getCharge(@PathParam(PAYMENT_KEY) String chargeId, @Context UriInfo uriInfo) {
         logger.info("received get payment request: [ {} ]", chargeId);
 
-        Response connectorResponse = client.target(connectorUrl + "/" + chargeId)
+        Response connectorResponse = client.target(chargeUrl + "/" + chargeId)
                 .request()
                 .get();
 
@@ -82,7 +82,7 @@ public class PaymentsResource {
             return fieldsMissingResponse(logger, missingFields.get());
         }
 
-        Response connectorResponse = client.target(connectorUrl)
+        Response connectorResponse = client.target(chargeUrl)
                 .request()
                 .post(buildChargeRequest(node));
 
