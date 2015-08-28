@@ -8,7 +8,7 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import uk.gov.pay.api.config.PublicApiConfig;
 import uk.gov.pay.api.healthcheck.Ping;
-import uk.gov.pay.api.resources.Payments;
+import uk.gov.pay.api.resources.PaymentsResource;
 
 import javax.ws.rs.client.Client;
 
@@ -30,7 +30,7 @@ public class PublicApi extends Application<PublicApiConfig> {
           .build(getName());
 
         environment.healthChecks().register("ping", new Ping());
-        environment.jersey().register(new Payments(client, config.getConnectorUrl()));
+        environment.jersey().register(new PaymentsResource(client, config.getConnectorUrl()));
 
     }
 

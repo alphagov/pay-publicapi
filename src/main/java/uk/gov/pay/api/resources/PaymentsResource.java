@@ -35,7 +35,7 @@ import static uk.gov.pay.api.utils.ResponseUtil.fieldsMissingResponse;
 import static uk.gov.pay.api.utils.ResponseUtil.notFoundResponse;
 
 @Path("/")
-public class Payments {
+public class PaymentsResource {
     private static final String PAYMENT_KEY = "paymentId";
     private static final String AMOUNT_KEY = "amount";
     private static final String GATEWAY_ACCOUNT_KEY = "gateway_account_id";
@@ -46,11 +46,11 @@ public class Payments {
     public static final String PAYMENTS_PATH = "/v1/payments";
     public static final String PAYMENT_BY_ID = "/v1/payments/{" + PAYMENT_KEY + "}";
 
-    private final Logger logger = LoggerFactory.getLogger(Payments.class);
+    private final Logger logger = LoggerFactory.getLogger(PaymentsResource.class);
     private final Client client;
     private final String connectorUrl;
 
-    public Payments(Client client, String connectorUrl) {
+    public PaymentsResource(Client client, String connectorUrl) {
         this.client = client;
         this.connectorUrl = connectorUrl;
     }
