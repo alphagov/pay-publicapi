@@ -66,6 +66,7 @@ public class PaymentsResourceITest {
         ValidatableResponse response = postPaymentResponse(paymentPayload(TEST_AMOUNT, GATEWAY_ACCOUNT_ID))
                 .statusCode(201)
                 .contentType(JSON)
+                .body("payment_id", is(TEST_CHARGE_ID))
                 .body("amount", is(TEST_AMOUNT))
                 .body("status", is(TEST_STATUS));
 
