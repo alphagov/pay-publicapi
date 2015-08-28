@@ -32,11 +32,11 @@ public class ConnectorMockClient {
         return jsonString("amount", amount, "gateway_account_id", gatewayAccountId);
     }
 
-    private String createChargeResponse(long amount, String chargeId) {
+    private String createChargeResponse(long amount, String chargeId, String status) {
         return jsonStringBuilder()
                 .add("charge_id", chargeId)
                 .add("amount", amount)
-                .add("status", "CREATED")
+                .add("status", status)
                 .addToMap("links", "href", chargeLocation(chargeId))
                 .addToMap("links", "rel", "self")
                 .addToMap("links", "method", GET)
@@ -47,13 +47,13 @@ public class ConnectorMockClient {
         return baseUrl + CONNECTOR_MOCK_CHARGE_PATH + "/" + chargeId;
     }
 
-    public void respondOk_whenCreateCharge(long amount, String gatewayAccountId, String chargeId) {
+    public void respondOk_whenCreateCharge(long amount, String gatewayAccountId, String chargeId, String status) {
         whenCreateCharge(amount, gatewayAccountId)
                 .respond(response()
                         .withStatusCode(CREATED_201)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                         .withHeader(LOCATION, chargeLocation(chargeId))
-                        .withBody(createChargeResponse(amount, chargeId)));
+                        .withBody(createChargeResponse(amount, chargeId, status)));
     }
 
     public void respondUnknownGateway_whenCreateCharge(long amount, String gatewayAccountId, String errorMsg) {
@@ -72,12 +72,12 @@ public class ConnectorMockClient {
                         .withHeader(LOCATION, chargeLocation(chargeId)));
     }
 
-    public void respondWithChargeFound(long amount, String chargeId) {
+    public void respondWithChargeFound(long amount, String chargeId, String status) {
         whenGetCharge(chargeId)
                 .respond(response()
                         .withStatusCode(OK_200)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withBody(createChargeResponse(amount, chargeId)));
+                        .withBody(createChargeResponse(amount, chargeId, status)));
     }
 
     public void respondChargeNotFound(String chargeId, String errorMsg) {

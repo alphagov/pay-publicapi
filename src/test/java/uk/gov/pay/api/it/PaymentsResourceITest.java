@@ -20,12 +20,13 @@ import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static uk.gov.pay.api.utils.ConnectorMockClient.CONNECTOR_MOCK_CHARGE_PATH;
-import static uk.gov.pay.api.utils.JsonStringBuilder.jsonString;
+import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
 import static uk.gov.pay.api.utils.LinksAssert.assertSelfLink;
 
 public class PaymentsResourceITest {
     private static final String TEST_CHARGE_ID = "ch_ab2341da231434l";
     private static final long TEST_AMOUNT = 20032123132120l;
+    private static final String TEST_STATUS = "someState";
     private static final String GATEWAY_ACCOUNT_ID = "gw_32adf21bds3aac21";
     public static final String PAYMENTS_PATH = "/v1/payments/";
 
@@ -60,12 +61,13 @@ public class PaymentsResourceITest {
 
     @Test
     public void createPayment() {
-        connectorMock.respondOk_whenCreateCharge(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID);
+        connectorMock.respondOk_whenCreateCharge(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_STATUS);
 
         ValidatableResponse response = postPaymentResponse(paymentPayload(TEST_AMOUNT, GATEWAY_ACCOUNT_ID))
                 .statusCode(201)
                 .contentType(JSON)
-                .body("amount", is(TEST_AMOUNT));
+                .body("amount", is(TEST_AMOUNT))
+                .body("status", is(TEST_STATUS));
 
         String paymentId = response.extract().path("payment_id");
         assertThat(paymentId, is(TEST_CHARGE_ID));
@@ -111,13 +113,14 @@ public class PaymentsResourceITest {
 
     @Test
     public void getPayment_ReturnsPayment() {
-        connectorMock.respondWithChargeFound(TEST_AMOUNT, TEST_CHARGE_ID);
+        connectorMock.respondWithChargeFound(TEST_AMOUNT, TEST_CHARGE_ID, TEST_STATUS);
 
         ValidatableResponse response = getPaymentResponse(TEST_CHARGE_ID)
                 .statusCode(200)
                 .contentType(JSON)
                 .body("payment_id", is(TEST_CHARGE_ID))
-                .body("amount", is(TEST_AMOUNT));
+                .body("amount", is(TEST_AMOUNT))
+                .body("status", is(TEST_STATUS));
 
         assertSelfLink(response, paymentLocationFor(TEST_CHARGE_ID));
     }
@@ -135,7 +138,11 @@ public class PaymentsResourceITest {
     }
 
     private String paymentPayload(long amount, String gatewayAccountId) {
-        return jsonString("amount", amount, "gateway_account_id", gatewayAccountId);
+        return jsonStringBuilder()
+                .add("amount", amount)
+                .add("gateway_account_id", gatewayAccountId)
+                .add("status", TEST_STATUS)
+                .build();
     }
 
     private ValidatableResponse getPaymentResponse(String paymentId) {
