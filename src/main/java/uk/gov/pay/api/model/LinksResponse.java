@@ -3,6 +3,7 @@ package uk.gov.pay.api.model;
 import com.google.common.base.Joiner;
 import io.dropwizard.jackson.JsonSnakeCase;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,8 +12,8 @@ import static javax.ws.rs.HttpMethod.GET;
 public abstract class LinksResponse {
     private List<JsonLink> links = new ArrayList<>();
 
-    public LinksResponse addSelfLink(String href) {
-        links.add(new JsonLink("self", GET, href));
+    public LinksResponse addSelfLink(URI href) {
+        links.add(new JsonLink("self", GET, href.toString()));
         return this;
     }
 

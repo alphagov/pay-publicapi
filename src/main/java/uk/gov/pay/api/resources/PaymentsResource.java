@@ -100,16 +100,16 @@ public class PaymentsResource {
 
         JsonNode payload = connectorResponse.readEntity(JsonNode.class);
         if (connectorResponse.getStatus() == okStatus) {
-            URI newLocation = uriInfo.getBaseUriBuilder()
+            URI documentLocation = uriInfo.getBaseUriBuilder()
                     .path(PAYMENT_BY_ID)
                     .build(payload.get(CHARGE_KEY).asText());
 
             LinksResponse response = createPaymentResponse(payload)
-                    .addSelfLink(newLocation.toString());
+                    .addSelfLink(documentLocation);
 
             logger.info("payment returned: [ {} ]", response);
 
-            return okResponse.apply(newLocation, response).build();
+            return okResponse.apply(documentLocation, response).build();
         }
         return errorResponse.apply(payload);
     }
