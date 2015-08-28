@@ -1,4 +1,4 @@
-package uk.gov.pay.api.tests;
+package uk.gov.pay.api.it;
 
 import com.jayway.restassured.response.ValidatableResponse;
 import io.dropwizard.testing.junit.DropwizardAppRule;
@@ -23,7 +23,7 @@ import static uk.gov.pay.api.utils.ConnectorMockClient.CONNECTOR_MOCK_CHARGE_PAT
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonString;
 import static uk.gov.pay.api.utils.LinksAssert.assertSelfLink;
 
-public class PaymentTest {
+public class PaymentsITest {
     private static final String TEST_CHARGE_ID = "ch_ab2341da231434l";
     private static final long TEST_AMOUNT = 20032123132120l;
     private static final String GATEWAY_ACCOUNT_ID = "gw_32adf21bds3aac21";
