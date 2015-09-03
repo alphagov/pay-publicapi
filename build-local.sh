@@ -1,2 +1,2 @@
 #!/bin/bash
-mvn -DskipTests package && docker build -t govukpay/publicapi:local .
+mvn -DskipTests clean package && docker build -t govukpay/publicapi:local .
