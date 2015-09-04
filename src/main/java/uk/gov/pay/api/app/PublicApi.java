@@ -1,7 +1,6 @@
 package uk.gov.pay.api.app;
 
 import io.dropwizard.Application;
-import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.setup.Bootstrap;
@@ -11,6 +10,7 @@ import uk.gov.pay.api.healthcheck.Ping;
 import uk.gov.pay.api.resources.PaymentsResource;
 
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 
 public class PublicApi extends Application<PublicApiConfig> {
 
@@ -26,8 +26,7 @@ public class PublicApi extends Application<PublicApiConfig> {
 
     @Override
     public void run(PublicApiConfig config, Environment environment) throws Exception {
-        final Client client = new JerseyClientBuilder(environment).using(config.getClientConfiguration())
-          .build(getName());
+        final Client client = ClientBuilder.newBuilder().build();
 
         environment.healthChecks().register("ping", new Ping());
         environment.jersey().register(new PaymentsResource(client, config.getConnectorUrl()));
