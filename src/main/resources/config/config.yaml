@@ -2,14 +2,3 @@ logging:
   level: INFO
 
 connectorUrl: ${CONNECTOR_URL}
-
-jerseyClient:
-    timeout: 1000ms
-    connectionTimeout: 500ms
-    timeToLive: 1h
-    cookiesEnabled: false
-    maxConnections: 1024
-    maxConnectionsPerRoute: 1024
-    keepAlive: 0ms
-    retries: 0
-    userAgent: publicapi
