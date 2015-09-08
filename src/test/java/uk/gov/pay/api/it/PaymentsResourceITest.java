@@ -21,7 +21,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static uk.gov.pay.api.utils.ConnectorMockClient.CONNECTOR_MOCK_CHARGE_PATH;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
-import static uk.gov.pay.api.utils.LinksAssert.assertSelfLink;
+import static uk.gov.pay.api.utils.LinksAssert.assertLink;
 
 public class PaymentsResourceITest {
     private static final String TEST_CHARGE_ID = "ch_ab2341da231434l";
@@ -76,8 +76,18 @@ public class PaymentsResourceITest {
         String paymentUrl = paymentLocationFor(paymentId);
 
         response.header(HttpHeaders.LOCATION, is(paymentUrl));
-        assertSelfLink(response, paymentUrl);
+        assertLink(response, paymentUrl, "self");
+        assertLink(response, cardDetailsUrlFor(TEST_CHARGE_ID), "next_url");
         connectorMock.verifyCreateCharge(TEST_AMOUNT, GATEWAY_ACCOUNT_ID);
+    }
+
+    @Test
+    public void createPayment_responseWith4xx_whenNextUrlIsMissing() {
+        connectorMock.respondOk_whenCreateChargeWithoutNextUrl(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_STATUS);
+        postPaymentResponse(paymentPayload(TEST_AMOUNT, GATEWAY_ACCOUNT_ID))
+                .statusCode(500)
+                .contentType(JSON)
+                .body("message", is("Internal Server Error"));
     }
 
     @Test
@@ -123,7 +133,7 @@ public class PaymentsResourceITest {
                 .body("amount", is(TEST_AMOUNT))
                 .body("status", is(TEST_STATUS));
 
-        assertSelfLink(response, paymentLocationFor(TEST_CHARGE_ID));
+        assertLink(response, paymentLocationFor(TEST_CHARGE_ID), "self");
     }
 
     @Test
@@ -136,6 +146,10 @@ public class PaymentsResourceITest {
                 .statusCode(404)
                 .contentType(JSON)
                 .body("message", is(errorMessage));
+    }
+
+    private String cardDetailsUrlFor(String chargeId) {
+        return "http://Frontend/charge/" + chargeId;
     }
 
     private String paymentPayload(long amount, String gatewayAccountId) {

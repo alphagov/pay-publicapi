@@ -17,6 +17,11 @@ public abstract class LinksResponse {
         return this;
     }
 
+    public LinksResponse addLink(String rel, String method, String href) {
+        links.add(new JsonLink(rel, method, href));
+        return this;
+    }
+
     public List<JsonLink> getLinks() {
         return links;
     }

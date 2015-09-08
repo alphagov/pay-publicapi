@@ -6,12 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.model.LinksResponse;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Context;
@@ -21,6 +16,7 @@ import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -30,9 +26,7 @@ import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static uk.gov.pay.api.model.CreatePaymentResponse.createPaymentResponse;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonString;
-import static uk.gov.pay.api.utils.ResponseUtil.badRequestResponse;
-import static uk.gov.pay.api.utils.ResponseUtil.fieldsMissingResponse;
-import static uk.gov.pay.api.utils.ResponseUtil.notFoundResponse;
+import static uk.gov.pay.api.utils.ResponseUtil.*;
 
 @Path("/")
 public class PaymentsResource {
@@ -105,14 +99,35 @@ public class PaymentsResource {
                     .path(PAYMENT_BY_ID)
                     .build(payload.get(CHARGE_KEY).asText());
 
-            LinksResponse response = createPaymentResponse(payload)
-                    .addSelfLink(documentLocation);
+            return getNextLink(payload).map(
+                    nextLink -> {
+                        LinksResponse response =
+                                createPaymentResponse(payload)
+                                        .addSelfLink(documentLocation)
+                                        .addLink(
+                                                nextLink.get("rel").asText(),
+                                                nextLink.get("method").asText(),
+                                                nextLink.get("href").asText()
+                                        );
 
-            logger.info("payment returned: [ {} ]", response);
+                        logger.info("payment returned: [ {} ]", response);
 
-            return okResponse.apply(documentLocation, response).build();
+                        return okResponse.apply(documentLocation, response).build();
+                    }).orElseGet(() -> internalServerErrorResponse(logger, "Missing link next_url from connector response", "Internal Server Error"));
         }
+
         return errorResponse.apply(payload);
+    }
+
+    private Optional<JsonNode> getNextLink(JsonNode payload) {
+        for (Iterator<JsonNode> it = payload.get("links").elements(); it.hasNext(); ) {
+            JsonNode node = it.next();
+            if ("next_url".equals(node.get("rel").asText())) {
+                return Optional.of(node);
+            }
+        }
+
+        return Optional.empty();
     }
 
 
