@@ -142,7 +142,6 @@ public class PaymentsResourceITest {
         return jsonStringBuilder()
                 .add("amount", amount)
                 .add("gateway_account_id", gatewayAccountId)
-                .add("status", TEST_STATUS)
                 .build();
     }
 
