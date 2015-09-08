@@ -99,7 +99,7 @@ public class PaymentsResourceITest {
         postPaymentResponse("{}")
                 .statusCode(400)
                 .contentType(JSON)
-                .body("message", is("Field(s) missing: [amount, gateway_account_id]"));
+                .body("message", is("Field(s) missing: [amount, account_id]"));
     }
 
     @Test
@@ -141,7 +141,7 @@ public class PaymentsResourceITest {
     private String paymentPayload(long amount, String gatewayAccountId) {
         return jsonStringBuilder()
                 .add("amount", amount)
-                .add("gateway_account_id", gatewayAccountId)
+                .add("account_id", gatewayAccountId)
                 .add("status", TEST_STATUS)
                 .build();
     }

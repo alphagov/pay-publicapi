@@ -38,10 +38,11 @@ import static uk.gov.pay.api.utils.ResponseUtil.notFoundResponse;
 public class PaymentsResource {
     private static final String PAYMENT_KEY = "paymentId";
     private static final String AMOUNT_KEY = "amount";
+    private static final String ACCOUNT_KEY = "account_id";
     private static final String GATEWAY_ACCOUNT_KEY = "gateway_account_id";
     private static final String CHARGE_KEY = "charge_id";
 
-    private static final String[] REQUIRED_FIELDS = {AMOUNT_KEY, GATEWAY_ACCOUNT_KEY};
+    private static final String[] REQUIRED_FIELDS = {AMOUNT_KEY, ACCOUNT_KEY};
 
     public static final String PAYMENTS_PATH = "/v1/payments";
     public static final String PAYMENT_BY_ID = "/v1/payments/{" + PAYMENT_KEY + "}";
@@ -74,17 +75,17 @@ public class PaymentsResource {
     @Path(PAYMENTS_PATH)
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
-    public Response createNewPayment(JsonNode node, @Context UriInfo uriInfo) throws IOException {
-        logger.info("received create payment request: [ {} ]", node);
+    public Response createNewPayment(JsonNode requestPayload, @Context UriInfo uriInfo) throws IOException {
+        logger.info("received create payment request: [ {} ]", requestPayload);
 
-        Optional<List<String>> missingFields = checkMissingFields(node);
+        Optional<List<String>> missingFields = checkMissingFields(requestPayload);
         if (missingFields.isPresent()) {
             return fieldsMissingResponse(logger, missingFields.get());
         }
 
         Response connectorResponse = client.target(chargeUrl)
                 .request()
-                .post(buildChargeRequest(node));
+                .post(buildChargeRequestPayload(requestPayload));
 
         return responseFrom(uriInfo, connectorResponse, HttpStatus.SC_CREATED,
                 (locationUrl, data) -> Response.created(locationUrl).entity(data),
@@ -127,10 +128,10 @@ public class PaymentsResource {
                 : Optional.of(missing);
     }
 
-    private Entity buildChargeRequest(JsonNode request) {
-        long amount = request.get(AMOUNT_KEY).asLong();
-        String gatewayAccountId = request.get(GATEWAY_ACCOUNT_KEY).asText();
+    private Entity buildChargeRequestPayload(JsonNode requestPayload) {
+        long amount = requestPayload.get(AMOUNT_KEY).asLong();
+        String accountId = requestPayload.get(ACCOUNT_KEY).asText();
 
-        return json(jsonString(AMOUNT_KEY, amount, GATEWAY_ACCOUNT_KEY, gatewayAccountId));
+        return json(jsonString(AMOUNT_KEY, amount, GATEWAY_ACCOUNT_KEY, accountId));
     }
 }

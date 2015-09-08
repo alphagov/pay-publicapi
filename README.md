@@ -22,7 +22,7 @@ Content-Type: application/json
 
 {
     "amount": 50000,
-    "gateway_account_id": "gw_32adf21bds3aac21"
+    "account_id": "32adf21bds3aac21"
 }
 ```
 
@@ -31,7 +31,7 @@ Content-Type: application/json
 | Field                    | required | Description                               |
 | ------------------------ |:--------:| ----------------------------------------- |
 | `amount`                 | X | Amount to pay in pence                           |
-| `gateway_account_id`     | X | ID of the gateway account to use for the payment |
+| `account_id`             | X | ID of the account to use for the payment         |
 
 
 #### Payment created response
@@ -71,7 +71,7 @@ Content-Type: application/json
 Content-Length: 34
 
 {
-    "message": "Unknown gateway account: gw_32adf21bds3aac21"
+    "message": "Unknown account: 32adf21bds3aac21"
 }
 ```
 
@@ -115,7 +115,7 @@ Content-Type: application/json
 
 ##### Response field description
 
-See: [Payment created](#payment-created)
+See: [Payment created](#payment-created-response)
 
 
 #### Payment not found
