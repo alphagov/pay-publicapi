@@ -1,17 +1,16 @@
 package uk.gov.pay.api.utils;
 
+import com.google.common.collect.ImmutableMap;
 import org.mockserver.client.server.ForwardChainExpectation;
 import org.mockserver.client.server.MockServerClient;
 
+import static java.util.Arrays.asList;
 import static javax.ws.rs.HttpMethod.GET;
 import static javax.ws.rs.HttpMethod.POST;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.HttpHeaders.LOCATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
-import static org.eclipse.jetty.http.HttpStatus.CREATED_201;
-import static org.eclipse.jetty.http.HttpStatus.NOT_FOUND_404;
-import static org.eclipse.jetty.http.HttpStatus.OK_200;
+import static org.eclipse.jetty.http.HttpStatus.*;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 import static org.mockserver.verify.VerificationTimes.once;
@@ -32,15 +31,26 @@ public class ConnectorMockClient {
         return jsonString("amount", amount, "gateway_account_id", gatewayAccountId);
     }
 
-    private String createChargeResponse(long amount, String chargeId, String status) {
-        return jsonStringBuilder()
+    private String createChargeResponse(long amount, String chargeId, String status, ImmutableMap<String, String> ... links) {
+        String result = jsonStringBuilder()
                 .add("charge_id", chargeId)
                 .add("amount", amount)
                 .add("status", status)
-                .addToMap("links", "href", chargeLocation(chargeId))
-                .addToMap("links", "rel", "self")
-                .addToMap("links", "method", GET)
+                .add("links", asList(links))
                 .build();
+        return result;
+    }
+
+    private ImmutableMap<String, String> validLink(String href, String rel) {
+        return ImmutableMap.of(
+                "href", href,
+                "rel", rel,
+                "method", GET);
+    }
+
+
+    private String nextUrl(String chargeId) {
+        return "http://Frontend/charge/" + chargeId;
     }
 
     private String chargeLocation(String chargeId) {
@@ -53,7 +63,19 @@ public class ConnectorMockClient {
                         .withStatusCode(CREATED_201)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                         .withHeader(LOCATION, chargeLocation(chargeId))
-                        .withBody(createChargeResponse(amount, chargeId, status)));
+                        .withBody(createChargeResponse(amount, chargeId, status,
+                                validLink(chargeLocation(chargeId), "self"),
+                                validLink(nextUrl(chargeId), "next_url"))));
+    }
+
+    public void respondOk_whenCreateChargeWithoutNextUrl(long amount, String gatewayAccountId, String chargeId, String status) {
+        whenCreateCharge(amount, gatewayAccountId)
+                .respond(response()
+                        .withStatusCode(CREATED_201)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withHeader(LOCATION, chargeLocation(chargeId))
+                        .withBody(createChargeResponse(amount, chargeId, status,
+                                validLink(chargeLocation(chargeId), "self"))));
     }
 
     public void respondUnknownGateway_whenCreateCharge(long amount, String gatewayAccountId, String errorMsg) {
@@ -77,7 +99,9 @@ public class ConnectorMockClient {
                 .respond(response()
                         .withStatusCode(OK_200)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withBody(createChargeResponse(amount, chargeId, status)));
+                        .withBody(createChargeResponse(amount, chargeId, status,
+                                validLink(chargeLocation(chargeId), "self"),
+                                validLink(nextUrl(chargeId), "next_url"))));
     }
 
     public void respondChargeNotFound(String chargeId, String errorMsg) {

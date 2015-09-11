@@ -8,8 +8,7 @@ import org.slf4j.Logger;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.*;
 
 public class ResponseUtil {
 
@@ -27,15 +26,23 @@ public class ResponseUtil {
         return messageResponse(logger, message, BAD_REQUEST);
     }
 
+    public static Response internalServerErrorResponse(Logger logger, String internalMessage, String externalMessage) {
+        return messageResponse(logger, internalMessage, externalMessage, INTERNAL_SERVER_ERROR);
+    }
+
     public static Response fieldsMissingResponse(Logger logger, List<String> missingFields) {
         String message = String.format("Field(s) missing: [%s]", COMMA_JOINER.join(missingFields));
         return messageResponse(logger, message, BAD_REQUEST);
     }
 
     private static Response messageResponse(Logger logger, String message, Response.Status status) {
-        logger.error(message);
+        return messageResponse(logger, message, message, status);
+    }
+
+    private static Response messageResponse(Logger logger, String internalMessage, String externalMessage, Response.Status status) {
+        logger.error(internalMessage);
         return Response.status(status)
-                .entity(ImmutableMap.of("message", message))
+                .entity(ImmutableMap.of("message", externalMessage))
                 .build();
     }
 

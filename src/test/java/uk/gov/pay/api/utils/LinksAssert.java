@@ -6,8 +6,8 @@ import static javax.ws.rs.HttpMethod.GET;
 import static org.hamcrest.Matchers.is;
 
 public class LinksAssert {
-    public static void assertSelfLink(ValidatableResponse response, String paymentUrl) {
-        response.body("links.find {links -> links.rel == 'self' }.href", is(paymentUrl));
-        response.body("links.find {links -> links.rel == 'self' }.method", is(GET));
+    public static void assertLink(ValidatableResponse response, String paymentUrl, String linkRel) {
+        response.body("links.find {links -> links.rel == '" + linkRel + "' }.href", is(paymentUrl));
+        response.body("links.find {links -> links.rel == '" + linkRel + "' }.method", is(GET));
     }
 }
