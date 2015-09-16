@@ -23,6 +23,7 @@ Content-Type: application/json
 {
     "amount": 50000,
     "account_id": "32adf21bds3aac21"
+    "return_url": "http://service.url/success"
 }
 ```
 
@@ -32,6 +33,7 @@ Content-Type: application/json
 | ------------------------ |:--------:| ----------------------------------------- |
 | `amount`                 | X | Amount to pay in pence                           |
 | `account_id`             | X | ID of the account to use for the payment         |
+| `return_url`             | X | The URL where the user should be redirected to when the payment workflow is finished.         |
 
 
 #### Payment created response

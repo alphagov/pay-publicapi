@@ -10,7 +10,10 @@ import static javax.ws.rs.HttpMethod.POST;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.HttpHeaders.LOCATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.eclipse.jetty.http.HttpStatus.*;
+import static org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
+import static org.eclipse.jetty.http.HttpStatus.CREATED_201;
+import static org.eclipse.jetty.http.HttpStatus.NOT_FOUND_404;
+import static org.eclipse.jetty.http.HttpStatus.OK_200;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 import static org.mockserver.verify.VerificationTimes.once;
@@ -27,18 +30,21 @@ public class ConnectorMockClient {
         this.baseUrl = baseUrl;
     }
 
-    private String createChargePayload(long amount, String gatewayAccountId) {
-        return jsonString("amount", amount, "gateway_account_id", gatewayAccountId);
+    private String createChargePayload(long amount, String gatewayAccountId, String returnUrl) {
+        return jsonStringBuilder()
+                .add("amount", amount)
+                .add("gateway_account_id", gatewayAccountId)
+                .add("return_url", returnUrl)
+                .build();
     }
 
-    private String createChargeResponse(long amount, String chargeId, String status, ImmutableMap<String, String> ... links) {
-        String result = jsonStringBuilder()
+    private String createChargeResponse(long amount, String chargeId, String status, ImmutableMap<?, ?>... links) {
+        return jsonStringBuilder()
                 .add("charge_id", chargeId)
                 .add("amount", amount)
                 .add("status", status)
                 .add("links", asList(links))
                 .build();
-        return result;
     }
 
     private ImmutableMap<String, String> validLink(String href, String rel) {
@@ -57,8 +63,8 @@ public class ConnectorMockClient {
         return baseUrl + CONNECTOR_MOCK_CHARGE_PATH + "/" + chargeId;
     }
 
-    public void respondOk_whenCreateCharge(long amount, String gatewayAccountId, String chargeId, String status) {
-        whenCreateCharge(amount, gatewayAccountId)
+    public void respondOk_whenCreateCharge(long amount, String gatewayAccountId, String chargeId, String status, String returnUrl) {
+        whenCreateCharge(amount, gatewayAccountId, returnUrl)
                 .respond(response()
                         .withStatusCode(CREATED_201)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
@@ -68,8 +74,8 @@ public class ConnectorMockClient {
                                 validLink(nextUrl(chargeId), "next_url"))));
     }
 
-    public void respondOk_whenCreateChargeWithoutNextUrl(long amount, String gatewayAccountId, String chargeId, String status) {
-        whenCreateCharge(amount, gatewayAccountId)
+    public void respondOk_whenCreateChargeWithoutNextUrl(long amount, String gatewayAccountId, String chargeId, String status, String returnUrl) {
+        whenCreateCharge(amount, gatewayAccountId, returnUrl)
                 .respond(response()
                         .withStatusCode(CREATED_201)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
@@ -78,16 +84,16 @@ public class ConnectorMockClient {
                                 validLink(chargeLocation(chargeId), "self"))));
     }
 
-    public void respondUnknownGateway_whenCreateCharge(long amount, String gatewayAccountId, String errorMsg) {
-        whenCreateCharge(amount, gatewayAccountId)
+    public void respondUnknownGateway_whenCreateCharge(long amount, String gatewayAccountId, String errorMsg, String returnUrl) {
+        whenCreateCharge(amount, gatewayAccountId, returnUrl)
                 .respond(response()
                         .withStatusCode(BAD_REQUEST_400)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                         .withBody(jsonString("message", errorMsg)));
     }
 
-    public void respondOk_withEmptyBody(long amount, String gatewayAccountId, String chargeId) {
-        whenCreateCharge(amount, gatewayAccountId)
+    public void respondOk_withEmptyBody(long amount, String gatewayAccountId, String chargeId, String returnUrl) {
+        whenCreateCharge(amount, gatewayAccountId, returnUrl)
                 .respond(response()
                         .withStatusCode(CREATED_201)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
@@ -112,12 +118,12 @@ public class ConnectorMockClient {
                         .withBody(jsonString("message", errorMsg)));
     }
 
-    private ForwardChainExpectation whenCreateCharge(long amount, String gatewayAccountId) {
+    private ForwardChainExpectation whenCreateCharge(long amount, String gatewayAccountId, String returnUrl) {
         return mockClient.when(request()
                         .withMethod(POST)
                         .withPath(CONNECTOR_MOCK_CHARGE_PATH)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withBody(createChargePayload(amount, gatewayAccountId))
+                        .withBody(createChargePayload(amount, gatewayAccountId, returnUrl))
         );
     }
 
@@ -128,11 +134,11 @@ public class ConnectorMockClient {
         );
     }
 
-    public void verifyCreateCharge(long amount, String gatewayAccountId) {
+    public void verifyCreateCharge(long amount, String gatewayAccountId, String returnUrl) {
         mockClient.verify(request()
                         .withMethod(POST)
                         .withPath(CONNECTOR_MOCK_CHARGE_PATH)
-                        .withBody(createChargePayload(amount, gatewayAccountId)),
+                        .withBody(createChargePayload(amount, gatewayAccountId, returnUrl)),
                 once()
         );
     }

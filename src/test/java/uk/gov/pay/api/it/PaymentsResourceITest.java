@@ -27,6 +27,7 @@ public class PaymentsResourceITest {
     private static final String TEST_CHARGE_ID = "ch_ab2341da231434l";
     private static final long TEST_AMOUNT = 20032123132120l;
     private static final String TEST_STATUS = "someState";
+    private static final String TEST_RETURN_URL = "http://somewhere.over.the/rainbow/";
     private static final String GATEWAY_ACCOUNT_ID = "gw_32adf21bds3aac21";
     public static final String PAYMENTS_PATH = "/v1/payments/";
 
@@ -61,7 +62,7 @@ public class PaymentsResourceITest {
 
     @Test
     public void createPayment() {
-        connectorMock.respondOk_whenCreateCharge(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_STATUS);
+        connectorMock.respondOk_whenCreateCharge(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_STATUS, TEST_RETURN_URL);
 
         ValidatableResponse response = postPaymentResponse(paymentPayload(TEST_AMOUNT, GATEWAY_ACCOUNT_ID))
                 .statusCode(201)
@@ -78,12 +79,12 @@ public class PaymentsResourceITest {
         response.header(HttpHeaders.LOCATION, is(paymentUrl));
         assertLink(response, paymentUrl, "self");
         assertLink(response, cardDetailsUrlFor(TEST_CHARGE_ID), "next_url");
-        connectorMock.verifyCreateCharge(TEST_AMOUNT, GATEWAY_ACCOUNT_ID);
+        connectorMock.verifyCreateCharge(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_RETURN_URL);
     }
 
     @Test
     public void createPayment_responseWith4xx_whenNextUrlIsMissing() {
-        connectorMock.respondOk_whenCreateChargeWithoutNextUrl(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_STATUS);
+        connectorMock.respondOk_whenCreateChargeWithoutNextUrl(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_STATUS, TEST_RETURN_URL);
         postPaymentResponse(paymentPayload(TEST_AMOUNT, GATEWAY_ACCOUNT_ID))
                 .statusCode(500)
                 .contentType(JSON)
@@ -94,14 +95,14 @@ public class PaymentsResourceITest {
     public void createPayment_responseWith4xx_whenInvalidGatewayAccount() {
         String invalidGatewayAccountId = "ada2dfa323";
         String errorMessage = "something went wrong";
-        connectorMock.respondUnknownGateway_whenCreateCharge(TEST_AMOUNT, invalidGatewayAccountId, errorMessage);
+        connectorMock.respondUnknownGateway_whenCreateCharge(TEST_AMOUNT, invalidGatewayAccountId, errorMessage, TEST_RETURN_URL);
 
         postPaymentResponse(paymentPayload(TEST_AMOUNT, invalidGatewayAccountId))
                 .statusCode(400)
                 .contentType(JSON)
                 .body("message", is(errorMessage));
 
-        connectorMock.verifyCreateCharge(TEST_AMOUNT, invalidGatewayAccountId);
+        connectorMock.verifyCreateCharge(TEST_AMOUNT, invalidGatewayAccountId, TEST_RETURN_URL);
     }
 
     @Test
@@ -109,12 +110,12 @@ public class PaymentsResourceITest {
         postPaymentResponse("{}")
                 .statusCode(400)
                 .contentType(JSON)
-                .body("message", is("Field(s) missing: [amount, account_id]"));
+                .body("message", is("Field(s) missing: [amount, account_id, return_url]"));
     }
 
     @Test
     public void createPayment_responseWith4xx_whenConnectorResponseEmpty() {
-        connectorMock.respondOk_withEmptyBody(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID);
+        connectorMock.respondOk_withEmptyBody(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_RETURN_URL);
 
         postPaymentResponse(paymentPayload(TEST_AMOUNT, GATEWAY_ACCOUNT_ID))
                 .statusCode(400)
@@ -157,6 +158,7 @@ public class PaymentsResourceITest {
                 .add("amount", amount)
                 .add("account_id", gatewayAccountId)
                 .add("status", TEST_STATUS)
+                .add("return_url", TEST_RETURN_URL)
                 .build();
     }
 
