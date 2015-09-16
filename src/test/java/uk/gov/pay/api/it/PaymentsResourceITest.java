@@ -17,6 +17,7 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
+import static java.lang.String.format;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static uk.gov.pay.api.utils.ConnectorMockClient.CONNECTOR_MOCK_CHARGE_PATH;
@@ -27,7 +28,7 @@ public class PaymentsResourceITest {
     private static final String TEST_CHARGE_ID = "ch_ab2341da231434l";
     private static final long TEST_AMOUNT = 20032123132120l;
     private static final String TEST_STATUS = "someState";
-    private static final String TEST_RETURN_URL = "http://somewhere.over.the/rainbow/";
+    private static final String TEST_RETURN_URL = "http://somewhere.over.the/rainbow/{paymentID}";
     private static final String GATEWAY_ACCOUNT_ID = "gw_32adf21bds3aac21";
     public static final String PAYMENTS_PATH = "/v1/payments/";
 
@@ -64,7 +65,7 @@ public class PaymentsResourceITest {
     public void createPayment() {
         connectorMock.respondOk_whenCreateCharge(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_STATUS, TEST_RETURN_URL);
 
-        ValidatableResponse response = postPaymentResponse(paymentPayload(TEST_AMOUNT, GATEWAY_ACCOUNT_ID))
+        ValidatableResponse response = postPaymentResponse(paymentPayload(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_RETURN_URL))
                 .statusCode(201)
                 .contentType(JSON)
                 .body("payment_id", is(TEST_CHARGE_ID))
@@ -86,7 +87,7 @@ public class PaymentsResourceITest {
     @Test
     public void createPayment_responseWith4xx_whenNextUrlIsMissing() {
         connectorMock.respondOk_whenCreateChargeWithoutNextUrl(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_STATUS, TEST_RETURN_URL);
-        postPaymentResponse(paymentPayload(TEST_AMOUNT, GATEWAY_ACCOUNT_ID))
+        postPaymentResponse(paymentPayload(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_RETURN_URL))
                 .statusCode(500)
                 .contentType(JSON)
                 .body("message", is("Internal Server Error"));
@@ -98,12 +99,22 @@ public class PaymentsResourceITest {
         String errorMessage = "something went wrong";
         connectorMock.respondUnknownGateway_whenCreateCharge(TEST_AMOUNT, invalidGatewayAccountId, errorMessage, TEST_RETURN_URL);
 
-        postPaymentResponse(paymentPayload(TEST_AMOUNT, invalidGatewayAccountId))
+        postPaymentResponse(paymentPayload(TEST_AMOUNT, invalidGatewayAccountId, TEST_RETURN_URL))
                 .statusCode(400)
                 .contentType(JSON)
                 .body("message", is(errorMessage));
 
         connectorMock.verifyCreateCharge(TEST_AMOUNT, invalidGatewayAccountId, TEST_RETURN_URL);
+    }
+
+    @Test
+    public void createPayment_responseWith4xx_forInvalidReturnUrl() {
+        String invalidReturnUrl = "http://no.payment.id/inpath";
+
+        postPaymentResponse(paymentPayload(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, invalidReturnUrl))
+                .statusCode(400)
+                .contentType(JSON)
+                .body("message", is(format("Payment-id placeholder is missing: '%s' does not contain a '{paymentId}' placeholder.", invalidReturnUrl)));
     }
 
     @Test
@@ -118,7 +129,7 @@ public class PaymentsResourceITest {
     public void createPayment_responseWith4xx_whenConnectorResponseEmpty() {
         connectorMock.respondOk_withEmptyBody(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_RETURN_URL);
 
-        postPaymentResponse(paymentPayload(TEST_AMOUNT, GATEWAY_ACCOUNT_ID))
+        postPaymentResponse(paymentPayload(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_RETURN_URL))
                 .statusCode(400)
                 .contentType(JSON)
                 .body("message", is("Connector response contains no payload!"));
@@ -155,12 +166,12 @@ public class PaymentsResourceITest {
         return "http://Frontend/charge/" + chargeId;
     }
 
-    private String paymentPayload(long amount, String gatewayAccountId) {
+    private String paymentPayload(long amount, String gatewayAccountId, String returnUrl) {
         return jsonStringBuilder()
                 .add("amount", amount)
                 .add("account_id", gatewayAccountId)
                 .add("status", TEST_STATUS)
-                .add("return_url", TEST_RETURN_URL)
+                .add("return_url", returnUrl)
                 .build();
     }
 

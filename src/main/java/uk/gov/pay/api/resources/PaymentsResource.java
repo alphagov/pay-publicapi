@@ -27,8 +27,11 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import static java.lang.String.format;
 import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.apache.commons.lang3.BooleanUtils.negate;
+import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import static uk.gov.pay.api.model.CreatePaymentResponse.createPaymentResponse;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
 import static uk.gov.pay.api.utils.ResponseUtil.badRequestResponse;
@@ -47,8 +50,9 @@ public class PaymentsResource {
 
     private static final String[] REQUIRED_FIELDS = {AMOUNT_KEY, ACCOUNT_KEY, SERVICE_RETURN_URL};
 
-    public static final String PAYMENTS_PATH = "/v1/payments";
-    public static final String PAYMENT_BY_ID = "/v1/payments/{" + PAYMENT_KEY + "}";
+    private static final String PAYMENTS_PATH = "/v1/payments";
+    private static final String PAYMENTS_ID_PLACEHOLDER = "{" + PAYMENT_KEY + "}";
+    private static final String PAYMENT_BY_ID = "/v1/payments/" + PAYMENTS_ID_PLACEHOLDER;
 
     private final Logger logger = LoggerFactory.getLogger(PaymentsResource.class);
     private final Client client;
@@ -84,6 +88,10 @@ public class PaymentsResource {
         Optional<List<String>> missingFields = checkMissingFields(requestPayload);
         if (missingFields.isPresent()) {
             return fieldsMissingResponse(logger, missingFields.get());
+        }
+        Optional<String> fieldFormatError = checkFieldFormat(requestPayload);
+        if (fieldFormatError.isPresent()) {
+            return badRequestResponse(logger, fieldFormatError.get());
         }
 
         Response connectorResponse = client.target(chargeUrl)
@@ -150,6 +158,16 @@ public class PaymentsResource {
         return missing.isEmpty()
                 ? Optional.<List<String>>empty()
                 : Optional.of(missing);
+    }
+
+    private Optional<String> checkFieldFormat(JsonNode requestPayload) {
+        String returnUrl = requestPayload.get(SERVICE_RETURN_URL).asText();
+        if (negate(containsIgnoreCase(returnUrl, PAYMENTS_ID_PLACEHOLDER))) {
+            String errorMessage = format("Payment-id placeholder is missing: '%s' does not contain a '%s' placeholder."
+                    , returnUrl, PAYMENTS_ID_PLACEHOLDER);
+            return Optional.of(errorMessage);
+        }
+        return Optional.empty();
     }
 
     private Entity buildChargeRequestPayload(JsonNode requestPayload) {
