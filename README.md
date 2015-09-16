@@ -22,7 +22,7 @@ Content-Type: application/json
 
 {
     "amount": 50000,
-    "account_id": "32adf21bds3aac21"
+    "account_id": "32adf21bds3aac21",
     "return_url": "http://service.url/success"
 }
 ```
@@ -53,7 +53,8 @@ Content-Type: application/json
     ],
     "payment_id": "ab2341da231434",
     "amount": 50000,
-    "status": "CREATED"
+    "status": "CREATED",
+    "return_url": "http://service.url/success"
 }
 ```
 
@@ -111,7 +112,8 @@ Content-Type: application/json
     ],
     "payment_id": "ab2341da231434",
     "amount": 50000,
-    "status": "CREATED"
+    "status": "CREATED",
+    "return_url": "http://service.url/success"
 }
 ```
 
