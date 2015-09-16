@@ -38,11 +38,12 @@ public class ConnectorMockClient {
                 .build();
     }
 
-    private String createChargeResponse(long amount, String chargeId, String status, ImmutableMap<?, ?>... links) {
+    private String createChargeResponse(long amount, String chargeId, String status, String returnUrl, ImmutableMap<?, ?>... links) {
         return jsonStringBuilder()
                 .add("charge_id", chargeId)
                 .add("amount", amount)
                 .add("status", status)
+                .add("return_url", returnUrl)
                 .add("links", asList(links))
                 .build();
     }
@@ -69,7 +70,7 @@ public class ConnectorMockClient {
                         .withStatusCode(CREATED_201)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                         .withHeader(LOCATION, chargeLocation(chargeId))
-                        .withBody(createChargeResponse(amount, chargeId, status,
+                        .withBody(createChargeResponse(amount, chargeId, status, returnUrl,
                                 validLink(chargeLocation(chargeId), "self"),
                                 validLink(nextUrl(chargeId), "next_url"))));
     }
@@ -80,7 +81,7 @@ public class ConnectorMockClient {
                         .withStatusCode(CREATED_201)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                         .withHeader(LOCATION, chargeLocation(chargeId))
-                        .withBody(createChargeResponse(amount, chargeId, status,
+                        .withBody(createChargeResponse(amount, chargeId, status, returnUrl,
                                 validLink(chargeLocation(chargeId), "self"))));
     }
 
@@ -100,12 +101,12 @@ public class ConnectorMockClient {
                         .withHeader(LOCATION, chargeLocation(chargeId)));
     }
 
-    public void respondWithChargeFound(long amount, String chargeId, String status) {
+    public void respondWithChargeFound(long amount, String chargeId, String status, String returnUrl) {
         whenGetCharge(chargeId)
                 .respond(response()
                         .withStatusCode(OK_200)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withBody(createChargeResponse(amount, chargeId, status,
+                        .withBody(createChargeResponse(amount, chargeId, status, returnUrl,
                                 validLink(chargeLocation(chargeId), "self"),
                                 validLink(nextUrl(chargeId), "next_url"))));
     }

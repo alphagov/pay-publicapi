@@ -69,7 +69,8 @@ public class PaymentsResourceITest {
                 .contentType(JSON)
                 .body("payment_id", is(TEST_CHARGE_ID))
                 .body("amount", is(TEST_AMOUNT))
-                .body("status", is(TEST_STATUS));
+                .body("status", is(TEST_STATUS))
+                .body("return_url", is(TEST_RETURN_URL));
 
         String paymentId = response.extract().path("payment_id");
         assertThat(paymentId, is(TEST_CHARGE_ID));
@@ -125,14 +126,15 @@ public class PaymentsResourceITest {
 
     @Test
     public void getPayment_ReturnsPayment() {
-        connectorMock.respondWithChargeFound(TEST_AMOUNT, TEST_CHARGE_ID, TEST_STATUS);
+        connectorMock.respondWithChargeFound(TEST_AMOUNT, TEST_CHARGE_ID, TEST_STATUS, TEST_RETURN_URL);
 
         ValidatableResponse response = getPaymentResponse(TEST_CHARGE_ID)
                 .statusCode(200)
                 .contentType(JSON)
                 .body("payment_id", is(TEST_CHARGE_ID))
                 .body("amount", is(TEST_AMOUNT))
-                .body("status", is(TEST_STATUS));
+                .body("status", is(TEST_STATUS))
+                .body("return_url", is(TEST_RETURN_URL));
 
         assertLink(response, paymentLocationFor(TEST_CHARGE_ID), "self");
     }
