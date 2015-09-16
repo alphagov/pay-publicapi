@@ -22,7 +22,8 @@ Content-Type: application/json
 
 {
     "amount": 50000,
-    "account_id": "32adf21bds3aac21"
+    "account_id": "32adf21bds3aac21",
+    "return_url": "http://service.url/success/{paymentId}"
 }
 ```
 
@@ -32,7 +33,11 @@ Content-Type: application/json
 | ------------------------ |:--------:| ----------------------------------------- |
 | `amount`                 | X | Amount to pay in pence                           |
 | `account_id`             | X | ID of the account to use for the payment         |
+| `return_url`             | X | The URL where the user should be redirected to when the payment workflow is finished.         |
 
+The value of field `return_url` needs to contain a placeholder for the payment-id. This is the literal string `{paymentId}`,
+which will be replaced with the payment-id of the created payment resource when the user finishes the payment workflow
+and is redirected back to the calling service.
 
 #### Payment created response
 
@@ -51,7 +56,8 @@ Content-Type: application/json
     ],
     "payment_id": "ab2341da231434",
     "amount": 50000,
-    "status": "CREATED"
+    "status": "CREATED",
+    "return_url": "http://service.url/success"
 }
 ```
 
@@ -62,6 +68,7 @@ Content-Type: application/json
 | `payment_id`           | The ID of the created payment             |
 | `amount`               | Amount to pay in pence                    |
 | `status`               | Current status of the payment             |
+| `return_url`           | The URL where the user should be redirected to when the payment workflow is finished.         |
 
 #### Payment creation failed
 
@@ -109,7 +116,8 @@ Content-Type: application/json
     ],
     "payment_id": "ab2341da231434",
     "amount": 50000,
-    "status": "CREATED"
+    "status": "CREATED",
+    "return_url": "http://service.url/success"
 }
 ```
 

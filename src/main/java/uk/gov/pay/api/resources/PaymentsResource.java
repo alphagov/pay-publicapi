@@ -6,7 +6,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.model.LinksResponse;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Context;
@@ -22,11 +27,17 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import static java.lang.String.format;
 import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.apache.commons.lang3.BooleanUtils.negate;
+import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import static uk.gov.pay.api.model.CreatePaymentResponse.createPaymentResponse;
-import static uk.gov.pay.api.utils.JsonStringBuilder.jsonString;
-import static uk.gov.pay.api.utils.ResponseUtil.*;
+import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
+import static uk.gov.pay.api.utils.ResponseUtil.badRequestResponse;
+import static uk.gov.pay.api.utils.ResponseUtil.fieldsMissingResponse;
+import static uk.gov.pay.api.utils.ResponseUtil.internalServerErrorResponse;
+import static uk.gov.pay.api.utils.ResponseUtil.notFoundResponse;
 
 @Path("/")
 public class PaymentsResource {
@@ -34,12 +45,14 @@ public class PaymentsResource {
     private static final String AMOUNT_KEY = "amount";
     private static final String ACCOUNT_KEY = "account_id";
     private static final String GATEWAY_ACCOUNT_KEY = "gateway_account_id";
+    private static final String SERVICE_RETURN_URL = "return_url";
     private static final String CHARGE_KEY = "charge_id";
 
-    private static final String[] REQUIRED_FIELDS = {AMOUNT_KEY, ACCOUNT_KEY};
+    private static final String[] REQUIRED_FIELDS = {AMOUNT_KEY, ACCOUNT_KEY, SERVICE_RETURN_URL};
 
-    public static final String PAYMENTS_PATH = "/v1/payments";
-    public static final String PAYMENT_BY_ID = "/v1/payments/{" + PAYMENT_KEY + "}";
+    private static final String PAYMENTS_PATH = "/v1/payments";
+    private static final String PAYMENTS_ID_PLACEHOLDER = "{" + PAYMENT_KEY + "}";
+    private static final String PAYMENT_BY_ID = "/v1/payments/" + PAYMENTS_ID_PLACEHOLDER;
 
     private final Logger logger = LoggerFactory.getLogger(PaymentsResource.class);
     private final Client client;
@@ -75,6 +88,10 @@ public class PaymentsResource {
         Optional<List<String>> missingFields = checkMissingFields(requestPayload);
         if (missingFields.isPresent()) {
             return fieldsMissingResponse(logger, missingFields.get());
+        }
+        Optional<String> fieldFormatError = checkFieldFormat(requestPayload);
+        if (fieldFormatError.isPresent()) {
+            return badRequestResponse(logger, fieldFormatError.get());
         }
 
         Response connectorResponse = client.target(chargeUrl)
@@ -143,10 +160,25 @@ public class PaymentsResource {
                 : Optional.of(missing);
     }
 
+    private Optional<String> checkFieldFormat(JsonNode requestPayload) {
+        String returnUrl = requestPayload.get(SERVICE_RETURN_URL).asText();
+        if (negate(containsIgnoreCase(returnUrl, PAYMENTS_ID_PLACEHOLDER))) {
+            String errorMessage = format("Payment-id placeholder is missing: '%s' does not contain a '%s' placeholder."
+                    , returnUrl, PAYMENTS_ID_PLACEHOLDER);
+            return Optional.of(errorMessage);
+        }
+        return Optional.empty();
+    }
+
     private Entity buildChargeRequestPayload(JsonNode requestPayload) {
         long amount = requestPayload.get(AMOUNT_KEY).asLong();
         String accountId = requestPayload.get(ACCOUNT_KEY).asText();
+        String returnUrl = requestPayload.get(SERVICE_RETURN_URL).asText();
 
-        return json(jsonString(AMOUNT_KEY, amount, GATEWAY_ACCOUNT_KEY, accountId));
+        return json(jsonStringBuilder()
+                .add(AMOUNT_KEY, amount)
+                .add(GATEWAY_ACCOUNT_KEY, accountId)
+                .add(SERVICE_RETURN_URL, returnUrl)
+                .build());
     }
 }
