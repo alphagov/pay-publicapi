@@ -116,21 +116,24 @@ public class PaymentsResource {
                     .path(PAYMENT_BY_ID)
                     .build(payload.get(CHARGE_KEY).asText());
 
-            return getNextLink(payload).map(
-                    nextLink -> {
-                        LinksResponse response =
-                                createPaymentResponse(payload)
-                                        .addSelfLink(documentLocation)
-                                        .addLink(
-                                                nextLink.get("rel").asText(),
-                                                nextLink.get("method").asText(),
-                                                nextLink.get("href").asText()
-                                        );
+            Optional<JsonNode> nextLinkMaybe = getNextLink(payload);
 
-                        logger.info("payment returned: [ {} ]", response);
+            LinksResponse response =
+                    createPaymentResponse(payload)
+                            .addSelfLink(documentLocation);
 
-                        return okResponse.apply(documentLocation, response).build();
-                    }).orElseGet(() -> internalServerErrorResponse(logger, "Missing link next_url from connector response", "Internal Server Error"));
+            if (nextLinkMaybe.isPresent()) {
+                JsonNode nextLink = nextLinkMaybe.get();
+                response.addLink(
+                        nextLink.get("rel").asText(),
+                        nextLink.get("method").asText(),
+                        nextLink.get("href").asText()
+                );
+            }
+
+            logger.info("payment returned: [ {} ]", response);
+
+            return okResponse.apply(documentLocation, response).build();
         }
 
         return errorResponse.apply(payload);

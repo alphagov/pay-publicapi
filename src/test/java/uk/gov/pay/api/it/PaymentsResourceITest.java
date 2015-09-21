@@ -85,15 +85,6 @@ public class PaymentsResourceITest {
     }
 
     @Test
-    public void createPayment_responseWith4xx_whenNextUrlIsMissing() {
-        connectorMock.respondOk_whenCreateChargeWithoutNextUrl(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_STATUS, TEST_RETURN_URL);
-        postPaymentResponse(paymentPayload(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_RETURN_URL))
-                .statusCode(500)
-                .contentType(JSON)
-                .body("message", is("Internal Server Error"));
-    }
-
-    @Test
     public void createPayment_responseWith4xx_whenInvalidGatewayAccount() {
         String invalidGatewayAccountId = "ada2dfa323";
         String errorMessage = "something went wrong";
