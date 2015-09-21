@@ -147,13 +147,13 @@ See: [Payment creation failed](#payment-creation-failed)
 
 This endpoint cancels a new payment. A payment can only be cancelled if it's state is one of the following (case-insensitive):
 
-| Cancellable payment state |
-| ------------------------- |
-| created                   |
-| entering_card_details     |
-| authorisation_success     |
-| authorisation_submitted   |
-| ready_for_capture         |
+| Cancellable payment states |
+| -------------------------- |
+| created                    |
+| entering_card_details      |
+| authorisation_success      |
+| authorisation_submitted    |
+| ready_for_capture          |
 
 
 #### Request example
