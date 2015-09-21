@@ -7,7 +7,7 @@ The Payments Public API in Java (Dropwizard)
 | ------------------------------------------------------ | ------ | ---------------------------------- |
 |[`/v1/payments`](#post-v1payments)                      | POST   |  creates a payment                 |
 |[`/v1/payments/{paymentId}`](#get-v1paymentspaymentId)  | GET    |  returns a payment by ID           |
-|[`/v1/payments/{paymentId}/cancel`](#cancel-v1paymentspaymentIdcancel)  | POST   |  cancels a payment |
+|[`/v1/payments/{paymentId}/cancel`](#post-v1paymentspaymentidcancel)  | POST   |  cancels a payment |
 
 
 ### POST /v1/payments
