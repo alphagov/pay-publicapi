@@ -54,6 +54,9 @@ public class PaymentsResource {
     private static final String PAYMENTS_ID_PLACEHOLDER = "{" + PAYMENT_KEY + "}";
     private static final String PAYMENT_BY_ID = "/v1/payments/" + PAYMENTS_ID_PLACEHOLDER;
 
+    private static final String CANCEL_PATH_SUFFIX = "/cancel";
+    private static final String CANCEL_PAYMENT_PATH = "/v1/payments/" + PAYMENTS_ID_PLACEHOLDER + CANCEL_PATH_SUFFIX;
+
     private final Logger logger = LoggerFactory.getLogger(PaymentsResource.class);
     private final Client client;
     private final String chargeUrl;
@@ -183,5 +186,22 @@ public class PaymentsResource {
                 .add(GATEWAY_ACCOUNT_KEY, accountId)
                 .add(SERVICE_RETURN_URL, returnUrl)
                 .build());
+    }
+
+    @POST
+    @Path(CANCEL_PAYMENT_PATH)
+    @Produces(APPLICATION_JSON)
+    public Response cancelCharge(@PathParam(PAYMENT_KEY) String chargeId) {
+        logger.info("received cancel payment request: [{}]", chargeId);
+
+        Response connectorResponse = client.target(chargeUrl + "/" + chargeId + "/cancel")
+                .request()
+                .post(Entity.json(""));
+
+        if (connectorResponse.getStatus() == HttpStatus.SC_NO_CONTENT) {
+            return Response.noContent().build();
+        }
+
+        return badRequestResponse(logger, "Cancellation of charge failed.");
     }
 }

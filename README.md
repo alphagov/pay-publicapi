@@ -7,7 +7,7 @@ The Payments Public API in Java (Dropwizard)
 | ------------------------------------------------------ | ------ | ---------------------------------- |
 |[`/v1/payments`](#post-v1payments)                      | POST   |  creates a payment                 |
 |[`/v1/payments/{paymentId}`](#get-v1paymentspaymentId)  | GET    |  returns a payment by ID           |
-
+|[`/v1/payments/{paymentId}/cancel`](#cancel-v1paymentspaymentIdcancel)  | POST   |  cancels a payment |
 
 
 ### POST /v1/payments
@@ -140,3 +140,45 @@ Content-Type: application/json
 ##### Response field description
 
 See: [Payment creation failed](#payment-creation-failed)
+
+------------------------------------------------------------------------------------------------
+
+### POST /v1/payments/{paymentId}/cancel
+
+This endpoint cancels a new payment. A payment can only be cancelled if it's state is one of the following (case-insensitive):
+
+| Cancellable payment state |
+| ------------------------- |
+| created                   |
+| entering_card_details     |
+| authorisation_success     |
+| authorisation_submitted   |
+| ready_for_capture         |
+
+
+#### Request example
+
+```
+POST /v1/payments/ab2341da231434/cancel
+```
+
+#### Payment cancellation successful
+
+```
+HTTP/1.1 204 No Content
+```
+
+
+#### Payment cancellation failed
+
+Either because the payment state is not cancellable or the payment does not exist.
+
+```
+HTTP/1.1 400 Bad Request
+Content-Type: application/json
+Content-Length: 44
+
+{
+    "message": "Cancellation of charge failed."
+}
+```
