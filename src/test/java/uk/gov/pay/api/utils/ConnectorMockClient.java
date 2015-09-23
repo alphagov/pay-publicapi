@@ -3,6 +3,7 @@ package uk.gov.pay.api.utils;
 import com.google.common.collect.ImmutableMap;
 import org.mockserver.client.server.ForwardChainExpectation;
 import org.mockserver.client.server.MockServerClient;
+import org.mockserver.model.HttpResponse;
 
 import static java.util.Arrays.asList;
 import static javax.ws.rs.HttpMethod.GET;
@@ -13,6 +14,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
 import static org.eclipse.jetty.http.HttpStatus.CREATED_201;
 import static org.eclipse.jetty.http.HttpStatus.NOT_FOUND_404;
+import static org.eclipse.jetty.http.HttpStatus.NO_CONTENT_204;
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
@@ -22,6 +24,7 @@ import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
 
 public class ConnectorMockClient {
     public static final String CONNECTOR_MOCK_CHARGE_PATH = "/tv1/charges";
+    public static final String CONNECTOR_MOCK_CANCEL_PATH_SUFFIX = "/cancel";
     private final MockServerClient mockClient;
     private final String baseUrl;
 
@@ -87,10 +90,7 @@ public class ConnectorMockClient {
 
     public void respondUnknownGateway_whenCreateCharge(long amount, String gatewayAccountId, String errorMsg, String returnUrl) {
         whenCreateCharge(amount, gatewayAccountId, returnUrl)
-                .respond(response()
-                        .withStatusCode(BAD_REQUEST_400)
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withBody(jsonString("message", errorMsg)));
+                .respond(withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg));
     }
 
     public void respondOk_withEmptyBody(long amount, String gatewayAccountId, String chargeId, String returnUrl) {
@@ -113,10 +113,23 @@ public class ConnectorMockClient {
 
     public void respondChargeNotFound(String chargeId, String errorMsg) {
         whenGetCharge(chargeId)
+                .respond(withStatusAndErrorMessage(NOT_FOUND_404, errorMsg));
+    }
+
+    public void respondOk_whenCancelCharge(String paymentId) {
+        whenCancelCharge(paymentId)
                 .respond(response()
-                        .withStatusCode(NOT_FOUND_404)
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withBody(jsonString("message", errorMsg)));
+                        .withStatusCode(NO_CONTENT_204));
+    }
+
+    public void respondChargeNotFound_WhenCancelCharge(String paymentId, String errorMsg) {
+        whenCancelCharge(paymentId)
+                .respond(withStatusAndErrorMessage(NOT_FOUND_404, errorMsg));
+    }
+
+    public void respondBadRequest_WhenCancelChargeNotAllowed(String paymentId, String errorMsg) {
+        whenCancelCharge(paymentId)
+                .respond(withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg));
     }
 
     private ForwardChainExpectation whenCreateCharge(long amount, String gatewayAccountId, String returnUrl) {
@@ -135,6 +148,19 @@ public class ConnectorMockClient {
         );
     }
 
+    private ForwardChainExpectation whenCancelCharge(String paymentId) {
+        return mockClient.when(request()
+                .withMethod(POST)
+                .withPath(CONNECTOR_MOCK_CHARGE_PATH + "/" + paymentId + CONNECTOR_MOCK_CANCEL_PATH_SUFFIX));
+    }
+
+    private HttpResponse withStatusAndErrorMessage(int statusCode, String errorMsg) {
+        return response()
+                .withStatusCode(statusCode)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                .withBody(jsonString("message", errorMsg));
+    }
+
     public void verifyCreateCharge(long amount, String gatewayAccountId, String returnUrl) {
         mockClient.verify(request()
                         .withMethod(POST)
@@ -142,5 +168,12 @@ public class ConnectorMockClient {
                         .withBody(createChargePayload(amount, gatewayAccountId, returnUrl)),
                 once()
         );
+    }
+
+    public void verifyCancelCharge(String paymentId) {
+        mockClient.verify(request()
+                        .withMethod(POST)
+                        .withPath(CONNECTOR_MOCK_CHARGE_PATH + "/" + paymentId + CONNECTOR_MOCK_CANCEL_PATH_SUFFIX),
+                once());
     }
 }
