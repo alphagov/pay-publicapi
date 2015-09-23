@@ -149,11 +149,8 @@ This endpoint cancels a new payment. A payment can only be cancelled if it's sta
 
 | Cancellable payment states |
 | -------------------------- |
-| created                    |
-| entering_card_details      |
-| authorisation_success      |
-| authorisation_submitted    |
-| ready_for_capture          |
+| Created                    |
+| In Progress                |
 
 
 #### Request example
