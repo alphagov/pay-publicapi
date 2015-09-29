@@ -98,6 +98,23 @@ public class PaymentsResource {
                 data -> badRequestResponse(logger, data));
     }
 
+    @POST
+    @Path(CANCEL_PAYMENT_PATH)
+    @Produces(APPLICATION_JSON)
+    public Response cancelCharge(@PathParam(PAYMENT_KEY) String chargeId) {
+        logger.info("received cancel payment request: [{}]", chargeId);
+
+        Response connectorResponse = client.target(chargeUrl + "/" + chargeId + "/cancel")
+                .request()
+                .post(Entity.json(""));
+
+        if (connectorResponse.getStatus() == HttpStatus.SC_NO_CONTENT) {
+            return Response.noContent().build();
+        }
+
+        return badRequestResponse(logger, "Cancellation of charge failed.");
+    }
+
     private Response responseFrom(UriInfo uriInfo, Response connectorResponse, int okStatus,
                                   BiFunction<URI, Object, ResponseBuilder> okResponse,
                                   Function<JsonNode, Response> errorResponse) {
@@ -177,22 +194,5 @@ public class PaymentsResource {
                 .add(GATEWAY_ACCOUNT_KEY, accountId)
                 .add(SERVICE_RETURN_URL, returnUrl)
                 .build());
-    }
-
-    @POST
-    @Path(CANCEL_PAYMENT_PATH)
-    @Produces(APPLICATION_JSON)
-    public Response cancelCharge(@PathParam(PAYMENT_KEY) String chargeId) {
-        logger.info("received cancel payment request: [{}]", chargeId);
-
-        Response connectorResponse = client.target(chargeUrl + "/" + chargeId + "/cancel")
-                .request()
-                .post(Entity.json(""));
-
-        if (connectorResponse.getStatus() == HttpStatus.SC_NO_CONTENT) {
-            return Response.noContent().build();
-        }
-
-        return badRequestResponse(logger, "Cancellation of charge failed.");
     }
 }
