@@ -9,7 +9,7 @@ import org.mockserver.junit.MockServerRule;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.config.PublicApiConfig;
 import uk.gov.pay.api.utils.ConnectorMockClient;
-import uk.gov.pay.api.utils.PublicApiMockClient;
+import uk.gov.pay.api.utils.PublicAuthMockClient;
 
 import javax.ws.rs.core.HttpHeaders;
 
@@ -41,7 +41,7 @@ public class PaymentsResourceITest {
     public MockServerRule publicAuthMockRule = new MockServerRule(this);
 
     private ConnectorMockClient connectorMock;
-    private PublicApiMockClient publicAuthMock;
+    private PublicAuthMockClient publicAuthMock;
 
     @Rule
     public DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
@@ -69,7 +69,7 @@ public class PaymentsResourceITest {
     @Before
     public void setup() {
         connectorMock = new ConnectorMockClient(connectorMockRule.getHttpPort(), connectorBaseUrl());
-        publicAuthMock = new PublicApiMockClient(publicAuthMockRule.getHttpPort(), publicAuthBaseUrl());
+        publicAuthMock = new PublicAuthMockClient(publicAuthMockRule.getHttpPort(), publicAuthBaseUrl());
     }
 
     @Test
@@ -137,8 +137,8 @@ public class PaymentsResourceITest {
     @Test
     public void createPayment_responseWith4xx_whenConnectorResponseEmpty() {
         connectorMock.respondOk_withEmptyBody(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_RETURN_URL);
-
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+
         postPaymentResponse(BEARER_TOKEN, paymentPayload(TEST_AMOUNT, TEST_RETURN_URL))
                 .statusCode(400)
                 .contentType(JSON)
@@ -147,9 +147,10 @@ public class PaymentsResourceITest {
 
     @Test
     public void getPayment_ReturnsPayment() {
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
         connectorMock.respondWithChargeFound(TEST_AMOUNT, TEST_CHARGE_ID, TEST_STATUS, TEST_RETURN_URL);
 
-        ValidatableResponse response = getPaymentResponse(TEST_CHARGE_ID)
+        ValidatableResponse response = getPaymentResponse( BEARER_TOKEN, TEST_CHARGE_ID)
                 .statusCode(200)
                 .contentType(JSON)
                 .body("payment_id", is(TEST_CHARGE_ID))
@@ -161,16 +162,26 @@ public class PaymentsResourceITest {
     }
 
     @Test
+    public void getPayment_Returns401_WhenUnauthorised() {
+        publicAuthMock.respondUnauthorised();
+
+        getPaymentResponse(BEARER_TOKEN, TEST_CHARGE_ID)
+                .statusCode(401);
+    }
+
+    @Test
     public void getPayment_InvalidPaymentId() {
         String invalidPaymentId = "ds2af2afd3df112";
         String errorMessage = "backend-error-message";
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
         connectorMock.respondChargeNotFound(invalidPaymentId, errorMessage);
 
-        getPaymentResponse(invalidPaymentId)
+        getPaymentResponse(BEARER_TOKEN, invalidPaymentId)
                 .statusCode(404)
                 .contentType(JSON)
                 .body("message", is(errorMessage));
     }
+
 
     @Test
     public void createPayment_Returns401_WhenUnauthorised() {
@@ -201,8 +212,9 @@ public class PaymentsResourceITest {
                 .build();
     }
 
-    private ValidatableResponse getPaymentResponse(String paymentId) {
+    private ValidatableResponse getPaymentResponse(String bearerToken, String paymentId) {
         return given().port(app.getLocalPort())
+                .header(AUTHORIZATION, "Bearer " + bearerToken)
                 .get(PAYMENTS_PATH + paymentId)
                 .then();
     }

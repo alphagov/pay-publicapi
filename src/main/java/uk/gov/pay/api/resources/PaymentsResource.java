@@ -61,7 +61,7 @@ public class PaymentsResource {
     @GET
     @Path(PAYMENT_BY_ID)
     @Produces(APPLICATION_JSON)
-    public Response getCharge(@PathParam(PAYMENT_KEY) String chargeId, @Context UriInfo uriInfo) {
+    public Response getCharge(@Auth String accountId, @PathParam(PAYMENT_KEY) String chargeId, @Context UriInfo uriInfo) {
         logger.info("received get payment request: [ {} ]", chargeId);
 
         Response connectorResponse = client.target(chargeUrl + "/" + chargeId)
@@ -101,7 +101,7 @@ public class PaymentsResource {
     @POST
     @Path(CANCEL_PAYMENT_PATH)
     @Produces(APPLICATION_JSON)
-    public Response cancelCharge(@PathParam(PAYMENT_KEY) String chargeId) {
+    public Response cancelCharge(@Auth String accountId, @PathParam(PAYMENT_KEY) String chargeId) {
         logger.info("received cancel payment request: [{}]", chargeId);
 
         Response connectorResponse = client.target(chargeUrl + "/" + chargeId + "/cancel")

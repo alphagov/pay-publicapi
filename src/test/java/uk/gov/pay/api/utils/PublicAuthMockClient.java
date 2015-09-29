@@ -12,12 +12,12 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
-public class PublicApiMockClient {
+public class PublicAuthMockClient {
 
     private final MockServerClient mockClient;
     private final String baseUrl;
 
-    public PublicApiMockClient(int mockServerPort, String baseUrl) {
+    public PublicAuthMockClient(int mockServerPort, String baseUrl) {
         this.mockClient = new MockServerClient("localhost", mockServerPort);
         this.baseUrl = baseUrl;
     }
