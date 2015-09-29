@@ -11,11 +11,7 @@ import static javax.ws.rs.HttpMethod.POST;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.HttpHeaders.LOCATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
-import static org.eclipse.jetty.http.HttpStatus.CREATED_201;
-import static org.eclipse.jetty.http.HttpStatus.NOT_FOUND_404;
-import static org.eclipse.jetty.http.HttpStatus.NO_CONTENT_204;
-import static org.eclipse.jetty.http.HttpStatus.OK_200;
+import static org.eclipse.jetty.http.HttpStatus.*;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 import static org.mockserver.verify.VerificationTimes.once;
@@ -28,8 +24,8 @@ public class ConnectorMockClient {
     private final MockServerClient mockClient;
     private final String baseUrl;
 
-    public ConnectorMockClient(MockServerClient mockClient, String baseUrl) {
-        this.mockClient = mockClient;
+    public ConnectorMockClient(int port, String baseUrl) {
+        this.mockClient = new MockServerClient("localhost", port);
         this.baseUrl = baseUrl;
     }
 

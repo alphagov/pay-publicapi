@@ -5,7 +5,6 @@ import io.dropwizard.testing.junit.DropwizardAppRule;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockserver.client.server.MockServerClient;
 import org.mockserver.junit.MockServerRule;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.config.PublicApiConfig;
@@ -28,7 +27,6 @@ public class PaymentsCancelResourceITest {
     @Rule
     public MockServerRule connectorMockRule = new MockServerRule(this);
 
-    private MockServerClient mockServerClient = null;
     private ConnectorMockClient connectorMock;
 
     @Rule
@@ -47,7 +45,7 @@ public class PaymentsCancelResourceITest {
 
     @Before
     public void setup() {
-        connectorMock = new ConnectorMockClient(mockServerClient, connectorBaseUrl());
+        connectorMock = new ConnectorMockClient(connectorMockRule.getHttpPort(), connectorBaseUrl());
     }
 
     @Test
