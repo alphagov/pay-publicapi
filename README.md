@@ -6,7 +6,7 @@ The Payments Public API in Java (Dropwizard)
 | Path                                                   | Method | Description                        |
 | ------------------------------------------------------ | ------ | ---------------------------------- |
 |[`/v1/payments`](#post-v1payments)                      | POST   |  creates a payment                 |
-|[`/v1/payments/{paymentId}`](#get-v1paymentspaymentId)  | GET    |  returns a payment by ID           |
+|[`/v1/payments/{paymentId}`](#get-v1paymentspaymentid)  | GET    |  returns a payment by ID           |
 |[`/v1/payments/{paymentId}/cancel`](#post-v1paymentspaymentidcancel)  | POST   |  cancels a payment |
 
 
@@ -52,12 +52,17 @@ Content-Type: application/json
             "rel": "self",
             "method": "GET",
             "href": "http://publicapi.co.uk/v1/payments/ab2341da231434"
+        },
+        {
+            "rel": "next_url",
+            "method": "GET",
+            "href": "http://frontend.co.uk/charge/1?chargeTokenId=82347"
         }
     ],
     "payment_id": "ab2341da231434",
     "amount": 50000,
     "status": "CREATED",
-    "return_url": "http://service.url/success"
+    "return_url": "http://service.url/success/{paymentId}"
 }
 ```
 
@@ -112,12 +117,17 @@ Content-Type: application/json
             "rel": "self",
             "method": "GET",
             "href": "http://publicapi.co.uk/v1/payments/ab2341da231434"
+        },
+        {
+            "rel": "next_url",
+            "method": "GET",
+            "href": "http://frontend.co.uk/charge/1?chargeTokenId=82347"
         }
     ],
     "payment_id": "ab2341da231434",
     "amount": 50000,
     "status": "CREATED",
-    "return_url": "http://service.url/success"
+    "return_url": "http://service.url/success/{paymentId}"
 }
 ```
 
