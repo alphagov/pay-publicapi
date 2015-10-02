@@ -11,8 +11,6 @@ import uk.gov.pay.api.config.PublicApiConfig;
 import uk.gov.pay.api.utils.ConnectorMockClient;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 
-import javax.ws.rs.core.HttpHeaders;
-
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static io.dropwizard.testing.ConfigOverride.config;
@@ -61,7 +59,7 @@ public class PaymentsCancelResourceITest {
     @Before
     public void setup() {
         connectorMock = new ConnectorMockClient(connectorMockRule.getHttpPort(), connectorBaseUrl());
-        publicAuthMock = new PublicAuthMockClient(publicAuthMockRule.getHttpPort(), publicAuthBaseUrl());
+        publicAuthMock = new PublicAuthMockClient(publicAuthMockRule.getHttpPort());
     }
 
     @Test

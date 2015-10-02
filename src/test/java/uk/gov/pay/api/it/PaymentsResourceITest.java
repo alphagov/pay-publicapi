@@ -69,7 +69,7 @@ public class PaymentsResourceITest {
     @Before
     public void setup() {
         connectorMock = new ConnectorMockClient(connectorMockRule.getHttpPort(), connectorBaseUrl());
-        publicAuthMock = new PublicAuthMockClient(publicAuthMockRule.getHttpPort(), publicAuthBaseUrl());
+        publicAuthMock = new PublicAuthMockClient(publicAuthMockRule.getHttpPort());
     }
 
     @Test

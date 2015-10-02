@@ -2,12 +2,8 @@ package uk.gov.pay.api.utils;
 
 import org.mockserver.client.server.MockServerClient;
 
-import javax.ws.rs.core.HttpHeaders;
-
 import static javax.ws.rs.HttpMethod.GET;
-import static javax.ws.rs.core.HttpHeaders.ACCEPT;
-import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
-import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
+import static javax.ws.rs.core.HttpHeaders.*;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
@@ -15,11 +11,9 @@ import static org.mockserver.model.HttpResponse.response;
 public class PublicAuthMockClient {
 
     private final MockServerClient mockClient;
-    private final String baseUrl;
 
-    public PublicAuthMockClient(int mockServerPort, String baseUrl) {
+    public PublicAuthMockClient(int mockServerPort) {
         this.mockClient = new MockServerClient("localhost", mockServerPort);
-        this.baseUrl = baseUrl;
     }
 
     public void respondUnauthorised() {
