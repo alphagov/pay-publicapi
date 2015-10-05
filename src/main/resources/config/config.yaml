@@ -2,3 +2,4 @@ logging:
   level: INFO
 
 connectorUrl: ${CONNECTOR_URL}
+publicAuthUrl: ${PUBLIC_AUTH_URL}

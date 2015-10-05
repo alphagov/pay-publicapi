@@ -1,10 +1,13 @@
 package uk.gov.pay.api.app;
 
 import io.dropwizard.Application;
+import io.dropwizard.auth.AuthFactory;
+import io.dropwizard.auth.oauth.OAuthFactory;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import uk.gov.pay.api.auth.AccountAuthenticator;
 import uk.gov.pay.api.config.PublicApiConfig;
 import uk.gov.pay.api.healthcheck.Ping;
 import uk.gov.pay.api.resources.PaymentsResource;
@@ -30,7 +33,9 @@ public class PublicApi extends Application<PublicApiConfig> {
 
         environment.healthChecks().register("ping", new Ping());
         environment.jersey().register(new PaymentsResource(client, config.getConnectorUrl()));
-
+        environment.jersey().register(AuthFactory.binder(new OAuthFactory<>(new AccountAuthenticator(client, config.getPublicAuthUrl()),
+                "",
+                String.class)));
     }
 
     public static void main(String[] args) throws Exception {

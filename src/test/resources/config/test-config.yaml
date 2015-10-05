@@ -16,3 +16,4 @@ logging:
         logFormat: "[%thread] %highlight(%-5level) %cyan(%logger{15}) - %msg %n"
 
 connectorUrl: http://connector.url/
+publicAuthUrl: http://publicauth.url/v1/auth

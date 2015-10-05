@@ -18,6 +18,7 @@ This endpoint creates a new payment.
 
 ```
 POST /v1/payments
+Authorization: Bearer BEARER_TOKEN
 Content-Type: application/json
 
 {
@@ -103,6 +104,7 @@ Returns a payment by ID.
 
 ```
 GET /v1/payments/ab2341da231434
+Authorization: Bearer BEARER_TOKEN
 ```
 
 #### Payment response
@@ -167,6 +169,7 @@ This endpoint cancels a new payment. A payment can only be cancelled if it's sta
 
 ```
 POST /v1/payments/ab2341da231434/cancel
+Authorization: Bearer BEARER_TOKEN
 ```
 
 #### Payment cancellation successful

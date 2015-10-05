@@ -1,0 +1,46 @@
+package uk.gov.pay.api.auth;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.base.Optional;
+import io.dropwizard.auth.AuthenticationException;
+import io.dropwizard.auth.Authenticator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ws.rs.ServiceUnavailableException;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static javax.ws.rs.core.Response.Status.OK;
+import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+
+public class AccountAuthenticator implements Authenticator<String, String> {
+    private final Client client;
+    private final String publicAuthUrl;
+
+    private static Logger logger = LoggerFactory.getLogger(AccountAuthenticator.class);
+
+    public AccountAuthenticator(Client client, String publicAuthUrl) {
+        this.client = client;
+        this.publicAuthUrl = publicAuthUrl;
+    }
+
+    @Override
+    public Optional<String> authenticate(String bearerToken) throws AuthenticationException {
+        Response response = client.target(publicAuthUrl).request()
+                .header(AUTHORIZATION, "Bearer " + bearerToken)
+                .accept(MediaType.APPLICATION_JSON)
+                .get();
+        if (response.getStatus() == OK.getStatusCode()) {
+            String accountId = response.readEntity(JsonNode.class).get("account_id").asText();
+            return Optional.of(accountId);
+        } else if (response.getStatus() == UNAUTHORIZED.getStatusCode()) {
+            return Optional.absent();
+        } else {
+            logger.warn("Unexpected status code " + response.getStatus() + " from auth.");
+            throw new ServiceUnavailableException();
+        }
+    }
+}

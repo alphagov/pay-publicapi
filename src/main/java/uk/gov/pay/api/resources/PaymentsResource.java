@@ -1,17 +1,13 @@
 package uk.gov.pay.api.resources;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import io.dropwizard.auth.Auth;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.model.LinksResponse;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Context;
@@ -34,21 +30,17 @@ import static org.apache.commons.lang3.BooleanUtils.negate;
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import static uk.gov.pay.api.model.CreatePaymentResponse.createPaymentResponse;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
-import static uk.gov.pay.api.utils.ResponseUtil.badRequestResponse;
-import static uk.gov.pay.api.utils.ResponseUtil.fieldsMissingResponse;
-import static uk.gov.pay.api.utils.ResponseUtil.internalServerErrorResponse;
-import static uk.gov.pay.api.utils.ResponseUtil.notFoundResponse;
+import static uk.gov.pay.api.utils.ResponseUtil.*;
 
 @Path("/")
 public class PaymentsResource {
     private static final String PAYMENT_KEY = "paymentId";
     private static final String AMOUNT_KEY = "amount";
-    private static final String ACCOUNT_KEY = "account_id";
     private static final String GATEWAY_ACCOUNT_KEY = "gateway_account_id";
     private static final String SERVICE_RETURN_URL = "return_url";
     private static final String CHARGE_KEY = "charge_id";
 
-    private static final String[] REQUIRED_FIELDS = {AMOUNT_KEY, ACCOUNT_KEY, SERVICE_RETURN_URL};
+    private static final String[] REQUIRED_FIELDS = {AMOUNT_KEY, SERVICE_RETURN_URL};
 
     private static final String PAYMENTS_PATH = "/v1/payments";
     private static final String PAYMENTS_ID_PLACEHOLDER = "{" + PAYMENT_KEY + "}";
@@ -69,7 +61,7 @@ public class PaymentsResource {
     @GET
     @Path(PAYMENT_BY_ID)
     @Produces(APPLICATION_JSON)
-    public Response getCharge(@PathParam(PAYMENT_KEY) String chargeId, @Context UriInfo uriInfo) {
+    public Response getCharge(@Auth String accountId, @PathParam(PAYMENT_KEY) String chargeId, @Context UriInfo uriInfo) {
         logger.info("received get payment request: [ {} ]", chargeId);
 
         Response connectorResponse = client.target(chargeUrl + "/" + chargeId)
@@ -85,7 +77,7 @@ public class PaymentsResource {
     @Path(PAYMENTS_PATH)
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
-    public Response createNewPayment(JsonNode requestPayload, @Context UriInfo uriInfo) throws IOException {
+    public Response createNewPayment(@Auth String accountId, JsonNode requestPayload, @Context UriInfo uriInfo) throws IOException {
         logger.info("received create payment request: [ {} ]", requestPayload);
 
         Optional<List<String>> missingFields = checkMissingFields(requestPayload);
@@ -99,11 +91,28 @@ public class PaymentsResource {
 
         Response connectorResponse = client.target(chargeUrl)
                 .request()
-                .post(buildChargeRequestPayload(requestPayload));
+                .post(buildChargeRequestPayload(accountId, requestPayload));
 
         return responseFrom(uriInfo, connectorResponse, HttpStatus.SC_CREATED,
                 (locationUrl, data) -> Response.created(locationUrl).entity(data),
                 data -> badRequestResponse(logger, data));
+    }
+
+    @POST
+    @Path(CANCEL_PAYMENT_PATH)
+    @Produces(APPLICATION_JSON)
+    public Response cancelCharge(@Auth String accountId, @PathParam(PAYMENT_KEY) String chargeId) {
+        logger.info("received cancel payment request: [{}]", chargeId);
+
+        Response connectorResponse = client.target(chargeUrl + "/" + chargeId + "/cancel")
+                .request()
+                .post(Entity.json(""));
+
+        if (connectorResponse.getStatus() == HttpStatus.SC_NO_CONTENT) {
+            return Response.noContent().build();
+        }
+
+        return badRequestResponse(logger, "Cancellation of charge failed.");
     }
 
     private Response responseFrom(UriInfo uriInfo, Response connectorResponse, int okStatus,
@@ -176,9 +185,8 @@ public class PaymentsResource {
         return Optional.empty();
     }
 
-    private Entity buildChargeRequestPayload(JsonNode requestPayload) {
+    private Entity buildChargeRequestPayload(String accountId, JsonNode requestPayload) {
         long amount = requestPayload.get(AMOUNT_KEY).asLong();
-        String accountId = requestPayload.get(ACCOUNT_KEY).asText();
         String returnUrl = requestPayload.get(SERVICE_RETURN_URL).asText();
 
         return json(jsonStringBuilder()
@@ -186,22 +194,5 @@ public class PaymentsResource {
                 .add(GATEWAY_ACCOUNT_KEY, accountId)
                 .add(SERVICE_RETURN_URL, returnUrl)
                 .build());
-    }
-
-    @POST
-    @Path(CANCEL_PAYMENT_PATH)
-    @Produces(APPLICATION_JSON)
-    public Response cancelCharge(@PathParam(PAYMENT_KEY) String chargeId) {
-        logger.info("received cancel payment request: [{}]", chargeId);
-
-        Response connectorResponse = client.target(chargeUrl + "/" + chargeId + "/cancel")
-                .request()
-                .post(Entity.json(""));
-
-        if (connectorResponse.getStatus() == HttpStatus.SC_NO_CONTENT) {
-            return Response.noContent().build();
-        }
-
-        return badRequestResponse(logger, "Cancellation of charge failed.");
     }
 }
