@@ -31,6 +31,7 @@
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-testing</artifactId>
             <version>${dropwizard.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.jayway.restassured</groupId>
