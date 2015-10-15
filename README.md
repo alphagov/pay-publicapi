@@ -23,17 +23,17 @@ Content-Type: application/json
 
 {
     "amount": 50000,
-    "account_id": "32adf21bds3aac21",
     "return_url": "http://service.url/success/{paymentId}"
 }
 ```
 
-##### Request body description
+##### Request description
+
+BEARER_TOKEN: A valid bearer token for the account to associate the payment with.
 
 | Field                    | required | Description                               |
 | ------------------------ |:--------:| ----------------------------------------- |
 | `amount`                 | X | Amount to pay in pence                           |
-| `account_id`             | X | ID of the account to use for the payment         |
 | `return_url`             | X | The URL where the user should be redirected to when the payment workflow is finished.         |
 
 The value of field `return_url` needs to contain a placeholder for the payment-id. This is the literal string `{paymentId}`,
