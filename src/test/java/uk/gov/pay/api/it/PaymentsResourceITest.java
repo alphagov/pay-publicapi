@@ -17,7 +17,6 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
-import static java.lang.String.format;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -30,8 +29,11 @@ public class PaymentsResourceITest {
     private static final String TEST_STATUS = "someState";
     private static final String TEST_RETURN_URL = "http://somewhere.over.the/rainbow/{paymentID}";
     private static final String GATEWAY_ACCOUNT_ID = "gw_32adf21bds3aac21";
-    public static final String PAYMENTS_PATH = "/v1/payments/";
+    private static final String PAYMENTS_PATH = "/v1/payments/";
     private static final String BEARER_TOKEN = "TEST-BEARER-TOKEN";
+    private static final String TEST_DESCRIPTION = "Some description";
+    
+    private static final String SUCCESS_PAYLOAD = paymentPayload(TEST_AMOUNT, TEST_RETURN_URL, TEST_DESCRIPTION);
 
     @Rule
     public MockServerRule connectorMockRule = new MockServerRule(this);
@@ -70,13 +72,14 @@ public class PaymentsResourceITest {
     @Test
     public void createPayment() {
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondOk_whenCreateCharge(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_STATUS, TEST_RETURN_URL);
+        connectorMock.respondOk_whenCreateCharge(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_STATUS, TEST_RETURN_URL, TEST_DESCRIPTION);
 
-        ValidatableResponse response = postPaymentResponse(BEARER_TOKEN, paymentPayload(TEST_AMOUNT, TEST_RETURN_URL))
+        ValidatableResponse response = postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
                 .statusCode(201)
                 .contentType(JSON)
                 .body("payment_id", is(TEST_CHARGE_ID))
                 .body("amount", is(TEST_AMOUNT))
+                .body("description", is(TEST_DESCRIPTION))
                 .body("status", is(TEST_STATUS))
                 .body("return_url", is(TEST_RETURN_URL));
 
@@ -88,7 +91,7 @@ public class PaymentsResourceITest {
         response.header(HttpHeaders.LOCATION, is(paymentUrl));
         assertLink(response, paymentUrl, "self");
         assertLink(response, cardDetailsUrlFor(TEST_CHARGE_ID), "next_url");
-        connectorMock.verifyCreateCharge(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_RETURN_URL);
+        connectorMock.verifyCreateCharge(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_RETURN_URL, TEST_DESCRIPTION);
     }
 
     @Test
@@ -97,14 +100,14 @@ public class PaymentsResourceITest {
         String errorMessage = "something went wrong";
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, invalidGatewayAccountId);
 
-        connectorMock.respondUnknownGateway_whenCreateCharge(TEST_AMOUNT, invalidGatewayAccountId, errorMessage, TEST_RETURN_URL);
+        connectorMock.respondUnknownGateway_whenCreateCharge(TEST_AMOUNT, invalidGatewayAccountId, errorMessage, TEST_RETURN_URL, TEST_DESCRIPTION);
 
-        postPaymentResponse(BEARER_TOKEN, paymentPayload(TEST_AMOUNT, TEST_RETURN_URL))
+        postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
                 .statusCode(400)
                 .contentType(JSON)
                 .body("message", is(errorMessage));
 
-        connectorMock.verifyCreateCharge(TEST_AMOUNT, invalidGatewayAccountId, TEST_RETURN_URL);
+        connectorMock.verifyCreateCharge(TEST_AMOUNT, invalidGatewayAccountId, TEST_RETURN_URL, TEST_DESCRIPTION);
     }
 
     @Test
@@ -114,15 +117,15 @@ public class PaymentsResourceITest {
         postPaymentResponse(BEARER_TOKEN, "{}")
                 .statusCode(400)
                 .contentType(JSON)
-                .body("message", is("Field(s) missing: [amount, return_url]"));
+                .body("message", is("Field(s) missing: [description, amount, return_url]"));
     }
 
     @Test
     public void createPayment_responseWith4xx_whenConnectorResponseEmpty() {
-        connectorMock.respondOk_withEmptyBody(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_RETURN_URL);
+        connectorMock.respondOk_withEmptyBody(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_RETURN_URL, TEST_DESCRIPTION);
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
 
-        postPaymentResponse(BEARER_TOKEN, paymentPayload(TEST_AMOUNT, TEST_RETURN_URL))
+        postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
                 .statusCode(400)
                 .contentType(JSON)
                 .body("message", is("Connector response contains no payload!"));
@@ -131,7 +134,7 @@ public class PaymentsResourceITest {
     @Test
     public void getPayment_ReturnsPayment() {
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondWithChargeFound(TEST_AMOUNT, TEST_CHARGE_ID, TEST_STATUS, TEST_RETURN_URL);
+        connectorMock.respondWithChargeFound(TEST_AMOUNT, TEST_CHARGE_ID, TEST_STATUS, TEST_RETURN_URL, TEST_DESCRIPTION);
 
         ValidatableResponse response = getPaymentResponse( BEARER_TOKEN, TEST_CHARGE_ID)
                 .statusCode(200)
@@ -165,12 +168,11 @@ public class PaymentsResourceITest {
                 .body("message", is(errorMessage));
     }
 
-
     @Test
     public void createPayment_Returns401_WhenUnauthorised() {
         publicAuthMock.respondUnauthorised();
 
-        postPaymentResponse(BEARER_TOKEN, paymentPayload(TEST_AMOUNT, TEST_RETURN_URL))
+        postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
                 .statusCode(401);
     }
 
@@ -178,18 +180,18 @@ public class PaymentsResourceITest {
     public void createPayment_Returns_WhenPublicAuthInaccessible() {
         publicAuthMock.respondWithError();
 
-        postPaymentResponse(BEARER_TOKEN, paymentPayload(TEST_AMOUNT, TEST_RETURN_URL))
+        postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
                 .statusCode(503);
     }
-
 
     private String cardDetailsUrlFor(String chargeId) {
         return "http://Frontend/charge/" + chargeId;
     }
 
-    private String paymentPayload(long amount, String returnUrl) {
+    private static String paymentPayload(long amount, String returnUrl, String description) {
         return jsonStringBuilder()
                 .add("amount", amount)
+                .add("description", description)
                 .add("status", TEST_STATUS)
                 .add("return_url", returnUrl)
                 .build();

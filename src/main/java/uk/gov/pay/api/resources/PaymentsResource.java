@@ -26,6 +26,7 @@ import java.util.function.Function;
 import static java.lang.String.format;
 import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.apache.http.HttpStatus.SC_OK;
 import static uk.gov.pay.api.model.CreatePaymentResponse.createPaymentResponse;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
 import static uk.gov.pay.api.utils.ResponseUtil.*;
@@ -33,12 +34,13 @@ import static uk.gov.pay.api.utils.ResponseUtil.*;
 @Path("/")
 public class PaymentsResource {
     private static final String PAYMENT_KEY = "paymentId";
+    private static final String DESCRIPTION_KEY = "description";
     private static final String AMOUNT_KEY = "amount";
     private static final String GATEWAY_ACCOUNT_KEY = "gateway_account_id";
     private static final String SERVICE_RETURN_URL = "return_url";
     private static final String CHARGE_KEY = "charge_id";
 
-    private static final String[] REQUIRED_FIELDS = {AMOUNT_KEY, SERVICE_RETURN_URL};
+    private static final String[] REQUIRED_FIELDS = {DESCRIPTION_KEY, AMOUNT_KEY, SERVICE_RETURN_URL};
 
     private static final String PAYMENTS_PATH = "/v1/payments";
     private static final String PAYMENTS_ID_PLACEHOLDER = "{" + PAYMENT_KEY + "}";
@@ -68,7 +70,7 @@ public class PaymentsResource {
                 .request()
                 .get();
 
-        return responseFrom(uriInfo, connectorResponse, HttpStatus.SC_OK,
+        return responseFrom(uriInfo, connectorResponse, SC_OK,
                 (locationUrl, data) -> Response.ok(data),
                 data -> notFoundResponse(logger, data));
     }
@@ -173,10 +175,12 @@ public class PaymentsResource {
 
     private Entity buildChargeRequestPayload(String accountId, JsonNode requestPayload) {
         long amount = requestPayload.get(AMOUNT_KEY).asLong();
+        String description = requestPayload.get(DESCRIPTION_KEY).asText();
         String returnUrl = requestPayload.get(SERVICE_RETURN_URL).asText();
 
         return json(jsonStringBuilder()
                 .add(AMOUNT_KEY, amount)
+                .add(DESCRIPTION_KEY, description)
                 .add(GATEWAY_ACCOUNT_KEY, accountId)
                 .add(SERVICE_RETURN_URL, returnUrl)
                 .build());

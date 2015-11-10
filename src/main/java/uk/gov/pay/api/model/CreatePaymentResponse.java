@@ -9,21 +9,24 @@ public class CreatePaymentResponse extends LinksResponse {
     private final long amount;
     private final String status;
     private final String returnUrl;
+    private final String description;
 
     public static CreatePaymentResponse createPaymentResponse(JsonNode payload) {
         return new CreatePaymentResponse(
                 payload.get("charge_id").asText(),
                 payload.get("amount").asLong(),
                 payload.get("status").asText(),
-                payload.get("return_url").asText()
-        );
+                payload.get("return_url").asText(),
+                payload.get("description").asText()
+                );
     }
 
-    private CreatePaymentResponse(String chargeId, long amount, String status, String returnUrl) {
+    private CreatePaymentResponse(String chargeId, long amount, String status, String returnUrl, String description) {
         this.paymentId = chargeId;
         this.amount = amount;
         this.status = status;
         this.returnUrl = returnUrl;
+        this.description = description;
     }
 
     public String getPaymentId() {
@@ -42,13 +45,18 @@ public class CreatePaymentResponse extends LinksResponse {
         return returnUrl;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
     @Override
     public String toString() {
-        return "CreatePaymentResponse { " + super.toString() +
-                ", paymentId='" + paymentId + "' " +
-                ", amount='" + amount + "' " +
-                ", status='" + status + "' " +
-                ", returnUrl='" + returnUrl + "' " +
-                "} ";
+        return "CreatePaymentResponse{" +
+                "paymentId='" + paymentId + '\'' +
+                ", amount=" + amount +
+                ", status='" + status + '\'' +
+                ", returnUrl='" + returnUrl + '\'' +
+                ", description='" + description + '\'' +
+                '}';
     }
 }
