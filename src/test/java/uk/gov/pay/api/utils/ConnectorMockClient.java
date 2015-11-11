@@ -1,6 +1,7 @@
 package uk.gov.pay.api.utils;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.mockserver.client.server.ForwardChainExpectation;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.model.HttpResponse;
@@ -11,6 +12,7 @@ import static javax.ws.rs.HttpMethod.POST;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.HttpHeaders.LOCATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 import static org.eclipse.jetty.http.HttpStatus.*;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
@@ -32,7 +34,7 @@ public class ConnectorMockClient {
     private String createChargePayload(long amount, String gatewayAccountId, String returnUrl, String description) {
         return jsonStringBuilder()
                 .add("amount", amount)
-                .add("description", description)
+                .add("description", escapeHtml4(description))
                 .add("gateway_account_id", gatewayAccountId)
                 .add("return_url", returnUrl)
                 .build();
@@ -76,19 +78,9 @@ public class ConnectorMockClient {
                                 chargeId,
                                 status,
                                 returnUrl,
-                                description,
+                                escapeHtml4(description),
                                 validLink(chargeLocation(chargeId), "self"),
                                 validLink(nextUrl(chargeId), "next_url"))));
-    }
-
-    public void respondOk_whenCreateChargeWithoutNextUrl(long amount, String gatewayAccountId, String chargeId, String status, String returnUrl, String description) {
-        whenCreateCharge(amount, gatewayAccountId, returnUrl, description)
-                .respond(response()
-                        .withStatusCode(CREATED_201)
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withHeader(LOCATION, chargeLocation(chargeId))
-                        .withBody(createChargeResponse(amount, chargeId, status, returnUrl,
-                                description, validLink(chargeLocation(chargeId), "self"))));
     }
 
     public void respondUnknownGateway_whenCreateCharge(long amount, String gatewayAccountId, String errorMsg, String returnUrl, String description) {

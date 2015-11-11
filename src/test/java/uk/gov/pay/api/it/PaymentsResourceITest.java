@@ -18,6 +18,7 @@ import static com.jayway.restassured.http.ContentType.JSON;
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
@@ -31,7 +32,7 @@ public class PaymentsResourceITest {
     private static final String GATEWAY_ACCOUNT_ID = "gw_32adf21bds3aac21";
     private static final String PAYMENTS_PATH = "/v1/payments/";
     private static final String BEARER_TOKEN = "TEST-BEARER-TOKEN";
-    private static final String TEST_DESCRIPTION = "Some description";
+    private static final String TEST_DESCRIPTION = "Some description <script> alert('This is a ?{simple} XSS attack.')</script>";
     
     private static final String SUCCESS_PAYLOAD = paymentPayload(TEST_AMOUNT, TEST_RETURN_URL, TEST_DESCRIPTION);
 
@@ -79,7 +80,7 @@ public class PaymentsResourceITest {
                 .contentType(JSON)
                 .body("payment_id", is(TEST_CHARGE_ID))
                 .body("amount", is(TEST_AMOUNT))
-                .body("description", is(TEST_DESCRIPTION))
+                .body("description", is(escapeHtml4(TEST_DESCRIPTION)))
                 .body("status", is(TEST_STATUS))
                 .body("return_url", is(TEST_RETURN_URL));
 

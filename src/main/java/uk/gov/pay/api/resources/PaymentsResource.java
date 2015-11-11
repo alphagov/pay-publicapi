@@ -26,6 +26,7 @@ import java.util.function.Function;
 import static java.lang.String.format;
 import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 import static org.apache.http.HttpStatus.SC_OK;
 import static uk.gov.pay.api.model.CreatePaymentResponse.createPaymentResponse;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
@@ -180,7 +181,7 @@ public class PaymentsResource {
 
         return json(jsonStringBuilder()
                 .add(AMOUNT_KEY, amount)
-                .add(DESCRIPTION_KEY, description)
+                .add(DESCRIPTION_KEY, escapeHtml4(description))
                 .add(GATEWAY_ACCOUNT_KEY, accountId)
                 .add(SERVICE_RETURN_URL, returnUrl)
                 .build());
