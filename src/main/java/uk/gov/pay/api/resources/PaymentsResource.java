@@ -102,7 +102,9 @@ public class PaymentsResource {
 
         Response connectorResponse = client.target(chargeUrl + "/" + chargeId + "/cancel")
                 .request()
-                .post(Entity.json(""));
+                .post(Entity.json(jsonStringBuilder()
+                        .add(GATEWAY_ACCOUNT_KEY, accountId)
+                        .build()));
 
         if (connectorResponse.getStatus() == HttpStatus.SC_NO_CONTENT) {
             return Response.noContent().build();

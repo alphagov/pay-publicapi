@@ -73,7 +73,7 @@ public class PaymentsCancelResourceITest {
     @Test
     public void successful_whenConnector_AllowsCancellation() {
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondOk_whenCancelCharge(TEST_CHARGE_ID);
+        connectorMock.respondOk_whenCancelCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID);
 
         postCancelPaymentResponse(TEST_CHARGE_ID)
                 .statusCode(204);
@@ -82,9 +82,19 @@ public class PaymentsCancelResourceITest {
     }
 
     @Test
+    public void cancelPayment_returns400_whenAccountIdIsMissing() {
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        connectorMock.respondBadRequest_WhenAccountIdIsMissing(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID ,"account_id is missing for cancellation");
+
+        postCancelPaymentResponse(TEST_CHARGE_ID)
+                .statusCode(400)
+                .body("message", is("Cancellation of charge failed."));
+    }
+
+    @Test
     public void respondWithBadRequest_whenPaymentNotFound() {
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondChargeNotFound_WhenCancelCharge(TEST_CHARGE_ID, "some backend error message");
+        connectorMock.respondChargeNotFound_WhenCancelCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID, "some backend error message");
 
         postCancelPaymentResponse(TEST_CHARGE_ID)
                 .statusCode(400)
@@ -94,7 +104,7 @@ public class PaymentsCancelResourceITest {
 
     @Test
     public void respondWithBadRequest_whenConnector_DoesntAllowCancellation() {
-        connectorMock.respondBadRequest_WhenCancelChargeNotAllowed(TEST_CHARGE_ID, "some other message");
+        connectorMock.respondBadRequest_WhenCancelChargeNotAllowed(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID, "some other message");
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
 
         postCancelPaymentResponse(TEST_CHARGE_ID)

@@ -112,20 +112,25 @@ public class ConnectorMockClient {
                 .respond(withStatusAndErrorMessage(NOT_FOUND_404, errorMsg));
     }
 
-    public void respondOk_whenCancelCharge(String paymentId) {
-        whenCancelCharge(paymentId)
+    public void respondOk_whenCancelCharge(String paymentId, String accountId) {
+        whenCancelCharge(paymentId, accountId)
                 .respond(response()
                         .withStatusCode(NO_CONTENT_204));
     }
 
-    public void respondChargeNotFound_WhenCancelCharge(String paymentId, String errorMsg) {
-        whenCancelCharge(paymentId)
+    public void respondChargeNotFound_WhenCancelCharge(String paymentId, String accountId ,String errorMsg) {
+        whenCancelCharge(paymentId, accountId)
                 .respond(withStatusAndErrorMessage(NOT_FOUND_404, errorMsg));
     }
 
-    public void respondBadRequest_WhenCancelChargeNotAllowed(String paymentId, String errorMsg) {
-        whenCancelCharge(paymentId)
+    public void respondBadRequest_WhenCancelChargeNotAllowed(String paymentId, String accountId, String errorMsg) {
+        whenCancelCharge(paymentId, accountId)
                 .respond(withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg));
+    }
+
+    public void respondBadRequest_WhenAccountIdIsMissing(String paymentId, String accountId, String errorMessage) {
+        whenCancelCharge(paymentId, accountId)
+                .respond(withStatusAndErrorMessage(BAD_REQUEST_400, errorMessage));
     }
 
     private ForwardChainExpectation whenCreateCharge(long amount, String gatewayAccountId, String returnUrl) {
@@ -144,10 +149,11 @@ public class ConnectorMockClient {
         );
     }
 
-    private ForwardChainExpectation whenCancelCharge(String paymentId) {
+    private ForwardChainExpectation whenCancelCharge(String paymentId, String accountId) {
         return mockClient.when(request()
                 .withMethod(POST)
-                .withPath(CONNECTOR_MOCK_CHARGE_PATH + "/" + paymentId + CONNECTOR_MOCK_CANCEL_PATH_SUFFIX));
+                .withPath(CONNECTOR_MOCK_CHARGE_PATH + "/" + paymentId + CONNECTOR_MOCK_CANCEL_PATH_SUFFIX)
+        .withBody(jsonString("gateway_account_id", accountId)));
     }
 
     private HttpResponse withStatusAndErrorMessage(int statusCode, String errorMsg) {
