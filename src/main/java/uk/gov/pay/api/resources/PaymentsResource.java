@@ -84,10 +84,6 @@ public class PaymentsResource {
         if (missingFields.isPresent()) {
             return fieldsMissingResponse(logger, missingFields.get());
         }
-        Optional<String> fieldFormatError = checkFieldFormat(requestPayload);
-        if (fieldFormatError.isPresent()) {
-            return badRequestResponse(logger, fieldFormatError.get());
-        }
 
         Response connectorResponse = client.target(chargeUrl)
                 .request()
@@ -173,16 +169,6 @@ public class PaymentsResource {
         return missing.isEmpty()
                 ? Optional.<List<String>>empty()
                 : Optional.of(missing);
-    }
-
-    private Optional<String> checkFieldFormat(JsonNode requestPayload) {
-        String returnUrl = requestPayload.get(SERVICE_RETURN_URL).asText();
-        if (negate(containsIgnoreCase(returnUrl, PAYMENTS_ID_PLACEHOLDER))) {
-            String errorMessage = format("Payment-id placeholder is missing: '%s' does not contain a '%s' placeholder."
-                    , returnUrl, PAYMENTS_ID_PLACEHOLDER);
-            return Optional.of(errorMessage);
-        }
-        return Optional.empty();
     }
 
     private Entity buildChargeRequestPayload(String accountId, JsonNode requestPayload) {

@@ -113,18 +113,6 @@ public class PaymentsResourceITest {
     }
 
     @Test
-    public void createPayment_responseWith4xx_forInvalidReturnUrl() {
-        String invalidReturnUrl = "http://no.payment.id/inpath";
-
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-
-        postPaymentResponse(BEARER_TOKEN, paymentPayload(TEST_AMOUNT, invalidReturnUrl))
-                .statusCode(400)
-                .contentType(JSON)
-                .body("message", is(format("Payment-id placeholder is missing: '%s' does not contain a '{paymentId}' placeholder.", invalidReturnUrl)));
-    }
-
-    @Test
     public void createPayment_responseWith4xx_whenFieldsMissing() {
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
 
