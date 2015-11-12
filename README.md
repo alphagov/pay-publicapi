@@ -23,6 +23,7 @@ Content-Type: application/json
 
 {
     "amount": 50000,
+    "description": "Payment description",
     "return_url": "http://service.url/success/{paymentId}"
 }
 ```
@@ -34,6 +35,7 @@ BEARER_TOKEN: A valid bearer token for the account to associate the payment with
 | Field                    | required | Description                               |
 | ------------------------ |:--------:| ----------------------------------------- |
 | `amount`                 | X | Amount to pay in pence                           |
+| `description`            | X | Payment description                              |
 | `return_url`             | X | The URL where the user should be redirected to when the payment workflow is finished.         |
 
 The value of field `return_url` needs to contain a placeholder for the payment-id. This is the literal string `{paymentId}`,
@@ -62,6 +64,7 @@ Content-Type: application/json
     ],
     "payment_id": "ab2341da231434",
     "amount": 50000,
+    "description": "Payment description",
     "status": "CREATED",
     "return_url": "http://service.url/success/{paymentId}"
 }
@@ -73,6 +76,7 @@ Content-Type: application/json
 | ---------------------- | ----------------------------------------- |
 | `payment_id`           | The ID of the created payment             |
 | `amount`               | Amount to pay in pence                    |
+| `description`          | Payment description                       |
 | `status`               | Current status of the payment             |
 | `return_url`           | The URL where the user should be redirected to when the payment workflow is finished.         |
 
@@ -128,6 +132,7 @@ Content-Type: application/json
     ],
     "payment_id": "ab2341da231434",
     "amount": 50000,
+    "description": "Payment description",
     "status": "CREATED",
     "return_url": "http://service.url/success/{paymentId}"
 }
