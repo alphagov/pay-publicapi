@@ -26,8 +26,6 @@ import java.util.function.Function;
 import static java.lang.String.format;
 import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.apache.commons.lang3.BooleanUtils.negate;
-import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import static uk.gov.pay.api.model.CreatePaymentResponse.createPaymentResponse;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
 import static uk.gov.pay.api.utils.ResponseUtil.*;
@@ -51,11 +49,11 @@ public class PaymentsResource {
 
     private final Logger logger = LoggerFactory.getLogger(PaymentsResource.class);
     private final Client client;
-    private final String chargeUrl;
+    private final String connectorUrl;
 
-    public PaymentsResource(Client client, String chargeUrl) {
+    public PaymentsResource(Client client, String connectorUrl) {
         this.client = client;
-        this.chargeUrl = chargeUrl;
+        this.connectorUrl = connectorUrl;
     }
 
     @GET
@@ -64,7 +62,7 @@ public class PaymentsResource {
     public Response getCharge(@Auth String accountId, @PathParam(PAYMENT_KEY) String chargeId, @Context UriInfo uriInfo) {
         logger.info("received get payment request: [ {} ]", chargeId);
 
-        Response connectorResponse = client.target(chargeUrl + "/" + chargeId)
+        Response connectorResponse = client.target(connectorUrl + "/v1/api/charges" + "/" + chargeId)
                 .request()
                 .get();
 
@@ -85,7 +83,7 @@ public class PaymentsResource {
             return fieldsMissingResponse(logger, missingFields.get());
         }
 
-        Response connectorResponse = client.target(chargeUrl)
+        Response connectorResponse = client.target(connectorUrl + "/v1/api/charges")
                 .request()
                 .post(buildChargeRequestPayload(accountId, requestPayload));
 
@@ -100,11 +98,9 @@ public class PaymentsResource {
     public Response cancelCharge(@Auth String accountId, @PathParam(PAYMENT_KEY) String chargeId) {
         logger.info("received cancel payment request: [{}]", chargeId);
 
-        Response connectorResponse = client.target(chargeUrl + "/" + chargeId + "/cancel")
+        Response connectorResponse = client.target(connectorUrl + "/v1/api/accounts/"+ accountId + "/charges/" + chargeId + "/cancel")
                 .request()
-                .post(Entity.json(jsonStringBuilder()
-                        .add(GATEWAY_ACCOUNT_KEY, accountId)
-                        .build()));
+                .post(Entity.json(""));
 
         if (connectorResponse.getStatus() == HttpStatus.SC_NO_CONTENT) {
             return Response.noContent().build();

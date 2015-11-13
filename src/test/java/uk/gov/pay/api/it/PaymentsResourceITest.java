@@ -21,7 +21,6 @@ import static java.lang.String.format;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static uk.gov.pay.api.utils.ConnectorMockClient.CONNECTOR_MOCK_CHARGE_PATH;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
 import static uk.gov.pay.api.utils.LinksAssert.assertLink;
 
@@ -47,7 +46,7 @@ public class PaymentsResourceITest {
     public DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
             PublicApi.class
             , resourceFilePath("config/test-config.yaml")
-            , config("connectorUrl", connectorMockChargeUrl())
+            , config("connectorUrl", connectorBaseUrl())
             , config("publicAuthUrl", publicAuthBaseUrl()));
 
     private String connectorBaseUrl() {
@@ -56,10 +55,6 @@ public class PaymentsResourceITest {
 
     private String publicAuthBaseUrl() {
         return "http://localhost:" + publicAuthMockRule.getHttpPort() + "/v1/auth";
-    }
-
-    private String connectorMockChargeUrl() {
-        return connectorBaseUrl() + CONNECTOR_MOCK_CHARGE_PATH;
     }
 
     private String paymentLocationFor(String chargeId) {

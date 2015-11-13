@@ -18,7 +18,6 @@ import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.Matchers.is;
 import static uk.gov.pay.api.utils.ConnectorMockClient.CONNECTOR_MOCK_CANCEL_PATH_SUFFIX;
-import static uk.gov.pay.api.utils.ConnectorMockClient.CONNECTOR_MOCK_CHARGE_PATH;
 
 public class PaymentsCancelResourceITest {
     private static final String TEST_CHARGE_ID = "ch_ab2341da231434";
@@ -42,14 +41,10 @@ public class PaymentsCancelResourceITest {
             PublicApi.class
             , resourceFilePath("config/test-config.yaml")
             , config("publicAuthUrl", publicAuthBaseUrl())
-            , config("connectorUrl", connectorMockChargeUrl()));
+            , config("connectorUrl", connectorBaseUrl()));
 
     private String connectorBaseUrl() {
         return "http://localhost:" + connectorMockRule.getHttpPort();
-    }
-
-    private String connectorMockChargeUrl() {
-        return connectorBaseUrl() + CONNECTOR_MOCK_CHARGE_PATH;
     }
 
     private String publicAuthBaseUrl() {
@@ -78,13 +73,13 @@ public class PaymentsCancelResourceITest {
         postCancelPaymentResponse(TEST_CHARGE_ID)
                 .statusCode(204);
 
-        connectorMock.verifyCancelCharge(TEST_CHARGE_ID);
+        connectorMock.verifyCancelCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID);
     }
 
     @Test
     public void cancelPayment_returns400_whenAccountIdIsMissing() {
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondBadRequest_WhenAccountIdIsMissing(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID ,"account_id is missing for cancellation");
+        connectorMock.respondBadRequest_WhenAccountIdIsMissing(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID ,"Invalid account Id");
 
         postCancelPaymentResponse(TEST_CHARGE_ID)
                 .statusCode(400)
