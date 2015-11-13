@@ -17,13 +17,12 @@ import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.Matchers.is;
-import static uk.gov.pay.api.utils.ConnectorMockClient.CONNECTOR_MOCK_CANCEL_PATH_SUFFIX;
 
 public class PaymentsCancelResourceITest {
     private static final String TEST_CHARGE_ID = "ch_ab2341da231434";
 
     private static final String PAYMENTS_PATH = "/v1/payments/";
-    private static final String CANCEL_PAYMENTS_PATH = PAYMENTS_PATH + "{paymentId}" + CONNECTOR_MOCK_CANCEL_PATH_SUFFIX;
+    private static final String CANCEL_PAYMENTS_PATH = PAYMENTS_PATH + "%s/cancel";
     private static final String BEARER_TOKEN = "TEST_BEARER_TOKEN";
     private static final String GATEWAY_ACCOUNT_ID = "GATEWAY_ACCOUNT_ID";
 
@@ -79,7 +78,7 @@ public class PaymentsCancelResourceITest {
     @Test
     public void cancelPayment_returns400_whenAccountIdIsMissing() {
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondBadRequest_WhenAccountIdIsMissing(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID ,"Invalid account Id");
+        connectorMock.respondBadRequest_WhenAccountIdIsMissing(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID, "Invalid account Id");
 
         postCancelPaymentResponse(TEST_CHARGE_ID)
                 .statusCode(400)
@@ -111,7 +110,7 @@ public class PaymentsCancelResourceITest {
     private ValidatableResponse postCancelPaymentResponse(String paymentId) {
         return given().port(app.getLocalPort())
                 .header(AUTHORIZATION, "Bearer " + BEARER_TOKEN)
-                .post(CANCEL_PAYMENTS_PATH.replace("{paymentId}", paymentId))
+                .post(String.format(CANCEL_PAYMENTS_PATH, paymentId))
                 .then();
     }
 }

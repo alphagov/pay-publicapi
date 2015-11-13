@@ -46,6 +46,8 @@ public class PaymentsResource {
 
     private static final String CANCEL_PATH_SUFFIX = "/cancel";
     private static final String CANCEL_PAYMENT_PATH = "/v1/payments/" + PAYMENTS_ID_PLACEHOLDER + CANCEL_PATH_SUFFIX;
+    public static final String CONNECTOR_CHARGES_RESOURCE = "/v1/api/charges";
+    public static final String CONNECTOR_ACCOUNT_CHARGE_CANCEL_RESOURCE = "/v1/api/accounts/%s/charges/%s/cancel";
 
     private final Logger logger = LoggerFactory.getLogger(PaymentsResource.class);
     private final Client client;
@@ -62,7 +64,7 @@ public class PaymentsResource {
     public Response getCharge(@Auth String accountId, @PathParam(PAYMENT_KEY) String chargeId, @Context UriInfo uriInfo) {
         logger.info("received get payment request: [ {} ]", chargeId);
 
-        Response connectorResponse = client.target(connectorUrl + "/v1/api/charges" + "/" + chargeId)
+        Response connectorResponse = client.target(connectorUrl + CONNECTOR_CHARGES_RESOURCE + "/" + chargeId)
                 .request()
                 .get();
 
@@ -83,7 +85,7 @@ public class PaymentsResource {
             return fieldsMissingResponse(logger, missingFields.get());
         }
 
-        Response connectorResponse = client.target(connectorUrl + "/v1/api/charges")
+        Response connectorResponse = client.target(connectorUrl + CONNECTOR_CHARGES_RESOURCE)
                 .request()
                 .post(buildChargeRequestPayload(accountId, requestPayload));
 
@@ -98,9 +100,9 @@ public class PaymentsResource {
     public Response cancelCharge(@Auth String accountId, @PathParam(PAYMENT_KEY) String chargeId) {
         logger.info("received cancel payment request: [{}]", chargeId);
 
-        Response connectorResponse = client.target(connectorUrl + "/v1/api/accounts/"+ accountId + "/charges/" + chargeId + "/cancel")
+        Response connectorResponse = client.target(connectorUrl + format(CONNECTOR_ACCOUNT_CHARGE_CANCEL_RESOURCE, accountId, chargeId))
                 .request()
-                .post(Entity.json(""));
+                .post(Entity.json("{}"));
 
         if (connectorResponse.getStatus() == HttpStatus.SC_NO_CONTENT) {
             return Response.noContent().build();

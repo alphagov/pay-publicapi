@@ -20,8 +20,7 @@ import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
 
 public class ConnectorMockClient {
     public static final String CONNECTOR_MOCK_CHARGE_PATH = "/v1/api/charges";
-    public static final String CONNECTOR_MOCK_CANCEL_PATH_SUFFIX = "/cancel";
-    public static final String CONNECTOR_CANCEL_CHARGE_PATH = "/v1/api/accounts/{accountId}/charges/{chargeId}";
+    public static final String CONNECTOR_CANCEL_CHARGE_PATH = "/v1/api/accounts/%s/charges/%s/cancel";
     private final MockServerClient mockClient;
     private final String baseUrl;
 
@@ -143,11 +142,11 @@ public class ConnectorMockClient {
     private ForwardChainExpectation whenCancelCharge(String paymentId, String accountId) {
         return mockClient.when(request()
                 .withMethod(POST)
-                .withPath(connectorCancelChargePathFor(paymentId, accountId) + CONNECTOR_MOCK_CANCEL_PATH_SUFFIX));
+                .withPath(connectorCancelChargePathFor(paymentId, accountId)));
     }
 
     private String connectorCancelChargePathFor(String paymentId, String accountId) {
-        return CONNECTOR_CANCEL_CHARGE_PATH.replace("{accountId}", accountId).replace("{chargeId}", paymentId);
+        return String.format(CONNECTOR_CANCEL_CHARGE_PATH, accountId, paymentId);
     }
 
     private HttpResponse withStatusAndErrorMessage(int statusCode, String errorMsg) {
@@ -169,7 +168,7 @@ public class ConnectorMockClient {
     public void verifyCancelCharge(String paymentId, String accountId) {
         mockClient.verify(request()
                         .withMethod(POST)
-                        .withPath(connectorCancelChargePathFor(paymentId, accountId) + CONNECTOR_MOCK_CANCEL_PATH_SUFFIX),
+                        .withPath(connectorCancelChargePathFor(paymentId, accountId)),
                 once());
     }
 }
