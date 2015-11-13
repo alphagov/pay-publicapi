@@ -1,3 +1,11 @@
+server:
+  applicationConnectors:
+    - type: http
+      port: ${PORT}
+  adminConnectors:
+    - type: http
+      port: ${ADMIN_PORT}
+
 logging:
   level: INFO
 
