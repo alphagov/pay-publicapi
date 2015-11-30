@@ -1,5 +1,7 @@
 FROM java:8-jre
 ENV JAVA_HOME /usr/lib/jvm/java-8-*/
+ENV PORT 8080
+ENV ADMIN_PORT 8081
 ENV ENABLE_NEWRELIC no
 
 WORKDIR /app
