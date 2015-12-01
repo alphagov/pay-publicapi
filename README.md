@@ -1,5 +1,26 @@
 # pay-publicapi
-The Payments Public API in Java (Dropwizard)
+GOV.UK Pay Public API service in Java (Dropwizard)
+
+## Running in Development Mode
+
+Steps are as follows:
+
+1. Use a docker-compose environment to run everything (such as the database) that you don't want to develop on right now.
+2. Stop `pay-publicapi` in the docker (`docker stop pay-publicapi`), to get ready to run from your checked out copy instead.
+3. Because other services (inside or outside of docker) will try and talk to publicapi on dockerhost (not localhost), run the redirect script to send these requests to localhost.
+4. Use `env.sh` to pick up the same environment variables from `pay-scripts`, so configuration is set correctly (this assumes `$WORKSPACE/pay-scripts` exists).
+
+For example:
+
+```
+$ ./redirect.sh start
+$ ./env.sh mvn exec:java
+...
+(pay-publicapi log output)
+...
+(press CTRL+C to stop service)
+...
+$ ./redirect.sh stop
 
 ## API
 
