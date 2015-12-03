@@ -120,7 +120,7 @@ public class PaymentsResourceITest {
         postPaymentResponse(BEARER_TOKEN, "{}")
                 .statusCode(400)
                 .contentType(JSON)
-                .body("message", is("Field(s) missing: [description, amount, return_url]"));
+                .body("message", is("Field(s) missing: [description, amount, reference, return_url]"));
     }
 
     @Test

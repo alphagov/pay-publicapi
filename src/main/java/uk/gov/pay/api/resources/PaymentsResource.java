@@ -6,7 +6,6 @@ import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.model.LinksResponse;
-import uk.gov.pay.api.utils.TolerantReaderUtil;
 
 import javax.ws.rs.*;
 import javax.ws.rs.client.Client;
@@ -25,7 +24,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static java.lang.String.format;
-import static java.lang.String.valueOf;
 import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
@@ -45,7 +43,7 @@ public class PaymentsResource {
     private static final String SERVICE_RETURN_URL = "return_url";
     private static final String CHARGE_KEY = "charge_id";
 
-    private static final String[] REQUIRED_FIELDS = {DESCRIPTION_KEY, AMOUNT_KEY, SERVICE_RETURN_URL};
+    private static final String[] REQUIRED_FIELDS = {DESCRIPTION_KEY, AMOUNT_KEY, REFERENCE_KEY, SERVICE_RETURN_URL};
 
     private static final String PAYMENTS_PATH = "/v1/payments";
     private static final String PAYMENTS_ID_PLACEHOLDER = "{" + PAYMENT_KEY + "}";
@@ -180,7 +178,7 @@ public class PaymentsResource {
 
     private Entity buildChargeRequestPayload(String accountId, JsonNode requestPayload) {
         long amount = requestPayload.get(AMOUNT_KEY).asLong();
-        String reference = tolerantGet(requestPayload, REFERENCE_KEY);
+        String reference = requestPayload.get(REFERENCE_KEY).asText();
         String description = requestPayload.get(DESCRIPTION_KEY).asText();
         String returnUrl = requestPayload.get(SERVICE_RETURN_URL).asText();
 

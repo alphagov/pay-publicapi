@@ -21,8 +21,8 @@ public class CreatePaymentResponse extends LinksResponse {
                 payload.get("status").asText(),
                 payload.get("return_url").asText(),
                 payload.get("description").asText(),
-                tolerantGet(payload, "reference")
-                );
+                payload.get("reference").asText()
+        );
     }
 
     private CreatePaymentResponse(String chargeId, long amount, String status, String returnUrl, String description, String reference) {
