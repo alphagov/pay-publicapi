@@ -3,8 +3,6 @@ package uk.gov.pay.api.model;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.dropwizard.jackson.JsonSnakeCase;
 
-import static uk.gov.pay.api.utils.TolerantReaderUtil.tolerantGet;
-
 @JsonSnakeCase
 public class CreatePaymentResponse extends LinksResponse {
     private final String paymentId;
@@ -21,8 +19,8 @@ public class CreatePaymentResponse extends LinksResponse {
                 payload.get("status").asText(),
                 payload.get("return_url").asText(),
                 payload.get("description").asText(),
-                tolerantGet(payload, "reference")
-                );
+                payload.get("reference").asText()
+        );
     }
 
     private CreatePaymentResponse(String chargeId, long amount, String status, String returnUrl, String description, String reference) {

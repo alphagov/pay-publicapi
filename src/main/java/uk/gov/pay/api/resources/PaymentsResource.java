@@ -6,7 +6,6 @@ import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.model.LinksResponse;
-import uk.gov.pay.api.utils.TolerantReaderUtil;
 
 import javax.ws.rs.*;
 import javax.ws.rs.client.Client;
@@ -15,7 +14,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
-import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,7 +23,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static java.lang.String.format;
-import static java.lang.String.valueOf;
 import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
@@ -33,7 +30,6 @@ import static org.apache.http.HttpStatus.SC_OK;
 import static uk.gov.pay.api.model.CreatePaymentResponse.createPaymentResponse;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
 import static uk.gov.pay.api.utils.ResponseUtil.*;
-import static uk.gov.pay.api.utils.TolerantReaderUtil.tolerantGet;
 
 @Path("/")
 public class PaymentsResource {
@@ -45,7 +41,7 @@ public class PaymentsResource {
     private static final String SERVICE_RETURN_URL = "return_url";
     private static final String CHARGE_KEY = "charge_id";
 
-    private static final String[] REQUIRED_FIELDS = {DESCRIPTION_KEY, AMOUNT_KEY, SERVICE_RETURN_URL};
+    private static final String[] REQUIRED_FIELDS = {DESCRIPTION_KEY, AMOUNT_KEY, REFERENCE_KEY, SERVICE_RETURN_URL};
 
     private static final String PAYMENTS_PATH = "/v1/payments";
     private static final String PAYMENTS_ID_PLACEHOLDER = "{" + PAYMENT_KEY + "}";
@@ -84,7 +80,7 @@ public class PaymentsResource {
     @Path(PAYMENTS_PATH)
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
-    public Response createNewPayment(@Auth String accountId, JsonNode requestPayload, @Context UriInfo uriInfo) throws IOException {
+    public Response createNewPayment(@Auth String accountId, JsonNode requestPayload, @Context UriInfo uriInfo) {
         logger.info("received create payment request: [ {} ]", requestPayload);
 
         Optional<List<String>> missingFields = checkMissingFields(requestPayload);
@@ -180,7 +176,7 @@ public class PaymentsResource {
 
     private Entity buildChargeRequestPayload(String accountId, JsonNode requestPayload) {
         long amount = requestPayload.get(AMOUNT_KEY).asLong();
-        String reference = tolerantGet(requestPayload, REFERENCE_KEY);
+        String reference = requestPayload.get(REFERENCE_KEY).asText();
         String description = requestPayload.get(DESCRIPTION_KEY).asText();
         String returnUrl = requestPayload.get(SERVICE_RETURN_URL).asText();
 
