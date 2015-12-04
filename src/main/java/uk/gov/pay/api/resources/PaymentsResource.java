@@ -2,12 +2,19 @@ package uk.gov.pay.api.resources;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.dropwizard.auth.Auth;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiParam;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.model.LinksResponse;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Context;
@@ -33,7 +40,8 @@ import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
 import static uk.gov.pay.api.utils.ResponseUtil.*;
 
 @Path("/")
-public class PaymentsResource {
+@Api(value = "/", description = "Public Api Endpoints")
+public class PaymentsResource implements PaymentsResourceDoc {
     private static final String PAYMENT_KEY = "paymentId";
     private static final String REFERENCE_KEY = "reference";
     private static final String DESCRIPTION_KEY = "description";
@@ -67,10 +75,12 @@ public class PaymentsResource {
     @GET
     @Path(PAYMENT_BY_ID)
     @Produces(APPLICATION_JSON)
-    public Response getCharge(@Auth String accountId, @PathParam(PAYMENT_KEY) String chargeId, @Context UriInfo uriInfo) {
-        logger.info("received get payment request: [ {} ]", chargeId);
+    public Response getPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
+                               @ApiParam(required = true) @PathParam(PAYMENT_KEY) String paymentId,
+                               @Context UriInfo uriInfo) {
+        logger.info("received get payment request: [ {} ]", paymentId);
 
-        Response connectorResponse = client.target(connectorUrl + format(CONNECTOR_CHARGE_RESOURCE, accountId, chargeId))
+        Response connectorResponse = client.target(connectorUrl + format(CONNECTOR_CHARGE_RESOURCE, accountId, paymentId))
                 .request()
                 .get();
 

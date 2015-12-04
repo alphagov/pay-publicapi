@@ -9,6 +9,7 @@
         <dropwizard.version>0.8.1</dropwizard.version>
         <mockserver.version>3.9.17</mockserver.version>
         <swagger.jersey2.version>1.5.4</swagger.jersey2.version>
+        <jersey2.version>2.17</jersey2.version>
     </properties>
 
     <dependencies>
@@ -83,6 +84,11 @@
                     <artifactId>jersey-media-multipart</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-multipart</artifactId>
+            <version>${jersey2.version}</version>
         </dependency>
     </dependencies>
 

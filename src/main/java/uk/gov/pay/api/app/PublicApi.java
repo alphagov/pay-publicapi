@@ -7,6 +7,8 @@ import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.swagger.jaxrs.config.BeanConfig;
+import io.swagger.jaxrs.listing.ApiListingResource;
 import uk.gov.pay.api.auth.AccountAuthenticator;
 import uk.gov.pay.api.config.PublicApiConfig;
 import uk.gov.pay.api.healthcheck.Ping;
@@ -36,6 +38,14 @@ public class PublicApi extends Application<PublicApiConfig> {
         environment.jersey().register(AuthFactory.binder(new OAuthFactory<>(new AccountAuthenticator(client, config.getPublicAuthUrl()),
                 "",
                 String.class)));
+
+        environment.jersey().register(new ApiListingResource());
+        BeanConfig swaggerConfig = new BeanConfig();
+        swaggerConfig.setTitle("GDS Payments Api");
+        swaggerConfig.setVersion("1.0.0");
+        swaggerConfig.setResourcePackage("uk.gov.pay.api.resources");
+        swaggerConfig.setPrettyPrint(true);
+        swaggerConfig.setScan(true);
     }
 
     public static void main(String[] args) throws Exception {
