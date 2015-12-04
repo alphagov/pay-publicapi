@@ -21,6 +21,7 @@ $ ./env.sh mvn exec:java
 (press CTRL+C to stop service)
 ...
 $ ./redirect.sh stop
+```
 
 ## API
 
