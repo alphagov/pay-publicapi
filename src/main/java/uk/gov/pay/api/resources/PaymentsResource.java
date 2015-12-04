@@ -14,7 +14,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
-import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -31,7 +30,6 @@ import static org.apache.http.HttpStatus.SC_OK;
 import static uk.gov.pay.api.model.CreatePaymentResponse.createPaymentResponse;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
 import static uk.gov.pay.api.utils.ResponseUtil.*;
-import static uk.gov.pay.api.utils.TolerantReaderUtil.tolerantGet;
 
 @Path("/")
 public class PaymentsResource {
@@ -82,7 +80,7 @@ public class PaymentsResource {
     @Path(PAYMENTS_PATH)
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
-    public Response createNewPayment(@Auth String accountId, JsonNode requestPayload, @Context UriInfo uriInfo) throws IOException {
+    public Response createNewPayment(@Auth String accountId, JsonNode requestPayload, @Context UriInfo uriInfo) {
         logger.info("received create payment request: [ {} ]", requestPayload);
 
         Optional<List<String>> missingFields = checkMissingFields(requestPayload);
