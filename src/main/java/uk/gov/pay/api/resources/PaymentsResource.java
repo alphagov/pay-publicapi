@@ -7,14 +7,11 @@ import io.swagger.annotations.ApiParam;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.LinksResponse;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.validation.Valid;
+import javax.ws.rs.*;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Context;
@@ -22,9 +19,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -33,11 +28,11 @@ import static java.lang.String.format;
 import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.http.HttpStatus.SC_OK;
 import static uk.gov.pay.api.model.CreatePaymentResponse.createPaymentResponse;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
-import static uk.gov.pay.api.utils.ResponseUtil.*;
+import static uk.gov.pay.api.utils.ResponseUtil.badRequestResponse;
+import static uk.gov.pay.api.utils.ResponseUtil.notFoundResponse;
 
 @Path("/")
 @Api(value = "/", description = "Public Api Endpoints")
@@ -49,8 +44,6 @@ public class PaymentsResource implements PaymentsResourceDoc {
     private static final String GATEWAY_ACCOUNT_KEY = "gateway_account_id";
     private static final String SERVICE_RETURN_URL = "return_url";
     private static final String CHARGE_KEY = "charge_id";
-
-    private static final String[] REQUIRED_FIELDS = {DESCRIPTION_KEY, AMOUNT_KEY, REFERENCE_KEY, SERVICE_RETURN_URL};
 
     private static final String PAYMENTS_PATH = "/v1/payments";
     private static final String PAYMENTS_ID_PLACEHOLDER = "{" + PAYMENT_KEY + "}";
@@ -78,6 +71,7 @@ public class PaymentsResource implements PaymentsResourceDoc {
     public Response getPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
                                @ApiParam(required = true) @PathParam(PAYMENT_KEY) String paymentId,
                                @Context UriInfo uriInfo) {
+
         logger.info("received get payment request: [ {} ]", paymentId);
 
         Response connectorResponse = client.target(connectorUrl + format(CONNECTOR_CHARGE_RESOURCE, accountId, paymentId))
@@ -93,13 +87,11 @@ public class PaymentsResource implements PaymentsResourceDoc {
     @Path(PAYMENTS_PATH)
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
-    public Response createNewPayment(@Auth String accountId, JsonNode requestPayload, @Context UriInfo uriInfo) {
-        logger.info("received create payment request: [ {} ]", requestPayload);
+    public Response createNewPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
+                                     @ApiParam(value = "requestPayload") @Valid CreatePaymentRequest requestPayload,
+                                     @Context UriInfo uriInfo) {
 
-        Optional<List<String>> missingFields = checkMissingFields(requestPayload);
-        if (missingFields.isPresent()) {
-            return fieldsMissingResponse(logger, missingFields.get());
-        }
+        logger.info("received create payment request: [ {} ]", requestPayload);
 
         Response connectorResponse = client.target(connectorUrl + format(CONNECTOR_CHARGES_RESOURCE, accountId))
                 .request()
@@ -174,26 +166,16 @@ public class PaymentsResource implements PaymentsResourceDoc {
         return Optional.empty();
     }
 
-
-    private Optional<List<String>> checkMissingFields(JsonNode node) {
-        List<String> missing = new ArrayList<>();
-        for (String field : REQUIRED_FIELDS) {
-            if (!node.hasNonNull(field) || isEmpty(node.get(field).asText())) {
-                missing.add(field);
-            }
-        }
-        return missing.isEmpty()
-                ? Optional.<List<String>>empty()
-                : Optional.of(missing);
-    }
-
-    private Entity buildChargeRequestPayload(JsonNode requestPayload) {
-
+    private Entity buildChargeRequestPayload(CreatePaymentRequest requestPayload) {
+        long amount = requestPayload.getAmount();
+        String reference = requestPayload.getReference();
+        String description = requestPayload.getDescription();
+        String returnUrl = requestPayload.getReturnUrl();
         return json(jsonStringBuilder()
-                .add(AMOUNT_KEY, requestPayload.get(AMOUNT_KEY).asLong())
-                .add(REFERENCE_KEY, escapeHtml4(requestPayload.get(REFERENCE_KEY).asText()))
-                .add(DESCRIPTION_KEY, escapeHtml4(requestPayload.get(DESCRIPTION_KEY).asText()))
-                .add(SERVICE_RETURN_URL, requestPayload.get(SERVICE_RETURN_URL).asText())
+                .add(AMOUNT_KEY, amount)
+                .add(REFERENCE_KEY, escapeHtml4(reference))
+                .add(DESCRIPTION_KEY, escapeHtml4(description))
+                .add(SERVICE_RETURN_URL, returnUrl)
                 .build());
     }
 
