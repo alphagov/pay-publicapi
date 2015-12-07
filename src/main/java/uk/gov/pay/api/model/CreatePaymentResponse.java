@@ -2,7 +2,9 @@ package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.dropwizard.jackson.JsonSnakeCase;
+import io.swagger.annotations.ApiModel;
 
+@ApiModel(value="CreatePaymentResponse", description = "The Payment Response Payload")
 @JsonSnakeCase
 public class CreatePaymentResponse extends LinksResponse {
     private final String paymentId;

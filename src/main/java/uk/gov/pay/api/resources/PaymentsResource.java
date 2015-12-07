@@ -105,10 +105,12 @@ public class PaymentsResource implements PaymentsResourceDoc {
     @POST
     @Path(CANCEL_PAYMENT_PATH)
     @Produces(APPLICATION_JSON)
-    public Response cancelCharge(@Auth String accountId, @PathParam(PAYMENT_KEY) String chargeId) {
-        logger.info("received cancel payment request: [{}]", chargeId);
+    public Response cancelCharge(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
+                                 @ApiParam(required = true) @PathParam(PAYMENT_KEY) String paymentId) {
 
-        Response connectorResponse = client.target(connectorUrl + format(CONNECTOR_ACCOUNT_CHARGE_CANCEL_RESOURCE, accountId, chargeId))
+        logger.info("received cancel payment request: [{}]", paymentId);
+
+        Response connectorResponse = client.target(connectorUrl + format(CONNECTOR_ACCOUNT_CHARGE_CANCEL_RESOURCE, accountId, paymentId))
                 .request()
                 .post(Entity.json("{}"));
 
