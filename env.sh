@@ -6,4 +6,4 @@ then
   source $ENV_FILE
   set +a  
 fi
-$@
+eval "$@"
