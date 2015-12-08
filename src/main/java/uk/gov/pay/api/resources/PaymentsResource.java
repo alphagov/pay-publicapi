@@ -26,6 +26,7 @@ import static java.lang.String.format;
 import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.http.HttpStatus.SC_OK;
 import static uk.gov.pay.api.model.CreatePaymentResponse.createPaymentResponse;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
@@ -165,7 +166,7 @@ public class PaymentsResource {
     private Optional<List<String>> checkMissingFields(JsonNode node) {
         List<String> missing = new ArrayList<>();
         for (String field : REQUIRED_FIELDS) {
-            if (!node.hasNonNull(field)) {
+            if (!node.hasNonNull(field) || isEmpty(node.get(field).asText())) {
                 missing.add(field);
             }
         }
