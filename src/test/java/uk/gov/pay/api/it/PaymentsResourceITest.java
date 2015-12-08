@@ -117,7 +117,7 @@ public class PaymentsResourceITest {
     public void createPayment_responseWith4xx_whenFieldsMissing() {
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
 
-        postPaymentResponse(BEARER_TOKEN, "{}")
+        postPaymentResponse(BEARER_TOKEN, "{\"description\":\"\", \"reference\":null}")
                 .statusCode(400)
                 .contentType(JSON)
                 .body("message", is("Field(s) missing: [description, amount, reference, return_url]"));
