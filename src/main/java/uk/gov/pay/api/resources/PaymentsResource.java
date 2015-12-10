@@ -26,6 +26,7 @@ import java.util.function.Function;
 
 import static java.lang.String.format;
 import static javax.ws.rs.client.Entity.json;
+import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 import static org.apache.http.HttpStatus.SC_OK;
@@ -104,6 +105,7 @@ public class PaymentsResource implements PaymentsResourceDoc {
 
     @POST
     @Path(CANCEL_PAYMENT_PATH)
+    @Consumes(APPLICATION_FORM_URLENCODED)
     @Produces(APPLICATION_JSON)
     public Response cancelPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
                                   @ApiParam(required = true) @PathParam(PAYMENT_KEY) String paymentId) {
