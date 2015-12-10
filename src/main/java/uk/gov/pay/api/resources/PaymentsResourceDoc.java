@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import uk.gov.pay.api.model.BadRequest400Response;
 import uk.gov.pay.api.model.CreatePaymentRequest;
-import uk.gov.pay.api.model.CreatePaymentResponse;
+import uk.gov.pay.api.model.NotFound404Response;
+import uk.gov.pay.api.model.Payment;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -18,9 +20,9 @@ interface PaymentsResourceDoc {
             code = 200,
             response = JsonNode.class)
 
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "OK"),
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "OK", response = Payment.class),
                             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-                            @ApiResponse(code = 404, message = "Not found") })
+                            @ApiResponse(code = 404, message = "Not found", response = NotFound404Response.class) })
 
     public Response getPayment(String accountId, String paymentId, UriInfo uriInfo);
 
@@ -30,10 +32,10 @@ interface PaymentsResourceDoc {
             notes = "Creates a new payment for the account associated to the Authorization token",
             code = 201,
             nickname = "newPayment",
-            response = CreatePaymentResponse.class)
+            response = Payment.class)
 
-    @ApiResponses(value = { @ApiResponse(code = 201, message = "Created"),
-                            @ApiResponse(code = 400, message = "Bad request"),
+    @ApiResponses(value = { @ApiResponse(code = 201, message = "Created", response = Payment.class),
+                            @ApiResponse(code = 400, message = "Bad request", response = BadRequest400Response.class),
                             @ApiResponse(code = 401, message = "Credentials are required to access this resource") })
 
     public Response createNewPayment(String accountId, CreatePaymentRequest requestPayload, UriInfo uriInfo);
@@ -45,9 +47,9 @@ interface PaymentsResourceDoc {
             code = 204)
 
     @ApiResponses(value = { @ApiResponse(code = 204, message = "No Content"),
-                            @ApiResponse(code = 400, message = "Cancellation of charge failed"),
+                            @ApiResponse(code = 400, message = "Payment cancellation failed", response = BadRequest400Response.class),
                             @ApiResponse(code = 401, message = "Credentials are required to access this resource") })
 
-    public Response cancelCharge(String accountId, String chargeId);
+    public Response cancelPayment(String accountId, String chargeId);
 
 }

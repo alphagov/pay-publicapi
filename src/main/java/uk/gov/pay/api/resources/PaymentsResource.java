@@ -29,7 +29,7 @@ import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 import static org.apache.http.HttpStatus.SC_OK;
-import static uk.gov.pay.api.model.CreatePaymentResponse.createPaymentResponse;
+import static uk.gov.pay.api.model.Payment.createPaymentResponse;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
 import static uk.gov.pay.api.utils.ResponseUtil.badRequestResponse;
 import static uk.gov.pay.api.utils.ResponseUtil.notFoundResponse;
@@ -105,8 +105,8 @@ public class PaymentsResource implements PaymentsResourceDoc {
     @POST
     @Path(CANCEL_PAYMENT_PATH)
     @Produces(APPLICATION_JSON)
-    public Response cancelCharge(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
-                                 @ApiParam(required = true) @PathParam(PAYMENT_KEY) String paymentId) {
+    public Response cancelPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
+                                  @ApiParam(required = true) @PathParam(PAYMENT_KEY) String paymentId) {
 
         logger.info("received cancel payment request: [{}]", paymentId);
 

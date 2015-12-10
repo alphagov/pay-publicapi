@@ -1,21 +1,20 @@
 package uk.gov.pay.api.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 
 import javax.ws.rs.core.Response;
-import java.util.List;
 
-import static javax.ws.rs.core.Response.Status.*;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static uk.gov.pay.api.model.BadRequest400Response.createBadRequest400Response;
+import static uk.gov.pay.api.model.NotFound404Response.createNotFound404Response;
 
 public class ResponseUtil {
 
-    public static final Joiner COMMA_JOINER = Joiner.on(", ");
-
     public static Response notFoundResponse(Logger logger, JsonNode node) {
-        return messageResponse(logger, nodeMessage(node, "Not found."), NOT_FOUND);
+        String message = nodeMessage(node, "Not found.");
+        return messageResponse(logger, message, createNotFound404Response(message), NOT_FOUND);
     }
 
     public static Response badRequestResponse(Logger logger, JsonNode node) {
@@ -23,26 +22,13 @@ public class ResponseUtil {
     }
 
     public static Response badRequestResponse(Logger logger, String message) {
-        return messageResponse(logger, message, BAD_REQUEST);
+        return messageResponse(logger, message, createBadRequest400Response(message), BAD_REQUEST);
     }
 
-    public static Response internalServerErrorResponse(Logger logger, String internalMessage, String externalMessage) {
-        return messageResponse(logger, internalMessage, externalMessage, INTERNAL_SERVER_ERROR);
-    }
-
-    public static Response fieldsMissingResponse(Logger logger, List<String> missingFields) {
-        String message = String.format("Field(s) missing: [%s]", COMMA_JOINER.join(missingFields));
-        return messageResponse(logger, message, BAD_REQUEST);
-    }
-
-    private static Response messageResponse(Logger logger, String message, Response.Status status) {
-        return messageResponse(logger, message, message, status);
-    }
-
-    private static Response messageResponse(Logger logger, String internalMessage, String externalMessage, Response.Status status) {
+    private static Response messageResponse(Logger logger, String internalMessage, Object entity, Response.Status status) {
         logger.error(internalMessage);
         return Response.status(status)
-                .entity(ImmutableMap.of("message", externalMessage))
+                .entity(entity)
                 .build();
     }
 

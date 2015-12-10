@@ -48,9 +48,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         swaggerConfig.setTitle("GDS Payments Api");
         swaggerConfig.setVersion("1.0.0");
         swaggerConfig.setResourcePackage("uk.gov.pay.api.resources");
-        swaggerConfig.setPrettyPrint(true);
         swaggerConfig.setScan(true);
-        swaggerConfig.setHost("www-flow-0.pymnt.uk");
     }
 
     public static void main(String[] args) throws Exception {
