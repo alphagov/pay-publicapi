@@ -50,8 +50,10 @@ public class PaymentsResource {
 
     private static final String CANCEL_PATH_SUFFIX = "/cancel";
     private static final String CANCEL_PAYMENT_PATH = "/v1/payments/" + PAYMENTS_ID_PLACEHOLDER + CANCEL_PATH_SUFFIX;
-    public static final String CONNECTOR_CHARGES_RESOURCE = "/v1/api/charges";
-    public static final String CONNECTOR_ACCOUNT_CHARGE_CANCEL_RESOURCE = "/v1/api/accounts/%s/charges/%s/cancel";
+    public static final String CONNECTOR_ACCOUNT_RESOURCE = "/v1/api/accounts/%s";
+    public static final String CONNECTOR_CHARGES_RESOURCE = CONNECTOR_ACCOUNT_RESOURCE + "/charges";
+    public static final String CONNECTOR_CHARGE_RESOURCE = CONNECTOR_CHARGES_RESOURCE + "/%s";
+    public static final String CONNECTOR_ACCOUNT_CHARGE_CANCEL_RESOURCE = CONNECTOR_CHARGE_RESOURCE + "/cancel";
 
     private final Logger logger = LoggerFactory.getLogger(PaymentsResource.class);
     private final Client client;
@@ -68,7 +70,7 @@ public class PaymentsResource {
     public Response getCharge(@Auth String accountId, @PathParam(PAYMENT_KEY) String chargeId, @Context UriInfo uriInfo) {
         logger.info("received get payment request: [ {} ]", chargeId);
 
-        Response connectorResponse = client.target(connectorUrl + CONNECTOR_CHARGES_RESOURCE + "/" + chargeId)
+        Response connectorResponse = client.target(connectorUrl + format(CONNECTOR_CHARGE_RESOURCE, accountId, chargeId))
                 .request()
                 .get();
 
@@ -89,9 +91,9 @@ public class PaymentsResource {
             return fieldsMissingResponse(logger, missingFields.get());
         }
 
-        Response connectorResponse = client.target(connectorUrl + CONNECTOR_CHARGES_RESOURCE)
+        Response connectorResponse = client.target(connectorUrl + format(CONNECTOR_CHARGES_RESOURCE, accountId))
                 .request()
-                .post(buildChargeRequestPayload(accountId, requestPayload));
+                .post(buildChargeRequestPayload(requestPayload));
 
         return responseFrom(uriInfo, connectorResponse, HttpStatus.SC_CREATED,
                 (locationUrl, data) -> Response.created(locationUrl).entity(data),
@@ -175,18 +177,13 @@ public class PaymentsResource {
                 : Optional.of(missing);
     }
 
-    private Entity buildChargeRequestPayload(String accountId, JsonNode requestPayload) {
-        long amount = requestPayload.get(AMOUNT_KEY).asLong();
-        String reference = requestPayload.get(REFERENCE_KEY).asText();
-        String description = requestPayload.get(DESCRIPTION_KEY).asText();
-        String returnUrl = requestPayload.get(SERVICE_RETURN_URL).asText();
+    private Entity buildChargeRequestPayload(JsonNode requestPayload) {
 
         return json(jsonStringBuilder()
-                .add(AMOUNT_KEY, amount)
-                .add(REFERENCE_KEY, escapeHtml4(reference))
-                .add(DESCRIPTION_KEY, escapeHtml4(description))
-                .add(GATEWAY_ACCOUNT_KEY, accountId)
-                .add(SERVICE_RETURN_URL, returnUrl)
+                .add(AMOUNT_KEY, requestPayload.get(AMOUNT_KEY).asLong())
+                .add(REFERENCE_KEY, escapeHtml4(requestPayload.get(REFERENCE_KEY).asText()))
+                .add(DESCRIPTION_KEY, escapeHtml4(requestPayload.get(DESCRIPTION_KEY).asText()))
+                .add(SERVICE_RETURN_URL, requestPayload.get(SERVICE_RETURN_URL).asText())
                 .build());
     }
 
