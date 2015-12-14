@@ -160,8 +160,8 @@ Content-Type: application/json
     "amount": 50000,
     "description": "Payment description",
     "status": "CREATED",
-    "return_url": "{service/return/url/for/this/payment}",
-    "reference" : "abcd-1234" 
+    "return_url": "https://example.service.gov.uk/some-reference-to-this-payment",
+    "reference" : "some-reference-to-this-payment"
 }
 ```
 
