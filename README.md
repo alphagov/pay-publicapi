@@ -46,7 +46,8 @@ Content-Type: application/json
 {
     "amount": 50000,
     "description": "Payment description",
-    "return_url": "http://service.url/success/{paymentId}"
+    "return_url": "https://example.service.gov.uk/some-reference-to-this-payment",
+    "reference" : "some-reference-to-this-payment"
 }
 ```
 
@@ -59,6 +60,7 @@ BEARER_TOKEN: A valid bearer token for the account to associate the payment with
 | `amount`                 | X | Amount to pay in pence                           |
 | `description`            | X | Payment description                              |
 | `return_url`             | X | The URL where the user should be redirected to when the payment workflow is finished.         |
+| `reference`              | X | There reference issued by the government service for this payment         |
 
 The value of field `return_url` needs to contain a placeholder for the payment-id. This is the literal string `{paymentId}`,
 which will be replaced with the payment-id of the created payment resource when the user finishes the payment workflow
@@ -88,7 +90,8 @@ Content-Type: application/json
     "amount": 50000,
     "description": "Payment description",
     "status": "CREATED",
-    "return_url": "http://service.url/success/{paymentId}"
+    "return_url": "https://example.service.gov.uk/some-reference-to-this-payment",
+    "reference": "some-reference-to-this-payment"
 }
 ```
 
@@ -101,6 +104,7 @@ Content-Type: application/json
 | `description`          | Payment description                       |
 | `status`               | Current status of the payment             |
 | `return_url`           | The URL where the user should be redirected to when the payment workflow is finished.         |
+| `reference`            | There reference issued by the government service for this payment          |
 
 #### Payment creation failed
 
@@ -156,7 +160,8 @@ Content-Type: application/json
     "amount": 50000,
     "description": "Payment description",
     "status": "CREATED",
-    "return_url": "http://service.url/success/{paymentId}"
+    "return_url": "{service/return/url/for/this/payment}",
+    "reference" : "abcd-1234" 
 }
 ```
 
