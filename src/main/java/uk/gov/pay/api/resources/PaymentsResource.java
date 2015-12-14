@@ -2,13 +2,13 @@ package uk.gov.pay.api.resources;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.dropwizard.auth.Auth;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.*;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.LinksResponse;
+import uk.gov.pay.api.model.Payment;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -26,7 +26,6 @@ import java.util.function.Function;
 
 import static java.lang.String.format;
 import static javax.ws.rs.client.Entity.json;
-import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 import static org.apache.http.HttpStatus.SC_OK;
@@ -37,7 +36,8 @@ import static uk.gov.pay.api.utils.ResponseUtil.notFoundResponse;
 
 @Path("/")
 @Api(value = "/", description = "Public Api Endpoints")
-public class PaymentsResource implements PaymentsResourceDoc {
+@Produces({"application/json"})
+public class PaymentsResource {
     private static final String PAYMENT_KEY = "paymentId";
     private static final String REFERENCE_KEY = "reference";
     private static final String DESCRIPTION_KEY = "description";
@@ -69,8 +69,17 @@ public class PaymentsResource implements PaymentsResourceDoc {
     @GET
     @Path(PAYMENT_BY_ID)
     @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Find a Payment by ID",
+            notes = "Return information about the payment",
+            code = 200,
+            response = Payment.class)
+
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "OK", response = Payment.class),
+            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
+            @ApiResponse(code = 404, message = "Not found") })
     public Response getPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
-                               @ApiParam(required = true) @PathParam(PAYMENT_KEY) String paymentId,
+                               @PathParam(PAYMENT_KEY) String paymentId,
                                @Context UriInfo uriInfo) {
 
         logger.info("received get payment request: [ {} ]", paymentId);
@@ -88,8 +97,18 @@ public class PaymentsResource implements PaymentsResourceDoc {
     @Path(PAYMENTS_PATH)
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Creates a new payment",
+            notes = "Creates a new payment for the account associated to the Authorisation token",
+            code = 201,
+            nickname = "newPayment",
+            response = Payment.class)
+
+    @ApiResponses(value = { @ApiResponse(code = 201, message = "Created", response = Payment.class),
+            @ApiResponse(code = 400, message = "Bad request"),
+            @ApiResponse(code = 401, message = "Credentials are required to access this resource") })
     public Response createNewPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
-                                     @ApiParam(value = "requestPayload") @Valid CreatePaymentRequest requestPayload,
+                                     @ApiParam(value = "requestPayload", required = true) @Valid CreatePaymentRequest requestPayload,
                                      @Context UriInfo uriInfo) {
 
         logger.info("received create payment request: [ {} ]", requestPayload);
@@ -105,10 +124,18 @@ public class PaymentsResource implements PaymentsResourceDoc {
 
     @POST
     @Path(CANCEL_PAYMENT_PATH)
-    @Consumes(APPLICATION_FORM_URLENCODED)
     @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Cancels a payment",
+            notes = "Cancels a payment based on the provided payment ID and the Authorisation token",
+            code = 204)
+
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "No Content"),
+            @ApiResponse(code = 400, message = "Payment cancellation failed"),
+            @ApiResponse(code = 401, message = "Credentials are required to access this resource") })
+
     public Response cancelPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
-                                  @ApiParam(required = true) @PathParam(PAYMENT_KEY) String paymentId) {
+                                  @PathParam(PAYMENT_KEY) String paymentId) {
 
         logger.info("received cancel payment request: [{}]", paymentId);
 

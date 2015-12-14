@@ -118,11 +118,16 @@ public class PaymentsResourceITest {
     @Test
     public void createPayment_responseWith4xx_whenFieldsMissing() {
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-
+        String nullCheck = " may not be null (was null)";
+        String emptyCheck = " may not be empty (was null)";
         postPaymentResponse(BEARER_TOKEN, "{}")
                 .statusCode(422)
                 .contentType(JSON)
-                .body("errors", is(Arrays.asList("amount may not be null (was null)", "description may not be empty (was null)", "reference may not be empty (was null)", "returnUrl may not be empty (was null)")));
+                .body("errors", is(Arrays.asList(
+                            "amount"      + nullCheck,
+                            "description" + emptyCheck,
+                            "reference"   + emptyCheck,
+                            "returnUrl"   + emptyCheck)));
     }
 
     @Test

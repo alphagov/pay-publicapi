@@ -23,4 +23,7 @@ hs_err_pid*
 # Maven
 target
 
+# Swagger
+swagger
+
 bin

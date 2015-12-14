@@ -202,6 +202,36 @@
                     </arguments>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>com.github.kongchen</groupId>
+                <artifactId>swagger-maven-plugin</artifactId>
+                <version>3.1.2</version>
+                <configuration>
+                    <apiSources>
+                        <apiSource>
+                            <springmvc>false</springmvc>
+                            <locations>uk.gov.pay.api.resources</locations>
+                            <schemes>http,https</schemes>
+                            <host>www-flow-0.pymnt.uk</host>
+                            <basePath>/</basePath>
+                            <info>
+                                <title>GOV.UK Pay Api</title>
+                                <version>1.0.0</version>
+                                <description>GOV.UK Pay Api</description>
+                            </info>
+                            <swaggerDirectory>swagger</swaggerDirectory>
+                        </apiSource>
+                    </apiSources>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>
