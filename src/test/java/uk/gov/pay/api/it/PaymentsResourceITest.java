@@ -137,7 +137,7 @@ public class PaymentsResourceITest {
     @Test
     public void getPayment_ReturnsPayment() {
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondWithChargeFound(TEST_AMOUNT, TEST_CHARGE_ID, TEST_STATUS, TEST_RETURN_URL, TEST_DESCRIPTION, TEST_REFERENCE);
+        connectorMock.respondWithChargeFound(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_STATUS, TEST_RETURN_URL, TEST_DESCRIPTION, TEST_REFERENCE);
 
         ValidatableResponse response = getPaymentResponse(BEARER_TOKEN, TEST_CHARGE_ID)
                 .statusCode(200)
@@ -165,7 +165,7 @@ public class PaymentsResourceITest {
         String invalidPaymentId = "ds2af2afd3df112";
         String errorMessage = "backend-error-message";
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondChargeNotFound(invalidPaymentId, errorMessage);
+        connectorMock.respondChargeNotFound(GATEWAY_ACCOUNT_ID, invalidPaymentId, errorMessage);
 
         getPaymentResponse(BEARER_TOKEN, invalidPaymentId)
                 .statusCode(404)
@@ -198,7 +198,6 @@ public class PaymentsResourceITest {
                 .add("amount", amount)
                 .add("reference", reference)
                 .add("description", description)
-                .add("status", TEST_STATUS)
                 .add("return_url", returnUrl)
                 .build();
     }

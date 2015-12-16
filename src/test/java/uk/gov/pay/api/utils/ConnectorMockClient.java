@@ -5,6 +5,7 @@ import org.mockserver.client.server.ForwardChainExpectation;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.model.HttpResponse;
 
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static javax.ws.rs.HttpMethod.GET;
 import static javax.ws.rs.HttpMethod.POST;
@@ -20,8 +21,9 @@ import static uk.gov.pay.api.utils.JsonStringBuilder.jsonString;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
 
 public class ConnectorMockClient {
-    public static final String CONNECTOR_MOCK_CHARGE_PATH = "/v1/api/charges";
-    public static final String CONNECTOR_CANCEL_CHARGE_PATH = "/v1/api/accounts/%s/charges/%s/cancel";
+    public static final String CONNECTOR_MOCK_ACCOUNTS_PATH = "/v1/api/accounts/%s";
+    public static final String CONNECTOR_MOCK_CHARGES_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/charges";
+    public static final String CONNECTOR_MOCK_CHARGE_PATH = CONNECTOR_MOCK_CHARGES_PATH + "/%s";
     private final MockServerClient mockClient;
     private final String baseUrl;
 
@@ -30,12 +32,11 @@ public class ConnectorMockClient {
         this.baseUrl = baseUrl;
     }
 
-    private String createChargePayload(long amount, String gatewayAccountId, String returnUrl, String description, String reference) {
+    private String createChargePayload(long amount, String returnUrl, String description, String reference) {
         return jsonStringBuilder()
                 .add("amount", amount)
                 .add("reference", escapeHtml4(reference))
                 .add("description", escapeHtml4(description))
-                .add("gateway_account_id", gatewayAccountId)
                 .add("return_url", returnUrl)
                 .build();
     }
@@ -64,8 +65,8 @@ public class ConnectorMockClient {
         return "http://Frontend/charge/" + chargeId;
     }
 
-    private String chargeLocation(String chargeId) {
-        return baseUrl + CONNECTOR_MOCK_CHARGE_PATH + "/" + chargeId;
+    private String chargeLocation(String accountId, String chargeId) {
+        return baseUrl + format(CONNECTOR_MOCK_CHARGE_PATH, accountId, chargeId);
     }
 
     public void respondOk_whenCreateCharge(long amount, String gatewayAccountId, String chargeId, String status, String returnUrl, String description, String reference) {
@@ -73,7 +74,7 @@ public class ConnectorMockClient {
                 .respond(response()
                         .withStatusCode(CREATED_201)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withHeader(LOCATION, chargeLocation(chargeId))
+                        .withHeader(LOCATION, chargeLocation(gatewayAccountId, chargeId))
                         .withBody(createChargeResponse(
                                 amount,
                                 chargeId,
@@ -81,7 +82,7 @@ public class ConnectorMockClient {
                                 returnUrl,
                                 description,
                                 reference,
-                                validLink(chargeLocation(chargeId), "self"),
+                                validLink(chargeLocation(gatewayAccountId, chargeId), "self"),
                                 validLink(nextUrl(chargeId), "next_url"))));
     }
 
@@ -95,21 +96,21 @@ public class ConnectorMockClient {
                 .respond(response()
                         .withStatusCode(CREATED_201)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withHeader(LOCATION, chargeLocation(chargeId)));
+                        .withHeader(LOCATION, chargeLocation(gatewayAccountId, chargeId)));
     }
 
-    public void respondWithChargeFound(long amount, String chargeId, String status, String returnUrl, String description, String reference) {
-        whenGetCharge(chargeId)
+    public void respondWithChargeFound(long amount, String gatewayAccountId, String chargeId, String status, String returnUrl, String description, String reference) {
+        whenGetCharge(gatewayAccountId, chargeId)
                 .respond(response()
                         .withStatusCode(OK_200)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                         .withBody(createChargeResponse(amount, chargeId, status, returnUrl,
-                                description, reference, validLink(chargeLocation(chargeId), "self"),
+                                description, reference, validLink(chargeLocation(gatewayAccountId, chargeId), "self"),
                                 validLink(nextUrl(chargeId), "next_url"))));
     }
 
-    public void respondChargeNotFound(String chargeId, String errorMsg) {
-        whenGetCharge(chargeId)
+    public void respondChargeNotFound(String gatewayAccountId, String chargeId, String errorMsg) {
+        whenGetCharge(gatewayAccountId, chargeId)
                 .respond(withStatusAndErrorMessage(NOT_FOUND_404, errorMsg));
     }
 
@@ -136,17 +137,17 @@ public class ConnectorMockClient {
 
     private ForwardChainExpectation whenCreateCharge(long amount, String gatewayAccountId, String returnUrl, String description, String reference) {
         return mockClient.when(request()
-                        .withMethod(POST)
-                        .withPath(CONNECTOR_MOCK_CHARGE_PATH)
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withBody(createChargePayload(amount, gatewayAccountId, returnUrl, description, reference))
+                .withMethod(POST)
+                .withPath(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId))
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                .withBody(createChargePayload(amount, returnUrl, description, reference))
         );
     }
 
-    private ForwardChainExpectation whenGetCharge(String chargeId) {
+    private ForwardChainExpectation whenGetCharge(String gatewayAccountId, String chargeId) {
         return mockClient.when(request()
                 .withMethod(GET)
-                .withPath(CONNECTOR_MOCK_CHARGE_PATH + "/" + chargeId)
+                .withPath(format(CONNECTOR_MOCK_CHARGE_PATH, gatewayAccountId, chargeId))
         );
     }
 
@@ -157,7 +158,7 @@ public class ConnectorMockClient {
     }
 
     private String connectorCancelChargePathFor(String paymentId, String accountId) {
-        return String.format(CONNECTOR_CANCEL_CHARGE_PATH, accountId, paymentId);
+        return format(CONNECTOR_MOCK_CHARGE_PATH + "/cancel", accountId, paymentId);
     }
 
     private HttpResponse withStatusAndErrorMessage(int statusCode, String errorMsg) {
@@ -170,8 +171,8 @@ public class ConnectorMockClient {
     public void verifyCreateCharge(long amount, String gatewayAccountId, String returnUrl, String description, String reference) {
         mockClient.verify(request()
                         .withMethod(POST)
-                        .withPath(CONNECTOR_MOCK_CHARGE_PATH)
-                        .withBody(createChargePayload(amount, gatewayAccountId, returnUrl, description, reference)),
+                        .withPath(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId))
+                        .withBody(createChargePayload(amount, returnUrl, description, reference)),
                 once()
         );
     }
