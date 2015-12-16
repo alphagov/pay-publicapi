@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 @JsonSnakeCase
 public class CreatePaymentRequest {
 
+    private String accountId;
     private Long amount;
     private String returnUrl;
     private String reference;
@@ -22,6 +23,12 @@ public class CreatePaymentRequest {
     @NotBlank
     public String getReturnUrl() {
         return returnUrl;
+    }
+
+    @ApiModelProperty(value = "account id", required = true)
+    @JsonProperty
+    public String getAccountId() {
+        return accountId;
     }
 
     @ApiModelProperty(value = "amount in pence", required = true, allowableValues = ">0")
