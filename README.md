@@ -23,6 +23,18 @@ $ ./env.sh mvn exec:java
 $ ./redirect.sh stop
 ```
 
+## API through gelato.io 
+
+gelato.io is a hosted service that dynamically generates beautiful documentation and sandbox from a Swagger-compliant API.
+It also provides customized documentation, markdown editor, automatic API explorer, code sample Generation, custom styling and allows to add a custom domain.
+
+Useful links:
+ - [API Portal](https://gds-payments.gelato.io)
+ - [API Documentation](https://gds-payments.gelato.io/reference/docs)
+ - [API Reference](https://gds-payments.gelato.io/reference/api/v1)
+ - [API Explorer](https://gds-payments.gelato.io/api-explorer/)
+
+
 ## API
 
 | Path                                                   | Method | Description                        |

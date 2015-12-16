@@ -26,15 +26,6 @@ public class ResponseUtil {
         return messageResponse(logger, message, BAD_REQUEST);
     }
 
-    public static Response internalServerErrorResponse(Logger logger, String internalMessage, String externalMessage) {
-        return messageResponse(logger, internalMessage, externalMessage, INTERNAL_SERVER_ERROR);
-    }
-
-    public static Response fieldsMissingResponse(Logger logger, List<String> missingFields) {
-        String message = String.format("Field(s) missing: [%s]", COMMA_JOINER.join(missingFields));
-        return messageResponse(logger, message, BAD_REQUEST);
-    }
-
     private static Response messageResponse(Logger logger, String message, Response.Status status) {
         return messageResponse(logger, message, message, status);
     }

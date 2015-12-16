@@ -2,11 +2,15 @@ package uk.gov.pay.api.resources;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.dropwizard.auth.Auth;
+import io.swagger.annotations.*;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.LinksResponse;
+import uk.gov.pay.api.model.Payment;
 
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
@@ -15,9 +19,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -26,13 +28,15 @@ import static java.lang.String.format;
 import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.http.HttpStatus.SC_OK;
-import static uk.gov.pay.api.model.CreatePaymentResponse.createPaymentResponse;
+import static uk.gov.pay.api.model.Payment.createPaymentResponse;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
-import static uk.gov.pay.api.utils.ResponseUtil.*;
+import static uk.gov.pay.api.utils.ResponseUtil.badRequestResponse;
+import static uk.gov.pay.api.utils.ResponseUtil.notFoundResponse;
 
 @Path("/")
+@Api(value = "/", description = "Public Api Endpoints")
+@Produces({"application/json"})
 public class PaymentsResource {
     private static final String PAYMENT_KEY = "paymentId";
     private static final String REFERENCE_KEY = "reference";
@@ -41,8 +45,6 @@ public class PaymentsResource {
     private static final String GATEWAY_ACCOUNT_KEY = "gateway_account_id";
     private static final String SERVICE_RETURN_URL = "return_url";
     private static final String CHARGE_KEY = "charge_id";
-
-    private static final String[] REQUIRED_FIELDS = {DESCRIPTION_KEY, AMOUNT_KEY, REFERENCE_KEY, SERVICE_RETURN_URL};
 
     private static final String PAYMENTS_PATH = "/v1/payments";
     private static final String PAYMENTS_ID_PLACEHOLDER = "{" + PAYMENT_KEY + "}";
@@ -67,10 +69,22 @@ public class PaymentsResource {
     @GET
     @Path(PAYMENT_BY_ID)
     @Produces(APPLICATION_JSON)
-    public Response getCharge(@Auth String accountId, @PathParam(PAYMENT_KEY) String chargeId, @Context UriInfo uriInfo) {
-        logger.info("received get payment request: [ {} ]", chargeId);
+    @ApiOperation(
+            value = "Find a Payment by ID",
+            notes = "Return information about the payment",
+            code = 200,
+            response = Payment.class)
 
-        Response connectorResponse = client.target(connectorUrl + format(CONNECTOR_CHARGE_RESOURCE, accountId, chargeId))
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "OK", response = Payment.class),
+            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
+            @ApiResponse(code = 404, message = "Not found") })
+    public Response getPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
+                               @PathParam(PAYMENT_KEY) String paymentId,
+                               @Context UriInfo uriInfo) {
+
+        logger.info("received get payment request: [ {} ]", paymentId);
+
+        Response connectorResponse = client.target(connectorUrl + format(CONNECTOR_CHARGE_RESOURCE, accountId, paymentId))
                 .request()
                 .get();
 
@@ -83,13 +97,21 @@ public class PaymentsResource {
     @Path(PAYMENTS_PATH)
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
-    public Response createNewPayment(@Auth String accountId, JsonNode requestPayload, @Context UriInfo uriInfo) {
-        logger.info("received create payment request: [ {} ]", requestPayload);
+    @ApiOperation(
+            value = "Creates a new payment",
+            notes = "Creates a new payment for the account associated to the Authorisation token",
+            code = 201,
+            nickname = "newPayment",
+            response = Payment.class)
 
-        Optional<List<String>> missingFields = checkMissingFields(requestPayload);
-        if (missingFields.isPresent()) {
-            return fieldsMissingResponse(logger, missingFields.get());
-        }
+    @ApiResponses(value = { @ApiResponse(code = 201, message = "Created", response = Payment.class),
+            @ApiResponse(code = 400, message = "Bad request"),
+            @ApiResponse(code = 401, message = "Credentials are required to access this resource") })
+    public Response createNewPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
+                                     @ApiParam(value = "requestPayload", required = true) @Valid CreatePaymentRequest requestPayload,
+                                     @Context UriInfo uriInfo) {
+
+        logger.info("received create payment request: [ {} ]", requestPayload);
 
         Response connectorResponse = client.target(connectorUrl + format(CONNECTOR_CHARGES_RESOURCE, accountId))
                 .request()
@@ -103,10 +125,21 @@ public class PaymentsResource {
     @POST
     @Path(CANCEL_PAYMENT_PATH)
     @Produces(APPLICATION_JSON)
-    public Response cancelCharge(@Auth String accountId, @PathParam(PAYMENT_KEY) String chargeId) {
-        logger.info("received cancel payment request: [{}]", chargeId);
+    @ApiOperation(
+            value = "Cancels a payment",
+            notes = "Cancels a payment based on the provided payment ID and the Authorisation token",
+            code = 204)
 
-        Response connectorResponse = client.target(connectorUrl + format(CONNECTOR_ACCOUNT_CHARGE_CANCEL_RESOURCE, accountId, chargeId))
+    @ApiResponses(value = { @ApiResponse(code = 204, message = "No Content"),
+            @ApiResponse(code = 400, message = "Payment cancellation failed"),
+            @ApiResponse(code = 401, message = "Credentials are required to access this resource") })
+
+    public Response cancelPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
+                                  @PathParam(PAYMENT_KEY) String paymentId) {
+
+        logger.info("received cancel payment request: [{}]", paymentId);
+
+        Response connectorResponse = client.target(connectorUrl + format(CONNECTOR_ACCOUNT_CHARGE_CANCEL_RESOURCE, accountId, paymentId))
                 .request()
                 .post(Entity.json("{}"));
 
@@ -164,26 +197,16 @@ public class PaymentsResource {
         return Optional.empty();
     }
 
-
-    private Optional<List<String>> checkMissingFields(JsonNode node) {
-        List<String> missing = new ArrayList<>();
-        for (String field : REQUIRED_FIELDS) {
-            if (!node.hasNonNull(field) || isEmpty(node.get(field).asText())) {
-                missing.add(field);
-            }
-        }
-        return missing.isEmpty()
-                ? Optional.<List<String>>empty()
-                : Optional.of(missing);
-    }
-
-    private Entity buildChargeRequestPayload(JsonNode requestPayload) {
-
+    private Entity buildChargeRequestPayload(CreatePaymentRequest requestPayload) {
+        long amount = requestPayload.getAmount();
+        String reference = requestPayload.getReference();
+        String description = requestPayload.getDescription();
+        String returnUrl = requestPayload.getReturnUrl();
         return json(jsonStringBuilder()
-                .add(AMOUNT_KEY, requestPayload.get(AMOUNT_KEY).asLong())
-                .add(REFERENCE_KEY, escapeHtml4(requestPayload.get(REFERENCE_KEY).asText()))
-                .add(DESCRIPTION_KEY, escapeHtml4(requestPayload.get(DESCRIPTION_KEY).asText()))
-                .add(SERVICE_RETURN_URL, requestPayload.get(SERVICE_RETURN_URL).asText())
+                .add(AMOUNT_KEY, amount)
+                .add(REFERENCE_KEY, escapeHtml4(reference))
+                .add(DESCRIPTION_KEY, escapeHtml4(description))
+                .add(SERVICE_RETURN_URL, returnUrl)
                 .build());
     }
 

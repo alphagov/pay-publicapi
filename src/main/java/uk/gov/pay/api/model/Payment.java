@@ -2,9 +2,11 @@ package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.dropwizard.jackson.JsonSnakeCase;
+import io.swagger.annotations.ApiModel;
 
+@ApiModel(value="Payment information", description = "A Payment description")
 @JsonSnakeCase
-public class CreatePaymentResponse extends LinksResponse {
+public class Payment extends LinksResponse {
     private final String paymentId;
     private final long amount;
     private final String status;
@@ -12,8 +14,8 @@ public class CreatePaymentResponse extends LinksResponse {
     private final String description;
     private final String reference;
 
-    public static CreatePaymentResponse createPaymentResponse(JsonNode payload) {
-        return new CreatePaymentResponse(
+    public static Payment createPaymentResponse(JsonNode payload) {
+        return new Payment(
                 payload.get("charge_id").asText(),
                 payload.get("amount").asLong(),
                 payload.get("status").asText(),
@@ -23,7 +25,7 @@ public class CreatePaymentResponse extends LinksResponse {
         );
     }
 
-    private CreatePaymentResponse(String chargeId, long amount, String status, String returnUrl, String description, String reference) {
+    private Payment(String chargeId, long amount, String status, String returnUrl, String description, String reference) {
         this.paymentId = chargeId;
         this.amount = amount;
         this.status = status;

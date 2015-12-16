@@ -8,7 +8,10 @@
     <properties>
         <dropwizard.version>0.8.1</dropwizard.version>
         <mockserver.version>3.9.17</mockserver.version>
+        <swagger.jersey2.version>1.5.4</swagger.jersey2.version>
+        <jersey2.version>2.17</jersey2.version>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>io.dropwizard</groupId>
@@ -63,7 +66,32 @@
             <version>${mockserver.version}</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- swagger -->
+        <!-- the excluded dependencies are already pulled by io.dropwizard:dropwizard-jersey transitively -->
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-jersey2-jaxrs</artifactId>
+            <version>${swagger.jersey2.version}</version>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.glassfish.jersey.containers</groupId>
+                    <artifactId>jersey-container-servlet-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.glassfish.jersey.media</groupId>
+                    <artifactId>jersey-media-multipart</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-multipart</artifactId>
+            <version>${jersey2.version}</version>
+        </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -173,6 +201,36 @@
                         <argument>src/main/resources/config/config.yaml</argument>
                     </arguments>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.kongchen</groupId>
+                <artifactId>swagger-maven-plugin</artifactId>
+                <version>3.1.2</version>
+                <configuration>
+                    <apiSources>
+                        <apiSource>
+                            <springmvc>false</springmvc>
+                            <locations>uk.gov.pay.api.resources</locations>
+                            <schemes>http,https</schemes>
+                            <host>www-flow-0.pymnt.uk</host>
+                            <basePath>/</basePath>
+                            <info>
+                                <title>GOV.UK Pay Api</title>
+                                <version>1.0.0</version>
+                                <description>GOV.UK Pay Api</description>
+                            </info>
+                            <swaggerDirectory>swagger</swaggerDirectory>
+                        </apiSource>
+                    </apiSources>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

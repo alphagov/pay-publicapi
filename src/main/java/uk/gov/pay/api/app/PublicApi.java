@@ -32,10 +32,10 @@ public class PublicApi extends Application<PublicApiConfig> {
         final Client client = ClientBuilder.newBuilder().build();
 
         environment.healthChecks().register("ping", new Ping());
+
         environment.jersey().register(new PaymentsResource(client, config.getConnectorUrl()));
-        environment.jersey().register(AuthFactory.binder(new OAuthFactory<>(new AccountAuthenticator(client, config.getPublicAuthUrl()),
-                "",
-                String.class)));
+
+        environment.jersey().register(AuthFactory.binder(new OAuthFactory<>(new AccountAuthenticator(client, config.getPublicAuthUrl()), "", String.class)));
     }
 
     public static void main(String[] args) throws Exception {

@@ -13,6 +13,8 @@ import uk.gov.pay.api.utils.PublicAuthMockClient;
 
 import javax.ws.rs.core.HttpHeaders;
 
+import java.util.Arrays;
+
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static io.dropwizard.testing.ConfigOverride.config;
@@ -116,11 +118,16 @@ public class PaymentsResourceITest {
     @Test
     public void createPayment_responseWith4xx_whenFieldsMissing() {
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-
-        postPaymentResponse(BEARER_TOKEN, "{\"description\":\"\", \"reference\":null}")
-                .statusCode(400)
+        String nullCheck = " may not be null (was null)";
+        String emptyCheck = " may not be empty (was null)";
+        postPaymentResponse(BEARER_TOKEN, "{}")
+                .statusCode(422)
                 .contentType(JSON)
-                .body("message", is("Field(s) missing: [description, amount, reference, return_url]"));
+                .body("errors", is(Arrays.asList(
+                            "amount"      + nullCheck,
+                            "description" + emptyCheck,
+                            "reference"   + emptyCheck,
+                            "returnUrl"   + emptyCheck)));
     }
 
     @Test
