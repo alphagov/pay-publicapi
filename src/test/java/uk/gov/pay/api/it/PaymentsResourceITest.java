@@ -1,5 +1,7 @@
 package uk.gov.pay.api.it;
 
+import com.jayway.restassured.response.ExtractableResponse;
+import com.jayway.restassured.response.ResponseBodyExtractionOptions;
 import com.jayway.restassured.response.ValidatableResponse;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 import org.junit.Before;
@@ -8,20 +10,29 @@ import org.junit.Test;
 import org.mockserver.junit.MockServerRule;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.config.PublicApiConfig;
+import uk.gov.pay.api.model.PaymentEvent;
 import uk.gov.pay.api.utils.ConnectorMockClient;
+import uk.gov.pay.api.utils.PaymentEventBuilder;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 
 import javax.ws.rs.core.HttpHeaders;
-
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
 import static uk.gov.pay.api.utils.LinksAssert.assertLink;
@@ -33,9 +44,13 @@ public class PaymentsResourceITest {
     private static final String TEST_RETURN_URL = "http://somewhere.over.the/rainbow/{paymentID}";
     private static final String GATEWAY_ACCOUNT_ID = "gw_32adf21bds3aac21";
     private static final String PAYMENTS_PATH = "/v1/payments/";
+    private static final String PAYMENT_EVENTS_PATH = "/v1/payments/%s/events";
     private static final String BEARER_TOKEN = "TEST-BEARER-TOKEN";
     private static final String TEST_REFERENCE = "Some reference <script> alert('This is a ?{simple} XSS attack.')</script>";
     private static final String TEST_DESCRIPTION = "Some description <script> alert('This is a ?{simple} XSS attack.')</script>";
+    private static final LocalDateTime TEST_TIMESTAMP = LocalDateTime.of(2016, Month.JANUARY, 1, 12, 00, 00);
+    private static final PaymentEvent TEST_PAYMENT_CREATED = new PaymentEventBuilder(TEST_CHARGE_ID, TEST_STATUS, TEST_TIMESTAMP).build();
+    private static final List<PaymentEvent> TEST_EVENTS = newArrayList(TEST_PAYMENT_CREATED);
 
     private static final String SUCCESS_PAYLOAD = paymentPayload(TEST_AMOUNT, TEST_RETURN_URL, TEST_DESCRIPTION, TEST_REFERENCE);
 
@@ -65,6 +80,10 @@ public class PaymentsResourceITest {
 
     private String paymentLocationFor(String chargeId) {
         return "http://localhost:" + app.getLocalPort() + PAYMENTS_PATH + chargeId;
+    }
+
+    private String paymentEventsLocationFor(String chargeId) {
+        return paymentLocationFor(chargeId) + "/events";
     }
 
     @Before
@@ -181,6 +200,46 @@ public class PaymentsResourceITest {
     }
 
     @Test
+    public void getPaymentEvents_ReturnsPaymentEvents() {
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        connectorMock.respondWithChargeEventsFound(GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_EVENTS);
+
+        ValidatableResponse response = getPaymentEventsResponse(BEARER_TOKEN, TEST_CHARGE_ID)
+                .statusCode(200)
+                .contentType(JSON)
+                .body("payment_id", is(TEST_CHARGE_ID))
+                .body("events", hasSize(1));
+
+        List<Map<String,String>> list = response.extract().body().jsonPath().getList("events");
+        assertEquals(list.get(0).get("payment_id"), TEST_CHARGE_ID);
+        assertEquals(list.get(0).get("status"), TEST_STATUS);
+        assertEquals(list.get(0).get("updated"), "2016-01-01 12:00:00");
+
+        assertLink(response, paymentEventsLocationFor(TEST_CHARGE_ID), "self");
+    }
+
+    @Test
+    public void getPaymentEvents_Returns401_WhenUnauthorised() {
+        publicAuthMock.respondUnauthorised();
+
+        getPaymentEventsResponse(BEARER_TOKEN, TEST_CHARGE_ID)
+                .statusCode(401);
+    }
+
+    @Test
+    public void getPaymentEvents_Returns404_WhenInvalidPaymentId() {
+        String invalidPaymentId = "ds2af2afd3df112";
+        String errorMessage = "backend-error-message";
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        connectorMock.respondChargeEventsNotFound(GATEWAY_ACCOUNT_ID, invalidPaymentId, errorMessage);
+
+        getPaymentEventsResponse(BEARER_TOKEN, invalidPaymentId)
+                .statusCode(404)
+                .contentType(JSON)
+                .body("message", is(errorMessage));
+    }
+
+    @Test
     public void createPayment_Returns401_WhenUnauthorised() {
         publicAuthMock.respondUnauthorised();
 
@@ -213,6 +272,13 @@ public class PaymentsResourceITest {
         return given().port(app.getLocalPort())
                 .header(AUTHORIZATION, "Bearer " + bearerToken)
                 .get(PAYMENTS_PATH + paymentId)
+                .then();
+    }
+
+    private ValidatableResponse getPaymentEventsResponse(String bearerToken, String paymentId) {
+        return given().port(app.getLocalPort())
+                .header(AUTHORIZATION, "Bearer " + bearerToken)
+                .get(String.format(PAYMENT_EVENTS_PATH, paymentId))
                 .then();
     }
 

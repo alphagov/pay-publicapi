@@ -1,8 +1,12 @@
 package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.dropwizard.jackson.JsonSnakeCase;
 import io.swagger.annotations.ApiModel;
+import uk.gov.pay.api.utils.JsonDateDeserializer;
+import uk.gov.pay.api.utils.JsonDateSerializer;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -10,26 +14,22 @@ import java.time.format.DateTimeFormatter;
 @ApiModel(value="Payment Events information", description = "A List of Payment Events information")
 @JsonSnakeCase
 public class PaymentEvent {
+
     private final String paymentId;
     private final String status;
+
+    @JsonDeserialize(using = JsonDateDeserializer.class)
+    @JsonSerialize(using = JsonDateSerializer.class)
     private final LocalDateTime updated;
 
     public static PaymentEvent createPaymentEvent(JsonNode payload) {
         LocalDateTime updated = null;
         if(payload.get("updated") != null) {
-            String updatedStr =
-                    payload.get("updated").get("year") + "-" +
-                    format(payload.get("updated").get("monthValue").asInt()) + "-" +
-                    format(payload.get("updated").get("dayOfMonth").asInt()) + " " +
-                    format(payload.get("updated").get("hour").asInt()) + ":" +
-                    format(payload.get("updated").get("minute").asInt()) + ":" +
-                    format(payload.get("updated").get("second").asInt());
-            System.out.println("TEST: UpdatedStr: "  + updatedStr);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            updated = LocalDateTime.parse(updatedStr, formatter);
+            updated = LocalDateTime.parse(payload.get("updated").asText(), formatter);
         }
         return new PaymentEvent(
-                payload.get("chargeId").asText(),
+                payload.get("paymentId").asText(),
                 payload.get("status").asText(),
                 updated
         );
@@ -51,15 +51,6 @@ public class PaymentEvent {
 
     public LocalDateTime getUpdated() {
         return updated;
-    }
-
-    private static String format(Integer value) {
-        System.out.println("TEST-format: value: "  + value);
-        if (value < 10) {
-            return "0" + value;
-        } else {
-            return value.toString();
-        }
     }
 
     @Override

@@ -225,7 +225,7 @@ public class PaymentsResource {
         JsonNode payload = connectorResponse.readEntity(JsonNode.class);
         if (connectorResponse.getStatus() == okStatus) {
             URI documentLocation = uriInfo.getBaseUriBuilder()
-                    .path(PAYMENT_BY_ID)
+                    .path(PAYMENT_EVENTS_BY_ID)
                     .build(payload.get(CHARGE_KEY).asText());
 
             LinksResponse response =

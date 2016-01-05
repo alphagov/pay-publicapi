@@ -4,6 +4,9 @@ import com.google.common.collect.ImmutableMap;
 import org.mockserver.client.server.ForwardChainExpectation;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.model.HttpResponse;
+import uk.gov.pay.api.model.PaymentEvent;
+
+import java.util.List;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -24,6 +27,7 @@ public class ConnectorMockClient {
     public static final String CONNECTOR_MOCK_ACCOUNTS_PATH = "/v1/api/accounts/%s";
     public static final String CONNECTOR_MOCK_CHARGES_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/charges";
     public static final String CONNECTOR_MOCK_CHARGE_PATH = CONNECTOR_MOCK_CHARGES_PATH + "/%s";
+    public static final String CONNECTOR_MOCK_CHARGE_EVENTS_PATH = CONNECTOR_MOCK_CHARGE_PATH + "/events";
     private final MockServerClient mockClient;
     private final String baseUrl;
 
@@ -53,6 +57,14 @@ public class ConnectorMockClient {
                 .build();
     }
 
+    private String createChargeEventsResponse(String chargeId, List<PaymentEvent> events, ImmutableMap<?, ?>... links) {
+        return jsonStringBuilder()
+                .add("charge_id", chargeId)
+                .add("events", events)
+                .add("links", asList(links))
+                .build();
+    }
+
     private ImmutableMap<String, String> validLink(String href, String rel) {
         return ImmutableMap.of(
                 "href", href,
@@ -67,6 +79,10 @@ public class ConnectorMockClient {
 
     private String chargeLocation(String accountId, String chargeId) {
         return baseUrl + format(CONNECTOR_MOCK_CHARGE_PATH, accountId, chargeId);
+    }
+
+    private String chargeEventsLocation(String accountId, String chargeId) {
+        return baseUrl + format(CONNECTOR_MOCK_CHARGE_EVENTS_PATH, accountId, chargeId);
     }
 
     public void respondOk_whenCreateCharge(long amount, String gatewayAccountId, String chargeId, String status, String returnUrl, String description, String reference) {
@@ -109,8 +125,22 @@ public class ConnectorMockClient {
                                 validLink(nextUrl(chargeId), "next_url"))));
     }
 
+    public void respondWithChargeEventsFound(String gatewayAccountId, String chargeId, List<PaymentEvent> events) {
+        whenGetChargeEvents(gatewayAccountId, chargeId)
+                .respond(response()
+                        .withStatusCode(OK_200)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withBody(createChargeEventsResponse(chargeId, events, validLink(chargeEventsLocation(gatewayAccountId, chargeId), "self"))));
+    }
+
+
     public void respondChargeNotFound(String gatewayAccountId, String chargeId, String errorMsg) {
         whenGetCharge(gatewayAccountId, chargeId)
+                .respond(withStatusAndErrorMessage(NOT_FOUND_404, errorMsg));
+    }
+
+    public void respondChargeEventsNotFound(String gatewayAccountId, String chargeId, String errorMsg) {
+        whenGetChargeEvents(gatewayAccountId, chargeId)
                 .respond(withStatusAndErrorMessage(NOT_FOUND_404, errorMsg));
     }
 
@@ -148,6 +178,13 @@ public class ConnectorMockClient {
         return mockClient.when(request()
                 .withMethod(GET)
                 .withPath(format(CONNECTOR_MOCK_CHARGE_PATH, gatewayAccountId, chargeId))
+        );
+    }
+
+    private ForwardChainExpectation whenGetChargeEvents(String gatewayAccountId, String chargeId) {
+        return mockClient.when(request()
+                        .withMethod(GET)
+                        .withPath(format(CONNECTOR_MOCK_CHARGE_EVENTS_PATH, gatewayAccountId, chargeId))
         );
     }
 
