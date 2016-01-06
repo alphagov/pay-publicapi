@@ -1,7 +1,5 @@
 package uk.gov.pay.api.it;
 
-import com.jayway.restassured.response.ExtractableResponse;
-import com.jayway.restassured.response.ResponseBodyExtractionOptions;
 import com.jayway.restassured.response.ValidatableResponse;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 import org.junit.Before;
@@ -10,9 +8,8 @@ import org.junit.Test;
 import org.mockserver.junit.MockServerRule;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.config.PublicApiConfig;
-import uk.gov.pay.api.model.PaymentEvent;
 import uk.gov.pay.api.utils.ConnectorMockClient;
-import uk.gov.pay.api.utils.PaymentEventBuilder;
+import uk.gov.pay.api.utils.ChargeEventBuilder;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 
 import javax.ws.rs.core.HttpHeaders;
@@ -31,7 +28,6 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
@@ -49,8 +45,8 @@ public class PaymentsResourceITest {
     private static final String TEST_REFERENCE = "Some reference <script> alert('This is a ?{simple} XSS attack.')</script>";
     private static final String TEST_DESCRIPTION = "Some description <script> alert('This is a ?{simple} XSS attack.')</script>";
     private static final LocalDateTime TEST_TIMESTAMP = LocalDateTime.of(2016, Month.JANUARY, 1, 12, 00, 00);
-    private static final PaymentEvent TEST_PAYMENT_CREATED = new PaymentEventBuilder(TEST_CHARGE_ID, TEST_STATUS, TEST_TIMESTAMP).build();
-    private static final List<PaymentEvent> TEST_EVENTS = newArrayList(TEST_PAYMENT_CREATED);
+    private static final Map<String, String> TEST_PAYMENT_CREATED = new ChargeEventBuilder(TEST_CHARGE_ID, TEST_STATUS, TEST_TIMESTAMP).build();
+    private static final List<Map<String, String>> TEST_EVENTS = newArrayList(TEST_PAYMENT_CREATED);
 
     private static final String SUCCESS_PAYLOAD = paymentPayload(TEST_AMOUNT, TEST_RETURN_URL, TEST_DESCRIPTION, TEST_REFERENCE);
 

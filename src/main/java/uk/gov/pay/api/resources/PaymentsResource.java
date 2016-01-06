@@ -6,10 +6,10 @@ import io.swagger.annotations.*;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.pay.api.model.PaymentEvents;
 import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.LinksResponse;
 import uk.gov.pay.api.model.Payment;
+import uk.gov.pay.api.model.PaymentEvents;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;

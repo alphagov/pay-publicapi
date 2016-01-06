@@ -4,9 +4,9 @@ import com.google.common.collect.ImmutableMap;
 import org.mockserver.client.server.ForwardChainExpectation;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.model.HttpResponse;
-import uk.gov.pay.api.model.PaymentEvent;
 
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -57,7 +57,7 @@ public class ConnectorMockClient {
                 .build();
     }
 
-    private String createChargeEventsResponse(String chargeId, List<PaymentEvent> events, ImmutableMap<?, ?>... links) {
+    private String createChargeEventsResponse(String chargeId, List<Map<String,String>> events, ImmutableMap<?, ?>... links) {
         return jsonStringBuilder()
                 .add("charge_id", chargeId)
                 .add("events", events)
@@ -125,7 +125,7 @@ public class ConnectorMockClient {
                                 validLink(nextUrl(chargeId), "next_url"))));
     }
 
-    public void respondWithChargeEventsFound(String gatewayAccountId, String chargeId, List<PaymentEvent> events) {
+    public void respondWithChargeEventsFound(String gatewayAccountId, String chargeId, List<Map<String,String>> events) {
         whenGetChargeEvents(gatewayAccountId, chargeId)
                 .respond(response()
                         .withStatusCode(OK_200)

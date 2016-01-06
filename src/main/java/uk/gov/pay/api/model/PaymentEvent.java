@@ -1,12 +1,13 @@
 package uk.gov.pay.api.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.joda.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import io.dropwizard.jackson.JsonSnakeCase;
 import io.swagger.annotations.ApiModel;
-import uk.gov.pay.api.utils.JsonDateDeserializer;
-import uk.gov.pay.api.utils.JsonDateSerializer;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,8 +19,9 @@ public class PaymentEvent {
     private final String paymentId;
     private final String status;
 
-    @JsonDeserialize(using = JsonDateDeserializer.class)
-    @JsonSerialize(using = JsonDateSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private final LocalDateTime updated;
 
     public static PaymentEvent createPaymentEvent(JsonNode payload) {
@@ -29,7 +31,7 @@ public class PaymentEvent {
             updated = LocalDateTime.parse(payload.get("updated").asText(), formatter);
         }
         return new PaymentEvent(
-                payload.get("paymentId").asText(),
+                payload.get("chargeId").asText(),
                 payload.get("status").asText(),
                 updated
         );
