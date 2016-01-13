@@ -1,0 +1,184 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "GOV.UK Pay Api",
+    "version" : "1.0.0",
+    "title" : "GOV.UK Pay Api"
+  },
+  "host" : "www-flow-0.pymnt.uk",
+  "basePath" : "/",
+  "schemes" : [ "http", "https" ],
+  "paths" : {
+    "/v1/payments" : {
+      "post" : {
+        "summary" : "Creates a new payment",
+        "description" : "Creates a new payment for the account associated to the Authorisation token",
+        "operationId" : "newPayment",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "requestPayload",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/CreatePaymentRequest"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Payment information"
+            }
+          },
+          "201" : {
+            "description" : "Created",
+            "schema" : {
+              "$ref" : "#/definitions/Payment information"
+            }
+          },
+          "400" : {
+            "description" : "Bad request"
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          }
+        }
+      }
+    },
+    "/v1/payments/{paymentId}" : {
+      "get" : {
+        "summary" : "Find a Payment by ID",
+        "description" : "Return information about the payment",
+        "operationId" : "getPayment",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "paymentId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/Payment information"
+            }
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "404" : {
+            "description" : "Not found"
+          }
+        }
+      }
+    },
+    "/v1/payments/{paymentId}/cancel" : {
+      "post" : {
+        "summary" : "Cancels a payment",
+        "description" : "Cancels a payment based on the provided payment ID and the Authorisation token",
+        "operationId" : "cancelPayment",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "paymentId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "400" : {
+            "description" : "Payment cancellation failed"
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "CreatePaymentRequest" : {
+      "type" : "object",
+      "required" : [ "accountId", "amount", "description", "reference", "returnUrl" ],
+      "properties" : {
+        "accountId" : {
+          "type" : "string",
+          "description" : "account id",
+          "readOnly" : true
+        },
+        "amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "amount in pence",
+          "readOnly" : true
+        },
+        "returnUrl" : {
+          "type" : "string",
+          "description" : "service return url",
+          "readOnly" : true
+        },
+        "reference" : {
+          "type" : "string",
+          "description" : "payment reference",
+          "readOnly" : true
+        },
+        "description" : {
+          "type" : "string",
+          "description" : "payment description",
+          "readOnly" : true
+        }
+      },
+      "description" : "The Payment Request Payload"
+    },
+    "JsonLink" : {
+      "type" : "object",
+      "properties" : {
+        "rel" : {
+          "type" : "string"
+        },
+        "method" : {
+          "type" : "string"
+        },
+        "href" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Payment information" : {
+      "type" : "object",
+      "properties" : {
+        "links" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/JsonLink"
+          }
+        },
+        "paymentId" : {
+          "type" : "string"
+        },
+        "amount" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "status" : {
+          "type" : "string"
+        },
+        "returnUrl" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "reference" : {
+          "type" : "string"
+        }
+      },
+      "description" : "A Payment description"
+    }
+  }
+}
