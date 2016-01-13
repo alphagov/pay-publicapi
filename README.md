@@ -199,6 +199,73 @@ See: [Payment creation failed](#payment-creation-failed)
 
 ------------------------------------------------------------------------------------------------
 
+### GET /v1/payments/{paymentId}/events
+
+Returns the list of events associated with a payment.
+
+#### Request example
+
+```
+GET /v1/payments/ab2341da231434/events
+Authorization: Bearer BEARER_TOKEN
+```
+
+#### Payment response
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+"events": [
+        {
+            "payment_id": "ab2341da231434",
+            "status": "CREATED",
+            "updated": "2016-01-13 17:42:16"
+        },
+        {
+            "payment_id": "ab2341da231434",
+            "status": "IN PROGRESS",
+            "updated": "2016-01-13 17:42:28"
+        },
+        {
+            "payment_id": "ab2341da231434",
+            "status": "SUCCEEDED",
+            "updated": "2016-01-13 17:42:29"
+        }
+    ],
+    "links": [
+        {
+            "href": "http://dockerhost:9100/v1/payments/1/events",
+            "method": "GET",
+            "rel": "self"
+        }
+    ],
+    "payment_id": "ab2341da231434"
+
+```
+
+##### Response field description
+
+See: [Payment created](#payment-created-response)
+
+
+#### Payment not found
+
+```
+HTTP/1.1 404 Not Found
+Content-Type: application/json
+
+{
+    "message": "backend-error-message"
+}
+```
+
+##### Response field description
+
+See: [Payment creation failed](#payment-creation-failed)
+
+------------------------------------------------------------------------------------------------
+
 ### POST /v1/payments/{paymentId}/cancel
 
 This endpoint cancels a new payment. A payment can only be cancelled if it's state is one of the following (case-insensitive):
