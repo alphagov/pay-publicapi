@@ -12,8 +12,10 @@ import javax.validation.constraints.NotNull;
 @JsonSnakeCase
 public class CreatePaymentRequest {
 
+    @JsonProperty("account_id")
     private String accountId;
     private Long amount;
+    @JsonProperty("return_url")
     private String returnUrl;
     private String reference;
     private String description;
