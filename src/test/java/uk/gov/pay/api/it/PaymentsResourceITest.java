@@ -8,8 +8,8 @@ import org.junit.Test;
 import org.mockserver.junit.MockServerRule;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.config.PublicApiConfig;
-import uk.gov.pay.api.utils.ConnectorMockClient;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
+import uk.gov.pay.api.utils.ConnectorMockClient;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 
 import javax.ws.rs.core.HttpHeaders;

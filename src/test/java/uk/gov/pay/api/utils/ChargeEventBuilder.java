@@ -1,19 +1,23 @@
 package uk.gov.pay.api.utils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.joda.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import io.dropwizard.jackson.JsonSnakeCase;
 
 import java.time.LocalDateTime;
 import java.util.Map;
 
+@JsonSnakeCase
 public class ChargeEventBuilder {
 
     @JsonDeserialize
     @JsonSerialize
+    @JsonProperty("charge_id")
     private String chargeId;
 
     @JsonDeserialize

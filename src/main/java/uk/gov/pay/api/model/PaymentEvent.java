@@ -31,7 +31,7 @@ public class PaymentEvent {
             updated = LocalDateTime.parse(payload.get("updated").asText(), formatter);
         }
         return new PaymentEvent(
-                payload.get("chargeId").asText(),
+                payload.get("charge_id").asText(),
                 payload.get("status").asText(),
                 updated
         );
