@@ -42,7 +42,6 @@ public class PaymentsResource {
     private static final String REFERENCE_KEY = "reference";
     private static final String DESCRIPTION_KEY = "description";
     private static final String AMOUNT_KEY = "amount";
-    private static final String GATEWAY_ACCOUNT_KEY = "gateway_account_id";
     private static final String SERVICE_RETURN_URL = "return_url";
     private static final String CHARGE_KEY = "charge_id";
 
