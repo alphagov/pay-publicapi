@@ -27,7 +27,7 @@ public class CreatePaymentRequest {
         return returnUrl;
     }
 
-    @ApiModelProperty(value = "account id", required = true)
+    @ApiModelProperty(value = "account id", required = false)
     @JsonProperty
     public String getAccountId() {
         return accountId;
