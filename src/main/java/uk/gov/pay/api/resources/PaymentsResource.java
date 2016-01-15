@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.LinksResponse;
 import uk.gov.pay.api.model.Payment;
+import uk.gov.pay.api.model.PaymentEvents;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -48,12 +49,14 @@ public class PaymentsResource {
     private static final String PAYMENTS_PATH = "/v1/payments";
     private static final String PAYMENTS_ID_PLACEHOLDER = "{" + PAYMENT_KEY + "}";
     private static final String PAYMENT_BY_ID = "/v1/payments/" + PAYMENTS_ID_PLACEHOLDER;
+    private static final String PAYMENT_EVENTS_BY_ID = "/v1/payments/" + PAYMENTS_ID_PLACEHOLDER + "/events";
 
     private static final String CANCEL_PATH_SUFFIX = "/cancel";
     private static final String CANCEL_PAYMENT_PATH = "/v1/payments/" + PAYMENTS_ID_PLACEHOLDER + CANCEL_PATH_SUFFIX;
     public static final String CONNECTOR_ACCOUNT_RESOURCE = "/v1/api/accounts/%s";
     public static final String CONNECTOR_CHARGES_RESOURCE = CONNECTOR_ACCOUNT_RESOURCE + "/charges";
     public static final String CONNECTOR_CHARGE_RESOURCE = CONNECTOR_CHARGES_RESOURCE + "/%s";
+    public static final String CONNECTOR_CHARGE_EVENTS_RESOURCE = CONNECTOR_CHARGES_RESOURCE + "/%s" + "/events";
     public static final String CONNECTOR_ACCOUNT_CHARGE_CANCEL_RESOURCE = CONNECTOR_CHARGE_RESOURCE + "/cancel";
 
     private final Logger logger = LoggerFactory.getLogger(PaymentsResource.class);
@@ -88,6 +91,33 @@ public class PaymentsResource {
                 .get();
 
         return responseFrom(uriInfo, connectorResponse, SC_OK,
+                (locationUrl, data) -> Response.ok(data),
+                data -> notFoundResponse(logger, data));
+    }
+
+    @GET
+    @Path(PAYMENT_EVENTS_BY_ID)
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Return a Payment Events by ID",
+            notes = "Return Payment Events information about a certain payment",
+            code = 200,
+            response = Payment.class)
+
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "OK", response = Payment.class),
+            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
+            @ApiResponse(code = 404, message = "Not found") })
+    public Response getPaymentEvents(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
+                               @PathParam(PAYMENT_KEY) String paymentId,
+                               @Context UriInfo uriInfo) {
+
+        logger.info("received get payment request: [ {} ]", paymentId);
+
+        Response connectorResponse = client.target(connectorUrl + format(CONNECTOR_CHARGE_EVENTS_RESOURCE, accountId, paymentId))
+                .request()
+                .get();
+
+        return eventsResponseFrom(uriInfo, connectorResponse, SC_OK,
                 (locationUrl, data) -> Response.ok(data),
                 data -> notFoundResponse(logger, data));
     }
@@ -176,6 +206,31 @@ public class PaymentsResource {
                         nextLink.get("href").asText()
                 );
             }
+
+            logger.info("payment returned: [ {} ]", response);
+
+            return okResponse.apply(documentLocation, response).build();
+        }
+
+        return errorResponse.apply(payload);
+    }
+
+    private Response eventsResponseFrom(UriInfo uriInfo, Response connectorResponse, int okStatus,
+                                  BiFunction<URI, Object, ResponseBuilder> okResponse,
+                                  Function<JsonNode, Response> errorResponse) {
+        if (!connectorResponse.hasEntity()) {
+            return badRequestResponse(logger, "Connector response contains no payload!");
+        }
+
+        JsonNode payload = connectorResponse.readEntity(JsonNode.class);
+        if (connectorResponse.getStatus() == okStatus) {
+            URI documentLocation = uriInfo.getBaseUriBuilder()
+                    .path(PAYMENT_EVENTS_BY_ID)
+                    .build(payload.get(CHARGE_KEY).asText());
+
+            LinksResponse response =
+                    PaymentEvents.createPaymentEventsResponse(payload)
+                            .addSelfLink(documentLocation);
 
             logger.info("payment returned: [ {} ]", response);
 

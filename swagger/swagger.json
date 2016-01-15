@@ -99,27 +99,45 @@
           }
         }
       }
+    },
+    "/v1/payments/{paymentId}/events" : {
+      "get" : {
+        "summary" : "Return a Payment Events by ID",
+        "description" : "Return Payment Events information about a certain payment",
+        "operationId" : "getPaymentEvents",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "paymentId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/Payment information"
+            }
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "404" : {
+            "description" : "Not found"
+          }
+        }
+      }
     }
   },
   "definitions" : {
     "CreatePaymentRequest" : {
       "type" : "object",
-      "required" : [ "accountId", "amount", "description", "reference", "returnUrl" ],
+      "required" : [ "amount", "description", "reference", "return_url" ],
       "properties" : {
-        "accountId" : {
-          "type" : "string",
-          "description" : "account id",
-          "readOnly" : true
-        },
         "amount" : {
           "type" : "integer",
           "format" : "int64",
           "description" : "amount in pence",
-          "readOnly" : true
-        },
-        "returnUrl" : {
-          "type" : "string",
-          "description" : "service return url",
           "readOnly" : true
         },
         "reference" : {
@@ -130,6 +148,16 @@
         "description" : {
           "type" : "string",
           "description" : "payment description",
+          "readOnly" : true
+        },
+        "account_id" : {
+          "type" : "string",
+          "description" : "account id",
+          "readOnly" : true
+        },
+        "return_url" : {
+          "type" : "string",
+          "description" : "service return url",
           "readOnly" : true
         }
       },
@@ -158,9 +186,6 @@
             "$ref" : "#/definitions/JsonLink"
           }
         },
-        "paymentId" : {
-          "type" : "string"
-        },
         "amount" : {
           "type" : "integer",
           "format" : "int64"
@@ -168,14 +193,19 @@
         "status" : {
           "type" : "string"
         },
-        "returnUrl" : {
-          "type" : "string"
-        },
         "description" : {
           "type" : "string"
         },
         "reference" : {
           "type" : "string"
+        },
+        "payment_id" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "return_url" : {
+          "type" : "string",
+          "readOnly" : true
         }
       },
       "description" : "A Payment description"
