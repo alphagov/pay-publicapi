@@ -190,8 +190,16 @@
           "example" : "1122335",
           "readOnly" : true
         },
+        "payment_provider" : {
+          "type" : "string",
+          "readOnly" : true
+        },
         "_links" : {
           "$ref" : "#/definitions/paymentLinks"
+        },
+        "created_date" : {
+          "type" : "string",
+          "readOnly" : true
         }
       },
       "description" : "A Payment description"

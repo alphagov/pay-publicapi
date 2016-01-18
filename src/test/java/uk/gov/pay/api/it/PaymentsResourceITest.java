@@ -15,6 +15,7 @@ import uk.gov.pay.api.utils.PublicAuthMockClient;
 import javax.ws.rs.core.HttpHeaders;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -33,17 +34,19 @@ import static org.junit.Assert.assertThat;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
 
 public class PaymentsResourceITest {
-    private static final String TEST_CHARGE_ID = "ch_ab2341da231434l";
-    private static final long TEST_AMOUNT = 20032123132120l;
-    private static final String TEST_STATUS = "someState";
-    private static final String TEST_RETURN_URL = "http://somewhere.over.the/rainbow/{paymentID}";
     private static final String GATEWAY_ACCOUNT_ID = "gw_32adf21bds3aac21";
     private static final String PAYMENTS_PATH = "/v1/payments/";
     private static final String PAYMENT_EVENTS_PATH = "/v1/payments/%s/events";
     private static final String BEARER_TOKEN = "TEST-BEARER-TOKEN";
+    private static final long TEST_AMOUNT = 20032123132120l;
+    private static final String TEST_CHARGE_ID = "ch_ab2341da231434l";
+    private static final String TEST_STATUS = "someState";
+    private static final String TEST_PAYMENT_PROVIDER = "Sandbox";
+    private static final String TEST_RETURN_URL = "http://somewhere.over.the/rainbow/{paymentID}";
     private static final String TEST_REFERENCE = "Some reference <script> alert('This is a ?{simple} XSS attack.')</script>";
     private static final String TEST_DESCRIPTION = "Some description <script> alert('This is a ?{simple} XSS attack.')</script>";
     private static final LocalDateTime TEST_TIMESTAMP = LocalDateTime.of(2016, Month.JANUARY, 1, 12, 00, 00);
+    private static final String TEST_CREATED_DATE = TEST_TIMESTAMP.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:SS"));
     private static final Map<String, String> TEST_PAYMENT_CREATED = new ChargeEventBuilder(TEST_CHARGE_ID, TEST_STATUS, TEST_TIMESTAMP).build();
     private static final List<Map<String, String>> TEST_EVENTS = newArrayList(TEST_PAYMENT_CREATED);
 
@@ -90,7 +93,8 @@ public class PaymentsResourceITest {
     @Test
     public void createPayment() {
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondOk_whenCreateCharge(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_STATUS, TEST_RETURN_URL, TEST_DESCRIPTION, TEST_REFERENCE);
+        connectorMock.respondOk_whenCreateCharge(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_STATUS, TEST_RETURN_URL,
+                TEST_DESCRIPTION, TEST_REFERENCE, TEST_PAYMENT_PROVIDER, TEST_CREATED_DATE);
 
         ValidatableResponse response = postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
                 .statusCode(201)
@@ -100,7 +104,9 @@ public class PaymentsResourceITest {
                 .body("reference", is(escapeHtml4(TEST_REFERENCE)))
                 .body("description", is(escapeHtml4(TEST_DESCRIPTION)))
                 .body("status", is(TEST_STATUS))
-                .body("return_url", is(TEST_RETURN_URL));
+                .body("return_url", is(TEST_RETURN_URL))
+                .body("payment_provider", is(TEST_PAYMENT_PROVIDER))
+                .body("created_date", is(TEST_CREATED_DATE));
 
         String paymentId = response.extract().path("payment_id");
         assertThat(paymentId, is(TEST_CHARGE_ID));
@@ -162,7 +168,8 @@ public class PaymentsResourceITest {
     @Test
     public void getPayment_ReturnsPayment() {
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondWithChargeFound(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_STATUS, TEST_RETURN_URL, TEST_DESCRIPTION, TEST_REFERENCE);
+        connectorMock.respondWithChargeFound(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_STATUS, TEST_RETURN_URL,
+                TEST_DESCRIPTION, TEST_REFERENCE, TEST_PAYMENT_PROVIDER, TEST_CREATED_DATE);
 
         ValidatableResponse response = getPaymentResponse(BEARER_TOKEN, TEST_CHARGE_ID)
                 .statusCode(200)
@@ -172,7 +179,9 @@ public class PaymentsResourceITest {
                 .body("description", is(escapeHtml4(TEST_DESCRIPTION)))
                 .body("amount", is(TEST_AMOUNT))
                 .body("status", is(TEST_STATUS))
-                .body("return_url", is(TEST_RETURN_URL));
+                .body("return_url", is(TEST_RETURN_URL))
+                .body("payment_provider", is(TEST_PAYMENT_PROVIDER))
+                .body("created_date", is(TEST_CREATED_DATE));
 
         response.body("_links.self.href", is(paymentLocationFor(TEST_CHARGE_ID)));
     }
