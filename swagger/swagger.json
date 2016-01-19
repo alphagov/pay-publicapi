@@ -5,9 +5,9 @@
     "version" : "1.0.0",
     "title" : "GOV.UK Pay Api"
   },
-  "host" : "www-flow-0.pymnt.uk",
+  "host" : "publicapi-integration-1.pymnt.uk",
   "basePath" : "/",
-  "schemes" : [ "http", "https" ],
+  "schemes" : [ "https" ],
   "paths" : {
     "/v1/payments" : {
       "post" : {
