@@ -1,7 +1,10 @@
 package uk.gov.pay.api.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Joiner;
 import io.dropwizard.jackson.JsonSnakeCase;
+import io.swagger.annotations.ApiModelProperty;
+import org.hibernate.validator.constraints.NotBlank;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -43,14 +46,20 @@ public abstract class LinksResponse {
             this.href = href;
         }
 
+        @ApiModelProperty(example = "self")
+        @NotBlank
         public String getRel() {
             return rel;
         }
 
+        @ApiModelProperty(example = "GET")
+        @NotBlank
         public String getMethod() {
             return method;
         }
 
+        @ApiModelProperty(example = "http://payments.gov.uk/v1/payments/1122335")
+        @NotBlank
         public String getHref() {
             return href;
         }

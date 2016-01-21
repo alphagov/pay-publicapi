@@ -20,34 +20,34 @@ public class CreatePaymentRequest {
     private String reference;
     private String description;
 
-    @ApiModelProperty(value = "service return url", required = true)
+    @ApiModelProperty(value = "service return url", required = true, example = "https://service-name.gov.uk/transactions/12345")
     @JsonProperty
     @NotBlank
     public String getReturnUrl() {
         return returnUrl;
     }
 
-    @ApiModelProperty(value = "account id", required = false)
+    @ApiModelProperty(value = "account id", required = false, example = "789")
     @JsonProperty
     public String getAccountId() {
         return accountId;
     }
 
-    @ApiModelProperty(value = "amount in pence", required = true, allowableValues = ">0")
+    @ApiModelProperty(value = "amount in pence", required = true, allowableValues = ">0", example = "12000")
     @JsonProperty
     @NotNull
     public Long getAmount() {
         return amount;
     }
 
-    @ApiModelProperty(value = "payment reference", required = true)
+    @ApiModelProperty(value = "payment reference", required = true, example = "12345")
     @JsonProperty
     @NotBlank
     public String getReference() {
         return reference;
     }
 
-    @ApiModelProperty(value = "payment description", required = true)
+    @ApiModelProperty(value = "payment description", required = true, example = "New passport application")
     @JsonProperty
     @NotBlank
     public String getDescription() {
