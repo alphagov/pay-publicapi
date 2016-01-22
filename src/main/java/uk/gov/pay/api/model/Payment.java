@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.dropwizard.jackson.JsonSnakeCase;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(value="Payment information", description = "A Payment description")
 @JsonSnakeCase
@@ -12,9 +13,8 @@ public class Payment extends LinksResponse {
     private final String paymentId;
     private final long amount;
     private final String status;
-    @JsonProperty("return_url")
-    private final String returnUrl;
     private final String description;
+    private final String returnUrl;
     private final String reference;
 
     public static Payment createPaymentResponse(JsonNode payload) {
@@ -37,26 +37,32 @@ public class Payment extends LinksResponse {
         this.reference = reference;
     }
 
+    @ApiModelProperty(example = "1122335")
     public String getPaymentId() {
         return paymentId;
     }
 
+    @ApiModelProperty(example = "1200")
     public long getAmount() {
         return amount;
     }
 
+    @ApiModelProperty(example = "CREATED")
     public String getStatus() {
         return status;
     }
 
+    @ApiModelProperty(example = "http://government.service.domain/transaction/1")
     public String getReturnUrl() {
         return returnUrl;
     }
 
+    @ApiModelProperty(example = "New Passport Application")
     public String getDescription() {
         return description;
     }
 
+    @ApiModelProperty(example = "12345")
     public String getReference() {
         return reference;
     }

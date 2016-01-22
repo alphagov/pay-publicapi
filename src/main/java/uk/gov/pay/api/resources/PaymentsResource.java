@@ -74,8 +74,7 @@ public class PaymentsResource {
     @ApiOperation(
             value = "Find a Payment by ID",
             notes = "Return information about the payment",
-            code = 200,
-            response = Payment.class)
+            code = 200)
 
     @ApiResponses(value = { @ApiResponse(code = 200, message = "OK", response = Payment.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
@@ -101,8 +100,7 @@ public class PaymentsResource {
     @ApiOperation(
             value = "Return a Payment Events by ID",
             notes = "Return Payment Events information about a certain payment",
-            code = 200,
-            response = Payment.class)
+            code = 200)
 
     @ApiResponses(value = { @ApiResponse(code = 200, message = "OK", response = Payment.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
@@ -130,8 +128,7 @@ public class PaymentsResource {
             value = "Creates a new payment",
             notes = "Creates a new payment for the account associated to the Authorisation token",
             code = 201,
-            nickname = "newPayment",
-            response = Payment.class)
+            nickname = "newPayment")
 
     @ApiResponses(value = { @ApiResponse(code = 201, message = "Created", response = Payment.class),
             @ApiResponse(code = 400, message = "Bad request"),

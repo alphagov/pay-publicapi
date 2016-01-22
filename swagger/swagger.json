@@ -6,7 +6,6 @@
     "title" : "GOV.UK Pay Api"
   },
   "host" : "publicapi-integration-1.pymnt.uk",
-  "basePath" : "/",
   "schemes" : [ "https" ],
   "paths" : {
     "/v1/payments" : {
@@ -26,12 +25,6 @@
           }
         } ],
         "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "$ref" : "#/definitions/Payment information"
-            }
-          },
           "201" : {
             "description" : "Created",
             "schema" : {
@@ -137,26 +130,31 @@
         "amount" : {
           "type" : "integer",
           "format" : "int64",
+          "example" : "12000",
           "description" : "amount in pence",
           "readOnly" : true
         },
         "reference" : {
           "type" : "string",
+          "example" : "12345",
           "description" : "payment reference",
           "readOnly" : true
         },
         "description" : {
           "type" : "string",
+          "example" : "New passport application",
           "description" : "payment description",
           "readOnly" : true
         },
         "account_id" : {
           "type" : "string",
+          "example" : "789",
           "description" : "account id",
           "readOnly" : true
         },
         "return_url" : {
           "type" : "string",
+          "example" : "https://service-name.gov.uk/transactions/12345",
           "description" : "service return url",
           "readOnly" : true
         }
@@ -167,13 +165,16 @@
       "type" : "object",
       "properties" : {
         "rel" : {
-          "type" : "string"
+          "type" : "string",
+          "example" : "self"
         },
         "method" : {
-          "type" : "string"
+          "type" : "string",
+          "example" : "GET"
         },
         "href" : {
-          "type" : "string"
+          "type" : "string",
+          "example" : "http://payments.gov.uk/v1/payments/1122335"
         }
       }
     },
@@ -188,23 +189,28 @@
         },
         "amount" : {
           "type" : "integer",
-          "format" : "int64"
+          "format" : "int64",
+          "example" : "1200"
         },
         "status" : {
-          "type" : "string"
+          "type" : "string",
+          "example" : "CREATED"
         },
         "description" : {
-          "type" : "string"
+          "type" : "string",
+          "example" : "New Passport Application"
+        },
+        "returnUrl" : {
+          "type" : "string",
+          "example" : "http://government.service.domain/transaction/1"
         },
         "reference" : {
-          "type" : "string"
+          "type" : "string",
+          "example" : "12345"
         },
         "payment_id" : {
           "type" : "string",
-          "readOnly" : true
-        },
-        "return_url" : {
-          "type" : "string",
+          "example" : "1122335",
           "readOnly" : true
         }
       },
