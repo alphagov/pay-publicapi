@@ -1,5 +1,6 @@
 package uk.gov.pay.api.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.dropwizard.jackson.JsonSnakeCase;
 import io.swagger.annotations.ApiModel;
@@ -11,9 +12,11 @@ import static uk.gov.pay.api.model.PaymentEvent.createPaymentEvent;
 
 @ApiModel(value="Payment Events information", description = "A List of Payment Events information")
 @JsonSnakeCase
-public class PaymentEvents extends LinksResponse {
+public class PaymentEvents {
     private final String paymentId;
     private final List<PaymentEvent> events;
+    @JsonProperty("_links")
+    private final Links links = new Links();
 
     public static PaymentEvents createPaymentEventsResponse(JsonNode payload) {
         List<PaymentEvent> events = newArrayList();
@@ -47,5 +50,10 @@ public class PaymentEvents extends LinksResponse {
                 "paymentId='" + paymentId + '\'' +
                 ", events=" + events +
                 '}';
+    }
+
+    public PaymentEvents withSelfLink(String uri) {
+        links.setSelf(uri);
+        return this;
     }
 }

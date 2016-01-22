@@ -31,7 +31,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
-import static uk.gov.pay.api.utils.LinksAssert.assertLink;
 
 public class PaymentsResourceITest {
     private static final String TEST_CHARGE_ID = "ch_ab2341da231434l";
@@ -109,8 +108,12 @@ public class PaymentsResourceITest {
         String paymentUrl = paymentLocationFor(paymentId);
 
         response.header(HttpHeaders.LOCATION, is(paymentUrl));
-        assertLink(response, paymentUrl, "self");
-        assertLink(response, cardDetailsUrlFor(TEST_CHARGE_ID), "next_url");
+
+        response.body("_links.self.href", is(paymentUrl));
+        response.body("_links.self.method", is("GET"));
+        response.body("_links.next_url.href", is(cardDetailsUrlFor(TEST_CHARGE_ID)));
+        response.body("_links.next_url.method", is("GET"));
+
         connectorMock.verifyCreateCharge(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_RETURN_URL, TEST_DESCRIPTION, TEST_REFERENCE);
     }
 
@@ -171,7 +174,7 @@ public class PaymentsResourceITest {
                 .body("status", is(TEST_STATUS))
                 .body("return_url", is(TEST_RETURN_URL));
 
-        assertLink(response, paymentLocationFor(TEST_CHARGE_ID), "self");
+        response.body("_links.self.href", is(paymentLocationFor(TEST_CHARGE_ID)));
     }
 
     @Test
@@ -211,7 +214,7 @@ public class PaymentsResourceITest {
         assertEquals(list.get(0).get("status"), TEST_STATUS);
         assertEquals(list.get(0).get("updated"), "2016-01-01 12:00:00");
 
-        assertLink(response, paymentEventsLocationFor(TEST_CHARGE_ID), "self");
+        response.body("_links.self.href", is(paymentEventsLocationFor(TEST_CHARGE_ID)));
     }
 
     @Test
