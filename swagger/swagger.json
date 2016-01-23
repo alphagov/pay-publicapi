@@ -10,8 +10,8 @@
   "paths" : {
     "/v1/payments" : {
       "post" : {
-        "summary" : "Creates a new payment",
-        "description" : "Creates a new payment for the account associated to the Authorisation token",
+        "summary" : "Create new payment",
+        "description" : "Create a new payment for the account associated to the Authorisation token",
         "operationId" : "newPayment",
         "consumes" : [ "application/json" ],
         "produces" : [ "application/json" ],
@@ -42,7 +42,7 @@
     },
     "/v1/payments/{paymentId}" : {
       "get" : {
-        "summary" : "Find a Payment by ID",
+        "summary" : "Find payment by ID",
         "description" : "Return information about the payment",
         "operationId" : "getPayment",
         "produces" : [ "application/json" ],
@@ -70,8 +70,8 @@
     },
     "/v1/payments/{paymentId}/cancel" : {
       "post" : {
-        "summary" : "Cancels a payment",
-        "description" : "Cancels a payment based on the provided payment ID and the Authorisation token",
+        "summary" : "Cancel payment",
+        "description" : "Cancel a payment based on the provided payment ID and the Authorisation token",
         "operationId" : "cancelPayment",
         "produces" : [ "application/json" ],
         "parameters" : [ {
@@ -95,8 +95,8 @@
     },
     "/v1/payments/{paymentId}/events" : {
       "get" : {
-        "summary" : "Return a Payment Events by ID",
-        "description" : "Return Payment Events information about a certain payment",
+        "summary" : "Return payment events by ID",
+        "description" : "Return payment events information about a certain payment",
         "operationId" : "getPaymentEvents",
         "produces" : [ "application/json" ],
         "parameters" : [ {

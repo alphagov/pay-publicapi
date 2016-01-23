@@ -72,7 +72,7 @@ public class PaymentsResource {
     @Path(PAYMENT_BY_ID)
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Find a Payment by ID",
+            value = "Find payment by ID",
             notes = "Return information about the payment",
             code = 200)
 
@@ -98,8 +98,8 @@ public class PaymentsResource {
     @Path(PAYMENT_EVENTS_BY_ID)
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Return a Payment Events by ID",
-            notes = "Return Payment Events information about a certain payment",
+            value = "Return payment events by ID",
+            notes = "Return payment events information about a certain payment",
             code = 200)
 
     @ApiResponses(value = { @ApiResponse(code = 200, message = "OK", response = Payment.class),
@@ -125,8 +125,8 @@ public class PaymentsResource {
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Creates a new payment",
-            notes = "Creates a new payment for the account associated to the Authorisation token",
+            value = "Create new payment",
+            notes = "Create a new payment for the account associated to the Authorisation token",
             code = 201,
             nickname = "newPayment")
 
@@ -152,8 +152,8 @@ public class PaymentsResource {
     @Path(CANCEL_PAYMENT_PATH)
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Cancels a payment",
-            notes = "Cancels a payment based on the provided payment ID and the Authorisation token",
+            value = "Cancel payment",
+            notes = "Cancel a payment based on the provided payment ID and the Authorisation token",
             code = 204)
 
     @ApiResponses(value = { @ApiResponse(code = 204, message = "No Content"),
