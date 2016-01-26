@@ -10,12 +10,12 @@ public class Links {
     private Link self;
     private Link nextUrl;
 
-    public void setSelf(String uri) {
-        this.self = Link.get(uri);
+    public void setSelf(String url) {
+        this.self = Link.get(url);
     }
 
-    public void setNext(String uri) {
-        this.nextUrl = Link.get(uri);
+    public void setNext(String url) {
+        this.nextUrl = Link.get(url);
     }
 
     public Link getSelf() {

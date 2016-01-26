@@ -82,13 +82,13 @@ public class Payment {
                 '}';
     }
 
-    public Payment withSelfLink(String uri) {
-        this.links.setSelf(uri);
+    public Payment withSelfLink(String url) {
+        this.links.setSelf(url);
         return this;
     }
 
-    public Payment withNextLink(String uri) {
-        this.links.setNext(uri);
+    public Payment withNextLink(String url) {
+        this.links.setNext(url);
         return this;
     }
 }
