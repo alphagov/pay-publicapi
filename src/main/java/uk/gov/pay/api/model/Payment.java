@@ -8,7 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(value="Payment information", description = "A Payment description")
 @JsonSnakeCase
-public class Payment extends LinksResponse {
+public class Payment {
     @JsonProperty("payment_id")
     private final String paymentId;
     private final long amount;
@@ -16,6 +16,8 @@ public class Payment extends LinksResponse {
     private final String description;
     private final String returnUrl;
     private final String reference;
+    @JsonProperty("_links")
+    private final Links links = new Links();
 
     public static Payment createPaymentResponse(JsonNode payload) {
         return new Payment(
@@ -69,13 +71,24 @@ public class Payment extends LinksResponse {
 
     @Override
     public String toString() {
-        return "CreatePaymentResponse{" +
+        return "Payment{" +
                 "paymentId='" + paymentId + '\'' +
                 ", amount=" + amount +
                 ", status='" + status + '\'' +
                 ", returnUrl='" + returnUrl + '\'' +
                 ", description='" + description + '\'' +
                 ", reference='" + reference + '\'' +
+                ", links=" + links +
                 '}';
+    }
+
+    public Payment withSelfLink(String url) {
+        this.links.setSelf(url);
+        return this;
+    }
+
+    public Payment withNextLink(String url) {
+        this.links.setNext(url);
+        return this;
     }
 }

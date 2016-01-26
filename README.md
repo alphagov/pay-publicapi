@@ -86,18 +86,16 @@ Location: http://publicapi.co.uk/v1/payments/ab2341da231434
 Content-Type: application/json
 
 {
-    "links": [
-        {
-            "rel": "self",
-            "method": "GET",
-            "href": "http://publicapi.co.uk/v1/payments/ab2341da231434"
+    "_links": {
+        "self" :{
+            "href": "http://publicapi.co.uk/v1/payments/ab2341da231434",
+            "method": "GET" 
         },
-        {
-            "rel": "next_url",
-            "method": "GET",
-            "href": "http://frontend.co.uk/charge/1?chargeTokenId=82347"
+        "next_url" : {
+            "href": "http://frontend.co.uk/charge/1?chargeTokenId=82347",
+            "method": "GET" 
         }
-    ],
+    },
     "payment_id": "ab2341da231434",
     "amount": 50000,
     "description": "Payment description",
@@ -156,18 +154,16 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
-    "links": [
-        {
-            "rel": "self",
-            "method": "GET",
-            "href": "http://publicapi.co.uk/v1/payments/ab2341da231434"
-        },
-        {
-            "rel": "next_url",
-            "method": "GET",
-            "href": "http://frontend.co.uk/charge/1?chargeTokenId=82347"
-        }
-    ],
+    "_links": {
+            "self" :{
+                "href": "http://publicapi.co.uk/v1/payments/ab2341da231434",
+                "method": "GET" 
+            },
+            "next_url" : {
+                "href": "http://frontend.co.uk/charge/1?chargeTokenId=82347",
+                "method": "GET" 
+            }
+    },
     "payment_id": "ab2341da231434",
     "amount": 50000,
     "description": "Payment description",
@@ -233,13 +229,12 @@ Content-Type: application/json
             "updated": "2016-01-13 17:42:29"
         }
     ],
-    "links": [
-        {
-            "href": "http://dockerhost:9100/v1/payments/1/events",
-            "method": "GET",
-            "rel": "self"
-        }
-    ],
+    "_links": {
+        "self" :{
+            "href": "http://publicapi.co.uk/v1/payments/ab2341da231434",
+            "method": "GET" 
+        }           
+    },
     "payment_id": "ab2341da231434"
 
 ```

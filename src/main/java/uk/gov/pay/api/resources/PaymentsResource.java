@@ -7,7 +7,6 @@ import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.model.CreatePaymentRequest;
-import uk.gov.pay.api.model.LinksResponse;
 import uk.gov.pay.api.model.Payment;
 import uk.gov.pay.api.model.PaymentEvents;
 
@@ -191,17 +190,13 @@ public class PaymentsResource {
 
             Optional<JsonNode> nextLinkMaybe = getNextLink(payload);
 
-            LinksResponse response =
+            Payment response =
                     createPaymentResponse(payload)
-                            .addSelfLink(documentLocation);
+                            .withSelfLink(documentLocation.toString());
 
             if (nextLinkMaybe.isPresent()) {
                 JsonNode nextLink = nextLinkMaybe.get();
-                response.addLink(
-                        nextLink.get("rel").asText(),
-                        nextLink.get("method").asText(),
-                        nextLink.get("href").asText()
-                );
+                response.withNextLink(nextLink.get("href").asText());
             }
 
             logger.info("payment returned: [ {} ]", response);
@@ -225,9 +220,9 @@ public class PaymentsResource {
                     .path(PAYMENT_EVENTS_BY_ID)
                     .build(payload.get(CHARGE_KEY).asText());
 
-            LinksResponse response =
+            PaymentEvents response =
                     PaymentEvents.createPaymentEventsResponse(payload)
-                            .addSelfLink(documentLocation);
+                            .withSelfLink(documentLocation.toString());
 
             logger.info("payment returned: [ {} ]", response);
 

@@ -161,32 +161,9 @@
       },
       "description" : "The Payment Request Payload"
     },
-    "JsonLink" : {
-      "type" : "object",
-      "properties" : {
-        "rel" : {
-          "type" : "string",
-          "example" : "self"
-        },
-        "method" : {
-          "type" : "string",
-          "example" : "GET"
-        },
-        "href" : {
-          "type" : "string",
-          "example" : "http://payments.gov.uk/v1/payments/1122335"
-        }
-      }
-    },
     "Payment information" : {
       "type" : "object",
       "properties" : {
-        "links" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/JsonLink"
-          }
-        },
         "amount" : {
           "type" : "integer",
           "format" : "int64",
@@ -212,9 +189,24 @@
           "type" : "string",
           "example" : "1122335",
           "readOnly" : true
+        },
+        "_links" : {
+          "$ref" : "#/definitions/paymentLinks"
         }
       },
       "description" : "A Payment description"
+    },
+    "paymentLinks" : {
+      "type" : "object",
+      "properties" : {
+        "self" : {
+          "$ref" : "#/definitions/paymentLinks"
+        },
+        "nextUrl" : {
+          "$ref" : "#/definitions/paymentLinks"
+        }
+      },
+      "description" : "Resource links of a Payment"
     }
   }
 }
