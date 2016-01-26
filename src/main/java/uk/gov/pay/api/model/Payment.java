@@ -71,13 +71,14 @@ public class Payment {
 
     @Override
     public String toString() {
-        return "CreatePaymentResponse{" +
+        return "Payment{" +
                 "paymentId='" + paymentId + '\'' +
                 ", amount=" + amount +
                 ", status='" + status + '\'' +
                 ", returnUrl='" + returnUrl + '\'' +
                 ", description='" + description + '\'' +
                 ", reference='" + reference + '\'' +
+                ", links=" + links +
                 '}';
     }
 

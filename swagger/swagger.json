@@ -6,13 +6,12 @@
     "title" : "GOV.UK Pay Api"
   },
   "host" : "publicapi-integration-1.pymnt.uk",
-  "basePath" : "/",
   "schemes" : [ "https" ],
   "paths" : {
     "/v1/payments" : {
       "post" : {
-        "summary" : "Creates a new payment",
-        "description" : "Creates a new payment for the account associated to the Authorisation token",
+        "summary" : "Create new payment",
+        "description" : "Create a new payment for the account associated to the Authorisation token",
         "operationId" : "newPayment",
         "consumes" : [ "application/json" ],
         "produces" : [ "application/json" ],
@@ -26,12 +25,6 @@
           }
         } ],
         "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "$ref" : "#/definitions/Payment information"
-            }
-          },
           "201" : {
             "description" : "Created",
             "schema" : {
@@ -49,7 +42,7 @@
     },
     "/v1/payments/{paymentId}" : {
       "get" : {
-        "summary" : "Find a Payment by ID",
+        "summary" : "Find payment by ID",
         "description" : "Return information about the payment",
         "operationId" : "getPayment",
         "produces" : [ "application/json" ],
@@ -77,8 +70,8 @@
     },
     "/v1/payments/{paymentId}/cancel" : {
       "post" : {
-        "summary" : "Cancels a payment",
-        "description" : "Cancels a payment based on the provided payment ID and the Authorisation token",
+        "summary" : "Cancel payment",
+        "description" : "Cancel a payment based on the provided payment ID and the Authorisation token",
         "operationId" : "cancelPayment",
         "produces" : [ "application/json" ],
         "parameters" : [ {
@@ -102,8 +95,8 @@
     },
     "/v1/payments/{paymentId}/events" : {
       "get" : {
-        "summary" : "Return a Payment Events by ID",
-        "description" : "Return Payment Events information about a certain payment",
+        "summary" : "Return payment events by ID",
+        "description" : "Return payment events information about a certain payment",
         "operationId" : "getPaymentEvents",
         "produces" : [ "application/json" ],
         "parameters" : [ {
@@ -137,26 +130,31 @@
         "amount" : {
           "type" : "integer",
           "format" : "int64",
+          "example" : "12000",
           "description" : "amount in pence",
           "readOnly" : true
         },
         "reference" : {
           "type" : "string",
+          "example" : "12345",
           "description" : "payment reference",
           "readOnly" : true
         },
         "description" : {
           "type" : "string",
+          "example" : "New passport application",
           "description" : "payment description",
           "readOnly" : true
         },
         "account_id" : {
           "type" : "string",
+          "example" : "789",
           "description" : "account id",
           "readOnly" : true
         },
         "return_url" : {
           "type" : "string",
+          "example" : "https://service-name.gov.uk/transactions/12345",
           "description" : "service return url",
           "readOnly" : true
         }
@@ -168,23 +166,28 @@
       "properties" : {
         "amount" : {
           "type" : "integer",
-          "format" : "int64"
+          "format" : "int64",
+          "example" : "1200"
         },
         "status" : {
-          "type" : "string"
+          "type" : "string",
+          "example" : "CREATED"
         },
         "description" : {
-          "type" : "string"
+          "type" : "string",
+          "example" : "New Passport Application"
+        },
+        "returnUrl" : {
+          "type" : "string",
+          "example" : "http://government.service.domain/transaction/1"
         },
         "reference" : {
-          "type" : "string"
+          "type" : "string",
+          "example" : "12345"
         },
         "payment_id" : {
           "type" : "string",
-          "readOnly" : true
-        },
-        "return_url" : {
-          "type" : "string",
+          "example" : "1122335",
           "readOnly" : true
         },
         "_links" : {
@@ -199,8 +202,7 @@
         "self" : {
           "$ref" : "#/definitions/paymentLinks"
         },
-        "next_url" : {
-          "readOnly" : true,
+        "nextUrl" : {
           "$ref" : "#/definitions/paymentLinks"
         }
       },
