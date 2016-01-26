@@ -25,4 +25,12 @@ public class Link {
     public String getMethod() {
         return method;
     }
+
+    @Override
+    public String toString() {
+        return "Link{" +
+                "href='" + href + '\'' +
+                ", method='" + method + '\'' +
+                '}';
+    }
 }

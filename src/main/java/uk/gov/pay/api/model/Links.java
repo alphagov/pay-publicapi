@@ -25,4 +25,12 @@ public class Links {
     public Link getNextUrl() {
         return nextUrl;
     }
+
+    @Override
+    public String toString() {
+        return "Links{" +
+                "self=" + self +
+                ", nextUrl=" + nextUrl +
+                '}';
+    }
 }
