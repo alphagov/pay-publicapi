@@ -101,7 +101,9 @@ Content-Type: application/json
     "description": "Payment description",
     "status": "CREATED",
     "return_url": "https://example.service.gov.uk/some-reference-to-this-payment",
-    "reference": "some-reference-to-this-payment"
+    "reference": "some-reference-to-this-payment",
+    "payment_provider": "Sandbox",
+    "created_date": "2016-01-15 16:30:56"
 }
 ```
 
@@ -113,8 +115,10 @@ Content-Type: application/json
 | `amount`               | Amount to pay in pence                    |
 | `description`          | Payment description                       |
 | `status`               | Current status of the payment             |
-| `return_url`           | The URL where the user should be redirected to when the payment workflow is finished.         |
-| `reference`            | There reference issued by the government service for this payment          |
+| `return_url`           | The URL where the user should be redirected to when the payment workflow is finished.    |
+| `reference`            | The reference issued by the government service for this payment                          |
+| `payment_provider      | The payment provider for this payment                                                    |
+| `created_date`         | The payment creation date for this payment                                               |
 
 #### Payment creation failed
 
@@ -169,7 +173,9 @@ Content-Type: application/json
     "description": "Payment description",
     "status": "CREATED",
     "return_url": "https://example.service.gov.uk/some-reference-to-this-payment",
-    "reference" : "some-reference-to-this-payment"
+    "reference" : "some-reference-to-this-payment",
+    "payment_provider": "Sandbox",
+    "created_date": "2016-01-15 16:30:56"
 }
 ```
 
