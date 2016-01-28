@@ -53,7 +53,7 @@ public class Payment {
         return createdDate;
     }
 
-    @ApiModelProperty(example = "1122335")
+    @ApiModelProperty(example = "12345")
     public String getPaymentId() {
         return paymentId;
     }
@@ -68,17 +68,17 @@ public class Payment {
         return status;
     }
 
-    @ApiModelProperty(example = "http://government.service.domain/transaction/1")
+    @ApiModelProperty(example = "http://your.service.domain/your-reference")
     public String getReturnUrl() {
         return returnUrl;
     }
 
-    @ApiModelProperty(example = "New Passport Application")
+    @ApiModelProperty(example = "Your Service Description")
     public String getDescription() {
         return description;
     }
 
-    @ApiModelProperty(example = "12345")
+    @ApiModelProperty(example = "your-reference")
     public String getReference() {
         return reference;
     }

@@ -2,6 +2,7 @@ package uk.gov.pay.api.model;
 
 import io.dropwizard.jackson.JsonSnakeCase;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(value="paymentLinks", description = "Resource links of a Payment")
 @JsonSnakeCase
@@ -18,10 +19,12 @@ public class Links {
         this.nextUrl = Link.get(url);
     }
 
+    @ApiModelProperty(example = "https://publicapi-integration-1.pymnt.uk/v1/payments/12345")
     public Link getSelf() {
         return self;
     }
 
+    @ApiModelProperty(example = "https://www-integration-1.pymnt.uk/charge/12345?chargeTokenId=3671c717-2a0c-4655-92d3-348c7c7b04fb")
     public Link getNextUrl() {
         return nextUrl;
     }

@@ -175,19 +175,19 @@
         },
         "description" : {
           "type" : "string",
-          "example" : "New Passport Application"
+          "example" : "Your Service Description"
         },
         "returnUrl" : {
           "type" : "string",
-          "example" : "http://government.service.domain/transaction/1"
+          "example" : "http://your.service.domain/your-reference"
         },
         "reference" : {
           "type" : "string",
-          "example" : "12345"
+          "example" : "your-reference"
         },
         "payment_id" : {
           "type" : "string",
-          "example" : "1122335",
+          "example" : "12345",
           "readOnly" : true
         },
         "payment_provider" : {
@@ -208,9 +208,11 @@
       "type" : "object",
       "properties" : {
         "self" : {
+          "example" : "https://publicapi-integration-1.pymnt.uk/v1/payments/12345",
           "$ref" : "#/definitions/paymentLinks"
         },
         "nextUrl" : {
+          "example" : "https://www-integration-1.pymnt.uk/charge/12345?chargeTokenId=3671c717-2a0c-4655-92d3-348c7c7b04fb",
           "$ref" : "#/definitions/paymentLinks"
         }
       },
