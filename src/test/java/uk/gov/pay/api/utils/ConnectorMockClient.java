@@ -4,10 +4,12 @@ import com.google.common.collect.ImmutableMap;
 import org.mockserver.client.server.ForwardChainExpectation;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.model.HttpResponse;
+import org.mockserver.model.Parameter;
 
 import java.util.List;
 import java.util.Map;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static javax.ws.rs.HttpMethod.GET;
@@ -16,6 +18,7 @@ import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.HttpHeaders.LOCATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.eclipse.jetty.http.HttpStatus.*;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
@@ -28,6 +31,10 @@ public class ConnectorMockClient {
     public static final String CONNECTOR_MOCK_CHARGES_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/charges";
     public static final String CONNECTOR_MOCK_CHARGE_PATH = CONNECTOR_MOCK_CHARGES_PATH + "/%s";
     public static final String CONNECTOR_MOCK_CHARGE_EVENTS_PATH = CONNECTOR_MOCK_CHARGE_PATH + "/events";
+    private static final String REFERENCE_KEY = "reference";
+    private static final String STATUS_KEY = "status";
+    private static final String FROM_DATE_KEY = "from_date";
+    private static final String TO_DATE_KEY = "to_date";
     private final MockServerClient mockClient;
     private final String baseUrl;
 
@@ -106,6 +113,16 @@ public class ConnectorMockClient {
                                 createdDate,
                                 validLink(chargeLocation(gatewayAccountId, chargeId), "self"),
                                 validLink(nextUrl(chargeId), "next_url"))));
+    }
+
+    public void respondOk_whenSearchCharges(String accountId, String reference, String status, String fromDate, String toDate, String expectedResponse) {
+        whenSearchCharges(accountId, reference, status, fromDate, toDate)
+                .respond(response()
+                        .withStatusCode(OK_200)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withBody(expectedResponse)
+                );
+
     }
 
     public void respondUnknownGateway_whenCreateCharge(long amount, String gatewayAccountId, String errorMsg, String returnUrl, String description, String reference) {
@@ -195,6 +212,32 @@ public class ConnectorMockClient {
         );
     }
 
+    private ForwardChainExpectation whenSearchCharges(String gatewayAccountId, String reference, String status, String fromDate, String toDate) {
+        return mockClient.when(request()
+                .withMethod(GET)
+                .withPath(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId))
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                .withQueryStringParameters(notNullQueryParamsFrom(reference, status, fromDate, toDate))
+        );
+    }
+
+    private Parameter[] notNullQueryParamsFrom(String reference, String status, String fromDate, String toDate) {
+        List<Parameter> params = newArrayList();
+        if (isNotBlank(reference)) {
+            params.add(Parameter.param(REFERENCE_KEY, reference));
+        }
+        if (isNotBlank(status)) {
+            params.add(Parameter.param(STATUS_KEY, status));
+        }
+        if (isNotBlank(fromDate)) {
+            params.add(Parameter.param(FROM_DATE_KEY, fromDate));
+        }
+        if (isNotBlank(toDate)) {
+            params.add(Parameter.param(TO_DATE_KEY, toDate));
+        }
+        return params.toArray(new Parameter[0]);
+    }
+
     private ForwardChainExpectation whenCancelCharge(String paymentId, String accountId) {
         return mockClient.when(request()
                 .withMethod(POST)
@@ -220,6 +263,7 @@ public class ConnectorMockClient {
                 once()
         );
     }
+
 
     public void verifyCancelCharge(String paymentId, String accountId) {
         mockClient.verify(request()
