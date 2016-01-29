@@ -42,6 +42,7 @@ Useful links:
 |[`/v1/payments`](#post-v1payments)                      | POST   |  creates a payment                 |
 |[`/v1/payments/{paymentId}`](#get-v1paymentspaymentid)  | GET    |  returns a payment by ID           |
 |[`/v1/payments/{paymentId}/cancel`](#post-v1paymentspaymentidcancel)  | POST   |  cancels a payment |
+|[`/v1/payments/{paymentId}/events`](#get-v1paymentspaymentidevents)  | GET   |  Returns the list of events associated with a payment. |
 
 
 ### POST /v1/payments
