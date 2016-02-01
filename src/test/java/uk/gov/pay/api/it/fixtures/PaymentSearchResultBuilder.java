@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +19,7 @@ import static uk.gov.pay.api.it.PaymentResourceITestBase.GATEWAY_ACCOUNT_ID;
 public class PaymentSearchResultBuilder {
     private static final String REFERENCE_KEY = "reference";
     private static final String STATUS_KEY = "status";
-    private static final String FROM_DATE_KEY = "from_date";
-    private static final String TO_DATE_KEY = "to_date";
+    private static final String CREATED_DATE_KEY = "created_date";
 
 
     String[] statuses = {"CREATED", "IN PROGRESS", "AUTHORIZED", "SUCCEEDED"};
@@ -27,6 +28,7 @@ public class PaymentSearchResultBuilder {
     private String status;
     private String fromDate;
     private String toDate;
+    private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public static PaymentSearchResultBuilder aSuccessfulSearchResponse() {
         return new PaymentSearchResultBuilder();
@@ -43,12 +45,8 @@ public class PaymentSearchResultBuilder {
         return this;
     }
 
-    public PaymentSearchResultBuilder withMatchingFromDate(String fromDate) {
+    public PaymentSearchResultBuilder withCreatedDateBetween(String fromDate, String toDate) {
         this.fromDate = fromDate;
-        return this;
-    }
-
-    public PaymentSearchResultBuilder withMatchingToDate(String toDate) {
         this.toDate = toDate;
         return this;
     }
@@ -58,7 +56,8 @@ public class PaymentSearchResultBuilder {
         for (int i = 0; i < noOfResults; i++) {
             results.add(modified(defaultPaymentResultFrom(i)));
         }
-        return new Gson().toJson(ImmutableMap.of("results", results), new TypeToken<Map<String, List<Map<String,Object>>>>(){}.getType());
+        return new Gson().toJson(ImmutableMap.of("results", results), new TypeToken<Map<String, List<Map<String, Object>>>>() {
+        }.getType());
     }
 
     private Map<String, Object> modified(Map<String, Object> defaultPaymentResult) {
@@ -69,10 +68,9 @@ public class PaymentSearchResultBuilder {
             defaultPaymentResult.put(STATUS_KEY, status);
         }
         if (isNotBlank(fromDate)) {
-            defaultPaymentResult.put(FROM_DATE_KEY, fromDate);
-        }
-        if (isNotBlank(toDate)) {
-            defaultPaymentResult.put(TO_DATE_KEY, toDate);
+            //randomize time for something slightly more than fromDate, so that it falls in between
+            LocalDateTime updatedFromDate = LocalDateTime.parse(fromDate, dateTimeFormatter).plusMinutes(new Random().nextInt(15) + 1);
+            defaultPaymentResult.put(CREATED_DATE_KEY, updatedFromDate.format(dateTimeFormatter));
         }
         return defaultPaymentResult;
     }
@@ -86,6 +84,7 @@ public class PaymentSearchResultBuilder {
             put("amount", new Random().nextInt(10000));
             put("gateway_account_id", GATEWAY_ACCOUNT_ID);
             put("gateway_transaction_id", randomUUID().toString());
+            put(CREATED_DATE_KEY, LocalDateTime.now().format(dateTimeFormatter));
             put("return_url", "http://example.service/return_from_payments");
         }};
         return result;

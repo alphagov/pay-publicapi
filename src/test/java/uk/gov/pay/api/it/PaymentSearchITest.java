@@ -3,8 +3,13 @@ package uk.gov.pay.api.it;
 
 import com.google.common.collect.ImmutableMap;
 import com.jayway.restassured.response.ValidatableResponse;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Test;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +17,6 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.aSuccessfulSearchResponse;
 
@@ -39,10 +43,107 @@ public class PaymentSearchITest extends PaymentResourceITestBase {
                 .body("results.size()", equalTo(3));
 
         List<Map<String, Object>> results = response.extract().body().jsonPath().getList("results");
-        assertThat(results.get(0).get("reference"), is(TEST_REFERENCE));
-        assertThat(results.get(1).get("reference"), is(TEST_REFERENCE));
-        assertThat(results.get(2).get("reference"), is(TEST_REFERENCE));
+        assertThat(results, matchesField("reference", TEST_REFERENCE));
+    }
 
+
+    @Test
+    public void searchPayments_filterByStatus() throws Exception {
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, TEST_STATUS, null, null,
+                aSuccessfulSearchResponse()
+                        .withMatchingStatus(TEST_STATUS)
+                        .build()
+        );
+
+        ValidatableResponse response = searchPayments(BEARER_TOKEN, ImmutableMap.of("status", TEST_STATUS))
+                .statusCode(200)
+                .contentType(JSON)
+                .body("results.size()", equalTo(3));
+
+        List<Map<String, Object>> results = response.extract().body().jsonPath().getList("results");
+        assertThat(results, matchesField("status", TEST_STATUS));
+    }
+
+    @Test
+    public void searchPayments_filterFromAndToDates() throws Exception {
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, null, TEST_FROM_DATE, TEST_TO_DATE,
+                aSuccessfulSearchResponse()
+                        .withCreatedDateBetween(TEST_FROM_DATE, TEST_TO_DATE)
+                        .build()
+        );
+
+        ValidatableResponse response = searchPayments(BEARER_TOKEN, ImmutableMap.of("from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
+                .statusCode(200)
+                .contentType(JSON)
+                .body("results.size()", equalTo(3));
+
+        List<Map<String, Object>> results = response.extract().body().jsonPath().getList("results");
+
+        assertThat(results, matchesCreatedDateInBetween(TEST_FROM_DATE, TEST_TO_DATE));
+
+    }
+
+    @Test
+    public void searchPayments_filterByReferenceStatusAndFromToDates() throws Exception {
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, TEST_STATUS, TEST_FROM_DATE, TEST_TO_DATE,
+                aSuccessfulSearchResponse()
+                        .withMatchingReference(TEST_REFERENCE)
+                        .withMatchingStatus(TEST_STATUS)
+                        .withCreatedDateBetween(TEST_FROM_DATE, TEST_TO_DATE)
+                        .build()
+        );
+
+        ValidatableResponse response = searchPayments(BEARER_TOKEN,
+                ImmutableMap.of("reference", TEST_REFERENCE, "status", TEST_STATUS, "from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
+                .statusCode(200)
+                .contentType(JSON)
+                .body("results.size()", equalTo(3));
+
+        List<Map<String, Object>> results = response.extract().body().jsonPath().getList("results");
+        assertThat(results, matchesField("reference", TEST_REFERENCE));
+        assertThat(results, matchesField("status", TEST_STATUS));
+        assertThat(results, matchesCreatedDateInBetween(TEST_FROM_DATE, TEST_TO_DATE));
+
+    }
+
+    private Matcher<? super List<Map<String, Object>>> matchesField(final String field, final String value) {
+        return new TypeSafeMatcher<List<Map<String, Object>>>() {
+            @Override
+            protected boolean matchesSafely(List<Map<String, Object>> maps) {
+                return maps.stream().allMatch(result -> value.equals(result.get(field)));
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText(String.format("not all result %s match %s", field, value));
+            }
+        };
+    }
+
+    private Matcher<? super List<Map<String, Object>>> matchesCreatedDateInBetween(final String fromDate, final String toDate) {
+        return new TypeSafeMatcher<List<Map<String, Object>>>() {
+            @Override
+            protected boolean matchesSafely(List<Map<String, Object>> results) {
+                return results.stream().allMatch(result -> {
+                            LocalDateTime createdDate = localDateTimeOf(result.get("created_date").toString());
+                            return createdDate.isAfter(localDateTimeOf(fromDate)) && createdDate.isBefore(localDateTimeOf(toDate));
+                        }
+
+                );
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText(String.format("created date of results does not fall in between %s and %s", fromDate, toDate));
+            }
+        };
+    }
+
+    private LocalDateTime localDateTimeOf(String dateString) {
+        return LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
     private ValidatableResponse searchPayments(String bearerToken, ImmutableMap<String, String> queryParams) {
