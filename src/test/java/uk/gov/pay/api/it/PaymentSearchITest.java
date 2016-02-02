@@ -7,9 +7,9 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Test;
+import uk.gov.pay.api.utils.DateTimeUtils;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +17,7 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.aSuccessfulSearchResponse;
 
@@ -24,8 +25,8 @@ public class PaymentSearchITest extends PaymentResourceITestBase {
 
     protected static final String TEST_REFERENCE = "test_reference";
     protected static final String TEST_STATUS = "SUCCEEDED";
-    protected static final String TEST_FROM_DATE = "2016-01-28 00:00:00";
-    protected static final String TEST_TO_DATE = "2016-01-28 12:00:00";
+    protected static final String TEST_FROM_DATE = "2016-01-28T00:00:00Z";
+    protected static final String TEST_TO_DATE = "2016-01-28T12:00:00Z";
     private static final String SEARCH_PATH = "/v1/payments";
 
     @Test
@@ -109,6 +110,26 @@ public class PaymentSearchITest extends PaymentResourceITestBase {
 
     }
 
+    @Test
+    public void searchPayments_errorIfToDatesIsNotInLocalDateTimeFormat() throws Exception {
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        searchPayments(BEARER_TOKEN,
+                ImmutableMap.of("reference", TEST_REFERENCE, "status", TEST_STATUS, "from_date", TEST_FROM_DATE, "to_date", "2016-01-01 00:00"))
+                .statusCode(400)
+                .contentType(JSON)
+                .body("message", is("fields [to_date] are not in correct format. see public api documentation for the correct data formats"));
+    }
+
+    @Test
+    public void searchPayments_errorIfFromToDatesAreNotInLocalDateTimeFormat() throws Exception {
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        searchPayments(BEARER_TOKEN,
+                ImmutableMap.of("reference", TEST_REFERENCE, "status", TEST_STATUS, "from_date", "12345", "to_date", "2016-01-01 00:00"))
+                .statusCode(400)
+                .contentType(JSON)
+                .body("message", is("fields [from_date, to_date] are not in correct format. see public api documentation for the correct data formats"));
+    }
+
     private Matcher<? super List<Map<String, Object>>> matchesField(final String field, final String value) {
         return new TypeSafeMatcher<List<Map<String, Object>>>() {
             @Override
@@ -128,8 +149,8 @@ public class PaymentSearchITest extends PaymentResourceITestBase {
             @Override
             protected boolean matchesSafely(List<Map<String, Object>> results) {
                 return results.stream().allMatch(result -> {
-                            LocalDateTime createdDate = localDateTimeOf(result.get("created_date").toString());
-                            return createdDate.isAfter(localDateTimeOf(fromDate)) && createdDate.isBefore(localDateTimeOf(toDate));
+                            ZonedDateTime createdDate = zonedDateTimeOf(result.get("created_date").toString());
+                            return createdDate.isAfter(zonedDateTimeOf(fromDate)) && createdDate.isBefore(zonedDateTimeOf(toDate));
                         }
 
                 );
@@ -142,8 +163,8 @@ public class PaymentSearchITest extends PaymentResourceITestBase {
         };
     }
 
-    private LocalDateTime localDateTimeOf(String dateString) {
-        return LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    private ZonedDateTime zonedDateTimeOf(String dateString) {
+        return DateTimeUtils.toUTCZonedDateTime(dateString).get();
     }
 
     private ValidatableResponse searchPayments(String bearerToken, ImmutableMap<String, String> queryParams) {

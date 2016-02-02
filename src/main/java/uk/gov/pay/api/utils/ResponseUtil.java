@@ -6,9 +6,9 @@ import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 
 import javax.ws.rs.core.Response;
-import java.util.List;
 
-import static javax.ws.rs.core.Response.Status.*;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
 public class ResponseUtil {
 

@@ -3,7 +3,6 @@ package uk.gov.pay.api.resources;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.dropwizard.auth.Auth;
 import io.swagger.annotations.*;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +29,7 @@ import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.http.HttpStatus.SC_OK;
 import static uk.gov.pay.api.model.Payment.createPaymentResponse;
+import static uk.gov.pay.api.resources.ApiValidators.validateQueryParams;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
 import static uk.gov.pay.api.utils.ResponseUtil.badRequestResponse;
 import static uk.gov.pay.api.utils.ResponseUtil.notFoundResponse;
@@ -41,8 +41,8 @@ public class PaymentsResource {
     private static final String PAYMENT_KEY = "paymentId";
     private static final String REFERENCE_KEY = "reference";
     private static final String STATUS_KEY = "status";
-    private static final String FROM_DATE_KEY = "from_date";
-    private static final String TO_DATE_KEY = "to_date";
+    static final String FROM_DATE_KEY = "from_date";
+    static final String TO_DATE_KEY = "to_date";
     private static final String DESCRIPTION_KEY = "description";
     private static final String AMOUNT_KEY = "amount";
     private static final String SERVICE_RETURN_URL = "return_url";
@@ -143,22 +143,27 @@ public class PaymentsResource {
         logger.info("received get search payments request: [ {} ]",
                 format("reference:%s, status: %s, fromDate: %s, toDate: %s", reference, status, fromDate, toDate));
 
-        Response connectorResponse = client.target(getConnectorUlr(accountId, reference, status, fromDate, toDate))
-                .request()
-                .header(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
-                .get();
+        Optional<String> validationErrors = validateQueryParams(fromDate, toDate);
+        return validationErrors
+                .map(errorMessage -> badRequestResponse(logger, errorMessage))
+                .orElseGet(() -> {
+                    Response connectorResponse = client.target(getConnectorUlr(accountId, reference, status, fromDate, toDate))
+                            .request()
+                            .header(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
+                            .get();
 
-        //TODO: New method to parse a list of payment results from connector.
-        //      Important: We are still returning the updated date from connector when performing a search.
-        //                 This needs to be replaced by created_date and avoid joining two tables on connector.
-        //                 When performing that change on connector, we will also require a change in self-service,
-        //                 as it is still looking at the 'updated' field from connector.
-        //      E2E tests require updating and a new integration test
-        if (connectorResponse.getStatus() == SC_OK) {
-            return Response.ok(connectorResponse.readEntity(String.class)).build();
-        } else {
-            return badRequestResponse(logger, "Search payments failed.");
-        }
+                    //TODO: New method to parse a list of payment results from connector.
+                    //      Important: We are still returning the updated date from connector when performing a search.
+                    //                 This needs to be replaced by created_date and avoid joining two tables on connector.
+                    //                 When performing that change on connector, we will also require a change in self-service,
+                    //                 as it is still looking at the 'updated' field from connector.
+                    //      E2E tests require updating and a new integration test
+                    if (connectorResponse.getStatus() == SC_OK) {
+                        return Response.ok(connectorResponse.readEntity(String.class)).build();
+                    } else {
+                        return badRequestResponse(logger, "Search payments failed.");
+                    }
+                });
     }
 
     @POST
@@ -275,8 +280,8 @@ public class PaymentsResource {
     }
 
     private Response eventsResponseFrom(UriInfo uriInfo, Response connectorResponse, int okStatus,
-                                  BiFunction<URI, Object, ResponseBuilder> okResponse,
-                                  Function<JsonNode, Response> errorResponse) {
+                                        BiFunction<URI, Object, ResponseBuilder> okResponse,
+                                        Function<JsonNode, Response> errorResponse) {
         if (!connectorResponse.hasEntity()) {
             return badRequestResponse(logger, "Connector response contains no payload!");
         }
