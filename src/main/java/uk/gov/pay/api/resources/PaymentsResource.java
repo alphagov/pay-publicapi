@@ -1,8 +1,10 @@
 package uk.gov.pay.api.resources;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.collect.Lists;
 import io.dropwizard.auth.Auth;
 import io.swagger.annotations.*;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +20,7 @@ import javax.ws.rs.core.*;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import java.net.URI;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -143,11 +146,17 @@ public class PaymentsResource {
         logger.info("received get search payments request: [ {} ]",
                 format("reference:%s, status: %s, fromDate: %s, toDate: %s", reference, status, fromDate, toDate));
 
-        Optional<String> validationErrors = validateQueryParams(fromDate, toDate);
+        List<Pair<String, String>> queryParams = Lists.newArrayList(
+                Pair.of(REFERENCE_KEY, reference),
+                Pair.of(STATUS_KEY, status),
+                Pair.of(FROM_DATE_KEY, fromDate),
+                Pair.of(TO_DATE_KEY, toDate));
+
+        Optional<String> validationErrors = validateQueryParams(queryParams);
         return validationErrors
                 .map(errorMessage -> badRequestResponse(logger, errorMessage))
                 .orElseGet(() -> {
-                    Response connectorResponse = client.target(getConnectorUlr(accountId, reference, status, fromDate, toDate))
+                    Response connectorResponse = client.target(getConnectorUlr(accountId, queryParams))
                             .request()
                             .header(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
                             .get();
@@ -222,28 +231,16 @@ public class PaymentsResource {
         return badRequestResponse(logger, "Cancellation of charge failed.");
     }
 
-    private String getConnectorUlr(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
-                                   String reference, String status, String fromDate, String toDate) {
-
+    private String getConnectorUlr(String accountId, List<Pair<String, String>> queryParams) {
         UriBuilder builder = UriBuilder
                 .fromPath(connectorUrl)
                 .path(format(CONNECTOR_CHARGES_RESOURCE, accountId));
 
-        if (isNotBlank(reference)) {
-            builder.queryParam(REFERENCE_KEY, reference);
-        }
-
-        if (isNotBlank(status)) {
-            builder.queryParam(STATUS_KEY, status);
-        }
-
-        if (isNotBlank(fromDate)) {
-            builder.queryParam(FROM_DATE_KEY, fromDate);
-        }
-
-        if (isNotBlank(fromDate)) {
-            builder.queryParam(TO_DATE_KEY, toDate);
-        }
+        queryParams.stream().forEach(pair -> {
+            if (isNotBlank(pair.getRight())) {
+                builder.queryParam(pair.getKey(), pair.getRight());
+            }
+        });
         return builder.toString();
     }
 
