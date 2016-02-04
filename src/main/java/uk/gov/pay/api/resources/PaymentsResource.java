@@ -160,13 +160,7 @@ public class PaymentsResource {
                             .request()
                             .header(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
                             .get();
-
-                    //TODO: New method to parse a list of payment results from connector.
-                    //      Important: We are still returning the updated date from connector when performing a search.
-                    //                 This needs to be replaced by created_date and avoid joining two tables on connector.
-                    //                 When performing that change on connector, we will also require a change in self-service,
-                    //                 as it is still looking at the 'updated' field from connector.
-                    //      E2E tests require updating and a new integration test
+                    
                     if (connectorResponse.getStatus() == SC_OK) {
                         return Response.ok(connectorResponse.readEntity(String.class)).build();
                     } else {
