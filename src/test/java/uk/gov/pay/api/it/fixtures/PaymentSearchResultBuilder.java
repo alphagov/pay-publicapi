@@ -5,9 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import uk.gov.pay.api.utils.DateTimeUtils;
 
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +14,6 @@ import java.util.Random;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static uk.gov.pay.api.it.PaymentResourceITestBase.GATEWAY_ACCOUNT_ID;
 
 public class PaymentSearchResultBuilder {
     private static final String REFERENCE_KEY = "reference";
@@ -83,10 +80,8 @@ public class PaymentSearchResultBuilder {
             put(REFERENCE_KEY, randomUUID().toString());
             put(STATUS_KEY, statuses[new Random().nextInt(statuses.length)]);
             put("amount", new Random().nextInt(10000));
-            put("gateway_account_id", GATEWAY_ACCOUNT_ID);
             put("gateway_transaction_id", randomUUID().toString());
             put(CREATED_DATE_KEY, DateTimeUtils.toUTCDateString(ZonedDateTime.now()));
-            put("return_url", "http://example.service/return_from_payments");
         }};
         return result;
     }

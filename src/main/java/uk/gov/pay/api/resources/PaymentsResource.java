@@ -160,7 +160,7 @@ public class PaymentsResource {
                             .request()
                             .header(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
                             .get();
-                    
+
                     if (connectorResponse.getStatus() == SC_OK) {
                         return Response.ok(connectorResponse.readEntity(String.class)).build();
                     } else {
