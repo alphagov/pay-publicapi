@@ -43,7 +43,7 @@ import static uk.gov.pay.api.utils.ResponseUtil.notFoundResponse;
 public class PaymentsResource {
     private static final String PAYMENT_KEY = "paymentId";
     private static final String REFERENCE_KEY = "reference";
-    private static final String STATUS_KEY = "status";
+    static final String STATUS_KEY = "status";
     static final String FROM_DATE_KEY = "from_date";
     static final String TO_DATE_KEY = "to_date";
     private static final String DESCRIPTION_KEY = "description";

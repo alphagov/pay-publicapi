@@ -130,6 +130,16 @@ public class PaymentSearchITest extends PaymentResourceITestBase {
                 .body("message", is("fields [from_date, to_date] are not in correct format. see public api documentation for the correct data formats"));
     }
 
+    @Test
+    public void searchPayments_errorIfStatusNotMatchingWithExpectedExternalStatuses() throws Exception {
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        searchPayments(BEARER_TOKEN,
+                ImmutableMap.of("reference", TEST_REFERENCE, "status", "invalid status", "from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
+                .statusCode(400)
+                .contentType(JSON)
+                .body("message", is("fields [status] are not in correct format. see public api documentation for the correct data formats"));
+    }
+
     private Matcher<? super List<Map<String, Object>>> matchesField(final String field, final String value) {
         return new TypeSafeMatcher<List<Map<String, Object>>>() {
             @Override
