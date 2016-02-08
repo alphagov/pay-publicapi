@@ -118,7 +118,7 @@ public class PaymentSearchITest extends PaymentResourceITestBase {
                 ImmutableMap.of("reference", TEST_REFERENCE, "status", TEST_STATUS, "from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
                 .statusCode(500)
                 .contentType(JSON)
-                .body("message", is("Search payments failed."));
+                .body("message", is("Search payments failed"));
     }
 
     @Test
