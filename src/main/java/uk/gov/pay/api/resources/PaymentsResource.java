@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Lists;
 import io.dropwizard.auth.Auth;
 import io.swagger.annotations.*;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static javax.ws.rs.client.Entity.json;
@@ -32,10 +34,8 @@ import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.http.HttpStatus.SC_OK;
 import static uk.gov.pay.api.model.Payment.createPaymentResponse;
-import static uk.gov.pay.api.resources.ApiValidators.validateQueryParams;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
-import static uk.gov.pay.api.utils.ResponseUtil.badRequestResponse;
-import static uk.gov.pay.api.utils.ResponseUtil.notFoundResponse;
+import static uk.gov.pay.api.utils.ResponseUtil.*;
 
 @Path("/")
 @Api(value = "/", description = "Public Api Endpoints")
@@ -146,16 +146,23 @@ public class PaymentsResource {
         logger.info("received get search payments request: [ {} ]",
                 format("reference:%s, status: %s, fromDate: %s, toDate: %s", reference, status, fromDate, toDate));
 
-        List<Pair<String, String>> queryParams = Lists.newArrayList(
-                Pair.of(REFERENCE_KEY, reference),
-                Pair.of(STATUS_KEY, status),
-                Pair.of(FROM_DATE_KEY, fromDate),
-                Pair.of(TO_DATE_KEY, toDate));
+        Optional<List<Pair<String, String>>> validationErrors = ApiValidator.queryParamValidator()
+                .validateDates(Lists.newArrayList(
+                        Pair.of(FROM_DATE_KEY, fromDate),
+                        Pair.of(TO_DATE_KEY, toDate)))
+                .validateStatus(Pair.of(STATUS_KEY, status))
+                .build();
 
-        Optional<String> validationErrors = validateQueryParams(queryParams);
         return validationErrors
-                .map(errorMessage -> badRequestResponse(logger, errorMessage))
+                .map(invalidParams -> unprocessableEntityResponse(logger, errorMessageFrom(invalidParams)))
                 .orElseGet(() -> {
+                    List<Pair<String, String>> queryParams = Lists.newArrayList(
+                            Pair.of(REFERENCE_KEY, reference),
+                            Pair.of(STATUS_KEY, status),
+                            Pair.of(FROM_DATE_KEY, fromDate),
+                            Pair.of(TO_DATE_KEY, toDate)
+                    );
+
                     Response connectorResponse = client.target(getConnectorUlr(accountId, queryParams))
                             .request()
                             .header(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
@@ -164,7 +171,7 @@ public class PaymentsResource {
                     if (connectorResponse.getStatus() == SC_OK) {
                         return Response.ok(connectorResponse.readEntity(String.class)).build();
                     } else {
-                        return badRequestResponse(logger, "Search payments failed.");
+                        return serverErrorResponse(logger, "Search payments failed.");
                     }
                 });
     }
@@ -223,6 +230,11 @@ public class PaymentsResource {
         }
 
         return badRequestResponse(logger, "Cancellation of charge failed.");
+    }
+
+    private String errorMessageFrom(List<Pair<String, String>> invalidParams) {
+        List<String> keys = invalidParams.stream().map(pair -> pair.getLeft()).collect(Collectors.toList());
+        return String.format("fields [%s] are not in correct format. see public api documentation for the correct data formats", StringUtils.join(keys, ", "));
     }
 
     private String getConnectorUlr(String accountId, List<Pair<String, String>> queryParams) {

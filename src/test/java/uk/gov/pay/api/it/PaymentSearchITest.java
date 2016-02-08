@@ -111,13 +111,34 @@ public class PaymentSearchITest extends PaymentResourceITestBase {
     }
 
     @Test
+    public void searchPayments_errorIfConnectorResponseFails() throws Exception {
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+
+        searchPayments(BEARER_TOKEN,
+                ImmutableMap.of("reference", TEST_REFERENCE, "status", TEST_STATUS, "from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
+                .statusCode(500)
+                .contentType(JSON)
+                .body("message", is("Search payments failed."));
+    }
+
+    @Test
     public void searchPayments_errorIfToDatesIsNotInLocalDateTimeFormat() throws Exception {
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
         searchPayments(BEARER_TOKEN,
                 ImmutableMap.of("reference", TEST_REFERENCE, "status", TEST_STATUS, "from_date", TEST_FROM_DATE, "to_date", "2016-01-01 00:00"))
-                .statusCode(400)
+                .statusCode(422)
                 .contentType(JSON)
                 .body("message", is("fields [to_date] are not in correct format. see public api documentation for the correct data formats"));
+    }
+
+    @Test
+    public void searchPayments_errorIfToDatesNotInLocalDateTimeFormaAndInvalidStatus() throws Exception {
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        searchPayments(BEARER_TOKEN,
+                ImmutableMap.of("reference", TEST_REFERENCE, "status", "invalid status", "from_date", TEST_FROM_DATE, "to_date", "2016-01-01 00:00"))
+                .statusCode(422)
+                .contentType(JSON)
+                .body("message", is("fields [to_date, status] are not in correct format. see public api documentation for the correct data formats"));
     }
 
     @Test
@@ -125,7 +146,7 @@ public class PaymentSearchITest extends PaymentResourceITestBase {
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
         searchPayments(BEARER_TOKEN,
                 ImmutableMap.of("reference", TEST_REFERENCE, "status", TEST_STATUS, "from_date", "12345", "to_date", "2016-01-01 00:00"))
-                .statusCode(400)
+                .statusCode(422)
                 .contentType(JSON)
                 .body("message", is("fields [from_date, to_date] are not in correct format. see public api documentation for the correct data formats"));
     }
@@ -135,7 +156,7 @@ public class PaymentSearchITest extends PaymentResourceITestBase {
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
         searchPayments(BEARER_TOKEN,
                 ImmutableMap.of("reference", TEST_REFERENCE, "status", "invalid status", "from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
-                .statusCode(400)
+                .statusCode(422)
                 .contentType(JSON)
                 .body("message", is("fields [status] are not in correct format. see public api documentation for the correct data formats"));
     }
