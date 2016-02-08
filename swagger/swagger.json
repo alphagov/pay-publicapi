@@ -14,27 +14,6 @@
         "description" : "Search payments by reference, status, 'from' and 'to' date",
         "operationId" : "searchPayments",
         "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "reference",
-          "in" : "query",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "status",
-          "in" : "query",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "from_date",
-          "in" : "query",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "to_date",
-          "in" : "query",
-          "required" : false,
-          "type" : "string"
-        } ],
         "responses" : {
           "200" : {
             "description" : "OK",

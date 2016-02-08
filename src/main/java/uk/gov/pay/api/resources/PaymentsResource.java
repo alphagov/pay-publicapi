@@ -131,17 +131,23 @@ public class PaymentsResource {
     @ApiOperation(
             value = "Search payments",
             notes = "Search payments by reference, status, 'from' and 'to' date",
+            responseContainer = "List",
             code = 200)
 
     @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = Payment.class, responseContainer = "List"),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 500, message = "Search payments failed"),
             @ApiResponse(code = 422, message = "fields [from_date, to_date, status] are not in correct format. see public api documentation for the correct data formats")})
-    public Response searchPayments(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
-                                   @QueryParam(REFERENCE_KEY) String reference,
-                                   @QueryParam(STATUS_KEY) String status,
-                                   @QueryParam(FROM_DATE_KEY) String fromDate,
-                                   @QueryParam(TO_DATE_KEY) String toDate,
+    public Response searchPayments(@ApiParam(value = "accountId", hidden = true)
+                                       @Auth String accountId,
+                                   @ApiParam(value = "reference", hidden = true, example = "your-reference")
+                                        @QueryParam(REFERENCE_KEY) String reference,
+                                   @ApiParam(value = "status", hidden = true, example = "SUCCESS", allowableValues = "range[SUCCEEDED,CREATED,IN PROGRESS,FAILED,SYSTEM CANCELLED")
+                                        @QueryParam(STATUS_KEY) String status,
+                                   @ApiParam(value = "from_date", hidden = true, example = "2015-08-13T12:35:00Z")
+                                        @QueryParam(FROM_DATE_KEY) String fromDate,
+                                   @ApiParam(value = "to_date", hidden = true, example = "2015-08-14T18:00:00Z")
+                                        @QueryParam(TO_DATE_KEY) String toDate,
                                    @Context UriInfo uriInfo) {
 
         logger.info("received get search payments request: [ {} ]",
