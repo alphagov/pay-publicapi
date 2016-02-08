@@ -45,8 +45,11 @@
           "401" : {
             "description" : "Credentials are required to access this resource"
           },
-          "404" : {
-            "description" : "Not found"
+          "422" : {
+            "description" : "fields [from_date, to_date, status] are not in correct format. see public api documentation for the correct data formats"
+          },
+          "500" : {
+            "description" : "Search payments failed"
           }
         }
       },

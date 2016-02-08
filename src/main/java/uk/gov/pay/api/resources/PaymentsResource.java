@@ -133,9 +133,10 @@ public class PaymentsResource {
             notes = "Search payments by reference, status, 'from' and 'to' date",
             code = 200)
 
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = Payment.class),
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = Payment.class, responseContainer = "List"),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 404, message = "Not found")})
+            @ApiResponse(code = 500, message = "Search payments failed"),
+            @ApiResponse(code = 422, message = "fields [from_date, to_date, status] are not in correct format. see public api documentation for the correct data formats")})
     public Response searchPayments(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
                                    @QueryParam(REFERENCE_KEY) String reference,
                                    @QueryParam(STATUS_KEY) String status,
@@ -171,7 +172,7 @@ public class PaymentsResource {
                     if (connectorResponse.getStatus() == SC_OK) {
                         return Response.ok(connectorResponse.readEntity(String.class)).build();
                     } else {
-                        return serverErrorResponse(logger, "Search payments failed.");
+                        return serverErrorResponse(logger, "Search payments failed");
                     }
                 });
     }
