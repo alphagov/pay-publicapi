@@ -3,6 +3,8 @@ package uk.gov.pay.api.model;
 
 import java.util.Optional;
 
+import static org.apache.commons.lang3.StringUtils.upperCase;
+
 public enum ExternalChargeStatus {
     EXT_CREATED("CREATED"),
     EXT_IN_PROGRESS("IN PROGRESS"),
@@ -17,8 +19,9 @@ public enum ExternalChargeStatus {
     }
 
     public static Optional<ExternalChargeStatus> mapFromStatus(String statusValue) {
+        String upperCasedStatus = upperCase(statusValue);
         for (ExternalChargeStatus chargeStatus : values()) {
-            if (chargeStatus.status.equals(statusValue)) {
+            if (chargeStatus.status.equals(upperCasedStatus)) {
                 return Optional.of(chargeStatus);
             }
         }

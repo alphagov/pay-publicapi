@@ -251,7 +251,7 @@ public class PaymentsResource {
 
         queryParams.stream().forEach(pair -> {
             if (isNotBlank(pair.getRight())) {
-                builder.queryParam(pair.getKey(), pair.getRight());
+                builder.queryParam(pair.getKey(), pair.getValue());
             }
         });
         return builder.toString();
