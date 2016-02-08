@@ -315,7 +315,6 @@ This endpoint searches for transactions for the given account id.
 
 ```
 GET /v1/payments
-Content-Type: application/json
 
 ```
 
