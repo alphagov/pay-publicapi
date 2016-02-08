@@ -1,18 +1,14 @@
 package uk.gov.pay.api.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 
 import javax.ws.rs.core.Response;
-import java.util.List;
 
 import static javax.ws.rs.core.Response.Status.*;
 
 public class ResponseUtil {
-
-    public static final Joiner COMMA_JOINER = Joiner.on(", ");
 
     public static Response notFoundResponse(Logger logger, JsonNode node) {
         return messageResponse(logger, nodeMessage(node, "Not found."), NOT_FOUND);
@@ -24,6 +20,17 @@ public class ResponseUtil {
 
     public static Response badRequestResponse(Logger logger, String message) {
         return messageResponse(logger, message, BAD_REQUEST);
+    }
+
+    public static Response serverErrorResponse(Logger logger, String message) {
+        return messageResponse(logger, message, INTERNAL_SERVER_ERROR);
+    }
+
+    public static Response unprocessableEntityResponse(Logger logger, String message) {
+        logger.error(message);
+        return Response.status(422)
+                .entity(ImmutableMap.of("message", message))
+                .build();
     }
 
     private static Response messageResponse(Logger logger, String message, Response.Status status) {

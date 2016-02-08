@@ -9,6 +9,29 @@
   "schemes" : [ "https" ],
   "paths" : {
     "/v1/payments" : {
+      "get" : {
+        "summary" : "Search payments",
+        "description" : "Search payments by reference, status, 'from' and 'to' date",
+        "operationId" : "searchPayments",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/Payment information"
+            }
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "422" : {
+            "description" : "fields [from_date, to_date, status] are not in correct format. see public api documentation for the correct data formats"
+          },
+          "500" : {
+            "description" : "Search payments failed"
+          }
+        }
+      },
       "post" : {
         "summary" : "Create new payment",
         "description" : "Create a new payment for the account associated to the Authorisation token",

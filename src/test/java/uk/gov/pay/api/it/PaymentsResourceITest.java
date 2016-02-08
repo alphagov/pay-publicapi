@@ -1,16 +1,8 @@
 package uk.gov.pay.api.it;
 
 import com.jayway.restassured.response.ValidatableResponse;
-import io.dropwizard.testing.junit.DropwizardAppRule;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.mockserver.junit.MockServerRule;
-import uk.gov.pay.api.app.PublicApi;
-import uk.gov.pay.api.config.PublicApiConfig;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
-import uk.gov.pay.api.utils.ConnectorMockClient;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
 
 import javax.ws.rs.core.HttpHeaders;
 import java.time.LocalDateTime;
@@ -23,8 +15,6 @@ import java.util.Map;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
-import static io.dropwizard.testing.ConfigOverride.config;
-import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 import static org.hamcrest.Matchers.hasSize;
@@ -33,11 +23,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
 
-public class PaymentsResourceITest {
-    private static final String GATEWAY_ACCOUNT_ID = "gw_32adf21bds3aac21";
-    private static final String PAYMENTS_PATH = "/v1/payments/";
+public class PaymentsResourceITest extends PaymentResourceITestBase {
     private static final String PAYMENT_EVENTS_PATH = "/v1/payments/%s/events";
-    private static final String BEARER_TOKEN = "TEST-BEARER-TOKEN";
     private static final long TEST_AMOUNT = 20032123132120l;
     private static final String TEST_CHARGE_ID = "ch_ab2341da231434l";
     private static final String TEST_STATUS = "someState";
@@ -51,44 +38,6 @@ public class PaymentsResourceITest {
     private static final List<Map<String, String>> TEST_EVENTS = newArrayList(TEST_PAYMENT_CREATED);
 
     private static final String SUCCESS_PAYLOAD = paymentPayload(TEST_AMOUNT, TEST_RETURN_URL, TEST_DESCRIPTION, TEST_REFERENCE);
-
-    @Rule
-    public MockServerRule connectorMockRule = new MockServerRule(this);
-
-    @Rule
-    public MockServerRule publicAuthMockRule = new MockServerRule(this);
-
-    private ConnectorMockClient connectorMock;
-    private PublicAuthMockClient publicAuthMock;
-
-    @Rule
-    public DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
-            PublicApi.class
-            , resourceFilePath("config/test-config.yaml")
-            , config("connectorUrl", connectorBaseUrl())
-            , config("publicAuthUrl", publicAuthBaseUrl()));
-
-    private String connectorBaseUrl() {
-        return "http://localhost:" + connectorMockRule.getHttpPort();
-    }
-
-    private String publicAuthBaseUrl() {
-        return "http://localhost:" + publicAuthMockRule.getHttpPort() + "/v1/auth";
-    }
-
-    private String paymentLocationFor(String chargeId) {
-        return "http://localhost:" + app.getLocalPort() + PAYMENTS_PATH + chargeId;
-    }
-
-    private String paymentEventsLocationFor(String chargeId) {
-        return paymentLocationFor(chargeId) + "/events";
-    }
-
-    @Before
-    public void setup() {
-        connectorMock = new ConnectorMockClient(connectorMockRule.getHttpPort(), connectorBaseUrl());
-        publicAuthMock = new PublicAuthMockClient(publicAuthMockRule.getHttpPort());
-    }
 
     @Test
     public void createPayment() {
@@ -261,6 +210,14 @@ public class PaymentsResourceITest {
 
         postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
                 .statusCode(503);
+    }
+
+    private String paymentLocationFor(String chargeId) {
+        return "http://localhost:" + app.getLocalPort() + PAYMENTS_PATH + chargeId;
+    }
+
+    private String paymentEventsLocationFor(String chargeId) {
+        return paymentLocationFor(chargeId) + "/events";
     }
 
     private String cardDetailsUrlFor(String chargeId) {

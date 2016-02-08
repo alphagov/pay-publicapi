@@ -42,7 +42,8 @@ Useful links:
 |[`/v1/payments`](#post-v1payments)                      | POST   |  creates a payment                 |
 |[`/v1/payments/{paymentId}`](#get-v1paymentspaymentid)  | GET    |  returns a payment by ID           |
 |[`/v1/payments/{paymentId}/cancel`](#post-v1paymentspaymentidcancel)  | POST   |  cancels a payment |
-|[`/v1/payments/{paymentId}/events`](#get-v1paymentspaymentidevents)  | GET   |  Returns the list of events associated with a payment. |
+|[`/v1/payments/{paymentId}/events`](#get-v1paymentspaymentidevents)  | GET    |  returns all audit events for the payment referred by this ID  |
+|[`/v1/payments`](#get-v1payments)  | GET    |  search/filter payments           |
 
 
 ### POST /v1/payments
@@ -305,3 +306,57 @@ Content-Length: 44
     "message": "Cancellation of charge failed."
 }
 ```
+
+### GET /v1/payments
+
+This endpoint searches for transactions for the given account id.
+
+#### Request example
+
+```
+GET /v1/payments
+
+```
+
+##### Query Parameters description
+
+| Field                    | required | Description                               |
+| ------------------------ |:--------:| ----------------------------------------- |
+| `reference`              | X | There (partial or full) reference issued by the government service for this payment. |
+| `status`                 | X | The transaction of this payment |
+| `from_date`               | X | The initial date for search payments |
+| `to_date`                 | X | The end date for search payments|
+
+#### Response example
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+{
+    "results": [{     
+        "charge_id": "1",
+        "description": "Breathing licence",
+        "reference": "Ref-1234",
+        "amount": 5000,
+        "gateway_account_id": "10",
+        "gateway_transaction_id": "DFG98-FG8J-R78HJ-8JUG9",
+        "status": "CREATED",
+        "created_date": "2016-05-13T18:20:33Z"
+     }]
+}
+```
+
+##### Response field description
+
+| Field                    | always present | Description                               |
+| ------------------------ |:--------:| ----------------------------------------- |
+| `results`                | X | List of payments       |
+| `charge_id`              | X | The unique identifier for this charge       |
+| `amount`                 | X | The amount of this charge in pence      |
+| `description`            | X | The payment description       
+| `reference`              | X | There reference issued by the government service for this payment       |
+| `gateway_transaction_id` | X | The gateway transaction reference associated to this charge       |
+| `status`                 | X | The current external status of the charge       |
+| `created_date`             | X | The created date in ISO_8601 format (```yyyy-MM-ddTHH:mm:ssZ```)|
+
+-----------------------------------------------------------------------------------------------------------

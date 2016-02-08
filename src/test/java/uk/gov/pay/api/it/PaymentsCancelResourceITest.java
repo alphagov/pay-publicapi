@@ -18,13 +18,10 @@ import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.Matchers.is;
 
-public class PaymentsCancelResourceITest {
+public class PaymentsCancelResourceITest extends PaymentResourceITestBase {
     private static final String TEST_CHARGE_ID = "ch_ab2341da231434";
 
-    private static final String PAYMENTS_PATH = "/v1/payments/";
     private static final String CANCEL_PAYMENTS_PATH = PAYMENTS_PATH + "%s/cancel";
-    private static final String BEARER_TOKEN = "TEST_BEARER_TOKEN";
-    private static final String GATEWAY_ACCOUNT_ID = "GATEWAY_ACCOUNT_ID";
 
     @Rule
     public MockServerRule connectorMockRule = new MockServerRule(this);
