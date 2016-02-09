@@ -49,6 +49,7 @@ public class Payment {
         this.createdDate = createdDate;
     }
 
+    @ApiModelProperty(example = "2016-01-21T17:15:00Z")
     public String getCreatedDate() {
         return createdDate;
     }
@@ -83,8 +84,14 @@ public class Payment {
         return reference;
     }
 
+    @ApiModelProperty(example = "worldpay")
     public String getPaymentProvider() {
         return paymentProvider;
+    }
+
+    @ApiModelProperty(dataType = "uk.gov.pay.api.model.Links")
+    public Links getLinks() {
+        return links;
     }
 
     @Override

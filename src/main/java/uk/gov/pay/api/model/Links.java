@@ -19,12 +19,12 @@ public class Links {
         this.nextUrl = Link.get(url);
     }
 
-    @ApiModelProperty(example = "https://publicapi-integration-1.pymnt.uk/v1/payments/12345")
+    @ApiModelProperty(value = "selfUrl", dataType = "uk.gov.pay.api.model.Link")
     public Link getSelf() {
         return self;
     }
 
-    @ApiModelProperty(example = "https://www-integration-1.pymnt.uk/charge/12345?chargeTokenId=3671c717-2a0c-4655-92d3-348c7c7b04fb")
+    @ApiModelProperty(value = "nextUrl", dataType = "uk.gov.pay.api.model.Link")
     public Link getNextUrl() {
         return nextUrl;
     }

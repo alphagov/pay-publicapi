@@ -4,7 +4,7 @@ import io.dropwizard.jackson.JsonSnakeCase;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(value = "paymentLinks", description = "Resource links of a Payment")
+@ApiModel(value = "paymentLink", description = "A link related to a payment")
 @JsonSnakeCase
 public class Link {
     private String href;
@@ -19,7 +19,7 @@ public class Link {
         return new Link(url, "GET");
     }
 
-    @ApiModelProperty(example = "https://publicapi-integration-1.pymnt.uk/v1/payments/12345")
+    @ApiModelProperty(example = "https://an.example.link/from/payment/platform")
     public String getHref() {
         return href;
     }

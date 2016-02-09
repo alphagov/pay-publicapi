@@ -215,28 +215,45 @@
         },
         "payment_provider" : {
           "type" : "string",
+          "example" : "worldpay",
           "readOnly" : true
         },
         "_links" : {
+          "readOnly" : true,
           "$ref" : "#/definitions/paymentLinks"
         },
         "created_date" : {
           "type" : "string",
+          "example" : "2016-01-21T17:15:00Z",
           "readOnly" : true
         }
       },
       "description" : "A Payment description"
     },
+    "paymentLink" : {
+      "type" : "object",
+      "properties" : {
+        "href" : {
+          "type" : "string",
+          "example" : "https://an.example.link/from/payment/platform"
+        },
+        "method" : {
+          "type" : "string",
+          "example" : "GET"
+        }
+      },
+      "description" : "A link related to a payment"
+    },
     "paymentLinks" : {
       "type" : "object",
       "properties" : {
         "self" : {
-          "example" : "https://publicapi-integration-1.pymnt.uk/v1/payments/12345",
-          "$ref" : "#/definitions/paymentLinks"
+          "description" : "selfUrl",
+          "$ref" : "#/definitions/paymentLink"
         },
         "nextUrl" : {
-          "example" : "https://www-integration-1.pymnt.uk/charge/12345?chargeTokenId=3671c717-2a0c-4655-92d3-348c7c7b04fb",
-          "$ref" : "#/definitions/paymentLinks"
+          "description" : "nextUrl",
+          "$ref" : "#/definitions/paymentLink"
         }
       },
       "description" : "Resource links of a Payment"
