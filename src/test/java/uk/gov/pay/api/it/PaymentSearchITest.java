@@ -67,6 +67,24 @@ public class PaymentSearchITest extends PaymentResourceITestBase {
     }
 
     @Test
+    public void searchPayments_filterByStatusLowercase() throws Exception {
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, TEST_STATUS, null, null,
+                aSuccessfulSearchResponse()
+                        .withMatchingStatus(TEST_STATUS)
+                        .build()
+        );
+
+        ValidatableResponse response = searchPayments(BEARER_TOKEN, ImmutableMap.of("status", TEST_STATUS.toLowerCase()))
+                .statusCode(200)
+                .contentType(JSON)
+                .body("results.size()", equalTo(3));
+
+        List<Map<String, Object>> results = response.extract().body().jsonPath().getList("results");
+        assertThat(results, matchesField("status", TEST_STATUS));
+    }
+
+    @Test
     public void searchPayments_filterFromAndToDates() throws Exception {
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
         connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, null, TEST_FROM_DATE, TEST_TO_DATE,

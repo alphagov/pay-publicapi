@@ -32,6 +32,7 @@ import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.upperCase;
 import static org.apache.http.HttpStatus.SC_OK;
 import static uk.gov.pay.api.model.Payment.createPaymentResponse;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
@@ -165,7 +166,7 @@ public class PaymentsResource {
                 .orElseGet(() -> {
                     List<Pair<String, String>> queryParams = Lists.newArrayList(
                             Pair.of(REFERENCE_KEY, reference),
-                            Pair.of(STATUS_KEY, status),
+                            Pair.of(STATUS_KEY, upperCase(status)),
                             Pair.of(FROM_DATE_KEY, fromDate),
                             Pair.of(TO_DATE_KEY, toDate)
                     );
