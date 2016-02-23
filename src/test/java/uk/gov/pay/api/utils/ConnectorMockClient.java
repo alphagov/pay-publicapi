@@ -17,7 +17,6 @@ import static javax.ws.rs.HttpMethod.POST;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.HttpHeaders.LOCATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.eclipse.jetty.http.HttpStatus.*;
 import static org.mockserver.model.HttpRequest.request;
@@ -46,8 +45,8 @@ public class ConnectorMockClient {
     private String createChargePayload(long amount, String returnUrl, String description, String reference) {
         return jsonStringBuilder()
                 .add("amount", amount)
-                .add("reference", escapeHtml4(reference))
-                .add("description", escapeHtml4(description))
+                .add("reference", reference)
+                .add("description", description)
                 .add("return_url", returnUrl)
                 .build();
     }
@@ -57,8 +56,8 @@ public class ConnectorMockClient {
         return jsonStringBuilder()
                 .add("charge_id", chargeId)
                 .add("amount", amount)
-                .add("reference", escapeHtml4(reference))
-                .add("description", escapeHtml4(description))
+                .add("reference", reference)
+                .add("description", description)
                 .add("status", status)
                 .add("return_url", returnUrl)
                 .add("payment_provider", paymentProvider)

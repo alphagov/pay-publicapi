@@ -16,7 +16,6 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
-import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
@@ -50,8 +49,8 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .contentType(JSON)
                 .body("payment_id", is(TEST_CHARGE_ID))
                 .body("amount", is(TEST_AMOUNT))
-                .body("reference", is(escapeHtml4(TEST_REFERENCE)))
-                .body("description", is(escapeHtml4(TEST_DESCRIPTION)))
+                .body("reference", is(TEST_REFERENCE))
+                .body("description", is(TEST_DESCRIPTION))
                 .body("status", is(TEST_STATUS))
                 .body("return_url", is(TEST_RETURN_URL))
                 .body("payment_provider", is(TEST_PAYMENT_PROVIDER))
@@ -124,8 +123,8 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .statusCode(200)
                 .contentType(JSON)
                 .body("payment_id", is(TEST_CHARGE_ID))
-                .body("reference", is(escapeHtml4(TEST_REFERENCE)))
-                .body("description", is(escapeHtml4(TEST_DESCRIPTION)))
+                .body("reference", is(TEST_REFERENCE))
+                .body("description", is(TEST_DESCRIPTION))
                 .body("amount", is(TEST_AMOUNT))
                 .body("status", is(TEST_STATUS))
                 .body("return_url", is(TEST_RETURN_URL))
