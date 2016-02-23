@@ -11,3 +11,10 @@ logging:
 
 connectorUrl: ${CONNECTOR_URL}
 publicAuthUrl: ${PUBLIC_AUTH_URL}
+
+jerseyClientConfig:
+  secureConnection: ${SECURE_INTERNAL_CONNECTION}
+  trustStoreFlie: ""
+  trustStorePassword: ${TRUST_STORE_PASSWORD}
+  keyStoreFile: ""
+  keyStorePassword: ${KEY_STORE_PASSWORD}

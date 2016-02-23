@@ -17,3 +17,10 @@ logging:
 
 connectorUrl: http://connector.url/
 publicAuthUrl: http://publicauth.url/v1/auth
+
+jerseyClientConfig:
+  secureConnection: "false"
+  trustStoreFlie: "./truststore_client"
+  trustStorePassword: "test-trust-store-password"
+  keyStoreFile: "./keystore_client"
+  keyStorePassword: "test-key-store-password"

@@ -1,0 +1,120 @@
+package uk.gov.pay.api.resources;
+
+import com.google.common.io.Files;
+import com.google.common.io.Resources;
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import uk.gov.pay.api.config.JerseyClientConfig;
+
+import javax.net.ssl.SSLContext;
+import javax.ws.rs.client.Client;
+import java.io.*;
+import java.security.KeyStore;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.mockito.Mockito.*;
+
+public class ClientFactoryTest {
+
+    private File keyStoreDir;
+    private final String keyStoreName = "tempKeystore.jks";
+    private String keyStorePath;
+    private String keyStorePassword = "password1234";
+
+    @Before
+    public void before() throws Exception {
+        keyStoreDir = Files.createTempDir();
+        KeyStoreUtil.createKeyStoreWithCerts(keyStoreDir, keyStoreName, keyStorePassword.toCharArray());
+        keyStorePath = keyStoreDir.getAbsolutePath() + "/" + keyStoreName;
+    }
+
+    @After
+    public void after() throws Exception {
+        FileUtils.deleteDirectory(keyStoreDir);
+    }
+
+    @Test
+    public void jerseyClient_shouldNotUseSSLWhenSecureInternalCommunicationIsOn() throws Exception {
+        //given
+        JerseyClientConfig clientConfiguration = mock(JerseyClientConfig.class);
+        when(clientConfiguration.getSecureConnection()).thenReturn("false");
+
+        //when
+        Client client = ClientFactory.from(clientConfiguration).getInstance();
+
+        //then
+        verify(clientConfiguration, times(0)).getKeyStoreFile();
+        verify(clientConfiguration, times(0)).getKeyStorePassword();
+        verify(clientConfiguration, times(0)).getTrustStoreFlie();
+        verify(clientConfiguration, times(0)).getTrustStorePassword();
+       assertThat(client.getSslContext().getProtocol(), is(not("TLSv1.2")));
+    }
+
+    @Test
+    public void jerseyClient_shouldUseSSLWhenSecureInternalCommunicationIsOn() throws Exception {
+        //given
+        JerseyClientConfig clientConfiguration = mock(JerseyClientConfig.class);
+        when(clientConfiguration.getSecureConnection()).thenReturn("true");
+        when(clientConfiguration.getKeyStoreFile()).thenReturn(keyStorePath);
+        when(clientConfiguration.getKeyStorePassword()).thenReturn(keyStorePassword);
+        when(clientConfiguration.getTrustStoreFlie()).thenReturn(keyStorePath);
+        when(clientConfiguration.getTrustStorePassword()).thenReturn(keyStorePassword);
+
+        //when
+        Client client = ClientFactory.from(clientConfiguration).getInstance();
+
+        //then
+        SSLContext sslContext = client.getSslContext();
+        assertThat(sslContext.getProtocol(), is("TLSv1.2"));
+
+    }
+
+
+    static class KeyStoreUtil {
+
+        public static final String CERT_FILE = "gds-test.pem";
+
+        public static void createKeyStoreWithCerts(File keyStoreDir, String keyStoreName, char[] keyStorePassword) throws Exception {
+
+            File keyStore = new File(keyStoreDir, keyStoreName);
+            FileOutputStream os = new FileOutputStream(keyStore);
+
+            KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keystore.load(null, keyStorePassword);
+            keystore.store(os, keyStorePassword);
+
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            InputStream certstream = fullStream(Resources.getResource(CERT_FILE).getFile());
+            Certificate certs = cf.generateCertificate(certstream);
+
+            // Load the keystore contents
+            FileInputStream in = new FileInputStream(keyStore);
+            keystore.load(in, keyStorePassword);
+            in.close();
+
+            // Add the certificate
+            keystore.setCertificateEntry("root", certs);
+
+            // Save the new keystore contents
+            FileOutputStream out = new FileOutputStream(keyStore);
+            keystore.store(out, keyStorePassword);
+            out.close();
+        }
+
+        private static InputStream fullStream(String certFile) throws IOException {
+            FileInputStream fis = new FileInputStream(certFile);
+            DataInputStream dis = new DataInputStream(fis);
+            byte[] bytes = new byte[dis.available()];
+            dis.readFully(bytes);
+            ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+            return bais;
+        }
+
+    }
+}
