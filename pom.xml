@@ -234,7 +234,7 @@
                             <springmvc>false</springmvc>
                             <locations>uk.gov.pay.api.resources</locations>
                             <schemes>https</schemes>
-                            <host>publicapi-integration-1.pymnt.uk</host>
+                            <host>publicapi.pymnt.uk</host>
                             <!--<basePath>/</basePath>-->
                             <info>
                                 <title>GOV.UK Pay Api</title>
