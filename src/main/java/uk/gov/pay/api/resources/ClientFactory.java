@@ -8,12 +8,11 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
 public class ClientFactory {
-    public static final String SECURE_CONNECTION_DISABLED = "false";
     public static final String TLSV1_2 = "TLSv1.2";
     private static JerseyClientConfig clientConfig;
 
     public Client getInstance() {
-        if (SECURE_CONNECTION_DISABLED.equals(clientConfig.getSecureConnection())) {
+        if (clientConfig.isDisabledSecureConnection()) {
             return ClientBuilder.newBuilder().build();
         } else {
             SslConfigurator sslConfig = SslConfigurator.newInstance()

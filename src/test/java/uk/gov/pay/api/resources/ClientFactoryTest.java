@@ -40,27 +40,10 @@ public class ClientFactoryTest {
     }
 
     @Test
-    public void jerseyClient_shouldNotUseSSLWhenSecureInternalCommunicationIsOn() throws Exception {
-        //given
-        JerseyClientConfig clientConfiguration = mock(JerseyClientConfig.class);
-        when(clientConfiguration.getSecureConnection()).thenReturn("false");
-
-        //when
-        Client client = ClientFactory.from(clientConfiguration).getInstance();
-
-        //then
-        verify(clientConfiguration, times(0)).getKeyStoreFile();
-        verify(clientConfiguration, times(0)).getKeyStorePassword();
-        verify(clientConfiguration, times(0)).getTrustStoreFlie();
-        verify(clientConfiguration, times(0)).getTrustStorePassword();
-       assertThat(client.getSslContext().getProtocol(), is(not("TLSv1.2")));
-    }
-
-    @Test
     public void jerseyClient_shouldUseSSLWhenSecureInternalCommunicationIsOn() throws Exception {
         //given
         JerseyClientConfig clientConfiguration = mock(JerseyClientConfig.class);
-        when(clientConfiguration.getSecureConnection()).thenReturn("true");
+        when(clientConfiguration.isDisabledSecureConnection()).thenReturn(false);
         when(clientConfiguration.getKeyStoreFile()).thenReturn(keyStorePath);
         when(clientConfiguration.getKeyStorePassword()).thenReturn(keyStorePassword);
         when(clientConfiguration.getTrustStoreFlie()).thenReturn(keyStorePath);
@@ -73,6 +56,23 @@ public class ClientFactoryTest {
         SSLContext sslContext = client.getSslContext();
         assertThat(sslContext.getProtocol(), is("TLSv1.2"));
 
+    }
+
+    @Test
+    public void jerseyClient_shouldNotUseSSLWhenSecureInternalCommunicationIsOn() throws Exception {
+        //given
+        JerseyClientConfig clientConfiguration = mock(JerseyClientConfig.class);
+        when(clientConfiguration.isDisabledSecureConnection()).thenReturn(true);
+
+        //when
+        Client client = ClientFactory.from(clientConfiguration).getInstance();
+
+        //then
+        verify(clientConfiguration, times(0)).getKeyStoreFile();
+        verify(clientConfiguration, times(0)).getKeyStorePassword();
+        verify(clientConfiguration, times(0)).getTrustStoreFlie();
+        verify(clientConfiguration, times(0)).getTrustStorePassword();
+        assertThat(client.getSslContext().getProtocol(), is(not("TLSv1.2")));
     }
 
 
@@ -89,31 +89,28 @@ public class ClientFactoryTest {
             keystore.load(null, keyStorePassword);
             keystore.store(os, keyStorePassword);
 
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            InputStream certstream = fullStream(Resources.getResource(CERT_FILE).getFile());
-            Certificate certs = cf.generateCertificate(certstream);
+            CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+            Certificate certs = certFactory.generateCertificate(streamedCertificate(Resources.getResource(CERT_FILE).getFile()));
 
             // Load the keystore contents
-            FileInputStream in = new FileInputStream(keyStore);
-            keystore.load(in, keyStorePassword);
-            in.close();
+            FileInputStream keyStoreRead = new FileInputStream(keyStore);
+            keystore.load(keyStoreRead, keyStorePassword);
+            keyStoreRead.close();
 
             // Add the certificate
             keystore.setCertificateEntry("root", certs);
 
             // Save the new keystore contents
-            FileOutputStream out = new FileOutputStream(keyStore);
-            keystore.store(out, keyStorePassword);
-            out.close();
+            FileOutputStream keyStoreWrite = new FileOutputStream(keyStore);
+            keystore.store(keyStoreWrite, keyStorePassword);
+            keyStoreWrite.close();
         }
 
-        private static InputStream fullStream(String certFile) throws IOException {
-            FileInputStream fis = new FileInputStream(certFile);
-            DataInputStream dis = new DataInputStream(fis);
+        private static InputStream streamedCertificate(String certFile) throws IOException {
+            DataInputStream dis = new DataInputStream(new FileInputStream(certFile));
             byte[] bytes = new byte[dis.available()];
             dis.readFully(bytes);
-            ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-            return bais;
+            return new ByteArrayInputStream(bytes);
         }
 
     }

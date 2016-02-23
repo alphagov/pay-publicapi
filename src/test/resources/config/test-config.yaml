@@ -19,7 +19,7 @@ connectorUrl: http://connector.url/
 publicAuthUrl: http://publicauth.url/v1/auth
 
 jerseyClientConfig:
-  secureConnection: "false"
+  disabledSecureConnection: true
   trustStoreFlie: "./truststore_client"
   trustStorePassword: "test-trust-store-password"
   keyStoreFile: "./keystore_client"

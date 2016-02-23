@@ -13,7 +13,7 @@ connectorUrl: ${CONNECTOR_URL}
 publicAuthUrl: ${PUBLIC_AUTH_URL}
 
 jerseyClientConfig:
-  secureConnection: ${SECURE_INTERNAL_CONNECTION}
+  disabledSecureConnection: ${DISABLE_INTERNAL_HTTPS}
   trustStoreFlie: ""
   trustStorePassword: ${TRUST_STORE_PASSWORD}
   keyStoreFile: ""

@@ -4,7 +4,7 @@ import io.dropwizard.Configuration;
 
 public class JerseyClientConfig extends Configuration {
 
-    private String secureConnection;
+    private String disabledSecureConnection;
     private String trustStoreFlie;
     private String trustStorePassword;
     private String keyStoreFile;
@@ -26,8 +26,8 @@ public class JerseyClientConfig extends Configuration {
         return keyStorePassword;
     }
 
-    public String getSecureConnection() {
-        return secureConnection;
+    public Boolean isDisabledSecureConnection() {
+        return "true".equals(disabledSecureConnection);
     }
 
 }
