@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.upperCase;
 import static org.apache.http.HttpStatus.SC_OK;
@@ -333,8 +332,8 @@ public class PaymentsResource {
         String returnUrl = requestPayload.getReturnUrl();
         return json(jsonStringBuilder()
                 .add(AMOUNT_KEY, amount)
-                .add(REFERENCE_KEY, escapeHtml4(reference))
-                .add(DESCRIPTION_KEY, escapeHtml4(description))
+                .add(REFERENCE_KEY, reference)
+                .add(DESCRIPTION_KEY, description)
                 .add(SERVICE_RETURN_URL, returnUrl)
                 .build());
     }
