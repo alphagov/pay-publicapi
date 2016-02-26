@@ -14,6 +14,6 @@ publicAuthUrl: ${PUBLIC_AUTH_URL}
 
 jerseyClientConfig:
   disabledSecureConnection: ${DISABLE_INTERNAL_HTTPS}
-  keystoreDir: "/etc/ssl/"
-  keyStoreFile: "ca.cert.crt" # TODO need to replace with the exact file name
+  keyStoreDir: "/etc/ssl/"
+  keyStoreFile: "keystore.pfx" # TODO need to replace with the exact file name
   keyStorePassword: ${KEY_STORE_PASSWORD}
