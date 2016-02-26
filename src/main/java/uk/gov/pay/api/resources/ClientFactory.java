@@ -15,10 +15,12 @@ public class ClientFactory {
         if (clientConfig.isDisabledSecureConnection()) {
             return ClientBuilder.newBuilder().build();
         } else {
+            String keyStoreDir = clientConfig.getKeyStoreDir().endsWith("/") ?
+                    clientConfig.getKeyStoreDir() :
+                    clientConfig.getKeyStoreDir().concat("/"); //safer file path
+            String keyStoreFile = keyStoreDir.concat(clientConfig.getKeyStoreFile());
             SslConfigurator sslConfig = SslConfigurator.newInstance()
-                    .trustStoreFile(clientConfig.getTrustStoreFlie())
-                    .trustStorePassword(clientConfig.getTrustStorePassword())
-                    .keyStoreFile(clientConfig.getKeyStoreFile())
+                    .keyStoreFile(keyStoreFile)
                     .keyPassword(clientConfig.getKeyStorePassword())
                     .securityProtocol(TLSV1_2);
 

@@ -5,17 +5,12 @@ import io.dropwizard.Configuration;
 public class JerseyClientConfig extends Configuration {
 
     private String disabledSecureConnection;
-    private String trustStoreFlie;
-    private String trustStorePassword;
+    private String keyStoreDir;
     private String keyStoreFile;
     private String keyStorePassword;
 
-    public String getTrustStoreFlie() {
-        return trustStoreFlie;
-    }
-
-    public String getTrustStorePassword() {
-        return trustStorePassword;
+    public String getKeyStoreDir() {
+        return keyStoreDir;
     }
 
     public String getKeyStoreFile() {

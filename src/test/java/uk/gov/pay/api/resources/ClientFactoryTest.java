@@ -23,15 +23,13 @@ import static org.mockito.Mockito.*;
 public class ClientFactoryTest {
 
     private File keyStoreDir;
-    private final String keyStoreName = "tempKeystore.jks";
-    private String keyStorePath;
-    private String keyStorePassword = "password1234";
+    private final String keyStoreFile = "tempKeystore.jks";
+    private String keyStorePassword = "password";
 
     @Before
     public void before() throws Exception {
         keyStoreDir = Files.createTempDir();
-        KeyStoreUtil.createKeyStoreWithCerts(keyStoreDir, keyStoreName, keyStorePassword.toCharArray());
-        keyStorePath = keyStoreDir.getAbsolutePath() + "/" + keyStoreName;
+        KeyStoreUtil.createKeyStoreWithCerts(keyStoreDir, keyStoreFile, keyStorePassword.toCharArray());
     }
 
     @After
@@ -44,10 +42,9 @@ public class ClientFactoryTest {
         //given
         JerseyClientConfig clientConfiguration = mock(JerseyClientConfig.class);
         when(clientConfiguration.isDisabledSecureConnection()).thenReturn(false);
-        when(clientConfiguration.getKeyStoreFile()).thenReturn(keyStorePath);
+        when(clientConfiguration.getKeyStoreDir()).thenReturn(keyStoreDir.getAbsolutePath());
+        when(clientConfiguration.getKeyStoreFile()).thenReturn(keyStoreFile);
         when(clientConfiguration.getKeyStorePassword()).thenReturn(keyStorePassword);
-        when(clientConfiguration.getTrustStoreFlie()).thenReturn(keyStorePath);
-        when(clientConfiguration.getTrustStorePassword()).thenReturn(keyStorePassword);
 
         //when
         Client client = ClientFactory.from(clientConfiguration).getInstance();
@@ -68,10 +65,9 @@ public class ClientFactoryTest {
         Client client = ClientFactory.from(clientConfiguration).getInstance();
 
         //then
+        verify(clientConfiguration, times(0)).getKeyStoreDir();
         verify(clientConfiguration, times(0)).getKeyStoreFile();
         verify(clientConfiguration, times(0)).getKeyStorePassword();
-        verify(clientConfiguration, times(0)).getTrustStoreFlie();
-        verify(clientConfiguration, times(0)).getTrustStorePassword();
         assertThat(client.getSslContext().getProtocol(), is(not("TLSv1.2")));
     }
 
