@@ -14,7 +14,6 @@ import uk.gov.pay.api.resources.ClientFactory;
 import uk.gov.pay.api.resources.PaymentsResource;
 
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 
 public class PublicApi extends Application<PublicApiConfig> {
 
