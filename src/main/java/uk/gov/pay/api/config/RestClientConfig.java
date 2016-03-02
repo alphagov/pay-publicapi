@@ -2,7 +2,7 @@ package uk.gov.pay.api.config;
 
 import io.dropwizard.Configuration;
 
-public class JerseyClientConfig extends Configuration {
+public class RestClientConfig extends Configuration {
 
     private String disabledSecureConnection;
     private String keyStoreDir;
@@ -10,7 +10,7 @@ public class JerseyClientConfig extends Configuration {
     private String keyStorePassword;
 
     public String getKeyStoreDir() {
-        return keyStoreDir;
+        return keyStoreDir.endsWith("/") ? keyStoreDir : keyStoreDir.concat("/");
     }
 
     public String getKeyStoreFile() {

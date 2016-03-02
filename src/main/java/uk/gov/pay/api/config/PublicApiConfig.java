@@ -15,10 +15,10 @@ public class PublicApiConfig extends Configuration {
     @Valid
     @NotNull
     @JsonProperty("jerseyClientConfig")
-    private JerseyClientConfig jerseyClientConfig;
+    private RestClientConfig restClientConfig;
 
-    public JerseyClientConfig getJerseyClientConfig() {
-        return jerseyClientConfig;
+    public RestClientConfig getRestClientConfig() {
+        return restClientConfig;
     }
 
     public String getConnectorUrl() {

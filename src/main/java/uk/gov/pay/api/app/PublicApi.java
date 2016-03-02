@@ -10,7 +10,7 @@ import io.dropwizard.setup.Environment;
 import uk.gov.pay.api.auth.AccountAuthenticator;
 import uk.gov.pay.api.config.PublicApiConfig;
 import uk.gov.pay.api.healthcheck.Ping;
-import uk.gov.pay.api.resources.ClientFactory;
+import uk.gov.pay.api.resources.RestClientFactory;
 import uk.gov.pay.api.resources.PaymentsResource;
 
 import javax.ws.rs.client.Client;
@@ -29,7 +29,7 @@ public class PublicApi extends Application<PublicApiConfig> {
 
     @Override
     public void run(PublicApiConfig config, Environment environment) throws Exception {
-        final Client client = ClientFactory.from(config.getJerseyClientConfig()).getInstance();
+        final Client client = RestClientFactory.from(config.getRestClientConfig()).getInstance();
 
         environment.healthChecks().register("ping", new Ping());
 

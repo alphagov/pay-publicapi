@@ -6,7 +6,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import uk.gov.pay.api.config.JerseyClientConfig;
+import uk.gov.pay.api.config.RestClientConfig;
 
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.client.Client;
@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.mockito.Mockito.*;
 
-public class ClientFactoryTest {
+public class RestClientFactoryTest {
 
     private File keyStoreDir;
     private final String keyStoreFile = "tempKeystore.jks";
@@ -40,14 +40,14 @@ public class ClientFactoryTest {
     @Test
     public void jerseyClient_shouldUseSSLWhenSecureInternalCommunicationIsOn() throws Exception {
         //given
-        JerseyClientConfig clientConfiguration = mock(JerseyClientConfig.class);
+        RestClientConfig clientConfiguration = mock(RestClientConfig.class);
         when(clientConfiguration.isDisabledSecureConnection()).thenReturn(false);
-        when(clientConfiguration.getKeyStoreDir()).thenReturn(keyStoreDir.getAbsolutePath());
+        when(clientConfiguration.getKeyStoreDir()).thenReturn(keyStoreDir.getAbsolutePath() + "/");
         when(clientConfiguration.getKeyStoreFile()).thenReturn(keyStoreFile);
         when(clientConfiguration.getKeyStorePassword()).thenReturn(keyStorePassword);
 
         //when
-        Client client = ClientFactory.from(clientConfiguration).getInstance();
+        Client client = RestClientFactory.from(clientConfiguration).getInstance();
 
         //then
         SSLContext sslContext = client.getSslContext();
@@ -56,13 +56,13 @@ public class ClientFactoryTest {
     }
 
     @Test
-    public void jerseyClient_shouldNotUseSSLWhenSecureInternalCommunicationIsOn() throws Exception {
+    public void jerseyClient_shouldNotUseSSLWhenSecureInternalCommunicationIsOff() throws Exception {
         //given
-        JerseyClientConfig clientConfiguration = mock(JerseyClientConfig.class);
+        RestClientConfig clientConfiguration = mock(RestClientConfig.class);
         when(clientConfiguration.isDisabledSecureConnection()).thenReturn(true);
 
         //when
-        Client client = ClientFactory.from(clientConfiguration).getInstance();
+        Client client = RestClientFactory.from(clientConfiguration).getInstance();
 
         //then
         verify(clientConfiguration, times(0)).getKeyStoreDir();
