@@ -14,6 +14,7 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static javax.ws.rs.HttpMethod.GET;
 import static javax.ws.rs.HttpMethod.POST;
+import static javax.ws.rs.core.HttpHeaders.ACCEPT;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.HttpHeaders.LOCATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -215,7 +216,7 @@ public class ConnectorMockClient {
         return mockClient.when(request()
                 .withMethod(GET)
                 .withPath(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId))
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                .withHeader(ACCEPT, APPLICATION_JSON)
                 .withQueryStringParameters(notNullQueryParamsFrom(reference, status, fromDate, toDate))
         );
     }

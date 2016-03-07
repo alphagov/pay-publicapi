@@ -172,7 +172,7 @@ public class PaymentsResource {
 
                     Response connectorResponse = client.target(getConnectorUlr(accountId, queryParams))
                             .request()
-                            .header(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
+                            .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
                             .get();
 
                     if (connectorResponse.getStatus() == SC_OK) {
