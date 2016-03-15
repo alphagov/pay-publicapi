@@ -200,10 +200,6 @@
           "type" : "string",
           "example" : "Your Service Description"
         },
-        "returnUrl" : {
-          "type" : "string",
-          "example" : "http://your.service.domain/your-reference"
-        },
         "reference" : {
           "type" : "string",
           "example" : "your-reference"
@@ -216,6 +212,11 @@
         "payment_provider" : {
           "type" : "string",
           "example" : "worldpay",
+          "readOnly" : true
+        },
+        "return_url" : {
+          "type" : "string",
+          "example" : "http://your.service.domain/your-reference",
           "readOnly" : true
         },
         "_links" : {
@@ -248,11 +249,11 @@
       "type" : "object",
       "properties" : {
         "self" : {
-          "description" : "selfUrl",
+          "description" : "self",
           "$ref" : "#/definitions/paymentLink"
         },
-        "nextUrl" : {
-          "description" : "nextUrl",
+        "next_url" : {
+          "description" : "next_url",
           "$ref" : "#/definitions/paymentLink"
         }
       },
