@@ -6,6 +6,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 @ApiModel(value="CreatePaymentRequest", description = "The Payment Request Payload")
@@ -14,6 +16,7 @@ public class CreatePaymentRequest {
 
     @JsonProperty("account_id")
     private String accountId;
+
     private Long amount;
     @JsonProperty("return_url")
     private String returnUrl;
@@ -36,6 +39,8 @@ public class CreatePaymentRequest {
     @ApiModelProperty(value = "amount in pence", required = true, allowableValues = ">0", example = "12000")
     @JsonProperty
     @NotNull
+    @Min(1)
+    @Max(10000000)
     public Long getAmount() {
         return amount;
     }

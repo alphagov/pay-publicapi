@@ -24,7 +24,7 @@ import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
 
 public class PaymentsResourceITest extends PaymentResourceITestBase {
     private static final String PAYMENT_EVENTS_PATH = "/v1/payments/%s/events";
-    private static final long TEST_AMOUNT = 20032123132120l;
+    private static final Long TEST_AMOUNT = 2003210L;
     private static final String TEST_CHARGE_ID = "ch_ab2341da231434l";
     private static final String TEST_STATUS = "someState";
     private static final String TEST_PAYMENT_PROVIDER = "Sandbox";
@@ -48,7 +48,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .statusCode(201)
                 .contentType(JSON)
                 .body("payment_id", is(TEST_CHARGE_ID))
-                .body("amount", is(TEST_AMOUNT))
+                .body("amount", is(TEST_AMOUNT.intValue()))
                 .body("reference", is(TEST_REFERENCE))
                 .body("description", is(TEST_DESCRIPTION))
                 .body("status", is(TEST_STATUS))
@@ -103,6 +103,36 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     }
 
     @Test
+    public void createPayment_responseWith422_whenAmountIsNegative() {
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        String invalidAmount = "amount must be greater than or equal to 1 (was -123)";
+        postPaymentResponse(BEARER_TOKEN, paymentPayload(-123L, TEST_RETURN_URL, TEST_DESCRIPTION, TEST_REFERENCE))
+                .statusCode(422)
+                .contentType(JSON)
+                .body("errors", is(Arrays.asList(invalidAmount)));
+    }
+
+    @Test
+    public void createPayment_responseWith422_whenAmountIsSmallerThanTheMinimumAllowed() {
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        String invalidAmount = "amount must be greater than or equal to 1 (was 0)";
+        postPaymentResponse(BEARER_TOKEN, paymentPayload(0, TEST_RETURN_URL, TEST_DESCRIPTION, TEST_REFERENCE))
+                .statusCode(422)
+                .contentType(JSON)
+                .body("errors", is(Arrays.asList(invalidAmount)));
+    }
+
+    @Test
+    public void createPayment_responseWith422_whenAmountIsBiggerThanTheMaximumAllowed() {
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        String invalidAmount = "amount must be less than or equal to 10000000 (was 10000001)";
+        postPaymentResponse(BEARER_TOKEN, paymentPayload(10000001L, TEST_RETURN_URL, TEST_DESCRIPTION, TEST_REFERENCE))
+                .statusCode(422)
+                .contentType(JSON)
+                .body("errors", is(Arrays.asList(invalidAmount)));
+    }
+
+    @Test
     public void createPayment_responseWith4xx_whenConnectorResponseEmpty() {
         connectorMock.respondOk_withEmptyBody(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_RETURN_URL, TEST_DESCRIPTION, TEST_REFERENCE);
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
@@ -125,7 +155,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .body("payment_id", is(TEST_CHARGE_ID))
                 .body("reference", is(TEST_REFERENCE))
                 .body("description", is(TEST_DESCRIPTION))
-                .body("amount", is(TEST_AMOUNT))
+                .body("amount", is(TEST_AMOUNT.intValue()))
                 .body("status", is(TEST_STATUS))
                 .body("return_url", is(TEST_RETURN_URL))
                 .body("payment_provider", is(TEST_PAYMENT_PROVIDER))

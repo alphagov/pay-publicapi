@@ -155,7 +155,8 @@
           "format" : "int64",
           "example" : "12000",
           "description" : "amount in pence",
-          "readOnly" : true
+          "readOnly" : true,
+          "minimum" : 0.0
         },
         "reference" : {
           "type" : "string",
