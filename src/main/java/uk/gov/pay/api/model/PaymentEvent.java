@@ -8,6 +8,7 @@ import com.fasterxml.jackson.datatype.joda.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import io.dropwizard.jackson.JsonSnakeCase;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -43,6 +44,7 @@ public class PaymentEvent {
         this.updated = updated;
     }
 
+    @ApiModelProperty(example = "hu20sqlact5260q2nanm0q8u93")
     public String getPaymentId() {
         return paymentId;
     }

@@ -54,7 +54,7 @@ public class Payment {
         return createdDate;
     }
 
-    @ApiModelProperty(example = "12345")
+    @ApiModelProperty(example = "hu20sqlact5260q2nanm0q8u93")
     public String getPaymentId() {
         return paymentId;
     }
