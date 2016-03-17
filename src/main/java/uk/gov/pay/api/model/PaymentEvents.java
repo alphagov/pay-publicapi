@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.dropwizard.jackson.JsonSnakeCase;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
 
@@ -36,6 +37,7 @@ public class PaymentEvents {
         this.events = events;
     }
 
+    @ApiModelProperty(example = "hu20sqlact5260q2nanm0q8u93")
     public String getPaymentId() {
         return paymentId;
     }

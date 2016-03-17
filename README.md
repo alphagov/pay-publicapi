@@ -166,7 +166,7 @@ Content-Type: application/json
                 "method": "GET" 
             },
             "next_url" : {
-                "href": "http://frontend.co.uk/charge/1?chargeTokenId=82347",
+                "href": "http://frontend.co.uk/charge/ab2341da231434?chargeTokenId=82347",
                 "method": "GET" 
             }
     },
@@ -334,7 +334,7 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 {
     "results": [{     
-        "charge_id": "1",
+        "charge_id": "hu20sqlact5260q2nanm0q8u93",
         "description": "Breathing licence",
         "reference": "Ref-1234",
         "amount": 5000,

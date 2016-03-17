@@ -211,7 +211,7 @@
         },
         "payment_id" : {
           "type" : "string",
-          "example" : "12345",
+          "example" : "hu20sqlact5260q2nanm0q8u93",
           "readOnly" : true
         },
         "payment_provider" : {
