@@ -2,7 +2,6 @@ package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import io.dropwizard.jackson.JsonSnakeCase;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -12,8 +11,8 @@ import static com.google.common.collect.Lists.newArrayList;
 import static uk.gov.pay.api.model.PaymentEvent.createPaymentEvent;
 
 @ApiModel(value="Payment Events information", description = "A List of Payment Events information")
-@JsonSnakeCase
 public class PaymentEvents {
+    @JsonProperty("payment_id")
     private final String paymentId;
     private final List<PaymentEvent> events;
     @JsonProperty("_links")

@@ -1,7 +1,6 @@
 package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.dropwizard.jackson.JsonSnakeCase;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.NotBlank;
@@ -11,9 +10,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 @ApiModel(value="CreatePaymentRequest", description = "The Payment Request Payload")
-@JsonSnakeCase
 public class CreatePaymentRequest {
-
     @JsonProperty("account_id")
     private String accountId;
 

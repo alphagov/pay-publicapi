@@ -1,11 +1,9 @@
 package uk.gov.pay.api.model;
 
-import io.dropwizard.jackson.JsonSnakeCase;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(value = "paymentLink", description = "A link related to a payment")
-@JsonSnakeCase
 public class Link {
     private String href;
     private String method;

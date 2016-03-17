@@ -2,22 +2,25 @@ package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import io.dropwizard.jackson.JsonSnakeCase;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(value="Payment information", description = "A Payment description")
-@JsonSnakeCase
 public class Payment {
     @JsonProperty("payment_id")
     private final String paymentId;
+    
     @JsonProperty("payment_provider")
     private final String paymentProvider;
     private final long amount;
     private final String status;
     private final String description;
+    
+    @JsonProperty("return_url")
     private final String returnUrl;
+    
     private final String reference;
+    
     @JsonProperty("_links")
     private final Links links = new Links();
 
@@ -115,7 +118,7 @@ public class Payment {
     }
 
     public Payment withNextLink(String url) {
-        this.links.setNext(url);
+        this.links.setNextUrl(url);
         return this;
     }
 }
