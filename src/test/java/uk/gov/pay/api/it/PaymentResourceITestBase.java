@@ -14,9 +14,9 @@ import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 
 public abstract class PaymentResourceITestBase {
 
-    public static final String BEARER_TOKEN = "TEST_BEARER_TOKEN";
-    public static final String GATEWAY_ACCOUNT_ID = "GATEWAY_ACCOUNT_ID";
-    public static final String PAYMENTS_PATH = "/v1/payments/";
+    protected static final String BEARER_TOKEN = "TEST_BEARER_TOKEN";
+    protected static final String GATEWAY_ACCOUNT_ID = "GATEWAY_ACCOUNT_ID";
+    protected static final String PAYMENTS_PATH = "/v1/payments/";
 
     @Rule
     public MockServerRule connectorMockRule = new MockServerRule(this);
@@ -24,15 +24,15 @@ public abstract class PaymentResourceITestBase {
     @Rule
     public MockServerRule publicAuthMockRule = new MockServerRule(this);
 
-    protected ConnectorMockClient connectorMock;
-    protected PublicAuthMockClient publicAuthMock;
-
     @Rule
     public DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
             PublicApi.class
             , resourceFilePath("config/test-config.yaml")
             , config("connectorUrl", connectorBaseUrl())
             , config("publicAuthUrl", publicAuthBaseUrl()));
+
+    protected ConnectorMockClient connectorMock;
+    protected PublicAuthMockClient publicAuthMock;
 
     @Before
     public void setup() {
@@ -47,5 +47,4 @@ public abstract class PaymentResourceITestBase {
     private String publicAuthBaseUrl() {
         return "http://localhost:" + publicAuthMockRule.getHttpPort() + "/v1/auth";
     }
-
 }

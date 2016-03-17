@@ -1,5 +1,6 @@
 package uk.gov.pay.api.app;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthFactory;
 import io.dropwizard.auth.oauth.OAuthFactory;
@@ -31,10 +32,10 @@ public class PublicApi extends Application<PublicApiConfig> {
     public void run(PublicApiConfig config, Environment environment) throws Exception {
         final Client client = RestClientFactory.from(config.getRestClientConfig()).getInstance();
 
+        environment.getObjectMapper().configure(DeserializationFeature.ACCEPT_FLOAT_AS_INT, false);
+
         environment.healthChecks().register("ping", new Ping());
-
         environment.jersey().register(new PaymentsResource(client, config.getConnectorUrl()));
-
         environment.jersey().register(AuthFactory.binder(new OAuthFactory<>(new AccountAuthenticator(client, config.getPublicAuthUrl()), "", String.class)));
     }
 

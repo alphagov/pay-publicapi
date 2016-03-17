@@ -1,57 +1,17 @@
 package uk.gov.pay.api.it;
 
 import com.jayway.restassured.response.ValidatableResponse;
-import io.dropwizard.testing.junit.DropwizardAppRule;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.mockserver.junit.MockServerRule;
-import uk.gov.pay.api.app.PublicApi;
-import uk.gov.pay.api.config.PublicApiConfig;
-import uk.gov.pay.api.utils.ConnectorMockClient;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
-import static io.dropwizard.testing.ConfigOverride.config;
-import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.Matchers.is;
 
 public class PaymentsCancelResourceITest extends PaymentResourceITestBase {
+
     private static final String TEST_CHARGE_ID = "ch_ab2341da231434";
-
     private static final String CANCEL_PAYMENTS_PATH = PAYMENTS_PATH + "%s/cancel";
-
-    @Rule
-    public MockServerRule connectorMockRule = new MockServerRule(this);
-
-    @Rule
-    public MockServerRule publicAuthMockRule = new MockServerRule(this);
-
-    private ConnectorMockClient connectorMock;
-    private PublicAuthMockClient publicAuthMock;
-
-    @Rule
-    public DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
-            PublicApi.class
-            , resourceFilePath("config/test-config.yaml")
-            , config("publicAuthUrl", publicAuthBaseUrl())
-            , config("connectorUrl", connectorBaseUrl()));
-
-    private String connectorBaseUrl() {
-        return "http://localhost:" + connectorMockRule.getHttpPort();
-    }
-
-    private String publicAuthBaseUrl() {
-        return "http://localhost:" + publicAuthMockRule.getHttpPort() + "/v1/auth";
-    }
-
-    @Before
-    public void setup() {
-        connectorMock = new ConnectorMockClient(connectorMockRule.getHttpPort(), connectorBaseUrl());
-        publicAuthMock = new PublicAuthMockClient(publicAuthMockRule.getHttpPort());
-    }
 
     @Test
     public void cancelPayment_Returns401_WhenUnauthorised() {
