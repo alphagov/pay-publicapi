@@ -181,7 +181,9 @@
           "type" : "string",
           "example" : "https://service-name.gov.uk/transactions/12345",
           "description" : "service return url",
-          "readOnly" : true
+          "readOnly" : true,
+          "minLength" : 0,
+          "maxLength" : 2048
         }
       },
       "description" : "The Payment Request Payload"

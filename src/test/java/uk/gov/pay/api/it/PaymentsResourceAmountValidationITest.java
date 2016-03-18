@@ -4,7 +4,6 @@ import com.jayway.restassured.response.ValidatableResponse;
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.google.common.collect.Maps.newHashMap;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
@@ -22,7 +21,14 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
     @Test
     public void createPayment_responseWith422_whenAmountIsNegative() {
 
-        postPaymentResponse(BEARER_TOKEN, paymentPayload(-123))
+        String payload = "{" +
+                "  \"amount\" : -123," +
+                "  \"reference\" : \"Some reference\"," +
+                "  \"description\" : \"Some description\"," +
+                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
+                "}";
+
+        postPaymentResponse(BEARER_TOKEN, payload)
                 .statusCode(422)
                 .contentType(JSON)
                 .body("errors", hasSize(1))
@@ -32,7 +38,14 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
     @Test
     public void createPayment_responseWith422_whenAmountIsSmallerThanTheMinimumAllowed() {
 
-        postPaymentResponse(BEARER_TOKEN, paymentPayload(0))
+        String payload = "{" +
+                "  \"amount\" : 0," +
+                "  \"reference\" : \"Some reference\"," +
+                "  \"description\" : \"Some description\"," +
+                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
+                "}";
+
+        postPaymentResponse(BEARER_TOKEN, payload)
                 .statusCode(422)
                 .contentType(JSON)
                 .body("errors", hasSize(1))
@@ -42,7 +55,14 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
     @Test
     public void createPayment_responseWith422_whenAmountIsBiggerThanTheMaximumAllowed() {
 
-        postPaymentResponse(BEARER_TOKEN, paymentPayload(10000001L))
+        String payload = "{" +
+                "  \"amount\" : 10000001," +
+                "  \"reference\" : \"Some reference\"," +
+                "  \"description\" : \"Some description\"," +
+                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
+                "}";
+
+        postPaymentResponse(BEARER_TOKEN, payload)
                 .statusCode(422)
                 .contentType(JSON)
                 .body("errors", hasSize(1))
@@ -52,7 +72,14 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
     @Test
     public void createPayment_responseWith422_whenAmountFieldHasNullValue() {
 
-        postPaymentResponse(BEARER_TOKEN, paymentPayload(null))
+        String payload = "{" +
+                "  \"amount\" : null," +
+                "  \"reference\" : \"Some reference\"," +
+                "  \"description\" : \"Some description\"," +
+                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
+                "}";
+
+        postPaymentResponse(BEARER_TOKEN, payload)
                 .statusCode(422)
                 .contentType(JSON)
                 .body("errors", hasSize(1))
@@ -62,7 +89,14 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
     @Test
     public void createPayment_responseWith400_whenAmountFieldIsNotNumeric() {
 
-        postPaymentResponse(BEARER_TOKEN, paymentPayload("£%&dasg*??<>"))
+        String payload = "{" +
+                "  \"amount\" : \"£%&dasg*??<>\"," +
+                "  \"reference\" : \"Some reference\"," +
+                "  \"description\" : \"Some description\"," +
+                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
+                "}";
+
+        postPaymentResponse(BEARER_TOKEN, payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .body("message", is("Unable to process JSON"));
@@ -71,7 +105,14 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
     @Test
     public void createPayment_responseWith400_whenAmountFieldIsNotAValidJsonField() {
 
-        postPaymentResponse(BEARER_TOKEN, paymentPayload(newHashMap()))
+        String payload = "{" +
+                "  \"amount\" : { \"whatever\": 1 }," +
+                "  \"reference\" : \"Some reference\"," +
+                "  \"description\" : \"Some description\"," +
+                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
+                "}";
+
+        postPaymentResponse(BEARER_TOKEN, payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .body("message", is("Unable to process JSON"));
@@ -80,7 +121,30 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
     @Test
     public void createPayment_responseWith422_whenAmountFieldIsBlank() {
 
-        postPaymentResponse(BEARER_TOKEN, paymentPayload("\"    \""))
+        String payload = "{" +
+                "  \"amount\" : \"    \"," +
+                "  \"reference\" : \"Some reference\"," +
+                "  \"description\" : \"Some description\"," +
+                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
+                "}";
+
+        postPaymentResponse(BEARER_TOKEN, payload)
+                .statusCode(422)
+                .contentType(JSON)
+                .body("errors", hasSize(1))
+                .body("errors", hasItem("amount may not be null (was null)"));
+    }
+
+    @Test
+    public void createPayment_responseWith400_whenAmountFieldIsMissing() {
+
+        String payload = "{" +
+                "  \"reference\" : \"Some reference\"," +
+                "  \"description\" : \"Some description\"," +
+                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
+                "}";
+
+        postPaymentResponse(BEARER_TOKEN, payload)
                 .statusCode(422)
                 .contentType(JSON)
                 .body("errors", hasSize(1))
@@ -90,7 +154,14 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
     @Test
     public void createPayment_responseWith400_whenAmountIsHexadecimal() {
 
-        postPaymentResponse(BEARER_TOKEN, paymentPayload("0x1000"))
+        String payload = "{" +
+                "  \"amount\" : 0x1000," +
+                "  \"reference\" : \"Some reference\"," +
+                "  \"description\" : \"Some description\"," +
+                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
+                "}";
+
+        postPaymentResponse(BEARER_TOKEN, payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .body("message", is("Unable to process JSON"));
@@ -99,7 +170,14 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
     @Test
     public void createPayment_responseWith400_whenAmountIsBinary() {
 
-        postPaymentResponse(BEARER_TOKEN, paymentPayload("0B101"))
+        String payload = "{" +
+                "  \"amount\" : 0B101," +
+                "  \"reference\" : \"Some reference\"," +
+                "  \"description\" : \"Some description\"," +
+                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
+                "}";
+
+        postPaymentResponse(BEARER_TOKEN, payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .body("message", is("Unable to process JSON"));
@@ -108,7 +186,14 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
     @Test
     public void createPayment_responseWith400_whenAmountIsOctal() {
 
-        postPaymentResponse(BEARER_TOKEN, paymentPayload("017"))
+        String payload = "{" +
+                "  \"amount\" : 017," +
+                "  \"reference\" : \"Some reference\"," +
+                "  \"description\" : \"Some description\"," +
+                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
+                "}";
+
+        postPaymentResponse(BEARER_TOKEN, payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .body("message", is("Unable to process JSON"));
@@ -117,7 +202,14 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
     @Test
     public void createPayment_responseWith400_whenAmountIsFloat() {
 
-        postPaymentResponse(BEARER_TOKEN, paymentPayload(27.55))
+        String payload = "{" +
+                "  \"amount\" : 27.55," +
+                "  \"reference\" : \"Some reference\"," +
+                "  \"description\" : \"Some description\"," +
+                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
+                "}";
+
+        postPaymentResponse(BEARER_TOKEN, payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .body("message", is("Unable to process JSON"));
@@ -126,7 +218,14 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
     @Test
     public void createPayment_responseWith400_whenAmountIsDouble() {
 
-        postPaymentResponse(BEARER_TOKEN, paymentPayload(27.55d))
+        String payload = "{" +
+                "  \"amount\" : 27.55d," +
+                "  \"reference\" : \"Some reference\"," +
+                "  \"description\" : \"Some description\"," +
+                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
+                "}";
+
+        postPaymentResponse(BEARER_TOKEN, payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .body("message", is("Unable to process JSON"));
@@ -135,19 +234,17 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
     @Test
     public void createPayment_responseWith400_whenAmountIsNullByteEncoded() {
 
-        postPaymentResponse(BEARER_TOKEN, paymentPayload("%00"))
-                .statusCode(400)
-                .contentType(JSON)
-                .body("message", is("Unable to process JSON"));
-    }
-
-    private String paymentPayload(Object amount) {
-        return "{" +
-                "  \"amount\" : " + amount + "," +
+        String payload = "{" +
+                "  \"amount\" : %00," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
                 "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
                 "}";
+
+        postPaymentResponse(BEARER_TOKEN, payload)
+                .statusCode(400)
+                .contentType(JSON)
+                .body("message", is("Unable to process JSON"));
     }
 
     private ValidatableResponse postPaymentResponse(String bearerToken, String payload) {

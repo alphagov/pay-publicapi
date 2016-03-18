@@ -11,9 +11,11 @@ import io.dropwizard.setup.Environment;
 import uk.gov.pay.api.auth.AccountAuthenticator;
 import uk.gov.pay.api.config.PublicApiConfig;
 import uk.gov.pay.api.healthcheck.Ping;
-import uk.gov.pay.api.resources.RestClientFactory;
 import uk.gov.pay.api.resources.PaymentsResource;
+import uk.gov.pay.api.resources.RestClientFactory;
+import uk.gov.pay.api.validation.ConfigurationAwareConstraintValidatorFactory;
 
+import javax.validation.Validation;
 import javax.ws.rs.client.Client;
 
 public class PublicApi extends Application<PublicApiConfig> {
@@ -30,11 +32,17 @@ public class PublicApi extends Application<PublicApiConfig> {
 
     @Override
     public void run(PublicApiConfig config, Environment environment) throws Exception {
+
         final Client client = RestClientFactory.from(config.getRestClientConfig()).getInstance();
 
         environment.getObjectMapper().configure(DeserializationFeature.ACCEPT_FLOAT_AS_INT, false);
-
         environment.healthChecks().register("ping", new Ping());
+
+        environment.setValidator(Validation.byDefaultProvider()
+                .configure().constraintValidatorFactory(new ConfigurationAwareConstraintValidatorFactory(config))
+                .buildValidatorFactory()
+                .getValidator());
+
         environment.jersey().register(new PaymentsResource(client, config.getConnectorUrl()));
         environment.jersey().register(AuthFactory.binder(new OAuthFactory<>(new AccountAuthenticator(client, config.getPublicAuthUrl()), "", String.class)));
     }
