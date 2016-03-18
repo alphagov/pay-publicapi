@@ -152,11 +152,12 @@
       "properties" : {
         "amount" : {
           "type" : "integer",
-          "format" : "int64",
+          "format" : "int32",
           "example" : "12000",
           "description" : "amount in pence",
           "readOnly" : true,
-          "minimum" : 0.0
+          "minimum" : 1.0,
+          "maximum" : 1.0E7
         },
         "reference" : {
           "type" : "string",

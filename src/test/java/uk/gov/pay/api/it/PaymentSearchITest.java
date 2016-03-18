@@ -23,10 +23,10 @@ import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.aSuccessfulS
 
 public class PaymentSearchITest extends PaymentResourceITestBase {
 
-    protected static final String TEST_REFERENCE = "test_reference";
-    protected static final String TEST_STATUS = "succeeded";
-    protected static final String TEST_FROM_DATE = "2016-01-28T00:00:00Z";
-    protected static final String TEST_TO_DATE = "2016-01-28T12:00:00Z";
+    private static final String TEST_REFERENCE = "test_reference";
+    private static final String TEST_STATUS = "succeeded";
+    private static final String TEST_FROM_DATE = "2016-01-28T00:00:00Z";
+    private static final String TEST_TO_DATE = "2016-01-28T12:00:00Z";
     private static final String SEARCH_PATH = "/v1/payments";
 
     @Test

@@ -9,12 +9,11 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-@ApiModel(value="CreatePaymentRequest", description = "The Payment Request Payload")
+@ApiModel(value = "CreatePaymentRequest", description = "The Payment Request Payload")
 public class CreatePaymentRequest {
     @JsonProperty("account_id")
     private String accountId;
-
-    private Long amount;
+    private Integer amount;
     @JsonProperty("return_url")
     private String returnUrl;
     private String reference;
@@ -38,7 +37,7 @@ public class CreatePaymentRequest {
     @NotNull
     @Min(1)
     @Max(10000000)
-    public Long getAmount() {
+    public Integer getAmount() {
         return amount;
     }
 

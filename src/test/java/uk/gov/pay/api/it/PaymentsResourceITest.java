@@ -8,7 +8,6 @@ import javax.ws.rs.core.HttpHeaders;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -16,48 +15,47 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
 
 public class PaymentsResourceITest extends PaymentResourceITestBase {
-    private static final String PAYMENT_EVENTS_PATH = "/v1/payments/%s/events";
-    private static final Long TEST_AMOUNT = 2003210L;
-    private static final String TEST_CHARGE_ID = "ch_ab2341da231434l";
-    private static final String TEST_STATUS = "someState";
-    private static final String TEST_PAYMENT_PROVIDER = "Sandbox";
-    private static final String TEST_RETURN_URL = "http://somewhere.over.the/rainbow/{paymentID}";
-    private static final String TEST_REFERENCE = "Some reference <script> alert('This is a ?{simple} XSS attack.')</script>";
-    private static final String TEST_DESCRIPTION = "Some description <script> alert('This is a ?{simple} XSS attack.')</script>";
-    private static final LocalDateTime TEST_TIMESTAMP = LocalDateTime.of(2016, Month.JANUARY, 1, 12, 00, 00);
-    private static final String TEST_CREATED_DATE = TEST_TIMESTAMP.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:SS"));
-    private static final Map<String, String> TEST_PAYMENT_CREATED = new ChargeEventBuilder(TEST_CHARGE_ID, TEST_STATUS, TEST_TIMESTAMP).build();
-    private static final List<Map<String, String>> TEST_EVENTS = newArrayList(TEST_PAYMENT_CREATED);
 
-    private static final String SUCCESS_PAYLOAD = paymentPayload(TEST_AMOUNT, TEST_RETURN_URL, TEST_DESCRIPTION, TEST_REFERENCE);
+    private static final int AMOUNT = 9999999;
+    private static final String CHARGE_ID = "ch_ab2341da231434l";
+    private static final String STATUS = "someState";
+    private static final String PAYMENT_PROVIDER = "Sandbox";
+    private static final String RETURN_URL = "http://somewhere.over.the/rainbow/{paymentID}";
+    private static final String REFERENCE = "Some reference <script> alert('This is a ?{simple} XSS attack.')</script>";
+    private static final String DESCRIPTION = "Some description <script> alert('This is a ?{simple} XSS attack.')</script>";
+    private static final LocalDateTime TIMESTAMP = LocalDateTime.of(2016, Month.JANUARY, 1, 12, 00, 00);
+    private static final String CREATED_DATE = TIMESTAMP.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:SS"));
+    private static final Map<String, String> PAYMENT_CREATED = new ChargeEventBuilder(CHARGE_ID, STATUS, TIMESTAMP).build();
+    private static final List<Map<String, String>> EVENTS = newArrayList(PAYMENT_CREATED);
+
+    private static final String SUCCESS_PAYLOAD = paymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE);
 
     @Test
     public void createPayment() {
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondOk_whenCreateCharge(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_STATUS, TEST_RETURN_URL,
-                TEST_DESCRIPTION, TEST_REFERENCE, TEST_PAYMENT_PROVIDER, TEST_CREATED_DATE);
+        connectorMock.respondOk_whenCreateCharge(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, STATUS, RETURN_URL,
+                DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE);
 
         ValidatableResponse response = postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
                 .statusCode(201)
                 .contentType(JSON)
-                .body("payment_id", is(TEST_CHARGE_ID))
-                .body("amount", is(TEST_AMOUNT.intValue()))
-                .body("reference", is(TEST_REFERENCE))
-                .body("description", is(TEST_DESCRIPTION))
-                .body("status", is(TEST_STATUS))
-                .body("return_url", is(TEST_RETURN_URL))
-                .body("payment_provider", is(TEST_PAYMENT_PROVIDER))
-                .body("created_date", is(TEST_CREATED_DATE));
+                .body("payment_id", is(CHARGE_ID))
+                .body("amount", is(9999999))
+                .body("reference", is(REFERENCE))
+                .body("description", is(DESCRIPTION))
+                .body("status", is(STATUS))
+                .body("return_url", is(RETURN_URL))
+                .body("payment_provider", is(PAYMENT_PROVIDER))
+                .body("created_date", is(CREATED_DATE));
 
         String paymentId = response.extract().path("payment_id");
-        assertThat(paymentId, is(TEST_CHARGE_ID));
+        assertThat(paymentId, is(CHARGE_ID));
 
         String paymentUrl = paymentLocationFor(paymentId);
 
@@ -65,76 +63,71 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
 
         response.body("_links.self.href", is(paymentUrl));
         response.body("_links.self.method", is("GET"));
-        response.body("_links.next_url.href", is(cardDetailsUrlFor(TEST_CHARGE_ID)));
+        response.body("_links.next_url.href", is(cardDetailsUrlFor(CHARGE_ID)));
         response.body("_links.next_url.method", is("GET"));
 
-        connectorMock.verifyCreateCharge(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_RETURN_URL, TEST_DESCRIPTION, TEST_REFERENCE);
+        connectorMock.verifyCreateCharge(AMOUNT, GATEWAY_ACCOUNT_ID, RETURN_URL, DESCRIPTION, REFERENCE);
     }
 
     @Test
-    public void createPayment_responseWith4xx_whenInvalidGatewayAccount() {
+    public void createPayment_withMinimumAmount() {
+
+        int minimumAmount = 1;
+
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        connectorMock.respondOk_whenCreateCharge(minimumAmount, GATEWAY_ACCOUNT_ID, CHARGE_ID, STATUS, RETURN_URL,
+                DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE);
+
+       postPaymentResponse(BEARER_TOKEN, paymentPayload(minimumAmount, RETURN_URL, DESCRIPTION, REFERENCE))
+                .statusCode(201)
+                .contentType(JSON)
+                .body("payment_id", is(CHARGE_ID))
+                .body("amount", is(minimumAmount))
+                .body("reference", is(REFERENCE))
+                .body("description", is(DESCRIPTION))
+                .body("status", is(STATUS))
+                .body("return_url", is(RETURN_URL))
+                .body("payment_provider", is(PAYMENT_PROVIDER))
+                .body("created_date", is(CREATED_DATE));
+
+        connectorMock.verifyCreateCharge(minimumAmount, GATEWAY_ACCOUNT_ID, RETURN_URL, DESCRIPTION, REFERENCE);
+    }
+
+    @Test
+    public void createPayment_responseWith400_whenInvalidGatewayAccount() {
         String invalidGatewayAccountId = "ada2dfa323";
         String errorMessage = "something went wrong";
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, invalidGatewayAccountId);
 
-        connectorMock.respondUnknownGateway_whenCreateCharge(TEST_AMOUNT, invalidGatewayAccountId, errorMessage, TEST_RETURN_URL, TEST_DESCRIPTION, TEST_REFERENCE);
+        connectorMock.respondUnknownGateway_whenCreateCharge(AMOUNT, invalidGatewayAccountId, errorMessage, RETURN_URL, DESCRIPTION, REFERENCE);
 
         postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
                 .statusCode(400)
                 .contentType(JSON)
                 .body("message", is(errorMessage));
 
-        connectorMock.verifyCreateCharge(TEST_AMOUNT, invalidGatewayAccountId, TEST_RETURN_URL, TEST_DESCRIPTION, TEST_REFERENCE);
+        connectorMock.verifyCreateCharge(AMOUNT, invalidGatewayAccountId, RETURN_URL, DESCRIPTION, REFERENCE);
     }
 
     @Test
-    public void createPayment_responseWith4xx_whenFieldsMissing() {
+    public void createPayment_responseWith422_whenFieldsMissing() {
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
         String nullCheck = " may not be null (was null)";
         String emptyCheck = " may not be empty (was null)";
         postPaymentResponse(BEARER_TOKEN, "{}")
                 .statusCode(422)
                 .contentType(JSON)
-                .body("errors", is(Arrays.asList(
-                            "amount"      + nullCheck,
-                            "description" + emptyCheck,
-                            "reference"   + emptyCheck,
-                            "returnUrl"   + emptyCheck)));
+                .body("errors", hasSize(4))
+                .body("errors", hasItems(
+                        "amount" + nullCheck,
+                        "description" + emptyCheck,
+                        "reference" + emptyCheck,
+                        "returnUrl" + emptyCheck));
     }
 
     @Test
-    public void createPayment_responseWith422_whenAmountIsNegative() {
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-        String invalidAmount = "amount must be greater than or equal to 1 (was -123)";
-        postPaymentResponse(BEARER_TOKEN, paymentPayload(-123L, TEST_RETURN_URL, TEST_DESCRIPTION, TEST_REFERENCE))
-                .statusCode(422)
-                .contentType(JSON)
-                .body("errors", is(Arrays.asList(invalidAmount)));
-    }
-
-    @Test
-    public void createPayment_responseWith422_whenAmountIsSmallerThanTheMinimumAllowed() {
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-        String invalidAmount = "amount must be greater than or equal to 1 (was 0)";
-        postPaymentResponse(BEARER_TOKEN, paymentPayload(0, TEST_RETURN_URL, TEST_DESCRIPTION, TEST_REFERENCE))
-                .statusCode(422)
-                .contentType(JSON)
-                .body("errors", is(Arrays.asList(invalidAmount)));
-    }
-
-    @Test
-    public void createPayment_responseWith422_whenAmountIsBiggerThanTheMaximumAllowed() {
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-        String invalidAmount = "amount must be less than or equal to 10000000 (was 10000001)";
-        postPaymentResponse(BEARER_TOKEN, paymentPayload(10000001L, TEST_RETURN_URL, TEST_DESCRIPTION, TEST_REFERENCE))
-                .statusCode(422)
-                .contentType(JSON)
-                .body("errors", is(Arrays.asList(invalidAmount)));
-    }
-
-    @Test
-    public void createPayment_responseWith4xx_whenConnectorResponseEmpty() {
-        connectorMock.respondOk_withEmptyBody(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_RETURN_URL, TEST_DESCRIPTION, TEST_REFERENCE);
+    public void createPayment_responseWith400_whenConnectorResponseEmpty() {
+        connectorMock.respondOk_withEmptyBody(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, RETURN_URL, DESCRIPTION, REFERENCE);
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
 
         postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
@@ -146,29 +139,29 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     @Test
     public void getPayment_ReturnsPayment() {
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondWithChargeFound(TEST_AMOUNT, GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_STATUS, TEST_RETURN_URL,
-                TEST_DESCRIPTION, TEST_REFERENCE, TEST_PAYMENT_PROVIDER, TEST_CREATED_DATE);
+        connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, STATUS, RETURN_URL,
+                DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE);
 
-        ValidatableResponse response = getPaymentResponse(BEARER_TOKEN, TEST_CHARGE_ID)
+        ValidatableResponse response = getPaymentResponse(BEARER_TOKEN, CHARGE_ID)
                 .statusCode(200)
                 .contentType(JSON)
-                .body("payment_id", is(TEST_CHARGE_ID))
-                .body("reference", is(TEST_REFERENCE))
-                .body("description", is(TEST_DESCRIPTION))
-                .body("amount", is(TEST_AMOUNT.intValue()))
-                .body("status", is(TEST_STATUS))
-                .body("return_url", is(TEST_RETURN_URL))
-                .body("payment_provider", is(TEST_PAYMENT_PROVIDER))
-                .body("created_date", is(TEST_CREATED_DATE));
+                .body("payment_id", is(CHARGE_ID))
+                .body("reference", is(REFERENCE))
+                .body("description", is(DESCRIPTION))
+                .body("amount", is(AMOUNT))
+                .body("status", is(STATUS))
+                .body("return_url", is(RETURN_URL))
+                .body("payment_provider", is(PAYMENT_PROVIDER))
+                .body("created_date", is(CREATED_DATE));
 
-        response.body("_links.self.href", is(paymentLocationFor(TEST_CHARGE_ID)));
+        response.body("_links.self.href", is(paymentLocationFor(CHARGE_ID)));
     }
 
     @Test
     public void getPayment_Returns401_WhenUnauthorised() {
         publicAuthMock.respondUnauthorised();
 
-        getPaymentResponse(BEARER_TOKEN, TEST_CHARGE_ID)
+        getPaymentResponse(BEARER_TOKEN, CHARGE_ID)
                 .statusCode(401);
     }
 
@@ -188,27 +181,27 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     @Test
     public void getPaymentEvents_ReturnsPaymentEvents() {
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondWithChargeEventsFound(GATEWAY_ACCOUNT_ID, TEST_CHARGE_ID, TEST_EVENTS);
+        connectorMock.respondWithChargeEventsFound(GATEWAY_ACCOUNT_ID, CHARGE_ID, EVENTS);
 
-        ValidatableResponse response = getPaymentEventsResponse(BEARER_TOKEN, TEST_CHARGE_ID)
+        ValidatableResponse response = getPaymentEventsResponse(BEARER_TOKEN, CHARGE_ID)
                 .statusCode(200)
                 .contentType(JSON)
-                .body("payment_id", is(TEST_CHARGE_ID))
+                .body("payment_id", is(CHARGE_ID))
                 .body("events", hasSize(1));
 
-        List<Map<String,String>> list = response.extract().body().jsonPath().getList("events");
-        assertEquals(list.get(0).get("payment_id"), TEST_CHARGE_ID);
-        assertEquals(list.get(0).get("status"), TEST_STATUS);
+        List<Map<String, String>> list = response.extract().body().jsonPath().getList("events");
+        assertEquals(list.get(0).get("payment_id"), CHARGE_ID);
+        assertEquals(list.get(0).get("status"), STATUS);
         assertEquals(list.get(0).get("updated"), "2016-01-01 12:00:00");
 
-        response.body("_links.self.href", is(paymentEventsLocationFor(TEST_CHARGE_ID)));
+        response.body("_links.self.href", is(paymentEventsLocationFor(CHARGE_ID)));
     }
 
     @Test
     public void getPaymentEvents_Returns401_WhenUnauthorised() {
         publicAuthMock.respondUnauthorised();
 
-        getPaymentEventsResponse(BEARER_TOKEN, TEST_CHARGE_ID)
+        getPaymentEventsResponse(BEARER_TOKEN, CHARGE_ID)
                 .statusCode(401);
     }
 
@@ -272,7 +265,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     private ValidatableResponse getPaymentEventsResponse(String bearerToken, String paymentId) {
         return given().port(app.getLocalPort())
                 .header(AUTHORIZATION, "Bearer " + bearerToken)
-                .get(String.format(PAYMENT_EVENTS_PATH, paymentId))
+                .get(String.format("/v1/payments/%s/events", paymentId))
                 .then();
     }
 

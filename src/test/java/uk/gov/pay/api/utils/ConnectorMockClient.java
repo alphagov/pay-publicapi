@@ -93,7 +93,7 @@ public class ConnectorMockClient {
         return baseUrl + format(CONNECTOR_MOCK_CHARGE_EVENTS_PATH, accountId, chargeId);
     }
 
-    public void respondOk_whenCreateCharge(long amount, String gatewayAccountId, String chargeId, String status, String returnUrl,
+    public void respondOk_whenCreateCharge(int amount, String gatewayAccountId, String chargeId, String status, String returnUrl,
                                            String description, String reference, String paymentProvider, String createdDate) {
         whenCreateCharge(amount, gatewayAccountId, returnUrl, description, reference)
                 .respond(response()
@@ -253,7 +253,7 @@ public class ConnectorMockClient {
                 .withBody(jsonString("message", errorMsg));
     }
 
-    public void verifyCreateCharge(long amount, String gatewayAccountId, String returnUrl, String description, String reference) {
+    public void verifyCreateCharge(int amount, String gatewayAccountId, String returnUrl, String description, String reference) {
         mockClient.verify(request()
                         .withMethod(POST)
                         .withPath(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId))
