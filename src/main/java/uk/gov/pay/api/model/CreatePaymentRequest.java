@@ -33,7 +33,7 @@ public class CreatePaymentRequest {
         return accountId;
     }
 
-    @ApiModelProperty(value = "amount in pence", required = true, allowableValues = ">0", example = "12000")
+    @ApiModelProperty(value = "amount in pence", required = true, allowableValues = "range[1, 10000000]", example = "12000")
     @JsonProperty
     @NotNull
     @Min(1)
