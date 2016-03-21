@@ -25,7 +25,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"amount\" : -123," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
+                "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
         postPaymentResponse(BEARER_TOKEN, payload)
@@ -36,30 +36,13 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
     }
 
     @Test
-    public void createPayment_responseWith422_whenAmountIsSmallerThanTheMinimumAllowed() {
-
-        String payload = "{" +
-                "  \"amount\" : 0," +
-                "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
-                "}";
-
-        postPaymentResponse(BEARER_TOKEN, payload)
-                .statusCode(422)
-                .contentType(JSON)
-                .body("errors", hasSize(1))
-                .body("errors", hasItem("amount must be greater than or equal to 1 (was 0)"));
-    }
-
-    @Test
     public void createPayment_responseWith422_whenAmountIsBiggerThanTheMaximumAllowed() {
 
         String payload = "{" +
                 "  \"amount\" : 10000001," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
+                "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
         postPaymentResponse(BEARER_TOKEN, payload)
@@ -76,7 +59,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"amount\" : null," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
+                "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
         postPaymentResponse(BEARER_TOKEN, payload)
@@ -93,7 +76,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"amount\" : \"£%&dasg*??<>\"," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
+                "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
         postPaymentResponse(BEARER_TOKEN, payload)
@@ -109,7 +92,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"amount\" : { \"whatever\": 1 }," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
+                "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
         postPaymentResponse(BEARER_TOKEN, payload)
@@ -125,7 +108,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"amount\" : \"    \"," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
+                "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
         postPaymentResponse(BEARER_TOKEN, payload)
@@ -141,7 +124,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
         String payload = "{" +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
+                "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
         postPaymentResponse(BEARER_TOKEN, payload)
@@ -158,7 +141,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"amount\" : 0x1000," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
+                "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
         postPaymentResponse(BEARER_TOKEN, payload)
@@ -174,7 +157,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"amount\" : 0B101," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
+                "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
         postPaymentResponse(BEARER_TOKEN, payload)
@@ -190,7 +173,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"amount\" : 017," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
+                "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
         postPaymentResponse(BEARER_TOKEN, payload)
@@ -206,7 +189,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"amount\" : 27.55," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
+                "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
         postPaymentResponse(BEARER_TOKEN, payload)
@@ -222,7 +205,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"amount\" : 27.55d," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
+                "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
         postPaymentResponse(BEARER_TOKEN, payload)
@@ -238,7 +221,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"amount\" : %00," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://somewhere.over.the/rainbow/{paymentID}\"" +
+                "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
         postPaymentResponse(BEARER_TOKEN, payload)

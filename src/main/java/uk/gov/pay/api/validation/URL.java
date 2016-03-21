@@ -11,7 +11,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Target({FIELD, METHOD, PARAMETER, ANNOTATION_TYPE})
 @Retention(RUNTIME)
-@Constraint(validatedBy = URLValidator.class)
+@Constraint(validatedBy = URLConstraintValidator.class)
 @Documented
 public @interface URL {
 

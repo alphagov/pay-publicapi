@@ -72,24 +72,25 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
     }
 
     @Test
-    public void createPayment_responseWith400_whenReturnUrlIsMissing() {
+    public void createPayment_responseWith422_whenReturnUrlIsMissing() {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
                 "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
+                "  \"description\" : \"Some description\"" +
                 "}";
 
         postPaymentResponse(BEARER_TOKEN, payload)
-                .statusCode(400)
+                .statusCode(422)
                 .contentType(JSON)
-                .body("message", is("Unable to process JSON"));
+                .body("errors", hasSize(1))
+                .body("errors", hasItem("returnUrl may not be empty (was null)"));
     }
 
     @Test
     public void createPayment_responseWith422_whenReturnUrlSizeIsGreaterThanMaxLengthAndHasInvalidFormat() {
 
-        String aVeryBigInvalidReturnUrl = RandomStringUtils.randomAlphanumeric(2049);
+        String aVeryBigInvalidReturnUrl = RandomStringUtils.randomAlphanumeric(2001);
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
@@ -103,13 +104,13 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
                 .contentType(JSON)
                 .body("errors", hasSize(2))
                 .body("errors", hasItem("returnUrl must be a valid URL format (was " + aVeryBigInvalidReturnUrl + ")"))
-                .body("errors", hasItem("returnUrl size must be between 0 and 2048 (was " + aVeryBigInvalidReturnUrl + ")"));
+                .body("errors", hasItem("returnUrl size must be between 0 and 2000 (was " + aVeryBigInvalidReturnUrl + ")"));
     }
 
     @Test
     public void createPayment_responseWith422_whenReturnUrlSizeIsGreaterThanMaxLengthAndHasValidFormat() {
 
-        String aVeryBigValidReturnUrl = "http://" + RandomStringUtils.randomAlphanumeric(2040) + ".com";
+        String aVeryBigValidReturnUrl = "http://payments.gov.uk?something=" + RandomStringUtils.randomAlphanumeric(2000);
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
@@ -122,7 +123,7 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
                 .statusCode(422)
                 .contentType(JSON)
                 .body("errors", hasSize(1))
-                .body("errors", hasItem("returnUrl size must be between 0 and 2048 (was " + aVeryBigValidReturnUrl + ")"));
+                .body("errors", hasItem("returnUrl size must be between 0 and 2000 (was " + aVeryBigValidReturnUrl + ")"));
     }
 
     @Test
@@ -162,7 +163,7 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
     }
 
     @Test
-    public void createPayment_responseWith422_whenReturnUrlDoesNotHaveAValue() {
+    public void createPayment_responseWith400_whenReturnUrlDoesNotHaveAValue() {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +

@@ -17,20 +17,20 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class URLValidatorTest {
+public class URLConstraintValidatorTest {
 
     @Mock
     private RestClientConfig mockRestClientConfig;
     @Mock
     private ConstraintValidatorContext mockContext;
 
-    private URLValidator validator;
+    private URLConstraintValidator validator;
 
     @Before
     public void setup() {
         PublicApiConfig mockConfiguration = mock(PublicApiConfig.class);
         when(mockConfiguration.getRestClientConfig()).thenReturn(mockRestClientConfig);
-        validator = new URLValidator();
+        validator = new URLConstraintValidator();
         validator.setConfiguration(mockConfiguration);
     }
 
@@ -75,11 +75,19 @@ public class URLValidatorTest {
     }
 
     @Test
-    public void whenUrlIsBlank_shouldFailValidation() {
+    public void whenUrlIsBlank_shouldFailValidation_whenDisabledSecureConnection() {
+
+        when(mockRestClientConfig.isDisabledSecureConnection()).thenReturn(true);
 
         assertThat(validator.isValid("   ", mockContext), is(false));
+    }
 
-        verifyZeroInteractions(mockRestClientConfig);
+    @Test
+    public void whenUrlIsBlank_shouldFailValidation_whenEnabledSecureConnection() {
+
+        when(mockRestClientConfig.isDisabledSecureConnection()).thenReturn(false);
+
+        assertThat(validator.isValid("   ", mockContext), is(false));
     }
 
     @Test

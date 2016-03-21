@@ -23,7 +23,7 @@ public class CreatePaymentRequest {
     @ApiModelProperty(value = "service return url", required = true, example = "https://service-name.gov.uk/transactions/12345")
     @JsonProperty("return_url")
     @URL
-    @Size(max = 2048)
+    @Size(max = 2000)
     @NotBlank
     public String getReturnUrl() {
         return returnUrl;

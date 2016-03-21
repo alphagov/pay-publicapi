@@ -1,55 +1,30 @@
 package uk.gov.pay.api.validation;
 
-import io.dropwizard.Configuration;
-import uk.gov.pay.api.config.PublicApiConfig;
+import org.apache.commons.validator.routines.UrlValidator;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
-import java.net.MalformedURLException;
-import java.util.List;
+import static org.apache.commons.validator.routines.UrlValidator.*;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+public enum URLValidator {
+    SECURITY_ENABLED {
+        private final UrlValidator URL_VALIDATOR = new UrlValidator(new String[]{"https"});
 
-/**
- * Validates a notEmpty URL using protocol http/https depending on isDisabledSecureConnection configuration value.
- */
-
-public class URLValidator implements ConstraintValidator<URL, CharSequence>, ConfigurationAware {
-
-    private PublicApiConfig config;
-
-    @Override
-    public boolean isValid(CharSequence value, ConstraintValidatorContext constraintValidatorContext) {
-
-        if (isNotEmpty(value)) {
-            java.net.URL url;
-            try {
-                url = new java.net.URL(value.toString());
-            } catch (MalformedURLException malformedUrl) {
-                return false;
-            }
-            return acceptedProtocols(config).contains(url.getProtocol());
-        } else {
-            return true;
+        @Override
+        public boolean isValid(String value) {
+            return URL_VALIDATOR.isValid(value);
         }
-    }
 
-    @Override
-    public void initialize(URL url) {
-    }
+    }, SECURITY_DISABLED {
+        private final UrlValidator URL_VALIDATOR = new UrlValidator(new String[]{"http", "https"}, ALLOW_LOCAL_URLS);
 
-    @Override
-    public void setConfiguration(Configuration configuration) {
-
-        config = ((PublicApiConfig) configuration);
-    }
-
-    private List<String> acceptedProtocols(PublicApiConfig config) {
-        List<String> acceptedProtocols = newArrayList("https");
-        if (config.getRestClientConfig().isDisabledSecureConnection()) {
-            acceptedProtocols.add("http");
+        @Override
+        public boolean isValid(String value) {
+            return URL_VALIDATOR.isValid(value);
         }
-        return acceptedProtocols;
+    };
+
+    public static URLValidator urlValidatorValueOf(boolean isDisabledSecureConnection) {
+        return isDisabledSecureConnection ? SECURITY_DISABLED : SECURITY_ENABLED;
     }
+
+    public abstract boolean isValid(String value);
 }

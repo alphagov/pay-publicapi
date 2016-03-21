@@ -183,7 +183,7 @@
           "description" : "service return url",
           "readOnly" : true,
           "minLength" : 0,
-          "maxLength" : 2048
+          "maxLength" : 2000
         }
       },
       "description" : "The Payment Request Payload"
