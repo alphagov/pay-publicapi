@@ -235,7 +235,6 @@
                             <locations>uk.gov.pay.api.resources</locations>
                             <schemes>https</schemes>
                             <host>publicapi.pymnt.uk</host>
-                            <!--<basePath>/</basePath>-->
                             <info>
                                 <title>GOV.UK Pay Api</title>
                                 <version>1.0.0</version>
