@@ -2,6 +2,7 @@ package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import java.net.URI;
 import java.util.Iterator;
 import java.util.Optional;
 
@@ -14,16 +15,20 @@ public class PaymentWithLinks implements PaymentWithLinksJSON {
         return links;
     }
 
-    public static PaymentWithLinks createPaymentResponseWithLinks(JsonNode payload, String selfLink) {
-        Payment payment = Payment.createPaymentResponse(payload);
-        PaymentWithLinks paymentWithLinks = new PaymentWithLinks(payment);
-        paymentWithLinks.withSelfLink(selfLink);
-        Optional<JsonNode> nextLinkMaybe = getNextLink(payload);
-
-        nextLinkMaybe.ifPresent(
-                (nextLink) -> paymentWithLinks.withNextLink(nextLink.get("href").asText()));
-
-        return paymentWithLinks;
+    public static PaymentWithLinks valueOf(JsonNode payload, URI selfLink) {
+        PaymentWithLinks payment = new PaymentWithLinks(Payment.valueOf(payload, selfLink));
+        payment.withSelfLink(selfLink.toString());
+        JsonNode links = payload.get("links");
+        links.forEach(link -> {
+            String rel = link.get("rel").asText();
+            if ("next_url".equals(rel)) {
+                payment.withNextLink(link.get("href").asText());
+            }
+            if ("next_url_post".equals(rel)) {
+                payment.withNextPostLink(link.get("href").asText(), link.get("type").asText(), link.get("params"));
+            }
+        });
+        return payment;
     }
 
     private PaymentWithLinks(Payment payment) {
@@ -72,15 +77,8 @@ public class PaymentWithLinks implements PaymentWithLinksJSON {
         return this;
     }
 
-    private static Optional<JsonNode> getNextLink(JsonNode payload) {
-        for (Iterator<JsonNode> it = payload.get("links").elements(); it.hasNext(); ) {
-            JsonNode node = it.next();
-            if ("next_url".equals(node.get("rel").asText())) {
-                return Optional.of(node);
-            }
-        }
-
-        return Optional.empty();
+    public PaymentWithLinks withNextPostLink(String url, String type, JsonNode params) {
+        this.links.setNextUrlPost(url, type, params);
+        return this;
     }
-
 }

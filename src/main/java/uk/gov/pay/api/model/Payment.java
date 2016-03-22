@@ -2,21 +2,23 @@ package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import java.net.URI;
+
 public class Payment implements PaymentJSON {
     private final String paymentId;
-    
+
     private final String paymentProvider;
     private final long amount;
     private final String status;
     private final String description;
-    
+
     private final String returnUrl;
-    
+
     private final String reference;
 
     private final String createdDate;
 
-    public static Payment createPaymentResponse(JsonNode payload) {
+    public static Payment valueOf(JsonNode payload, URI documentLocation) {
         return new Payment(
                 payload.get("charge_id").asText(),
                 payload.get("amount").asLong(),
