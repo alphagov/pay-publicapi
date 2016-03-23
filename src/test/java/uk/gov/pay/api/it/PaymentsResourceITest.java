@@ -26,7 +26,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     private static final String CHARGE_ID = "ch_ab2341da231434l";
     private static final String STATUS = "someState";
     private static final String PAYMENT_PROVIDER = "Sandbox";
-    private static final String RETURN_URL = "http://somewhere.over.the/rainbow/{paymentID}";
+    private static final String RETURN_URL = "http://somewhere.gov.uk/rainbow/1";
     private static final String REFERENCE = "Some reference <script> alert('This is a ?{simple} XSS attack.')</script>";
     private static final String DESCRIPTION = "Some description <script> alert('This is a ?{simple} XSS attack.')</script>";
     private static final LocalDateTime TIMESTAMP = LocalDateTime.of(2016, Month.JANUARY, 1, 12, 00, 00);
@@ -71,14 +71,14 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
 
     @Test
     public void createPayment_withMinimumAmount() {
-
+        String return_url = "http://dockerHost:8989/payment/1";
         int minimumAmount = 1;
 
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondOk_whenCreateCharge(minimumAmount, GATEWAY_ACCOUNT_ID, CHARGE_ID, STATUS, RETURN_URL,
+        connectorMock.respondOk_whenCreateCharge(minimumAmount, GATEWAY_ACCOUNT_ID, CHARGE_ID, STATUS, return_url,
                 DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE);
 
-       postPaymentResponse(BEARER_TOKEN, paymentPayload(minimumAmount, RETURN_URL, DESCRIPTION, REFERENCE))
+        postPaymentResponse(BEARER_TOKEN, paymentPayload(minimumAmount, return_url, DESCRIPTION, REFERENCE))
                 .statusCode(201)
                 .contentType(JSON)
                 .body("payment_id", is(CHARGE_ID))
@@ -86,11 +86,11 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .body("reference", is(REFERENCE))
                 .body("description", is(DESCRIPTION))
                 .body("status", is(STATUS))
-                .body("return_url", is(RETURN_URL))
+                .body("return_url", is(return_url))
                 .body("payment_provider", is(PAYMENT_PROVIDER))
                 .body("created_date", is(CREATED_DATE));
 
-        connectorMock.verifyCreateCharge(minimumAmount, GATEWAY_ACCOUNT_ID, RETURN_URL, DESCRIPTION, REFERENCE);
+        connectorMock.verifyCreateCharge(minimumAmount, GATEWAY_ACCOUNT_ID, return_url, DESCRIPTION, REFERENCE);
     }
 
     @Test
