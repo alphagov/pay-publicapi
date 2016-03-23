@@ -1,44 +1,39 @@
 package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import java.util.List;
+
+import static javax.ws.rs.HttpMethod.GET;
 
 @ApiModel(value = "paymentLinks", description = "Resource links of a Payment")
 public class Links {
 
+    private static final String SELF = "self";
+    private static final String NEXT_URL = "next_url";
+    private static final String NEXT_URL_POST = "next_url_post";
+
     private Link self;
 
-    @JsonProperty("next_url")
+    @JsonProperty(NEXT_URL)
     private Link nextUrl;
 
-    @JsonProperty("next_url_post")
+    @JsonProperty(NEXT_URL_POST)
     private Link nextUrlPost;
 
-    public void setSelf(String url) {
-        this.self = Link.get(url);
-    }
-
-    public void setNextUrl(String url) {
-        this.nextUrl = Link.get(url);
-    }
-
-    public void setNextUrlPost(String url, String type, JsonNode params) {
-        this.nextUrlPost = Link.post(url, type, params);
-    }
-
-    @ApiModelProperty(value = "self", dataType = "uk.gov.pay.api.model.Link")
+    @ApiModelProperty(value = SELF, dataType = "uk.gov.pay.api.model.Link")
     public Link getSelf() {
         return self;
     }
 
-    @ApiModelProperty(value = "next_url", dataType = "uk.gov.pay.api.model.Link")
+    @ApiModelProperty(value = NEXT_URL, dataType = "uk.gov.pay.api.model.Link")
     public Link getNextUrl() {
         return nextUrl;
     }
 
-    @ApiModelProperty(value = "next_url_post", dataType = "uk.gov.pay.api.model.Link")
+    @ApiModelProperty(value = NEXT_URL_POST, dataType = "uk.gov.pay.api.model.Link")
     public Link getNextUrlPost() {
         return nextUrlPost;
     }
@@ -50,5 +45,28 @@ public class Links {
                 ", nextUrl=" + nextUrl +
                 ", nextUrlPost=" + nextUrlPost +
                 '}';
+    }
+
+    void addSelf(String href) {
+        this.self = new Link(href, GET);
+    }
+
+    void addKnownLinksValueOf(List<PaymentConnectorResponseLink> paymentConnectorLinks) {
+        addNextUrlIfPresent(paymentConnectorLinks);
+        addNextUrlPostIfPresent(paymentConnectorLinks);
+    }
+
+    private void addNextUrlPostIfPresent(List<PaymentConnectorResponseLink> links) {
+        links.stream()
+                .filter(chargeLink -> NEXT_URL_POST.equals(chargeLink.getRel()))
+                .findFirst()
+                .ifPresent(chargeLink -> this.nextUrlPost = new Link(chargeLink.getHref(), chargeLink.getMethod(), chargeLink.getType(), chargeLink.getParams()));
+    }
+
+    private void addNextUrlIfPresent(List<PaymentConnectorResponseLink> links) {
+        links.stream()
+                .filter(chargeLink -> NEXT_URL.equals(chargeLink.getRel()))
+                .findFirst()
+                .ifPresent(chargeLink -> this.nextUrl = new Link(chargeLink.getHref(), chargeLink.getMethod()));
     }
 }

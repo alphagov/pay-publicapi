@@ -1,38 +1,21 @@
 package uk.gov.pay.api.model;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import java.net.URI;
-import java.util.Iterator;
-import java.util.Optional;
+import java.util.List;
 
 public class PaymentWithLinks implements PaymentWithLinksJSON {
-    Payment payment;
 
-    private final Links links = new Links();
+    private Payment payment;
+    private Links links = new Links();
 
-    public Links getLinks() {
-        return links;
+    public static PaymentWithLinks valueOf(PaymentConnectorResponse paymentConnector, URI selfLink) {
+        return new PaymentWithLinks(Payment.valueOf(paymentConnector), paymentConnector.getLinks(), selfLink);
     }
 
-    public static PaymentWithLinks valueOf(JsonNode payload, URI selfLink) {
-        PaymentWithLinks payment = new PaymentWithLinks(Payment.valueOf(payload, selfLink));
-        payment.withSelfLink(selfLink.toString());
-        JsonNode links = payload.get("links");
-        links.forEach(link -> {
-            String rel = link.get("rel").asText();
-            if ("next_url".equals(rel)) {
-                payment.withNextLink(link.get("href").asText());
-            }
-            if ("next_url_post".equals(rel)) {
-                payment.withNextPostLink(link.get("href").asText(), link.get("type").asText(), link.get("params"));
-            }
-        });
-        return payment;
-    }
-
-    private PaymentWithLinks(Payment payment) {
+    private PaymentWithLinks(Payment payment, List<PaymentConnectorResponseLink> paymentConnectorResponseLinks, URI selfLink) {
         this.payment = payment;
+        this.links.addSelf(selfLink.toString());
+        this.links.addKnownLinksValueOf(paymentConnectorResponseLinks);
     }
 
     public String getCreatedDate() {
@@ -67,18 +50,7 @@ public class PaymentWithLinks implements PaymentWithLinksJSON {
         return payment.getPaymentProvider();
     }
 
-    public PaymentWithLinks withSelfLink(String url) {
-        this.links.setSelf(url);
-        return this;
-    }
-
-    public PaymentWithLinks withNextLink(String url) {
-        this.links.setNextUrl(url);
-        return this;
-    }
-
-    public PaymentWithLinks withNextPostLink(String url, String type, JsonNode params) {
-        this.links.setNextUrlPost(url, type, params);
-        return this;
+    public Links getLinks() {
+        return links;
     }
 }

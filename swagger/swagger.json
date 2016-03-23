@@ -208,95 +208,6 @@
       },
       "description" : "The Payment Request Payload"
     },
-    "JsonNode" : {
-      "type" : "object",
-      "properties" : {
-        "array" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "null" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "int" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "nodeType" : {
-          "type" : "string",
-          "enum" : [ "ARRAY", "BINARY", "BOOLEAN", "MISSING", "NULL", "NUMBER", "OBJECT", "POJO", "STRING" ]
-        },
-        "float" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "number" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "valueNode" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "object" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "containerNode" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "missingNode" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "pojo" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "integralNumber" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "floatingPointNumber" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "short" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "long" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "double" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "bigDecimal" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "bigInteger" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "textual" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "boolean" : {
-          "type" : "boolean",
-          "default" : false
-        },
-        "binary" : {
-          "type" : "boolean",
-          "default" : false
-        }
-      }
-    },
     "Payment" : {
       "type" : "object",
       "properties" : {
@@ -351,19 +262,9 @@
           "readOnly" : true,
           "$ref" : "#/definitions/paymentLinks"
         },
-        "status" : {
-          "type" : "string",
-          "example" : "CREATED",
-          "readOnly" : true
-        },
         "reference" : {
           "type" : "string",
           "example" : "your-reference",
-          "readOnly" : true
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "Your Service Description",
           "readOnly" : true
         },
         "created_date" : {
@@ -379,6 +280,16 @@
         "payment_provider" : {
           "type" : "string",
           "example" : "worldpay",
+          "readOnly" : true
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "Your Service Description",
+          "readOnly" : true
+        },
+        "status" : {
+          "type" : "string",
+          "example" : "CREATED",
           "readOnly" : true
         },
         "amount" : {
@@ -411,8 +322,11 @@
           "example" : "multipart/form-data"
         },
         "params" : {
-          "example" : "\"description\":\"This is a value for description\"",
-          "$ref" : "#/definitions/JsonNode"
+          "type" : "object",
+          "example" : "\"description\":\"This is a value for a parameter called description\"",
+          "additionalProperties" : {
+            "type" : "object"
+          }
         }
       },
       "description" : "A link related to a payment"
@@ -426,6 +340,7 @@
         },
         "next_url" : {
           "description" : "next_url",
+          "readOnly" : true,
           "$ref" : "#/definitions/paymentLink"
         },
         "next_url_post" : {

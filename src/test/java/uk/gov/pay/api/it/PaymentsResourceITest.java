@@ -64,7 +64,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .body("_links.next_url.method", is("GET"))
                 .body("_links.next_url_post.href", is("http://Frontend/charge/"))
                 .body("_links.next_url_post.method", is("POST"))
-                .body("_links.next_url_post.type", is("multipart/form-data"))
+                .body("_links.next_url_post.type", is("application/x-www-form-urlencoded"))
                 .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
                 .extract().body().asString();
 
@@ -86,7 +86,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
         connectorMock.respondOk_whenCreateCharge(minimumAmount, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID, STATUS, RETURN_URL,
                 DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE);
 
-       postPaymentResponse(BEARER_TOKEN, paymentPayload(minimumAmount, RETURN_URL, DESCRIPTION, REFERENCE))
+        postPaymentResponse(BEARER_TOKEN, paymentPayload(minimumAmount, RETURN_URL, DESCRIPTION, REFERENCE))
                 .statusCode(201)
                 .contentType(JSON)
                 .body("payment_id", is(CHARGE_ID))
@@ -148,9 +148,9 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     public void getPayment_ReturnsPayment() {
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, STATUS, RETURN_URL,
-                DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE);
+                DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID);
 
-        ValidatableResponse response = getPaymentResponse(BEARER_TOKEN, CHARGE_ID)
+        getPaymentResponse(BEARER_TOKEN, CHARGE_ID)
                 .statusCode(200)
                 .contentType(JSON)
                 .body("payment_id", is(CHARGE_ID))
@@ -161,7 +161,14 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .body("return_url", is(RETURN_URL))
                 .body("payment_provider", is(PAYMENT_PROVIDER))
                 .body("created_date", is(CREATED_DATE))
-                .body("_links.self.href", is(paymentLocationFor(CHARGE_ID)));
+                .body("_links.self.href", is(paymentLocationFor(CHARGE_ID)))
+                .body("_links.self.method", is("GET"))
+                .body("_links.next_url.href", is("http://Frontend/charge/" + CHARGE_ID))
+                .body("_links.next_url.method", is("GET"))
+                .body("_links.next_url_post.href", is("http://Frontend/charge/"))
+                .body("_links.next_url_post.method", is("POST"))
+                .body("_links.next_url_post.type", is("application/x-www-form-urlencoded"))
+                .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID));
     }
 
     @Test

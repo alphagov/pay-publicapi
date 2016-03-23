@@ -1,9 +1,10 @@
 package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import java.util.Map;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -14,26 +15,17 @@ public class Link {
     private String href;
     private String method;
     private String type;
-    private JsonNode params;
+    private Map<String, Object> params;
 
-    private Link(String href, String method) {
+    Link(String href, String method) {
         this.href = href;
         this.method = method;
     }
 
-    private Link(String href, String method, String type, JsonNode params) {
-        this.href = href;
-        this.method = method;
+    Link(String href, String method, String type, Map<String, Object> params) {
+        this(href, method);
         this.type = type;
         this.params = params;
-    }
-
-    public static Link get(String url) {
-        return new Link(url, "GET");
-    }
-
-    public static Link post(String url, String type, JsonNode params) {
-        return new Link(url, "POST", type, params);
     }
 
     @ApiModelProperty(example = "https://an.example.link/from/payment/platform")
@@ -51,8 +43,8 @@ public class Link {
         return type;
     }
 
-    @ApiModelProperty(example = "\"description\":\"This is a value for description\"")
-    public JsonNode getParams() {
+    @ApiModelProperty(example = "\"description\":\"This is a value for a parameter called description\"")
+    public Map<String, Object> getParams() {
         return params;
     }
 
@@ -61,6 +53,8 @@ public class Link {
         return "Link{" +
                 "href='" + href + '\'' +
                 ", method='" + method + '\'' +
+                ", type='" + type + '\'' +
+                ", params=" + params +
                 '}';
     }
 }

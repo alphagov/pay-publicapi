@@ -53,8 +53,8 @@ public class ConnectorMockClient {
     }
 
     private String createChargeResponse(long amount, String chargeId, String status, String returnUrl, String description,
-                                        String reference, String paymentProvider, String createdDate, ImmutableMap<?, ?>... links) {
-        return new JsonStringBuilder()
+                                        String reference, String paymentProvider, String gatewayTransactionId, String createdDate, ImmutableMap<?, ?>... links) {
+        JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
                 .add("charge_id", chargeId)
                 .add("amount", amount)
                 .add("reference", reference)
@@ -63,11 +63,14 @@ public class ConnectorMockClient {
                 .add("return_url", returnUrl)
                 .add("payment_provider", paymentProvider)
                 .add("created_date", createdDate)
-                .add("links", asList(links))
-                .build();
+                .add("links", asList(links));
+        if (gatewayTransactionId != null) {
+            jsonStringBuilder.add("gateway_transaction_id", gatewayTransactionId);
+        }
+        return jsonStringBuilder.build();
     }
 
-    private String createChargeEventsResponse(String chargeId, List<Map<String,String>> events, ImmutableMap<?, ?>... links) {
+    private String createChargeEventsResponse(String chargeId, List<Map<String, String>> events, ImmutableMap<?, ?>... links) {
         return new JsonStringBuilder()
                 .add("charge_id", chargeId)
                 .add("events", events)
@@ -123,11 +126,14 @@ public class ConnectorMockClient {
                                 description,
                                 reference,
                                 paymentProvider,
+                                null,
                                 createdDate,
                                 validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
                                 validGetLink(nextUrl(chargeTokenId), "next_url"),
-                                validPostLink(nextUrlPost(), "next_url_post", "multipart/form-data",
-                                        new HashMap<String, String>() {{put("chargeTokenId", chargeTokenId); }}))));
+                                validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",
+                                        new HashMap<String, String>() {{
+                                            put("chargeTokenId", chargeTokenId);
+                                        }}))));
     }
 
     public void respondOk_whenSearchCharges(String accountId, String reference, String status, String fromDate, String toDate, String expectedResponse) {
@@ -154,14 +160,19 @@ public class ConnectorMockClient {
     }
 
     public void respondWithChargeFound(long amount, String gatewayAccountId, String chargeId, String status, String returnUrl,
-                                       String description, String reference, String paymentProvider, String createdDate) {
+                                       String description, String reference, String paymentProvider, String createdDate, String chargeTokenId) {
         whenGetCharge(gatewayAccountId, chargeId)
                 .respond(response()
                         .withStatusCode(OK_200)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                         .withBody(createChargeResponse(amount, chargeId, status, returnUrl,
-                                description, reference, paymentProvider, createdDate, validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
-                                validGetLink(nextUrl(chargeId), "next_url"))));
+                                description, reference, paymentProvider, gatewayAccountId, createdDate,
+                                validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
+                                validGetLink(nextUrl(chargeId), "next_url"),
+                                validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",
+                                        new HashMap<String, String>() {{
+                                            put("chargeTokenId", chargeTokenId);
+                                        }}))));
     }
 
     public void respondWithChargeEventsFound(String gatewayAccountId, String chargeId, List<Map<String, String>> events) {
