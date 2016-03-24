@@ -10,6 +10,22 @@ Steps are as follows:
 3. Because other services (inside or outside of docker) will try and talk to publicapi on dockerhost (not localhost), run the redirect script to send these requests to localhost.
 4. Use `env.sh` to pick up the same environment variables from `pay-scripts`, so configuration is set correctly (this assumes `$WORKSPACE/pay-scripts` exists).
 
+## Keystore setup for HTTPS outbound calls:
+
+Following variables are needed in order to import the trusted certificates and public keys to a java keystore, which will be used for secure outbound HTTPS calls.
+Importing certs/keys are handled in `docker-startup.sh`. This script assumes the infrastructure provids a trusted certificate file (CERT_FILE), a key (KEY_FILE) in a 
+known directory (CERTS_DIR). 
+Then the script creates a keystore (KEYSTORE_FILE) in a separate directory (KEYSTORE_DIR) and imports the certificate and key in to it.
+
+| Variable                    | required |  Description                               |
+| --------------------------- |:--------:| ------------------------------------------ |
+| CERTS_DIR                   | X |  The directory where the import script can find a trusted certificate and any public key |
+| CERT_FILE                   | X |  The name of the certificate file to import  |
+| KEY_FILE                    | X |  The key file to import |
+| KEYSTORE_DIR                | X |  The directory where the java keystore will be created |
+| KEYSTORE_FILE               | X |  The name of the java keystore file |
+
+
 For example:
 
 ```
