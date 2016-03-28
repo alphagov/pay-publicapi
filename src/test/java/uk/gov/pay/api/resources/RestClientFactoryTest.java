@@ -42,9 +42,6 @@ public class RestClientFactoryTest {
         //given
         RestClientConfig clientConfiguration = mock(RestClientConfig.class);
         when(clientConfiguration.isDisabledSecureConnection()).thenReturn(false);
-        when(clientConfiguration.getKeyStoreDir()).thenReturn(keyStoreDir.getAbsolutePath() + "/");
-        when(clientConfiguration.getKeyStoreFile()).thenReturn(keyStoreFile);
-        when(clientConfiguration.getKeyStorePassword()).thenReturn(keyStorePassword);
 
         //when
         Client client = RestClientFactory.buildClient(clientConfiguration);
@@ -65,9 +62,6 @@ public class RestClientFactoryTest {
         Client client = RestClientFactory.buildClient(clientConfiguration);
 
         //then
-        verify(clientConfiguration, times(0)).getKeyStoreDir();
-        verify(clientConfiguration, times(0)).getKeyStoreFile();
-        verify(clientConfiguration, times(0)).getKeyStorePassword();
         assertThat(client.getSslContext().getProtocol(), is(not("TLSv1.2")));
     }
 
