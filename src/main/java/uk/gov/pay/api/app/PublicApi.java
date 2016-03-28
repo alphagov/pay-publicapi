@@ -32,8 +32,7 @@ public class PublicApi extends Application<PublicApiConfig> {
 
     @Override
     public void run(PublicApiConfig config, Environment environment) throws Exception {
-
-        final Client client = RestClientFactory.from(config.getRestClientConfig()).getInstance();
+        final Client client = new RestClientFactory(config.getRestClientConfig()).getInstance();
 
         environment.getObjectMapper().configure(DeserializationFeature.ACCEPT_FLOAT_AS_INT, false);
         environment.healthChecks().register("ping", new Ping());

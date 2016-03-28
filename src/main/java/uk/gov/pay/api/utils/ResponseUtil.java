@@ -8,7 +8,9 @@ import javax.ws.rs.core.Response;
 
 import static javax.ws.rs.core.Response.Status.*;
 
-public class ResponseUtil {
+public final class ResponseUtil {
+    private ResponseUtil() {
+    }
 
     public static Response notFoundResponse(Logger logger, JsonNode node) {
         return messageResponse(logger, nodeMessage(node, "Not found."), NOT_FOUND);

@@ -9,7 +9,12 @@ import javax.ws.rs.client.ClientBuilder;
 
 public class RestClientFactory {
     public static final String TLSV1_2 = "TLSv1.2";
-    private static RestClientConfig clientConfig;
+
+    private final RestClientConfig clientConfig;
+
+    public RestClientFactory(RestClientConfig clientConfiguration) {
+        this.clientConfig = clientConfiguration;
+    }
 
     public Client getInstance() {
         if (clientConfig.isDisabledSecureConnection()) {
@@ -24,13 +29,5 @@ public class RestClientFactory {
             SSLContext sslContext = sslConfig.createSSLContext();
             return ClientBuilder.newBuilder().sslContext(sslContext).build();
         }
-    }
-
-    public static RestClientFactory from(RestClientConfig clientConfiguration) {
-        return new RestClientFactory(clientConfiguration);
-    }
-
-    private RestClientFactory(RestClientConfig clientConfiguration) {
-        this.clientConfig = clientConfiguration;
     }
 }

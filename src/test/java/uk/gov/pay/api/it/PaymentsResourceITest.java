@@ -3,6 +3,7 @@ package uk.gov.pay.api.it;
 import com.jayway.restassured.response.ValidatableResponse;
 import org.junit.Test;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
+import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import javax.ws.rs.core.HttpHeaders;
 import java.time.LocalDateTime;
@@ -18,7 +19,6 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
 
 public class PaymentsResourceITest extends PaymentResourceITestBase {
 
@@ -247,7 +247,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     }
 
     private static String paymentPayload(long amount, String returnUrl, String description, String reference) {
-        return jsonStringBuilder()
+        return new JsonStringBuilder()
                 .add("amount", amount)
                 .add("reference", reference)
                 .add("description", description)

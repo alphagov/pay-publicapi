@@ -11,11 +11,10 @@ import java.util.Optional;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class ApiValidator {
-
     private final List<Pair<String, String>> invalidParams;
 
-    public static ApiValidator queryParamValidator() {
-        return new ApiValidator();
+    public ApiValidator() {
+        this.invalidParams = new ArrayList<>();
     }
 
     public Optional<List<Pair<String, String>>> build() {
@@ -26,7 +25,6 @@ public class ApiValidator {
     }
 
     public ApiValidator validateDates(List<Pair<String, String>> queryParams) {
-
         queryParams.stream()
                 .forEach(param -> {
                     String dateString = param.getRight();
@@ -44,9 +42,5 @@ public class ApiValidator {
             invalidParams.add(status);
         }
         return this;
-    }
-
-    private ApiValidator() {
-        this.invalidParams = new ArrayList<>();
     }
 }

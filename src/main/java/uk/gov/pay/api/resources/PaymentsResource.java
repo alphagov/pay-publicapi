@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.Payment;
 import uk.gov.pay.api.model.PaymentEvents;
+import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -34,18 +35,19 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.upperCase;
 import static org.apache.http.HttpStatus.SC_OK;
 import static uk.gov.pay.api.model.Payment.createPaymentResponse;
-import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
 import static uk.gov.pay.api.utils.ResponseUtil.*;
 
 @Path("/")
 @Api(value = "/", description = "Public Api Endpoints")
 @Produces({"application/json"})
 public class PaymentsResource {
+    private static final Logger logger = LoggerFactory.getLogger(PaymentsResource.class);
+
     private static final String PAYMENT_KEY = "paymentId";
     private static final String REFERENCE_KEY = "reference";
-    static final String STATUS_KEY = "status";
-    static final String FROM_DATE_KEY = "from_date";
-    static final String TO_DATE_KEY = "to_date";
+    private static final String STATUS_KEY = "status";
+    private static final String FROM_DATE_KEY = "from_date";
+    private static final String TO_DATE_KEY = "to_date";
     private static final String DESCRIPTION_KEY = "description";
     private static final String AMOUNT_KEY = "amount";
     private static final String SERVICE_RETURN_URL = "return_url";
@@ -58,13 +60,13 @@ public class PaymentsResource {
 
     private static final String CANCEL_PATH_SUFFIX = "/cancel";
     private static final String CANCEL_PAYMENT_PATH = "/v1/payments/" + PAYMENTS_ID_PLACEHOLDER + CANCEL_PATH_SUFFIX;
-    public static final String CONNECTOR_ACCOUNT_RESOURCE = "/v1/api/accounts/%s";
-    public static final String CONNECTOR_CHARGES_RESOURCE = CONNECTOR_ACCOUNT_RESOURCE + "/charges";
-    public static final String CONNECTOR_CHARGE_RESOURCE = CONNECTOR_CHARGES_RESOURCE + "/%s";
-    public static final String CONNECTOR_CHARGE_EVENTS_RESOURCE = CONNECTOR_CHARGES_RESOURCE + "/%s" + "/events";
-    public static final String CONNECTOR_ACCOUNT_CHARGE_CANCEL_RESOURCE = CONNECTOR_CHARGE_RESOURCE + "/cancel";
+    private static final String CONNECTOR_ACCOUNT_RESOURCE = "/v1/api/accounts/%s";
+    private static final String CONNECTOR_CHARGES_RESOURCE = CONNECTOR_ACCOUNT_RESOURCE + "/charges";
+    private static final String CONNECTOR_CHARGE_RESOURCE = CONNECTOR_CHARGES_RESOURCE + "/%s";
+    private static final String CONNECTOR_CHARGE_EVENTS_RESOURCE = CONNECTOR_CHARGES_RESOURCE + "/%s" + "/events";
+    private static final String CONNECTOR_ACCOUNT_CHARGE_CANCEL_RESOURCE = CONNECTOR_CHARGE_RESOURCE + "/cancel";
 
-    private final Logger logger = LoggerFactory.getLogger(PaymentsResource.class);
+
     private final Client client;
     private final String connectorUrl;
 
@@ -153,7 +155,7 @@ public class PaymentsResource {
         logger.info("received get search payments request: [ {} ]",
                 format("reference:%s, status: %s, fromDate: %s, toDate: %s", reference, status, fromDate, toDate));
 
-        Optional<List<Pair<String, String>>> validationErrors = ApiValidator.queryParamValidator()
+        Optional<List<Pair<String, String>>> validationErrors = new ApiValidator()
                 .validateDates(Lists.newArrayList(
                         Pair.of(FROM_DATE_KEY, fromDate),
                         Pair.of(TO_DATE_KEY, toDate)))
@@ -330,7 +332,7 @@ public class PaymentsResource {
         String reference = requestPayload.getReference();
         String description = requestPayload.getDescription();
         String returnUrl = requestPayload.getReturnUrl();
-        return json(jsonStringBuilder()
+        return json(new JsonStringBuilder()
                 .add(AMOUNT_KEY, amount)
                 .add(REFERENCE_KEY, reference)
                 .add(DESCRIPTION_KEY, description)

@@ -3,7 +3,6 @@ package uk.gov.pay.api.utils;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
 
 public class JsonStringBuilderTest {
     @Test
@@ -11,7 +10,7 @@ public class JsonStringBuilderTest {
         String message = "There was an error";
         String code = "#the code of error!";
 
-        String result = jsonStringBuilder()
+        String result = new JsonStringBuilder()
                 .addRoot("error")
                 .add("message", message)
                 .add("type", "card_error")
@@ -27,7 +26,7 @@ public class JsonStringBuilderTest {
     public void nullValues() throws Exception {
         String message = "There was an error";
 
-        String result = jsonStringBuilder()
+        String result = new JsonStringBuilder()
                 .addRoot("error")
                 .add("message", message)
                 .add("type", "card_error")
@@ -43,7 +42,7 @@ public class JsonStringBuilderTest {
     public void nestedMaps() throws Exception {
         String message = "There was an error";
 
-        String result = jsonStringBuilder()
+        String result = new JsonStringBuilder()
                 .addRoot("error")
                 .add("message", message)
                 .add("type", "card_error")
