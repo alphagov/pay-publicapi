@@ -16,8 +16,8 @@ public class RestClientFactory {
         } else {
             String keyStoreFile = clientConfig.getKeyStoreDir() + clientConfig.getKeyStoreFile();
             SslConfigurator sslConfig = SslConfigurator.newInstance()
-                    .keyStoreFile(keyStoreFile)
-                    .keyPassword(clientConfig.getKeyStorePassword())
+                    .trustStoreFile(keyStoreFile)
+                    .trustStorePassword(clientConfig.getKeyStorePassword())
                     .securityProtocol(TLSV1_2);
 
             SSLContext sslContext = sslConfig.createSSLContext();
