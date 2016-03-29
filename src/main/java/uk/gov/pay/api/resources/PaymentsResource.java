@@ -3,7 +3,11 @@ package uk.gov.pay.api.resources;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Lists;
 import io.dropwizard.auth.Auth;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpStatus;
@@ -15,13 +19,24 @@ import uk.gov.pay.api.model.PaymentEvents;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import javax.validation.Valid;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -31,10 +46,13 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.upperCase;
 import static org.apache.http.HttpStatus.SC_OK;
 import static uk.gov.pay.api.model.Payment.createPaymentResponse;
+import static uk.gov.pay.api.resources.ParamValidator.validateDate;
+import static uk.gov.pay.api.resources.ParamValidator.validateStatus;
 import static uk.gov.pay.api.utils.ResponseUtil.*;
 
 @Path("/")
@@ -155,34 +173,42 @@ public class PaymentsResource {
         logger.info("received get search payments request: [ {} ]",
                 format("reference:%s, status: %s, fromDate: %s, toDate: %s", reference, status, fromDate, toDate));
 
-        Optional<List<Pair<String, String>>> validationErrors = new ApiValidator()
-                .validateDates(Lists.newArrayList(
-                        Pair.of(FROM_DATE_KEY, fromDate),
-                        Pair.of(TO_DATE_KEY, toDate)))
-                .validateStatus(Pair.of(STATUS_KEY, status))
-                .build();
+        List<Pair<String, String>> validationErrors = new LinkedList<>();
 
-        return validationErrors
-                .map(invalidParams -> unprocessableEntityResponse(logger, errorMessageFrom(invalidParams)))
-                .orElseGet(() -> {
-                    List<Pair<String, String>> queryParams = Lists.newArrayList(
-                            Pair.of(REFERENCE_KEY, reference),
-                            Pair.of(STATUS_KEY, upperCase(status)),
-                            Pair.of(FROM_DATE_KEY, fromDate),
-                            Pair.of(TO_DATE_KEY, toDate)
-                    );
+        if (!validateStatus(status)) {
+            validationErrors.add(Pair.of(STATUS_KEY, status));
+        }
 
-                    Response connectorResponse = client.target(getConnectorUlr(accountId, queryParams))
-                            .request()
-                            .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
-                            .get();
+        if (!validateDate(fromDate)) {
+            validationErrors.add(Pair.of(FROM_DATE_KEY, fromDate));
+        }
 
-                    if (connectorResponse.getStatus() == SC_OK) {
-                        return Response.ok(connectorResponse.readEntity(String.class)).build();
-                    } else {
-                        return serverErrorResponse(logger, "Search payments failed");
-                    }
-                });
+        if (!validateDate(toDate)) {
+            validationErrors.add(Pair.of(TO_DATE_KEY, toDate));
+        }
+
+        if (validationErrors.isEmpty()) {
+            List<Pair<String, String>> queryParams = Lists.newArrayList(
+                    Pair.of(REFERENCE_KEY, reference),
+                    Pair.of(STATUS_KEY, upperCase(status)),
+                    Pair.of(FROM_DATE_KEY, fromDate),
+                    Pair.of(TO_DATE_KEY, toDate)
+            );
+
+            Response connectorResponse = client.target(getConnectorUlr(accountId, queryParams))
+                    .request()
+                    .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
+                    .get();
+
+            if (connectorResponse.getStatus() == SC_OK) {
+                return Response.ok(connectorResponse.readEntity(String.class)).build();
+            } else {
+                return serverErrorResponse(logger, "Search payments failed");
+            }
+        }
+        else {
+            return unprocessableEntityResponse(logger, errorMessageFrom(validationErrors));
+        }
     }
 
     @POST

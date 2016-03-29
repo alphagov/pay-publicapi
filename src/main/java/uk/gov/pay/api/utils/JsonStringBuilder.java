@@ -21,13 +21,6 @@ public class JsonStringBuilder {
         return new JsonStringBuilder().add(key, value).build();
     }
 
-    public static String jsonString(String key1, Object value1, String key2, Object value2) {
-        return new JsonStringBuilder()
-                .add(key1, value1)
-                .add(key2, value2)
-                .build();
-    }
-
     public JsonStringBuilder() {
         map = new LinkedHashMap<>();
         prettyPrint = true;
