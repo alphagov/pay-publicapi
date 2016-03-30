@@ -1,5 +1,6 @@
 package uk.gov.pay.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -14,7 +15,6 @@ import javax.validation.constraints.Size;
 @ApiModel(value = "CreatePaymentRequest", description = "The Payment Request Payload")
 public class CreatePaymentRequest {
 
-    private String accountId;
     private Integer amount;
     private String returnUrl;
     private String reference;
@@ -27,12 +27,6 @@ public class CreatePaymentRequest {
     @NotBlank
     public String getReturnUrl() {
         return returnUrl;
-    }
-
-    @ApiModelProperty(value = "account id", required = false, example = "789")
-    @JsonProperty("account_id")
-    public String getAccountId() {
-        return accountId;
     }
 
     @ApiModelProperty(value = "amount in pence", required = true, allowableValues = "range[1, 10000000]", example = "12000")

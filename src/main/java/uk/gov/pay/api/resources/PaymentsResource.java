@@ -160,13 +160,13 @@ public class PaymentsResource {
             @ApiResponse(code = 422, message = "fields [from_date, to_date, status] are not in correct format. see public api documentation for the correct data formats")})
     public Response searchPayments(@ApiParam(value = "accountId", hidden = true)
                                        @Auth String accountId,
-                                   @ApiParam(value = "reference", hidden = true, example = "your-reference")
+                                   @ApiParam(value = "Your payment reference to search", hidden = false)
                                         @QueryParam(REFERENCE_KEY) String reference,
-                                   @ApiParam(value = "status", hidden = true, example = "SUCCESS", allowableValues = "range[SUCCEEDED,CREATED,IN PROGRESS,FAILED,SYSTEM CANCELLED")
+                                   @ApiParam(value = "Status of payments to be searched. Example=SUCCESSED", hidden = false, allowableValues = "range[SUCCEEDED,CREATED,IN PROGRESS,FAILED,SYSTEM CANCELLED")
                                         @QueryParam(STATUS_KEY) String status,
-                                   @ApiParam(value = "from_date", hidden = true, example = "2015-08-13T12:35:00Z")
+                                   @ApiParam(value = "From date of payments to be searched. Example=2015-08-13T12:35:00Z", hidden = false)
                                         @QueryParam(FROM_DATE_KEY) String fromDate,
-                                   @ApiParam(value = "to_date", hidden = true, example = "2015-08-14T18:00:00Z")
+                                   @ApiParam(value = "To date of payments to be searched. Example=2015-08-13T12:35:00Z", hidden = false)
                                         @QueryParam(TO_DATE_KEY) String toDate,
                                    @Context UriInfo uriInfo) {
 

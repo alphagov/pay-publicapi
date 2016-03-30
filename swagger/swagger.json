@@ -14,6 +14,32 @@
         "description" : "Search payments by reference, status, 'from' and 'to' date",
         "operationId" : "searchPayments",
         "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "reference",
+          "in" : "query",
+          "description" : "Your payment reference to search",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "status",
+          "in" : "query",
+          "description" : "Status of payments to be searched. Example=SUCCESSED",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "range[SUCCEEDED", "CREATED", "IN PROGRESS", "FAILED", "SYSTEM CANCELLED" ]
+        }, {
+          "name" : "from_date",
+          "in" : "query",
+          "description" : "From date of payments to be searched. Example=2015-08-13T12:35:00Z",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "to_date",
+          "in" : "query",
+          "description" : "To date of payments to be searched. Example=2015-08-13T12:35:00Z",
+          "required" : false,
+          "type" : "string"
+        } ],
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -169,12 +195,6 @@
           "type" : "string",
           "example" : "New passport application",
           "description" : "payment description",
-          "readOnly" : true
-        },
-        "account_id" : {
-          "type" : "string",
-          "example" : "789",
-          "description" : "account id",
           "readOnly" : true
         },
         "return_url" : {
