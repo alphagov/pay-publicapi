@@ -156,7 +156,7 @@ public class PaymentSearchITest extends PaymentResourceITestBase {
                 ImmutableMap.of("reference", TEST_REFERENCE, "status", "invalid status", "from_date", TEST_FROM_DATE, "to_date", "2016-01-01 00:00"))
                 .statusCode(422)
                 .contentType(JSON)
-                .body("message", is("fields [to_date, status] are not in correct format. see public api documentation for the correct data formats"));
+                .body("message", is("fields [status, to_date] are not in correct format. see public api documentation for the correct data formats"));
     }
 
     @Test

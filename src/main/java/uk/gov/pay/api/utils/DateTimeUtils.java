@@ -7,7 +7,6 @@ import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
 public class DateTimeUtils {
-
     private static final ZoneId UTC = ZoneId.of("Z");
     private static DateTimeFormatter dateTimeFormatterUTC = DateTimeFormatter.ISO_INSTANT.withZone(UTC);
     private static DateTimeFormatter dateTimeFormatterAny = DateTimeFormatter.ISO_ZONED_DATE_TIME;

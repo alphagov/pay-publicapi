@@ -47,7 +47,7 @@ public class RestClientFactoryTest {
         when(clientConfiguration.getKeyStorePassword()).thenReturn(keyStorePassword);
 
         //when
-        Client client = RestClientFactory.from(clientConfiguration).getInstance();
+        Client client = RestClientFactory.buildClient(clientConfiguration);
 
         //then
         SSLContext sslContext = client.getSslContext();
@@ -62,7 +62,7 @@ public class RestClientFactoryTest {
         when(clientConfiguration.isDisabledSecureConnection()).thenReturn(true);
 
         //when
-        Client client = RestClientFactory.from(clientConfiguration).getInstance();
+        Client client = RestClientFactory.buildClient(clientConfiguration);
 
         //then
         verify(clientConfiguration, times(0)).getKeyStoreDir();

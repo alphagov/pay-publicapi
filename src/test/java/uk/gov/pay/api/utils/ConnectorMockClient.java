@@ -22,7 +22,6 @@ import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 import static org.mockserver.verify.VerificationTimes.once;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonString;
-import static uk.gov.pay.api.utils.JsonStringBuilder.jsonStringBuilder;
 
 public class ConnectorMockClient {
     public static final String CONNECTOR_MOCK_ACCOUNTS_PATH = "/v1/api/accounts/%s";
@@ -42,7 +41,7 @@ public class ConnectorMockClient {
     }
 
     private String createChargePayload(long amount, String returnUrl, String description, String reference) {
-        return jsonStringBuilder()
+        return new JsonStringBuilder()
                 .add("amount", amount)
                 .add("reference", reference)
                 .add("description", description)
@@ -52,7 +51,7 @@ public class ConnectorMockClient {
 
     private String createChargeResponse(long amount, String chargeId, String status, String returnUrl, String description,
                                         String reference, String paymentProvider, String createdDate, ImmutableMap<?, ?>... links) {
-        return jsonStringBuilder()
+        return new JsonStringBuilder()
                 .add("charge_id", chargeId)
                 .add("amount", amount)
                 .add("reference", reference)
@@ -66,7 +65,7 @@ public class ConnectorMockClient {
     }
 
     private String createChargeEventsResponse(String chargeId, List<Map<String,String>> events, ImmutableMap<?, ?>... links) {
-        return jsonStringBuilder()
+        return new JsonStringBuilder()
                 .add("charge_id", chargeId)
                 .add("events", events)
                 .add("links", asList(links))

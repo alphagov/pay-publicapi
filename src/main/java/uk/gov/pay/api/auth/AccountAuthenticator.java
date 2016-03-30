@@ -17,10 +17,10 @@ import static javax.ws.rs.core.Response.Status.OK;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
 public class AccountAuthenticator implements Authenticator<String, String> {
+    private static Logger logger = LoggerFactory.getLogger(AccountAuthenticator.class);
+
     private final Client client;
     private final String publicAuthUrl;
-
-    private static Logger logger = LoggerFactory.getLogger(AccountAuthenticator.class);
 
     public AccountAuthenticator(Client client, String publicAuthUrl) {
         this.client = client;

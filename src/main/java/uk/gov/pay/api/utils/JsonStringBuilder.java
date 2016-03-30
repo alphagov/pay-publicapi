@@ -18,21 +18,10 @@ public class JsonStringBuilder {
     private boolean prettyPrint;
 
     public static String jsonString(String key, Object value) {
-        return jsonStringBuilder().add(key, value).build();
+        return new JsonStringBuilder().add(key, value).build();
     }
 
-    public static String jsonString(String key1, Object value1, String key2, Object value2) {
-        return jsonStringBuilder()
-                .add(key1, value1)
-                .add(key2, value2)
-                .build();
-    }
-
-    public static JsonStringBuilder jsonStringBuilder() {
-        return new JsonStringBuilder();
-    }
-
-    private JsonStringBuilder() {
+    public JsonStringBuilder() {
         map = new LinkedHashMap<>();
         prettyPrint = true;
     }
