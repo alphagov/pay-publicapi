@@ -3,11 +3,7 @@ package uk.gov.pay.api.resources;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Lists;
 import io.dropwizard.auth.Auth;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpStatus;
@@ -16,29 +12,18 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.Payment;
 import uk.gov.pay.api.model.PaymentEvents;
+import uk.gov.pay.api.model.PaymentWithLinks;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import javax.validation.Valid;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
 import java.net.URI;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -46,11 +31,10 @@ import java.util.stream.Collectors;
 import static java.lang.String.format;
 import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.upperCase;
 import static org.apache.http.HttpStatus.SC_OK;
-import static uk.gov.pay.api.model.Payment.createPaymentResponse;
+import static uk.gov.pay.api.model.PaymentWithLinks.createPaymentResponseWithLinks;
 import static uk.gov.pay.api.resources.ParamValidator.validateDate;
 import static uk.gov.pay.api.resources.ParamValidator.validateStatus;
 import static uk.gov.pay.api.utils.ResponseUtil.*;
@@ -101,7 +85,7 @@ public class PaymentsResource {
             notes = "Return information about the payment",
             code = 200)
 
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = Payment.class),
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = PaymentWithLinks.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found")})
     public Response getPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
@@ -114,7 +98,7 @@ public class PaymentsResource {
                 .request()
                 .get();
 
-        return responseFrom(uriInfo, connectorResponse, SC_OK,
+        return responseForPaymentWithLinks(uriInfo, connectorResponse, SC_OK,
                 (locationUrl, data) -> Response.ok(data),
                 data -> notFoundResponse(logger, data));
     }
@@ -221,7 +205,7 @@ public class PaymentsResource {
             code = 201,
             nickname = "newPayment")
 
-    @ApiResponses(value = {@ApiResponse(code = 201, message = "Created", response = Payment.class),
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "Created", response = PaymentWithLinks.class),
             @ApiResponse(code = 400, message = "Bad request"),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource")})
     public Response createNewPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
@@ -234,7 +218,7 @@ public class PaymentsResource {
                 .request()
                 .post(buildChargeRequestPayload(requestPayload));
 
-        return responseFrom(uriInfo, connectorResponse, HttpStatus.SC_CREATED,
+        return responseForPaymentWithLinks(uriInfo, connectorResponse, HttpStatus.SC_CREATED,
                 (locationUrl, data) -> Response.created(locationUrl).entity(data),
                 data -> badRequestResponse(logger, data));
     }
@@ -285,9 +269,9 @@ public class PaymentsResource {
         return builder.toString();
     }
 
-    private Response responseFrom(UriInfo uriInfo, Response connectorResponse, int okStatus,
-                                  BiFunction<URI, Object, ResponseBuilder> okResponse,
-                                  Function<JsonNode, Response> errorResponse) {
+    private Response responseForPaymentWithLinks(UriInfo uriInfo, Response connectorResponse, int okStatus,
+                                                 BiFunction<URI, Object, ResponseBuilder> okResponse,
+                                                 Function<JsonNode, Response> errorResponse) {
         if (!connectorResponse.hasEntity()) {
             return badRequestResponse(logger, "Connector response contains no payload!");
         }
@@ -298,16 +282,7 @@ public class PaymentsResource {
                     .path(PAYMENT_BY_ID)
                     .build(payload.get(CHARGE_KEY).asText());
 
-            Optional<JsonNode> nextLinkMaybe = getNextLink(payload);
-
-            Payment response =
-                    createPaymentResponse(payload)
-                            .withSelfLink(documentLocation.toString());
-
-            if (nextLinkMaybe.isPresent()) {
-                JsonNode nextLink = nextLinkMaybe.get();
-                response.withNextLink(nextLink.get("href").asText());
-            }
+            PaymentWithLinks response = createPaymentResponseWithLinks(payload, documentLocation.toString());
 
             logger.info("payment returned: [ {} ]", response);
 
@@ -340,17 +315,6 @@ public class PaymentsResource {
         }
 
         return errorResponse.apply(payload);
-    }
-
-    private Optional<JsonNode> getNextLink(JsonNode payload) {
-        for (Iterator<JsonNode> it = payload.get("links").elements(); it.hasNext(); ) {
-            JsonNode node = it.next();
-            if ("next_url".equals(node.get("rel").asText())) {
-                return Optional.of(node);
-            }
-        }
-
-        return Optional.empty();
     }
 
     private Entity buildChargeRequestPayload(CreatePaymentRequest requestPayload) {
