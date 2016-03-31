@@ -7,6 +7,9 @@ import javax.net.ssl.SSLContext;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
+import static uk.gov.pay.api.utils.TrustStoreLoader.getTrustStore;
+import static uk.gov.pay.api.utils.TrustStoreLoader.getTrustStorePassword;
+
 public class RestClientFactory {
     public static final String TLSV1_2 = "TLSv1.2";
 
@@ -17,7 +20,8 @@ public class RestClientFactory {
             String keyStoreFile = clientConfig.getKeyStoreDir() + clientConfig.getKeyStoreFile();
             SslConfigurator sslConfig = SslConfigurator.newInstance()
                     .trustStoreFile(keyStoreFile)
-                    .trustStorePassword(clientConfig.getKeyStorePassword())
+                    .trustStore(getTrustStore())
+                    .trustStorePassword(getTrustStorePassword())
                     .securityProtocol(TLSV1_2);
 
             SSLContext sslContext = sslConfig.createSSLContext();
