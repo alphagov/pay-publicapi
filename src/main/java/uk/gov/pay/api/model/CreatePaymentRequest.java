@@ -13,7 +13,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @ApiModel(value = "CreatePaymentRequest", description = "The Payment Request Payload")
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class CreatePaymentRequest {
 
     private Integer amount;
