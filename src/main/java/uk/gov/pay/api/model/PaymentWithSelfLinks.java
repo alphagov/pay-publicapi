@@ -1,21 +1,19 @@
 package uk.gov.pay.api.model;
 
 import java.net.URI;
-import java.util.List;
 
-public class PaymentWithLinks implements PaymentWithLinksJSON, PaymentJSON {
+public class PaymentWithSelfLinks implements PaymentWithSelfLinksJSON, PaymentJSON {
 
     private Payment payment;
-    private SelfAndNextLinks links = new SelfAndNextLinks();
+    private SelfLinks links = new SelfLinks();
 
-    public static PaymentWithLinks valueOf(PaymentConnectorResponse paymentConnector, URI selfLink) {
-        return new PaymentWithLinks(Payment.valueOf(paymentConnector), paymentConnector.getLinks(), selfLink);
+    public static PaymentWithSelfLinks valueOf(PaymentConnectorResponse charge, URI selfLink) {
+        return new PaymentWithSelfLinks(Payment.valueOf(charge), selfLink);
     }
 
-    private PaymentWithLinks(Payment payment, List<PaymentConnectorResponseLink> paymentConnectorResponseLinks, URI selfLink) {
+    private PaymentWithSelfLinks(Payment payment, URI selfLink) {
         this.payment = payment;
         this.links.addSelf(selfLink.toString());
-        this.links.addKnownLinksValueOf(paymentConnectorResponseLinks);
     }
 
     public String getCreatedDate() {
@@ -50,7 +48,7 @@ public class PaymentWithLinks implements PaymentWithLinksJSON, PaymentJSON {
         return payment.getPaymentProvider();
     }
 
-    public SelfAndNextLinks getLinks() {
+    public SelfLinks getLinks() {
         return links;
     }
 }

@@ -1,6 +1,8 @@
 package uk.gov.pay.api.resources;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import io.dropwizard.auth.Auth;
 import io.swagger.annotations.*;
@@ -18,14 +20,19 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.*;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -67,10 +74,12 @@ public class PaymentsResource {
 
     private final Client client;
     private final String connectorUrl;
+    private final ObjectMapper objectMapper;
 
     public PaymentsResource(Client client, String connectorUrl) {
         this.client = client;
         this.connectorUrl = connectorUrl;
+        this.objectMapper = new ObjectMapper();
     }
 
     @GET
@@ -134,7 +143,7 @@ public class PaymentsResource {
             responseContainer = "List",
             code = 200)
 
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = Payment.class, responseContainer = "List"),
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = PaymentSearchResults.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 500, message = "Search payments failed"),
             @ApiResponse(code = 422, message = "fields [from_date, to_date, status] are not in correct format. see public api documentation for the correct data formats")})
@@ -168,7 +177,7 @@ public class PaymentsResource {
         }
 
         if (validationErrors.isEmpty()) {
-            List<Pair<String, String>> queryParams = Lists.newArrayList(
+            List<Pair<String, String>> queryParams = asList(
                     Pair.of(REFERENCE_KEY, reference),
                     Pair.of(STATUS_KEY, upperCase(status)),
                     Pair.of(FROM_DATE_KEY, fromDate),
@@ -180,11 +189,13 @@ public class PaymentsResource {
                     .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
                     .get();
 
-            if (connectorResponse.getStatus() == SC_OK) {
-                return Response.ok(connectorResponse.readEntity(String.class)).build();
-            } else {
-                return serverErrorResponse(logger, "Search payments failed");
-            }
+            return responseForPaymentsWithSelfLinks(
+                    uriInfo,
+                    connectorResponse, SC_OK,
+                    Response::ok,
+                    () -> serverErrorResponse(logger, "Search payments failed")
+            );
+
         } else {
             return unprocessableEntityResponse(logger, errorMessageFrom(validationErrors));
         }
@@ -284,6 +295,41 @@ public class PaymentsResource {
         }
 
         return errorResponse.apply(connectorResponse.readEntity(JsonNode.class));
+    }
+
+    private Response responseForPaymentsWithSelfLinks(UriInfo uriInfo, Response connectorResponse, int okStatus,
+                                                      Function<Object, ResponseBuilder> okResponse,
+                                                      Supplier<Response> errorResponse) {
+
+        if (connectorResponse.getStatus() == okStatus) {
+            try {
+                JsonNode responseJson = connectorResponse.readEntity(JsonNode.class);
+
+                TypeReference<HashMap<String, List<PaymentConnectorResponse>>> typeRef
+                        = new TypeReference<HashMap<String, List<PaymentConnectorResponse>>>() {};
+
+                Map<String, List<PaymentConnectorResponse>> chargesMap
+                        = objectMapper.readValue(responseJson.traverse(), typeRef);
+
+                List<PaymentWithSelfLinks> paymentsWithSelfLink = chargesMap.get("results")
+                        .stream()
+                        .map(charge -> {
+                            URI paymentLink = uriInfo.getBaseUriBuilder()
+                                    .path(PAYMENT_BY_ID)
+                                    .build(charge.getChargeId());
+
+                            return PaymentWithSelfLinks.valueOf(charge, paymentLink);
+                        })
+                        .collect(Collectors.toList());
+
+                return okResponse.apply(new PaymentSearchResults(paymentsWithSelfLink)).build();
+
+            } catch (IOException e) {
+                return errorResponse.get();
+            }
+        }
+
+        return errorResponse.get();
     }
 
     private Response eventsResponseFrom(UriInfo uriInfo, Response connectorResponse, int okStatus,

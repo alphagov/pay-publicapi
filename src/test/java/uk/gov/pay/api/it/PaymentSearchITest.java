@@ -16,10 +16,11 @@ import java.util.Map;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.aSuccessfulSearchResponse;
+import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.*;
 
 public class PaymentSearchITest extends PaymentResourceITestBase {
 
@@ -28,6 +29,33 @@ public class PaymentSearchITest extends PaymentResourceITestBase {
     private static final String TEST_FROM_DATE = "2016-01-28T00:00:00Z";
     private static final String TEST_TO_DATE = "2016-01-28T12:00:00Z";
     private static final String SEARCH_PATH = "/v1/payments";
+
+    @Test
+    public void searchPayments_shouldOnlyReturnAllowedProperties() {
+
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null,
+                aSuccessfulSearchResponse()
+                        .withMatchingStatus(TEST_STATUS)
+                        .withMatchingReference(TEST_REFERENCE)
+                        .numberOfResults(1)
+                        .build()
+        );
+
+        searchPayments(BEARER_TOKEN, ImmutableMap.of("reference", TEST_REFERENCE))
+                .statusCode(200)
+                .contentType(JSON)
+                .body("results.get(0).created_date", is(DEFAULT_CREATED_DATE))
+                .body("results.get(0).reference", is(TEST_REFERENCE))
+                .body("results.get(0).return_url", is(DEFAULT_RETURN_URL))
+                .body("results.get(0).description", is("description-0"))
+                .body("results.get(0).status", is(TEST_STATUS))
+                .body("results.get(0).amount", is(DEFAULT_AMOUNT))
+                .body("results.get(0).payment_provider", is(DEFAULT_PAYMENT_PROVIDER))
+                .body("results.get(0).payment_id", is("0"))
+                .body("results.get(0)._links.self.method", is("GET"))
+                .body("results.get(0)._links.self.href", endsWith("/v1/payments/0"));
+    }
 
     @Test
     public void searchPayments_filterByFullReference() throws Exception {
