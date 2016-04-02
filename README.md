@@ -121,7 +121,7 @@ Content-Type: application/json
     "return_url": "https://example.service.gov.uk/some-reference-to-this-payment",
     "reference": "some-reference-to-this-payment",
     "payment_provider": "Sandbox",
-    "created_date": "2016-01-15 16:30:56"
+    "created_date": "2016-01-15T16:30:56Z"
 }
 ```
 
@@ -135,8 +135,10 @@ Content-Type: application/json
 | `status`               | Current status of the payment             |
 | `return_url`           | The URL where the user should be redirected to when the payment workflow is finished.    |
 | `reference`            | The reference issued by the government service for this payment                          |
-| `payment_provider      | The payment provider for this payment                                                    |
+| `payment_provider`     | The payment provider for this payment                                                    |
 | `created_date`         | The payment creation date for this payment                                               |
+| `_links.self`          | Link to the payment                                                                      |
+| `_links.next_url`      | Where to navigate the user next                                                          |
 
 #### Payment creation failed
 
@@ -193,7 +195,7 @@ Content-Type: application/json
     "return_url": "https://example.service.gov.uk/some-reference-to-this-payment",
     "reference" : "some-reference-to-this-payment",
     "payment_provider": "Sandbox",
-    "created_date": "2016-01-15 16:30:56"
+    "created_date": "2016-01-15T16:30:56Z"
 }
 ```
 
@@ -338,10 +340,10 @@ GET /v1/payments
 
 | Field                    | required | Description                               |
 | ------------------------ |:--------:| ----------------------------------------- |
-| `reference`              | X | There (partial or full) reference issued by the government service for this payment. |
-| `status`                 | X | The transaction of this payment |
-| `from_date`               | X | The initial date for search payments |
-| `to_date`                 | X | The end date for search payments|
+| `reference`              | - | There (partial or full) reference issued by the government service for this payment. |
+| `status`                 | - | The transaction of this payment |
+| `from_date`               | - | The initial date for search payments |
+| `to_date`                 | - | The end date for search payments|
 
 #### Response example
 
@@ -350,13 +352,19 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 {
     "results": [{     
-        "charge_id": "hu20sqlact5260q2nanm0q8u93",
-        "description": "Breathing licence",
-        "reference": "Ref-1234",
+        "_links": {
+                "self" :{
+                    "href": "http://publicapi.co.uk/v1/payments/ab2341da231434",
+                    "method": "GET" 
+                }
+        },
+        "payment_id": "hu20sqlact5260q2nanm0q8u93",
+        "payment_provider": "worldpay",
         "amount": 5000,
-        "gateway_account_id": "10",
-        "gateway_transaction_id": "DFG98-FG8J-R78HJ-8JUG9",
         "status": "CREATED",
+        "description": "Your service description",
+        "return_url": "http://your.service.domain/your-reference"
+        "reference": "Ref-1234",
         "created_date": "2016-05-13T18:20:33Z"
      }]
 }
@@ -373,7 +381,8 @@ Content-Type: application/json
 | `reference`              | X | There reference issued by the government service for this payment       |
 | `gateway_transaction_id` | X | The gateway transaction reference associated to this charge       |
 | `status`                 | X | The current external status of the charge       |
-| `created_date`             | X | The created date in ISO_8601 format (```yyyy-MM-ddTHH:mm:ssZ```)|
+| `created_date`           | X | The created date in ISO_8601 format (```yyyy-MM-ddTHH:mm:ssZ```)|
+| `_links.self`            | X | Link to the payment                                                 |
 
 -----------------------------------------------------------------------------------------------------------
 
