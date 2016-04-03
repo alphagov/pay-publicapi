@@ -6,7 +6,7 @@ import static org.apache.commons.validator.routines.UrlValidator.*;
 
 public enum URLValidator {
     SECURITY_ENABLED {
-        private final UrlValidator URL_VALIDATOR = new UrlValidator(new String[]{"https"});
+        private final UrlValidator URL_VALIDATOR = new UrlValidator(new String[]{"https"}, ALLOW_LOCAL_URLS);
 
         @Override
         public boolean isValid(String value) {
