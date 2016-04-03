@@ -9,6 +9,7 @@ EXPOSE 8080
 EXPOSE 8081
 
 WORKDIR /app
+RUN mkdir /app/ssl
 
 ADD target/*.yaml /app/
 ADD target/pay-*-allinone.jar /app/
