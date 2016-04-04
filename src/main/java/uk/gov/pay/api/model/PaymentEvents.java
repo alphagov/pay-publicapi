@@ -54,7 +54,7 @@ public class PaymentEvents {
     }
 
     public PaymentEvents withSelfLink(String url) {
-        links.setSelf(url);
+        links.addSelf(url);
         return this;
     }
 }

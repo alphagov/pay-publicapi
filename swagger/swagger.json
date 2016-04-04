@@ -267,6 +267,21 @@
           "example" : "your-reference",
           "readOnly" : true
         },
+        "created_date" : {
+          "type" : "string",
+          "example" : "2016-01-21T17:15:00Z",
+          "readOnly" : true
+        },
+        "payment_id" : {
+          "type" : "string",
+          "example" : "hu20sqlact5260q2nanm0q8u93",
+          "readOnly" : true
+        },
+        "payment_provider" : {
+          "type" : "string",
+          "example" : "worldpay",
+          "readOnly" : true
+        },
         "description" : {
           "type" : "string",
           "example" : "Your Service Description",
@@ -287,21 +302,6 @@
           "type" : "string",
           "example" : "http://your.service.domain/your-reference",
           "readOnly" : true
-        },
-        "created_date" : {
-          "type" : "string",
-          "example" : "2016-01-21T17:15:00Z",
-          "readOnly" : true
-        },
-        "payment_id" : {
-          "type" : "string",
-          "example" : "hu20sqlact5260q2nanm0q8u93",
-          "readOnly" : true
-        },
-        "payment_provider" : {
-          "type" : "string",
-          "example" : "worldpay",
-          "readOnly" : true
         }
       },
       "description" : "A Payment with links"
@@ -316,6 +316,17 @@
         "method" : {
           "type" : "string",
           "example" : "GET"
+        },
+        "type" : {
+          "type" : "string",
+          "example" : "multipart/form-data"
+        },
+        "params" : {
+          "type" : "object",
+          "example" : "\"description\":\"This is a value for a parameter called description\"",
+          "additionalProperties" : {
+            "type" : "object"
+          }
         }
       },
       "description" : "A link related to a payment"
@@ -329,6 +340,12 @@
         },
         "next_url" : {
           "description" : "next_url",
+          "readOnly" : true,
+          "$ref" : "#/definitions/paymentLink"
+        },
+        "next_url_post" : {
+          "description" : "next_url_post",
+          "readOnly" : true,
           "$ref" : "#/definitions/paymentLink"
         }
       },

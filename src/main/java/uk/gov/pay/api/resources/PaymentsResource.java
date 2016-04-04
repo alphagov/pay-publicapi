@@ -9,10 +9,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.pay.api.model.CreatePaymentRequest;
-import uk.gov.pay.api.model.Payment;
-import uk.gov.pay.api.model.PaymentEvents;
-import uk.gov.pay.api.model.PaymentWithLinks;
+import uk.gov.pay.api.model.*;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import javax.validation.Valid;
@@ -34,7 +31,6 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.upperCase;
 import static org.apache.http.HttpStatus.SC_OK;
-import static uk.gov.pay.api.model.PaymentWithLinks.createPaymentResponseWithLinks;
 import static uk.gov.pay.api.resources.ParamValidator.validateDate;
 import static uk.gov.pay.api.resources.ParamValidator.validateStatus;
 import static uk.gov.pay.api.utils.ResponseUtil.*;
@@ -143,15 +139,15 @@ public class PaymentsResource {
             @ApiResponse(code = 500, message = "Search payments failed"),
             @ApiResponse(code = 422, message = "fields [from_date, to_date, status] are not in correct format. see public api documentation for the correct data formats")})
     public Response searchPayments(@ApiParam(value = "accountId", hidden = true)
-                                       @Auth String accountId,
+                                   @Auth String accountId,
                                    @ApiParam(value = "Your payment reference to search", hidden = false)
-                                        @QueryParam(REFERENCE_KEY) String reference,
+                                   @QueryParam(REFERENCE_KEY) String reference,
                                    @ApiParam(value = "Status of payments to be searched. Example=SUCCESSED", hidden = false, allowableValues = "range[SUCCEEDED,CREATED,IN PROGRESS,FAILED,SYSTEM CANCELLED")
-                                        @QueryParam(STATUS_KEY) String status,
+                                   @QueryParam(STATUS_KEY) String status,
                                    @ApiParam(value = "From date of payments to be searched. Example=2015-08-13T12:35:00Z", hidden = false)
-                                        @QueryParam(FROM_DATE_KEY) String fromDate,
+                                   @QueryParam(FROM_DATE_KEY) String fromDate,
                                    @ApiParam(value = "To date of payments to be searched. Example=2015-08-13T12:35:00Z", hidden = false)
-                                        @QueryParam(TO_DATE_KEY) String toDate,
+                                   @QueryParam(TO_DATE_KEY) String toDate,
                                    @Context UriInfo uriInfo) {
 
         logger.info("received get search payments request: [ {} ]",
@@ -189,8 +185,7 @@ public class PaymentsResource {
             } else {
                 return serverErrorResponse(logger, "Search payments failed");
             }
-        }
-        else {
+        } else {
             return unprocessableEntityResponse(logger, errorMessageFrom(validationErrors));
         }
     }
@@ -252,7 +247,7 @@ public class PaymentsResource {
     }
 
     private String errorMessageFrom(List<Pair<String, String>> invalidParams) {
-        List<String> keys = invalidParams.stream().map(pair -> pair.getLeft()).collect(Collectors.toList());
+        List<String> keys = invalidParams.stream().map(Pair::getLeft).collect(Collectors.toList());
         return String.format("fields [%s] are not in correct format. see public api documentation for the correct data formats", StringUtils.join(keys, ", "));
     }
 
@@ -276,20 +271,19 @@ public class PaymentsResource {
             return badRequestResponse(logger, "Connector response contains no payload!");
         }
 
-        JsonNode payload = connectorResponse.readEntity(JsonNode.class);
         if (connectorResponse.getStatus() == okStatus) {
+            PaymentConnectorResponse response = connectorResponse.readEntity(PaymentConnectorResponse.class);
             URI documentLocation = uriInfo.getBaseUriBuilder()
                     .path(PAYMENT_BY_ID)
-                    .build(payload.get(CHARGE_KEY).asText());
+                    .build(response.getChargeId());
 
-            PaymentWithLinks response = createPaymentResponseWithLinks(payload, documentLocation.toString());
+            PaymentWithLinks payment = PaymentWithLinks.valueOf(response, documentLocation);
 
-            logger.info("payment returned: [ {} ]", response);
-
-            return okResponse.apply(documentLocation, response).build();
+            logger.info("payment returned: [ {} ]", payment);
+            return okResponse.apply(documentLocation, payment).build();
         }
 
-        return errorResponse.apply(payload);
+        return errorResponse.apply(connectorResponse.readEntity(JsonNode.class));
     }
 
     private Response eventsResponseFrom(UriInfo uriInfo, Response connectorResponse, int okStatus,
@@ -329,5 +323,4 @@ public class PaymentsResource {
                 .add(SERVICE_RETURN_URL, returnUrl)
                 .build());
     }
-
 }

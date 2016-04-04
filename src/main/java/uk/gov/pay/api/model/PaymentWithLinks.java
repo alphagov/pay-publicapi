@@ -1,33 +1,21 @@
 package uk.gov.pay.api.model;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
-import java.util.Iterator;
-import java.util.Optional;
+import java.net.URI;
+import java.util.List;
 
 public class PaymentWithLinks implements PaymentWithLinksJSON {
-    Payment payment;
 
-    private final Links links = new Links();
+    private Payment payment;
+    private Links links = new Links();
 
-    public Links getLinks() {
-        return links;
+    public static PaymentWithLinks valueOf(PaymentConnectorResponse paymentConnector, URI selfLink) {
+        return new PaymentWithLinks(Payment.valueOf(paymentConnector), paymentConnector.getLinks(), selfLink);
     }
 
-    public static PaymentWithLinks createPaymentResponseWithLinks(JsonNode payload, String selfLink) {
-        Payment payment = Payment.createPaymentResponse(payload);
-        PaymentWithLinks paymentWithLinks = new PaymentWithLinks(payment);
-        paymentWithLinks.withSelfLink(selfLink);
-        Optional<JsonNode> nextLinkMaybe = getNextLink(payload);
-
-        nextLinkMaybe.ifPresent(
-                (nextLink) -> paymentWithLinks.withNextLink(nextLink.get("href").asText()));
-
-        return paymentWithLinks;
-    }
-
-    private PaymentWithLinks(Payment payment) {
+    private PaymentWithLinks(Payment payment, List<PaymentConnectorResponseLink> paymentConnectorResponseLinks, URI selfLink) {
         this.payment = payment;
+        this.links.addSelf(selfLink.toString());
+        this.links.addKnownLinksValueOf(paymentConnectorResponseLinks);
     }
 
     public String getCreatedDate() {
@@ -62,25 +50,7 @@ public class PaymentWithLinks implements PaymentWithLinksJSON {
         return payment.getPaymentProvider();
     }
 
-    public PaymentWithLinks withSelfLink(String url) {
-        this.links.setSelf(url);
-        return this;
+    public Links getLinks() {
+        return links;
     }
-
-    public PaymentWithLinks withNextLink(String url) {
-        this.links.setNextUrl(url);
-        return this;
-    }
-
-    private static Optional<JsonNode> getNextLink(JsonNode payload) {
-        for (Iterator<JsonNode> it = payload.get("links").elements(); it.hasNext(); ) {
-            JsonNode node = it.next();
-            if ("next_url".equals(node.get("rel").asText())) {
-                return Optional.of(node);
-            }
-        }
-
-        return Optional.empty();
-    }
-
 }

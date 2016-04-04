@@ -6,6 +6,7 @@ import org.mockserver.client.server.MockServerClient;
 import org.mockserver.model.HttpResponse;
 import org.mockserver.model.Parameter;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,14 +25,16 @@ import static org.mockserver.verify.VerificationTimes.once;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonString;
 
 public class ConnectorMockClient {
-    public static final String CONNECTOR_MOCK_ACCOUNTS_PATH = "/v1/api/accounts/%s";
-    public static final String CONNECTOR_MOCK_CHARGES_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/charges";
-    public static final String CONNECTOR_MOCK_CHARGE_PATH = CONNECTOR_MOCK_CHARGES_PATH + "/%s";
-    public static final String CONNECTOR_MOCK_CHARGE_EVENTS_PATH = CONNECTOR_MOCK_CHARGE_PATH + "/events";
+
+    private static final String CONNECTOR_MOCK_ACCOUNTS_PATH = "/v1/api/accounts/%s";
+    private static final String CONNECTOR_MOCK_CHARGES_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/charges";
+    private static final String CONNECTOR_MOCK_CHARGE_PATH = CONNECTOR_MOCK_CHARGES_PATH + "/%s";
+    private static final String CONNECTOR_MOCK_CHARGE_EVENTS_PATH = CONNECTOR_MOCK_CHARGE_PATH + "/events";
     private static final String REFERENCE_KEY = "reference";
     private static final String STATUS_KEY = "status";
     private static final String FROM_DATE_KEY = "from_date";
     private static final String TO_DATE_KEY = "to_date";
+
     private final MockServerClient mockClient;
     private final String baseUrl;
 
@@ -50,8 +53,8 @@ public class ConnectorMockClient {
     }
 
     private String createChargeResponse(long amount, String chargeId, String status, String returnUrl, String description,
-                                        String reference, String paymentProvider, String createdDate, ImmutableMap<?, ?>... links) {
-        return new JsonStringBuilder()
+                                        String reference, String paymentProvider, String gatewayTransactionId, String createdDate, ImmutableMap<?, ?>... links) {
+        JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
                 .add("charge_id", chargeId)
                 .add("amount", amount)
                 .add("reference", reference)
@@ -60,11 +63,14 @@ public class ConnectorMockClient {
                 .add("return_url", returnUrl)
                 .add("payment_provider", paymentProvider)
                 .add("created_date", createdDate)
-                .add("links", asList(links))
-                .build();
+                .add("links", asList(links));
+        if (gatewayTransactionId != null) {
+            jsonStringBuilder.add("gateway_transaction_id", gatewayTransactionId);
+        }
+        return jsonStringBuilder.build();
     }
 
-    private String createChargeEventsResponse(String chargeId, List<Map<String,String>> events, ImmutableMap<?, ?>... links) {
+    private String createChargeEventsResponse(String chargeId, List<Map<String, String>> events, ImmutableMap<?, ?>... links) {
         return new JsonStringBuilder()
                 .add("charge_id", chargeId)
                 .add("events", events)
@@ -72,16 +78,28 @@ public class ConnectorMockClient {
                 .build();
     }
 
-    private ImmutableMap<String, String> validLink(String href, String rel) {
+    private ImmutableMap<String, String> validGetLink(String href, String rel) {
         return ImmutableMap.of(
                 "href", href,
                 "rel", rel,
                 "method", GET);
     }
 
+    private ImmutableMap<String, Object> validPostLink(String href, String rel, String type, Map<String, String> params) {
+        return ImmutableMap.of(
+                "href", href,
+                "rel", rel,
+                "type", type,
+                "params", params,
+                "method", POST);
+    }
 
-    private String nextUrl(String chargeId) {
-        return "http://Frontend/charge/" + chargeId;
+    private String nextUrlPost() {
+        return "http://Frontend/charge/";
+    }
+
+    private String nextUrl(String tokenId) {
+        return nextUrlPost() + tokenId;
     }
 
     private String chargeLocation(String accountId, String chargeId) {
@@ -92,8 +110,9 @@ public class ConnectorMockClient {
         return baseUrl + format(CONNECTOR_MOCK_CHARGE_EVENTS_PATH, accountId, chargeId);
     }
 
-    public void respondOk_whenCreateCharge(int amount, String gatewayAccountId, String chargeId, String status, String returnUrl,
+    public void respondOk_whenCreateCharge(int amount, String gatewayAccountId, String chargeId, String chargeTokenId, String status, String returnUrl,
                                            String description, String reference, String paymentProvider, String createdDate) {
+
         whenCreateCharge(amount, gatewayAccountId, returnUrl, description, reference)
                 .respond(response()
                         .withStatusCode(CREATED_201)
@@ -107,9 +126,14 @@ public class ConnectorMockClient {
                                 description,
                                 reference,
                                 paymentProvider,
+                                null,
                                 createdDate,
-                                validLink(chargeLocation(gatewayAccountId, chargeId), "self"),
-                                validLink(nextUrl(chargeId), "next_url"))));
+                                validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
+                                validGetLink(nextUrl(chargeTokenId), "next_url"),
+                                validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",
+                                        new HashMap<String, String>() {{
+                                            put("chargeTokenId", chargeTokenId);
+                                        }}))));
     }
 
     public void respondOk_whenSearchCharges(String accountId, String reference, String status, String fromDate, String toDate, String expectedResponse) {
@@ -136,22 +160,27 @@ public class ConnectorMockClient {
     }
 
     public void respondWithChargeFound(long amount, String gatewayAccountId, String chargeId, String status, String returnUrl,
-                                       String description, String reference, String paymentProvider, String createdDate) {
+                                       String description, String reference, String paymentProvider, String createdDate, String chargeTokenId) {
         whenGetCharge(gatewayAccountId, chargeId)
                 .respond(response()
                         .withStatusCode(OK_200)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                         .withBody(createChargeResponse(amount, chargeId, status, returnUrl,
-                                description, reference, paymentProvider, createdDate, validLink(chargeLocation(gatewayAccountId, chargeId), "self"),
-                                validLink(nextUrl(chargeId), "next_url"))));
+                                description, reference, paymentProvider, gatewayAccountId, createdDate,
+                                validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
+                                validGetLink(nextUrl(chargeId), "next_url"),
+                                validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",
+                                        new HashMap<String, String>() {{
+                                            put("chargeTokenId", chargeTokenId);
+                                        }}))));
     }
 
-    public void respondWithChargeEventsFound(String gatewayAccountId, String chargeId, List<Map<String,String>> events) {
+    public void respondWithChargeEventsFound(String gatewayAccountId, String chargeId, List<Map<String, String>> events) {
         whenGetChargeEvents(gatewayAccountId, chargeId)
                 .respond(response()
                         .withStatusCode(OK_200)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withBody(createChargeEventsResponse(chargeId, events, validLink(chargeEventsLocation(gatewayAccountId, chargeId), "self"))));
+                        .withBody(createChargeEventsResponse(chargeId, events, validGetLink(chargeEventsLocation(gatewayAccountId, chargeId), "self"))));
     }
 
 
@@ -186,7 +215,7 @@ public class ConnectorMockClient {
                 .respond(withStatusAndErrorMessage(BAD_REQUEST_400, errorMessage));
     }
 
-    private ForwardChainExpectation whenCreateCharge(long amount, String gatewayAccountId, String returnUrl, String description, String reference) {
+    public ForwardChainExpectation whenCreateCharge(long amount, String gatewayAccountId, String returnUrl, String description, String reference) {
         return mockClient.when(request()
                 .withMethod(POST)
                 .withPath(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId))
@@ -204,8 +233,8 @@ public class ConnectorMockClient {
 
     private ForwardChainExpectation whenGetChargeEvents(String gatewayAccountId, String chargeId) {
         return mockClient.when(request()
-                        .withMethod(GET)
-                        .withPath(format(CONNECTOR_MOCK_CHARGE_EVENTS_PATH, gatewayAccountId, chargeId))
+                .withMethod(GET)
+                .withPath(format(CONNECTOR_MOCK_CHARGE_EVENTS_PATH, gatewayAccountId, chargeId))
         );
     }
 
@@ -260,7 +289,6 @@ public class ConnectorMockClient {
                 once()
         );
     }
-
 
     public void verifyCancelCharge(String paymentId, String accountId) {
         mockClient.verify(request()
