@@ -23,20 +23,20 @@
         }, {
           "name" : "status",
           "in" : "query",
-          "description" : "Status of payments to be searched. Example=SUCCESSED",
+          "description" : "Status of payments to be searched. Example=SUCCEEDED",
           "required" : false,
           "type" : "string",
           "enum" : [ "range[SUCCEEDED", "CREATED", "IN PROGRESS", "FAILED", "SYSTEM CANCELLED" ]
         }, {
           "name" : "from_date",
           "in" : "query",
-          "description" : "From date of payments to be searched. Example=2015-08-13T12:35:00Z",
+          "description" : "From date of payments to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z",
           "required" : false,
           "type" : "string"
         }, {
           "name" : "to_date",
           "in" : "query",
-          "description" : "To date of payments to be searched. Example=2015-08-13T12:35:00Z",
+          "description" : "To date of payments to be searched (this date is exclusive). Example=2015-08-13T12:35:00Z",
           "required" : false,
           "type" : "string"
         } ],
