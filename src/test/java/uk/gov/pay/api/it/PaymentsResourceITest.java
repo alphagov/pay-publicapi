@@ -17,6 +17,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.Matchers.*;
 
 public class PaymentsResourceITest extends PaymentResourceITestBase {
@@ -99,6 +100,38 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .body("created_date", is(CREATED_DATE));
 
         connectorMock.verifyCreateCharge(minimumAmount, GATEWAY_ACCOUNT_ID, RETURN_URL, DESCRIPTION, REFERENCE);
+    }
+
+    @Test
+    public void createPayment_withAllFieldsUpToMaxLengthBoundaries_shouldBeAccepted() {
+
+        int amount = 10000000;
+        String reference = randomAlphanumeric(255);
+        String description = randomAlphanumeric(255);
+        String return_url = "http://govdemopay.gov.uk?data=" + randomAlphanumeric(1970);
+
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        connectorMock.respondOk_whenCreateCharge(amount, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID, STATUS, return_url,
+                description, reference, PAYMENT_PROVIDER, CREATED_DATE);
+
+        String body = new JsonStringBuilder()
+                .add("amount", amount)
+                .add("reference", reference)
+                .add("description", description)
+                .add("return_url", return_url)
+                .build();
+
+        postPaymentResponse(BEARER_TOKEN, body)
+                .statusCode(201)
+                .contentType(JSON)
+                .body("payment_id", is(CHARGE_ID))
+                .body("amount", is(amount))
+                .body("reference", is(reference))
+                .body("description", is(description))
+                .body("status", is(STATUS))
+                .body("return_url", is(return_url))
+                .body("payment_provider", is(PAYMENT_PROVIDER))
+                .body("created_date", is(CREATED_DATE));
     }
 
     @Test
