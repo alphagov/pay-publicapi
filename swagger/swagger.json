@@ -231,12 +231,6 @@
     "Payment Event information" : {
       "type" : "object",
       "properties" : {
-        "updated" : {
-          "type" : "string",
-          "format" : "date-time",
-          "example" : "updated_date",
-          "description" : "updated"
-        },
         "payment_id" : {
           "type" : "string",
           "example" : "hu20sqlact5260q2nanm0q8u93",
@@ -246,6 +240,12 @@
           "type" : "string",
           "example" : "SUCCEEDED",
           "description" : "status",
+          "readOnly" : true
+        },
+        "updated" : {
+          "type" : "string",
+          "example" : "updated_date",
+          "description" : "updated",
           "readOnly" : true
         },
         "_links" : {
