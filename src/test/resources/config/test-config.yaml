@@ -20,6 +20,3 @@ publicAuthUrl: http://publicauth.url/v1/auth
 
 jerseyClientConfig:
   disabledSecureConnection: "true"
-  keyStoreDir: "./"
-  keyStoreFile: "./keystore_file.pfx"
-  keyStorePassword: "test-key-store-password"
