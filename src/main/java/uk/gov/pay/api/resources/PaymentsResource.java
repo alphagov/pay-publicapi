@@ -218,8 +218,7 @@ public class PaymentsResource {
     @ApiResponses(value = {@ApiResponse(code = 201, message = "Created", response = PaymentWithLinks.class),
             @ApiResponse(code = 400, message = "Bad request"),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 500, message = "There is an error with this account. Please contact support"),
-            @ApiResponse(code = 500, message = "Downstream system error")})
+            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentErrorResponse.class)})
     public Response createNewPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
                                      @ApiParam(value = "requestPayload", required = true) @Valid CreatePaymentRequest requestPayload,
                                      @Context UriInfo uriInfo) {

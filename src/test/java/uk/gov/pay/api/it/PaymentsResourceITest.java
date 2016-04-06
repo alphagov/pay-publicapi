@@ -146,13 +146,14 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
 
         postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
                 .statusCode(500)
-                .body(is("Downstream system error"));
+                .body("code", is("P0198"))
+                .body("message", is("Downstream system error"));
 
         connectorMock.verifyCreateChargeConnectorRequest(AMOUNT, gatewayAccountId, RETURN_URL, DESCRIPTION, REFERENCE);
     }
 
     @Test
-    public void createPayment_responseWith403_whenTokenForGatewayAccountIsValidButConnectorResponseIsNotFound() {
+    public void createPayment_responseWith500_whenTokenForGatewayAccountIsValidButConnectorResponseIsNotFound() {
 
         String notFoundGatewayAccountId = "9876545";
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, notFoundGatewayAccountId);
@@ -160,7 +161,9 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
         connectorMock.respondNotFound_whenCreateCharge(AMOUNT, notFoundGatewayAccountId, RETURN_URL, DESCRIPTION, REFERENCE);
 
         postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
-                .statusCode(500).body(is("Pay account error"));
+                .statusCode(500)
+                .body("code", is("P0199"))
+                .body("message", is("There is an error with this account. Please contact support"));
 
         connectorMock.verifyCreateChargeConnectorRequest(AMOUNT, notFoundGatewayAccountId, RETURN_URL, DESCRIPTION, REFERENCE);
     }

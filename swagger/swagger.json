@@ -87,7 +87,10 @@
             "description" : "Credentials are required to access this resource"
           },
           "500" : {
-            "description" : "Downstream system error"
+            "description" : "Downstream system error",
+            "schema" : {
+              "$ref" : "#/definitions/Payment Error response"
+            }
           }
         }
       }
@@ -210,6 +213,20 @@
         }
       },
       "description" : "The Payment Request Payload"
+    },
+    "Payment Error response" : {
+      "type" : "object",
+      "properties" : {
+        "code" : {
+          "type" : "string",
+          "example" : "P0198"
+        },
+        "message" : {
+          "type" : "string",
+          "example" : "Downstream system error"
+        }
+      },
+      "description" : "A Payment Error response"
     },
     "Payment Event information" : {
       "type" : "object",
