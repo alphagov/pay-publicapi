@@ -19,10 +19,16 @@ public class PaymentSearchResultBuilder {
     private static final String REFERENCE_KEY = "reference";
     private static final String STATUS_KEY = "status";
     private static final String CREATED_DATE_KEY = "created_date";
+    private static final int DEFAULT_NUMBER_OF_RESULTS = 3;
+
+    public static final String DEFAULT_CREATED_DATE = DateTimeUtils.toUTCDateString(ZonedDateTime.now());
+    public static final String DEFAULT_RETURN_URL = "http://example.com/service";
+    public static final int DEFAULT_AMOUNT = 10000;
+    public static final String DEFAULT_PAYMENT_PROVIDER = "worldpay";
 
 
     String[] statuses = {"CREATED", "IN PROGRESS", "AUTHORIZED", "SUCCEEDED"};
-    private int noOfResults = 3;
+    private int noOfResults = DEFAULT_NUMBER_OF_RESULTS;
     private String reference;
     private String status;
     private String fromDate;
@@ -46,6 +52,11 @@ public class PaymentSearchResultBuilder {
     public PaymentSearchResultBuilder withCreatedDateBetween(String fromDate, String toDate) {
         this.fromDate = fromDate;
         this.toDate = toDate;
+        return this;
+    }
+
+    public PaymentSearchResultBuilder numberOfResults(int numberOfResults) {
+        this.noOfResults = numberOfResults;
         return this;
     }
 
@@ -79,9 +90,11 @@ public class PaymentSearchResultBuilder {
             put("description", "description-" + i);
             put(REFERENCE_KEY, randomUUID().toString());
             put(STATUS_KEY, statuses[new Random().nextInt(statuses.length)]);
-            put("amount", new Random().nextInt(10000));
+            put("amount", DEFAULT_AMOUNT);
             put("gateway_transaction_id", randomUUID().toString());
-            put(CREATED_DATE_KEY, DateTimeUtils.toUTCDateString(ZonedDateTime.now()));
+            put(CREATED_DATE_KEY, DEFAULT_CREATED_DATE);
+            put("return_url", DEFAULT_RETURN_URL);
+            put("payment_provider", DEFAULT_PAYMENT_PROVIDER);
         }};
         return result;
     }

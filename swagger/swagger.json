@@ -44,7 +44,7 @@
           "200" : {
             "description" : "OK",
             "schema" : {
-              "$ref" : "#/definitions/Payment"
+              "$ref" : "#/definitions/PaymentSearchResults"
             }
           },
           "401" : {
@@ -255,16 +255,48 @@
       },
       "description" : "A Payment"
     },
+    "PaymentSearchResults" : {
+      "type" : "object",
+      "properties" : {
+        "results" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/PaymentWithSelfLinks"
+          }
+        }
+      }
+    },
     "PaymentWithLinks" : {
       "type" : "object",
       "properties" : {
         "_links" : {
           "readOnly" : true,
-          "$ref" : "#/definitions/paymentLinks"
+          "$ref" : "#/definitions/selfAndNextLinks"
+        },
+        "status" : {
+          "type" : "string",
+          "example" : "CREATED",
+          "readOnly" : true
         },
         "reference" : {
           "type" : "string",
           "example" : "your-reference",
+          "readOnly" : true
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "Your Service Description",
+          "readOnly" : true
+        },
+        "amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "example" : "1200",
+          "readOnly" : true
+        },
+        "return_url" : {
+          "type" : "string",
+          "example" : "http://your.service.domain/your-reference",
           "readOnly" : true
         },
         "created_date" : {
@@ -281,15 +313,30 @@
           "type" : "string",
           "example" : "worldpay",
           "readOnly" : true
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "Your Service Description",
-          "readOnly" : true
+        }
+      },
+      "description" : "A Payment with self and next links"
+    },
+    "PaymentWithSelfLinks" : {
+      "type" : "object",
+      "properties" : {
+        "_links" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/selfLinks"
         },
         "status" : {
           "type" : "string",
           "example" : "CREATED",
+          "readOnly" : true
+        },
+        "reference" : {
+          "type" : "string",
+          "example" : "your-reference",
+          "readOnly" : true
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "Your Service Description",
           "readOnly" : true
         },
         "amount" : {
@@ -302,9 +349,24 @@
           "type" : "string",
           "example" : "http://your.service.domain/your-reference",
           "readOnly" : true
+        },
+        "created_date" : {
+          "type" : "string",
+          "example" : "2016-01-21T17:15:00Z",
+          "readOnly" : true
+        },
+        "payment_id" : {
+          "type" : "string",
+          "example" : "hu20sqlact5260q2nanm0q8u93",
+          "readOnly" : true
+        },
+        "payment_provider" : {
+          "type" : "string",
+          "example" : "worldpay",
+          "readOnly" : true
         }
       },
-      "description" : "A Payment with links"
+      "description" : "A Payment with self link"
     },
     "paymentLink" : {
       "type" : "object",
@@ -331,7 +393,7 @@
       },
       "description" : "A link related to a payment"
     },
-    "paymentLinks" : {
+    "selfAndNextLinks" : {
       "type" : "object",
       "properties" : {
         "self" : {
@@ -349,7 +411,17 @@
           "$ref" : "#/definitions/paymentLink"
         }
       },
-      "description" : "Resource links of a Payment"
+      "description" : "Resource self and next links of a Payment"
+    },
+    "selfLinks" : {
+      "type" : "object",
+      "properties" : {
+        "self" : {
+          "description" : "self",
+          "$ref" : "#/definitions/paymentLink"
+        }
+      },
+      "description" : "Resource self link of a Payment"
     }
   }
 }
