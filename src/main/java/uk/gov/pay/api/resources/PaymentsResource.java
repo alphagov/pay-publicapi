@@ -3,7 +3,6 @@ package uk.gov.pay.api.resources;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 import io.dropwizard.auth.Auth;
 import io.swagger.annotations.*;
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +10,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.api.exception.CreateChargeConnectorErrorResponseException;
 import uk.gov.pay.api.model.*;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
@@ -217,7 +217,9 @@ public class PaymentsResource {
 
     @ApiResponses(value = {@ApiResponse(code = 201, message = "Created", response = PaymentWithLinks.class),
             @ApiResponse(code = 400, message = "Bad request"),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource")})
+            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
+            @ApiResponse(code = 500, message = "There is an error with this account. Please contact support"),
+            @ApiResponse(code = 500, message = "Downstream system error")})
     public Response createNewPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
                                      @ApiParam(value = "requestPayload", required = true) @Valid CreatePaymentRequest requestPayload,
                                      @Context UriInfo uriInfo) {
@@ -228,9 +230,22 @@ public class PaymentsResource {
                 .request()
                 .post(buildChargeRequestPayload(requestPayload));
 
-        return responseForPaymentWithLinks(uriInfo, connectorResponse, HttpStatus.SC_CREATED,
-                (locationUrl, data) -> Response.created(locationUrl).entity(data),
-                data -> badRequestResponse(logger, data));
+        if (connectorResponse.getStatus() == HttpStatus.SC_CREATED) {
+
+            PaymentConnectorResponse response = connectorResponse.readEntity(PaymentConnectorResponse.class);
+
+            URI paymentUri = uriInfo.getBaseUriBuilder()
+                    .path(PAYMENT_BY_ID)
+                    .build(response.getChargeId());
+
+            PaymentWithLinks payment = PaymentWithLinks.valueOf(response, paymentUri);
+
+            logger.info("payment returned: [ {} ]", payment);
+            return Response.created(paymentUri).entity(payment).build();
+
+        } else {
+            throw new CreateChargeConnectorErrorResponseException(connectorResponse.getStatus(), connectorResponse.readEntity(String.class));
+        }
     }
 
     @POST
@@ -282,10 +297,6 @@ public class PaymentsResource {
     private Response responseForPaymentWithLinks(UriInfo uriInfo, Response connectorResponse, int okStatus,
                                                  BiFunction<URI, Object, ResponseBuilder> okResponse,
                                                  Function<JsonNode, Response> errorResponse) {
-        if (!connectorResponse.hasEntity()) {
-            return badRequestResponse(logger, "Connector response contains no payload!");
-        }
-
         if (connectorResponse.getStatus() == okStatus) {
             PaymentConnectorResponse response = connectorResponse.readEntity(PaymentConnectorResponse.class);
             URI documentLocation = uriInfo.getBaseUriBuilder()
@@ -296,9 +307,9 @@ public class PaymentsResource {
 
             logger.info("payment returned: [ {} ]", payment);
             return okResponse.apply(documentLocation, payment).build();
+        } else {
+            return errorResponse.apply(connectorResponse.readEntity(JsonNode.class));
         }
-
-        return errorResponse.apply(connectorResponse.readEntity(JsonNode.class));
     }
 
     private Response responseForPaymentsWithSelfLinks(UriInfo uriInfo, Response connectorResponse, int okStatus,
@@ -310,7 +321,8 @@ public class PaymentsResource {
                 JsonNode responseJson = connectorResponse.readEntity(JsonNode.class);
 
                 TypeReference<HashMap<String, List<PaymentConnectorResponse>>> typeRef
-                        = new TypeReference<HashMap<String, List<PaymentConnectorResponse>>>() {};
+                        = new TypeReference<HashMap<String, List<PaymentConnectorResponse>>>() {
+                };
 
                 Map<String, List<PaymentConnectorResponse>> chargesMap
                         = objectMapper.readValue(responseJson.traverse(), typeRef);

@@ -75,7 +75,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .assertNotDefined("_links.next_url.type")
                 .assertNotDefined("_links.next_url.params");
 
-        connectorMock.verifyCreateCharge(AMOUNT, GATEWAY_ACCOUNT_ID, RETURN_URL, DESCRIPTION, REFERENCE);
+        connectorMock.verifyCreateChargeConnectorRequest(AMOUNT, GATEWAY_ACCOUNT_ID, RETURN_URL, DESCRIPTION, REFERENCE);
     }
 
     @Test
@@ -99,7 +99,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .body("payment_provider", is(PAYMENT_PROVIDER))
                 .body("created_date", is(CREATED_DATE));
 
-        connectorMock.verifyCreateCharge(minimumAmount, GATEWAY_ACCOUNT_ID, RETURN_URL, DESCRIPTION, REFERENCE);
+        connectorMock.verifyCreateChargeConnectorRequest(minimumAmount, GATEWAY_ACCOUNT_ID, RETURN_URL, DESCRIPTION, REFERENCE);
     }
 
     @Test
@@ -135,19 +135,34 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPayment_responseWith400_whenInvalidGatewayAccount() {
-        String invalidGatewayAccountId = "ada2dfa323";
-        String errorMessage = "something went wrong";
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, invalidGatewayAccountId);
+    public void createPayment_responseWith500_whenConnectorResponseIsAnUnrecognisedError() {
 
-        connectorMock.respondUnknownGateway_whenCreateCharge(AMOUNT, invalidGatewayAccountId, errorMessage, RETURN_URL, DESCRIPTION, REFERENCE);
+        String gatewayAccountId = "1234567";
+        String errorMessage = "something went wrong";
+
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, gatewayAccountId);
+
+        connectorMock.respondBadRequest_whenCreateCharge(AMOUNT, gatewayAccountId, errorMessage, RETURN_URL, DESCRIPTION, REFERENCE);
 
         postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
-                .statusCode(400)
-                .contentType(JSON)
-                .body("message", is(errorMessage));
+                .statusCode(500)
+                .body(is("Downstream system error"));
 
-        connectorMock.verifyCreateCharge(AMOUNT, invalidGatewayAccountId, RETURN_URL, DESCRIPTION, REFERENCE);
+        connectorMock.verifyCreateChargeConnectorRequest(AMOUNT, gatewayAccountId, RETURN_URL, DESCRIPTION, REFERENCE);
+    }
+
+    @Test
+    public void createPayment_responseWith403_whenTokenForGatewayAccountIsValidButConnectorResponseIsNotFound() {
+
+        String notFoundGatewayAccountId = "9876545";
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, notFoundGatewayAccountId);
+
+        connectorMock.respondNotFound_whenCreateCharge(AMOUNT, notFoundGatewayAccountId, RETURN_URL, DESCRIPTION, REFERENCE);
+
+        postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
+                .statusCode(500).body(is("Pay account error"));
+
+        connectorMock.verifyCreateChargeConnectorRequest(AMOUNT, notFoundGatewayAccountId, RETURN_URL, DESCRIPTION, REFERENCE);
     }
 
     @Test
@@ -164,17 +179,6 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                         "description" + emptyCheck,
                         "reference" + emptyCheck,
                         "returnUrl" + emptyCheck));
-    }
-
-    @Test
-    public void createPayment_responseWith400_whenConnectorResponseEmpty() {
-        connectorMock.respondOk_withEmptyBody(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, RETURN_URL, DESCRIPTION, REFERENCE);
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-
-        postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
-                .statusCode(400)
-                .contentType(JSON)
-                .body("message", is("Connector response contains no payload!"));
     }
 
     @Test
