@@ -1,55 +1,42 @@
 package uk.gov.pay.api.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.net.URI;
 import java.util.List;
 
-public class PaymentWithLinks implements PaymentWithLinksJSON, PaymentJSON {
+public class PaymentWithLinks extends Payment {
 
-    private Payment payment;
+    @JsonProperty(LINKS_JSON_ATTRIBUTE)
     private SelfAndNextLinks links = new SelfAndNextLinks();
 
-    public static PaymentWithLinks valueOf(PaymentConnectorResponse paymentConnector, URI selfLink) {
-        return new PaymentWithLinks(Payment.valueOf(paymentConnector), paymentConnector.getLinks(), selfLink);
-    }
+    private PaymentWithLinks(String chargeId, long amount, String status, String returnUrl, String description,
+                             String reference, String paymentProvider, String createdDate,
+                             List<PaymentConnectorResponseLink> paymentConnectorResponseLinks, URI selfLink) {
+        super(chargeId, amount, status, returnUrl, description, reference, paymentProvider, createdDate);
 
-    private PaymentWithLinks(Payment payment, List<PaymentConnectorResponseLink> paymentConnectorResponseLinks, URI selfLink) {
-        this.payment = payment;
         this.links.addSelf(selfLink.toString());
         this.links.addKnownLinksValueOf(paymentConnectorResponseLinks);
+
     }
 
-    public String getCreatedDate() {
-        return payment.getCreatedDate();
+    public static PaymentWithLinks valueOf(PaymentConnectorResponse paymentConnector, URI selfLink) {
+        return new PaymentWithLinks(
+                paymentConnector.getChargeId(),
+                paymentConnector.getAmount(),
+                paymentConnector.getStatus(),
+                paymentConnector.getReturnUrl(),
+                paymentConnector.getDescription(),
+                paymentConnector.getReference(),
+                paymentConnector.getPaymentProvider(),
+                paymentConnector.getCreated_date(),
+                paymentConnector.getLinks(),
+                selfLink
+        );
     }
 
-    public String getPaymentId() {
-        return payment.getPaymentId();
-    }
-
-    public long getAmount() {
-        return payment.getAmount();
-    }
-
-    public String getStatus() {
-        return payment.getStatus();
-    }
-
-    public String getReturnUrl() {
-        return payment.getReturnUrl();
-    }
-
-    public String getDescription() {
-        return payment.getDescription();
-    }
-
-    public String getReference() {
-        return payment.getReference();
-    }
-
-    public String getPaymentProvider() {
-        return payment.getPaymentProvider();
-    }
-
+    @ApiModelProperty(dataType = "uk.gov.pay.api.model.SelfAndNextLinks")
     public SelfAndNextLinks getLinks() {
         return links;
     }

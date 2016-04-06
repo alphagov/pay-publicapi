@@ -269,30 +269,6 @@
     "PaymentWithLinks" : {
       "type" : "object",
       "properties" : {
-        "_links" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/selfAndNextLinks"
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "Your Service Description",
-          "readOnly" : true
-        },
-        "reference" : {
-          "type" : "string",
-          "example" : "your-reference",
-          "readOnly" : true
-        },
-        "status" : {
-          "type" : "string",
-          "example" : "CREATED",
-          "readOnly" : true
-        },
-        "created_date" : {
-          "type" : "string",
-          "example" : "2016-01-21T17:15:00Z",
-          "readOnly" : true
-        },
         "payment_id" : {
           "type" : "string",
           "example" : "hu20sqlact5260q2nanm0q8u93",
@@ -309,41 +285,40 @@
           "example" : "1200",
           "readOnly" : true
         },
+        "status" : {
+          "type" : "string",
+          "example" : "CREATED",
+          "readOnly" : true
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "Your Service Description",
+          "readOnly" : true
+        },
         "return_url" : {
           "type" : "string",
           "example" : "http://your.service.domain/your-reference",
           "readOnly" : true
+        },
+        "reference" : {
+          "type" : "string",
+          "example" : "your-reference",
+          "readOnly" : true
+        },
+        "created_date" : {
+          "type" : "string",
+          "example" : "2016-01-21T17:15:00Z",
+          "readOnly" : true
+        },
+        "_links" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/selfAndNextLinks"
         }
-      },
-      "description" : "A Payment with self and next links"
+      }
     },
     "PaymentWithSelfLinks" : {
       "type" : "object",
       "properties" : {
-        "_links" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/selfLinks"
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "Your Service Description",
-          "readOnly" : true
-        },
-        "reference" : {
-          "type" : "string",
-          "example" : "your-reference",
-          "readOnly" : true
-        },
-        "status" : {
-          "type" : "string",
-          "example" : "CREATED",
-          "readOnly" : true
-        },
-        "created_date" : {
-          "type" : "string",
-          "example" : "2016-01-21T17:15:00Z",
-          "readOnly" : true
-        },
         "payment_id" : {
           "type" : "string",
           "example" : "hu20sqlact5260q2nanm0q8u93",
@@ -360,13 +335,36 @@
           "example" : "1200",
           "readOnly" : true
         },
+        "status" : {
+          "type" : "string",
+          "example" : "CREATED",
+          "readOnly" : true
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "Your Service Description",
+          "readOnly" : true
+        },
         "return_url" : {
           "type" : "string",
           "example" : "http://your.service.domain/your-reference",
           "readOnly" : true
+        },
+        "reference" : {
+          "type" : "string",
+          "example" : "your-reference",
+          "readOnly" : true
+        },
+        "created_date" : {
+          "type" : "string",
+          "example" : "2016-01-21T17:15:00Z",
+          "readOnly" : true
+        },
+        "_links" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/selfLinks"
         }
-      },
-      "description" : "A Payment with only a self link"
+      }
     },
     "payment-event-link" : {
       "type" : "object",
