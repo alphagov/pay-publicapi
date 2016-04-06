@@ -1,5 +1,6 @@
 package uk.gov.pay.api.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -10,6 +11,7 @@ public class SelfLinks {
 
     public static final String SELF = "self";
 
+    @JsonProperty(value = SELF)
     private Link self;
 
     @ApiModelProperty(value = SELF, dataType = "uk.gov.pay.api.model.Link")

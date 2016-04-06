@@ -14,9 +14,11 @@ import static uk.gov.pay.api.model.PaymentEvent.createPaymentEvent;
 public class PaymentEvents {
     @JsonProperty("payment_id")
     private final String paymentId;
+
     private final List<PaymentEvent> events;
+
     @JsonProperty("_links")
-    private final Links links = new Links();
+    private SelfLinks links = new SelfLinks();
 
     public static PaymentEvents createPaymentEventsResponse(JsonNode payload) {
         List<PaymentEvent> events = newArrayList();
@@ -50,6 +52,7 @@ public class PaymentEvents {
         return "PaymentEvents{" +
                 "paymentId='" + paymentId + '\'' +
                 ", events=" + events +
+                ", links=" + links +
                 '}';
     }
 

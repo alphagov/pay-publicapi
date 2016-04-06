@@ -116,7 +116,7 @@ public class PaymentsResource {
             notes = "Return payment events information about a certain payment",
             code = 200)
 
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = Payment.class),
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = PaymentEvents.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found")})
     public Response getPaymentEvents(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,

@@ -158,7 +158,7 @@
           "200" : {
             "description" : "OK",
             "schema" : {
-              "$ref" : "#/definitions/Payment"
+              "$ref" : "#/definitions/Payment Events information"
             }
           },
           "401" : {
@@ -183,7 +183,7 @@
           "description" : "amount in pence",
           "readOnly" : true,
           "minimum" : 1.0,
-          "maximum" : 1.0E7
+          "maximum" : 10000.0
         },
         "reference" : {
           "type" : "string",
@@ -208,52 +208,48 @@
       },
       "description" : "The Payment Request Payload"
     },
-    "Payment" : {
+    "Payment Event information" : {
       "type" : "object",
       "properties" : {
+        "updated" : {
+          "type" : "string",
+          "format" : "date-time",
+          "example" : "updated_date",
+          "description" : "updated"
+        },
         "payment_id" : {
           "type" : "string",
           "example" : "hu20sqlact5260q2nanm0q8u93",
           "readOnly" : true
         },
-        "payment_provider" : {
-          "type" : "string",
-          "example" : "worldpay",
-          "readOnly" : true
-        },
-        "amount" : {
-          "type" : "integer",
-          "format" : "int64",
-          "example" : "1200",
-          "readOnly" : true
-        },
         "status" : {
           "type" : "string",
-          "example" : "CREATED",
-          "readOnly" : true
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "Your Service Description",
-          "readOnly" : true
-        },
-        "return_url" : {
-          "type" : "string",
-          "example" : "http://your.service.domain/your-reference",
-          "readOnly" : true
-        },
-        "reference" : {
-          "type" : "string",
-          "example" : "your-reference",
-          "readOnly" : true
-        },
-        "created_date" : {
-          "type" : "string",
-          "example" : "2016-01-21T17:15:00Z",
+          "example" : "SUCCEEDED",
+          "description" : "status",
           "readOnly" : true
         }
       },
-      "description" : "A Payment"
+      "description" : "A List of Payment Events information"
+    },
+    "Payment Events information" : {
+      "type" : "object",
+      "properties" : {
+        "events" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Payment Event information"
+          }
+        },
+        "payment_id" : {
+          "type" : "string",
+          "example" : "hu20sqlact5260q2nanm0q8u93",
+          "readOnly" : true
+        },
+        "_links" : {
+          "$ref" : "#/definitions/selfLinks"
+        }
+      },
+      "description" : "A List of Payment Events information"
     },
     "PaymentSearchResults" : {
       "type" : "object",
@@ -366,7 +362,7 @@
           "readOnly" : true
         }
       },
-      "description" : "A Payment with self link"
+      "description" : "A Payment with only a self link"
     },
     "paymentLink" : {
       "type" : "object",
@@ -418,6 +414,7 @@
       "properties" : {
         "self" : {
           "description" : "self",
+          "readOnly" : true,
           "$ref" : "#/definitions/paymentLink"
         }
       },

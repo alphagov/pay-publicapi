@@ -13,10 +13,12 @@ import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@ApiModel(value="Payment Events information", description = "A List of Payment Events information")
+@ApiModel(value="Payment Event information", description = "A List of Payment Events information")
 public class PaymentEvent {
     @JsonProperty("payment_id")
     private final String paymentId;
+
+    @JsonProperty("status")
     private final String status;
 
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -48,10 +50,12 @@ public class PaymentEvent {
         return paymentId;
     }
 
+    @ApiModelProperty(value = "status",example = "SUCCEEDED")
     public String getStatus() {
         return status;
     }
 
+    @ApiModelProperty(value = "updated",example = "updated_date")
     public LocalDateTime getUpdated() {
         return updated;
     }
