@@ -201,11 +201,12 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .statusCode(200)
                 .contentType(JSON)
                 .body("payment_id", is(CHARGE_ID))
+                .body("_links.self.href", is(paymentEventsLocationFor(CHARGE_ID)))
                 .body("events", hasSize(1))
                 .body("events[0].payment_id", is(CHARGE_ID))
                 .body("events[0].status", is(STATUS))
                 .body("events[0].updated", is("2016-01-01 12:00:00"))
-                .body("_links.self.href", is(paymentEventsLocationFor(CHARGE_ID)));
+                .body("events[0]._links.payment_url.href", is(paymentLocationFor(CHARGE_ID)));
     }
 
     @Test

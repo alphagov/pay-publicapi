@@ -13,10 +13,12 @@ import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@ApiModel(value="Payment Events information", description = "A List of Payment Events information")
+@ApiModel(value="Payment Event information", description = "A List of Payment Events information")
 public class PaymentEvent {
     @JsonProperty("payment_id")
     private final String paymentId;
+
+    @JsonProperty("status")
     private final String status;
 
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -24,23 +26,28 @@ public class PaymentEvent {
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private final LocalDateTime updated;
 
-    public static PaymentEvent createPaymentEvent(JsonNode payload) {
+    @JsonProperty("_links")
+    private PaymentEventLink paymentLink;
+
+    public static PaymentEvent createPaymentEvent(JsonNode payload, String paymentLink) {
         LocalDateTime updated = null;
         if(payload.get("updated") != null) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             updated = LocalDateTime.parse(payload.get("updated").asText(), formatter);
         }
         return new PaymentEvent(
-                payload.get("charge_id").asText(),
-                payload.get("status").asText(),
-                updated
+            payload.get("charge_id").asText(),
+            payload.get("status").asText(),
+            updated,
+            paymentLink
         );
     }
 
-    private PaymentEvent(String chargeId, String status, LocalDateTime updated) {
+    private PaymentEvent(String chargeId, String status, LocalDateTime updated, String paymentLink) {
         this.paymentId = chargeId;
         this.status = status;
         this.updated = updated;
+        this.paymentLink = new PaymentEventLink(paymentLink);
     }
 
     @ApiModelProperty(example = "hu20sqlact5260q2nanm0q8u93")
@@ -48,12 +55,19 @@ public class PaymentEvent {
         return paymentId;
     }
 
+    @ApiModelProperty(value = "status",example = "SUCCEEDED")
     public String getStatus() {
         return status;
     }
 
+    @ApiModelProperty(value = "updated",example = "updated_date")
     public LocalDateTime getUpdated() {
         return updated;
+    }
+
+    @ApiModelProperty(dataType = "uk.gov.pay.api.model.PaymentEventLink")
+    public PaymentEventLink getPaymentLink() {
+        return paymentLink;
     }
 
     @Override
@@ -62,6 +76,7 @@ public class PaymentEvent {
                 "paymentId='" + paymentId + '\'' +
                 ", status='" + status + '\'' +
                 ", updated=" + updated +
+                ", paymentLink=" + paymentLink +
                 '}';
     }
 }

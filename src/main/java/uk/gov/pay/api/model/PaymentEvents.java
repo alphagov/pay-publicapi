@@ -14,15 +14,17 @@ import static uk.gov.pay.api.model.PaymentEvent.createPaymentEvent;
 public class PaymentEvents {
     @JsonProperty("payment_id")
     private final String paymentId;
-    private final List<PaymentEvent> events;
-    @JsonProperty("_links")
-    private final Links links = new Links();
 
-    public static PaymentEvents createPaymentEventsResponse(JsonNode payload) {
+    private final List<PaymentEvent> events;
+
+    @JsonProperty("_links")
+    private SelfLinks links = new SelfLinks();
+
+    public static PaymentEvents createPaymentEventsResponse(JsonNode payload, String paymentLink) {
         List<PaymentEvent> events = newArrayList();
         if(payload.get("events").isArray()) {
             for (JsonNode event : payload.get("events")) {
-                events.add(createPaymentEvent(event));
+                events.add(createPaymentEvent(event, paymentLink));
             }
         }
         return new PaymentEvents(
@@ -50,6 +52,7 @@ public class PaymentEvents {
         return "PaymentEvents{" +
                 "paymentId='" + paymentId + '\'' +
                 ", events=" + events +
+                ", links=" + links +
                 '}';
     }
 

@@ -116,7 +116,7 @@ public class PaymentsResource {
             notes = "Return payment events information about a certain payment",
             code = 200)
 
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = Payment.class),
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = PaymentEvents.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found")})
     public Response getPaymentEvents(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
@@ -129,9 +129,13 @@ public class PaymentsResource {
                 .request()
                 .get();
 
-        return eventsResponseFrom(uriInfo, connectorResponse, SC_OK,
-                (locationUrl, data) -> Response.ok(data),
-                data -> notFoundResponse(logger, data));
+        return eventsResponseFrom(
+                    uriInfo,
+                    connectorResponse,
+                    SC_OK,
+                    (locationUrl, data) -> Response.ok(data),
+                    data -> notFoundResponse(logger, data)
+        );
     }
 
     @GET
@@ -341,17 +345,21 @@ public class PaymentsResource {
 
         JsonNode payload = connectorResponse.readEntity(JsonNode.class);
         if (connectorResponse.getStatus() == okStatus) {
-            URI documentLocation = uriInfo.getBaseUriBuilder()
+            URI paymentEventsLink = uriInfo.getBaseUriBuilder()
                     .path(PAYMENT_EVENTS_BY_ID)
                     .build(payload.get(CHARGE_KEY).asText());
 
+            URI paymentLink = uriInfo.getBaseUriBuilder()
+                    .path(PAYMENT_BY_ID)
+                    .build(payload.get(CHARGE_KEY).asText());
+
             PaymentEvents response =
-                    PaymentEvents.createPaymentEventsResponse(payload)
-                            .withSelfLink(documentLocation.toString());
+                    PaymentEvents.createPaymentEventsResponse(payload, paymentLink.toString())
+                            .withSelfLink(paymentEventsLink.toString());
 
             logger.info("payment returned: [ {} ]", response);
 
-            return okResponse.apply(documentLocation, response).build();
+            return okResponse.apply(paymentEventsLink, response).build();
         }
 
         return errorResponse.apply(payload);

@@ -1,53 +1,36 @@
 package uk.gov.pay.api.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.net.URI;
 
-public class PaymentWithSelfLinks implements PaymentWithSelfLinksJSON, PaymentJSON {
+public class PaymentWithSelfLinks extends Payment {
 
-    private Payment payment;
+    @JsonProperty(LINKS_JSON_ATTRIBUTE)
     private SelfLinks links = new SelfLinks();
 
-    public static PaymentWithSelfLinks valueOf(PaymentConnectorResponse charge, URI selfLink) {
-        return new PaymentWithSelfLinks(Payment.valueOf(charge), selfLink);
-    }
-
-    private PaymentWithSelfLinks(Payment payment, URI selfLink) {
-        this.payment = payment;
+    public PaymentWithSelfLinks(String chargeId, long amount, String status, String returnUrl, String description,
+                                String reference, String paymentProvider, String createdDate, URI selfLink) {
+        super(chargeId, amount, status, returnUrl, description, reference, paymentProvider, createdDate);
         this.links.addSelf(selfLink.toString());
     }
 
-    public String getCreatedDate() {
-        return payment.getCreatedDate();
+    public static PaymentWithSelfLinks valueOf(PaymentConnectorResponse paymentConnectorResponse, URI selfLink) {
+        return new PaymentWithSelfLinks(
+                paymentConnectorResponse.getChargeId(),
+                paymentConnectorResponse.getAmount(),
+                paymentConnectorResponse.getStatus(),
+                paymentConnectorResponse.getReturnUrl(),
+                paymentConnectorResponse.getDescription(),
+                paymentConnectorResponse.getReference(),
+                paymentConnectorResponse.getPaymentProvider(),
+                paymentConnectorResponse.getCreated_date(),
+                selfLink
+        );
     }
 
-    public String getPaymentId() {
-        return payment.getPaymentId();
-    }
-
-    public long getAmount() {
-        return payment.getAmount();
-    }
-
-    public String getStatus() {
-        return payment.getStatus();
-    }
-
-    public String getReturnUrl() {
-        return payment.getReturnUrl();
-    }
-
-    public String getDescription() {
-        return payment.getDescription();
-    }
-
-    public String getReference() {
-        return payment.getReference();
-    }
-
-    public String getPaymentProvider() {
-        return payment.getPaymentProvider();
-    }
-
+    @ApiModelProperty(dataType = "uk.gov.pay.api.model.SelfLinks")
     public SelfLinks getLinks() {
         return links;
     }
