@@ -242,17 +242,41 @@ Content-Type: application/json
         {
             "payment_id": "ab2341da231434",
             "status": "CREATED",
-            "updated": "2016-01-13 17:42:16"
+            "updated": "2016-01-13 17:42:16",
+            "_links": {
+                "payment_url" : {
+                    "params": {},
+                    "type": "multipart/form-data",
+                    "method": "GET",
+                    "href": "http://publicapi.co.uk/v1/payments/ab2341da231434"
+                }
+            }
         },
         {
             "payment_id": "ab2341da231434",
             "status": "IN PROGRESS",
-            "updated": "2016-01-13 17:42:28"
+            "updated": "2016-01-13 17:42:28",
+            "_links": {
+                "payment_url" : {
+                    "params": {},
+                    "type": "multipart/form-data",
+                    "method": "GET",
+                    "href": "http://publicapi.co.uk/v1/payments/ab2341da231434"
+                }
+            }
         },
         {
             "payment_id": "ab2341da231434",
             "status": "SUCCEEDED",
-            "updated": "2016-01-13 17:42:29"
+            "updated": "2016-01-13 17:42:29",
+            "_links": {
+                "payment_url" : {
+                    "params": {},
+                    "type": "multipart/form-data",
+                    "method": "GET",
+                    "href": "http://publicapi.co.uk/v1/payments/ab2341da231434"
+                }
+            }
         }
     ],
     "_links": {
