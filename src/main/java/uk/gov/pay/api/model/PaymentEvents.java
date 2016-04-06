@@ -20,11 +20,11 @@ public class PaymentEvents {
     @JsonProperty("_links")
     private SelfLinks links = new SelfLinks();
 
-    public static PaymentEvents createPaymentEventsResponse(JsonNode payload) {
+    public static PaymentEvents createPaymentEventsResponse(JsonNode payload, String paymentLink) {
         List<PaymentEvent> events = newArrayList();
         if(payload.get("events").isArray()) {
             for (JsonNode event : payload.get("events")) {
-                events.add(createPaymentEvent(event));
+                events.add(createPaymentEvent(event, paymentLink));
             }
         }
         return new PaymentEvents(

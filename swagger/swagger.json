@@ -183,7 +183,7 @@
           "description" : "amount in pence",
           "readOnly" : true,
           "minimum" : 1.0,
-          "maximum" : 10000.0
+          "maximum" : 1.0E7
         },
         "reference" : {
           "type" : "string",
@@ -227,6 +227,10 @@
           "example" : "SUCCEEDED",
           "description" : "status",
           "readOnly" : true
+        },
+        "_links" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/payment-event-link"
         }
       },
       "description" : "A List of Payment Events information"
@@ -269,9 +273,9 @@
           "readOnly" : true,
           "$ref" : "#/definitions/selfAndNextLinks"
         },
-        "status" : {
+        "description" : {
           "type" : "string",
-          "example" : "CREATED",
+          "example" : "Your Service Description",
           "readOnly" : true
         },
         "reference" : {
@@ -279,20 +283,9 @@
           "example" : "your-reference",
           "readOnly" : true
         },
-        "description" : {
+        "status" : {
           "type" : "string",
-          "example" : "Your Service Description",
-          "readOnly" : true
-        },
-        "amount" : {
-          "type" : "integer",
-          "format" : "int64",
-          "example" : "1200",
-          "readOnly" : true
-        },
-        "return_url" : {
-          "type" : "string",
-          "example" : "http://your.service.domain/your-reference",
+          "example" : "CREATED",
           "readOnly" : true
         },
         "created_date" : {
@@ -308,6 +301,17 @@
         "payment_provider" : {
           "type" : "string",
           "example" : "worldpay",
+          "readOnly" : true
+        },
+        "amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "example" : "1200",
+          "readOnly" : true
+        },
+        "return_url" : {
+          "type" : "string",
+          "example" : "http://your.service.domain/your-reference",
           "readOnly" : true
         }
       },
@@ -320,9 +324,9 @@
           "readOnly" : true,
           "$ref" : "#/definitions/selfLinks"
         },
-        "status" : {
+        "description" : {
           "type" : "string",
-          "example" : "CREATED",
+          "example" : "Your Service Description",
           "readOnly" : true
         },
         "reference" : {
@@ -330,20 +334,9 @@
           "example" : "your-reference",
           "readOnly" : true
         },
-        "description" : {
+        "status" : {
           "type" : "string",
-          "example" : "Your Service Description",
-          "readOnly" : true
-        },
-        "amount" : {
-          "type" : "integer",
-          "format" : "int64",
-          "example" : "1200",
-          "readOnly" : true
-        },
-        "return_url" : {
-          "type" : "string",
-          "example" : "http://your.service.domain/your-reference",
+          "example" : "CREATED",
           "readOnly" : true
         },
         "created_date" : {
@@ -360,9 +353,31 @@
           "type" : "string",
           "example" : "worldpay",
           "readOnly" : true
+        },
+        "amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "example" : "1200",
+          "readOnly" : true
+        },
+        "return_url" : {
+          "type" : "string",
+          "example" : "http://your.service.domain/your-reference",
+          "readOnly" : true
         }
       },
       "description" : "A Payment with only a self link"
+    },
+    "payment-event-link" : {
+      "type" : "object",
+      "properties" : {
+        "payment_url" : {
+          "description" : "payment_url",
+          "readOnly" : true,
+          "$ref" : "#/definitions/paymentLink"
+        }
+      },
+      "description" : "Resource link for a payment of a payment event"
     },
     "paymentLink" : {
       "type" : "object",
