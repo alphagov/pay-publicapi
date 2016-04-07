@@ -11,6 +11,7 @@ import io.dropwizard.setup.Environment;
 import uk.gov.pay.api.auth.AccountAuthenticator;
 import uk.gov.pay.api.config.PublicApiConfig;
 import uk.gov.pay.api.exception.CreateChargeConnectorErrorResponseExceptionMapper;
+import uk.gov.pay.api.exception.ValidationExceptionMapper;
 import uk.gov.pay.api.healthcheck.Ping;
 import uk.gov.pay.api.resources.PaymentsResource;
 import uk.gov.pay.api.resources.RestClientFactory;
@@ -46,6 +47,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         environment.jersey().register(new PaymentsResource(client, config.getConnectorUrl()));
         environment.jersey().register(AuthFactory.binder(new OAuthFactory<>(new AccountAuthenticator(client, config.getPublicAuthUrl()), "", String.class)));
         environment.jersey().register(CreateChargeConnectorErrorResponseExceptionMapper.class);
+        environment.jersey().register(ValidationExceptionMapper.class);
     }
 
     public static void main(String[] args) throws Exception {
