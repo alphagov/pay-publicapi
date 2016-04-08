@@ -11,7 +11,7 @@
     "/v1/payments" : {
       "get" : {
         "summary" : "Search payments",
-        "description" : "Search payments by reference, status, 'from' and 'to' date",
+        "description" : "Search payments by reference, status, 'from' and 'to' date. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "searchPayments",
         "produces" : [ "application/json" ],
         "parameters" : [ {
@@ -60,7 +60,7 @@
       },
       "post" : {
         "summary" : "Create new payment",
-        "description" : "Create a new payment for the account associated to the Authorisation token",
+        "description" : "Create a new payment for the account associated to the Authorisation token. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "newPayment",
         "consumes" : [ "application/json" ],
         "produces" : [ "application/json" ],
@@ -98,7 +98,7 @@
     "/v1/payments/{paymentId}" : {
       "get" : {
         "summary" : "Find payment by ID",
-        "description" : "Return information about the payment",
+        "description" : "Return information about the payment The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "getPayment",
         "produces" : [ "application/json" ],
         "parameters" : [ {
@@ -126,7 +126,7 @@
     "/v1/payments/{paymentId}/cancel" : {
       "post" : {
         "summary" : "Cancel payment",
-        "description" : "Cancel a payment based on the provided payment ID and the Authorisation token",
+        "description" : "Cancel a payment based on the provided payment ID and the Authorisation token. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "cancelPayment",
         "produces" : [ "application/json" ],
         "parameters" : [ {
@@ -151,7 +151,7 @@
     "/v1/payments/{paymentId}/events" : {
       "get" : {
         "summary" : "Return payment events by ID",
-        "description" : "Return payment events information about a certain payment",
+        "description" : "Return payment events information about a certain payment The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "getPaymentEvents",
         "produces" : [ "application/json" ],
         "parameters" : [ {

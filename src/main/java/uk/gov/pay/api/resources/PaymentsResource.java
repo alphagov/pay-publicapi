@@ -87,7 +87,9 @@ public class PaymentsResource {
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Find payment by ID",
-            notes = "Return information about the payment",
+            notes = "Return information about the payment " +
+                    "The Authorisation token needs to be specified in the 'authorization' header " +
+                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             code = 200)
 
     @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = PaymentWithLinks.class),
@@ -113,7 +115,9 @@ public class PaymentsResource {
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Return payment events by ID",
-            notes = "Return payment events information about a certain payment",
+            notes = "Return payment events information about a certain payment " +
+                    "The Authorisation token needs to be specified in the 'authorization' header " +
+                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             code = 200)
 
     @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = PaymentEvents.class),
@@ -143,7 +147,9 @@ public class PaymentsResource {
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Search payments",
-            notes = "Search payments by reference, status, 'from' and 'to' date",
+            notes = "Search payments by reference, status, 'from' and 'to' date. " +
+                    "The Authorisation token needs to be specified in the 'authorization' header " +
+                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             responseContainer = "List",
             code = 200)
 
@@ -211,7 +217,9 @@ public class PaymentsResource {
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Create new payment",
-            notes = "Create a new payment for the account associated to the Authorisation token",
+            notes = "Create a new payment for the account associated to the Authorisation token. " +
+                    "The Authorisation token needs to be specified in the 'authorization' header " +
+                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             code = 201,
             nickname = "newPayment")
 
@@ -252,7 +260,9 @@ public class PaymentsResource {
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Cancel payment",
-            notes = "Cancel a payment based on the provided payment ID and the Authorisation token",
+            notes = "Cancel a payment based on the provided payment ID and the Authorisation token. " +
+                    "The Authorisation token needs to be specified in the 'authorization' header " +
+                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             code = 204)
 
     @ApiResponses(value = {@ApiResponse(code = 204, message = "No Content"),
