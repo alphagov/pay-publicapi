@@ -1,9 +1,8 @@
-package uk.gov.pay.api.resources;
+package uk.gov.pay.api.validation;
 
 import uk.gov.pay.api.model.ExternalChargeStatus;
 import uk.gov.pay.api.utils.DateTimeUtils;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.eclipse.jetty.util.StringUtil.isBlank;
 
 public class ParamValidator {

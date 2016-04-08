@@ -1,4 +1,4 @@
-package uk.gov.pay.api.config;
+package uk.gov.pay.api.app.config;
 
 import io.dropwizard.Configuration;
 

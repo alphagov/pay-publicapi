@@ -2,7 +2,7 @@ package uk.gov.pay.api.validation;
 
 import org.apache.commons.validator.routines.UrlValidator;
 
-import static org.apache.commons.validator.routines.UrlValidator.*;
+import static org.apache.commons.validator.routines.UrlValidator.ALLOW_LOCAL_URLS;
 
 public enum URLValidator {
     SECURITY_ENABLED {

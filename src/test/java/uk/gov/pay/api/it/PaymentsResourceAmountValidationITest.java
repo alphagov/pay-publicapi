@@ -11,7 +11,6 @@ import java.io.InputStream;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 
@@ -67,7 +66,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
     }
 
     @Test
-    public void createPayment_responseWith422_whenAmountFieldHasNullValue() throws IOException {
+    public void createPayment_responseWith400_whenAmountFieldHasNullValue() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : null," +
@@ -108,7 +107,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", is("P0100"))
-                .assertThat("$.description", is("Invalid attribute value: amount. Unrecognised format"));
+                .assertThat("$.description", is("Invalid attribute value: amount. Must be a valid numeric format"));
     }
 
     @Test
@@ -121,7 +120,6 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        System.out.println("payload = " + payload);
         InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
                 .statusCode(400)
                 .contentType(JSON)
@@ -131,11 +129,11 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", is("P0100"))
-                .assertThat("$.description", is("Invalid attribute value: amount. Unrecognised format"));
+                .assertThat("$.description", is("Invalid attribute value: amount. Must be a valid numeric format"));
     }
 
     @Test
-    public void createPayment_responseWith422_whenAmountFieldIsBlank() throws IOException {
+    public void createPayment_responseWith400_whenAmountFieldIsBlank() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : \"    \"," +
@@ -153,7 +151,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", is("P0100"))
-                .assertThat("$.description", is("Invalid attribute value: amount. Unrecognised format"));
+                .assertThat("$.description", is("Invalid attribute value: amount. Must be a valid numeric format"));
     }
 
     @Test
@@ -284,7 +282,27 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", is("P0100"))
-                .assertThat("$.description", is("Invalid attribute value: amount. Unrecognised format"));
+                .assertThat("$.description", is("Invalid attribute value: amount. Must be a valid numeric format"));
+    }
+
+    @Test
+    public void createPayment_responseWith400_whenAmountMissing_failFast() throws IOException {
+
+        String payload = "{" +
+                "  \"reference\" : \"whatever\"," +
+                "  \"return_url\" : \"whatever\"" +
+                "}";
+
+        InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
+                .statusCode(400)
+                .contentType(JSON)
+                .extract()
+                .body().asInputStream();
+
+        JsonAssert.with(body)
+                .assertThat("$.*", hasSize(2))
+                .assertThat("$.code", is("P0103"))
+                .assertThat("$.description", is("Missing mandatory attribute: amount"));
     }
 
     private ValidatableResponse postPaymentResponse(String bearerToken, String payload) {

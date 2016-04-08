@@ -10,11 +10,11 @@ public class CreateChargeConnectorErrorResponseException extends RuntimeExceptio
         this.errorBody = errorBody;
     }
 
-    int getErrorStatus() {
+    public int getErrorStatus() {
         return errorStatus;
     }
 
-    String getErrorBody() {
+    public String getErrorBody() {
         return errorBody;
     }
 }

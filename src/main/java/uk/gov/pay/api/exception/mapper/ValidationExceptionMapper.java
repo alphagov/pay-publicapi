@@ -1,7 +1,10 @@
-package uk.gov.pay.api.exception;
+package uk.gov.pay.api.exception.mapper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.api.exception.CreateChargeConnectorErrorResponseException;
+import uk.gov.pay.api.exception.ValidationException;
+import uk.gov.pay.api.model.PaymentError;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -12,8 +15,12 @@ public class ValidationExceptionMapper implements ExceptionMapper<ValidationExce
 
     @Override
     public Response toResponse(ValidationException exception) {
+
         PaymentError paymentError = exception.getPaymentError();
         LOGGER.debug("Validation exception {}", paymentError);
-        return paymentError.asResponse();
+
+        return Response.status(422)
+                .entity(paymentError)
+                .build();
     }
 }

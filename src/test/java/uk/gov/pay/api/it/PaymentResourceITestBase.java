@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.mockserver.junit.MockServerRule;
 import uk.gov.pay.api.app.PublicApi;
-import uk.gov.pay.api.config.PublicApiConfig;
+import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.utils.ConnectorMockClient;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 

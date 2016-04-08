@@ -1,4 +1,4 @@
-package uk.gov.pay.api.resources;
+package uk.gov.pay.api.app;
 
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
@@ -6,7 +6,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import uk.gov.pay.api.config.RestClientConfig;
+import uk.gov.pay.api.app.config.RestClientConfig;
 
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.client.Client;
@@ -18,7 +18,8 @@ import java.security.cert.CertificateFactory;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNot.not;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class RestClientFactoryTest {
 

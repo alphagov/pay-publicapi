@@ -1,10 +1,10 @@
-package uk.gov.pay.api.tests;
+package uk.gov.pay.api.it;
 
 import io.dropwizard.testing.junit.DropwizardAppRule;
 import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.pay.api.app.PublicApi;
-import uk.gov.pay.api.config.PublicApiConfig;
+import uk.gov.pay.api.app.config.PublicApiConfig;
 
 import static com.jayway.restassured.RestAssured.given;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
