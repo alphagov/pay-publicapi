@@ -187,7 +187,6 @@
           "format" : "int32",
           "example" : "12000",
           "description" : "amount in pence",
-          "readOnly" : true,
           "minimum" : 1.0,
           "maximum" : 1.0E7
         },
@@ -207,9 +206,7 @@
           "type" : "string",
           "example" : "https://service-name.gov.uk/transactions/12345",
           "description" : "service return url",
-          "readOnly" : true,
-          "minLength" : 0,
-          "maxLength" : 2000
+          "readOnly" : true
         }
       },
       "description" : "The Payment Request Payload"
@@ -221,7 +218,7 @@
           "type" : "string",
           "example" : "P0198"
         },
-        "message" : {
+        "description" : {
           "type" : "string",
           "example" : "Downstream system error"
         }

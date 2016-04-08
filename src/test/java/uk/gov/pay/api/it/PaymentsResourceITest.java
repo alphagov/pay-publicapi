@@ -9,6 +9,8 @@ import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import javax.ws.rs.core.HttpHeaders;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -19,6 +21,7 @@ import static com.jayway.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.core.Is.is;
 
 public class PaymentsResourceITest extends PaymentResourceITestBase {
 
@@ -151,7 +154,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
         postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
                 .statusCode(500)
                 .body("code", is("P0198"))
-                .body("message", is("Downstream system error"));
+                .body("description", is("Downstream system error"));
 
         connectorMock.verifyCreateChargeConnectorRequest(AMOUNT, gatewayAccountId, RETURN_URL, DESCRIPTION, REFERENCE);
     }
@@ -167,25 +170,26 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
         postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
                 .statusCode(500)
                 .body("code", is("P0199"))
-                .body("message", is("There is an error with this account. Please contact support"));
+                .body("description", is("There is an error with this account. Please contact support"));
 
         connectorMock.verifyCreateChargeConnectorRequest(AMOUNT, notFoundGatewayAccountId, RETURN_URL, DESCRIPTION, REFERENCE);
     }
 
     @Test
-    public void createPayment_responseWith422_whenFieldsMissing() {
+    public void createPayment_responseWith400_whenFieldsMissing_failFast() throws IOException {
+
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-        String nullCheck = " may not be null (was null)";
-        String emptyCheck = " may not be empty (was null)";
-        postPaymentResponse(BEARER_TOKEN, "{}")
-                .statusCode(422)
+
+        InputStream body = postPaymentResponse(BEARER_TOKEN, "{}")
+                .statusCode(400)
                 .contentType(JSON)
-                .body("errors", hasSize(4))
-                .body("errors", hasItems(
-                        "amount" + nullCheck,
-                        "description" + emptyCheck,
-                        "reference" + emptyCheck,
-                        "returnUrl" + emptyCheck));
+                .extract()
+                .body().asInputStream();
+
+        JsonAssert.with(body)
+                .assertThat("$.*", hasSize(2))
+                .assertThat("$.code", is("P0103"))
+                .assertThat("$.description", is("Missing mandatory attribute: amount"));
     }
 
     @Test
