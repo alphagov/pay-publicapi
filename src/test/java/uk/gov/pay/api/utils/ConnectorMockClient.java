@@ -146,7 +146,12 @@ public class ConnectorMockClient {
 
     }
 
-    public void respondUnknownGateway_whenCreateCharge(long amount, String gatewayAccountId, String errorMsg, String returnUrl, String description, String reference) {
+    public void respondNotFound_whenCreateCharge(long amount, String gatewayAccountId, String returnUrl, String description, String reference) {
+        whenCreateCharge(amount, gatewayAccountId, returnUrl, description, reference)
+                .respond(response().withStatusCode(NOT_FOUND_404));
+    }
+
+    public void respondBadRequest_whenCreateCharge(long amount, String gatewayAccountId, String errorMsg, String returnUrl, String description, String reference) {
         whenCreateCharge(amount, gatewayAccountId, returnUrl, description, reference)
                 .respond(withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg));
     }
@@ -281,7 +286,7 @@ public class ConnectorMockClient {
                 .withBody(jsonString("message", errorMsg));
     }
 
-    public void verifyCreateCharge(int amount, String gatewayAccountId, String returnUrl, String description, String reference) {
+    public void verifyCreateChargeConnectorRequest(int amount, String gatewayAccountId, String returnUrl, String description, String reference) {
         mockClient.verify(request()
                         .withMethod(POST)
                         .withPath(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId))
