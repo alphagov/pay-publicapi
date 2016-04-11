@@ -4,12 +4,11 @@ import com.jayway.jsonassert.JsonAssert;
 import com.jayway.restassured.response.ValidatableResponse;
 import org.junit.Test;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
+import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import javax.ws.rs.core.HttpHeaders;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.format.DateTimeFormatter;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -30,9 +29,9 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     private static final String RETURN_URL = "http://somewhere.gov.uk/rainbow/1";
     private static final String REFERENCE = "Some reference <script> alert('This is a ?{simple} XSS attack.')</script>";
     private static final String DESCRIPTION = "Some description <script> alert('This is a ?{simple} XSS attack.')</script>";
-    private static final LocalDateTime TIMESTAMP = LocalDateTime.of(2016, Month.JANUARY, 1, 12, 00, 00);
-    private static final String CREATED_DATE = TIMESTAMP.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:SS"));
-    private static final Map<String, String> PAYMENT_CREATED = new ChargeEventBuilder(CHARGE_ID, STATUS, TIMESTAMP).build();
+    private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
+    private static final String CREATED_DATE = DateTimeUtils.toUTCDateString(TIMESTAMP);
+    private static final Map<String, String> PAYMENT_CREATED = new ChargeEventBuilder(CHARGE_ID, STATUS, CREATED_DATE).build();
     private static final List<Map<String, String>> EVENTS = newArrayList(PAYMENT_CREATED);
 
     private static final String SUCCESS_PAYLOAD = paymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE);
@@ -245,7 +244,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .body("events", hasSize(1))
                 .body("events[0].payment_id", is(CHARGE_ID))
                 .body("events[0].status", is(STATUS))
-                .body("events[0].updated", is("2016-01-01 12:00:00"))
+                .body("events[0].updated", is("2016-01-01T12:00:00Z"))
                 .body("events[0]._links.payment_url.href", is(paymentLocationFor(CHARGE_ID)));
     }
 

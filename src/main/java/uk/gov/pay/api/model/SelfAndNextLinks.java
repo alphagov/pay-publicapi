@@ -33,7 +33,7 @@ public class SelfAndNextLinks {
         return nextUrl;
     }
 
-    @ApiModelProperty(value = NEXT_URL_POST, dataType = "uk.gov.pay.api.model.Link")
+    @ApiModelProperty(value = NEXT_URL_POST, dataType = "uk.gov.pay.api.model.PostLink")
     public Link getNextUrlPost() {
         return nextUrlPost;
     }
@@ -60,7 +60,7 @@ public class SelfAndNextLinks {
         chargeLinks.stream()
                 .filter(chargeLink -> NEXT_URL_POST.equals(chargeLink.getRel()))
                 .findFirst()
-                .ifPresent(chargeLink -> this.nextUrlPost = new Link(chargeLink.getHref(), chargeLink.getMethod(), chargeLink.getType(), chargeLink.getParams()));
+                .ifPresent(chargeLink -> this.nextUrlPost = new PostLink(chargeLink.getHref(), chargeLink.getMethod(), chargeLink.getType(), chargeLink.getParams()));
     }
 
     private void addNextUrlIfPresent(List<PaymentConnectorResponseLink> chargeLinks) {

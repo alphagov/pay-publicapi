@@ -2,6 +2,7 @@ package uk.gov.pay.api.it;
 
 
 import com.google.common.collect.ImmutableMap;
+import com.jayway.jsonassert.JsonAssert;
 import com.jayway.restassured.response.ValidatableResponse;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -42,19 +43,27 @@ public class PaymentSearchITest extends PaymentResourceITestBase {
                         .build()
         );
 
-        searchPayments(BEARER_TOKEN, ImmutableMap.of("reference", TEST_REFERENCE))
+        String responseBody = searchPayments(BEARER_TOKEN, ImmutableMap.of("reference", TEST_REFERENCE))
                 .statusCode(200)
                 .contentType(JSON)
-                .body("results.get(0).created_date", is(DEFAULT_CREATED_DATE))
-                .body("results.get(0).reference", is(TEST_REFERENCE))
-                .body("results.get(0).return_url", is(DEFAULT_RETURN_URL))
-                .body("results.get(0).description", is("description-0"))
-                .body("results.get(0).status", is(TEST_STATUS))
-                .body("results.get(0).amount", is(DEFAULT_AMOUNT))
-                .body("results.get(0).payment_provider", is(DEFAULT_PAYMENT_PROVIDER))
-                .body("results.get(0).payment_id", is("0"))
-                .body("results.get(0)._links.self.method", is("GET"))
-                .body("results.get(0)._links.self.href", endsWith("/v1/payments/0"));
+                .body("results[0].created_date", is(DEFAULT_CREATED_DATE))
+                .body("results[0].reference", is(TEST_REFERENCE))
+                .body("results[0].return_url", is(DEFAULT_RETURN_URL))
+                .body("results[0].description", is("description-0"))
+                .body("results[0].status", is(TEST_STATUS))
+                .body("results[0].amount", is(DEFAULT_AMOUNT))
+                .body("results[0].payment_provider", is(DEFAULT_PAYMENT_PROVIDER))
+                .body("results[0].payment_id", is("0"))
+                .body("results[0]._links.self.method", is("GET"))
+                .body("results[0]._links.self.href", endsWith("/v1/payments/0"))
+                .extract().asString();
+
+        JsonAssert.with(responseBody)
+                .assertNotDefined("_links.self.type")
+                .assertNotDefined("_links.self.params")
+                .assertNotDefined("_links.next_url.type")
+                .assertNotDefined("_links.next_url.params");
+
     }
 
     @Test

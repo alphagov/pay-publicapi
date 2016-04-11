@@ -1,17 +1,9 @@
 package uk.gov.pay.api.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.joda.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @ApiModel(value="Payment Event information", description = "A List of Payment Events information")
 public class PaymentEvent {
@@ -21,29 +13,22 @@ public class PaymentEvent {
     @JsonProperty("status")
     private final String status;
 
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private final LocalDateTime updated;
+    @JsonProperty("updated")
+    private final String updated;
 
     @JsonProperty("_links")
     private PaymentEventLink paymentLink;
 
     public static PaymentEvent createPaymentEvent(JsonNode payload, String paymentLink) {
-        LocalDateTime updated = null;
-        if(payload.get("updated") != null) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            updated = LocalDateTime.parse(payload.get("updated").asText(), formatter);
-        }
         return new PaymentEvent(
             payload.get("charge_id").asText(),
             payload.get("status").asText(),
-            updated,
+            payload.get("updated").asText(),
             paymentLink
         );
     }
 
-    private PaymentEvent(String chargeId, String status, LocalDateTime updated, String paymentLink) {
+    private PaymentEvent(String chargeId, String status, String updated, String paymentLink) {
         this.paymentId = chargeId;
         this.status = status;
         this.updated = updated;
@@ -61,7 +46,7 @@ public class PaymentEvent {
     }
 
     @ApiModelProperty(value = "updated",example = "updated_date")
-    public LocalDateTime getUpdated() {
+    public String getUpdated() {
         return updated;
     }
 

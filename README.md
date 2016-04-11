@@ -112,6 +112,12 @@ Content-Type: application/json
         "next_url" : {
             "href": "http://frontend.co.uk/charge/1?chargeTokenId=82347",
             "method": "GET" 
+        },
+        "next_url_post" : {
+            "params" : {},
+            "type" : "",
+            "href": "http://frontend.co.uk/charge/1?chargeTokenId=82347",
+            "method": "POST" 
         }
     },
     "payment_id": "ab2341da231434",
@@ -138,7 +144,8 @@ Content-Type: application/json
 | `payment_provider`     | The payment provider for this payment                                                    |
 | `created_date`         | The payment creation date for this payment                                               |
 | `_links.self`          | Link to the payment                                                                      |
-| `_links.next_url`      | Where to navigate the user next                                                          |
+| `_links.next_url`      | Where to navigate the user next as a GET                                                 |
+| `_links.next_url_post` | Where to navigate the user next as a POST                                                |
 
 #### Payment creation failed
 
@@ -179,14 +186,20 @@ Content-Type: application/json
 
 {
     "_links": {
-            "self" :{
-                "href": "http://publicapi.co.uk/v1/payments/ab2341da231434",
-                "method": "GET" 
-            },
-            "next_url" : {
-                "href": "http://frontend.co.uk/charge/ab2341da231434?chargeTokenId=82347",
-                "method": "GET" 
-            }
+        "self" :{
+            "href": "http://publicapi.co.uk/v1/payments/ab2341da231434",
+            "method": "GET" 
+        },
+        "next_url" : {
+            "href": "http://frontend.co.uk/charge/ab2341da231434?chargeTokenId=82347",
+            "method": "GET" 
+        },
+        "next_url_post" : {
+            "params" : {},
+            "type" : "",
+            "href": "http://frontend.co.uk/charge/1?chargeTokenId=82347",
+            "method": "POST" 
+        }
     },
     "payment_id": "ab2341da231434",
     "amount": 50000,
@@ -245,8 +258,6 @@ Content-Type: application/json
             "updated": "2016-01-13 17:42:16",
             "_links": {
                 "payment_url" : {
-                    "params": {},
-                    "type": "multipart/form-data",
                     "method": "GET",
                     "href": "http://publicapi.co.uk/v1/payments/ab2341da231434"
                 }
@@ -258,8 +269,6 @@ Content-Type: application/json
             "updated": "2016-01-13 17:42:28",
             "_links": {
                 "payment_url" : {
-                    "params": {},
-                    "type": "multipart/form-data",
                     "method": "GET",
                     "href": "http://publicapi.co.uk/v1/payments/ab2341da231434"
                 }
@@ -271,8 +280,6 @@ Content-Type: application/json
             "updated": "2016-01-13 17:42:29",
             "_links": {
                 "payment_url" : {
-                    "params": {},
-                    "type": "multipart/form-data",
                     "method": "GET",
                     "href": "http://publicapi.co.uk/v1/payments/ab2341da231434"
                 }
