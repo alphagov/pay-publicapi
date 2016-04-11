@@ -6,27 +6,17 @@ import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
 
-import static javax.ws.rs.HttpMethod.GET;
-import static uk.gov.pay.api.model.SelfLinks.SELF;
-
-@ApiModel(value = "selfAndNextLinks", description = "Resource self and next links of a Payment")
-public class SelfAndNextLinks {
+@ApiModel(value = "commonPaymentLinksAndNextLinks", description = "Resource self,events and next links of a Payment")
+public class PaymentNextLinks extends PaymentLinks {
 
     private static final String NEXT_URL = "next_url";
     private static final String NEXT_URL_POST = "next_url_post";
-
-    private Link self;
 
     @JsonProperty(NEXT_URL)
     private Link nextUrl;
 
     @JsonProperty(NEXT_URL_POST)
     private Link nextUrlPost;
-
-    @ApiModelProperty(value = SELF, dataType = "uk.gov.pay.api.model.Link")
-    public Link getSelf() {
-        return self;
-    }
 
     @ApiModelProperty(value = NEXT_URL, dataType = "uk.gov.pay.api.model.Link")
     public Link getNextUrl() {
@@ -41,14 +31,10 @@ public class SelfAndNextLinks {
     @Override
     public String toString() {
         return "Links{" +
-                "self=" + self +
+                "self=" + super.getSelf() +
                 ", nextUrl=" + nextUrl +
                 ", nextUrlPost=" + nextUrlPost +
                 '}';
-    }
-
-    void addSelf(String href) {
-        this.self = new Link(href, GET);
     }
 
     void addKnownLinksValueOf(List<PaymentConnectorResponseLink> chargeLinks) {

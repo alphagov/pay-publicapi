@@ -92,7 +92,7 @@ public class PaymentsResource {
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             code = 200)
 
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = PaymentWithLinks.class),
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = PaymentWithNextLinks.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found")})
     public Response getPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
@@ -223,7 +223,7 @@ public class PaymentsResource {
             code = 201,
             nickname = "newPayment")
 
-    @ApiResponses(value = {@ApiResponse(code = 201, message = "Created", response = PaymentWithLinks.class),
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "Created", response = PaymentWithNextLinks.class),
             @ApiResponse(code = 400, message = "Bad request"),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentErrorResponse.class)})
@@ -245,7 +245,11 @@ public class PaymentsResource {
                     .path(PAYMENT_BY_ID)
                     .build(response.getChargeId());
 
-            PaymentWithLinks payment = PaymentWithLinks.valueOf(response, paymentUri);
+            URI paymentEventsUri = uriInfo.getBaseUriBuilder()
+                    .path(PAYMENT_EVENTS_BY_ID)
+                    .build(response.getChargeId());
+
+            PaymentWithNextLinks payment = PaymentWithNextLinks.valueOf(response, paymentUri, paymentEventsUri);
 
             logger.info("payment returned: [ {} ]", payment);
             return Response.created(paymentUri).entity(payment).build();
@@ -312,7 +316,11 @@ public class PaymentsResource {
                     .path(PAYMENT_BY_ID)
                     .build(response.getChargeId());
 
-            PaymentWithLinks payment = PaymentWithLinks.valueOf(response, documentLocation);
+            URI paymentLink = uriInfo.getBaseUriBuilder()
+                    .path(PAYMENT_EVENTS_BY_ID)
+                    .build(response.getChargeId());
+
+            PaymentWithNextLinks payment = PaymentWithNextLinks.valueOf(response, documentLocation, paymentLink);
 
             logger.info("payment returned: [ {} ]", payment);
             return okResponse.apply(documentLocation, payment).build();
@@ -336,14 +344,14 @@ public class PaymentsResource {
                 Map<String, List<PaymentConnectorResponse>> chargesMap
                         = objectMapper.readValue(responseJson.traverse(), typeRef);
 
-                List<PaymentWithSelfLinks> paymentsWithSelfLink = chargesMap.get("results")
+                List<PaymentWithLinks> paymentsWithSelfLink = chargesMap.get("results")
                         .stream()
                         .map(charge -> {
                             URI paymentLink = uriInfo.getBaseUriBuilder()
                                     .path(PAYMENT_BY_ID)
                                     .build(charge.getChargeId());
 
-                            return PaymentWithSelfLinks.valueOf(charge, paymentLink);
+                            return PaymentWithLinks.valueOf(charge, paymentLink);
                         })
                         .collect(Collectors.toList());
 

@@ -77,7 +77,7 @@
           "201" : {
             "description" : "Created",
             "schema" : {
-              "$ref" : "#/definitions/PaymentWithLinks"
+              "$ref" : "#/definitions/PaymentWithNextLinks"
             }
           },
           "400" : {
@@ -111,7 +111,7 @@
           "200" : {
             "description" : "OK",
             "schema" : {
-              "$ref" : "#/definitions/PaymentWithLinks"
+              "$ref" : "#/definitions/PaymentWithNextLinks"
             }
           },
           "401" : {
@@ -281,7 +281,7 @@
         "results" : {
           "type" : "array",
           "items" : {
-            "$ref" : "#/definitions/PaymentWithSelfLinks"
+            "$ref" : "#/definitions/PaymentWithLinks"
           }
         }
       }
@@ -332,11 +332,11 @@
         },
         "_links" : {
           "readOnly" : true,
-          "$ref" : "#/definitions/selfAndNextLinks"
+          "$ref" : "#/definitions/selfLinks"
         }
       }
     },
-    "PaymentWithSelfLinks" : {
+    "PaymentWithNextLinks" : {
       "type" : "object",
       "properties" : {
         "payment_id" : {
@@ -382,9 +382,35 @@
         },
         "_links" : {
           "readOnly" : true,
-          "$ref" : "#/definitions/selfLinks"
+          "$ref" : "#/definitions/commonPaymentLinksAndNextLinks"
         }
       }
+    },
+    "commonPaymentLinksAndNextLinks" : {
+      "type" : "object",
+      "properties" : {
+        "self" : {
+          "description" : "self",
+          "readOnly" : true,
+          "$ref" : "#/definitions/paymentLink"
+        },
+        "events" : {
+          "description" : "events",
+          "readOnly" : true,
+          "$ref" : "#/definitions/paymentLink"
+        },
+        "next_url" : {
+          "description" : "next_url",
+          "readOnly" : true,
+          "$ref" : "#/definitions/paymentLink"
+        },
+        "next_url_post" : {
+          "description" : "next_url_post",
+          "readOnly" : true,
+          "$ref" : "#/definitions/paymentPOSTLink"
+        }
+      },
+      "description" : "Resource self,events and next links of a Payment"
     },
     "payment-event-link" : {
       "type" : "object",
@@ -436,31 +462,16 @@
       },
       "description" : "A POST link related to a payment"
     },
-    "selfAndNextLinks" : {
-      "type" : "object",
-      "properties" : {
-        "self" : {
-          "description" : "self",
-          "$ref" : "#/definitions/paymentLink"
-        },
-        "next_url" : {
-          "description" : "next_url",
-          "readOnly" : true,
-          "$ref" : "#/definitions/paymentLink"
-        },
-        "next_url_post" : {
-          "description" : "next_url_post",
-          "readOnly" : true,
-          "$ref" : "#/definitions/paymentPOSTLink"
-        }
-      },
-      "description" : "Resource self and next links of a Payment"
-    },
     "selfLinks" : {
       "type" : "object",
       "properties" : {
         "self" : {
           "description" : "self",
+          "readOnly" : true,
+          "$ref" : "#/definitions/paymentLink"
+        },
+        "events" : {
+          "description" : "events",
           "readOnly" : true,
           "$ref" : "#/definitions/paymentLink"
         }

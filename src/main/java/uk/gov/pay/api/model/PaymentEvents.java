@@ -18,7 +18,7 @@ public class PaymentEvents {
     private final List<PaymentEvent> events;
 
     @JsonProperty("_links")
-    private SelfLinks links = new SelfLinks();
+    private PaymentLinks links = new PaymentLinks();
 
     public static PaymentEvents createPaymentEventsResponse(JsonNode payload, String paymentLink) {
         List<PaymentEvent> events = newArrayList();
