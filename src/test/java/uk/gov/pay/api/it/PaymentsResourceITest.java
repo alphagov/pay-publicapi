@@ -10,10 +10,10 @@ import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import javax.ws.rs.core.HttpHeaders;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
@@ -33,7 +33,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
     private static final String CREATED_DATE = DateTimeUtils.toUTCDateString(TIMESTAMP);
     private static final Map<String, String> PAYMENT_CREATED = new ChargeEventBuilder(CHARGE_ID, STATUS, CREATED_DATE).build();
-    private static final List<Map<String, String>> EVENTS = newArrayList(PAYMENT_CREATED);
+    private static final List<Map<String, String>> EVENTS = Collections.singletonList(PAYMENT_CREATED);
 
     private static final String SUCCESS_PAYLOAD = paymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE);
 
@@ -45,14 +45,10 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
         connectorMock.respondOk_whenCreateCharge(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID, STATUS, RETURN_URL,
                 DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE);
 
-        String expectedPaymentUrl = "http://localhost:" + app.getLocalPort() + PAYMENTS_PATH + CHARGE_ID;
-        String expectedPaymentEventsUrl = "http://localhost:"+ app.getLocalPort() + PAYMENTS_PATH + CHARGE_ID + "/events";
-        String expectedPaymentCancelUrl = "http://localhost:"+ app.getLocalPort() + PAYMENTS_PATH + CHARGE_ID + "/cancel";
-
         String responseBody = postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
                 .statusCode(201)
                 .contentType(JSON)
-                .header(HttpHeaders.LOCATION, is(expectedPaymentUrl))
+                .header(HttpHeaders.LOCATION, is(paymentLocationFor(CHARGE_ID)))
                 .body("payment_id", is(CHARGE_ID))
                 .body("amount", is(9999999))
                 .body("reference", is(REFERENCE))
@@ -61,7 +57,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .body("return_url", is(RETURN_URL))
                 .body("payment_provider", is(PAYMENT_PROVIDER))
                 .body("created_date", is(CREATED_DATE))
-                .body("_links.self.href", is(expectedPaymentUrl))
+                .body("_links.self.href", is(paymentLocationFor(CHARGE_ID)))
                 .body("_links.self.method", is("GET"))
                 .body("_links.next_url.href", is("http://Frontend/charge/" + CHARGE_TOKEN_ID))
                 .body("_links.next_url.method", is("GET"))
@@ -69,9 +65,9 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .body("_links.next_url_post.method", is("POST"))
                 .body("_links.next_url_post.type", is("application/x-www-form-urlencoded"))
                 .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
-                .body("_links.events.href", is(expectedPaymentEventsUrl))
+                .body("_links.events.href", is(paymentEventsLocationFor(CHARGE_ID)))
                 .body("_links.events.method", is("GET"))
-                .body("_links.cancel.href", is(expectedPaymentCancelUrl))
+                .body("_links.cancel.href", is(paymentCancelLocationFor(CHARGE_ID)))
                 .body("_links.cancel.method", is("POST"))
                 .extract().body().asString();
 
