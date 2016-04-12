@@ -17,7 +17,6 @@ import java.util.Map;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
-import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -55,14 +54,18 @@ public class PaymentSearchITest extends PaymentResourceITestBase {
                 .body("results[0].payment_provider", is(DEFAULT_PAYMENT_PROVIDER))
                 .body("results[0].payment_id", is("0"))
                 .body("results[0]._links.self.method", is("GET"))
-                .body("results[0]._links.self.href", endsWith("/v1/payments/0"))
+                .body("results[0]._links.self.href", is(paymentLocationFor("0")))
+                .body("results[0]._links.events.href", is(paymentEventsLocationFor("0")))
+                .body("results[0]._links.events.method", is("GET"))
                 .extract().asString();
 
         JsonAssert.with(responseBody)
                 .assertNotDefined("_links.self.type")
                 .assertNotDefined("_links.self.params")
                 .assertNotDefined("_links.next_url.type")
-                .assertNotDefined("_links.next_url.params");
+                .assertNotDefined("_links.next_url.params")
+                .assertNotDefined("_links.events.type")
+                .assertNotDefined("_links.events.params");
 
     }
 

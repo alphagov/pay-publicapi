@@ -2,19 +2,20 @@ package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
+import uk.gov.pay.api.model.links.PaymentLinks;
 
 import java.net.URI;
 import java.util.List;
 
-public class PaymentWithNextLinks extends Payment {
+public class PaymentWithAllLinks extends Payment {
 
     @JsonProperty(LINKS_JSON_ATTRIBUTE)
-    private PaymentNextLinks links = new PaymentNextLinks();
+    private PaymentLinks links = new PaymentLinks();
 
-    private PaymentWithNextLinks(String chargeId, long amount, String status, String returnUrl, String description,
-                                 String reference, String paymentProvider, String createdDate,
-                                 List<PaymentConnectorResponseLink> paymentConnectorResponseLinks,
-                                 URI selfLink, URI paymentEventsLink) {
+    private PaymentWithAllLinks(String chargeId, long amount, String status, String returnUrl, String description,
+                                String reference, String paymentProvider, String createdDate,
+                                List<PaymentConnectorResponseLink> paymentConnectorResponseLinks,
+                                URI selfLink, URI paymentEventsLink) {
         super(chargeId, amount, status, returnUrl, description, reference, paymentProvider, createdDate);
 
         this.links.addSelf(selfLink.toString());
@@ -22,8 +23,8 @@ public class PaymentWithNextLinks extends Payment {
         this.links.addEvents(paymentEventsLink.toString());
     }
 
-    public static PaymentWithNextLinks valueOf(PaymentConnectorResponse paymentConnector, URI selfLink, URI paymentEventsUri) {
-        return new PaymentWithNextLinks(
+    public static PaymentWithAllLinks valueOf(PaymentConnectorResponse paymentConnector, URI selfLink, URI paymentEventsUri) {
+        return new PaymentWithAllLinks(
                 paymentConnector.getChargeId(),
                 paymentConnector.getAmount(),
                 paymentConnector.getStatus(),
@@ -38,8 +39,8 @@ public class PaymentWithNextLinks extends Payment {
         );
     }
 
-    @ApiModelProperty(dataType = "uk.gov.pay.api.model.PaymentNextLinks")
-    public PaymentNextLinks getLinks() {
+    @ApiModelProperty(dataType = "uk.gov.pay.api.model.links.PaymentLinks")
+    public PaymentLinks getLinks() {
         return links;
     }
 }

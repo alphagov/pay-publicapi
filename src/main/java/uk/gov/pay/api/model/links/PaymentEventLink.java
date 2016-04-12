@@ -1,4 +1,4 @@
-package uk.gov.pay.api.model;
+package uk.gov.pay.api.model.links;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
@@ -19,7 +19,7 @@ public class PaymentEventLink {
         this.paymentLink = new Link(href, GET);
     }
 
-    @ApiModelProperty(value = PAYMENT_LINK, dataType = "uk.gov.pay.api.model.Link")
+    @ApiModelProperty(value = PAYMENT_LINK, dataType = "uk.gov.pay.api.model.links.Link")
     public Link getPaymentLink() {
         return paymentLink;
     }

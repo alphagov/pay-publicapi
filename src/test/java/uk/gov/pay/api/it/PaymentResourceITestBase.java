@@ -47,4 +47,13 @@ public abstract class PaymentResourceITestBase {
     private String publicAuthBaseUrl() {
         return "http://localhost:" + publicAuthMockRule.getHttpPort() + "/v1/auth";
     }
+
+    String paymentLocationFor(String chargeId) {
+        return "http://localhost:" + app.getLocalPort() + PAYMENTS_PATH + chargeId;
+    }
+
+    String paymentEventsLocationFor(String chargeId) {
+        return paymentLocationFor(chargeId) + "/events";
+    }
+
 }

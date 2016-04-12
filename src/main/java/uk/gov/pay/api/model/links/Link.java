@@ -1,10 +1,8 @@
-package uk.gov.pay.api.model;
+package uk.gov.pay.api.model.links;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
-import java.util.Map;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include;
 

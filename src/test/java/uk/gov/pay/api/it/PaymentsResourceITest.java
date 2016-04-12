@@ -292,14 +292,6 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .statusCode(503);
     }
 
-    private String paymentLocationFor(String chargeId) {
-        return "http://localhost:" + app.getLocalPort() + PAYMENTS_PATH + chargeId;
-    }
-
-    private String paymentEventsLocationFor(String chargeId) {
-        return paymentLocationFor(chargeId) + "/events";
-    }
-
     private static String paymentPayload(long amount, String returnUrl, String description, String reference) {
         return new JsonStringBuilder()
                 .add("amount", amount)

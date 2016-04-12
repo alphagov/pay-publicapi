@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import uk.gov.pay.api.model.links.PaymentEventLink;
 
 @ApiModel(value="Payment Event information", description = "A List of Payment Events information")
 public class PaymentEvent {
@@ -50,7 +51,7 @@ public class PaymentEvent {
         return updated;
     }
 
-    @ApiModelProperty(dataType = "uk.gov.pay.api.model.PaymentEventLink")
+    @ApiModelProperty(dataType = "uk.gov.pay.api.model.links.PaymentEventLink")
     public PaymentEventLink getPaymentLink() {
         return paymentLink;
     }

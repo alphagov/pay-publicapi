@@ -4,13 +4,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import uk.gov.pay.api.model.links.PaymentLinksForEvents;
 
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static uk.gov.pay.api.model.PaymentEvent.createPaymentEvent;
 
-@ApiModel(value="Payment Events information", description = "A List of Payment Events information")
+@ApiModel(value="PaymentEventsInformation", description = "A List of Payment Events information")
 public class PaymentEvents {
     @JsonProperty("payment_id")
     private final String paymentId;
@@ -18,7 +19,7 @@ public class PaymentEvents {
     private final List<PaymentEvent> events;
 
     @JsonProperty("_links")
-    private PaymentLinks links = new PaymentLinks();
+    private PaymentLinksForEvents links = new PaymentLinksForEvents();
 
     public static PaymentEvents createPaymentEventsResponse(JsonNode payload, String paymentLink) {
         List<PaymentEvent> events = newArrayList();
