@@ -56,4 +56,8 @@ public abstract class PaymentResourceITestBase {
         return paymentLocationFor(chargeId) + "/events";
     }
 
+    String paymentCancelLocationFor(String chargeId) {
+        return paymentLocationFor(chargeId) + "/cancel";
+    }
+
 }

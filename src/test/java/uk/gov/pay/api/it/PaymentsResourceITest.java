@@ -3,6 +3,7 @@ package uk.gov.pay.api.it;
 import com.jayway.jsonassert.JsonAssert;
 import com.jayway.restassured.response.ValidatableResponse;
 import org.junit.Test;
+import uk.gov.pay.api.model.ExternalChargeStatus;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
@@ -24,7 +25,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     private static final int AMOUNT = 9999999;
     private static final String CHARGE_ID = "ch_ab2341da231434l";
     private static final String CHARGE_TOKEN_ID = "token_1234567asdf";
-    private static final String STATUS = "someState";
+    private static final String STATUS = "created";
     private static final String PAYMENT_PROVIDER = "Sandbox";
     private static final String RETURN_URL = "http://somewhere.gov.uk/rainbow/1";
     private static final String REFERENCE = "Some reference <script> alert('This is a ?{simple} XSS attack.')</script>";
@@ -46,6 +47,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
 
         String expectedPaymentUrl = "http://localhost:" + app.getLocalPort() + PAYMENTS_PATH + CHARGE_ID;
         String expectedPaymentEventsUrl = "http://localhost:"+ app.getLocalPort() + PAYMENTS_PATH + CHARGE_ID + "/events";
+        String expectedPaymentCancelUrl = "http://localhost:"+ app.getLocalPort() + PAYMENTS_PATH + CHARGE_ID + "/cancel";
 
         String responseBody = postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
                 .statusCode(201)
@@ -69,6 +71,8 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
                 .body("_links.events.href", is(expectedPaymentEventsUrl))
                 .body("_links.events.method", is("GET"))
+                .body("_links.cancel.href", is(expectedPaymentCancelUrl))
+                .body("_links.cancel.method", is("POST"))
                 .extract().body().asString();
 
         JsonAssert.with(responseBody)
@@ -216,7 +220,24 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .body("_links.next_url_post.type", is("application/x-www-form-urlencoded"))
                 .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
                 .body("_links.events.href", is(paymentEventsLocationFor(CHARGE_ID)))
-                .body("_links.events.method", is("GET"));
+                .body("_links.events.method", is("GET"))
+                .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
+                .body("_links.cancel.href", is(paymentCancelLocationFor(CHARGE_ID)))
+                .body("_links.cancel.method", is("POST"));
+    }
+
+    @Test
+    public void getPayment_ShouldNotIncludeCancelLinkIfPaymentCannotBeCancelled() {
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, ExternalChargeStatus.EXT_SUCCEEDED.name(), RETURN_URL,
+                DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID);
+
+        getPaymentResponse(BEARER_TOKEN, CHARGE_ID)
+                .statusCode(200)
+                .contentType(JSON)
+                .body("_links.cancel", is(nullValue()));
+
+
     }
 
     @Test

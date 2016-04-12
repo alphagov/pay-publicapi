@@ -15,15 +15,24 @@ public class PaymentWithAllLinks extends Payment {
     private PaymentWithAllLinks(String chargeId, long amount, String status, String returnUrl, String description,
                                 String reference, String paymentProvider, String createdDate,
                                 List<PaymentConnectorResponseLink> paymentConnectorResponseLinks,
-                                URI selfLink, URI paymentEventsLink) {
+                                URI selfLink, URI paymentEventsLink, URI paymentCancelUri) {
         super(chargeId, amount, status, returnUrl, description, reference, paymentProvider, createdDate);
 
         this.links.addSelf(selfLink.toString());
         this.links.addKnownLinksValueOf(paymentConnectorResponseLinks);
         this.links.addEvents(paymentEventsLink.toString());
+        ExternalChargeStatus.mapFromStatus(status)
+                .ifPresent((paymentStatus) -> {
+                    if(CANCELLABLE_STATUS.contains(paymentStatus)) {
+                        this.links.addCancel(paymentCancelUri.toString());
+                    }
+                });
     }
 
-    public static PaymentWithAllLinks valueOf(PaymentConnectorResponse paymentConnector, URI selfLink, URI paymentEventsUri) {
+    public static PaymentWithAllLinks valueOf(PaymentConnectorResponse paymentConnector,
+                                              URI selfLink,
+                                              URI paymentEventsUri,
+                                              URI paymentCancelUri) {
         return new PaymentWithAllLinks(
                 paymentConnector.getChargeId(),
                 paymentConnector.getAmount(),
@@ -35,7 +44,8 @@ public class PaymentWithAllLinks extends Payment {
                 paymentConnector.getCreated_date(),
                 paymentConnector.getLinks(),
                 selfLink,
-                paymentEventsUri
+                paymentEventsUri,
+                paymentCancelUri
         );
     }
 

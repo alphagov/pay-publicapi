@@ -408,6 +408,11 @@
           "description" : "events",
           "readOnly" : true,
           "$ref" : "#/definitions/paymentLink"
+        },
+        "cancel" : {
+          "description" : "cancel",
+          "readOnly" : true,
+          "$ref" : "#/definitions/paymentPOSTLink"
         }
       },
       "description" : "self,events and next links of a Payment"
@@ -430,6 +435,11 @@
           "description" : "self",
           "readOnly" : true,
           "$ref" : "#/definitions/paymentLink"
+        },
+        "cancel" : {
+          "description" : "cancel",
+          "readOnly" : true,
+          "$ref" : "#/definitions/paymentPOSTLink"
         },
         "events" : {
           "description" : "events",

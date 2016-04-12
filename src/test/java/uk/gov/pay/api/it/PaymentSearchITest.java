@@ -18,6 +18,7 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.*;
@@ -25,7 +26,7 @@ import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.*;
 public class PaymentSearchITest extends PaymentResourceITestBase {
 
     private static final String TEST_REFERENCE = "test_reference";
-    private static final String TEST_STATUS = "succeeded";
+    private static final String TEST_STATUS = "created";
     private static final String TEST_FROM_DATE = "2016-01-28T00:00:00Z";
     private static final String TEST_TO_DATE = "2016-01-28T12:00:00Z";
     private static final String SEARCH_PATH = "/v1/payments";
@@ -57,6 +58,8 @@ public class PaymentSearchITest extends PaymentResourceITestBase {
                 .body("results[0]._links.self.href", is(paymentLocationFor("0")))
                 .body("results[0]._links.events.href", is(paymentEventsLocationFor("0")))
                 .body("results[0]._links.events.method", is("GET"))
+                .body("results[0]._links.cancel.href", is(paymentCancelLocationFor("0")))
+                .body("results[0]._links.cancel.method", is("POST"))
                 .extract().asString();
 
         JsonAssert.with(responseBody)
@@ -66,6 +69,25 @@ public class PaymentSearchITest extends PaymentResourceITestBase {
                 .assertNotDefined("_links.next_url.params")
                 .assertNotDefined("_links.events.type")
                 .assertNotDefined("_links.events.params");
+
+    }
+
+    @Test
+    public void searchPayments_ShouldNotIncludeCancelLinkIfThePaymentCannotBeCancelled() {
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        String SUCCEEDED_STATUS = "succeeded";
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null,
+                aSuccessfulSearchResponse()
+                        .withMatchingStatus(SUCCEEDED_STATUS)
+                        .withMatchingReference(TEST_REFERENCE)
+                        .numberOfResults(1)
+                        .build()
+        );
+
+        searchPayments(BEARER_TOKEN, ImmutableMap.of("reference", TEST_REFERENCE))
+                .statusCode(200)
+                .contentType(JSON)
+                .body("results[0]._links.cancel", is(nullValue()));
 
     }
 

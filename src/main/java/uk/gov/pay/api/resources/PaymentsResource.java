@@ -199,7 +199,7 @@ public class PaymentsResource {
                     .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
                     .get();
 
-            return responseForPaymentsForSearchResults(
+            return responseForPaymentSearchResults(
                     uriInfo,
                     connectorResponse, SC_OK,
                     Response::ok,
@@ -249,7 +249,11 @@ public class PaymentsResource {
                     .path(PAYMENT_EVENTS_BY_ID)
                     .build(response.getChargeId());
 
-            PaymentWithAllLinks payment = PaymentWithAllLinks.valueOf(response, paymentUri, paymentEventsUri);
+            URI paymentCancelUri = uriInfo.getBaseUriBuilder()
+                    .path(CANCEL_PAYMENT_PATH)
+                    .build(response.getChargeId());
+
+            PaymentWithAllLinks payment = PaymentWithAllLinks.valueOf(response, paymentUri, paymentEventsUri, paymentCancelUri);
 
             logger.info("payment returned: [ {} ]", payment);
             return Response.created(paymentUri).entity(payment).build();
@@ -320,7 +324,11 @@ public class PaymentsResource {
                     .path(PAYMENT_EVENTS_BY_ID)
                     .build(response.getChargeId());
 
-            PaymentWithAllLinks payment = PaymentWithAllLinks.valueOf(response, documentLocation, paymentLink);
+            URI paymentCancelUri = uriInfo.getBaseUriBuilder()
+                    .path(CANCEL_PAYMENT_PATH)
+                    .build(response.getChargeId());
+
+            PaymentWithAllLinks payment = PaymentWithAllLinks.valueOf(response, documentLocation, paymentLink, paymentCancelUri);
 
             logger.info("payment returned: [ {} ]", payment);
             return okResponse.apply(documentLocation, payment).build();
@@ -329,9 +337,9 @@ public class PaymentsResource {
         }
     }
 
-    private Response responseForPaymentsForSearchResults(UriInfo uriInfo, Response connectorResponse, int okStatus,
-                                                         Function<Object, ResponseBuilder> okResponse,
-                                                         Supplier<Response> errorResponse) {
+    private Response responseForPaymentSearchResults(UriInfo uriInfo, Response connectorResponse, int okStatus,
+                                                     Function<Object, ResponseBuilder> okResponse,
+                                                     Supplier<Response> errorResponse) {
 
         if (connectorResponse.getStatus() == okStatus) {
             try {
@@ -355,7 +363,11 @@ public class PaymentsResource {
                                     .path(PAYMENT_EVENTS_BY_ID)
                                     .build(charge.getChargeId());
 
-                            return PaymentForSearchResult.valueOf(charge, paymentLink, paymentEventsUri);
+                            URI paymentCancelUri = uriInfo.getBaseUriBuilder()
+                                    .path(CANCEL_PAYMENT_PATH)
+                                    .build(charge.getChargeId());
+
+                            return PaymentForSearchResult.valueOf(charge, paymentLink, paymentEventsUri, paymentCancelUri);
                         })
                         .collect(Collectors.toList());
 

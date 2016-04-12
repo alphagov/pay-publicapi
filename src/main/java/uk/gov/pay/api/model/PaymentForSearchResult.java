@@ -13,16 +13,22 @@ public class PaymentForSearchResult extends Payment {
 
     public PaymentForSearchResult(String chargeId, long amount, String status, String returnUrl, String description,
                                   String reference, String paymentProvider, String createdDate,
-                                  URI selfLink, URI paymentEventsLink) {
+                                  URI selfLink, URI paymentEventsLink, URI paymentCancelLink) {
         super(chargeId, amount, status, returnUrl, description, reference, paymentProvider, createdDate);
         this.links.addSelf(selfLink.toString());
         this.links.addEvents(paymentEventsLink.toString());
+        ExternalChargeStatus.mapFromStatus(status).ifPresent((paymentStatus) -> {
+            if(CANCELLABLE_STATUS.contains(paymentStatus)) {
+                this.links.addCancel(paymentCancelLink.toString());
+            }
+        });
     }
 
     public static PaymentForSearchResult valueOf(
             PaymentConnectorResponse paymentConnectorResponse,
             URI selfLink,
-            URI paymentEventsLink) {
+            URI paymentEventsLink,
+            URI paymentCancelLink) {
         return new PaymentForSearchResult(
                 paymentConnectorResponse.getChargeId(),
                 paymentConnectorResponse.getAmount(),
@@ -33,7 +39,8 @@ public class PaymentForSearchResult extends Payment {
                 paymentConnectorResponse.getPaymentProvider(),
                 paymentConnectorResponse.getCreated_date(),
                 selfLink,
-                paymentEventsLink
+                paymentEventsLink,
+                paymentCancelLink
         );
     }
 
