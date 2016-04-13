@@ -45,6 +45,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE);
 
         String expectedPaymentUrl = "http://localhost:" + app.getLocalPort() + PAYMENTS_PATH + CHARGE_ID;
+        String expectedPaymentEventsUrl = "http://localhost:"+ app.getLocalPort() + PAYMENTS_PATH + CHARGE_ID + "/events";
 
         String responseBody = postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
                 .statusCode(201)
@@ -66,13 +67,17 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .body("_links.next_url_post.method", is("POST"))
                 .body("_links.next_url_post.type", is("application/x-www-form-urlencoded"))
                 .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
+                .body("_links.events.href", is(expectedPaymentEventsUrl))
+                .body("_links.events.method", is("GET"))
                 .extract().body().asString();
 
         JsonAssert.with(responseBody)
                 .assertNotDefined("_links.self.type")
                 .assertNotDefined("_links.self.params")
                 .assertNotDefined("_links.next_url.type")
-                .assertNotDefined("_links.next_url.params");
+                .assertNotDefined("_links.next_url.params")
+                .assertNotDefined("_links.events.type")
+                .assertNotDefined("_links.events.params");
 
         connectorMock.verifyCreateChargeConnectorRequest(AMOUNT, GATEWAY_ACCOUNT_ID, RETURN_URL, DESCRIPTION, REFERENCE);
     }
@@ -202,12 +207,16 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .body("created_date", is(CREATED_DATE))
                 .body("_links.self.href", is(paymentLocationFor(CHARGE_ID)))
                 .body("_links.self.method", is("GET"))
+                .body("_links.events.href", is(paymentEventsLocationFor(CHARGE_ID)))
+                .body("_links.events.method", is("GET"))
                 .body("_links.next_url.href", is("http://Frontend/charge/" + CHARGE_ID))
                 .body("_links.next_url.method", is("GET"))
                 .body("_links.next_url_post.href", is("http://Frontend/charge/"))
                 .body("_links.next_url_post.method", is("POST"))
                 .body("_links.next_url_post.type", is("application/x-www-form-urlencoded"))
-                .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID));
+                .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
+                .body("_links.events.href", is(paymentEventsLocationFor(CHARGE_ID)))
+                .body("_links.events.method", is("GET"));
     }
 
     @Test
@@ -283,14 +292,6 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
 
         postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
                 .statusCode(503);
-    }
-
-    private String paymentLocationFor(String chargeId) {
-        return "http://localhost:" + app.getLocalPort() + PAYMENTS_PATH + chargeId;
-    }
-
-    private String paymentEventsLocationFor(String chargeId) {
-        return paymentLocationFor(chargeId) + "/events";
     }
 
     private static String paymentPayload(long amount, String returnUrl, String description, String reference) {

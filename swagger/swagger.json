@@ -77,7 +77,7 @@
           "201" : {
             "description" : "Created",
             "schema" : {
-              "$ref" : "#/definitions/PaymentWithLinks"
+              "$ref" : "#/definitions/PaymentWithAllLinks"
             }
           },
           "400" : {
@@ -111,7 +111,7 @@
           "200" : {
             "description" : "OK",
             "schema" : {
-              "$ref" : "#/definitions/PaymentWithLinks"
+              "$ref" : "#/definitions/PaymentWithAllLinks"
             }
           },
           "401" : {
@@ -164,7 +164,7 @@
           "200" : {
             "description" : "OK",
             "schema" : {
-              "$ref" : "#/definitions/Payment Events information"
+              "$ref" : "#/definitions/PaymentEventsInformation"
             }
           },
           "401" : {
@@ -255,7 +255,7 @@
       },
       "description" : "A List of Payment Events information"
     },
-    "Payment Events information" : {
+    "PaymentEventsInformation" : {
       "type" : "object",
       "properties" : {
         "events" : {
@@ -270,10 +270,60 @@
           "readOnly" : true
         },
         "_links" : {
-          "$ref" : "#/definitions/selfLinks"
+          "$ref" : "#/definitions/linksForEvents"
         }
       },
       "description" : "A List of Payment Events information"
+    },
+    "PaymentForSearchResult" : {
+      "type" : "object",
+      "properties" : {
+        "payment_id" : {
+          "type" : "string",
+          "example" : "hu20sqlact5260q2nanm0q8u93",
+          "readOnly" : true
+        },
+        "payment_provider" : {
+          "type" : "string",
+          "example" : "worldpay",
+          "readOnly" : true
+        },
+        "amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "example" : "1200",
+          "readOnly" : true
+        },
+        "status" : {
+          "type" : "string",
+          "example" : "CREATED",
+          "readOnly" : true
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "Your Service Description",
+          "readOnly" : true
+        },
+        "return_url" : {
+          "type" : "string",
+          "example" : "http://your.service.domain/your-reference",
+          "readOnly" : true
+        },
+        "reference" : {
+          "type" : "string",
+          "example" : "your-reference",
+          "readOnly" : true
+        },
+        "created_date" : {
+          "type" : "string",
+          "example" : "2016-01-21T17:15:00Z",
+          "readOnly" : true
+        },
+        "_links" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/linksForSearchResults"
+        }
+      }
     },
     "PaymentSearchResults" : {
       "type" : "object",
@@ -281,12 +331,12 @@
         "results" : {
           "type" : "array",
           "items" : {
-            "$ref" : "#/definitions/PaymentWithSelfLinks"
+            "$ref" : "#/definitions/PaymentForSearchResult"
           }
         }
       }
     },
-    "PaymentWithLinks" : {
+    "PaymentWithAllLinks" : {
       "type" : "object",
       "properties" : {
         "payment_id" : {
@@ -332,59 +382,62 @@
         },
         "_links" : {
           "readOnly" : true,
-          "$ref" : "#/definitions/selfAndNextLinks"
+          "$ref" : "#/definitions/allLinksForAPayment"
         }
       }
     },
-    "PaymentWithSelfLinks" : {
+    "allLinksForAPayment" : {
       "type" : "object",
       "properties" : {
-        "payment_id" : {
-          "type" : "string",
-          "example" : "hu20sqlact5260q2nanm0q8u93",
-          "readOnly" : true
-        },
-        "payment_provider" : {
-          "type" : "string",
-          "example" : "worldpay",
-          "readOnly" : true
-        },
-        "amount" : {
-          "type" : "integer",
-          "format" : "int64",
-          "example" : "1200",
-          "readOnly" : true
-        },
-        "status" : {
-          "type" : "string",
-          "example" : "CREATED",
-          "readOnly" : true
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "Your Service Description",
-          "readOnly" : true
-        },
-        "return_url" : {
-          "type" : "string",
-          "example" : "http://your.service.domain/your-reference",
-          "readOnly" : true
-        },
-        "reference" : {
-          "type" : "string",
-          "example" : "your-reference",
-          "readOnly" : true
-        },
-        "created_date" : {
-          "type" : "string",
-          "example" : "2016-01-21T17:15:00Z",
-          "readOnly" : true
-        },
-        "_links" : {
+        "self" : {
+          "description" : "self",
           "readOnly" : true,
-          "$ref" : "#/definitions/selfLinks"
+          "$ref" : "#/definitions/paymentLink"
+        },
+        "next_url" : {
+          "description" : "next_url",
+          "readOnly" : true,
+          "$ref" : "#/definitions/paymentLink"
+        },
+        "next_url_post" : {
+          "description" : "next_url_post",
+          "readOnly" : true,
+          "$ref" : "#/definitions/paymentPOSTLink"
+        },
+        "events" : {
+          "description" : "events",
+          "readOnly" : true,
+          "$ref" : "#/definitions/paymentLink"
         }
-      }
+      },
+      "description" : "self,events and next links of a Payment"
+    },
+    "linksForEvents" : {
+      "type" : "object",
+      "properties" : {
+        "self" : {
+          "description" : "self",
+          "readOnly" : true,
+          "$ref" : "#/definitions/paymentLink"
+        }
+      },
+      "description" : "links for events resource"
+    },
+    "linksForSearchResults" : {
+      "type" : "object",
+      "properties" : {
+        "self" : {
+          "description" : "self",
+          "readOnly" : true,
+          "$ref" : "#/definitions/paymentLink"
+        },
+        "events" : {
+          "description" : "events",
+          "readOnly" : true,
+          "$ref" : "#/definitions/paymentLink"
+        }
+      },
+      "description" : "links for search payment resource"
     },
     "payment-event-link" : {
       "type" : "object",
@@ -435,37 +488,6 @@
         }
       },
       "description" : "A POST link related to a payment"
-    },
-    "selfAndNextLinks" : {
-      "type" : "object",
-      "properties" : {
-        "self" : {
-          "description" : "self",
-          "$ref" : "#/definitions/paymentLink"
-        },
-        "next_url" : {
-          "description" : "next_url",
-          "readOnly" : true,
-          "$ref" : "#/definitions/paymentLink"
-        },
-        "next_url_post" : {
-          "description" : "next_url_post",
-          "readOnly" : true,
-          "$ref" : "#/definitions/paymentPOSTLink"
-        }
-      },
-      "description" : "Resource self and next links of a Payment"
-    },
-    "selfLinks" : {
-      "type" : "object",
-      "properties" : {
-        "self" : {
-          "description" : "self",
-          "readOnly" : true,
-          "$ref" : "#/definitions/paymentLink"
-        }
-      },
-      "description" : "Resource self link of a Payment"
     }
   }
 }

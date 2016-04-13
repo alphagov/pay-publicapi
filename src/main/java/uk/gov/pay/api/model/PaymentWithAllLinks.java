@@ -2,27 +2,29 @@ package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
+import uk.gov.pay.api.model.links.PaymentLinks;
 
 import java.net.URI;
 import java.util.List;
 
-public class PaymentWithLinks extends Payment {
+public class PaymentWithAllLinks extends Payment {
 
     @JsonProperty(LINKS_JSON_ATTRIBUTE)
-    private SelfAndNextLinks links = new SelfAndNextLinks();
+    private PaymentLinks links = new PaymentLinks();
 
-    private PaymentWithLinks(String chargeId, long amount, String status, String returnUrl, String description,
-                             String reference, String paymentProvider, String createdDate,
-                             List<PaymentConnectorResponseLink> paymentConnectorResponseLinks, URI selfLink) {
+    private PaymentWithAllLinks(String chargeId, long amount, String status, String returnUrl, String description,
+                                String reference, String paymentProvider, String createdDate,
+                                List<PaymentConnectorResponseLink> paymentConnectorResponseLinks,
+                                URI selfLink, URI paymentEventsLink) {
         super(chargeId, amount, status, returnUrl, description, reference, paymentProvider, createdDate);
 
         this.links.addSelf(selfLink.toString());
         this.links.addKnownLinksValueOf(paymentConnectorResponseLinks);
-
+        this.links.addEvents(paymentEventsLink.toString());
     }
 
-    public static PaymentWithLinks valueOf(PaymentConnectorResponse paymentConnector, URI selfLink) {
-        return new PaymentWithLinks(
+    public static PaymentWithAllLinks valueOf(PaymentConnectorResponse paymentConnector, URI selfLink, URI paymentEventsUri) {
+        return new PaymentWithAllLinks(
                 paymentConnector.getChargeId(),
                 paymentConnector.getAmount(),
                 paymentConnector.getStatus(),
@@ -32,12 +34,13 @@ public class PaymentWithLinks extends Payment {
                 paymentConnector.getPaymentProvider(),
                 paymentConnector.getCreated_date(),
                 paymentConnector.getLinks(),
-                selfLink
+                selfLink,
+                paymentEventsUri
         );
     }
 
-    @ApiModelProperty(dataType = "uk.gov.pay.api.model.SelfAndNextLinks")
-    public SelfAndNextLinks getLinks() {
+    @ApiModelProperty(dataType = "uk.gov.pay.api.model.links.PaymentLinks")
+    public PaymentLinks getLinks() {
         return links;
     }
 }

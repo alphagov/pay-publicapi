@@ -118,6 +118,10 @@ Content-Type: application/json
             "type" : "",
             "href": "http://frontend.co.uk/charge/1?chargeTokenId=82347",
             "method": "POST" 
+        },
+        "events" :{
+            "href": "http://publicapi.co.uk/v1/payments/ab2341da231434/events",
+            "method": "GET" 
         }
     },
     "payment_id": "ab2341da231434",
@@ -199,6 +203,10 @@ Content-Type: application/json
             "type" : "",
             "href": "http://frontend.co.uk/charge/1?chargeTokenId=82347",
             "method": "POST" 
+        },
+        "events" :{
+            "href": "http://publicapi.co.uk/v1/payments/ab2341da231434/events",
+            "method": "GET" 
         }
     },
     "payment_id": "ab2341da231434",
@@ -386,6 +394,10 @@ Content-Type: application/json
         "_links": {
                 "self" :{
                     "href": "http://publicapi.co.uk/v1/payments/ab2341da231434",
+                    "method": "GET" 
+                },
+                "events" :{
+                    "href": "http://publicapi.co.uk/v1/payments/ab2341da231434/events",
                     "method": "GET" 
                 }
         },

@@ -7,9 +7,9 @@ import java.util.List;
 public class PaymentSearchResults {
 
     @JsonProperty(value = "results")
-    private List<PaymentWithSelfLinks> payments;
+    private List<PaymentForSearchResult> payments;
 
-    public PaymentSearchResults(List<PaymentWithSelfLinks> payments) {
+    public PaymentSearchResults(List<PaymentForSearchResult> payments) {
         this.payments = payments;
     }
 }

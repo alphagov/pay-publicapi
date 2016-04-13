@@ -1,59 +1,65 @@
-package uk.gov.pay.api.model;
+package uk.gov.pay.api.model.links;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 
 import java.util.List;
 
 import static javax.ws.rs.HttpMethod.GET;
-import static uk.gov.pay.api.model.SelfLinks.SELF;
 
-@ApiModel(value = "selfAndNextLinks", description = "Resource self and next links of a Payment")
-public class SelfAndNextLinks {
+@ApiModel(value = "allLinksForAPayment", description = "self,events and next links of a Payment")
+public class PaymentLinks {
 
+    public static final String SELF = "self";
     private static final String NEXT_URL = "next_url";
     private static final String NEXT_URL_POST = "next_url_post";
+    public static final String EVENTS = "events";
 
+    @JsonProperty(value = SELF)
     private Link self;
 
     @JsonProperty(NEXT_URL)
     private Link nextUrl;
 
     @JsonProperty(NEXT_URL_POST)
-    private Link nextUrlPost;
+    private PostLink nextUrlPost;
 
-    @ApiModelProperty(value = SELF, dataType = "uk.gov.pay.api.model.Link")
+    @JsonProperty(value = EVENTS)
+    private Link events;
+
+    @ApiModelProperty(value = SELF, dataType = "uk.gov.pay.api.model.links.Link")
     public Link getSelf() {
         return self;
     }
 
-    @ApiModelProperty(value = NEXT_URL, dataType = "uk.gov.pay.api.model.Link")
+    @ApiModelProperty(value = NEXT_URL, dataType = "uk.gov.pay.api.model.links.Link")
     public Link getNextUrl() {
         return nextUrl;
     }
 
-    @ApiModelProperty(value = NEXT_URL_POST, dataType = "uk.gov.pay.api.model.PostLink")
-    public Link getNextUrlPost() {
+    @ApiModelProperty(value = NEXT_URL_POST, dataType = "uk.gov.pay.api.model.links.PostLink")
+    public PostLink getNextUrlPost() {
         return nextUrlPost;
     }
 
-    @Override
-    public String toString() {
-        return "Links{" +
-                "self=" + self +
-                ", nextUrl=" + nextUrl +
-                ", nextUrlPost=" + nextUrlPost +
-                '}';
+    @ApiModelProperty(value = EVENTS, dataType = "uk.gov.pay.api.model.links.Link")
+    public Link getEvents() {
+        return events;
     }
 
-    void addSelf(String href) {
+    public void addKnownLinksValueOf(List<PaymentConnectorResponseLink> chargeLinks) {
+        addNextUrlIfPresent(chargeLinks);
+        addNextUrlPostIfPresent(chargeLinks);
+    }
+
+    public void addSelf(String href) {
         this.self = new Link(href, GET);
     }
 
-    void addKnownLinksValueOf(List<PaymentConnectorResponseLink> chargeLinks) {
-        addNextUrlIfPresent(chargeLinks);
-        addNextUrlPostIfPresent(chargeLinks);
+    public void addEvents(String href) {
+        this.events = new Link(href, GET);
     }
 
     private void addNextUrlPostIfPresent(List<PaymentConnectorResponseLink> chargeLinks) {
