@@ -214,7 +214,9 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .body("_links.next_url_post.href", is("http://Frontend/charge/"))
                 .body("_links.next_url_post.method", is("POST"))
                 .body("_links.next_url_post.type", is("application/x-www-form-urlencoded"))
-                .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID));
+                .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
+                .body("_links.events.href", is(paymentEventsLocationFor(CHARGE_ID)))
+                .body("_links.events.method", is("GET"));
     }
 
     @Test
