@@ -156,14 +156,6 @@ public class ConnectorMockClient {
                 .respond(withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg));
     }
 
-    public void respondOk_withEmptyBody(long amount, String gatewayAccountId, String chargeId, String returnUrl, String description, String reference) {
-        whenCreateCharge(amount, gatewayAccountId, returnUrl, description, reference)
-                .respond(response()
-                        .withStatusCode(CREATED_201)
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withHeader(LOCATION, chargeLocation(gatewayAccountId, chargeId)));
-    }
-
     public void respondWithChargeFound(long amount, String gatewayAccountId, String chargeId, String status, String returnUrl,
                                        String description, String reference, String paymentProvider, String createdDate, String chargeTokenId) {
         whenGetCharge(gatewayAccountId, chargeId)
@@ -243,7 +235,7 @@ public class ConnectorMockClient {
         );
     }
 
-    private ForwardChainExpectation whenSearchCharges(String gatewayAccountId, String reference, String status, String fromDate, String toDate) {
+    public ForwardChainExpectation whenSearchCharges(String gatewayAccountId, String reference, String status, String fromDate, String toDate) {
         return mockClient.when(request()
                 .withMethod(GET)
                 .withPath(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId))

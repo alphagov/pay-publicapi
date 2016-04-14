@@ -27,7 +27,7 @@ public final class ResponseUtil {
     public static Response unprocessableEntityResponse(Logger logger, String message) {
         logger.error(message);
         return Response.status(422)
-                .entity(ImmutableMap.of("message", message))
+                .entity(ImmutableMap.of("code", "P0401", "description", message))
                 .build();
     }
 

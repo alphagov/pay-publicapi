@@ -9,6 +9,7 @@ import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import javax.ws.rs.core.HttpHeaders;
+import java.io.InputStream;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -46,6 +47,9 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
 
         connectorMock.respondOk_whenCreateCharge(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID, STATUS, RETURN_URL,
                 DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE);
+
+        String expectedPaymentUrl = "http://localhost:" + app.getLocalPort() + PAYMENTS_PATH + CHARGE_ID;
+        String expectedPaymentEventsUrl = "http://localhost:" + app.getLocalPort() + PAYMENTS_PATH + CHARGE_ID + "/events";
 
         String responseBody = postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
                 .statusCode(201)
@@ -141,7 +145,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPayment_responseWith500_whenConnectorResponseIsAnUnrecognisedError() {
+    public void createPayment_responseWith500_whenConnectorResponseIsAnUnrecognisedError() throws Exception {
 
         String gatewayAccountId = "1234567";
         String errorMessage = "something went wrong";
@@ -150,10 +154,14 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
 
         connectorMock.respondBadRequest_whenCreateCharge(AMOUNT, gatewayAccountId, errorMessage, RETURN_URL, DESCRIPTION, REFERENCE);
 
-        postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
-                .statusCode(500)
-                .body("code", is("P0198"))
-                .body("description", is("Downstream system error"));
+        InputStream body = postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
+                .statusCode(500).extract()
+                .body().asInputStream();
+
+        JsonAssert.with(body)
+                .assertThat("$.*", hasSize(2))
+                .assertThat("$.code", is("P0198"))
+                .assertThat("$.description", is("Downstream system error"));
 
         connectorMock.verifyCreateChargeConnectorRequest(AMOUNT, gatewayAccountId, RETURN_URL, DESCRIPTION, REFERENCE);
     }
