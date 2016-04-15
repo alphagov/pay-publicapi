@@ -21,6 +21,10 @@ public class PostLink extends Link {
         this.params = params;
     }
 
+    PostLink(String href, String method) {
+        super(href, method);
+    }
+
     @ApiModelProperty(example = "POST")
     public String getMethod() {
         return super.getMethod();

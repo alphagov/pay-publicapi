@@ -8,6 +8,7 @@ import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import java.util.List;
 
 import static javax.ws.rs.HttpMethod.GET;
+import static javax.ws.rs.HttpMethod.POST;
 
 @ApiModel(value = "allLinksForAPayment", description = "self,events and next links of a Payment")
 public class PaymentLinks {
@@ -16,6 +17,7 @@ public class PaymentLinks {
     private static final String NEXT_URL = "next_url";
     private static final String NEXT_URL_POST = "next_url_post";
     public static final String EVENTS = "events";
+    private static final String CANCEL = "cancel";
 
     @JsonProperty(value = SELF)
     private Link self;
@@ -28,6 +30,10 @@ public class PaymentLinks {
 
     @JsonProperty(value = EVENTS)
     private Link events;
+
+    @JsonProperty(value = CANCEL)
+    private PostLink cancel;
+
 
     @ApiModelProperty(value = SELF, dataType = "uk.gov.pay.api.model.links.Link")
     public Link getSelf() {
@@ -49,6 +55,11 @@ public class PaymentLinks {
         return events;
     }
 
+    @ApiModelProperty(value = CANCEL, dataType = "uk.gov.pay.api.model.links.PostLink")
+    public PostLink getCancel() {
+        return cancel;
+    }
+
     public void addKnownLinksValueOf(List<PaymentConnectorResponseLink> chargeLinks) {
         addNextUrlIfPresent(chargeLinks);
         addNextUrlPostIfPresent(chargeLinks);
@@ -60,6 +71,10 @@ public class PaymentLinks {
 
     public void addEvents(String href) {
         this.events = new Link(href, GET);
+    }
+
+    public void addCancel(String href) {
+        this.cancel = new PostLink(href, POST);
     }
 
     private void addNextUrlPostIfPresent(List<PaymentConnectorResponseLink> chargeLinks) {

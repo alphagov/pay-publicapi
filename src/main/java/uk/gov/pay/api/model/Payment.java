@@ -3,7 +3,14 @@ package uk.gov.pay.api.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.List;
+
+import static java.util.Arrays.asList;
+
 public abstract class Payment {
+
+    public static final List<ExternalChargeStatus> CANCELLABLE_STATUS =
+            asList(ExternalChargeStatus.EXT_CREATED, ExternalChargeStatus.EXT_IN_PROGRESS);
 
     public static final String LINKS_JSON_ATTRIBUTE = "_links";
 

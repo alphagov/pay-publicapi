@@ -113,6 +113,12 @@ Content-Type: application/json
         "events" :{
             "href": "http://publicapi.co.uk/v1/payments/ab2341da231434/events",
             "method": "GET" 
+        },
+        "cancel" : {
+            "params" : {},
+            "type" : "",
+            "href": "http://publicapi.co.uk/v1/payments/ab2341da231434/cancel",
+            "method": "POST" 
         }
     },
     "payment_id": "ab2341da231434",
@@ -141,6 +147,8 @@ Content-Type: application/json
 | `_links.self`          | Link to the payment                                                                      |
 | `_links.next_url`      | Where to navigate the user next as a GET                                                 |
 | `_links.next_url_post` | Where to navigate the user next as a POST                                                |
+| `_links.events`        | Link to payment events                                                |
+| `_links.cancel`        | Link to cancel the payment (link only available when a payment can be cancelled (i.e. payment has one of the statuses - CREATED, IN PROGRESS |
 
 #### Payment creation failed
 
@@ -198,6 +206,12 @@ Content-Type: application/json
         "events" :{
             "href": "http://publicapi.co.uk/v1/payments/ab2341da231434/events",
             "method": "GET" 
+        },
+        "cancel" : {
+            "params" : {},
+            "type" : "",
+            "href": "http://publicapi.co.uk/v1/payments/ab2341da231434/cancel",
+            "method": "POST" 
         }
     },
     "payment_id": "ab2341da231434",
@@ -390,6 +404,12 @@ Content-Type: application/json
                 "events" :{
                     "href": "http://publicapi.co.uk/v1/payments/ab2341da231434/events",
                     "method": "GET" 
+                },
+                "cancel" : {
+                    "params" : {},
+                    "type" : "",
+                    "href": "http://publicapi.co.uk/v1/payments/ab2341da231434/cancel",
+                    "method": "POST" 
                 }
         },
         "payment_id": "hu20sqlact5260q2nanm0q8u93",
@@ -417,6 +437,8 @@ Content-Type: application/json
 | `status`                 | X | The current external status of the charge       |
 | `created_date`           | X | The created date in ISO_8601 format (```yyyy-MM-ddTHH:mm:ssZ```)|
 | `_links.self`            | X | Link to the payment                                                 |
+| `_links.events`          | X | Link to payment events                                                |
+| `_links.cancel`          | - | Link to cancel the payment (link only available when a payment can be cancelled (i.e. payment has one of the statuses - CREATED, IN PROGRESS |
 
 -----------------------------------------------------------------------------------------------------------
 

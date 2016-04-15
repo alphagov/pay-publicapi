@@ -19,16 +19,9 @@ import javax.ws.rs.*;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.*;
-import javax.ws.rs.core.Response.ResponseBuilder;
 import java.io.IOException;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -100,14 +93,27 @@ public class PaymentsResource {
                                @Context UriInfo uriInfo) {
 
         logger.info("received get payment request: [ {} ]", paymentId);
-
-        Response connectorResponse = client.target(connectorUrl + format(CONNECTOR_CHARGE_RESOURCE, accountId, paymentId))
+        Response connectorResponse = client
+                .target(getConnectorUlr(format(CONNECTOR_CHARGE_RESOURCE, accountId, paymentId)))
                 .request()
                 .get();
 
-        return responseForPaymentWithLinks(uriInfo, connectorResponse, SC_OK,
-                (locationUrl, data) -> Response.ok(data),
-                data -> notFoundResponse(logger, data));
+
+        if (connectorResponse.getStatus() == SC_OK) {
+            PaymentConnectorResponse response = connectorResponse.readEntity(PaymentConnectorResponse.class);
+            URI paymentURI = getPaymentURI(uriInfo, response.getChargeId());
+
+            PaymentWithAllLinks payment = PaymentWithAllLinks.valueOf(
+                    response,
+                    paymentURI,
+                    getPaymentEventsURI(uriInfo, response.getChargeId()),
+                    getPaymentCancelURI(uriInfo, response.getChargeId()));
+
+            logger.info("payment returned: [ {} ]", payment);
+            return Response.ok(payment).build();
+        } else {
+            return notFoundResponse(logger, connectorResponse.readEntity(JsonNode.class));
+        }
     }
 
     @GET
@@ -129,17 +135,31 @@ public class PaymentsResource {
 
         logger.info("received get payment request: [ {} ]", paymentId);
 
-        Response connectorResponse = client.target(connectorUrl + format(CONNECTOR_CHARGE_EVENTS_RESOURCE, accountId, paymentId))
+        Response connectorResponse = client
+                .target(getConnectorUlr(format(CONNECTOR_CHARGE_EVENTS_RESOURCE, accountId, paymentId)))
                 .request()
                 .get();
 
-        return eventsResponseFrom(
-                    uriInfo,
-                    connectorResponse,
-                    SC_OK,
-                    (locationUrl, data) -> Response.ok(data),
-                    data -> notFoundResponse(logger, data)
-        );
+        if (!connectorResponse.hasEntity()) {
+            return badRequestResponse(logger, "Connector response contains no payload!");
+        }
+
+        JsonNode payload = connectorResponse.readEntity(JsonNode.class);
+        if (connectorResponse.getStatus() == SC_OK) {
+            URI paymentEventsLink = getPaymentEventsURI(uriInfo, payload.get(CHARGE_KEY).asText());
+
+            URI paymentLink = getPaymentURI(uriInfo, payload.get(CHARGE_KEY).asText());
+
+            PaymentEvents response =
+                    PaymentEvents.createPaymentEventsResponse(payload, paymentLink.toString())
+                            .withSelfLink(paymentEventsLink.toString());
+
+            logger.info("payment returned: [ {} ]", response);
+
+            return Response.ok(response).build();
+        }
+
+        return notFoundResponse(logger, payload);
     }
 
     @GET
@@ -174,41 +194,53 @@ public class PaymentsResource {
 
         List<Pair<String, String>> validationErrors = new LinkedList<>();
 
-        if (!validateStatus(status)) {
-            validationErrors.add(Pair.of(STATUS_KEY, status));
-        }
+        validateSearchCriteria(status, fromDate, toDate, validationErrors);
 
-        if (!validateDate(fromDate)) {
-            validationErrors.add(Pair.of(FROM_DATE_KEY, fromDate));
-        }
-
-        if (!validateDate(toDate)) {
-            validationErrors.add(Pair.of(TO_DATE_KEY, toDate));
-        }
-
-        if (validationErrors.isEmpty()) {
-            List<Pair<String, String>> queryParams = asList(
-                    Pair.of(REFERENCE_KEY, reference),
-                    Pair.of(STATUS_KEY, upperCase(status)),
-                    Pair.of(FROM_DATE_KEY, fromDate),
-                    Pair.of(TO_DATE_KEY, toDate)
-            );
-
-            Response connectorResponse = client.target(getConnectorUlr(accountId, queryParams))
-                    .request()
-                    .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
-                    .get();
-
-            return responseForPaymentsForSearchResults(
-                    uriInfo,
-                    connectorResponse, SC_OK,
-                    Response::ok,
-                    () -> serverErrorResponse(logger, "Search payments failed")
-            );
-
-        } else {
+        if (!validationErrors.isEmpty()) {
             return unprocessableEntityResponse(logger, errorMessageFrom(validationErrors));
         }
+
+        List<Pair<String, String>> queryParams = asList(
+                Pair.of(REFERENCE_KEY, reference),
+                Pair.of(STATUS_KEY, upperCase(status)),
+                Pair.of(FROM_DATE_KEY, fromDate),
+                Pair.of(TO_DATE_KEY, toDate)
+        );
+
+        Response connectorResponse = client
+                .target(getConnectorUlr(format(CONNECTOR_CHARGES_RESOURCE, accountId), queryParams))
+                .request()
+                .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
+                .get();
+
+        if (connectorResponse.getStatus() == SC_OK) {
+            try {
+                JsonNode responseJson = connectorResponse.readEntity(JsonNode.class);
+
+                TypeReference<HashMap<String, List<PaymentConnectorResponse>>> typeRef
+                        = new TypeReference<HashMap<String, List<PaymentConnectorResponse>>>() {
+                };
+
+                Map<String, List<PaymentConnectorResponse>> chargesMap
+                        = objectMapper.readValue(responseJson.traverse(), typeRef);
+
+                List<PaymentForSearchResult> paymentsForSearchResults = chargesMap.get("results")
+                        .stream()
+                        .map(charge -> PaymentForSearchResult.valueOf(
+                                charge,
+                                getPaymentURI(uriInfo, charge.getChargeId()),
+                                getPaymentEventsURI(uriInfo, charge.getChargeId()),
+                                getPaymentCancelURI(uriInfo, charge.getChargeId())))
+                        .collect(Collectors.toList());
+
+                return Response.ok(new PaymentSearchResults(paymentsForSearchResults)).build();
+
+            } catch (IOException e) {
+                return serverErrorResponse(logger, "Search payments failed");
+            }
+        }
+
+        return serverErrorResponse(logger, "Search payments failed");
     }
 
     @POST
@@ -233,7 +265,8 @@ public class PaymentsResource {
 
         logger.info("received create payment request: [ {} ]", requestPayload);
 
-        Response connectorResponse = client.target(connectorUrl + format(CONNECTOR_CHARGES_RESOURCE, accountId))
+        Response connectorResponse = client
+                .target(getConnectorUlr(format(CONNECTOR_CHARGES_RESOURCE, accountId)))
                 .request()
                 .post(buildChargeRequestPayload(requestPayload));
 
@@ -241,15 +274,13 @@ public class PaymentsResource {
 
             PaymentConnectorResponse response = connectorResponse.readEntity(PaymentConnectorResponse.class);
 
-            URI paymentUri = uriInfo.getBaseUriBuilder()
-                    .path(PAYMENT_BY_ID)
-                    .build(response.getChargeId());
+            URI paymentUri = getPaymentURI(uriInfo, response.getChargeId());
 
-            URI paymentEventsUri = uriInfo.getBaseUriBuilder()
-                    .path(PAYMENT_EVENTS_BY_ID)
-                    .build(response.getChargeId());
-
-            PaymentWithAllLinks payment = PaymentWithAllLinks.valueOf(response, paymentUri, paymentEventsUri);
+            PaymentWithAllLinks payment = PaymentWithAllLinks.valueOf(
+                    response,
+                    paymentUri,
+                    getPaymentEventsURI(uriInfo, response.getChargeId()),
+                    getPaymentCancelURI(uriInfo, response.getChargeId()));
 
             logger.info("payment returned: [ {} ]", payment);
             return Response.created(paymentUri).entity(payment).build();
@@ -266,7 +297,8 @@ public class PaymentsResource {
             value = "Cancel payment",
             notes = "Cancel a payment based on the provided payment ID and the Authorisation token. " +
                     "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
+                    "as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be cancelled if its in " +
+                    "a CREATED or IN PROGRESS status",
             code = 204)
 
     @ApiResponses(value = {@ApiResponse(code = 204, message = "No Content"),
@@ -278,7 +310,8 @@ public class PaymentsResource {
 
         logger.info("received cancel payment request: [{}]", paymentId);
 
-        Response connectorResponse = client.target(connectorUrl + format(CONNECTOR_ACCOUNT_CHARGE_CANCEL_RESOURCE, accountId, paymentId))
+        Response connectorResponse = client
+                .target(getConnectorUlr(format(CONNECTOR_ACCOUNT_CHARGE_CANCEL_RESOURCE, accountId, paymentId)))
                 .request()
                 .post(Entity.json("{}"));
 
@@ -289,15 +322,46 @@ public class PaymentsResource {
         return badRequestResponse(logger, "Cancellation of charge failed.");
     }
 
-    private String errorMessageFrom(List<Pair<String, String>> invalidParams) {
-        List<String> keys = invalidParams.stream().map(Pair::getLeft).collect(Collectors.toList());
-        return String.format("fields [%s] are not in correct format. see public api documentation for the correct data formats", StringUtils.join(keys, ", "));
+    private void validateSearchCriteria(String status, String fromDate, String toDate, List<Pair<String, String>> validationErrors) {
+        if (!validateStatus(status)) {
+            validationErrors.add(Pair.of(STATUS_KEY, status));
+        }
+
+        if (!validateDate(fromDate)) {
+            validationErrors.add(Pair.of(FROM_DATE_KEY, fromDate));
+        }
+
+        if (!validateDate(toDate)) {
+            validationErrors.add(Pair.of(TO_DATE_KEY, toDate));
+        }
     }
 
-    private String getConnectorUlr(String accountId, List<Pair<String, String>> queryParams) {
+    private URI getPaymentURI(UriInfo uriInfo, String chargeId) {
+        return uriInfo.getBaseUriBuilder()
+                .path(PAYMENT_BY_ID)
+                .build(chargeId);
+    }
+
+    private URI getPaymentEventsURI(UriInfo uriInfo, String chargeId) {
+        return uriInfo.getBaseUriBuilder()
+                .path(PAYMENT_EVENTS_BY_ID)
+                .build(chargeId);
+    }
+
+    private URI getPaymentCancelURI(UriInfo uriInfo, String chargeId) {
+        return uriInfo.getBaseUriBuilder()
+                .path(CANCEL_PAYMENT_PATH)
+                .build(chargeId);
+    }
+
+    private String getConnectorUlr(String urlPath) {
+        return getConnectorUlr(urlPath, Collections.emptyList());
+    }
+
+    private String getConnectorUlr(String urlPath, List<Pair<String, String>> queryParams) {
         UriBuilder builder = UriBuilder
                 .fromPath(connectorUrl)
-                .path(format(CONNECTOR_CHARGES_RESOURCE, accountId));
+                .path(urlPath);
 
         queryParams.stream().forEach(pair -> {
             if (isNotBlank(pair.getRight())) {
@@ -307,95 +371,9 @@ public class PaymentsResource {
         return builder.toString();
     }
 
-    private Response responseForPaymentWithLinks(UriInfo uriInfo, Response connectorResponse, int okStatus,
-                                                 BiFunction<URI, Object, ResponseBuilder> okResponse,
-                                                 Function<JsonNode, Response> errorResponse) {
-        if (connectorResponse.getStatus() == okStatus) {
-            PaymentConnectorResponse response = connectorResponse.readEntity(PaymentConnectorResponse.class);
-            URI documentLocation = uriInfo.getBaseUriBuilder()
-                    .path(PAYMENT_BY_ID)
-                    .build(response.getChargeId());
-
-            URI paymentLink = uriInfo.getBaseUriBuilder()
-                    .path(PAYMENT_EVENTS_BY_ID)
-                    .build(response.getChargeId());
-
-            PaymentWithAllLinks payment = PaymentWithAllLinks.valueOf(response, documentLocation, paymentLink);
-
-            logger.info("payment returned: [ {} ]", payment);
-            return okResponse.apply(documentLocation, payment).build();
-        } else {
-            return errorResponse.apply(connectorResponse.readEntity(JsonNode.class));
-        }
-    }
-
-    private Response responseForPaymentsForSearchResults(UriInfo uriInfo, Response connectorResponse, int okStatus,
-                                                         Function<Object, ResponseBuilder> okResponse,
-                                                         Supplier<Response> errorResponse) {
-
-        if (connectorResponse.getStatus() == okStatus) {
-            try {
-                JsonNode responseJson = connectorResponse.readEntity(JsonNode.class);
-
-                TypeReference<HashMap<String, List<PaymentConnectorResponse>>> typeRef
-                        = new TypeReference<HashMap<String, List<PaymentConnectorResponse>>>() {
-                };
-
-                Map<String, List<PaymentConnectorResponse>> chargesMap
-                        = objectMapper.readValue(responseJson.traverse(), typeRef);
-
-                List<PaymentForSearchResult> paymentsForSearchResults = chargesMap.get("results")
-                        .stream()
-                        .map(charge -> {
-                            URI paymentLink = uriInfo.getBaseUriBuilder()
-                                    .path(PAYMENT_BY_ID)
-                                    .build(charge.getChargeId());
-
-                            URI paymentEventsUri = uriInfo.getBaseUriBuilder()
-                                    .path(PAYMENT_EVENTS_BY_ID)
-                                    .build(charge.getChargeId());
-
-                            return PaymentForSearchResult.valueOf(charge, paymentLink, paymentEventsUri);
-                        })
-                        .collect(Collectors.toList());
-
-                return okResponse.apply(new PaymentSearchResults(paymentsForSearchResults)).build();
-
-            } catch (IOException e) {
-                return errorResponse.get();
-            }
-        }
-
-        return errorResponse.get();
-    }
-
-    private Response eventsResponseFrom(UriInfo uriInfo, Response connectorResponse, int okStatus,
-                                        BiFunction<URI, Object, ResponseBuilder> okResponse,
-                                        Function<JsonNode, Response> errorResponse) {
-        if (!connectorResponse.hasEntity()) {
-            return badRequestResponse(logger, "Connector response contains no payload!");
-        }
-
-        JsonNode payload = connectorResponse.readEntity(JsonNode.class);
-        if (connectorResponse.getStatus() == okStatus) {
-            URI paymentEventsLink = uriInfo.getBaseUriBuilder()
-                    .path(PAYMENT_EVENTS_BY_ID)
-                    .build(payload.get(CHARGE_KEY).asText());
-
-            URI paymentLink = uriInfo.getBaseUriBuilder()
-                    .path(PAYMENT_BY_ID)
-                    .build(payload.get(CHARGE_KEY).asText());
-
-            PaymentEvents response =
-                    PaymentEvents.createPaymentEventsResponse(payload, paymentLink.toString())
-                            .withSelfLink(paymentEventsLink.toString());
-
-            logger.info("payment returned: [ {} ]", response);
-
-            return okResponse.apply(paymentEventsLink, response).build();
-        }
-
-        return errorResponse.apply(payload);
+    private String errorMessageFrom(List<Pair<String, String>> invalidParams) {
+        List<String> keys = invalidParams.stream().map(Pair::getLeft).collect(Collectors.toList());
+        return String.format("fields [%s] are not in correct format. see public api documentation for the correct data formats", StringUtils.join(keys, ", "));
     }
 
     private Entity buildChargeRequestPayload(CreatePaymentRequest requestPayload) {
