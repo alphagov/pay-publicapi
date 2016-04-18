@@ -14,7 +14,6 @@ import uk.gov.pay.api.exception.CreateChargeConnectorErrorResponseException;
 import uk.gov.pay.api.model.*;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
-import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
@@ -31,9 +30,9 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.upperCase;
 import static org.apache.http.HttpStatus.SC_OK;
-import static uk.gov.pay.api.resources.ParamValidator.validateDate;
-import static uk.gov.pay.api.resources.ParamValidator.validateStatus;
 import static uk.gov.pay.api.utils.ResponseUtil.*;
+import static uk.gov.pay.api.validation.ParamValidator.validateDate;
+import static uk.gov.pay.api.validation.ParamValidator.validateStatus;
 
 @Path("/")
 @Api(value = "/", description = "Public Api Endpoints")
@@ -258,9 +257,9 @@ public class PaymentsResource {
     @ApiResponses(value = {@ApiResponse(code = 201, message = "Created", response = PaymentWithAllLinks.class),
             @ApiResponse(code = 400, message = "Bad request"),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentErrorResponse.class)})
+            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response createNewPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
-                                     @ApiParam(value = "requestPayload", required = true) @Valid CreatePaymentRequest requestPayload,
+                                     @ApiParam(value = "requestPayload", required = true) CreatePaymentRequest requestPayload,
                                      @Context UriInfo uriInfo) {
 
         logger.info("received create payment request: [ {} ]", requestPayload);
@@ -377,7 +376,7 @@ public class PaymentsResource {
     }
 
     private Entity buildChargeRequestPayload(CreatePaymentRequest requestPayload) {
-        long amount = requestPayload.getAmount();
+        int amount = requestPayload.getAmount();
         String reference = requestPayload.getReference();
         String description = requestPayload.getDescription();
         String returnUrl = requestPayload.getReturnUrl();

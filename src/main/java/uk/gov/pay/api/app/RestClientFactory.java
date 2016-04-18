@@ -1,7 +1,7 @@
-package uk.gov.pay.api.resources;
+package uk.gov.pay.api.app;
 
 import org.glassfish.jersey.SslConfigurator;
-import uk.gov.pay.api.config.RestClientConfig;
+import uk.gov.pay.api.app.config.RestClientConfig;
 
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.client.Client;

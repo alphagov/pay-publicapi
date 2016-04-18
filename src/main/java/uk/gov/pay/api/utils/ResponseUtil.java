@@ -16,10 +16,6 @@ public final class ResponseUtil {
         return messageResponse(logger, nodeMessage(node, "Not found."), NOT_FOUND);
     }
 
-    public static Response badRequestResponse(Logger logger, JsonNode node) {
-        return badRequestResponse(logger, nodeMessage(node, "Bad request."));
-    }
-
     public static Response badRequestResponse(Logger logger, String message) {
         return messageResponse(logger, message, BAD_REQUEST);
     }

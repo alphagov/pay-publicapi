@@ -18,7 +18,9 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.core.Is.is;
 
 public class PaymentsResourceITest extends PaymentResourceITestBase {
 
@@ -151,7 +153,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
         postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
                 .statusCode(500)
                 .body("code", is("P0198"))
-                .body("message", is("Downstream system error"));
+                .body("description", is("Downstream system error"));
 
         connectorMock.verifyCreateChargeConnectorRequest(AMOUNT, gatewayAccountId, RETURN_URL, DESCRIPTION, REFERENCE);
     }
@@ -167,25 +169,9 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
         postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
                 .statusCode(500)
                 .body("code", is("P0199"))
-                .body("message", is("There is an error with this account. Please contact support"));
+                .body("description", is("There is an error with this account. Please contact support"));
 
         connectorMock.verifyCreateChargeConnectorRequest(AMOUNT, notFoundGatewayAccountId, RETURN_URL, DESCRIPTION, REFERENCE);
-    }
-
-    @Test
-    public void createPayment_responseWith422_whenFieldsMissing() {
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-        String nullCheck = " may not be null (was null)";
-        String emptyCheck = " may not be empty (was null)";
-        postPaymentResponse(BEARER_TOKEN, "{}")
-                .statusCode(422)
-                .contentType(JSON)
-                .body("errors", hasSize(4))
-                .body("errors", hasItems(
-                        "amount" + nullCheck,
-                        "description" + emptyCheck,
-                        "reference" + emptyCheck,
-                        "returnUrl" + emptyCheck));
     }
 
     @Test

@@ -89,7 +89,7 @@
           "500" : {
             "description" : "Downstream system error",
             "schema" : {
-              "$ref" : "#/definitions/Payment Error response"
+              "$ref" : "#/definitions/Payment Error"
             }
           }
         }
@@ -187,43 +187,38 @@
           "format" : "int32",
           "example" : "12000",
           "description" : "amount in pence",
-          "readOnly" : true,
           "minimum" : 1.0,
           "maximum" : 1.0E7
         },
         "reference" : {
           "type" : "string",
           "example" : "12345",
-          "description" : "payment reference",
-          "readOnly" : true
+          "description" : "payment reference"
         },
         "description" : {
           "type" : "string",
           "example" : "New passport application",
-          "description" : "payment description",
-          "readOnly" : true
+          "description" : "payment description"
         },
         "return_url" : {
           "type" : "string",
           "example" : "https://service-name.gov.uk/transactions/12345",
           "description" : "service return url",
-          "readOnly" : true,
-          "minLength" : 0,
-          "maxLength" : 2000
+          "readOnly" : true
         }
       },
       "description" : "The Payment Request Payload"
     },
-    "Payment Error response" : {
+    "Payment Error" : {
       "type" : "object",
       "properties" : {
         "code" : {
           "type" : "string",
-          "example" : "P0198"
+          "example" : "P0102"
         },
-        "message" : {
+        "description" : {
           "type" : "string",
-          "example" : "Downstream system error"
+          "example" : "Invalid attribute value: amount. Must be less than or equal to 10000000"
         }
       },
       "description" : "A Payment Error response"

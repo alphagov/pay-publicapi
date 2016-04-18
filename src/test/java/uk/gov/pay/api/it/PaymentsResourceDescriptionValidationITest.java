@@ -15,7 +15,7 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 
-public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITestBase {
+public class PaymentsResourceDescriptionValidationITest extends PaymentResourceITestBase {
 
     @Before
     public void setUpBearerToken() {
@@ -23,13 +23,13 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
     }
 
     @Test
-    public void createPayment_responseWith400_whenReturnUrlIsNumeric() throws IOException {
+    public void createPayment_responseWith400_whenReferenceIsNumeric() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
+                "  \"description\" : 1234," +
                 "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : 123" +
+                "  \"return_url\" : \"http://my-payments.com\"" +
                 "}";
 
         InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
@@ -41,17 +41,17 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", is("P0100"))
-                .assertThat("$.description", is("Invalid attribute value: return_url. Must be a valid URL format"));
+                .assertThat("$.description", is("Invalid attribute value: description. Must be a valid string format"));
     }
 
     @Test
-    public void createPayment_responseWith400_whenReturnUrlIsEmpty() throws IOException {
+    public void createPayment_responseWith400_whenReferenceIsEmpty() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
+                "  \"description\" : \"\"," +
                 "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"\"" +
+                "  \"return_url\" : \"http://my-payments.com\"" +
                 "}";
 
         InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
@@ -63,17 +63,17 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", is("P0103"))
-                .assertThat("$.description", is("Missing mandatory attribute: return_url"));
+                .assertThat("$.description", is("Missing mandatory attribute: description"));
     }
 
     @Test
-    public void createPayment_responseWith400_whenReturnUrlIsBlank() throws IOException {
+    public void createPayment_responseWith400_whenReferenceIsBlank() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
+                "  \"description\" : \"    \"," +
                 "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"  \"" +
+                "  \"return_url\" : \"http://my-payments.com\"" +
                 "}";
 
         InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
@@ -85,16 +85,16 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", is("P0103"))
-                .assertThat("$.description", is("Missing mandatory attribute: return_url"));
+                .assertThat("$.description", is("Missing mandatory attribute: description"));
     }
 
     @Test
-    public void createPayment_responseWith400_whenReturnUrlIsMissing() throws IOException {
+    public void createPayment_responseWith400_whenReferenceIsMissing() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
                 "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"" +
+                "  \"return_url\" : \"http://my-payments.com\"" +
                 "}";
 
         InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
@@ -106,17 +106,18 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", is("P0103"))
-                .assertThat("$.description", is("Missing mandatory attribute: return_url"));
+                .assertThat("$.description", is("Missing mandatory attribute: description"));
     }
 
     @Test
-    public void createPayment_responseWith400_whenReturnUrlIsNull() throws IOException {
+    public void createPayment_responseWith400_whenReferenceIsNull() throws IOException {
+
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
+                "  \"description\" : null," +
                 "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : null" +
+                "  \"return_url\" : \"http://my-payments.com\"" +
                 "}";
 
         InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
@@ -128,19 +129,19 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", is("P0103"))
-                .assertThat("$.description", is("Missing mandatory attribute: return_url"));
+                .assertThat("$.description", is("Missing mandatory attribute: description"));
     }
 
     @Test
-    public void createPayment_responseWith422_whenReturnUrlSizeIsGreaterThanMaxLengthAndHasInvalidFormat() throws IOException {
+    public void createPayment_responseWith422_whenReferenceSizeIsGreaterThanMaxLength() throws IOException {
 
-        String aVeryBigInvalidReturnUrl = RandomStringUtils.randomAlphanumeric(2001);
+        String aVeryLongReference = RandomStringUtils.randomAlphanumeric(256);
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
+                "  \"description\" : \"" + aVeryLongReference + "\"," +
                 "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"" + aVeryBigInvalidReturnUrl + "\"" +
+                "  \"return_url\" : \"http://my-payments.com\"" +
                 "}";
 
         InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
@@ -152,65 +153,17 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", is("P0102"))
-                .assertThat("$.description", is("Invalid attribute value: return_url. Must be less than or equal to 2000 characters length"));
+                .assertThat("$.description", is("Invalid attribute value: description. Must be less than or equal to 255 characters length"));
     }
 
     @Test
-    public void createPayment_responseWith422_whenReturnUrlSizeIsGreaterThanMaxLengthAndHasValidFormat_lengthIsFirstToCheck_failFast() throws IOException {
-
-        String aVeryBigValidReturnUrl = "http://payments.gov.uk?something=" + RandomStringUtils.randomAlphanumeric(2000);
+    public void createPayment_responseWith400_whenReferenceHasNotAValidJsonValue() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
+                "  \"description\" : " +
                 "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"" + aVeryBigValidReturnUrl + "\"" +
-                "}";
-
-        InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
-                .statusCode(422)
-                .contentType(JSON)
-                .extract()
-                .body().asInputStream();
-
-        JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0102"))
-                .assertThat("$.description", is("Invalid attribute value: return_url. Must be less than or equal to 2000 characters length"));
-    }
-
-    @Test
-    public void createPayment_responseWith422_whenReturnUrlIsNotAnUrl() throws IOException {
-
-        String anInvalidUrl = RandomStringUtils.randomAlphanumeric(50);
-
-        String payload = "{" +
-                "  \"amount\" : 9900," +
-                "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"" + anInvalidUrl + "\"" +
-                "}";
-
-        InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
-                .statusCode(422)
-                .contentType(JSON)
-                .extract()
-                .body().asInputStream();
-
-        JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0102"))
-                .assertThat("$.description", is("Invalid attribute value: return_url. Must be a valid URL format"));
-    }
-
-    @Test
-    public void createPayment_responseWith400_whenReturnUrlHasNotAValidJsonValue() throws IOException {
-
-        String payload = "{" +
-                "  \"amount\" : 9900," +
-                "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : " +
+                "  \"return_url\" : \"http://my-payments.com\"" +
                 "}";
 
         InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
@@ -226,13 +179,13 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
     }
 
     @Test
-    public void createPayment_responseWith400_whenReturnUrlFieldIsNotExpectedJsonField() throws IOException {
+    public void createPayment_responseWith400_whenReferenceFieldIsNotExpectedJsonField() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
+                "  \"description\" : {\"whatever\" : 1}," +
                 "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : []" +
+                "  \"return_url\" : \"http://my-payments.com\"" +
                 "}";
 
         InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
@@ -244,7 +197,7 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", is("P0100"))
-                .assertThat("$.description", is("Invalid attribute value: return_url. Must be a valid URL format"));
+                .assertThat("$.description", is("Invalid attribute value: description. Must be a valid string format"));
     }
 
     private ValidatableResponse postPaymentResponse(String bearerToken, String payload) {

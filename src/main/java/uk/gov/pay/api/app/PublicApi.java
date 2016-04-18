@@ -1,6 +1,8 @@
 package uk.gov.pay.api.app;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthFactory;
 import io.dropwizard.auth.oauth.OAuthFactory;
@@ -8,16 +10,21 @@ import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.AccountAuthenticator;
-import uk.gov.pay.api.config.PublicApiConfig;
-import uk.gov.pay.api.exception.CreateChargeConnectorErrorResponseExceptionMapper;
+import uk.gov.pay.api.exception.mapper.BadRequestExceptionMapper;
+import uk.gov.pay.api.exception.mapper.CreateChargeConnectorErrorResponseExceptionMapper;
+import uk.gov.pay.api.exception.mapper.ValidationExceptionMapper;
 import uk.gov.pay.api.healthcheck.Ping;
+import uk.gov.pay.api.json.CreatePaymentRequestDeserializer;
+import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.resources.PaymentsResource;
-import uk.gov.pay.api.resources.RestClientFactory;
-import uk.gov.pay.api.validation.ConfigurationAwareConstraintValidatorFactory;
+import uk.gov.pay.api.validation.PaymentRequestValidator;
+import uk.gov.pay.api.validation.URLValidator;
 
-import javax.validation.Validation;
 import javax.ws.rs.client.Client;
+
+import static uk.gov.pay.api.validation.URLValidator.urlValidatorValueOf;
 
 public class PublicApi extends Application<PublicApiConfig> {
 
@@ -35,17 +42,27 @@ public class PublicApi extends Application<PublicApiConfig> {
     public void run(PublicApiConfig config, Environment environment) throws Exception {
         final Client client = RestClientFactory.buildClient(config.getRestClientConfig());
 
-        environment.getObjectMapper().configure(DeserializationFeature.ACCEPT_FLOAT_AS_INT, false);
-        environment.healthChecks().register("ping", new Ping());
+        configureObjectMapper(config, environment.getObjectMapper());
 
-        environment.setValidator(Validation.byDefaultProvider()
-                .configure().constraintValidatorFactory(new ConfigurationAwareConstraintValidatorFactory(config))
-                .buildValidatorFactory()
-                .getValidator());
+        environment.healthChecks().register("ping", new Ping());
 
         environment.jersey().register(new PaymentsResource(client, config.getConnectorUrl()));
         environment.jersey().register(AuthFactory.binder(new OAuthFactory<>(new AccountAuthenticator(client, config.getPublicAuthUrl()), "", String.class)));
         environment.jersey().register(CreateChargeConnectorErrorResponseExceptionMapper.class);
+        environment.jersey().register(ValidationExceptionMapper.class);
+        environment.jersey().register(BadRequestExceptionMapper.class);
+    }
+
+    private void configureObjectMapper(PublicApiConfig config, ObjectMapper objectMapper) {
+
+        URLValidator urlValidator = urlValidatorValueOf(config.getRestClientConfig().isDisabledSecureConnection());
+        CreatePaymentRequestDeserializer paymentRequestDeserializer = new CreatePaymentRequestDeserializer(new PaymentRequestValidator(urlValidator));
+
+        SimpleModule customDeserializationModule = new SimpleModule("customDeserializationModule");
+        customDeserializationModule.addDeserializer(CreatePaymentRequest.class, paymentRequestDeserializer);
+
+        objectMapper.configure(DeserializationFeature.ACCEPT_FLOAT_AS_INT, false);
+        objectMapper.registerModule(customDeserializationModule);
     }
 
     public static void main(String[] args) throws Exception {
