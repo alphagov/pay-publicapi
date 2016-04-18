@@ -9,6 +9,7 @@ import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import javax.ws.rs.core.HttpHeaders;
+import java.io.IOException;
 import java.io.InputStream;
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -19,6 +20,7 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+import static org.apache.http.HttpStatus.SC_NOT_ACCEPTABLE;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
@@ -47,9 +49,6 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
 
         connectorMock.respondOk_whenCreateCharge(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID, STATUS, RETURN_URL,
                 DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE);
-
-        String expectedPaymentUrl = "http://localhost:" + app.getLocalPort() + PAYMENTS_PATH + CHARGE_ID;
-        String expectedPaymentEventsUrl = "http://localhost:" + app.getLocalPort() + PAYMENTS_PATH + CHARGE_ID + "/events";
 
         String responseBody = postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
                 .statusCode(201)
@@ -155,7 +154,8 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
         connectorMock.respondBadRequest_whenCreateCharge(AMOUNT, gatewayAccountId, errorMessage, RETURN_URL, DESCRIPTION, REFERENCE);
 
         InputStream body = postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
-                .statusCode(500).extract()
+                .statusCode(500)
+                .contentType(JSON).extract()
                 .body().asInputStream();
 
         JsonAssert.with(body)
@@ -176,6 +176,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
 
         postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
                 .statusCode(500)
+                .contentType(JSON)
                 .body("code", is("P0199"))
                 .body("description", is("There is an error with this account. Please contact support"));
 
@@ -226,8 +227,6 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .statusCode(200)
                 .contentType(JSON)
                 .body("_links.cancel", is(nullValue()));
-
-
     }
 
     @Test
@@ -239,16 +238,41 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPayment_InvalidPaymentId() {
-        String invalidPaymentId = "ds2af2afd3df112";
+    public void getPayment_returns404_whenConnectorRespondsWith404() throws IOException {
+
+        String paymentId = "ds2af2afd3df112";
         String errorMessage = "backend-error-message";
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondChargeNotFound(GATEWAY_ACCOUNT_ID, invalidPaymentId, errorMessage);
+        connectorMock.respondChargeNotFound(GATEWAY_ACCOUNT_ID, paymentId, errorMessage);
 
-        getPaymentResponse(BEARER_TOKEN, invalidPaymentId)
+        InputStream body = getPaymentResponse(BEARER_TOKEN, paymentId)
                 .statusCode(404)
-                .contentType(JSON)
-                .body("message", is(errorMessage));
+                .contentType(JSON).extract()
+                .body().asInputStream();
+
+        JsonAssert.with(body)
+                .assertThat("$.*", hasSize(2))
+                .assertThat("$.code", is("P0200"))
+                .assertThat("$.description", is("Not found"));
+    }
+
+    @Test
+    public void getPayment_returns500_whenConnectorRespondsWithResponseOtherThan200Or404() throws IOException {
+
+        String paymentId = "ds2af2afd3df112";
+        String errorMessage = "backend-error-message";
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        connectorMock.respondWhenGetCharge(GATEWAY_ACCOUNT_ID, paymentId, errorMessage, SC_NOT_ACCEPTABLE);
+
+        InputStream body = getPaymentResponse(BEARER_TOKEN, paymentId)
+                .statusCode(500)
+                .contentType(JSON).extract()
+                .body().asInputStream();
+
+        JsonAssert.with(body)
+                .assertThat("$.*", hasSize(2))
+                .assertThat("$.code", is("P0298"))
+                .assertThat("$.description", is("Downstream system error"));
     }
 
     @Test
@@ -277,16 +301,41 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentEvents_Returns404_WhenInvalidPaymentId() {
-        String invalidPaymentId = "ds2af2afd3df112";
+    public void getPaymentEvents_returns404_whenConnectorRespondsWith404() throws IOException {
+
+        String paymentId = "ds2af2afd3df112";
         String errorMessage = "backend-error-message";
         publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondChargeEventsNotFound(GATEWAY_ACCOUNT_ID, invalidPaymentId, errorMessage);
+        connectorMock.respondChargeEventsNotFound(GATEWAY_ACCOUNT_ID, paymentId, errorMessage);
 
-        getPaymentEventsResponse(BEARER_TOKEN, invalidPaymentId)
+        InputStream body = getPaymentEventsResponse(BEARER_TOKEN, paymentId)
                 .statusCode(404)
-                .contentType(JSON)
-                .body("message", is(errorMessage));
+                .contentType(JSON).extract()
+                .body().asInputStream();
+
+        JsonAssert.with(body)
+                .assertThat("$.*", hasSize(2))
+                .assertThat("$.code", is("P0300"))
+                .assertThat("$.description", is("Not found"));
+    }
+
+    @Test
+    public void getPaymentEvents_returns500_whenConnectorRespondsWithResponseOtherThan200Or404() throws IOException {
+
+        String paymentId = "ds2af2afd3df112";
+        String errorMessage = "backend-error-message";
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        connectorMock.respondWhenGetChargeEvents(GATEWAY_ACCOUNT_ID, paymentId, errorMessage, SC_NOT_ACCEPTABLE);
+
+        InputStream body = getPaymentEventsResponse(BEARER_TOKEN, paymentId)
+                .statusCode(500)
+                .contentType(JSON).extract()
+                .body().asInputStream();
+
+        JsonAssert.with(body)
+                .assertThat("$.*", hasSize(2))
+                .assertThat("$.code", is("P0398"))
+                .assertThat("$.description", is("Downstream system error"));
     }
 
     @Test

@@ -18,16 +18,8 @@ public class SearchChargesExceptionMapper implements ExceptionMapper<SearchCharg
 
     @Override
     public Response toResponse(SearchChargesException exception) {
-
-        Throwable cause = exception.getCause();
         PaymentError paymentError = aPaymentError(P0498, "Downstream system error");
-
-        if (cause != null) {
-            LOGGER.error("Unprocessable response body from a successful Connector call. status 200.\n Returning {}", paymentError);
-        } else {
-            LOGGER.error("Error response from Connector unrecognised. status {}, body {}", exception.getErrorStatus(), exception.getErrorBody(), paymentError);
-        }
-
+        LOGGER.error("Connector invalid response was {}.\n Returning http status {} with error body {}", exception.getMessage(), INTERNAL_SERVER_ERROR, paymentError);
         return Response
                 .status(INTERNAL_SERVER_ERROR)
                 .entity(paymentError)

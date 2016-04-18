@@ -16,8 +16,15 @@ public class PaymentError {
         P0101,
         P0102,
         P0103,
+        P0200,
+        P0298,
+        P0300,
+        P0398,
         P0401,
-        P0498
+        P0498,
+        P0500,
+        P0501,
+        P0598
     }
 
     private final Code code;

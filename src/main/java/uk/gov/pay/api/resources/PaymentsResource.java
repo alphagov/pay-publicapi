@@ -9,8 +9,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.pay.api.exception.CreateChargeException;
-import uk.gov.pay.api.exception.SearchChargesException;
+import uk.gov.pay.api.exception.*;
 import uk.gov.pay.api.model.*;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
@@ -33,8 +32,6 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.upperCase;
 import static org.apache.http.HttpStatus.SC_OK;
-import static uk.gov.pay.api.utils.ResponseUtil.badRequestResponse;
-import static uk.gov.pay.api.utils.ResponseUtil.notFoundResponse;
 import static uk.gov.pay.api.validation.PaymentSearchValidator.validateSearchParameters;
 
 @Path("/")
@@ -65,7 +62,6 @@ public class PaymentsResource {
     private static final String CONNECTOR_CHARGE_RESOURCE = CONNECTOR_CHARGES_RESOURCE + "/%s";
     private static final String CONNECTOR_CHARGE_EVENTS_RESOURCE = CONNECTOR_CHARGES_RESOURCE + "/%s" + "/events";
     private static final String CONNECTOR_ACCOUNT_CHARGE_CANCEL_RESOURCE = CONNECTOR_CHARGE_RESOURCE + "/cancel";
-
 
     private final Client client;
     private final String connectorUrl;
@@ -100,7 +96,6 @@ public class PaymentsResource {
                 .request()
                 .get();
 
-
         if (connectorResponse.getStatus() == SC_OK) {
             PaymentConnectorResponse response = connectorResponse.readEntity(PaymentConnectorResponse.class);
             URI paymentURI = getPaymentURI(uriInfo, response.getChargeId());
@@ -113,9 +108,9 @@ public class PaymentsResource {
 
             logger.info("payment returned: [ {} ]", payment);
             return Response.ok(payment).build();
-        } else {
-            return notFoundResponse(logger, connectorResponse.readEntity(JsonNode.class));
         }
+
+        throw new GetChargeException(connectorResponse);
     }
 
     @GET
@@ -142,12 +137,9 @@ public class PaymentsResource {
                 .request()
                 .get();
 
-        if (!connectorResponse.hasEntity()) {
-            return badRequestResponse(logger, "Connector response contains no payload!");
-        }
-
-        JsonNode payload = connectorResponse.readEntity(JsonNode.class);
         if (connectorResponse.getStatus() == SC_OK) {
+
+            JsonNode payload = connectorResponse.readEntity(JsonNode.class);
             URI paymentEventsLink = getPaymentEventsURI(uriInfo, payload.get(CHARGE_KEY).asText());
 
             URI paymentLink = getPaymentURI(uriInfo, payload.get(CHARGE_KEY).asText());
@@ -161,7 +153,7 @@ public class PaymentsResource {
             return Response.ok(response).build();
         }
 
-        return notFoundResponse(logger, payload);
+        throw new GetEventsException(connectorResponse);
     }
 
     @GET
@@ -281,9 +273,9 @@ public class PaymentsResource {
             logger.info("payment returned: [ {} ]", payment);
             return Response.created(paymentUri).entity(payment).build();
 
-        } else {
-            throw new CreateChargeException(connectorResponse);
         }
+
+        throw new CreateChargeException(connectorResponse);
     }
 
     @POST
@@ -312,10 +304,11 @@ public class PaymentsResource {
                 .post(Entity.json("{}"));
 
         if (connectorResponse.getStatus() == HttpStatus.SC_NO_CONTENT) {
-            return Response.noContent().build();
+            connectorResponse.close();
+            return  Response.noContent().build();
         }
 
-        return badRequestResponse(logger, "Cancellation of charge failed.");
+        throw new CancelPaymentException(connectorResponse);
     }
 
     private URI getPaymentURI(UriInfo uriInfo, String chargeId) {
