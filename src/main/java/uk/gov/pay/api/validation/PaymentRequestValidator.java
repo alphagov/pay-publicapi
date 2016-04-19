@@ -6,9 +6,8 @@ import uk.gov.pay.api.model.PaymentError;
 
 import static java.lang.String.format;
 import static uk.gov.pay.api.model.CreatePaymentRequest.*;
-import static uk.gov.pay.api.model.PaymentError.Code.P0101;
-import static uk.gov.pay.api.model.PaymentError.Code.P0102;
-import static uk.gov.pay.api.model.PaymentError.invalidAttributeValue;
+import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
+import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 import static uk.gov.pay.api.validation.MaxLengthValidator.isValid;
 
 public class PaymentRequestValidator {
@@ -39,28 +38,28 @@ public class PaymentRequestValidator {
 
     private void validateAmount(int amount) {
         validate(amount >= AMOUNT_MIN_VALUE,
-                invalidAttributeValue(P0101, AMOUNT_FIELD_NAME, format(CONSTRAINT_GREATER_THAN_MESSAGE_INT_TEMPLATE, AMOUNT_MIN_VALUE)));
+                aPaymentError(AMOUNT_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, format(CONSTRAINT_GREATER_THAN_MESSAGE_INT_TEMPLATE, AMOUNT_MIN_VALUE)));
 
         validate(amount <= AMOUNT_MAX_VALUE,
-                invalidAttributeValue(P0102, AMOUNT_FIELD_NAME, format(CONSTRAINT_LESS_THAN_MESSAGE_INT_TEMPLATE, AMOUNT_MAX_VALUE)));
+                aPaymentError(AMOUNT_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, format(CONSTRAINT_LESS_THAN_MESSAGE_INT_TEMPLATE, AMOUNT_MAX_VALUE)));
     }
 
     private void validateReturnUrl(String returnUrl) {
         validate(isValid(returnUrl, URL_MAX_LENGTH),
-                invalidAttributeValue(P0102, RETURN_URL_FIELD_NAME, format(CONSTRAINT_MESSAGE_STRING_TEMPLATE, URL_MAX_LENGTH)));
+                aPaymentError(RETURN_URL_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, format(CONSTRAINT_MESSAGE_STRING_TEMPLATE, URL_MAX_LENGTH)));
 
         validate(urlValidator.isValid(returnUrl),
-                invalidAttributeValue(P0102, RETURN_URL_FIELD_NAME, URL_FORMAT_MESSAGE));
+                aPaymentError(RETURN_URL_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, URL_FORMAT_MESSAGE));
     }
 
     private void validateReference(String reference) {
         validate(isValid(reference, REFERENCE_MAX_LENGTH),
-                invalidAttributeValue(P0102, REFERENCE_FIELD_NAME, format(CONSTRAINT_MESSAGE_STRING_TEMPLATE, REFERENCE_MAX_LENGTH)));
+                aPaymentError(REFERENCE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, format(CONSTRAINT_MESSAGE_STRING_TEMPLATE, REFERENCE_MAX_LENGTH)));
     }
 
     private void validateDescription(String description) {
         validate(isValid(description, DESCRIPTION_MAX_LENGTH),
-                invalidAttributeValue(P0102, DESCRIPTION_FIELD_NAME, format(CONSTRAINT_MESSAGE_STRING_TEMPLATE, DESCRIPTION_MAX_LENGTH)));
+                aPaymentError(DESCRIPTION_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, format(CONSTRAINT_MESSAGE_STRING_TEMPLATE, DESCRIPTION_MAX_LENGTH)));
     }
 
     private static void validate(boolean condition, PaymentError error) {

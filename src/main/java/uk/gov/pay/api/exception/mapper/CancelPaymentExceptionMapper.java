@@ -24,13 +24,13 @@ public class CancelPaymentExceptionMapper implements ExceptionMapper<CancelPayme
         Response.Status status;
 
         if (errorStatus == NOT_FOUND.getStatusCode()) {
-            paymentError = aPaymentError(P0500, "Not found");
+            paymentError = aPaymentError(CANCEL_PAYMENT_NOT_FOUND_ERROR);
             status = NOT_FOUND;
         } else if (errorStatus == BAD_REQUEST.getStatusCode()) {
-            paymentError = aPaymentError(P0501, "Cancellation of charge failed");
+            paymentError = aPaymentError(CANCEL_PAYMENT_CONNECTOR_BAD_REQUEST_ERROR);
             status = BAD_REQUEST;
         } else {
-            paymentError = aPaymentError(P0598, "Downstream system error");
+            paymentError = aPaymentError(CANCEL_PAYMENT_CONNECTOR_ERROR);
             status = INTERNAL_SERVER_ERROR;
         }
 

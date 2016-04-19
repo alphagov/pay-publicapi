@@ -10,8 +10,8 @@ import javax.ws.rs.ext.ExceptionMapper;
 
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static uk.gov.pay.api.model.PaymentError.Code.P0200;
-import static uk.gov.pay.api.model.PaymentError.Code.P0298;
+import static uk.gov.pay.api.model.PaymentError.Code.GET_PAYMENT_CONNECTOR_ERROR;
+import static uk.gov.pay.api.model.PaymentError.Code.GET_PAYMENT_NOT_FOUND_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 
 public class GetChargeExceptionMapper implements ExceptionMapper<GetChargeException> {
@@ -25,10 +25,10 @@ public class GetChargeExceptionMapper implements ExceptionMapper<GetChargeExcept
         Response.Status status;
 
         if (exception.getErrorStatus() == NOT_FOUND.getStatusCode()) {
-            paymentError = aPaymentError(P0200, "Not found");
+            paymentError = aPaymentError(GET_PAYMENT_NOT_FOUND_ERROR);
             status = NOT_FOUND;
         } else {
-            paymentError = aPaymentError(P0298, "Downstream system error");
+            paymentError = aPaymentError(GET_PAYMENT_CONNECTOR_ERROR);
             status = INTERNAL_SERVER_ERROR;
         }
 

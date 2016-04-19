@@ -20,10 +20,8 @@ import uk.gov.pay.api.validation.URLValidator;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verifyZeroInteractions;
-import static uk.gov.pay.api.matcher.BadRequestExceptionMatcher.aBadRequestExceptionContaining;
+import static uk.gov.pay.api.matcher.BadRequestExceptionMatcher.aBadRequestExceptionWithError;
 import static uk.gov.pay.api.matcher.ValidationExceptionMatcher.aValidationExceptionContaining;
-import static uk.gov.pay.api.model.PaymentError.Code.*;
-import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreatePaymentRequestDeserializerTest {
@@ -72,13 +70,13 @@ public class CreatePaymentRequestDeserializerTest {
                 "}";
 
         expectedException.expect(BadRequestException.class);
-        expectedException.expect(aBadRequestExceptionContaining(aPaymentError(P0100, "Unable to parse JSON")));
+        expectedException.expect(aBadRequestExceptionWithError("P0100", "Unable to parse JSON"));
 
         deserializer.deserialize(jsonFactory.createParser(invalidJson), ctx);
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_whenAmountIsMissing() throws Exception {
+    public void deserialize_shouldThrowBadRequestException_whenAmountIsMissing() throws Exception {
 
         String json = "{" +
                 "  \"reference\" : \"Some reference\"," +
@@ -86,7 +84,7 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionContaining(aPaymentError(P0103, "Missing mandatory attribute: amount")));
+        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: amount"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }
@@ -101,7 +99,7 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionContaining(aPaymentError(P0103, "Missing mandatory attribute: amount")));
+        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: amount"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }
@@ -116,7 +114,7 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionContaining(aPaymentError(P0100, "Invalid attribute value: amount. Must be a valid numeric format")));
+        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: amount. Must be a valid numeric format"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }
@@ -131,7 +129,7 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        expectedException.expect(aValidationExceptionContaining(aPaymentError(P0101, "Invalid attribute value: amount. Must be greater than or equal to 1")));
+        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: amount. Must be greater than or equal to 1"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }
@@ -146,7 +144,7 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        expectedException.expect(aValidationExceptionContaining(aPaymentError(P0102, "Invalid attribute value: amount. Must be less than or equal to 10000000")));
+        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: amount. Must be less than or equal to 10000000"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }
@@ -161,7 +159,7 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"return_url\" : 1" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionContaining(aPaymentError(P0100, "Invalid attribute value: return_url. Must be a valid URL format")));
+        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: return_url. Must be a valid URL format"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }
@@ -176,7 +174,7 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"return_url\" : \"" + RandomStringUtils.randomAlphanumeric(2001) + "\"" +
                 "}";
 
-        expectedException.expect(aValidationExceptionContaining(aPaymentError(P0102, "Invalid attribute value: return_url. Must be less than or equal to 2000 characters length")));
+        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: return_url. Must be less than or equal to 2000 characters length"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }
@@ -191,7 +189,7 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"return_url\" : \"" + RandomStringUtils.randomAlphanumeric(50) + "\"" +
                 "}";
 
-        expectedException.expect(aValidationExceptionContaining(aPaymentError(P0102, "Invalid attribute value: return_url. Must be a valid URL format")));
+        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: return_url. Must be a valid URL format"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }
@@ -205,7 +203,7 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"description\" : \"Some description\"" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionContaining(aPaymentError(P0103, "Missing mandatory attribute: return_url")));
+        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: return_url"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }
@@ -220,7 +218,7 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"return_url\" : null" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionContaining(aPaymentError(P0103, "Missing mandatory attribute: return_url")));
+        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: return_url"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }
@@ -234,7 +232,7 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionContaining(aPaymentError(P0103, "Missing mandatory attribute: reference")));
+        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: reference"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }
@@ -249,7 +247,7 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionContaining(aPaymentError(P0103, "Missing mandatory attribute: reference")));
+        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: reference"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }
@@ -264,7 +262,7 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionContaining(aPaymentError(P0100, "Invalid attribute value: reference. Must be a valid string format")));
+        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: reference. Must be a valid string format"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }
@@ -279,7 +277,7 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        expectedException.expect(aValidationExceptionContaining(aPaymentError(P0102, "Invalid attribute value: reference. Must be less than or equal to 255 characters length")));
+        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: reference. Must be less than or equal to 255 characters length"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }
@@ -293,7 +291,7 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionContaining(aPaymentError(P0103, "Missing mandatory attribute: description")));
+        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: description"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }
@@ -308,7 +306,7 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionContaining(aPaymentError(P0103, "Missing mandatory attribute: description")));
+        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: description"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }
@@ -323,7 +321,7 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionContaining(aPaymentError(P0100, "Invalid attribute value: description. Must be a valid string format")));
+        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: description. Must be a valid string format"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }
@@ -338,7 +336,7 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        expectedException.expect(aValidationExceptionContaining(aPaymentError(P0102, "Invalid attribute value: description. Must be less than or equal to 255 characters length")));
+        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: description. Must be less than or equal to 255 characters length"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }

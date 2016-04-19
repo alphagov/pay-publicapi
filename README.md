@@ -10,11 +10,11 @@ Then the script creates a keystore (KEYSTORE_FILE) in a separate directory (KEYS
 
 | Variable                    | required |  Description                               |
 | --------------------------- |:--------:| ------------------------------------------ |
-| CERTS_DIR                   | X |  The directory where the import script can find a trusted certificate and any public key |
-| CERT_FILE                   | X |  The name of the certificate file to import  |
-| KEY_FILE                    | X |  The key file to import |
-| KEYSTORE_DIR                | X |  The directory where the java keystore will be created |
-| KEYSTORE_FILE               | X |  The name of the java keystore file |
+| CERTS_DIR                   | Yes      |  The directory where the import script can find a trusted certificate and any public key |
+| CERT_FILE                   | Yes      |  The name of the certificate file to import  |
+| KEY_FILE                    | Yes      |  The key file to import |
+| KEYSTORE_DIR                | Yes      |  The directory where the java keystore will be created |
+| KEYSTORE_FILE               | Yes      |  The name of the java keystore file |
 
 
 For example:
@@ -52,6 +52,7 @@ Useful links:
 |[`/v1/payments/{paymentId}/events`](#get-v1paymentspaymentidevents)  | GET    |  returns all audit events for the payment referred by this ID  |
 |[`/v1/payments`](#get-v1payments)  | GET    |  search/filter payments           |
 
+------------------------------------------------------------------------------------------------
 
 ### POST /v1/payments
 
@@ -78,14 +79,10 @@ BEARER_TOKEN: A valid bearer token for the account to associate the payment with
 
 | Field                    | required | Description                               |
 | ------------------------ |:--------:| ----------------------------------------- |
-| `amount`                 | X | Amount to pay in pence                           |
-| `description`            | X | Payment description                              |
-| `return_url`             | X | The URL where the user should be redirected to when the payment workflow is finished.         |
-| `reference`              | X | There reference issued by the government service for this payment         |
-
-The value of field `return_url` needs to contain a placeholder for the payment-id. This is the literal string `{paymentId}`,
-which will be replaced with the payment-id of the created payment resource when the user finishes the payment workflow
-and is redirected back to the calling service.
+| `amount`                 | Yes      | Amount to pay in pence                           |
+| `description`            | Yes      | Payment description                              |
+| `return_url`             | Yes      | The URL where the user should be redirected to when the payment workflow is finished.         |
+| `reference`              | Yes      | There reference issued by the government service for this payment         |
 
 #### Payment created response
 
@@ -105,8 +102,10 @@ Content-Type: application/json
             "method": "GET" 
         },
         "next_url_post" : {
-            "params" : {},
-            "type" : "",
+            "params" : {
+                "chargeTokenId" : "82347"
+            },
+            "type" : "application/x-www-form-urlencoded",
             "href": "http://frontend.co.uk/charge/1?chargeTokenId=82347",
             "method": "POST" 
         },
@@ -132,7 +131,7 @@ Content-Type: application/json
 }
 ```
 
-##### Response field description
+##### Response fields description
 
 | Field                  | Description                               |
 | ---------------------- | ----------------------------------------- |
@@ -150,7 +149,40 @@ Content-Type: application/json
 | `_links.events`        | Link to payment events                                                |
 | `_links.cancel`        | Link to cancel the payment (link only available when a payment can be cancelled (i.e. payment has one of the statuses - CREATED, IN PROGRESS |
 
-#### Payment creation failed
+#### Payment creation response errors
+
+##### Unrecognised response from Connector
+Payment creation is now very defensive and with these validations in place Connector receives a valid Create payment request, so failing to
+create a payment should be very rare (infrastructure failures for example).
+
+```
+HTTP/1.1 500 Internal Server Error
+Content-Type: application/json
+Content-Length: 34
+
+{
+    "code": "P0198",
+    "description": "Downstream system error"
+}
+```
+
+##### Validation errors
+Payment request contains a valid Json payload with expected fields but it contains validation errors.
+
+```
+HTTP/1.1 422 Unprocessable Entity
+Content-Type: application/json
+Content-Length: 34
+
+{
+    "field: "amount",
+    "code": "P0102",
+    "description": "Invalid attribute value: amount. Must be greater than or equal to 1"
+}
+```
+
+##### Missing, null or empty mandatory field
+Payment request contains a valid Json payload but it has a missing (includes null or empty) field
 
 ```
 HTTP/1.1 400 Bad Request
@@ -158,15 +190,43 @@ Content-Type: application/json
 Content-Length: 34
 
 {
-    "message": "Unknown account: 32adf21bds3aac21"
+    "field: "reference",
+    "code": "P0101",
+    "description": "Missing mandatory attribute: reference"
 }
 ```
 
-##### Response field description
+##### Unable to parse request body
+Payment creation request is malformed, so it can't be processed
 
-| Field              | Description                     |
-| ------------------ | ------------------------------- |
-| `message`          | The error message               |
+```
+HTTP/1.1 400 Bad Request
+Content-Type: application/json
+Content-Length: 34
+
+{
+    "code": "P0100",
+    "description": "Unable to parse JSON"
+}
+```
+
+##### Response error fields description
+
+| Field              | Description                                                               |
+| ------------------ | --------------------------------------------------------------------------|
+| `field`            | Field related to the error (Only for validation or missing fields errors) |
+| `code`             | The error reference. Format: P01XX                                        |
+| `description`      | The error description                                                     |
+
+##### Response error codes
+
+| Code               | Description                                                       |
+| ------------------ | ------------------------------------------------------------------|
+| `P0199`            | Auth token was correct but the account wasn't found in Connector  |
+| `P0198`            | Connector response was unrecognised to PublicAPI                  |
+| `P0100`            | Body sent by the client can't be processed (is not a valid JSON)  |
+| `P0101`            | An mandatory attribute in the JSON body is missing, null or empty |
+| `P0102`            | An attribute in the JSON body has a validation error              |
 
 ------------------------------------------------------------------------------------------------
 
@@ -211,7 +271,7 @@ Content-Type: application/json
             "params" : {},
             "type" : "",
             "href": "http://publicapi.co.uk/v1/payments/ab2341da231434/cancel",
-            "method": "POST" 
+            "method": "POST"
         }
     },
     "payment_id": "ab2341da231434",
@@ -229,21 +289,45 @@ Content-Type: application/json
 
 See: [Payment created](#payment-created-response)
 
+#### GET Payment response errors
 
-#### Payment not found
+##### Payment not found
 
 ```
 HTTP/1.1 404 Not Found
 Content-Type: application/json
 
 {
-    "message": "backend-error-message"
+    "code" : "P0200"
+    "description": "Not found"
 }
 ```
 
-##### Response field description
+##### Unrecognised response from Connector
 
-See: [Payment creation failed](#payment-creation-failed)
+```
+HTTP/1.1 500 Internal Server Error
+Content-Type: application/json
+
+{
+    "code" : "P0298"
+    "description": "Downstream system error"
+}
+```
+
+##### Response errors field description
+
+| Field              | Description                                                               |
+| ------------------ | --------------------------------------------------------------------------|
+| `code`             | The error reference. Format: P02XX                                        |
+| `description`      | The error description                                                     |
+
+##### Response error codes
+
+| Code               | Description                                      |
+| ------------------ | -------------------------------------------------|
+| `P0200`            | Connector response was 404 Not Found             |
+| `P0298`            | Connector response was unrecognised to PublicAPI |
 
 ------------------------------------------------------------------------------------------------
 
@@ -313,21 +397,45 @@ Content-Type: application/json
 
 See: [Payment created](#payment-created-response)
 
+#### GET Payment Events response errors
 
-#### Payment not found
+##### Payment not found
 
 ```
 HTTP/1.1 404 Not Found
 Content-Type: application/json
 
 {
-    "message": "backend-error-message"
+    "code" : "P0300"
+    "description": "Not found"
 }
 ```
 
-##### Response field description
+##### Unrecognised response from Connector
 
-See: [Payment creation failed](#payment-creation-failed)
+```
+HTTP/1.1 500 Internal Server Error
+Content-Type: application/json
+
+{
+    "code" : "P0398"
+    "description": "Downstream system error"
+}
+```
+
+##### Response error fields description
+
+| Field              | Description                                                               |
+| ------------------ | --------------------------------------------------------------------------|
+| `code`             | The error reference. Format: P03XX                                        |
+| `description`      | The error description                                                     |
+
+##### Response error codes
+
+| Code               | Description                                      |
+| ------------------ | -------------------------------------------------|
+| `P0300`            | Connector response was 404 Not Found             |
+| `P0398`            | Connector response was unrecognised to PublicAPI |
 
 ------------------------------------------------------------------------------------------------
 
@@ -354,10 +462,26 @@ Authorization: Bearer BEARER_TOKEN
 HTTP/1.1 204 No Content
 ```
 
+#### Payment cancellation response errors
 
-#### Payment cancellation failed
+##### Payment not found
 
-Either because the payment state is not cancellable or the payment does not exist.
+The payment state is not cancellable.
+
+```
+HTTP/1.1 404 Not Found
+Content-Type: application/json
+Content-Length: 44
+
+{
+    "code" : "P0500"
+    "description" : "Not found"
+}
+```
+
+##### Payment cancellation failed
+
+The payment state is not cancellable.
 
 ```
 HTTP/1.1 400 Bad Request
@@ -365,10 +489,43 @@ Content-Type: application/json
 Content-Length: 44
 
 {
-    "message": "Cancellation of charge failed."
+    "code" : "P0501"
+    "description" : "Cancellation of charge failed"
 }
 ```
 
+##### Unrecognised response from Connector
+
+The payment state is not cancellable.
+
+```
+HTTP/1.1 500 Internal Server Error
+Content-Type: application/json
+Content-Length: 44
+
+{
+    "code" : "P0598"
+    "description" : "Downstream system error"
+}
+```
+
+##### Response error fields description
+
+| Field              | Description                                                               |
+| ------------------ | --------------------------------------------------------------------------|
+| `code`             | The error reference. Format: P05XX                                        |
+| `description`      | The error description                                                     |
+
+
+##### Response error codes
+
+| Code               | Description                                      |
+| ------------------ | -------------------------------------------------|
+| `P0500`            | Connector response was 404 Not Found             |
+| `P0501`            | Connector response was 400 Bad Request           |
+| `P0598`            | Connector response was unrecognised to PublicAPI |
+
+------------------------------------------------------------------------------------------------
 ### GET /v1/payments
 
 This endpoint searches for transactions for the given account id.
@@ -426,22 +583,61 @@ Content-Type: application/json
 
 ##### Response field description
 
-| Field                    | always present | Description                               |
-| ------------------------ |:--------:| ----------------------------------------- |
-| `results`                | X | List of payments       |
-| `charge_id`              | X | The unique identifier for this charge       |
-| `amount`                 | X | The amount of this charge in pence      |
-| `description`            | X | The payment description       
-| `reference`              | X | There reference issued by the government service for this payment       |
-| `gateway_transaction_id` | X | The gateway transaction reference associated to this charge       |
-| `status`                 | X | The current external status of the charge       |
-| `created_date`           | X | The created date in ISO_8601 format (```yyyy-MM-ddTHH:mm:ssZ```)|
-| `_links.self`            | X | Link to the payment                                                 |
-| `_links.events`          | X | Link to payment events                                                |
-| `_links.cancel`          | - | Link to cancel the payment (link only available when a payment can be cancelled (i.e. payment has one of the statuses - CREATED, IN PROGRESS |
+| Field                    | Always present | Description                                                       |
+| ------------------------ |:--------------:| ----------------------------------------------------------------- |
+| `results`                | Yes            | List of payments                                                  |
+| `charge_id`              | Yes            | The unique identifier for this charge                             |
+| `amount`                 | Yes            | The amount of this charge in pence                                |
+| `description`            | Yes            | The payment description                                           |
+| `reference`              | Yes            | There reference issued by the government service for this payment |
+| `gateway_transaction_id` | Yes            | The gateway transaction reference associated to this charge       |
+| `status`                 | Yes            | The current external status of the charge                         |
+| `created_date`           | Yes            | The created date in ISO_8601 format (```yyyy-MM-ddTHH:mm:ssZ```)  |
+| `_links.self`            | Yes            | Link to the payment                                               |
+| `_links.events`          | Yes            | Link to payment events                                            |
+| `_links.cancel`          | No             | Link to cancel the payment (link only available when a payment can be cancelled (i.e. payment has one of the statuses - CREATED, IN PROGRESS |
 
------------------------------------------------------------------------------------------------------------
+#### Search payments response errors
 
+##### Validation errors
+The search parameters are invalid
+
+```
+HTTP/1.1 422 Unprocessable Entity
+Content-Type: application/json
+Content-Length: 44
+
+{
+    "code" : "P0401"
+    "description" : "Invalid parameters: status, reference, from_date, to_date. See Public API documentation for the correct data formats"
+}
+```
+
+##### Unrecognised response from Connector
+```
+HTTP/1.1 500 Internal Server Error
+Content-Type: application/json
+Content-Length: 44
+
+{
+    "code" : "P0498"
+    "description" : "Downstream system error"
+}
+```
+
+##### Response error fields description
+
+| Field              | Description                                                               |
+| ------------------ | --------------------------------------------------------------------------|
+| `code`             | The error reference. Format: P04XX                                        |
+| `description`      | The error description                                                     |
+
+##### Response error codes
+
+| Code               | Description                                      |
+| ------------------ | -------------------------------------------------|
+| `P0401`            | Request parameters have Validation errors        |
+| `P0498`            | Connector response was unrecognised to PublicAPI |
 
 ## Responsible Disclosure
 

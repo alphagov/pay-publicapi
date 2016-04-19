@@ -212,6 +212,10 @@
     "Payment Error" : {
       "type" : "object",
       "properties" : {
+        "field" : {
+          "type" : "string",
+          "example" : "amount"
+        },
         "code" : {
           "type" : "string",
           "example" : "P0102"

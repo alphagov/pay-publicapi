@@ -39,8 +39,9 @@ public class PaymentsResourceReferenceValidationITest extends PaymentResourceITe
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0100"))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("reference"))
+                .assertThat("$.code", is("P0102"))
                 .assertThat("$.description", is("Invalid attribute value: reference. Must be a valid string format"));
     }
 
@@ -61,8 +62,9 @@ public class PaymentsResourceReferenceValidationITest extends PaymentResourceITe
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0103"))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("reference"))
+                .assertThat("$.code", is("P0101"))
                 .assertThat("$.description", is("Missing mandatory attribute: reference"));
     }
 
@@ -83,8 +85,9 @@ public class PaymentsResourceReferenceValidationITest extends PaymentResourceITe
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0103"))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("reference"))
+                .assertThat("$.code", is("P0101"))
                 .assertThat("$.description", is("Missing mandatory attribute: reference"));
     }
 
@@ -104,8 +107,9 @@ public class PaymentsResourceReferenceValidationITest extends PaymentResourceITe
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0103"))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("reference"))
+                .assertThat("$.code", is("P0101"))
                 .assertThat("$.description", is("Missing mandatory attribute: reference"));
     }
 
@@ -127,8 +131,9 @@ public class PaymentsResourceReferenceValidationITest extends PaymentResourceITe
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0103"))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("reference"))
+                .assertThat("$.code", is("P0101"))
                 .assertThat("$.description", is("Missing mandatory attribute: reference"));
     }
 
@@ -151,7 +156,8 @@ public class PaymentsResourceReferenceValidationITest extends PaymentResourceITe
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("reference"))
                 .assertThat("$.code", is("P0102"))
                 .assertThat("$.description", is("Invalid attribute value: reference. Must be less than or equal to 255 characters length"));
     }
@@ -195,8 +201,9 @@ public class PaymentsResourceReferenceValidationITest extends PaymentResourceITe
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0100"))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("reference"))
+                .assertThat("$.code", is("P0102"))
                 .assertThat("$.description", is("Invalid attribute value: reference. Must be a valid string format"));
     }
 

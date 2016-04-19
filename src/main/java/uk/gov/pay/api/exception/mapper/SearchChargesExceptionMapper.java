@@ -9,7 +9,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-import static uk.gov.pay.api.model.PaymentError.Code.P0498;
+import static uk.gov.pay.api.model.PaymentError.Code.SEARCH_PAYMENTS_CONNECTOR_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 
 public class SearchChargesExceptionMapper implements ExceptionMapper<SearchChargesException> {
@@ -18,7 +18,7 @@ public class SearchChargesExceptionMapper implements ExceptionMapper<SearchCharg
 
     @Override
     public Response toResponse(SearchChargesException exception) {
-        PaymentError paymentError = aPaymentError(P0498, "Downstream system error");
+        PaymentError paymentError = aPaymentError(SEARCH_PAYMENTS_CONNECTOR_ERROR);
         LOGGER.error("Connector invalid response was {}.\n Returning http status {} with error body {}", exception.getMessage(), INTERNAL_SERVER_ERROR, paymentError);
         return Response
                 .status(INTERNAL_SERVER_ERROR)
