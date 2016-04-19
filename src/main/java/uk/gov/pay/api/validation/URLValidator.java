@@ -4,7 +4,7 @@ import org.apache.commons.validator.routines.UrlValidator;
 
 import static org.apache.commons.validator.routines.UrlValidator.ALLOW_LOCAL_URLS;
 
-public enum URLValidator {
+public enum URLValidator  {
     SECURITY_ENABLED {
         private final UrlValidator URL_VALIDATOR = new UrlValidator(new String[]{"https"}, ALLOW_LOCAL_URLS);
 

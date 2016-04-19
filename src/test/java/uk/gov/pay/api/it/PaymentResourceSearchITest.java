@@ -7,9 +7,11 @@ import com.jayway.restassured.response.ValidatableResponse;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.api.utils.DateTimeUtils;
 
+import java.io.InputStream;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -17,13 +19,18 @@ import java.util.Map;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.eclipse.jetty.http.HttpStatus.OK_200;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mockserver.model.HttpResponse.response;
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.*;
 
-public class PaymentSearchITest extends PaymentResourceITestBase {
+public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
     private static final String TEST_REFERENCE = "test_reference";
     private static final String TEST_STATUS = "created";
@@ -31,10 +38,14 @@ public class PaymentSearchITest extends PaymentResourceITestBase {
     private static final String TEST_TO_DATE = "2016-01-28T12:00:00Z";
     private static final String SEARCH_PATH = "/v1/payments";
 
+    @Before
+    public void mapBearerTokenToAccountId() {
+        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+    }
+
     @Test
     public void searchPayments_shouldOnlyReturnAllowedProperties() {
 
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
         connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null,
                 aSuccessfulSearchResponse()
                         .withMatchingStatus(TEST_STATUS)
@@ -93,7 +104,7 @@ public class PaymentSearchITest extends PaymentResourceITestBase {
 
     @Test
     public void searchPayments_filterByFullReference() throws Exception {
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+
         connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null,
                 aSuccessfulSearchResponse()
                         .withMatchingReference(TEST_REFERENCE)
@@ -112,7 +123,7 @@ public class PaymentSearchITest extends PaymentResourceITestBase {
 
     @Test
     public void searchPayments_filterByStatus() throws Exception {
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+
         connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, TEST_STATUS, null, null,
                 aSuccessfulSearchResponse()
                         .withMatchingStatus(TEST_STATUS)
@@ -130,7 +141,7 @@ public class PaymentSearchITest extends PaymentResourceITestBase {
 
     @Test
     public void searchPayments_filterByStatusLowercase() throws Exception {
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+
         connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, TEST_STATUS, null, null,
                 aSuccessfulSearchResponse()
                         .withMatchingStatus(TEST_STATUS)
@@ -148,7 +159,7 @@ public class PaymentSearchITest extends PaymentResourceITestBase {
 
     @Test
     public void searchPayments_filterFromAndToDates() throws Exception {
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+
         connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, null, TEST_FROM_DATE, TEST_TO_DATE,
                 aSuccessfulSearchResponse()
                         .withCreatedDateBetween(TEST_FROM_DATE, TEST_TO_DATE)
@@ -168,7 +179,7 @@ public class PaymentSearchITest extends PaymentResourceITestBase {
 
     @Test
     public void searchPayments_filterByReferenceStatusAndFromToDates() throws Exception {
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+
         connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, TEST_STATUS, TEST_FROM_DATE, TEST_TO_DATE,
                 aSuccessfulSearchResponse()
                         .withMatchingReference(TEST_REFERENCE)
@@ -192,53 +203,38 @@ public class PaymentSearchITest extends PaymentResourceITestBase {
 
     @Test
     public void searchPayments_errorIfConnectorResponseFails() throws Exception {
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
 
-        searchPayments(BEARER_TOKEN,
+        InputStream body = searchPayments(BEARER_TOKEN,
                 ImmutableMap.of("reference", TEST_REFERENCE, "status", TEST_STATUS, "from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
                 .statusCode(500)
-                .contentType(JSON)
-                .body("message", is("Search payments failed"));
+                .contentType(JSON).extract()
+                .body().asInputStream();
+
+        JsonAssert.with(body)
+                .assertThat("$.*", hasSize(2))
+                .assertThat("$.code", is("P0498"))
+                .assertThat("$.description", is("Downstream system error"));
     }
 
     @Test
-    public void searchPayments_errorIfToDatesIsNotInLocalDateTimeFormat() throws Exception {
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-        searchPayments(BEARER_TOKEN,
-                ImmutableMap.of("reference", TEST_REFERENCE, "status", TEST_STATUS, "from_date", TEST_FROM_DATE, "to_date", "2016-01-01 00:00"))
-                .statusCode(422)
-                .contentType(JSON)
-                .body("message", is("fields [to_date] are not in correct format. see public api documentation for the correct data formats"));
-    }
+    public void searchPayments_errorIfConnectorResponseIsInvalid() throws Exception {
 
-    @Test
-    public void searchPayments_errorIfToDatesNotInLocalDateTimeFormaAndInvalidStatus() throws Exception {
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-        searchPayments(BEARER_TOKEN,
-                ImmutableMap.of("reference", TEST_REFERENCE, "status", "invalid status", "from_date", TEST_FROM_DATE, "to_date", "2016-01-01 00:00"))
-                .statusCode(422)
-                .contentType(JSON)
-                .body("message", is("fields [status, to_date] are not in correct format. see public api documentation for the correct data formats"));
-    }
+        connectorMock.whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, TEST_STATUS, TEST_FROM_DATE, TEST_TO_DATE)
+                .respond(response()
+                        .withStatusCode(OK_200)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withBody("wtf"));
 
-    @Test
-    public void searchPayments_errorIfFromToDatesAreNotInLocalDateTimeFormat() throws Exception {
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-        searchPayments(BEARER_TOKEN,
-                ImmutableMap.of("reference", TEST_REFERENCE, "status", TEST_STATUS, "from_date", "12345", "to_date", "2016-01-01 00:00"))
-                .statusCode(422)
-                .contentType(JSON)
-                .body("message", is("fields [from_date, to_date] are not in correct format. see public api documentation for the correct data formats"));
-    }
+        InputStream body = searchPayments(BEARER_TOKEN,
+                ImmutableMap.of("reference", TEST_REFERENCE, "status", TEST_STATUS, "from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
+                .statusCode(500)
+                .contentType(JSON).extract()
+                .body().asInputStream();
 
-    @Test
-    public void searchPayments_errorIfStatusNotMatchingWithExpectedExternalStatuses() throws Exception {
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
-        searchPayments(BEARER_TOKEN,
-                ImmutableMap.of("reference", TEST_REFERENCE, "status", "invalid status", "from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
-                .statusCode(422)
-                .contentType(JSON)
-                .body("message", is("fields [status] are not in correct format. see public api documentation for the correct data formats"));
+        JsonAssert.with(body)
+                .assertThat("$.*", hasSize(2))
+                .assertThat("$.code", is("P0498"))
+                .assertThat("$.description", is("Downstream system error"));
     }
 
     private Matcher<? super List<Map<String, Object>>> matchesField(final String field, final String value) {

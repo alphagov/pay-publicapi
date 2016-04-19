@@ -5,12 +5,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.auth.Auth;
 import io.swagger.annotations.*;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.pay.api.exception.CreateChargeConnectorErrorResponseException;
+import uk.gov.pay.api.exception.CreateChargeException;
+import uk.gov.pay.api.exception.SearchChargesException;
 import uk.gov.pay.api.model.*;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
@@ -20,7 +20,10 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.*;
 import java.io.IOException;
 import java.net.URI;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -30,9 +33,9 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.upperCase;
 import static org.apache.http.HttpStatus.SC_OK;
-import static uk.gov.pay.api.utils.ResponseUtil.*;
-import static uk.gov.pay.api.validation.ParamValidator.validateDate;
-import static uk.gov.pay.api.validation.ParamValidator.validateStatus;
+import static uk.gov.pay.api.utils.ResponseUtil.badRequestResponse;
+import static uk.gov.pay.api.utils.ResponseUtil.notFoundResponse;
+import static uk.gov.pay.api.validation.PaymentSearchValidator.validateSearchParameters;
 
 @Path("/")
 @Api(value = "/", description = "Public Api Endpoints")
@@ -41,10 +44,10 @@ public class PaymentsResource {
     private static final Logger logger = LoggerFactory.getLogger(PaymentsResource.class);
 
     private static final String PAYMENT_KEY = "paymentId";
-    private static final String REFERENCE_KEY = "reference";
-    private static final String STATUS_KEY = "status";
-    private static final String FROM_DATE_KEY = "from_date";
-    private static final String TO_DATE_KEY = "to_date";
+    public static final String REFERENCE_KEY = "reference";
+    public static final String STATUS_KEY = "status";
+    public static final String FROM_DATE_KEY = "from_date";
+    public static final String TO_DATE_KEY = "to_date";
     private static final String DESCRIPTION_KEY = "description";
     private static final String AMOUNT_KEY = "amount";
     private static final String SERVICE_RETURN_URL = "return_url";
@@ -191,13 +194,7 @@ public class PaymentsResource {
         logger.info("received get search payments request: [ {} ]",
                 format("reference:%s, status: %s, fromDate: %s, toDate: %s", reference, status, fromDate, toDate));
 
-        List<Pair<String, String>> validationErrors = new LinkedList<>();
-
-        validateSearchCriteria(status, fromDate, toDate, validationErrors);
-
-        if (!validationErrors.isEmpty()) {
-            return unprocessableEntityResponse(logger, errorMessageFrom(validationErrors));
-        }
+        validateSearchParameters(status, reference, fromDate, toDate);
 
         List<Pair<String, String>> queryParams = asList(
                 Pair.of(REFERENCE_KEY, reference),
@@ -234,12 +231,12 @@ public class PaymentsResource {
 
                 return Response.ok(new PaymentSearchResults(paymentsForSearchResults)).build();
 
-            } catch (IOException e) {
-                return serverErrorResponse(logger, "Search payments failed");
+            } catch (IOException | ProcessingException e) {
+                throw new SearchChargesException(e);
             }
         }
 
-        return serverErrorResponse(logger, "Search payments failed");
+        throw new SearchChargesException(connectorResponse);
     }
 
     @POST
@@ -285,7 +282,7 @@ public class PaymentsResource {
             return Response.created(paymentUri).entity(payment).build();
 
         } else {
-            throw new CreateChargeConnectorErrorResponseException(connectorResponse.getStatus(), connectorResponse.readEntity(String.class));
+            throw new CreateChargeException(connectorResponse);
         }
     }
 
@@ -321,20 +318,6 @@ public class PaymentsResource {
         return badRequestResponse(logger, "Cancellation of charge failed.");
     }
 
-    private void validateSearchCriteria(String status, String fromDate, String toDate, List<Pair<String, String>> validationErrors) {
-        if (!validateStatus(status)) {
-            validationErrors.add(Pair.of(STATUS_KEY, status));
-        }
-
-        if (!validateDate(fromDate)) {
-            validationErrors.add(Pair.of(FROM_DATE_KEY, fromDate));
-        }
-
-        if (!validateDate(toDate)) {
-            validationErrors.add(Pair.of(TO_DATE_KEY, toDate));
-        }
-    }
-
     private URI getPaymentURI(UriInfo uriInfo, String chargeId) {
         return uriInfo.getBaseUriBuilder()
                 .path(PAYMENT_BY_ID)
@@ -368,11 +351,6 @@ public class PaymentsResource {
             }
         });
         return builder.toString();
-    }
-
-    private String errorMessageFrom(List<Pair<String, String>> invalidParams) {
-        List<String> keys = invalidParams.stream().map(Pair::getLeft).collect(Collectors.toList());
-        return String.format("fields [%s] are not in correct format. see public api documentation for the correct data formats", StringUtils.join(keys, ", "));
     }
 
     private Entity buildChargeRequestPayload(CreatePaymentRequest requestPayload) {
