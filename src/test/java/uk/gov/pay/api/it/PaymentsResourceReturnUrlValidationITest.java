@@ -39,8 +39,9 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0100"))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("return_url"))
+                .assertThat("$.code", is("P0102"))
                 .assertThat("$.description", is("Invalid attribute value: return_url. Must be a valid URL format"));
     }
 
@@ -61,8 +62,9 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0103"))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("return_url"))
+                .assertThat("$.code", is("P0101"))
                 .assertThat("$.description", is("Missing mandatory attribute: return_url"));
     }
 
@@ -83,8 +85,9 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0103"))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("return_url"))
+                .assertThat("$.code", is("P0101"))
                 .assertThat("$.description", is("Missing mandatory attribute: return_url"));
     }
 
@@ -104,8 +107,9 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0103"))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("return_url"))
+                .assertThat("$.code", is("P0101"))
                 .assertThat("$.description", is("Missing mandatory attribute: return_url"));
     }
 
@@ -126,8 +130,9 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0103"))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("return_url"))
+                .assertThat("$.code", is("P0101"))
                 .assertThat("$.description", is("Missing mandatory attribute: return_url"));
     }
 
@@ -150,7 +155,8 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("return_url"))
                 .assertThat("$.code", is("P0102"))
                 .assertThat("$.description", is("Invalid attribute value: return_url. Must be less than or equal to 2000 characters length"));
     }
@@ -174,7 +180,8 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("return_url"))
                 .assertThat("$.code", is("P0102"))
                 .assertThat("$.description", is("Invalid attribute value: return_url. Must be less than or equal to 2000 characters length"));
     }
@@ -198,7 +205,8 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("return_url"))
                 .assertThat("$.code", is("P0102"))
                 .assertThat("$.description", is("Invalid attribute value: return_url. Must be a valid URL format"));
     }
@@ -242,8 +250,9 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0100"))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("return_url"))
+                .assertThat("$.code", is("P0102"))
                 .assertThat("$.description", is("Invalid attribute value: return_url. Must be a valid URL format"));
     }
 

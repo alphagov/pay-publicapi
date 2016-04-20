@@ -23,7 +23,7 @@ public class PaymentsResourceDescriptionValidationITest extends PaymentResourceI
     }
 
     @Test
-    public void createPayment_responseWith400_whenReferenceIsNumeric() throws IOException {
+    public void createPayment_responseWith400_whenDescriptionIsNumeric() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
@@ -39,13 +39,14 @@ public class PaymentsResourceDescriptionValidationITest extends PaymentResourceI
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0100"))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("description"))
+                .assertThat("$.code", is("P0102"))
                 .assertThat("$.description", is("Invalid attribute value: description. Must be a valid string format"));
     }
 
     @Test
-    public void createPayment_responseWith400_whenReferenceIsEmpty() throws IOException {
+    public void createPayment_responseWith400_whenDescriptionIsEmpty() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
@@ -61,13 +62,14 @@ public class PaymentsResourceDescriptionValidationITest extends PaymentResourceI
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0103"))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("description"))
+                .assertThat("$.code", is("P0101"))
                 .assertThat("$.description", is("Missing mandatory attribute: description"));
     }
 
     @Test
-    public void createPayment_responseWith400_whenReferenceIsBlank() throws IOException {
+    public void createPayment_responseWith400_whenDescriptionIsBlank() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
@@ -83,13 +85,14 @@ public class PaymentsResourceDescriptionValidationITest extends PaymentResourceI
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0103"))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("description"))
+                .assertThat("$.code", is("P0101"))
                 .assertThat("$.description", is("Missing mandatory attribute: description"));
     }
 
     @Test
-    public void createPayment_responseWith400_whenReferenceIsMissing() throws IOException {
+    public void createPayment_responseWith400_whenDescriptionIsMissing() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
@@ -104,13 +107,14 @@ public class PaymentsResourceDescriptionValidationITest extends PaymentResourceI
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0103"))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("description"))
+                .assertThat("$.code", is("P0101"))
                 .assertThat("$.description", is("Missing mandatory attribute: description"));
     }
 
     @Test
-    public void createPayment_responseWith400_whenReferenceIsNull() throws IOException {
+    public void createPayment_responseWith400_whenDescriptionIsNull() throws IOException {
 
 
         String payload = "{" +
@@ -127,13 +131,14 @@ public class PaymentsResourceDescriptionValidationITest extends PaymentResourceI
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0103"))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("description"))
+                .assertThat("$.code", is("P0101"))
                 .assertThat("$.description", is("Missing mandatory attribute: description"));
     }
 
     @Test
-    public void createPayment_responseWith422_whenReferenceSizeIsGreaterThanMaxLength() throws IOException {
+    public void createPayment_responseWith422_whenDescriptionSizeIsGreaterThanMaxLength() throws IOException {
 
         String aVeryLongReference = RandomStringUtils.randomAlphanumeric(256);
 
@@ -151,13 +156,14 @@ public class PaymentsResourceDescriptionValidationITest extends PaymentResourceI
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("description"))
                 .assertThat("$.code", is("P0102"))
                 .assertThat("$.description", is("Invalid attribute value: description. Must be less than or equal to 255 characters length"));
     }
 
     @Test
-    public void createPayment_responseWith400_whenReferenceHasNotAValidJsonValue() throws IOException {
+    public void createPayment_responseWith400_whenDescriptionHasNotAValidJsonValue() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
@@ -179,7 +185,7 @@ public class PaymentsResourceDescriptionValidationITest extends PaymentResourceI
     }
 
     @Test
-    public void createPayment_responseWith400_whenReferenceFieldIsNotExpectedJsonField() throws IOException {
+    public void createPayment_responseWith400_whenDescriptionFieldIsNotExpectedJsonField() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
@@ -195,8 +201,9 @@ public class PaymentsResourceDescriptionValidationITest extends PaymentResourceI
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0100"))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("description"))
+                .assertThat("$.code", is("P0102"))
                 .assertThat("$.description", is("Invalid attribute value: description. Must be a valid string format"));
     }
 

@@ -38,8 +38,9 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0101"))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("amount"))
+                .assertThat("$.code", is("P0102"))
                 .assertThat("$.description", is("Invalid attribute value: amount. Must be greater than or equal to 1"));
     }
 
@@ -60,7 +61,8 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("amount"))
                 .assertThat("$.code", is("P0102"))
                 .assertThat("$.description", is("Invalid attribute value: amount. Must be less than or equal to 10000000"));
     }
@@ -83,8 +85,9 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0103"))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("amount"))
+                .assertThat("$.code", is("P0101"))
                 .assertThat("$.description", is("Missing mandatory attribute: amount"));
     }
 
@@ -105,8 +108,9 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0100"))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("amount"))
+                .assertThat("$.code", is("P0102"))
                 .assertThat("$.description", is("Invalid attribute value: amount. Must be a valid numeric format"));
     }
 
@@ -127,8 +131,9 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0100"))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("amount"))
+                .assertThat("$.code", is("P0102"))
                 .assertThat("$.description", is("Invalid attribute value: amount. Must be a valid numeric format"));
     }
 
@@ -149,8 +154,9 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0100"))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("amount"))
+                .assertThat("$.code", is("P0102"))
                 .assertThat("$.description", is("Invalid attribute value: amount. Must be a valid numeric format"));
     }
 
@@ -170,8 +176,9 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0103"))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("amount"))
+                .assertThat("$.code", is("P0101"))
                 .assertThat("$.description", is("Missing mandatory attribute: amount"));
     }
 
@@ -280,8 +287,9 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0100"))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("amount"))
+                .assertThat("$.code", is("P0102"))
                 .assertThat("$.description", is("Invalid attribute value: amount. Must be a valid numeric format"));
     }
 
@@ -300,8 +308,9 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0103"))
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("amount"))
+                .assertThat("$.code", is("P0101"))
                 .assertThat("$.description", is("Missing mandatory attribute: amount"));
     }
 

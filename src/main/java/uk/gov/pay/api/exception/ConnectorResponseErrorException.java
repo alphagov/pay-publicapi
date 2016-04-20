@@ -4,12 +4,12 @@ import javax.ws.rs.core.Response;
 
 class ConnectorResponseErrorException extends RuntimeException {
 
-    private int errorStatus;
-    private String errorBody;
+    private int status;
 
     ConnectorResponseErrorException(Response response) {
-        this.errorStatus = response.getStatus();
-        this.errorBody = response.readEntity(String.class);
+        super(response.toString());
+        this.status = response.getStatus();
+        response.close();
     }
 
     ConnectorResponseErrorException(Throwable cause) {
@@ -17,10 +17,6 @@ class ConnectorResponseErrorException extends RuntimeException {
     }
 
     public int getErrorStatus() {
-        return errorStatus;
-    }
-
-    public String getErrorBody() {
-        return errorBody;
+        return status;
     }
 }

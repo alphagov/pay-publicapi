@@ -7,27 +7,33 @@ import uk.gov.pay.api.model.PaymentError;
 
 public class BadRequestExceptionMatcher extends TypeSafeMatcher<BadRequestException> {
 
-    private PaymentError expectedError;
+    private final String code;
+    private final String description;
 
-    private BadRequestExceptionMatcher(PaymentError expectedError) {
-        this.expectedError = expectedError;
+    private BadRequestExceptionMatcher(String code, String description) {
+        this.code = code;
+        this.description = description;
     }
 
-    public static BadRequestExceptionMatcher aBadRequestExceptionContaining(PaymentError expectedError) {
-        return new BadRequestExceptionMatcher(expectedError);
+    public static BadRequestExceptionMatcher aBadRequestExceptionWithError(String code, String description) {
+        return new BadRequestExceptionMatcher(code, description);
     }
 
     @Override
     protected boolean matchesSafely(BadRequestException e) {
         PaymentError paymentError = e.getPaymentError();
-        return expectedError.getCode().equals(paymentError.getCode()) &&
-                expectedError.getDescription().equals(paymentError.getDescription());
+        return code.equals(paymentError.getCode()) &&
+                description.equals(paymentError.getDescription());
     }
 
     @Override
     public void describeTo(Description description) {
         description.appendText(BadRequestException.class.getCanonicalName())
                 .appendText(" with ")
-                .appendText(expectedError.toString());
+                .appendText(" PaymentError. { code = ")
+                .appendValue(code)
+                .appendText(", description = ")
+                .appendValue(this.description)
+                .appendText(" }");
     }
 }

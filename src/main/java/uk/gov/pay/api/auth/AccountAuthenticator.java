@@ -37,8 +37,10 @@ public class AccountAuthenticator implements Authenticator<String, String> {
             String accountId = response.readEntity(JsonNode.class).get("account_id").asText();
             return Optional.of(accountId);
         } else if (response.getStatus() == UNAUTHORIZED.getStatusCode()) {
+            response.close();
             return Optional.absent();
         } else {
+            response.close();
             logger.warn("Unexpected status code " + response.getStatus() + " from auth.");
             throw new ServiceUnavailableException();
         }

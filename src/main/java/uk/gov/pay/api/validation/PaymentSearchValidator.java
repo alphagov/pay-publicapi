@@ -7,10 +7,9 @@ import uk.gov.pay.api.utils.DateTimeUtils;
 import java.util.LinkedList;
 import java.util.List;
 
-import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.join;
 import static org.eclipse.jetty.util.StringUtil.isBlank;
-import static uk.gov.pay.api.model.PaymentError.Code.P0401;
+import static uk.gov.pay.api.model.PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 import static uk.gov.pay.api.resources.PaymentsResource.*;
 import static uk.gov.pay.api.validation.MaxLengthValidator.isValid;
@@ -27,8 +26,7 @@ public class PaymentSearchValidator {
         validateToDate(toDate, validationErrors);
 
         if (!validationErrors.isEmpty()) {
-            throw new ValidationException(aPaymentError(P0401,
-                    format("Invalid parameters: %s. See Public API documentation for the correct data formats", join(validationErrors, ", "))));
+            throw new ValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", ")));
         }
     }
 

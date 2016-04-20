@@ -182,13 +182,21 @@ public class ConnectorMockClient {
 
 
     public void respondChargeNotFound(String gatewayAccountId, String chargeId, String errorMsg) {
+        respondWhenGetCharge(gatewayAccountId, chargeId, errorMsg, NOT_FOUND_404);
+    }
+
+    public void respondWhenGetCharge(String gatewayAccountId, String chargeId, String errorMsg, int status) {
         whenGetCharge(gatewayAccountId, chargeId)
-                .respond(withStatusAndErrorMessage(NOT_FOUND_404, errorMsg));
+                .respond(withStatusAndErrorMessage(status, errorMsg));
     }
 
     public void respondChargeEventsNotFound(String gatewayAccountId, String chargeId, String errorMsg) {
+        respondWhenGetChargeEvents(gatewayAccountId, chargeId, errorMsg, NOT_FOUND_404);
+    }
+
+    public void respondWhenGetChargeEvents(String gatewayAccountId, String chargeId, String errorMsg, int status) {
         whenGetChargeEvents(gatewayAccountId, chargeId)
-                .respond(withStatusAndErrorMessage(NOT_FOUND_404, errorMsg));
+                .respond(withStatusAndErrorMessage(status, errorMsg));
     }
 
     public void respondOk_whenCancelCharge(String paymentId, String accountId) {
@@ -198,18 +206,16 @@ public class ConnectorMockClient {
     }
 
     public void respondChargeNotFound_WhenCancelCharge(String paymentId, String accountId, String errorMsg) {
-        whenCancelCharge(paymentId, accountId)
-                .respond(withStatusAndErrorMessage(NOT_FOUND_404, errorMsg));
+        respond_WhenCancelCharge(paymentId, accountId, errorMsg, NOT_FOUND_404);
     }
 
-    public void respondBadRequest_WhenCancelChargeNotAllowed(String paymentId, String accountId, String errorMsg) {
-        whenCancelCharge(paymentId, accountId)
-                .respond(withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg));
+    public void respondBadRequest_WhenCancelCharge(String paymentId, String accountId, String errorMessage) {
+        respond_WhenCancelCharge(paymentId, accountId, errorMessage, BAD_REQUEST_400);
     }
 
-    public void respondBadRequest_WhenAccountIdIsMissing(String paymentId, String accountId, String errorMessage) {
+    public void respond_WhenCancelCharge(String paymentId, String accountId, String errorMessage, int status) {
         whenCancelCharge(paymentId, accountId)
-                .respond(withStatusAndErrorMessage(BAD_REQUEST_400, errorMessage));
+                .respond(withStatusAndErrorMessage(status, errorMessage));
     }
 
     public ForwardChainExpectation whenCreateCharge(long amount, String gatewayAccountId, String returnUrl, String description, String reference) {

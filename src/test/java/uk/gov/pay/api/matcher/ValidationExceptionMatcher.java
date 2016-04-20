@@ -7,27 +7,33 @@ import uk.gov.pay.api.model.PaymentError;
 
 public class ValidationExceptionMatcher extends TypeSafeMatcher<ValidationException> {
 
-    private PaymentError expectedError;
+    private final String code;
+    private final String description;
 
-    private ValidationExceptionMatcher(PaymentError expectedError) {
-        this.expectedError = expectedError;
+    private ValidationExceptionMatcher(String code, String description) {
+        this.code = code;
+        this.description = description;
     }
 
-    public static ValidationExceptionMatcher aValidationExceptionContaining(PaymentError expectedError) {
-        return new ValidationExceptionMatcher(expectedError);
+    public static ValidationExceptionMatcher aValidationExceptionContaining(String code, String description) {
+        return new ValidationExceptionMatcher(code, description);
     }
 
     @Override
     protected boolean matchesSafely(ValidationException e) {
         PaymentError paymentError = e.getPaymentError();
-        return expectedError.getCode().equals(paymentError.getCode()) &&
-                expectedError.getDescription().equals(paymentError.getDescription());
+        return code.equals(paymentError.getCode()) &&
+                description.equals(paymentError.getDescription());
     }
 
     @Override
     public void describeTo(Description description) {
         description.appendText(ValidationException.class.getCanonicalName())
                 .appendText(" with ")
-                .appendText(expectedError.toString());
+                .appendText(" PaymentError. { code = ")
+                .appendValue(code)
+                .appendText(", description = ")
+                .appendValue(description)
+                .appendText(" }");
     }
 }
