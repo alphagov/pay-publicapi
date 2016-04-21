@@ -51,7 +51,7 @@ public class PaymentsCancelResourceITest extends PaymentResourceITestBase {
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", Is.is("P0501"))
-                .assertThat("$.description", Is.is("Cancellation of charge failed"));
+                .assertThat("$.description", Is.is("Cancellation of payment failed"));
     }
 
     @Test

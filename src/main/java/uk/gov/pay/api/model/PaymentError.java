@@ -30,7 +30,7 @@ public class PaymentError {
         SEARCH_PAYMENTS_CONNECTOR_ERROR("P0498", "Downstream system error"),
 
         CANCEL_PAYMENT_NOT_FOUND_ERROR("P0500", "Not found"),
-        CANCEL_PAYMENT_CONNECTOR_BAD_REQUEST_ERROR("P0501", "Cancellation of charge failed"),
+        CANCEL_PAYMENT_CONNECTOR_BAD_REQUEST_ERROR("P0501", "Cancellation of payment failed"),
         CANCEL_PAYMENT_CONNECTOR_ERROR("P0598", "Downstream system error");
 
         private String value;

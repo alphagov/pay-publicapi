@@ -82,10 +82,11 @@ public class PaymentsResource {
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             code = 200)
-
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = PaymentWithAllLinks.class),
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = PaymentWithAllLinks.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 404, message = "Not found")})
+            @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
+            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response getPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
                                @PathParam(PAYMENT_KEY) String paymentId,
                                @Context UriInfo uriInfo) {
@@ -122,10 +123,11 @@ public class PaymentsResource {
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             code = 200)
-
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = PaymentEvents.class),
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = PaymentEvents.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 404, message = "Not found")})
+            @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
+            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response getPaymentEvents(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
                                      @PathParam(PAYMENT_KEY) String paymentId,
                                      @Context UriInfo uriInfo) {
@@ -167,10 +169,11 @@ public class PaymentsResource {
             responseContainer = "List",
             code = 200)
 
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "OK", response = PaymentSearchResults.class),
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = PaymentSearchResults.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 500, message = "Search payments failed"),
-            @ApiResponse(code = 422, message = "fields [from_date, to_date, status] are not in correct format. see public api documentation for the correct data formats")})
+            @ApiResponse(code = 422, message = "Invalid parameters: from_date, to_date, status. See Public API documentation for the correct data formats", response = PaymentError.class),
+            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response searchPayments(@ApiParam(value = "accountId", hidden = true)
                                    @Auth String accountId,
                                    @ApiParam(value = "Your payment reference to search", hidden = false)
@@ -242,10 +245,11 @@ public class PaymentsResource {
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             code = 201,
             nickname = "newPayment")
-
-    @ApiResponses(value = {@ApiResponse(code = 201, message = "Created", response = PaymentWithAllLinks.class),
-            @ApiResponse(code = 400, message = "Bad request"),
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Created", response = PaymentWithAllLinks.class),
+            @ApiResponse(code = 400, message = "Bad request", response = PaymentError.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
+            @ApiResponse(code = 422, message = "Invalid attribute value: description. Must be less than or equal to 255 characters length", response = PaymentError.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response createNewPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
                                      @ApiParam(value = "requestPayload", required = true) CreatePaymentRequest requestPayload,
@@ -288,11 +292,13 @@ public class PaymentsResource {
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be cancelled if its in " +
                     "a CREATED or IN PROGRESS status",
             code = 204)
-
-    @ApiResponses(value = {@ApiResponse(code = 204, message = "No Content"),
-            @ApiResponse(code = 400, message = "Payment cancellation failed"),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource")})
-
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "No Content"),
+            @ApiResponse(code = 400, message = "Cancellation of payment failed", response = PaymentError.class),
+            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
+            @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
+            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)
+    })
     public Response cancelPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
                                   @PathParam(PAYMENT_KEY) String paymentId) {
 
@@ -305,7 +311,7 @@ public class PaymentsResource {
 
         if (connectorResponse.getStatus() == HttpStatus.SC_NO_CONTENT) {
             connectorResponse.close();
-            return  Response.noContent().build();
+            return Response.noContent().build();
         }
 
         throw new CancelPaymentException(connectorResponse);
