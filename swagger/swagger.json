@@ -51,10 +51,16 @@
             "description" : "Credentials are required to access this resource"
           },
           "422" : {
-            "description" : "fields [from_date, to_date, status] are not in correct format. see public api documentation for the correct data formats"
+            "description" : "Invalid parameters: from_date, to_date, status. See Public API documentation for the correct data formats",
+            "schema" : {
+              "$ref" : "#/definitions/Payment Error"
+            }
           },
           "500" : {
-            "description" : "Search payments failed"
+            "description" : "Downstream system error",
+            "schema" : {
+              "$ref" : "#/definitions/Payment Error"
+            }
           }
         }
       },
@@ -81,10 +87,19 @@
             }
           },
           "400" : {
-            "description" : "Bad request"
+            "description" : "Bad request",
+            "schema" : {
+              "$ref" : "#/definitions/Payment Error"
+            }
           },
           "401" : {
             "description" : "Credentials are required to access this resource"
+          },
+          "422" : {
+            "description" : "Invalid attribute value: description. Must be less than or equal to 255 characters length",
+            "schema" : {
+              "$ref" : "#/definitions/Payment Error"
+            }
           },
           "500" : {
             "description" : "Downstream system error",
@@ -118,7 +133,16 @@
             "description" : "Credentials are required to access this resource"
           },
           "404" : {
-            "description" : "Not found"
+            "description" : "Not found",
+            "schema" : {
+              "$ref" : "#/definitions/Payment Error"
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "schema" : {
+              "$ref" : "#/definitions/Payment Error"
+            }
           }
         }
       }
@@ -140,10 +164,25 @@
             "description" : "No Content"
           },
           "400" : {
-            "description" : "Payment cancellation failed"
+            "description" : "Cancellation of payment failed",
+            "schema" : {
+              "$ref" : "#/definitions/Payment Error"
+            }
           },
           "401" : {
             "description" : "Credentials are required to access this resource"
+          },
+          "404" : {
+            "description" : "Not found",
+            "schema" : {
+              "$ref" : "#/definitions/Payment Error"
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "schema" : {
+              "$ref" : "#/definitions/Payment Error"
+            }
           }
         }
       }
@@ -171,7 +210,16 @@
             "description" : "Credentials are required to access this resource"
           },
           "404" : {
-            "description" : "Not found"
+            "description" : "Not found",
+            "schema" : {
+              "$ref" : "#/definitions/Payment Error"
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "schema" : {
+              "$ref" : "#/definitions/Payment Error"
+            }
           }
         }
       }
