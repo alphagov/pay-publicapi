@@ -13,6 +13,7 @@ import static uk.gov.pay.api.model.PaymentEvent.createPaymentEvent;
 
 @ApiModel(value="PaymentEventsInformation", description = "A List of Payment Events information")
 public class PaymentEvents {
+    public static final String EVENTS = "events";
     @JsonProperty("payment_id")
     private final String paymentId;
 
@@ -23,9 +24,11 @@ public class PaymentEvents {
 
     public static PaymentEvents createPaymentEventsResponse(JsonNode payload, String paymentLink) {
         List<PaymentEvent> events = newArrayList();
-        if(payload.get("events").isArray()) {
-            for (JsonNode event : payload.get("events")) {
-                events.add(createPaymentEvent(event, paymentLink));
+        String paymentId = payload.get("charge_id").asText();
+
+        if(payload.get(EVENTS).isArray()) {
+            for (JsonNode event : payload.get(EVENTS)) {
+                events.add(createPaymentEvent(event, paymentLink, paymentId));
             }
         }
         return new PaymentEvents(

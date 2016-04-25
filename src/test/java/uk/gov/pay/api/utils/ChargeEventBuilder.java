@@ -11,19 +11,13 @@ public class ChargeEventBuilder {
 
     @JsonDeserialize
     @JsonSerialize
-    @JsonProperty("charge_id")
-    private String chargeId;
-
-    @JsonDeserialize
-    @JsonSerialize
     private String status;
 
     @JsonDeserialize
     @JsonSerialize
     private String updated;
 
-    public ChargeEventBuilder(String chargeId, String status, String updated) {
-        this.chargeId = chargeId;
+    public ChargeEventBuilder(String status, String updated) {
         this.status = status;
         this.updated = updated;
     }

@@ -20,17 +20,12 @@ public class PaymentEvent {
     @JsonProperty("_links")
     private PaymentEventLink paymentLink;
 
-    public static PaymentEvent createPaymentEvent(JsonNode payload, String paymentLink) {
-        return new PaymentEvent(
-            payload.get("charge_id").asText(),
-            payload.get("status").asText(),
-            payload.get("updated").asText(),
-            paymentLink
-        );
+    public static PaymentEvent createPaymentEvent(JsonNode payload, String paymentLink, String paymentId) {
+        return new PaymentEvent(paymentId, payload.get("status").asText(), payload.get("updated").asText(), paymentLink);
     }
 
-    private PaymentEvent(String chargeId, String status, String updated, String paymentLink) {
-        this.paymentId = chargeId;
+    private PaymentEvent(String paymentId, String status, String updated, String paymentLink) {
+        this.paymentId = paymentId;
         this.status = status;
         this.updated = updated;
         this.paymentLink = new PaymentEventLink(paymentLink);
