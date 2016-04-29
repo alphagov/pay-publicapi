@@ -16,6 +16,7 @@ import uk.gov.pay.api.exception.mapper.*;
 import uk.gov.pay.api.healthcheck.Ping;
 import uk.gov.pay.api.json.CreatePaymentRequestDeserializer;
 import uk.gov.pay.api.model.CreatePaymentRequest;
+import uk.gov.pay.api.resources.HealthCheckResource;
 import uk.gov.pay.api.resources.PaymentsResource;
 import uk.gov.pay.api.validation.PaymentRequestValidator;
 import uk.gov.pay.api.validation.URLValidator;
@@ -45,6 +46,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         environment.healthChecks().register("ping", new Ping());
 
         environment.jersey().register(new PaymentsResource(client, config.getConnectorUrl()));
+        environment.jersey().register(new HealthCheckResource(environment));
         environment.jersey().register(AuthFactory.binder(new OAuthFactory<>(new AccountAuthenticator(client, config.getPublicAuthUrl()), "", String.class)));
         environment.jersey().register(CreateChargeExceptionMapper.class);
         environment.jersey().register(GetChargeExceptionMapper.class);
