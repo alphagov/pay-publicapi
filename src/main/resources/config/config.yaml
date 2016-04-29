@@ -14,3 +14,7 @@ publicAuthUrl: ${PUBLIC_AUTH_URL}
 
 jerseyClientConfig:
   disabledSecureConnection: ${DISABLE_INTERNAL_HTTPS}
+
+rateLimiter:
+  rate: ${RATE_LIMITER_VALUE:-3}
+  perMillis: ${RATE_LIMITER_PER_MILLIS:-1000}
