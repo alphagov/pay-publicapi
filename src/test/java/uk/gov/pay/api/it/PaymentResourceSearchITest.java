@@ -40,7 +40,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
     @Before
     public void mapBearerTokenToAccountId() {
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                         .build()
         );
 
-        String responseBody = searchPayments(BEARER_TOKEN, ImmutableMap.of("reference", TEST_REFERENCE))
+        String responseBody = searchPayments(API_KEY, ImmutableMap.of("reference", TEST_REFERENCE))
                 .statusCode(200)
                 .contentType(JSON)
                 .body("results[0].created_date", is(DEFAULT_CREATED_DATE))
@@ -85,7 +85,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
     @Test
     public void searchPayments_ShouldNotIncludeCancelLinkIfThePaymentCannotBeCancelled() {
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         String SUCCEEDED_STATUS = "succeeded";
         connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null,
                 aSuccessfulSearchResponse()
@@ -95,7 +95,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                         .build()
         );
 
-        searchPayments(BEARER_TOKEN, ImmutableMap.of("reference", TEST_REFERENCE))
+        searchPayments(API_KEY, ImmutableMap.of("reference", TEST_REFERENCE))
                 .statusCode(200)
                 .contentType(JSON)
                 .body("results[0]._links.cancel", is(nullValue()));
@@ -111,7 +111,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                         .build()
         );
 
-        ValidatableResponse response = searchPayments(BEARER_TOKEN, ImmutableMap.of("reference", TEST_REFERENCE))
+        ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of("reference", TEST_REFERENCE))
                 .statusCode(200)
                 .contentType(JSON)
                 .body("results.size()", equalTo(3));
@@ -130,7 +130,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                         .build()
         );
 
-        ValidatableResponse response = searchPayments(BEARER_TOKEN, ImmutableMap.of("status", TEST_STATUS))
+        ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of("status", TEST_STATUS))
                 .statusCode(200)
                 .contentType(JSON)
                 .body("results.size()", equalTo(3));
@@ -148,7 +148,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                         .build()
         );
 
-        ValidatableResponse response = searchPayments(BEARER_TOKEN, ImmutableMap.of("status", TEST_STATUS.toLowerCase()))
+        ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of("status", TEST_STATUS.toLowerCase()))
                 .statusCode(200)
                 .contentType(JSON)
                 .body("results.size()", equalTo(3));
@@ -166,7 +166,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                         .build()
         );
 
-        ValidatableResponse response = searchPayments(BEARER_TOKEN, ImmutableMap.of("from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
+        ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of("from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
                 .statusCode(200)
                 .contentType(JSON)
                 .body("results.size()", equalTo(3));
@@ -188,7 +188,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                         .build()
         );
 
-        ValidatableResponse response = searchPayments(BEARER_TOKEN,
+        ValidatableResponse response = searchPayments(API_KEY,
                 ImmutableMap.of("reference", TEST_REFERENCE, "status", TEST_STATUS, "from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
                 .statusCode(200)
                 .contentType(JSON)
@@ -204,7 +204,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
     @Test
     public void searchPayments_errorIfConnectorResponseFails() throws Exception {
 
-        InputStream body = searchPayments(BEARER_TOKEN,
+        InputStream body = searchPayments(API_KEY,
                 ImmutableMap.of("reference", TEST_REFERENCE, "status", TEST_STATUS, "from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
                 .statusCode(500)
                 .contentType(JSON).extract()
@@ -225,7 +225,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                         .withBody("wtf"));
 
-        InputStream body = searchPayments(BEARER_TOKEN,
+        InputStream body = searchPayments(API_KEY,
                 ImmutableMap.of("reference", TEST_REFERENCE, "status", TEST_STATUS, "from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
                 .statusCode(500)
                 .contentType(JSON).extract()

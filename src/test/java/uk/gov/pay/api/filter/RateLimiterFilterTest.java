@@ -47,7 +47,7 @@ public class RateLimiterFilterTest {
     }
 
     @Test
-    public void shouldRespondWith429TooManyRequests_whenRateLimiterThrowsRateLimiterException() throws Exception {
+    public void shouldRejectRequest_with429ResponseError__whenRateLimiterThrowsRateLimiterException() throws Exception {
 
         // given
         String authorization = "Bearer whateverAuthorizationToken";

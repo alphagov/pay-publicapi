@@ -18,3 +18,5 @@ jerseyClientConfig:
 rateLimiter:
   rate: ${RATE_LIMITER_VALUE:-3}
   perMillis: ${RATE_LIMITER_PER_MILLIS:-1000}
+
+apiKeyHmacSecret: ${TOKEN_API_HMAC_SECRET}

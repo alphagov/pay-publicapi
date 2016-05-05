@@ -6,6 +6,7 @@ import org.junit.Rule;
 import org.mockserver.junit.MockServerRule;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
+import uk.gov.pay.api.utils.ApiKeyGenerator;
 import uk.gov.pay.api.utils.ConnectorMockClient;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 
@@ -13,8 +14,8 @@ import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 
 public abstract class PaymentResourceITestBase {
-
-    protected static final String BEARER_TOKEN = "TEST_BEARER_TOKEN";
+    //Must use same secret set int configured test-config.xml
+    protected static final String API_KEY = ApiKeyGenerator.apiKeyValueOf("TEST_BEARER_TOKEN", "qwer9yuhgf");
     protected static final String GATEWAY_ACCOUNT_ID = "GATEWAY_ACCOUNT_ID";
     protected static final String PAYMENTS_PATH = "/v1/payments/";
 

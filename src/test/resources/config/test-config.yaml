@@ -24,3 +24,5 @@ jerseyClientConfig:
 rateLimiter:
   rate: 1
   perMillis: 1000
+
+apiKeyHmacSecret: qwer9yuhgf

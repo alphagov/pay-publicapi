@@ -27,13 +27,13 @@ public class PaymentResourceSearchValidationITest extends PaymentResourceITestBa
 
     @Before
     public void mapBearerTokenToAccountId() {
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
     }
 
     @Test
     public void searchPayments_errorWhenToDateIsNotInZoneDateTimeFormat() throws Exception {
 
-        InputStream body = searchPayments(BEARER_TOKEN,
+        InputStream body = searchPayments(API_KEY,
                 ImmutableMap.of("reference", VALID_REFERENCE, "status", VALID_STATUS, "from_date", VALID_FROM_DATE, "to_date", "2016-01-01 00:00"))
                 .statusCode(422)
                 .contentType(JSON).extract()
@@ -48,7 +48,7 @@ public class PaymentResourceSearchValidationITest extends PaymentResourceITestBa
     @Test
     public void searchPayments_errorWhenFromDateIsNotInZoneDateTimeFormat() throws Exception {
 
-        InputStream body = searchPayments(BEARER_TOKEN,
+        InputStream body = searchPayments(API_KEY,
                 ImmutableMap.of("reference", VALID_REFERENCE, "status", VALID_STATUS, "from_date", "2016-01-01 00:00", "to_date", VALID_TO_DATE))
                 .statusCode(422)
                 .contentType(JSON).extract()
@@ -63,7 +63,7 @@ public class PaymentResourceSearchValidationITest extends PaymentResourceITestBa
     @Test
     public void searchPayments_errorWhenStatusNotMatchingWithExpectedExternalStatuses() throws Exception {
 
-        InputStream body = searchPayments(BEARER_TOKEN,
+        InputStream body = searchPayments(API_KEY,
                 ImmutableMap.of("reference", VALID_REFERENCE, "status", "invalid status", "from_date", VALID_FROM_DATE, "to_date", VALID_TO_DATE))
                 .statusCode(422)
                 .contentType(JSON).extract()
@@ -78,7 +78,7 @@ public class PaymentResourceSearchValidationITest extends PaymentResourceITestBa
     @Test
     public void searchPayments_errorWhenReferenceSizeIsLongerThan255() throws Exception {
 
-        InputStream body = searchPayments(BEARER_TOKEN,
+        InputStream body = searchPayments(API_KEY,
                 ImmutableMap.of("reference", RandomStringUtils.randomAlphanumeric(256), "status", VALID_STATUS, "from_date", VALID_FROM_DATE, "to_date", VALID_TO_DATE))
                 .statusCode(422)
                 .contentType(JSON).extract()
@@ -93,7 +93,7 @@ public class PaymentResourceSearchValidationITest extends PaymentResourceITestBa
     @Test
     public void searchPayments_errorWhenToDateNotInZoneDateTimeFormat_andInvalidStatus() throws Exception {
 
-        InputStream body = searchPayments(BEARER_TOKEN,
+        InputStream body = searchPayments(API_KEY,
                 ImmutableMap.of("reference", VALID_REFERENCE, "status", "invalid status", "from_date", VALID_FROM_DATE, "to_date", "2016-01-01 00:00"))
                 .statusCode(422)
                 .contentType(JSON).extract()
@@ -108,7 +108,7 @@ public class PaymentResourceSearchValidationITest extends PaymentResourceITestBa
     @Test
     public void searchPayments_errorWhenFromAndToDatesAreNotInZoneDateTimeFormat() throws Exception {
 
-        InputStream body = searchPayments(BEARER_TOKEN,
+        InputStream body = searchPayments(API_KEY,
                 ImmutableMap.of("reference", VALID_REFERENCE, "status", VALID_STATUS, "from_date", "12345", "to_date", "2016-01-01 00:00"))
                 .statusCode(422)
                 .contentType(JSON).extract()
@@ -123,7 +123,7 @@ public class PaymentResourceSearchValidationITest extends PaymentResourceITestBa
     @Test
     public void searchPayments_errorWhenAllFieldsAreInvalid() throws Exception {
 
-        InputStream body = searchPayments(BEARER_TOKEN,
+        InputStream body = searchPayments(API_KEY,
                 ImmutableMap.of("reference", RandomStringUtils.randomAlphanumeric(256), "status", "invalid status", "from_date", "12345", "to_date", "98765"))
                 .statusCode(422)
                 .contentType(JSON).extract()

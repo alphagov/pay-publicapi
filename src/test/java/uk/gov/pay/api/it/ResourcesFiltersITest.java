@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.aSuccessfulSearchResponse;
 
-public class RateLimitResourcesITest extends PaymentResourceITestBase {
+public class ResourcesFiltersITest extends PaymentResourceITestBase {
 
     private static final int AMOUNT = 9999999;
     private static final String CHARGE_ID = "ch_ab2341da231434l";
@@ -45,12 +45,12 @@ public class RateLimitResourcesITest extends PaymentResourceITestBase {
     private static final Map<String, String> PAYMENT_CREATED = new ChargeEventBuilder(STATUS, CREATED_DATE).build();
     private static final List<Map<String, String>> EVENTS = Collections.singletonList(PAYMENT_CREATED);
 
-    private static final String SUCCESS_PAYLOAD = paymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE);
+    private static final String PAYLOAD = paymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE);
     private ExecutorService executor = Executors.newFixedThreadPool(2);
 
     @Before
     public void setupApiKey() {
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
     }
 
     @Test
@@ -60,8 +60,8 @@ public class RateLimitResourcesITest extends PaymentResourceITestBase {
                 DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE);
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
-                () -> postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD),
-                () -> postPaymentResponse(BEARER_TOKEN, SUCCESS_PAYLOAD)
+                () -> postPaymentResponse(API_KEY, PAYLOAD),
+                () -> postPaymentResponse(API_KEY, PAYLOAD)
         );
 
         List<ValidatableResponse> finishedTasks = invokeAll(tasks);
@@ -71,14 +71,28 @@ public class RateLimitResourcesITest extends PaymentResourceITestBase {
     }
 
     @Test
+    public void createPayment_whenInvalidAuthorizationHeader_shouldReturn401Response() throws Exception {
+
+        List<Callable<ValidatableResponse>> tasks = Arrays.asList(
+                () -> postPaymentResponse("InvalidToken", PAYLOAD),
+                () -> postPaymentResponse("InvalidToken", PAYLOAD)
+        );
+
+        List<ValidatableResponse> finishedTasks = invokeAll(tasks);
+
+        finishedTasks.get(0).statusCode(401);
+        finishedTasks.get(1).statusCode(401);
+    }
+
+    @Test
     public void getPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
 
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, STATUS, RETURN_URL,
                 DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID);
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
-                () -> getPaymentResponse(BEARER_TOKEN, CHARGE_ID),
-                () -> getPaymentResponse(BEARER_TOKEN, CHARGE_ID)
+                () -> getPaymentResponse(API_KEY, CHARGE_ID),
+                () -> getPaymentResponse(API_KEY, CHARGE_ID)
         );
 
         List<ValidatableResponse> finishedTasks = invokeAll(tasks);
@@ -88,19 +102,47 @@ public class RateLimitResourcesITest extends PaymentResourceITestBase {
     }
 
     @Test
+    public void getPayment_whenInvalidAuthorizationHeader_shouldReturn401Response() throws Exception {
+
+        List<Callable<ValidatableResponse>> tasks = Arrays.asList(
+                () -> getPaymentResponse("InvalidToken", CHARGE_ID),
+                () -> getPaymentResponse("InvalidToken", CHARGE_ID)
+        );
+
+        List<ValidatableResponse> finishedTasks = invokeAll(tasks);
+
+        finishedTasks.get(0).statusCode(401);
+        finishedTasks.get(1).statusCode(401);
+    }
+
+    @Test
     public void getPaymentEvents_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
 
         connectorMock.respondWithChargeEventsFound(GATEWAY_ACCOUNT_ID, CHARGE_ID, EVENTS);
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
-                () -> getPaymentEventsResponse(BEARER_TOKEN, CHARGE_ID),
-                () -> getPaymentEventsResponse(BEARER_TOKEN, CHARGE_ID)
+                () -> getPaymentEventsResponse(API_KEY, CHARGE_ID),
+                () -> getPaymentEventsResponse(API_KEY, CHARGE_ID)
         );
 
         List<ValidatableResponse> finishedTasks = invokeAll(tasks);
 
         assertThat(finishedTasks, hasItem(aResponse(200)));
         assertThat(finishedTasks, hasItem(anErrorResponse(429, "P0900", "Too many requests")));
+    }
+
+    @Test
+    public void getPaymentEvents_whenInvalidAuthorizationHeader_shouldReturn401Response() throws Exception {
+
+        List<Callable<ValidatableResponse>> tasks = Arrays.asList(
+                () -> getPaymentEventsResponse("InvalidToken", CHARGE_ID),
+                () -> getPaymentEventsResponse("InvalidToken", CHARGE_ID)
+        );
+
+        List<ValidatableResponse> finishedTasks = invokeAll(tasks);
+
+        finishedTasks.get(0).statusCode(401);
+        finishedTasks.get(1).statusCode(401);
     }
 
     @Test
@@ -114,8 +156,8 @@ public class RateLimitResourcesITest extends PaymentResourceITestBase {
                         .build());
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
-                () -> searchPayments(BEARER_TOKEN, ImmutableMap.of("reference", REFERENCE)),
-                () -> searchPayments(BEARER_TOKEN, ImmutableMap.of("reference", REFERENCE))
+                () -> searchPayments(API_KEY, ImmutableMap.of("reference", REFERENCE)),
+                () -> searchPayments(API_KEY, ImmutableMap.of("reference", REFERENCE))
         );
 
         List<ValidatableResponse> finishedTasks = invokeAll(tasks);
@@ -125,19 +167,47 @@ public class RateLimitResourcesITest extends PaymentResourceITestBase {
     }
 
     @Test
+    public void searchPayments_whenInvalidAuthorizationHeader_shouldReturn401Response() throws Exception {
+
+        List<Callable<ValidatableResponse>> tasks = Arrays.asList(
+                () -> searchPayments("InvalidToken", ImmutableMap.of("reference", REFERENCE)),
+                () -> searchPayments("InvalidToken", ImmutableMap.of("reference", REFERENCE))
+        );
+
+        List<ValidatableResponse> finishedTasks = invokeAll(tasks);
+
+        finishedTasks.get(0).statusCode(401);
+        finishedTasks.get(1).statusCode(401);
+    }
+
+    @Test
     public void cancelPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
 
         connectorMock.respondOk_whenCancelCharge(CHARGE_ID, GATEWAY_ACCOUNT_ID);
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
-                () -> postCancelPaymentResponse(CHARGE_ID),
-                () -> postCancelPaymentResponse(CHARGE_ID)
+                () -> postCancelPaymentResponse(API_KEY, CHARGE_ID),
+                () -> postCancelPaymentResponse(API_KEY, CHARGE_ID)
         );
 
         List<ValidatableResponse> finishedTasks = invokeAll(tasks);
 
         assertThat(finishedTasks, hasItem(aResponse(204)));
         assertThat(finishedTasks, hasItem(anErrorResponse(429, "P0900", "Too many requests")));
+    }
+
+    @Test
+    public void cancelPayment_whenInvalidAuthorizationHeader_shouldReturn401Response() throws Exception {
+
+        List<Callable<ValidatableResponse>> tasks = Arrays.asList(
+                () -> postCancelPaymentResponse("InvalidToken", CHARGE_ID),
+                () -> postCancelPaymentResponse("InvalidToken", CHARGE_ID)
+        );
+
+        List<ValidatableResponse> finishedTasks = invokeAll(tasks);
+
+        finishedTasks.get(0).statusCode(401);
+        finishedTasks.get(1).statusCode(401);
     }
 
     private List<ValidatableResponse> invokeAll(List<Callable<ValidatableResponse>> tasks) throws InterruptedException {
@@ -236,9 +306,9 @@ public class RateLimitResourcesITest extends PaymentResourceITestBase {
                 .then();
     }
 
-    private ValidatableResponse postCancelPaymentResponse(String paymentId) {
+    private ValidatableResponse postCancelPaymentResponse(String bearerToken, String paymentId) {
         return given().port(app.getLocalPort())
-                .header(AUTHORIZATION, "Bearer " + BEARER_TOKEN)
+                .header(AUTHORIZATION, "Bearer " + bearerToken)
                 .post(String.format("/v1/payments/%s/cancel", paymentId))
                 .then();
     }

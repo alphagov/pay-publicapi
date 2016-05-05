@@ -18,7 +18,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
 
     @Before
     public void setUpBearerToken() {
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
     }
 
     @Test
@@ -31,7 +31,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
+        InputStream body = postPaymentResponse(API_KEY, payload)
                 .statusCode(422)
                 .contentType(JSON)
                 .extract()
@@ -54,7 +54,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
+        InputStream body = postPaymentResponse(API_KEY, payload)
                 .statusCode(422)
                 .contentType(JSON)
                 .extract()
@@ -77,7 +77,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
+        InputStream body = postPaymentResponse(API_KEY, payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .contentType(JSON)
@@ -101,7 +101,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
+        InputStream body = postPaymentResponse(API_KEY, payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .extract()
@@ -124,7 +124,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
+        InputStream body = postPaymentResponse(API_KEY, payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .extract()
@@ -147,7 +147,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
+        InputStream body = postPaymentResponse(API_KEY, payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .extract()
@@ -169,7 +169,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
+        InputStream body = postPaymentResponse(API_KEY, payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .extract()
@@ -192,7 +192,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
+        InputStream body = postPaymentResponse(API_KEY, payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .extract()
@@ -214,7 +214,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
+        InputStream body = postPaymentResponse(API_KEY, payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .extract()
@@ -236,7 +236,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
+        InputStream body = postPaymentResponse(API_KEY, payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .extract()
@@ -258,7 +258,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
+        InputStream body = postPaymentResponse(API_KEY, payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .extract()
@@ -280,7 +280,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
+        InputStream body = postPaymentResponse(API_KEY, payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .extract()
@@ -301,7 +301,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"return_url\" : \"whatever\"" +
                 "}";
 
-        InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
+        InputStream body = postPaymentResponse(API_KEY, payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .extract()
