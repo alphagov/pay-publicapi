@@ -12,6 +12,7 @@ public class PaymentConnectorResponse {
     @JsonProperty("charge_id")
     private String chargeId;
     private Long amount;
+    private PaymentState state;
     private String status;
     @JsonProperty("return_url")
     private String returnUrl;
@@ -29,6 +30,10 @@ public class PaymentConnectorResponse {
 
     public Long getAmount() {
         return amount;
+    }
+
+    public PaymentState getState() {
+        return state;
     }
 
     public String getStatus() {

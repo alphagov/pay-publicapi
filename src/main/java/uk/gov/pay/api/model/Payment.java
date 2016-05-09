@@ -8,10 +8,6 @@ import java.util.List;
 import static java.util.Arrays.asList;
 
 public abstract class Payment {
-
-    public static final List<ExternalChargeStatus> CANCELLABLE_STATUS =
-            asList(ExternalChargeStatus.EXT_CREATED, ExternalChargeStatus.EXT_IN_PROGRESS);
-
     public static final String LINKS_JSON_ATTRIBUTE = "_links";
 
     @JsonProperty("payment_id")
@@ -22,6 +18,9 @@ public abstract class Payment {
 
     @JsonProperty("amount")
     private final long amount;
+
+    @JsonProperty("state")
+    private final PaymentState state;
 
     @JsonProperty("status")
     private final String status;
@@ -38,10 +37,11 @@ public abstract class Payment {
     @JsonProperty("created_date")
     private final String createdDate;
 
-    public Payment(String chargeId, long amount, String status, String returnUrl, String description,
+    public Payment(String chargeId, long amount, PaymentState state, String status, String returnUrl, String description,
                     String reference, String paymentProvider, String createdDate) {
         this.paymentId = chargeId;
         this.amount = amount;
+        this.state = state;
         this.status = status;
         this.returnUrl = returnUrl;
         this.description = description;
@@ -63,6 +63,11 @@ public abstract class Payment {
     @ApiModelProperty(example = "1200")
     public long getAmount() {
         return amount;
+    }
+
+    @ApiModelProperty(dataType = "uk.gov.pay.api.model.PaymentState")
+    public PaymentState getState() {
+        return state;
     }
 
     @ApiModelProperty(example = "CREATED")
@@ -96,7 +101,7 @@ public abstract class Payment {
                 "paymentId='" + paymentId + '\'' +
                 ", paymentProvider='" + paymentProvider + '\'' +
                 ", amount=" + amount +
-                ", status='" + status + '\'' +
+                ", state='" + state + '\'' +
                 ", returnUrl='" + returnUrl + '\'' +
                 ", description='" + description + '\'' +
                 ", reference='" + reference + '\'' +

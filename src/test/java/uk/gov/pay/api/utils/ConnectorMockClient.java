@@ -5,6 +5,7 @@ import org.mockserver.client.server.ForwardChainExpectation;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.model.HttpResponse;
 import org.mockserver.model.Parameter;
+import uk.gov.pay.api.model.PaymentState;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +32,7 @@ public class ConnectorMockClient {
     private static final String CONNECTOR_MOCK_CHARGE_PATH = CONNECTOR_MOCK_CHARGES_PATH + "/%s";
     private static final String CONNECTOR_MOCK_CHARGE_EVENTS_PATH = CONNECTOR_MOCK_CHARGE_PATH + "/events";
     private static final String REFERENCE_KEY = "reference";
-    private static final String STATUS_KEY = "status";
+    private static final String STATE_KEY = "state";
     private static final String FROM_DATE_KEY = "from_date";
     private static final String TO_DATE_KEY = "to_date";
 
@@ -52,13 +53,14 @@ public class ConnectorMockClient {
                 .build();
     }
 
-    private String createChargeResponse(long amount, String chargeId, String status, String returnUrl, String description,
+    private String createChargeResponse(long amount, String chargeId, PaymentState state, String status, String returnUrl, String description,
                                         String reference, String paymentProvider, String gatewayTransactionId, String createdDate, ImmutableMap<?, ?>... links) {
         JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
                 .add("charge_id", chargeId)
                 .add("amount", amount)
                 .add("reference", reference)
                 .add("description", description)
+                .add("state", state)
                 .add("status", status)
                 .add("return_url", returnUrl)
                 .add("payment_provider", paymentProvider)
@@ -110,7 +112,7 @@ public class ConnectorMockClient {
         return baseUrl + format(CONNECTOR_MOCK_CHARGE_EVENTS_PATH, accountId, chargeId);
     }
 
-    public void respondOk_whenCreateCharge(int amount, String gatewayAccountId, String chargeId, String chargeTokenId, String status, String returnUrl,
+    public void respondOk_whenCreateCharge(int amount, String gatewayAccountId, String chargeId, String chargeTokenId, PaymentState state, String status, String returnUrl,
                                            String description, String reference, String paymentProvider, String createdDate) {
 
         whenCreateCharge(amount, gatewayAccountId, returnUrl, description, reference)
@@ -121,6 +123,7 @@ public class ConnectorMockClient {
                         .withBody(createChargeResponse(
                                 amount,
                                 chargeId,
+                                state,
                                 status,
                                 returnUrl,
                                 description,
@@ -136,8 +139,8 @@ public class ConnectorMockClient {
                                         }}))));
     }
 
-    public void respondOk_whenSearchCharges(String accountId, String reference, String status, String fromDate, String toDate, String expectedResponse) {
-        whenSearchCharges(accountId, reference, status, fromDate, toDate)
+    public void respondOk_whenSearchCharges(String accountId, String reference, String state, String fromDate, String toDate, String expectedResponse) {
+        whenSearchCharges(accountId, reference, state, fromDate, toDate)
                 .respond(response()
                         .withStatusCode(OK_200)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
@@ -156,13 +159,13 @@ public class ConnectorMockClient {
                 .respond(withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg));
     }
 
-    public void respondWithChargeFound(long amount, String gatewayAccountId, String chargeId, String status, String returnUrl,
+    public void respondWithChargeFound(long amount, String gatewayAccountId, String chargeId, PaymentState state, String status, String returnUrl,
                                        String description, String reference, String paymentProvider, String createdDate, String chargeTokenId) {
         whenGetCharge(gatewayAccountId, chargeId)
                 .respond(response()
                         .withStatusCode(OK_200)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withBody(createChargeResponse(amount, chargeId, status, returnUrl,
+                        .withBody(createChargeResponse(amount, chargeId, state, status, returnUrl,
                                 description, reference, paymentProvider, gatewayAccountId, createdDate,
                                 validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
                                 validGetLink(nextUrl(chargeId), "next_url"),
@@ -241,22 +244,22 @@ public class ConnectorMockClient {
         );
     }
 
-    public ForwardChainExpectation whenSearchCharges(String gatewayAccountId, String reference, String status, String fromDate, String toDate) {
+    public ForwardChainExpectation whenSearchCharges(String gatewayAccountId, String reference, String state, String fromDate, String toDate) {
         return mockClient.when(request()
                 .withMethod(GET)
                 .withPath(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId))
                 .withHeader(ACCEPT, APPLICATION_JSON)
-                .withQueryStringParameters(notNullQueryParamsFrom(reference, status, fromDate, toDate))
+                .withQueryStringParameters(notNullQueryParamsFrom(reference, state, fromDate, toDate))
         );
     }
 
-    private Parameter[] notNullQueryParamsFrom(String reference, String status, String fromDate, String toDate) {
+    private Parameter[] notNullQueryParamsFrom(String reference, String state, String fromDate, String toDate) {
         List<Parameter> params = newArrayList();
         if (isNotBlank(reference)) {
             params.add(Parameter.param(REFERENCE_KEY, reference));
         }
-        if (isNotBlank(status)) {
-            params.add(Parameter.param(STATUS_KEY, status));
+        if (isNotBlank(state)) {
+            params.add(Parameter.param(STATE_KEY, state));
         }
         if (isNotBlank(fromDate)) {
             params.add(Parameter.param(FROM_DATE_KEY, fromDate));

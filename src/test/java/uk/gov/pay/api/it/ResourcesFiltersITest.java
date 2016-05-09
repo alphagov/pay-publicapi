@@ -8,6 +8,7 @@ import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Test;
+import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
@@ -35,6 +36,7 @@ public class ResourcesFiltersITest extends PaymentResourceITestBase {
     private static final int AMOUNT = 9999999;
     private static final String CHARGE_ID = "ch_ab2341da231434l";
     private static final String CHARGE_TOKEN_ID = "token_1234567asdf";
+    private static final PaymentState STATE = new PaymentState("created", false, null, null);
     private static final String STATUS = "created";
     private static final String PAYMENT_PROVIDER = "Sandbox";
     private static final String RETURN_URL = "http://somewhere.gov.uk/rainbow/1";
@@ -42,7 +44,7 @@ public class ResourcesFiltersITest extends PaymentResourceITestBase {
     private static final String DESCRIPTION = "Some description";
     private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
     private static final String CREATED_DATE = DateTimeUtils.toUTCDateString(TIMESTAMP);
-    private static final Map<String, String> PAYMENT_CREATED = new ChargeEventBuilder(STATUS, CREATED_DATE).build();
+    private static final Map<String, String> PAYMENT_CREATED = new ChargeEventBuilder(STATE, STATUS, CREATED_DATE).build();
     private static final List<Map<String, String>> EVENTS = Collections.singletonList(PAYMENT_CREATED);
 
     private static final String PAYLOAD = paymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE);
@@ -56,8 +58,8 @@ public class ResourcesFiltersITest extends PaymentResourceITestBase {
     @Test
     public void createPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
 
-        connectorMock.respondOk_whenCreateCharge(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID, STATUS, RETURN_URL,
-                DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE);
+        connectorMock.respondOk_whenCreateCharge(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID, STATE, STATUS,
+                RETURN_URL, DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE);
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> postPaymentResponse(API_KEY, PAYLOAD),
@@ -87,8 +89,8 @@ public class ResourcesFiltersITest extends PaymentResourceITestBase {
     @Test
     public void getPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
 
-        connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, STATUS, RETURN_URL,
-                DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID);
+        connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, STATE, STATUS,
+                RETURN_URL, DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID);
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> getPaymentResponse(API_KEY, CHARGE_ID),
@@ -150,7 +152,7 @@ public class ResourcesFiltersITest extends PaymentResourceITestBase {
 
         connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, REFERENCE, null, null, null,
                 aSuccessfulSearchResponse()
-                        .withMatchingStatus(STATUS)
+                        .withMatchingInProgressState("created")
                         .withMatchingReference(REFERENCE)
                         .numberOfResults(1)
                         .build());

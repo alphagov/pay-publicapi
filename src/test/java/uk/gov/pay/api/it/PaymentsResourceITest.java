@@ -3,7 +3,7 @@ package uk.gov.pay.api.it;
 import com.jayway.jsonassert.JsonAssert;
 import com.jayway.restassured.response.ValidatableResponse;
 import org.junit.Test;
-import uk.gov.pay.api.model.ExternalChargeStatus;
+import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
@@ -30,6 +30,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     private static final int AMOUNT = 9999999;
     private static final String CHARGE_ID = "ch_ab2341da231434l";
     private static final String CHARGE_TOKEN_ID = "token_1234567asdf";
+    private static final PaymentState STATE = new PaymentState("created", false, null, null);
     private static final String STATUS = "created";
     private static final String PAYMENT_PROVIDER = "Sandbox";
     private static final String RETURN_URL = "http://somewhere.gov.uk/rainbow/1";
@@ -37,7 +38,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     private static final String DESCRIPTION = "Some description <script> alert('This is a ?{simple} XSS attack.')</script>";
     private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
     private static final String CREATED_DATE = DateTimeUtils.toUTCDateString(TIMESTAMP);
-    private static final Map<String, String> PAYMENT_CREATED = new ChargeEventBuilder(STATUS, CREATED_DATE).build();
+    private static final Map<String, String> PAYMENT_CREATED = new ChargeEventBuilder(STATE, STATUS, CREATED_DATE).build();
     private static final List<Map<String, String>> EVENTS = Collections.singletonList(PAYMENT_CREATED);
 
     private static final String SUCCESS_PAYLOAD = paymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE);
@@ -47,8 +48,8 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
 
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
-        connectorMock.respondOk_whenCreateCharge(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID, STATUS, RETURN_URL,
-                DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE);
+        connectorMock.respondOk_whenCreateCharge(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID,
+                STATE, STATUS, RETURN_URL, DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE);
 
         String responseBody = postPaymentResponse(API_KEY, SUCCESS_PAYLOAD)
                 .statusCode(201)
@@ -58,6 +59,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .body("amount", is(9999999))
                 .body("reference", is(REFERENCE))
                 .body("description", is(DESCRIPTION))
+                .body("state.status", is(STATE.getStatus()))
                 .body("status", is(STATUS))
                 .body("return_url", is(RETURN_URL))
                 .body("payment_provider", is(PAYMENT_PROVIDER))
@@ -93,8 +95,8 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
         int minimumAmount = 1;
 
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondOk_whenCreateCharge(minimumAmount, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID, STATUS, RETURN_URL,
-                DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE);
+        connectorMock.respondOk_whenCreateCharge(minimumAmount, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID,
+                STATE, STATUS, RETURN_URL, DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE);
 
         postPaymentResponse(API_KEY, paymentPayload(minimumAmount, RETURN_URL, DESCRIPTION, REFERENCE))
                 .statusCode(201)
@@ -120,8 +122,8 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
         String return_url = "http://govdemopay.gov.uk?data=" + randomAlphanumeric(1970);
 
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondOk_whenCreateCharge(amount, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID, STATUS, return_url,
-                description, reference, PAYMENT_PROVIDER, CREATED_DATE);
+        connectorMock.respondOk_whenCreateCharge(amount, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID,
+                STATE, STATUS, return_url, description, reference, PAYMENT_PROVIDER, CREATED_DATE);
 
         String body = new JsonStringBuilder()
                 .add("amount", amount)
@@ -186,7 +188,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     @Test
     public void getPayment_ReturnsPayment() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, STATUS, RETURN_URL,
+        connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, STATE, STATUS, RETURN_URL,
                 DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID);
 
         getPaymentResponse(API_KEY, CHARGE_ID)
@@ -220,8 +222,9 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     @Test
     public void getPayment_ShouldNotIncludeCancelLinkIfPaymentCannotBeCancelled() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, ExternalChargeStatus.EXT_SUCCEEDED.name(), RETURN_URL,
-                DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID);
+        connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID,
+                new PaymentState("confirmed", true, null, null), "SUCCEEDED",
+                RETURN_URL, DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID);
 
         getPaymentResponse(API_KEY, CHARGE_ID)
                 .statusCode(200)

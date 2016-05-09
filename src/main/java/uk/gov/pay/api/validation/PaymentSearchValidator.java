@@ -1,11 +1,9 @@
 package uk.gov.pay.api.validation;
 
 import uk.gov.pay.api.exception.ValidationException;
-import uk.gov.pay.api.model.ExternalChargeStatus;
 import uk.gov.pay.api.utils.DateTimeUtils;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static org.apache.commons.lang3.StringUtils.join;
 import static org.eclipse.jetty.util.StringUtil.isBlank;
@@ -16,10 +14,18 @@ import static uk.gov.pay.api.validation.MaxLengthValidator.isValid;
 import static uk.gov.pay.api.validation.PaymentRequestValidator.REFERENCE_MAX_LENGTH;
 
 public class PaymentSearchValidator {
+    // we should really find a way to not have this anywhere but in the connector...
+    public static final Set<String> VALID_STATES =
+        new HashSet<>(Arrays.asList("created", "started", "submitted", "failed", "cancelled", "error", "confirmed", "captured"));
 
-    public static void validateSearchParameters(String status, String reference, String fromDate, String toDate) {
+    // legacy backwards compatibility - removed after PP-571 settled
+    public static final Set<String> VALID_STATUSES =
+            new HashSet<>(Arrays.asList("CREATED","IN PROGRESS","SUCCEEDED","FAILED","SYSTEM CANCELLED", "EXPIRED", "USER CANCELLED"));
+
+    public static void validateSearchParameters(String state, String status, String reference, String fromDate, String toDate) {
         List<String> validationErrors = new LinkedList<>();
 
+        validateState(state, validationErrors);
         validateStatus(status, validationErrors);
         validateReference(reference, validationErrors);
         validateFromDate(fromDate, validationErrors);
@@ -48,6 +54,12 @@ public class PaymentSearchValidator {
         }
     }
 
+    private static void validateState(String state, List<String> validationErrors) {
+        if (!validateState(state)) {
+            validationErrors.add(STATE_KEY);
+        }
+    }
+
     private static void validateStatus(String status, List<String> validationErrors) {
         if (!validateStatus(status)) {
             validationErrors.add(STATUS_KEY);
@@ -58,7 +70,11 @@ public class PaymentSearchValidator {
         return isBlank(value) || DateTimeUtils.toUTCZonedDateTime(value).isPresent();
     }
 
-    private static boolean validateStatus(String value) {
-        return isBlank(value) || ExternalChargeStatus.mapFromStatus(value).isPresent();
+    private static boolean validateState(String state) {
+        return isBlank(state) || VALID_STATES.contains(state);
+    }
+
+    private static boolean validateStatus(String status) {
+        return isBlank(status) || VALID_STATUSES.contains(status);
     }
 }

@@ -1,13 +1,16 @@
 package uk.gov.pay.api.utils;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import uk.gov.pay.api.model.PaymentState;
 
 import java.util.Map;
 
 public class ChargeEventBuilder {
+    @JsonDeserialize
+    @JsonSerialize
+    private PaymentState state;
 
     @JsonDeserialize
     @JsonSerialize
@@ -17,7 +20,8 @@ public class ChargeEventBuilder {
     @JsonSerialize
     private String updated;
 
-    public ChargeEventBuilder(String status, String updated) {
+    public ChargeEventBuilder(PaymentState state, String status, String updated) {
+        this.state = state;
         this.status = status;
         this.updated = updated;
     }

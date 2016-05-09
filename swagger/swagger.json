@@ -21,12 +21,12 @@
           "required" : false,
           "type" : "string"
         }, {
-          "name" : "status",
+          "name" : "state",
           "in" : "query",
-          "description" : "Status of payments to be searched. Example=SUCCEEDED",
+          "description" : "State of payments to be searched. Example=confirmed",
           "required" : false,
           "type" : "string",
-          "enum" : [ "range[SUCCEEDED", "CREATED", "IN PROGRESS", "FAILED", "SYSTEM CANCELLED" ]
+          "enum" : [ "range[created", "started", "submitted", "failed", "cancelled", "error", "confirmed", "captured" ]
         }, {
           "name" : "from_date",
           "in" : "query",
@@ -283,6 +283,11 @@
           "example" : "hu20sqlact5260q2nanm0q8u93",
           "readOnly" : true
         },
+        "state" : {
+          "description" : "state",
+          "readOnly" : true,
+          "$ref" : "#/definitions/PaymentState"
+        },
         "status" : {
           "type" : "string",
           "example" : "SUCCEEDED",
@@ -341,6 +346,10 @@
           "example" : "1200",
           "readOnly" : true
         },
+        "state" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/PaymentState"
+        },
         "status" : {
           "type" : "string",
           "example" : "CREATED",
@@ -383,6 +392,32 @@
         }
       }
     },
+    "PaymentState" : {
+      "type" : "object",
+      "properties" : {
+        "status" : {
+          "type" : "string",
+          "example" : "created",
+          "readOnly" : true
+        },
+        "finished" : {
+          "type" : "boolean",
+          "example" : "boolean",
+          "readOnly" : true,
+          "default" : false
+        },
+        "message" : {
+          "type" : "string",
+          "example" : "Payment was cancelled by the user",
+          "readOnly" : true
+        },
+        "code" : {
+          "type" : "string",
+          "example" : "P0030",
+          "readOnly" : true
+        }
+      }
+    },
     "PaymentWithAllLinks" : {
       "type" : "object",
       "properties" : {
@@ -401,6 +436,10 @@
           "format" : "int64",
           "example" : "1200",
           "readOnly" : true
+        },
+        "state" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/PaymentState"
         },
         "status" : {
           "type" : "string",
