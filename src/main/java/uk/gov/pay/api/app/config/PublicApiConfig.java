@@ -17,6 +17,13 @@ public class PublicApiConfig extends Configuration {
     @JsonProperty("jerseyClientConfig")
     private RestClientConfig restClientConfig;
 
+    @Valid
+    @NotNull
+    @JsonProperty("rateLimiter")
+    private RateLimiterConfig rateLimiterConfig;
+
+    private String apiKeyHmacSecret;
+
     public RestClientConfig getRestClientConfig() {
         return restClientConfig;
     }
@@ -27,5 +34,13 @@ public class PublicApiConfig extends Configuration {
 
     public String getPublicAuthUrl() {
         return publicAuthUrl;
+    }
+
+    public RateLimiterConfig getRateLimiterConfig() {
+        return rateLimiterConfig;
+    }
+
+    public String getApiKeyHmacSecret(){
+        return apiKeyHmacSecret;
     }
 }

@@ -19,7 +19,7 @@ public class PaymentsResourceReferenceValidationITest extends PaymentResourceITe
 
     @Before
     public void setUpBearerToken() {
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
     }
 
     @Test
@@ -32,7 +32,7 @@ public class PaymentsResourceReferenceValidationITest extends PaymentResourceITe
                 "  \"return_url\" : \"http://my-payments.com\"" +
                 "}";
 
-        InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
+        InputStream body = postPaymentResponse(API_KEY, payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .extract()
@@ -55,7 +55,7 @@ public class PaymentsResourceReferenceValidationITest extends PaymentResourceITe
                 "  \"return_url\" : \"http://my-payments.com\"" +
                 "}";
 
-        InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
+        InputStream body = postPaymentResponse(API_KEY, payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .extract()
@@ -78,7 +78,7 @@ public class PaymentsResourceReferenceValidationITest extends PaymentResourceITe
                 "  \"return_url\" : \"http://my-payments.com\"" +
                 "}";
 
-        InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
+        InputStream body = postPaymentResponse(API_KEY, payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .extract()
@@ -100,7 +100,7 @@ public class PaymentsResourceReferenceValidationITest extends PaymentResourceITe
                 "  \"return_url\" : \"http://my-payments.com\"" +
                 "}";
 
-        InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
+        InputStream body = postPaymentResponse(API_KEY, payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .extract()
@@ -124,7 +124,7 @@ public class PaymentsResourceReferenceValidationITest extends PaymentResourceITe
                 "  \"return_url\" : \"http://my-payments.com\"" +
                 "}";
 
-        InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
+        InputStream body = postPaymentResponse(API_KEY, payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .extract()
@@ -149,7 +149,7 @@ public class PaymentsResourceReferenceValidationITest extends PaymentResourceITe
                 "  \"return_url\" : \"http://my-payments.com\"" +
                 "}";
 
-        InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
+        InputStream body = postPaymentResponse(API_KEY, payload)
                 .statusCode(422)
                 .contentType(JSON)
                 .extract()
@@ -172,7 +172,7 @@ public class PaymentsResourceReferenceValidationITest extends PaymentResourceITe
                 "  \"return_url\" : \"http://my-payments.com\"" +
                 "}";
 
-        InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
+        InputStream body = postPaymentResponse(API_KEY, payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .extract()
@@ -194,7 +194,7 @@ public class PaymentsResourceReferenceValidationITest extends PaymentResourceITe
                 "  \"return_url\" : \"http://my-payments.com\"" +
                 "}";
 
-        InputStream body = postPaymentResponse(BEARER_TOKEN, payload)
+        InputStream body = postPaymentResponse(API_KEY, payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .extract()

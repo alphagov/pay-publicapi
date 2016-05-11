@@ -10,7 +10,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 
 public class ValidationExceptionMapper implements ExceptionMapper<ValidationException> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ValidationException.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ValidationExceptionMapper.class);
 
     @Override
     public Response toResponse(ValidationException exception) {

@@ -11,7 +11,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 
 public class BadRequestExceptionMapper implements ExceptionMapper<BadRequestException> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BadRequestException.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BadRequestExceptionMapper.class);
 
     @Override
     public Response toResponse(BadRequestException exception) {

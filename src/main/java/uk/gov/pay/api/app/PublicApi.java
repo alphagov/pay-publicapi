@@ -13,6 +13,9 @@ import io.dropwizard.setup.Environment;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.AccountAuthenticator;
 import uk.gov.pay.api.exception.mapper.*;
+import uk.gov.pay.api.filter.AuthorizationValidationFilter;
+import uk.gov.pay.api.filter.RateLimiter;
+import uk.gov.pay.api.filter.RateLimiterFilter;
 import uk.gov.pay.api.healthcheck.Ping;
 import uk.gov.pay.api.json.CreatePaymentRequestDeserializer;
 import uk.gov.pay.api.model.CreatePaymentRequest;
@@ -23,6 +26,8 @@ import uk.gov.pay.api.validation.URLValidator;
 
 import javax.ws.rs.client.Client;
 
+import static java.util.EnumSet.of;
+import static javax.servlet.DispatcherType.REQUEST;
 import static uk.gov.pay.api.validation.URLValidator.urlValidatorValueOf;
 
 public class PublicApi extends Application<PublicApiConfig> {
@@ -41,13 +46,24 @@ public class PublicApi extends Application<PublicApiConfig> {
     public void run(PublicApiConfig config, Environment environment) throws Exception {
         final Client client = RestClientFactory.buildClient(config.getRestClientConfig());
 
-        configureObjectMapper(config, environment.getObjectMapper());
+        ObjectMapper objectMapper = environment.getObjectMapper();
+        configureObjectMapper(config, objectMapper);
 
         environment.healthChecks().register("ping", new Ping());
+        environment.jersey().register(new HealthCheckResource(environment));
 
         environment.jersey().register(new PaymentsResource(client, config.getConnectorUrl()));
-        environment.jersey().register(new HealthCheckResource(environment));
+
+        RateLimiter rateLimiter = new RateLimiter(config.getRateLimiterConfig().getRate(), config.getRateLimiterConfig().getPerMillis());
+
+        environment.servlets().addFilter("AuthorizationValidationFilter", new AuthorizationValidationFilter(config.getApiKeyHmacSecret()))
+                .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");
+
+        environment.servlets().addFilter("RateLimiterFilter", new RateLimiterFilter(rateLimiter, objectMapper))
+                .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");
+
         environment.jersey().register(AuthFactory.binder(new OAuthFactory<>(new AccountAuthenticator(client, config.getPublicAuthUrl()), "", String.class)));
+
         environment.jersey().register(CreateChargeExceptionMapper.class);
         environment.jersey().register(GetChargeExceptionMapper.class);
         environment.jersey().register(GetEventsExceptionMapper.class);

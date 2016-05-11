@@ -14,7 +14,7 @@ import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 
 public class SearchChargesExceptionMapper implements ExceptionMapper<SearchChargesException> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SearchChargesException.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SearchChargesExceptionMapper.class);
 
     @Override
     public Response toResponse(SearchChargesException exception) {

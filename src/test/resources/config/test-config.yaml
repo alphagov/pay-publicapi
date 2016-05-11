@@ -20,3 +20,9 @@ publicAuthUrl: http://publicauth.url/v1/auth
 
 jerseyClientConfig:
   disabledSecureConnection: "true"
+
+rateLimiter:
+  rate: 1
+  perMillis: 1000
+
+apiKeyHmacSecret: qwer9yuhgf

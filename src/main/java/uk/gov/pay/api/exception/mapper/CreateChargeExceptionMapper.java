@@ -16,7 +16,7 @@ import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 
 public class CreateChargeExceptionMapper implements ExceptionMapper<CreateChargeException> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CreateChargeException.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CreateChargeExceptionMapper.class);
 
     @Override
     public Response toResponse(CreateChargeException exception) {

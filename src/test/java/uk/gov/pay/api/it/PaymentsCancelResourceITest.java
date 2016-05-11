@@ -29,7 +29,7 @@ public class PaymentsCancelResourceITest extends PaymentResourceITestBase {
 
     @Test
     public void successful_whenConnector_AllowsCancellation() {
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondOk_whenCancelCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID);
 
         postCancelPaymentResponse(TEST_CHARGE_ID)
@@ -40,7 +40,7 @@ public class PaymentsCancelResourceITest extends PaymentResourceITestBase {
 
     @Test
     public void cancelPayment_returns400_whenConnectorRespondsWithA400() throws IOException {
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondBadRequest_WhenCancelCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID, "Invalid account Id");
 
         InputStream body = postCancelPaymentResponse(TEST_CHARGE_ID)
@@ -56,7 +56,7 @@ public class PaymentsCancelResourceITest extends PaymentResourceITestBase {
 
     @Test
     public void cancelPayment_returns404_whenPaymentNotFound() throws IOException {
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondChargeNotFound_WhenCancelCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID, "some backend error message");
 
         InputStream body = postCancelPaymentResponse(TEST_CHARGE_ID)
@@ -72,7 +72,7 @@ public class PaymentsCancelResourceITest extends PaymentResourceITestBase {
 
     @Test
     public void cancelPayment_returns500_whenConnectorResponseIsUnexpected() throws IOException {
-        publicAuthMock.mapBearerTokenToAccountId(BEARER_TOKEN, GATEWAY_ACCOUNT_ID);
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respond_WhenCancelCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID, "some backend error message", CONFLICT_409);
 
         InputStream body = postCancelPaymentResponse(TEST_CHARGE_ID)
@@ -88,7 +88,7 @@ public class PaymentsCancelResourceITest extends PaymentResourceITestBase {
 
     private ValidatableResponse postCancelPaymentResponse(String paymentId) {
         return given().port(app.getLocalPort())
-                .header(AUTHORIZATION, "Bearer " + BEARER_TOKEN)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
                 .post(String.format(CANCEL_PAYMENTS_PATH, paymentId))
                 .then();
     }
