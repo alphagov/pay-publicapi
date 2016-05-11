@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.auth.Auth;
 import io.swagger.annotations.*;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.exception.*;
 import uk.gov.pay.api.model.*;
 import uk.gov.pay.api.utils.JsonStringBuilder;
+import uk.gov.pay.api.validation.PaymentSearchValidator;
 
 import javax.ws.rs.*;
 import javax.ws.rs.client.Client;
@@ -40,15 +42,16 @@ import static uk.gov.pay.api.validation.PaymentSearchValidator.validateSearchPar
 public class PaymentsResource {
     private static final Logger logger = LoggerFactory.getLogger(PaymentsResource.class);
 
-    private static final String PAYMENT_KEY = "paymentId";
+    public static final String PAYMENT_KEY = "paymentId";
     public static final String REFERENCE_KEY = "reference";
+    public static final String STATE_KEY = "state";
     public static final String STATUS_KEY = "status";
     public static final String FROM_DATE_KEY = "from_date";
     public static final String TO_DATE_KEY = "to_date";
-    private static final String DESCRIPTION_KEY = "description";
-    private static final String AMOUNT_KEY = "amount";
-    private static final String SERVICE_RETURN_URL = "return_url";
-    private static final String CHARGE_KEY = "charge_id";
+    public static final String DESCRIPTION_KEY = "description";
+    public static final String AMOUNT_KEY = "amount";
+    public static final String SERVICE_RETURN_URL = "return_url";
+    public static final String CHARGE_KEY = "charge_id";
 
     private static final String PAYMENTS_PATH = "/v1/payments";
     private static final String PAYMENTS_ID_PLACEHOLDER = "{" + PAYMENT_KEY + "}";
@@ -178,7 +181,9 @@ public class PaymentsResource {
                                    @Auth String accountId,
                                    @ApiParam(value = "Your payment reference to search", hidden = false)
                                    @QueryParam(REFERENCE_KEY) String reference,
-                                   @ApiParam(value = "Status of payments to be searched. Example=SUCCEEDED", hidden = false, allowableValues = "range[SUCCEEDED,CREATED,IN PROGRESS,FAILED,SYSTEM CANCELLED")
+                                   @ApiParam(value = "State of payments to be searched. Example=confirmed", hidden = false, allowableValues = "range[created,started,submitted,failed,cancelled,error,confirmed,captured")
+                                   @QueryParam(STATE_KEY) String state,
+                                   @ApiParam(value = "Status of payments to be searched (backwards compatible). Example=SUCCEEDED", hidden = true)
                                    @QueryParam(STATUS_KEY) String status,
                                    @ApiParam(value = "From date of payments to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z", hidden = false)
                                    @QueryParam(FROM_DATE_KEY) String fromDate,
@@ -187,13 +192,14 @@ public class PaymentsResource {
                                    @Context UriInfo uriInfo) {
 
         logger.info("received get search payments request: [ {} ]",
-                format("reference:%s, status: %s, fromDate: %s, toDate: %s", reference, status, fromDate, toDate));
+                format("reference:%s, status: %s, fromDate: %s, toDate: %s", reference, state, fromDate, toDate));
 
-        validateSearchParameters(status, reference, fromDate, toDate);
+        validateSearchParameters(state, status, reference, fromDate, toDate);
 
         List<Pair<String, String>> queryParams = asList(
                 Pair.of(REFERENCE_KEY, reference),
-                Pair.of(STATUS_KEY, upperCase(status)),
+                Pair.of(STATE_KEY, state),
+                Pair.of(STATUS_KEY, status),
                 Pair.of(FROM_DATE_KEY, fromDate),
                 Pair.of(TO_DATE_KEY, toDate)
         );

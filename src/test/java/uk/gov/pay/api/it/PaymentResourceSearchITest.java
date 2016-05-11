@@ -33,7 +33,7 @@ import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.*;
 public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
     private static final String TEST_REFERENCE = "test_reference";
-    private static final String TEST_STATUS = "created";
+    private static final String TEST_STATE = "created";
     private static final String TEST_FROM_DATE = "2016-01-28T00:00:00Z";
     private static final String TEST_TO_DATE = "2016-01-28T12:00:00Z";
     private static final String SEARCH_PATH = "/v1/payments";
@@ -48,7 +48,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
         connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null,
                 aSuccessfulSearchResponse()
-                        .withMatchingStatus(TEST_STATUS)
+                        .withMatchingInProgressState(TEST_STATE)
                         .withMatchingReference(TEST_REFERENCE)
                         .numberOfResults(1)
                         .build()
@@ -61,7 +61,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .body("results[0].reference", is(TEST_REFERENCE))
                 .body("results[0].return_url", is(DEFAULT_RETURN_URL))
                 .body("results[0].description", is("description-0"))
-                .body("results[0].status", is(TEST_STATUS))
+                .body("results[0].state.status", is(TEST_STATE))
                 .body("results[0].amount", is(DEFAULT_AMOUNT))
                 .body("results[0].payment_provider", is(DEFAULT_PAYMENT_PROVIDER))
                 .body("results[0].payment_id", is("0"))
@@ -86,10 +86,11 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
     @Test
     public void searchPayments_ShouldNotIncludeCancelLinkIfThePaymentCannotBeCancelled() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        String SUCCEEDED_STATUS = "succeeded";
+        String SUCCEEDED_STATE = "confirmed";
+
         connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null,
                 aSuccessfulSearchResponse()
-                        .withMatchingStatus(SUCCEEDED_STATUS)
+                        .withMatchingSuccessState(SUCCEEDED_STATE)
                         .withMatchingReference(TEST_REFERENCE)
                         .numberOfResults(1)
                         .build()
@@ -122,39 +123,38 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
 
     @Test
-    public void searchPayments_filterByStatus() throws Exception {
+    public void searchPayments_filterByState() throws Exception {
 
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, TEST_STATUS, null, null,
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, TEST_STATE, null, null,
                 aSuccessfulSearchResponse()
-                        .withMatchingStatus(TEST_STATUS)
+                        .withMatchingInProgressState(TEST_STATE)
                         .build()
         );
 
-        ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of("status", TEST_STATUS))
+        ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of("state", TEST_STATE))
                 .statusCode(200)
                 .contentType(JSON)
                 .body("results.size()", equalTo(3));
 
         List<Map<String, Object>> results = response.extract().body().jsonPath().getList("results");
-        assertThat(results, matchesField("status", TEST_STATUS));
+        assertThat(results, matchesState(TEST_STATE));
     }
 
     @Test
-    public void searchPayments_filterByStatusLowercase() throws Exception {
-
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, TEST_STATUS, null, null,
+    public void searchPayments_filterByStateLowercase() throws Exception {
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, TEST_STATE, null, null,
                 aSuccessfulSearchResponse()
-                        .withMatchingStatus(TEST_STATUS)
+                        .withMatchingInProgressState(TEST_STATE)
                         .build()
         );
 
-        ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of("status", TEST_STATUS.toLowerCase()))
+        ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of("state", TEST_STATE.toLowerCase()))
                 .statusCode(200)
                 .contentType(JSON)
                 .body("results.size()", equalTo(3));
 
         List<Map<String, Object>> results = response.extract().body().jsonPath().getList("results");
-        assertThat(results, matchesField("status", TEST_STATUS));
+        assertThat(results, matchesState(TEST_STATE));
     }
 
     @Test
@@ -178,34 +178,32 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_filterByReferenceStatusAndFromToDates() throws Exception {
-
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, TEST_STATUS, TEST_FROM_DATE, TEST_TO_DATE,
+    public void searchPayments_filterByReferenceStateAndFromToDates() throws Exception {
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, TEST_STATE, TEST_FROM_DATE, TEST_TO_DATE,
                 aSuccessfulSearchResponse()
                         .withMatchingReference(TEST_REFERENCE)
-                        .withMatchingStatus(TEST_STATUS)
+                        .withMatchingInProgressState(TEST_STATE)
                         .withCreatedDateBetween(TEST_FROM_DATE, TEST_TO_DATE)
                         .build()
         );
 
         ValidatableResponse response = searchPayments(API_KEY,
-                ImmutableMap.of("reference", TEST_REFERENCE, "status", TEST_STATUS, "from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
+                ImmutableMap.of("reference", TEST_REFERENCE, "state", TEST_STATE, "from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
                 .statusCode(200)
                 .contentType(JSON)
                 .body("results.size()", equalTo(3));
 
         List<Map<String, Object>> results = response.extract().body().jsonPath().getList("results");
         assertThat(results, matchesField("reference", TEST_REFERENCE));
-        assertThat(results, matchesField("status", TEST_STATUS));
+        assertThat(results, matchesState(TEST_STATE));
         assertThat(results, matchesCreatedDateInBetween(TEST_FROM_DATE, TEST_TO_DATE));
 
     }
 
     @Test
     public void searchPayments_errorIfConnectorResponseFails() throws Exception {
-
         InputStream body = searchPayments(API_KEY,
-                ImmutableMap.of("reference", TEST_REFERENCE, "status", TEST_STATUS, "from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
+                ImmutableMap.of("reference", TEST_REFERENCE, "state", TEST_STATE, "from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
                 .statusCode(500)
                 .contentType(JSON).extract()
                 .body().asInputStream();
@@ -218,15 +216,14 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
     @Test
     public void searchPayments_errorIfConnectorResponseIsInvalid() throws Exception {
-
-        connectorMock.whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, TEST_STATUS, TEST_FROM_DATE, TEST_TO_DATE)
+        connectorMock.whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, TEST_STATE, TEST_FROM_DATE, TEST_TO_DATE)
                 .respond(response()
                         .withStatusCode(OK_200)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                         .withBody("wtf"));
 
         InputStream body = searchPayments(API_KEY,
-                ImmutableMap.of("reference", TEST_REFERENCE, "status", TEST_STATUS, "from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
+                ImmutableMap.of("reference", TEST_REFERENCE, "state", TEST_STATE, "from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
                 .statusCode(500)
                 .contentType(JSON).extract()
                 .body().asInputStream();
@@ -235,6 +232,20 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", is("P0498"))
                 .assertThat("$.description", is("Downstream system error"));
+    }
+
+    private Matcher<? super List<Map<String, Object>>> matchesState(final String state) {
+        return new TypeSafeMatcher<List<Map<String, Object>>>() {
+            @Override
+            protected boolean matchesSafely(List<Map<String, Object>> maps) {
+                return maps.stream().allMatch(result -> state.equals( ((Map<String, Object>)result.get("state")).get("status") ));
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText(String.format("result state did not match %s", state));
+            }
+        };
     }
 
     private Matcher<? super List<Map<String, Object>>> matchesField(final String field, final String value) {

@@ -11,17 +11,16 @@ public class PaymentForSearchResult extends Payment {
     @JsonProperty(LINKS_JSON_ATTRIBUTE)
     private PaymentLinksForSearch links = new PaymentLinksForSearch();
 
-    public PaymentForSearchResult(String chargeId, long amount, String status, String returnUrl, String description,
+    public PaymentForSearchResult(String chargeId, long amount, PaymentState state, String status, String returnUrl, String description,
                                   String reference, String paymentProvider, String createdDate,
                                   URI selfLink, URI paymentEventsLink, URI paymentCancelLink) {
-        super(chargeId, amount, status, returnUrl, description, reference, paymentProvider, createdDate);
+        super(chargeId, amount, state, status, returnUrl, description, reference, paymentProvider, createdDate);
         this.links.addSelf(selfLink.toString());
         this.links.addEvents(paymentEventsLink.toString());
-        ExternalChargeStatus.mapFromStatus(status).ifPresent((paymentStatus) -> {
-            if(CANCELLABLE_STATUS.contains(paymentStatus)) {
-                this.links.addCancel(paymentCancelLink.toString());
-            }
-        });
+
+        if (!state.isFinished()) {
+            this.links.addCancel(paymentCancelLink.toString());
+        }
     }
 
     public static PaymentForSearchResult valueOf(
@@ -32,6 +31,7 @@ public class PaymentForSearchResult extends Payment {
         return new PaymentForSearchResult(
                 paymentConnectorResponse.getChargeId(),
                 paymentConnectorResponse.getAmount(),
+                paymentConnectorResponse.getState(),
                 paymentConnectorResponse.getStatus(),
                 paymentConnectorResponse.getReturnUrl(),
                 paymentConnectorResponse.getDescription(),

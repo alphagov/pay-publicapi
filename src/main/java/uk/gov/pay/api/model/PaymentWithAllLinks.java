@@ -12,21 +12,19 @@ public class PaymentWithAllLinks extends Payment {
     @JsonProperty(LINKS_JSON_ATTRIBUTE)
     private PaymentLinks links = new PaymentLinks();
 
-    private PaymentWithAllLinks(String chargeId, long amount, String status, String returnUrl, String description,
+    private PaymentWithAllLinks(String chargeId, long amount, PaymentState state, String status, String returnUrl, String description,
                                 String reference, String paymentProvider, String createdDate,
                                 List<PaymentConnectorResponseLink> paymentConnectorResponseLinks,
                                 URI selfLink, URI paymentEventsLink, URI paymentCancelUri) {
-        super(chargeId, amount, status, returnUrl, description, reference, paymentProvider, createdDate);
+        super(chargeId, amount, state, status, returnUrl, description, reference, paymentProvider, createdDate);
 
         this.links.addSelf(selfLink.toString());
         this.links.addKnownLinksValueOf(paymentConnectorResponseLinks);
         this.links.addEvents(paymentEventsLink.toString());
-        ExternalChargeStatus.mapFromStatus(status)
-                .ifPresent((paymentStatus) -> {
-                    if(CANCELLABLE_STATUS.contains(paymentStatus)) {
-                        this.links.addCancel(paymentCancelUri.toString());
-                    }
-                });
+
+        if (!state.isFinished()) {
+            this.links.addCancel(paymentCancelUri.toString());
+        }
     }
 
     public static PaymentWithAllLinks valueOf(PaymentConnectorResponse paymentConnector,
@@ -36,6 +34,7 @@ public class PaymentWithAllLinks extends Payment {
         return new PaymentWithAllLinks(
                 paymentConnector.getChargeId(),
                 paymentConnector.getAmount(),
+                paymentConnector.getState(),
                 paymentConnector.getStatus(),
                 paymentConnector.getReturnUrl(),
                 paymentConnector.getDescription(),

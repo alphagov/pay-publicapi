@@ -11,6 +11,9 @@ public class PaymentEvent {
     @JsonProperty("payment_id")
     private final String paymentId;
 
+    @JsonProperty("state")
+    private final PaymentState state;
+
     @JsonProperty("status")
     private final String status;
 
@@ -21,11 +24,13 @@ public class PaymentEvent {
     private PaymentEventLink paymentLink;
 
     public static PaymentEvent createPaymentEvent(JsonNode payload, String paymentLink, String paymentId) {
-        return new PaymentEvent(paymentId, payload.get("status").asText(), payload.get("updated").asText(), paymentLink);
+        PaymentState state = PaymentState.createPaymentState(payload.get("state"));
+        return new PaymentEvent(paymentId, state, payload.get("status").asText(), payload.get("updated").asText(), paymentLink);
     }
 
-    private PaymentEvent(String paymentId, String status, String updated, String paymentLink) {
+    private PaymentEvent(String paymentId, PaymentState state, String status, String updated, String paymentLink) {
         this.paymentId = paymentId;
+        this.state = state;
         this.status = status;
         this.updated = updated;
         this.paymentLink = new PaymentEventLink(paymentLink);
@@ -34,6 +39,11 @@ public class PaymentEvent {
     @ApiModelProperty(example = "hu20sqlact5260q2nanm0q8u93")
     public String getPaymentId() {
         return paymentId;
+    }
+
+    @ApiModelProperty(value = "state", dataType = "uk.gov.pay.api.model.PaymentState")
+    public PaymentState getState() {
+        return state;
     }
 
     @ApiModelProperty(value = "status",example = "SUCCEEDED")
