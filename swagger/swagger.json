@@ -11,7 +11,7 @@
     "/v1/payments" : {
       "get" : {
         "summary" : "Search payments",
-        "description" : "Search payments by reference, status, 'from' and 'to' date. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "description" : "Search payments by reference, state, 'from' and 'to' date. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "searchPayments",
         "produces" : [ "application/json" ],
         "parameters" : [ {
@@ -150,7 +150,7 @@
     "/v1/payments/{paymentId}/cancel" : {
       "post" : {
         "summary" : "Cancel payment",
-        "description" : "Cancel a payment based on the provided payment ID and the Authorisation token. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be cancelled if its in a CREATED or IN PROGRESS status",
+        "description" : "Cancel a payment based on the provided payment ID and the Authorisation token. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be cancelled if it's in a state that isn't finished.",
         "operationId" : "cancelPayment",
         "produces" : [ "application/json" ],
         "parameters" : [ {
@@ -286,13 +286,7 @@
         "state" : {
           "description" : "state",
           "readOnly" : true,
-          "$ref" : "#/definitions/PaymentState"
-        },
-        "status" : {
-          "type" : "string",
-          "example" : "SUCCEEDED",
-          "description" : "status",
-          "readOnly" : true
+          "$ref" : "#/definitions/Payment state"
         },
         "updated" : {
           "type" : "string",
@@ -306,6 +300,37 @@
         }
       },
       "description" : "A List of Payment Events information"
+    },
+    "Payment state" : {
+      "type" : "object",
+      "required" : [ "code", "finished", "message", "status" ],
+      "properties" : {
+        "status" : {
+          "type" : "string",
+          "example" : "created",
+          "description" : "Current progress of the payment in its lifecycle",
+          "readOnly" : true
+        },
+        "finished" : {
+          "type" : "boolean",
+          "description" : "Whether the payment has finished",
+          "readOnly" : true,
+          "default" : false
+        },
+        "message" : {
+          "type" : "string",
+          "example" : "User cancelled the payment",
+          "description" : "What went wrong with the Payment if it finished with an error - English message",
+          "readOnly" : true
+        },
+        "code" : {
+          "type" : "string",
+          "example" : "P010",
+          "description" : "What went wrong with the Payment if it finished with an error - error code",
+          "readOnly" : true
+        }
+      },
+      "description" : "A structure representing the current state of the payment in its lifecycle."
     },
     "PaymentEventsInformation" : {
       "type" : "object",
@@ -348,12 +373,7 @@
         },
         "state" : {
           "readOnly" : true,
-          "$ref" : "#/definitions/PaymentState"
-        },
-        "status" : {
-          "type" : "string",
-          "example" : "CREATED",
-          "readOnly" : true
+          "$ref" : "#/definitions/Payment state"
         },
         "description" : {
           "type" : "string",
@@ -392,32 +412,6 @@
         }
       }
     },
-    "PaymentState" : {
-      "type" : "object",
-      "properties" : {
-        "status" : {
-          "type" : "string",
-          "example" : "created",
-          "readOnly" : true
-        },
-        "finished" : {
-          "type" : "boolean",
-          "example" : "boolean",
-          "readOnly" : true,
-          "default" : false
-        },
-        "message" : {
-          "type" : "string",
-          "example" : "Payment was cancelled by the user",
-          "readOnly" : true
-        },
-        "code" : {
-          "type" : "string",
-          "example" : "P0030",
-          "readOnly" : true
-        }
-      }
-    },
     "PaymentWithAllLinks" : {
       "type" : "object",
       "properties" : {
@@ -439,12 +433,7 @@
         },
         "state" : {
           "readOnly" : true,
-          "$ref" : "#/definitions/PaymentState"
-        },
-        "status" : {
-          "type" : "string",
-          "example" : "CREATED",
-          "readOnly" : true
+          "$ref" : "#/definitions/Payment state"
         },
         "description" : {
           "type" : "string",
