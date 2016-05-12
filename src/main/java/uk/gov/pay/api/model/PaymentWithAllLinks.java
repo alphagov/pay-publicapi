@@ -12,11 +12,11 @@ public class PaymentWithAllLinks extends Payment {
     @JsonProperty(LINKS_JSON_ATTRIBUTE)
     private PaymentLinks links = new PaymentLinks();
 
-    private PaymentWithAllLinks(String chargeId, long amount, PaymentState state, String status, String returnUrl, String description,
+    private PaymentWithAllLinks(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                                 String reference, String paymentProvider, String createdDate,
                                 List<PaymentConnectorResponseLink> paymentConnectorResponseLinks,
                                 URI selfLink, URI paymentEventsLink, URI paymentCancelUri) {
-        super(chargeId, amount, state, status, returnUrl, description, reference, paymentProvider, createdDate);
+        super(chargeId, amount, state, returnUrl, description, reference, paymentProvider, createdDate);
 
         this.links.addSelf(selfLink.toString());
         this.links.addKnownLinksValueOf(paymentConnectorResponseLinks);
@@ -35,7 +35,6 @@ public class PaymentWithAllLinks extends Payment {
                 paymentConnector.getChargeId(),
                 paymentConnector.getAmount(),
                 paymentConnector.getState(),
-                paymentConnector.getStatus(),
                 paymentConnector.getReturnUrl(),
                 paymentConnector.getDescription(),
                 paymentConnector.getReference(),

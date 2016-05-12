@@ -59,4 +59,14 @@ public class PaymentState {
     public String getCode() {
         return code;
     }
+
+    @Override
+    public String toString() {
+        return "PaymentState{" +
+                "status='" + status + '\'' +
+                ", finished='" + finished + '\'' +
+                ", message=" + message +
+                ", code=" + code +
+                '}';
+    }
 }

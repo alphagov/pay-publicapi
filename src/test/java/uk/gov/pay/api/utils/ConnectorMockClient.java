@@ -53,7 +53,7 @@ public class ConnectorMockClient {
                 .build();
     }
 
-    private String createChargeResponse(long amount, String chargeId, PaymentState state, String status, String returnUrl, String description,
+    private String createChargeResponse(long amount, String chargeId, PaymentState state, String returnUrl, String description,
                                         String reference, String paymentProvider, String gatewayTransactionId, String createdDate, ImmutableMap<?, ?>... links) {
         JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
                 .add("charge_id", chargeId)
@@ -61,7 +61,6 @@ public class ConnectorMockClient {
                 .add("reference", reference)
                 .add("description", description)
                 .add("state", state)
-                .add("status", status)
                 .add("return_url", returnUrl)
                 .add("payment_provider", paymentProvider)
                 .add("created_date", createdDate)
@@ -112,7 +111,7 @@ public class ConnectorMockClient {
         return baseUrl + format(CONNECTOR_MOCK_CHARGE_EVENTS_PATH, accountId, chargeId);
     }
 
-    public void respondOk_whenCreateCharge(int amount, String gatewayAccountId, String chargeId, String chargeTokenId, PaymentState state, String status, String returnUrl,
+    public void respondOk_whenCreateCharge(int amount, String gatewayAccountId, String chargeId, String chargeTokenId, PaymentState state, String returnUrl,
                                            String description, String reference, String paymentProvider, String createdDate) {
 
         whenCreateCharge(amount, gatewayAccountId, returnUrl, description, reference)
@@ -124,7 +123,6 @@ public class ConnectorMockClient {
                                 amount,
                                 chargeId,
                                 state,
-                                status,
                                 returnUrl,
                                 description,
                                 reference,
@@ -159,13 +157,13 @@ public class ConnectorMockClient {
                 .respond(withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg));
     }
 
-    public void respondWithChargeFound(long amount, String gatewayAccountId, String chargeId, PaymentState state, String status, String returnUrl,
+    public void respondWithChargeFound(long amount, String gatewayAccountId, String chargeId, PaymentState state, String returnUrl,
                                        String description, String reference, String paymentProvider, String createdDate, String chargeTokenId) {
         whenGetCharge(gatewayAccountId, chargeId)
                 .respond(response()
                         .withStatusCode(OK_200)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withBody(createChargeResponse(amount, chargeId, state, status, returnUrl,
+                        .withBody(createChargeResponse(amount, chargeId, state, returnUrl,
                                 description, reference, paymentProvider, gatewayAccountId, createdDate,
                                 validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
                                 validGetLink(nextUrl(chargeId), "next_url"),

@@ -183,8 +183,6 @@ public class PaymentsResource {
                                    @QueryParam(REFERENCE_KEY) String reference,
                                    @ApiParam(value = "State of payments to be searched. Example=confirmed", hidden = false, allowableValues = "range[created,started,submitted,failed,cancelled,error,confirmed,captured")
                                    @QueryParam(STATE_KEY) String state,
-                                   @ApiParam(value = "Status of payments to be searched (backwards compatible). Example=SUCCEEDED", hidden = true)
-                                   @QueryParam(STATUS_KEY) String status,
                                    @ApiParam(value = "From date of payments to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z", hidden = false)
                                    @QueryParam(FROM_DATE_KEY) String fromDate,
                                    @ApiParam(value = "To date of payments to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z", hidden = false)
@@ -194,12 +192,11 @@ public class PaymentsResource {
         logger.info("received get search payments request: [ {} ]",
                 format("reference:%s, status: %s, fromDate: %s, toDate: %s", reference, state, fromDate, toDate));
 
-        validateSearchParameters(state, status, reference, fromDate, toDate);
+        validateSearchParameters(state, reference, fromDate, toDate);
 
         List<Pair<String, String>> queryParams = asList(
                 Pair.of(REFERENCE_KEY, reference),
                 Pair.of(STATE_KEY, state),
-                Pair.of(STATUS_KEY, status),
                 Pair.of(FROM_DATE_KEY, fromDate),
                 Pair.of(TO_DATE_KEY, toDate)
         );
@@ -295,8 +292,8 @@ public class PaymentsResource {
             value = "Cancel payment",
             notes = "Cancel a payment based on the provided payment ID and the Authorisation token. " +
                     "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be cancelled if its in " +
-                    "a CREATED or IN PROGRESS status",
+                    "as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be cancelled if it's in " +
+                    "a state that isn't finished.",
             code = 204)
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "No Content"),
