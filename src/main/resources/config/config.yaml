@@ -16,7 +16,7 @@ jerseyClientConfig:
   disabledSecureConnection: ${DISABLE_INTERNAL_HTTPS}
 
 rateLimiter:
-  rate: ${RATE_LIMITER_VALUE:-3}
+  rate: ${RATE_LIMITER_VALUE:-25}
   perMillis: ${RATE_LIMITER_PER_MILLIS:-1000}
 
 apiKeyHmacSecret: ${TOKEN_API_HMAC_SECRET}
