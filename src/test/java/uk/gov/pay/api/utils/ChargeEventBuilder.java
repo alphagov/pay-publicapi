@@ -14,15 +14,10 @@ public class ChargeEventBuilder {
 
     @JsonDeserialize
     @JsonSerialize
-    private String status;
-
-    @JsonDeserialize
-    @JsonSerialize
     private String updated;
 
-    public ChargeEventBuilder(PaymentState state, String status, String updated) {
+    public ChargeEventBuilder(PaymentState state, String updated) {
         this.state = state;
-        this.status = status;
         this.updated = updated;
     }
 

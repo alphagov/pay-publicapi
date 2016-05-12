@@ -22,9 +22,6 @@ public abstract class Payment {
     @JsonProperty("state")
     private final PaymentState state;
 
-    @JsonProperty("status")
-    private final String status;
-
     @JsonProperty("description")
     private final String description;
 
@@ -37,12 +34,11 @@ public abstract class Payment {
     @JsonProperty("created_date")
     private final String createdDate;
 
-    public Payment(String chargeId, long amount, PaymentState state, String status, String returnUrl, String description,
+    public Payment(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                     String reference, String paymentProvider, String createdDate) {
         this.paymentId = chargeId;
         this.amount = amount;
         this.state = state;
-        this.status = status;
         this.returnUrl = returnUrl;
         this.description = description;
         this.reference = reference;
@@ -68,11 +64,6 @@ public abstract class Payment {
     @ApiModelProperty(dataType = "uk.gov.pay.api.model.PaymentState")
     public PaymentState getState() {
         return state;
-    }
-
-    @ApiModelProperty(example = "CREATED")
-    public String getStatus() {
-        return status;
     }
 
     @ApiModelProperty(example = "http://your.service.domain/your-reference")

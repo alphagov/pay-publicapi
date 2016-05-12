@@ -13,7 +13,6 @@ public class PaymentConnectorResponse {
     private String chargeId;
     private Long amount;
     private PaymentState state;
-    private String status;
     @JsonProperty("return_url")
     private String returnUrl;
     private String description;
@@ -34,10 +33,6 @@ public class PaymentConnectorResponse {
 
     public PaymentState getState() {
         return state;
-    }
-
-    public String getStatus() {
-        return status;
     }
 
     public String getReturnUrl() {

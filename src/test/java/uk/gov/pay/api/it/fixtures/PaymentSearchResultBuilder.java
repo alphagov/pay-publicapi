@@ -16,7 +16,6 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public class PaymentSearchResultBuilder {
 
     private static final String STATE_KEY = "state";
-    private static final String STATUS_KEY = "status";
     private static final String CREATED_DATE_KEY = "created_date";
     private static final int DEFAULT_NUMBER_OF_RESULTS = 3;
 
@@ -27,7 +26,6 @@ public class PaymentSearchResultBuilder {
 
     private static class TestPayment {
         public TestPaymentState state;
-        public String status;
         public String charge_id, description, reference, created_date;
         public int amount;
         public String gateway_transaction_id, return_url, payment_provider;
@@ -136,7 +134,6 @@ public class PaymentSearchResultBuilder {
         }
         if (state != null) {
             defaultPaymentResult.state = state;
-            defaultPaymentResult.status = defaultPaymentResult.state.status; // backwards compat
         }
         if (fromDate != null) {
             //randomize time for something slightly more than fromDate, so that it falls in between
@@ -155,7 +152,6 @@ public class PaymentSearchResultBuilder {
         payment.description = "description-" + i;
         payment.reference =  randomUUID().toString();
         payment.state = state;
-        payment.status = payment.state.status;
         payment.amount = DEFAULT_AMOUNT;
         payment.gateway_transaction_id = randomUUID().toString();
         payment.created_date = DEFAULT_CREATED_DATE;
