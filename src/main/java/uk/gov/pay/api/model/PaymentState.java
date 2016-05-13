@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@ApiModel(value="Payment state", description = "A structure representing the current state of the payment in its lifecycle.")
 public class PaymentState {
     @JsonProperty("status")
     private String status;
@@ -40,23 +42,33 @@ public class PaymentState {
         this.code = code;
     }
 
-    @ApiModelProperty(example = "created")
+    @ApiModelProperty(value = "Current progress of the payment in its lifecycle", required=true, example = "created")
     public String getStatus() {
         return status;
     }
 
-    @ApiModelProperty(example = "boolean")
+    @ApiModelProperty(value = "Whether the payment has finished", required = true)
     public boolean isFinished() {
         return finished;
     }
 
-    @ApiModelProperty(example = "Payment was cancelled by the user", required = false)
+    @ApiModelProperty(value = "What went wrong with the Payment if it finished with an error - English message", required = true, example = "User cancelled the payment")
     public String getMessage() {
         return message;
     }
 
-    @ApiModelProperty(example = "P0030")
+    @ApiModelProperty(value = "What went wrong with the Payment if it finished with an error - error code", required = true, example = "P010")
     public String getCode() {
         return code;
+    }
+
+    @Override
+    public String toString() {
+        return "PaymentState{" +
+                "status='" + status + '\'' +
+                ", finished='" + finished + '\'' +
+                ", message=" + message +
+                ", code=" + code +
+                '}';
     }
 }

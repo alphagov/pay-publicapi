@@ -18,15 +18,10 @@ public class PaymentSearchValidator {
     public static final Set<String> VALID_STATES =
         new HashSet<>(Arrays.asList("created", "started", "submitted", "failed", "cancelled", "error", "confirmed", "captured"));
 
-    // legacy backwards compatibility - removed after PP-571 settled
-    public static final Set<String> VALID_STATUSES =
-            new HashSet<>(Arrays.asList("CREATED","IN PROGRESS","SUCCEEDED","FAILED","SYSTEM CANCELLED", "EXPIRED", "USER CANCELLED"));
-
-    public static void validateSearchParameters(String state, String status, String reference, String fromDate, String toDate) {
+    public static void validateSearchParameters(String state, String reference, String fromDate, String toDate) {
         List<String> validationErrors = new LinkedList<>();
 
         validateState(state, validationErrors);
-        validateStatus(status, validationErrors);
         validateReference(reference, validationErrors);
         validateFromDate(fromDate, validationErrors);
         validateToDate(toDate, validationErrors);
@@ -60,21 +55,11 @@ public class PaymentSearchValidator {
         }
     }
 
-    private static void validateStatus(String status, List<String> validationErrors) {
-        if (!validateStatus(status)) {
-            validationErrors.add(STATUS_KEY);
-        }
-    }
-
     private static boolean validateDate(String value) {
         return isBlank(value) || DateTimeUtils.toUTCZonedDateTime(value).isPresent();
     }
 
     private static boolean validateState(String state) {
         return isBlank(state) || VALID_STATES.contains(state);
-    }
-
-    private static boolean validateStatus(String status) {
-        return isBlank(status) || VALID_STATUSES.contains(status);
     }
 }
