@@ -212,6 +212,8 @@ public class PaymentsResource {
                 .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
                 .get();
 
+        logger.info("response from connector form charge search: "+connectorResponse);
+
         if (connectorResponse.getStatus() == SC_OK) {
             try {
                 JsonNode responseJson = connectorResponse.readEntity(JsonNode.class);

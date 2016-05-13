@@ -422,6 +422,20 @@
           "items" : {
             "$ref" : "#/definitions/PaymentForSearchResult"
           }
+        },
+        "total" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "count" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "_links" : {
+          "type" : "array",
+          "items" : {
+            "type" : "object"
+          }
         }
       }
     },
