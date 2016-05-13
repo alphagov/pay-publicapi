@@ -19,16 +19,30 @@ public class PaymentSearchValidator {
     public static final Set<String> VALID_STATES =
         new HashSet<>(Arrays.asList("created", "started", "submitted", "success", "failed", "cancelled", "error", "confirmed", "captured"));
 
-    public static void validateSearchParameters(String state, String reference, String fromDate, String toDate) {
+    public static void validateSearchParameters(String state, String reference, String fromDate, String toDate, String pageNumber, String displaySize) {
         List<String> validationErrors = new LinkedList<>();
 
         validateState(state, validationErrors);
         validateReference(reference, validationErrors);
         validateFromDate(fromDate, validationErrors);
         validateToDate(toDate, validationErrors);
+        validatePageNum(pageNumber, validationErrors);
+        validateDisplaySize(displaySize, validationErrors);
 
         if (!validationErrors.isEmpty()) {
             throw new ValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", ")));
+        }
+    }
+
+    private static void validatePageNum(String pageNum, List<String> validationErrors) {
+        if (pageNum!=null && Long.valueOf(pageNum) < 1) {
+            validationErrors.add(PAGE);
+        }
+    }
+
+    private static void validateDisplaySize(String displaySize, List<String> validationErrors) {
+        if (displaySize!= null && Long.valueOf(displaySize) < 1) {
+            validationErrors.add(DISPLAY_SIZE);
         }
     }
 

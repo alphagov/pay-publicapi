@@ -19,10 +19,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.*;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -45,6 +42,8 @@ public class PaymentsResource {
     public static final String STATE_KEY = "state";
     public static final String FROM_DATE_KEY = "from_date";
     public static final String TO_DATE_KEY = "to_date";
+    public static final String PAGE = "page";
+    public static final String DISPLAY_SIZE = "display_size";
 
     private static final String PAYMENT_KEY = "paymentId";
     private static final String DESCRIPTION_KEY = "description";
@@ -186,18 +185,24 @@ public class PaymentsResource {
                                    @QueryParam(FROM_DATE_KEY) String fromDate,
                                    @ApiParam(value = "To date of payments to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z", hidden = false)
                                    @QueryParam(TO_DATE_KEY) String toDate,
+                                   @ApiParam(value = "Page number requested for the search, should be a positive integer (optional, defaults to 1)", hidden = false)
+                                   @QueryParam(PAGE) String pageNumber,
+                                   @ApiParam(value = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500)", hidden = false)
+                                   @QueryParam(DISPLAY_SIZE) String displaySize,
                                    @Context UriInfo uriInfo) {
 
         logger.info("Payments search request - [ {} ]",
-                format("reference=%s, status=%s, fromDate=%s, toDate=%s", reference, state, fromDate, toDate));
+                format("reference:%s, status: %s, fromDate: %s, toDate: %s, page: %s, display_size: %s", reference, state, fromDate, toDate, pageNumber, displaySize));
 
-        validateSearchParameters(state, reference, fromDate, toDate);
+        validateSearchParameters(state, reference, fromDate, toDate, pageNumber, displaySize);
 
         List<Pair<String, String>> queryParams = asList(
                 Pair.of(REFERENCE_KEY, reference),
                 Pair.of(STATE_KEY, state),
                 Pair.of(FROM_DATE_KEY, fromDate),
-                Pair.of(TO_DATE_KEY, toDate)
+                Pair.of(TO_DATE_KEY, toDate),
+                Pair.of(PAGE, pageNumber),
+                Pair.of(DISPLAY_SIZE, displaySize)
         );
 
         Response connectorResponse = client
@@ -205,6 +210,8 @@ public class PaymentsResource {
                 .request()
                 .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
                 .get();
+
+        logger.info("response from connector form charge search: "+connectorResponse);
 
         if (connectorResponse.getStatus() == SC_OK) {
             try {

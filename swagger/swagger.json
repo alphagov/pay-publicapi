@@ -39,6 +39,18 @@
           "description" : "To date of payments to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z",
           "required" : false,
           "type" : "string"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page number requested for the search, should be a positive integer (optional, defaults to 1)",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "display_size",
+          "in" : "query",
+          "description" : "Number of results to be shown per page, should be a positive integer (optional, defaults to 500)",
+          "required" : false,
+          "type" : "string"
         } ],
         "responses" : {
           "200" : {
@@ -408,6 +420,20 @@
           "type" : "array",
           "items" : {
             "$ref" : "#/definitions/PaymentForSearchResult"
+          }
+        },
+        "total" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "count" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "_links" : {
+          "type" : "array",
+          "items" : {
+            "type" : "object"
           }
         }
       }
