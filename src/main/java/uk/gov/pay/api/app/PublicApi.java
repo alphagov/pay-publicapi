@@ -14,6 +14,7 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.AccountAuthenticator;
 import uk.gov.pay.api.exception.mapper.*;
 import uk.gov.pay.api.filter.AuthorizationValidationFilter;
+import uk.gov.pay.api.filter.LoggingFilter;
 import uk.gov.pay.api.filter.RateLimiter;
 import uk.gov.pay.api.filter.RateLimiterFilter;
 import uk.gov.pay.api.healthcheck.Ping;
@@ -28,6 +29,7 @@ import javax.ws.rs.client.Client;
 
 import static java.util.EnumSet.of;
 import static javax.servlet.DispatcherType.REQUEST;
+import static uk.gov.pay.api.resources.PaymentsResource.API_VERSION_PATH;
 import static uk.gov.pay.api.validation.URLValidator.urlValidatorValueOf;
 
 public class PublicApi extends Application<PublicApiConfig> {
@@ -57,10 +59,13 @@ public class PublicApi extends Application<PublicApiConfig> {
         RateLimiter rateLimiter = new RateLimiter(config.getRateLimiterConfig().getRate(), config.getRateLimiterConfig().getPerMillis());
 
         environment.servlets().addFilter("AuthorizationValidationFilter", new AuthorizationValidationFilter(config.getApiKeyHmacSecret()))
-                .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");
+                .addMappingForUrlPatterns(of(REQUEST), true, API_VERSION_PATH + "/*");
 
         environment.servlets().addFilter("RateLimiterFilter", new RateLimiterFilter(rateLimiter, objectMapper))
-                .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");
+                .addMappingForUrlPatterns(of(REQUEST), true, API_VERSION_PATH + "/*");
+
+        environment.servlets().addFilter("LoggingFilter", new LoggingFilter())
+                .addMappingForUrlPatterns(of(REQUEST), true, API_VERSION_PATH + "/*");
 
         environment.jersey().register(AuthFactory.binder(new OAuthFactory<>(new AccountAuthenticator(client, config.getPublicAuthUrl()), "", String.class)));
 

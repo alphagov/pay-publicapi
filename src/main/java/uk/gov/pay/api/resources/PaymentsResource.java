@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.auth.Auth;
 import io.swagger.annotations.*;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
@@ -13,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.exception.*;
 import uk.gov.pay.api.model.*;
 import uk.gov.pay.api.utils.JsonStringBuilder;
-import uk.gov.pay.api.validation.PaymentSearchValidator;
 
 import javax.ws.rs.*;
 import javax.ws.rs.client.Client;
@@ -32,7 +30,6 @@ import static java.util.Arrays.asList;
 import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.StringUtils.upperCase;
 import static org.apache.http.HttpStatus.SC_OK;
 import static uk.gov.pay.api.validation.PaymentSearchValidator.validateSearchParameters;
 
@@ -42,25 +39,27 @@ import static uk.gov.pay.api.validation.PaymentSearchValidator.validateSearchPar
 public class PaymentsResource {
     private static final Logger logger = LoggerFactory.getLogger(PaymentsResource.class);
 
-    public static final String PAYMENT_KEY = "paymentId";
+    public static final String API_VERSION_PATH = "/v1";
+
     public static final String REFERENCE_KEY = "reference";
     public static final String STATE_KEY = "state";
-    public static final String STATUS_KEY = "status";
     public static final String FROM_DATE_KEY = "from_date";
     public static final String TO_DATE_KEY = "to_date";
-    public static final String DESCRIPTION_KEY = "description";
-    public static final String AMOUNT_KEY = "amount";
-    public static final String SERVICE_RETURN_URL = "return_url";
-    public static final String CHARGE_KEY = "charge_id";
 
-    private static final String PAYMENTS_PATH = "/v1/payments";
+    private static final String PAYMENT_KEY = "paymentId";
+    private static final String DESCRIPTION_KEY = "description";
+    private static final String AMOUNT_KEY = "amount";
+    private static final String SERVICE_RETURN_URL = "return_url";
+    private static final String CHARGE_KEY = "charge_id";
+
+    private static final String PAYMENTS_PATH = API_VERSION_PATH + "/payments";
     private static final String PAYMENTS_ID_PLACEHOLDER = "{" + PAYMENT_KEY + "}";
-    private static final String PAYMENT_BY_ID = "/v1/payments/" + PAYMENTS_ID_PLACEHOLDER;
-    private static final String PAYMENT_EVENTS_BY_ID = "/v1/payments/" + PAYMENTS_ID_PLACEHOLDER + "/events";
+    private static final String PAYMENT_BY_ID = API_VERSION_PATH + "/payments/" + PAYMENTS_ID_PLACEHOLDER;
+    private static final String PAYMENT_EVENTS_BY_ID = API_VERSION_PATH + "/payments/" + PAYMENTS_ID_PLACEHOLDER + "/events";
 
     private static final String CANCEL_PATH_SUFFIX = "/cancel";
-    private static final String CANCEL_PAYMENT_PATH = "/v1/payments/" + PAYMENTS_ID_PLACEHOLDER + CANCEL_PATH_SUFFIX;
-    private static final String CONNECTOR_ACCOUNT_RESOURCE = "/v1/api/accounts/%s";
+    private static final String CANCEL_PAYMENT_PATH = API_VERSION_PATH + "/payments/" + PAYMENTS_ID_PLACEHOLDER + CANCEL_PATH_SUFFIX;
+    private static final String CONNECTOR_ACCOUNT_RESOURCE = API_VERSION_PATH + "/api/accounts/%s";
     private static final String CONNECTOR_CHARGES_RESOURCE = CONNECTOR_ACCOUNT_RESOURCE + "/charges";
     private static final String CONNECTOR_CHARGE_RESOURCE = CONNECTOR_CHARGES_RESOURCE + "/%s";
     private static final String CONNECTOR_CHARGE_EVENTS_RESOURCE = CONNECTOR_CHARGES_RESOURCE + "/%s" + "/events";

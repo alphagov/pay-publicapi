@@ -7,7 +7,13 @@ server:
       port: ${ADMIN_PORT}
 
 logging:
-  level: INFO
+    level: INFO
+    appenders:
+      - type: console
+        threshold: ALL
+        timeZone: UTC
+        target: stdout
+        logFormat: "[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] %highlight(%-5level) %cyan(%logger{15}) - %msg %n"
 
 connectorUrl: ${CONNECTOR_URL}
 publicAuthUrl: ${PUBLIC_AUTH_URL}
