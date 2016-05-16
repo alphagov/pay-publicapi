@@ -24,19 +24,19 @@ public class PaymentForSearchResult extends Payment {
     }
 
     public static PaymentForSearchResult valueOf(
-            PaymentConnectorResponse paymentConnectorResponse,
+            PaymentResult paymentResult,
             URI selfLink,
             URI paymentEventsLink,
             URI paymentCancelLink) {
         return new PaymentForSearchResult(
-                paymentConnectorResponse.getChargeId(),
-                paymentConnectorResponse.getAmount(),
-                paymentConnectorResponse.getState(),
-                paymentConnectorResponse.getReturnUrl(),
-                paymentConnectorResponse.getDescription(),
-                paymentConnectorResponse.getReference(),
-                paymentConnectorResponse.getPaymentProvider(),
-                paymentConnectorResponse.getCreated_date(),
+                paymentResult.getChargeId(),
+                paymentResult.getAmount(),
+                paymentResult.getState(),
+                paymentResult.getReturnUrl(),
+                paymentResult.getDescription(),
+                paymentResult.getReference(),
+                paymentResult.getPaymentProvider(),
+                paymentResult.getCreated_date(),
                 selfLink,
                 paymentEventsLink,
                 paymentCancelLink

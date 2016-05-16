@@ -1,17 +1,18 @@
 package uk.gov.pay.api.it.fixtures;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import uk.gov.pay.api.utils.DateTimeUtils;
 
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.UUID.randomUUID;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class PaymentSearchResultBuilder {
 
@@ -78,7 +79,7 @@ public class PaymentSearchResultBuilder {
     private String fromDate = null;
     private String toDate = null;
 
-    public static PaymentSearchResultBuilder aSuccessfulSearchResponse() {
+    public static PaymentSearchResultBuilder aSuccessfulSearchPayment() {
         return new PaymentSearchResultBuilder();
     }
 
@@ -114,6 +115,14 @@ public class PaymentSearchResultBuilder {
         return this;
     }
 
+    public List<TestPayment> getResults() {
+        List<TestPayment> results = newArrayList();
+        for (int i = 0; i < noOfResults; i++) {
+            results.add(modified(defaultPaymentResultFrom(i)));
+        }
+        return results;
+    }
+
     public String build() {
         List<TestPayment> results = newArrayList();
         for (int i = 0; i < noOfResults; i++) {
@@ -122,7 +131,8 @@ public class PaymentSearchResultBuilder {
 
         String json = new GsonBuilder().create().toJson(
                 ImmutableMap.of("results", results),
-                new TypeToken<Map<String, List<TestPayment>>>() {}.getType()
+                new TypeToken<Map<String, List<TestPayment>>>() {
+                }.getType()
         );
 
         return json;
@@ -150,7 +160,7 @@ public class PaymentSearchResultBuilder {
 
         payment.charge_id = "" + i;
         payment.description = "description-" + i;
-        payment.reference =  randomUUID().toString();
+        payment.reference = randomUUID().toString();
         payment.state = state;
         payment.amount = DEFAULT_AMOUNT;
         payment.gateway_transaction_id = randomUUID().toString();

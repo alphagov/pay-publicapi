@@ -129,6 +129,11 @@
             <version>2.0.1</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>black.door</groupId>
+            <artifactId>hate</artifactId>
+            <version>v1r3t1</version>
+        </dependency>
     </dependencies>
 
     <build>

@@ -19,7 +19,9 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.*;
 import java.io.IOException;
 import java.net.URI;
-import java.util.*;
+import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -99,7 +101,7 @@ public class PaymentsResource {
                 .get();
 
         if (connectorResponse.getStatus() == SC_OK) {
-            PaymentConnectorResponse response = connectorResponse.readEntity(PaymentConnectorResponse.class);
+            PaymentResult response = connectorResponse.readEntity(PaymentResult.class);
             URI paymentURI = getPaymentURI(uriInfo, response.getChargeId());
 
             PaymentWithAllLinks payment = PaymentWithAllLinks.valueOf(
@@ -204,27 +206,20 @@ public class PaymentsResource {
                 Pair.of(PAGE, pageNumber),
                 Pair.of(DISPLAY_SIZE, displaySize)
         );
-
         Response connectorResponse = client
                 .target(getConnectorUlr(format(CONNECTOR_CHARGES_RESOURCE, accountId), queryParams))
                 .request()
                 .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
                 .get();
 
-        logger.info("response from connector form charge search: "+connectorResponse);
-
         if (connectorResponse.getStatus() == SC_OK) {
             try {
                 JsonNode responseJson = connectorResponse.readEntity(JsonNode.class);
+                logger.debug("json response from connector from charge search: " + responseJson);
 
-                TypeReference<HashMap<String, List<PaymentConnectorResponse>>> typeRef
-                        = new TypeReference<HashMap<String, List<PaymentConnectorResponse>>>() {
-                };
-
-                Map<String, List<PaymentConnectorResponse>> chargesMap
-                        = objectMapper.readValue(responseJson.traverse(), typeRef);
-
-                List<PaymentForSearchResult> paymentsForSearchResults = chargesMap.get("results")
+                TypeReference<PaymentSearchResponse> typeRef = new TypeReference<PaymentSearchResponse>() {};
+                PaymentSearchResponse searchResponse = objectMapper.readValue(responseJson.traverse(), typeRef);
+                List<PaymentForSearchResult> paymentsForSearchResults = searchResponse.getPayments()
                         .stream()
                         .map(charge -> PaymentForSearchResult.valueOf(
                                 charge,
@@ -233,14 +228,33 @@ public class PaymentsResource {
                                 getPaymentCancelURI(uriInfo, charge.getChargeId())))
                         .collect(Collectors.toList());
 
-                return Response.ok(new PaymentSearchResults(paymentsForSearchResults)).build();
+                String halString = new HalResourceBuilder(transformIntoPublicUri(uriInfo, searchResponse.getLinks().getSelf()))
+                        .withProperty("results", paymentsForSearchResults)
+                        .withProperty("count", searchResponse.getCount())
+                        .withProperty("total", searchResponse.getTotal())
+                        .withProperty("page", searchResponse.getPage())
+                        .withLink("first_page", transformIntoPublicUri(uriInfo, searchResponse.getLinks().getFirstPage()))
+                        .withLink("last_page", transformIntoPublicUri(uriInfo, searchResponse.getLinks().getLastPage()))
+                        .withLink("prev_page", transformIntoPublicUri(uriInfo, searchResponse.getLinks().getPrevPage()))
+                        .withLink("next_page", transformIntoPublicUri(uriInfo, searchResponse.getLinks().getNextPage()))
+                        .build();
 
-            } catch (IOException | ProcessingException e) {
+                return Response.ok(halString).build();
+            } catch (IOException | ProcessingException | URISyntaxException e) {
                 throw new SearchChargesException(e);
             }
         }
-
         throw new SearchChargesException(connectorResponse);
+    }
+
+    private URI transformIntoPublicUri(UriInfo uriInfo, uk.gov.pay.api.model.links.Link link) throws URISyntaxException {
+        if (link == null)
+            return null;
+
+        return uriInfo.getBaseUriBuilder()
+                .path(PAYMENTS_PATH)
+                .replaceQuery(new URI(link.getHref()).getQuery())
+                .build();
     }
 
     @POST
@@ -272,11 +286,8 @@ public class PaymentsResource {
                 .post(buildChargeRequestPayload(requestPayload));
 
         if (connectorResponse.getStatus() == HttpStatus.SC_CREATED) {
-
-            PaymentConnectorResponse response = connectorResponse.readEntity(PaymentConnectorResponse.class);
-
+            PaymentResult response = connectorResponse.readEntity(PaymentResult.class);
             URI paymentUri = getPaymentURI(uriInfo, response.getChargeId());
-
             PaymentWithAllLinks payment = PaymentWithAllLinks.valueOf(
                     response,
                     paymentUri,

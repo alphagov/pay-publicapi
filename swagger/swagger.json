@@ -430,11 +430,12 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "page" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "_links" : {
-          "type" : "array",
-          "items" : {
-            "type" : "object"
-          }
+          "$ref" : "#/definitions/pageNavigationLinks"
         }
       }
     },
@@ -550,6 +551,32 @@
       },
       "description" : "links for search payment resource"
     },
+    "pageNavigationLinks" : {
+      "type" : "object",
+      "properties" : {
+        "self" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/paymentLink"
+        },
+        "first_page" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/paymentLink"
+        },
+        "last_page" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/paymentLink"
+        },
+        "prev_page" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/paymentLink"
+        },
+        "next_page" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/paymentLink"
+        }
+      },
+      "description" : "Links to navigate through pages"
+    },
     "payment-event-link" : {
       "type" : "object",
       "properties" : {
@@ -566,11 +593,13 @@
       "properties" : {
         "href" : {
           "type" : "string",
-          "example" : "https://an.example.link/from/payment/platform"
+          "example" : "https://an.example.link/from/payment/platform",
+          "readOnly" : true
         },
         "method" : {
           "type" : "string",
-          "example" : "GET"
+          "example" : "GET",
+          "readOnly" : true
         }
       },
       "description" : "A link related to a payment"
@@ -578,14 +607,6 @@
     "paymentPOSTLink" : {
       "type" : "object",
       "properties" : {
-        "href" : {
-          "type" : "string",
-          "example" : "https://an.example.link/from/payment/platform"
-        },
-        "method" : {
-          "type" : "string",
-          "example" : "POST"
-        },
         "type" : {
           "type" : "string",
           "example" : "multipart/form-data"
@@ -596,6 +617,16 @@
           "additionalProperties" : {
             "type" : "object"
           }
+        },
+        "href" : {
+          "type" : "string",
+          "example" : "https://an.example.link/from/payment/platform",
+          "readOnly" : true
+        },
+        "method" : {
+          "type" : "string",
+          "example" : "POST",
+          "readOnly" : true
         }
       },
       "description" : "A POST link related to a payment"

@@ -27,7 +27,7 @@ public class PaymentWithAllLinks extends Payment {
         }
     }
 
-    public static PaymentWithAllLinks valueOf(PaymentConnectorResponse paymentConnector,
+    public static PaymentWithAllLinks valueOf(PaymentResult paymentConnector,
                                               URI selfLink,
                                               URI paymentEventsUri,
                                               URI paymentCancelUri) {
