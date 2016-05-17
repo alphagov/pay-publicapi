@@ -21,7 +21,7 @@ public class Link {
         this.method = method;
     }
 
-    Link(String href) {
+    public Link(String href) {
         this.href = href;
     }
 

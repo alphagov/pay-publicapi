@@ -6,11 +6,11 @@ import com.jayway.jsonassert.JsonAssert;
 import com.jayway.restassured.response.ValidatableResponse;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Test;
-import uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder;
-import uk.gov.pay.api.model.links.PaymentSearchNavigationLinks;
+import uk.gov.pay.api.it.fixtures.PaymentNavigationLinksFixture;
 import uk.gov.pay.api.utils.DateTimeUtils;
 
 import java.io.InputStream;
@@ -30,7 +30,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockserver.model.HttpResponse.response;
-import static uk.gov.pay.api.it.fixtures.PaginatedPaymentSearchResult.aPaginatedPaymentSearchResult;
+import static uk.gov.pay.api.it.fixtures.PaginatedPaymentSearchResultFixture.aPaginatedPaymentSearchResult;
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.*;
 
 public class PaymentResourceSearchITest extends PaymentResourceITestBase {
@@ -55,7 +55,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .withPayments(aSuccessfulSearchPayment()
                         .withMatchingInProgressState(TEST_STATE)
                         .withMatchingReference(TEST_REFERENCE)
-                        .numberOfResults(1)
+                        .withNumberOfResults(1)
                         .getResults())
                 .build();
 
@@ -104,7 +104,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .withPayments(aSuccessfulSearchPayment()
                         .withMatchingSuccessState(SUCCEEDED_STATE)
                         .withMatchingReference(TEST_REFERENCE)
-                        .numberOfResults(1)
+                        .withNumberOfResults(1)
                         .getResults())
                 .build();
 
@@ -121,7 +121,6 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
     @Test
     public void searchPayments_filterByFullReference() throws Exception {
-
         String payments = aPaginatedPaymentSearchResult()
                 .withCount(10)
                 .withPage(2)
@@ -244,6 +243,64 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
         assertThat(results, matchesState(TEST_STATE));
         assertThat(results, matchesCreatedDateInBetween(TEST_FROM_DATE, TEST_TO_DATE));
 
+    }
+
+    @Test
+    public void searchPayments_getsPaginatedResultsFromConnector() throws Exception {
+
+        PaymentNavigationLinksFixture links = new PaymentNavigationLinksFixture()
+                .withPrevLink("http://server:port/path?query=prev")
+                .withNextLink("http://server:port/path?query=next")
+                .withSelfLink("http://server:port/path?query=self")
+                .withFirstLink("http://server:port/path?query=first")
+                .withLastLink("http://server:port/path?query=last");
+
+        String payments = aPaginatedPaymentSearchResult()
+                .withCount(10)
+                .withPage(2)
+                .withTotal(40)
+                .withPayments(aSuccessfulSearchPayment()
+                        .withMatchingReference(TEST_REFERENCE)
+                        .withMatchingInProgressState(TEST_STATE)
+                        .withCreatedDateBetween(TEST_FROM_DATE, TEST_TO_DATE)
+                        .withNumberOfResults(10)
+                        .getResults())
+                .withLinks(links)
+                .build();
+
+        connectorMock.respondOk_whenSearchChargesWithPageAndSize(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, "2", "10",
+                payments
+        );
+        ImmutableMap<String, String> queryParams = ImmutableMap.of(
+                "reference", TEST_REFERENCE,
+                "state", TEST_STATE,
+                "page", "2",
+                "display_size", "10"
+        );
+        ValidatableResponse response = searchPayments(API_KEY, queryParams)
+                .statusCode(200)
+                .contentType(JSON)
+                .body("results.size()", equalTo(10))
+                .body("total", is(40))
+                .body("count", is(10))
+                .body("page", is(2))
+                .body("_links.next_page.href", Matchers.is(expectedChargesLocationFor("?query=next")))
+                .body("_links.prev_page.href", Matchers.is(expectedChargesLocationFor("?query=prev")))
+                .body("_links.first_page.href", Matchers.is(expectedChargesLocationFor("?query=first")))
+                .body("_links.last_page.href", Matchers.is(Matchers.is(expectedChargesLocationFor("?query=last"))))
+                .body("_links.self.href", Matchers.is(Matchers.is(expectedChargesLocationFor("?query=self"))));
+
+        List<Map<String, Object>> results = response.extract().body().jsonPath().getList("results");
+        assertThat(results, matchesField("reference", TEST_REFERENCE));
+        assertThat(results, matchesState(TEST_STATE));
+        assertThat(results, matchesCreatedDateInBetween(TEST_FROM_DATE, TEST_TO_DATE));
+
+    }
+
+    private String expectedChargesLocationFor(String queryParams) {
+        return "http://localhost:" + app.getLocalPort()
+                + SEARCH_PATH
+                + queryParams;
     }
 
     @Test

@@ -418,24 +418,10 @@
       "properties" : {
         "results" : {
           "type" : "array",
+          "readOnly" : true,
           "items" : {
             "$ref" : "#/definitions/PaymentForSearchResult"
           }
-        },
-        "total" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "count" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "page" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "_links" : {
-          "$ref" : "#/definitions/pageNavigationLinks"
         }
       }
     },
@@ -550,32 +536,6 @@
         }
       },
       "description" : "links for search payment resource"
-    },
-    "pageNavigationLinks" : {
-      "type" : "object",
-      "properties" : {
-        "self" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/paymentLink"
-        },
-        "first_page" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/paymentLink"
-        },
-        "last_page" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/paymentLink"
-        },
-        "prev_page" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/paymentLink"
-        },
-        "next_page" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/paymentLink"
-        }
-      },
-      "description" : "Links to navigate through pages"
     },
     "payment-event-link" : {
       "type" : "object",

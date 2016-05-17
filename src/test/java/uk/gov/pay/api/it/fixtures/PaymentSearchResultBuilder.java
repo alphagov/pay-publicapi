@@ -110,7 +110,7 @@ public class PaymentSearchResultBuilder {
         return this;
     }
 
-    public PaymentSearchResultBuilder numberOfResults(int numberOfResults) {
+    public PaymentSearchResultBuilder withNumberOfResults(int numberOfResults) {
         this.noOfResults = numberOfResults;
         return this;
     }

@@ -8,8 +8,8 @@ import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Test;
+import uk.gov.pay.api.it.fixtures.PaymentNavigationLinksFixture;
 import uk.gov.pay.api.model.PaymentState;
-import uk.gov.pay.api.model.links.PaymentSearchNavigationLinks;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
@@ -30,7 +30,7 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static uk.gov.pay.api.it.fixtures.PaginatedPaymentSearchResult.aPaginatedPaymentSearchResult;
+import static uk.gov.pay.api.it.fixtures.PaginatedPaymentSearchResultFixture.aPaginatedPaymentSearchResult;
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.aSuccessfulSearchPayment;
 
 public class ResourcesFiltersITest extends PaymentResourceITestBase {
@@ -154,11 +154,11 @@ public class ResourcesFiltersITest extends PaymentResourceITestBase {
                 .withCount(10)
                 .withPage(2)
                 .withTotal(20)
-                .withLinks(new PaymentSearchNavigationLinks().withSelfLink("/self"))
+                .withLinks(new PaymentNavigationLinksFixture().withSelfLink("/self"))
                 .withPayments(aSuccessfulSearchPayment()
                         .withMatchingInProgressState("created")
                         .withMatchingReference(REFERENCE)
-                        .numberOfResults(1).getResults())
+                        .withNumberOfResults(1).getResults())
                 .build();
 
         connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, REFERENCE, null, null, null,
