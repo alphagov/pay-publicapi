@@ -68,7 +68,7 @@ public class PaymentSearchResultBuilder {
         states.add(new TestPaymentState("created", false));
         states.add(new TestPaymentState("started", false));
         states.add(new TestPaymentState("submitted", false));
-        states.add(new TestPaymentSuccessState("confirmed"));
+        states.add(new TestPaymentSuccessState("success"));
     };
 
     private int noOfResults = DEFAULT_NUMBER_OF_RESULTS;

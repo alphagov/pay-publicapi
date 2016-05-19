@@ -23,10 +23,10 @@
         }, {
           "name" : "state",
           "in" : "query",
-          "description" : "State of payments to be searched. Example=confirmed",
+          "description" : "State of payments to be searched. Example=success",
           "required" : false,
           "type" : "string",
-          "enum" : [ "range[created", "started", "submitted", "failed", "cancelled", "error", "confirmed", "captured" ]
+          "enum" : [ "range[created", "started", "submitted", "success", "failed", "cancelled", "error" ]
         }, {
           "name" : "from_date",
           "in" : "query",
