@@ -14,7 +14,7 @@ public class PaymentSearchValidatorTest {
 
     @Test
     public void validateParams_shouldSuccessValidation() {
-        PaymentSearchValidator.validateSearchParameters("confirmed", "ref", "2016-01-25T13:23:55Z", "2016-01-25T13:23:55Z");
+        PaymentSearchValidator.validateSearchParameters("success", "ref", "2016-01-25T13:23:55Z", "2016-01-25T13:23:55Z");
     }
 
     @Test
@@ -22,7 +22,7 @@ public class PaymentSearchValidatorTest {
 
         expectedException.expect(aValidationExceptionContaining("P0401", "Invalid parameters: reference. See Public API documentation for the correct data formats"));
 
-        PaymentSearchValidator.validateSearchParameters("confirmed", randomAlphanumeric(500), "2016-01-25T13:23:55Z", "2016-01-25T13:23:55Z");
+        PaymentSearchValidator.validateSearchParameters("success", randomAlphanumeric(500), "2016-01-25T13:23:55Z", "2016-01-25T13:23:55Z");
     }
 
     @Test
@@ -38,7 +38,7 @@ public class PaymentSearchValidatorTest {
 
         expectedException.expect(aValidationExceptionContaining("P0401", "Invalid parameters: to_date. See Public API documentation for the correct data formats"));
 
-        PaymentSearchValidator.validateSearchParameters("confirmed", "ref", "2016-01-25T13:23:55Z", "2016-01-25T13-23:55Z");
+        PaymentSearchValidator.validateSearchParameters("success", "ref", "2016-01-25T13:23:55Z", "2016-01-25T13-23:55Z");
     }
 
     @Test
@@ -46,7 +46,7 @@ public class PaymentSearchValidatorTest {
 
         expectedException.expect(aValidationExceptionContaining("P0401", "Invalid parameters: from_date. See Public API documentation for the correct data formats"));
 
-        PaymentSearchValidator.validateSearchParameters("confirmed", "ref", "2016-01-25T13-23:55Z", "2016-01-25T13:23:55Z");
+        PaymentSearchValidator.validateSearchParameters("success", "ref", "2016-01-25T13-23:55Z", "2016-01-25T13:23:55Z");
     }
 
     @Test

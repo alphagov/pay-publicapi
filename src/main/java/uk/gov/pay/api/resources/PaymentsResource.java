@@ -180,7 +180,7 @@ public class PaymentsResource {
                                    @Auth String accountId,
                                    @ApiParam(value = "Your payment reference to search", hidden = false)
                                    @QueryParam(REFERENCE_KEY) String reference,
-                                   @ApiParam(value = "State of payments to be searched. Example=confirmed", hidden = false, allowableValues = "range[created,started,submitted,failed,cancelled,error,confirmed,captured")
+                                   @ApiParam(value = "State of payments to be searched. Example=success", hidden = false, allowableValues = "range[created,started,submitted,success,failed,cancelled,error")
                                    @QueryParam(STATE_KEY) String state,
                                    @ApiParam(value = "From date of payments to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z", hidden = false)
                                    @QueryParam(FROM_DATE_KEY) String fromDate,
