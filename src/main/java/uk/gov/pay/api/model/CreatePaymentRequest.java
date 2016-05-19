@@ -44,4 +44,14 @@ public class CreatePaymentRequest {
     public String getDescription() {
         return description;
     }
+
+    @Override
+    public String toString() {
+        return "CreatePaymentRequest{" +
+                "amount=" + amount +
+                ", returnUrl='" + returnUrl + '\'' +
+                ", reference='" + reference + '\'' +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }
