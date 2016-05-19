@@ -93,7 +93,7 @@ public class PaymentsResource {
                                @PathParam(PAYMENT_KEY) String paymentId,
                                @Context UriInfo uriInfo) {
 
-        logger.info("received get payment request: [ {} ]", paymentId);
+        logger.info("Payment request - paymentId={}", paymentId);
         Response connectorResponse = client
                 .target(getConnectorUlr(format(CONNECTOR_CHARGE_RESOURCE, accountId, paymentId)))
                 .request()
@@ -109,7 +109,7 @@ public class PaymentsResource {
                     getPaymentEventsURI(uriInfo, response.getChargeId()),
                     getPaymentCancelURI(uriInfo, response.getChargeId()));
 
-            logger.info("payment returned: [ {} ]", payment);
+            logger.info("Payment returned - [ {} ]", payment);
             return Response.ok(payment).build();
         }
 
@@ -134,7 +134,7 @@ public class PaymentsResource {
                                      @PathParam(PAYMENT_KEY) String paymentId,
                                      @Context UriInfo uriInfo) {
 
-        logger.info("received get payment request: [ {} ]", paymentId);
+        logger.info("Payment events request - payment_id={}", paymentId);
 
         Response connectorResponse = client
                 .target(getConnectorUlr(format(CONNECTOR_CHARGE_EVENTS_RESOURCE, accountId, paymentId)))
@@ -152,7 +152,7 @@ public class PaymentsResource {
                     PaymentEvents.createPaymentEventsResponse(payload, paymentLink.toString())
                             .withSelfLink(paymentEventsLink.toString());
 
-            logger.info("payment returned: [ {} ]", response);
+            logger.info("Payment events returned - [ {} ]", response);
 
             return Response.ok(response).build();
         }
@@ -188,8 +188,8 @@ public class PaymentsResource {
                                    @QueryParam(TO_DATE_KEY) String toDate,
                                    @Context UriInfo uriInfo) {
 
-        logger.info("received get search payments request: [ {} ]",
-                format("reference:%s, status: %s, fromDate: %s, toDate: %s", reference, state, fromDate, toDate));
+        logger.info("Payments search request - [ {} ]",
+                format("reference=%s, status=%s, fromDate=%s, toDate=%s", reference, state, fromDate, toDate));
 
         validateSearchParameters(state, reference, fromDate, toDate);
 
@@ -257,7 +257,7 @@ public class PaymentsResource {
                                      @ApiParam(value = "requestPayload", required = true) CreatePaymentRequest requestPayload,
                                      @Context UriInfo uriInfo) {
 
-        logger.info("received create payment request: [ {} ]", requestPayload);
+        logger.info("Payment create request - [ {} ]", requestPayload);
 
         Response connectorResponse = client
                 .target(getConnectorUlr(format(CONNECTOR_CHARGES_RESOURCE, accountId)))
@@ -276,7 +276,7 @@ public class PaymentsResource {
                     getPaymentEventsURI(uriInfo, response.getChargeId()),
                     getPaymentCancelURI(uriInfo, response.getChargeId()));
 
-            logger.info("payment returned: [ {} ]", payment);
+            logger.info("Payment returned (created): [ {} ]", payment);
             return Response.created(paymentUri).entity(payment).build();
 
         }
@@ -304,7 +304,7 @@ public class PaymentsResource {
     public Response cancelPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
                                   @PathParam(PAYMENT_KEY) String paymentId) {
 
-        logger.info("received cancel payment request: [{}]", paymentId);
+        logger.info("Payment cancel request - payment_id=[{}]", paymentId);
 
         Response connectorResponse = client
                 .target(getConnectorUlr(format(CONNECTOR_ACCOUNT_CHARGE_CANCEL_RESOURCE, accountId, paymentId)))
