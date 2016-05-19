@@ -1,6 +1,5 @@
 package uk.gov.pay.api.validation;
 
-import org.apache.commons.lang3.StringUtils;
 import uk.gov.pay.api.exception.ValidationException;
 import uk.gov.pay.api.utils.DateTimeUtils;
 
@@ -19,25 +18,22 @@ public class PaymentSearchValidator {
     // we should really find a way to not have this anywhere but in the connector...
     // confirmed and captured should be removed once PP-541 ammendments are complete
     public static final Set<String> VALID_STATES =
-        new HashSet<>(Arrays.asList("created", "started", "submitted", "success", "failed", "cancelled", "error", "confirmed", "captured"));
+            new HashSet<>(Arrays.asList("created", "started", "submitted", "success", "failed", "cancelled", "error", "confirmed", "captured"));
 
     public static void validateSearchParameters(String state, String reference, String fromDate, String toDate, String pageNumber, String displaySize) {
-            List<String> validationErrors = new LinkedList<>();
+        List<String> validationErrors = new LinkedList<>();
         try {
-
             validateState(state, validationErrors);
             validateReference(reference, validationErrors);
             validateFromDate(fromDate, validationErrors);
             validateToDate(toDate, validationErrors);
             validatePage(pageNumber, validationErrors);
             validateDisplaySize(displaySize, validationErrors);
-
-            if (!validationErrors.isEmpty()) {
-                throw new ValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", ")));
-            }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new ValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", "), e.getMessage()));
+        }
+        if (!validationErrors.isEmpty()) {
+            throw new ValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", ")));
         }
     }
 
