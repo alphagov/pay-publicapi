@@ -4,6 +4,9 @@ import black.door.hate.HalRepresentation;
 import black.door.hate.HalRepresentation.HalRepresentationBuilder;
 import black.door.hate.HalResource;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uk.gov.pay.api.exception.mapper.SearchChargesExceptionMapper;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -15,6 +18,8 @@ public class HalResourceBuilder implements HalResource {
     private Map<String, URI> linkMap = new HashMap<>();
     private Map<String, Object> propertyMap = new HashMap<>();
     private URI selfLink;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(HalResourceBuilder.class);
 
     public HalResourceBuilder(URI selfLink) {
         try {
@@ -61,8 +66,8 @@ public class HalResourceBuilder implements HalResource {
         try {
             return representationBuilder().build().serialize();
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            LOGGER.error("error occurred while building the HAL resource with navigation links", e);
+            throw new RuntimeException("error occurred while building the HAL resource with navigation links", e);
         }
-        return null;
     }
 }

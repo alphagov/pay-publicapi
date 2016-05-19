@@ -53,4 +53,9 @@ public class PaymentSearchValidatorTest {
         PaymentSearchValidator.validateSearchParameters("invalid", randomAlphanumeric(500), "2016-01-25T13-23:55Z", "2016-01-25T13-23:55Z", null, null);
     }
 
+    @Test
+    public void validateParams_shouldNotGiveAnErrorValidation_ForNonNumberPageAndSize() throws Exception {
+        expectedException.expect(aValidationExceptionContaining("P0401", "Invalid parameters: state, reference, from_date, to_date. See Public API documentation for the correct data formats"));
+        PaymentSearchValidator.validateSearchParameters("invalid", randomAlphanumeric(500), "2016-01-25T13-23:55Z", "2016-01-25T13-23:55Z", "non-numeric-page", "non-numeric-size");
+    }
 }

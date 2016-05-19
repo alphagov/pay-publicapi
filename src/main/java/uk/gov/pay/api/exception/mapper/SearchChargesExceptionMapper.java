@@ -19,7 +19,6 @@ public class SearchChargesExceptionMapper implements ExceptionMapper<SearchCharg
 
     @Override
     public Response toResponse(SearchChargesException exception) {
-        PaymentError paymentError = null;
         if (exception.getErrorStatus() == NOT_FOUND.getStatusCode()) {
             return buildResponse(exception, SEARCH_PAYMENTS_NOT_FOUND, NOT_FOUND);
         }

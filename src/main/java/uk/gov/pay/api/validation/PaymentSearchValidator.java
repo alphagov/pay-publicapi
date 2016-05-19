@@ -1,5 +1,6 @@
 package uk.gov.pay.api.validation;
 
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.pay.api.exception.ValidationException;
 import uk.gov.pay.api.utils.DateTimeUtils;
 
@@ -7,6 +8,7 @@ import java.util.*;
 
 import static org.apache.commons.lang3.StringUtils.join;
 import static org.eclipse.jetty.util.StringUtil.isBlank;
+import static org.eclipse.jetty.util.StringUtil.isNotBlank;
 import static uk.gov.pay.api.model.PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 import static uk.gov.pay.api.resources.PaymentsResource.*;
@@ -20,28 +22,33 @@ public class PaymentSearchValidator {
         new HashSet<>(Arrays.asList("created", "started", "submitted", "success", "failed", "cancelled", "error", "confirmed", "captured"));
 
     public static void validateSearchParameters(String state, String reference, String fromDate, String toDate, String pageNumber, String displaySize) {
-        List<String> validationErrors = new LinkedList<>();
+            List<String> validationErrors = new LinkedList<>();
+        try {
 
-        validateState(state, validationErrors);
-        validateReference(reference, validationErrors);
-        validateFromDate(fromDate, validationErrors);
-        validateToDate(toDate, validationErrors);
-        validatePageNum(pageNumber, validationErrors);
-        validateDisplaySize(displaySize, validationErrors);
+            validateState(state, validationErrors);
+            validateReference(reference, validationErrors);
+            validateFromDate(fromDate, validationErrors);
+            validateToDate(toDate, validationErrors);
+            validatePage(pageNumber, validationErrors);
+            validateDisplaySize(displaySize, validationErrors);
 
-        if (!validationErrors.isEmpty()) {
-            throw new ValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", ")));
+            if (!validationErrors.isEmpty()) {
+                throw new ValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", ")));
+            }
+        }
+        catch (Exception e) {
+            throw new ValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", "), e.getMessage()));
         }
     }
 
-    private static void validatePageNum(String pageNum, List<String> validationErrors) {
-        if (pageNum!=null && Long.valueOf(pageNum) < 1) {
+    private static void validatePage(String pageNumber, List<String> validationErrors) {
+        if (isNotBlank(pageNumber) && Integer.valueOf(pageNumber) < 1) {
             validationErrors.add(PAGE);
         }
     }
 
     private static void validateDisplaySize(String displaySize, List<String> validationErrors) {
-        if (displaySize!= null && Long.valueOf(displaySize) < 1) {
+        if (isNotBlank(displaySize) && Integer.valueOf(displaySize) < 1) {
             validationErrors.add(DISPLAY_SIZE);
         }
     }
