@@ -20,7 +20,7 @@ import static org.hamcrest.core.Is.is;
 public class PaymentResourceSearchValidationITest extends PaymentResourceITestBase {
 
     private static final String VALID_REFERENCE = "test_reference";
-    private static final String VALID_STATE = "confirmed";
+    private static final String VALID_STATE = "success";
     private static final String VALID_FROM_DATE = "2016-01-28T00:00:00Z";
     private static final String VALID_TO_DATE = "2016-01-28T12:00:00Z";
 

@@ -95,7 +95,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
     @Test
     public void searchPayments_ShouldNotIncludeCancelLinkIfThePaymentCannotBeCancelled() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        String SUCCEEDED_STATE = "confirmed";
+        String SUCCEEDED_STATE = "success";
 
         String payments = aPaginatedPaymentSearchResult()
                 .withCount(10)
