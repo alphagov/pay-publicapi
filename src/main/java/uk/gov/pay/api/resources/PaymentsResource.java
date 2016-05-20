@@ -19,10 +19,9 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.*;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -45,6 +44,8 @@ public class PaymentsResource {
     public static final String STATE_KEY = "state";
     public static final String FROM_DATE_KEY = "from_date";
     public static final String TO_DATE_KEY = "to_date";
+    public static final String PAGE = "page";
+    public static final String DISPLAY_SIZE = "display_size";
 
     private static final String PAYMENT_KEY = "paymentId";
     private static final String DESCRIPTION_KEY = "description";
@@ -100,7 +101,7 @@ public class PaymentsResource {
                 .get();
 
         if (connectorResponse.getStatus() == SC_OK) {
-            PaymentConnectorResponse response = connectorResponse.readEntity(PaymentConnectorResponse.class);
+            PaymentResult response = connectorResponse.readEntity(PaymentResult.class);
             URI paymentURI = getPaymentURI(uriInfo, response.getChargeId());
 
             PaymentWithAllLinks payment = PaymentWithAllLinks.valueOf(
@@ -186,38 +187,41 @@ public class PaymentsResource {
                                    @QueryParam(FROM_DATE_KEY) String fromDate,
                                    @ApiParam(value = "To date of payments to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z", hidden = false)
                                    @QueryParam(TO_DATE_KEY) String toDate,
+                                   @ApiParam(value = "Page number requested for the search, should be a positive integer (optional, defaults to 1)", hidden = false)
+                                   @QueryParam(PAGE) String pageNumber,
+                                   @ApiParam(value = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500)", hidden = false)
+                                   @QueryParam(DISPLAY_SIZE) String displaySize,
                                    @Context UriInfo uriInfo) {
 
         logger.info("Payments search request - [ {} ]",
-                format("reference=%s, status=%s, fromDate=%s, toDate=%s", reference, state, fromDate, toDate));
+                format("reference:%s, status: %s, fromDate: %s, toDate: %s, page: %s, display_size: %s", reference, state, fromDate, toDate, pageNumber, displaySize));
 
-        validateSearchParameters(state, reference, fromDate, toDate);
+        validateSearchParameters(state, reference, fromDate, toDate, pageNumber, displaySize);
 
         List<Pair<String, String>> queryParams = asList(
                 Pair.of(REFERENCE_KEY, reference),
                 Pair.of(STATE_KEY, state),
                 Pair.of(FROM_DATE_KEY, fromDate),
-                Pair.of(TO_DATE_KEY, toDate)
+                Pair.of(TO_DATE_KEY, toDate),
+                Pair.of(PAGE, pageNumber),
+                Pair.of(DISPLAY_SIZE, displaySize)
         );
-
         Response connectorResponse = client
                 .target(getConnectorUlr(format(CONNECTOR_CHARGES_RESOURCE, accountId), queryParams))
                 .request()
                 .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
                 .get();
 
+        logger.info("response from connector form charge search: "+connectorResponse);
+
         if (connectorResponse.getStatus() == SC_OK) {
             try {
                 JsonNode responseJson = connectorResponse.readEntity(JsonNode.class);
+                logger.debug("json response from connector from charge search: " + responseJson);
 
-                TypeReference<HashMap<String, List<PaymentConnectorResponse>>> typeRef
-                        = new TypeReference<HashMap<String, List<PaymentConnectorResponse>>>() {
-                };
-
-                Map<String, List<PaymentConnectorResponse>> chargesMap
-                        = objectMapper.readValue(responseJson.traverse(), typeRef);
-
-                List<PaymentForSearchResult> paymentsForSearchResults = chargesMap.get("results")
+                TypeReference<PaymentSearchResponse> typeRef = new TypeReference<PaymentSearchResponse>() {};
+                PaymentSearchResponse searchResponse = objectMapper.readValue(responseJson.traverse(), typeRef);
+                List<PaymentForSearchResult> paymentsForSearchResults = searchResponse.getPayments()
                         .stream()
                         .map(charge -> PaymentForSearchResult.valueOf(
                                 charge,
@@ -226,14 +230,33 @@ public class PaymentsResource {
                                 getPaymentCancelURI(uriInfo, charge.getChargeId())))
                         .collect(Collectors.toList());
 
-                return Response.ok(new PaymentSearchResults(paymentsForSearchResults)).build();
+                String halString = new HalResourceBuilder(transformIntoPublicUri(uriInfo, searchResponse.getLinks().getSelf()))
+                        .withProperty("results", paymentsForSearchResults)
+                        .withProperty("count", searchResponse.getCount())
+                        .withProperty("total", searchResponse.getTotal())
+                        .withProperty("page", searchResponse.getPage())
+                        .withLink("first_page", transformIntoPublicUri(uriInfo, searchResponse.getLinks().getFirstPage()))
+                        .withLink("last_page", transformIntoPublicUri(uriInfo, searchResponse.getLinks().getLastPage()))
+                        .withLink("prev_page", transformIntoPublicUri(uriInfo, searchResponse.getLinks().getPrevPage()))
+                        .withLink("next_page", transformIntoPublicUri(uriInfo, searchResponse.getLinks().getNextPage()))
+                        .build();
 
-            } catch (IOException | ProcessingException e) {
+                return Response.ok(halString).build();
+            } catch (IOException | ProcessingException | URISyntaxException e) {
                 throw new SearchChargesException(e);
             }
         }
-
         throw new SearchChargesException(connectorResponse);
+    }
+
+    private URI transformIntoPublicUri(UriInfo uriInfo, uk.gov.pay.api.model.links.Link link) throws URISyntaxException {
+        if (link == null)
+            return null;
+
+        return uriInfo.getBaseUriBuilder()
+                .path(PAYMENTS_PATH)
+                .replaceQuery(new URI(link.getHref()).getQuery())
+                .build();
     }
 
     @POST
@@ -265,11 +288,8 @@ public class PaymentsResource {
                 .post(buildChargeRequestPayload(requestPayload));
 
         if (connectorResponse.getStatus() == HttpStatus.SC_CREATED) {
-
-            PaymentConnectorResponse response = connectorResponse.readEntity(PaymentConnectorResponse.class);
-
+            PaymentResult response = connectorResponse.readEntity(PaymentResult.class);
             URI paymentUri = getPaymentURI(uriInfo, response.getChargeId());
-
             PaymentWithAllLinks payment = PaymentWithAllLinks.valueOf(
                     response,
                     paymentUri,

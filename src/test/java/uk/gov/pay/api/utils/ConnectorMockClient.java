@@ -147,6 +147,16 @@ public class ConnectorMockClient {
 
     }
 
+    public void respondOk_whenSearchChargesWithPageAndSize(String accountId, String reference, String page, String displaySize, String expectedResponse) {
+        whenSearchCharges(accountId, reference, null, null, null, page, displaySize)
+                .respond(response()
+                        .withStatusCode(OK_200)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withBody(expectedResponse)
+                );
+
+    }
+
     public void respondNotFound_whenCreateCharge(long amount, String gatewayAccountId, String returnUrl, String description, String reference) {
         whenCreateCharge(amount, gatewayAccountId, returnUrl, description, reference)
                 .respond(response().withStatusCode(NOT_FOUND_404));
@@ -243,15 +253,19 @@ public class ConnectorMockClient {
     }
 
     public ForwardChainExpectation whenSearchCharges(String gatewayAccountId, String reference, String state, String fromDate, String toDate) {
+        return whenSearchCharges(gatewayAccountId, reference, state, fromDate, toDate, null, null);
+    }
+
+    public ForwardChainExpectation whenSearchCharges(String gatewayAccountId, String reference, String state, String fromDate, String toDate, String page, String displaySize) {
         return mockClient.when(request()
                 .withMethod(GET)
                 .withPath(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId))
                 .withHeader(ACCEPT, APPLICATION_JSON)
-                .withQueryStringParameters(notNullQueryParamsFrom(reference, state, fromDate, toDate))
+                .withQueryStringParameters(notNullQueryParamsFrom(reference, state, fromDate, toDate, page, displaySize))
         );
     }
 
-    private Parameter[] notNullQueryParamsFrom(String reference, String state, String fromDate, String toDate) {
+    private Parameter[] notNullQueryParamsFrom(String reference, String state, String fromDate, String toDate, String page, String displaySize) {
         List<Parameter> params = newArrayList();
         if (isNotBlank(reference)) {
             params.add(Parameter.param(REFERENCE_KEY, reference));
@@ -264,6 +278,12 @@ public class ConnectorMockClient {
         }
         if (isNotBlank(toDate)) {
             params.add(Parameter.param(TO_DATE_KEY, toDate));
+        }
+        if (isNotBlank(page)) {
+            params.add(Parameter.param("page", page));
+        }
+        if (isNotBlank(displaySize)) {
+            params.add(Parameter.param("display_size", displaySize));
         }
         return params.toArray(new Parameter[0]);
     }

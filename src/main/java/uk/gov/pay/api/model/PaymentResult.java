@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PaymentConnectorResponse {
+public class PaymentResult {
 
     @JsonProperty("charge_id")
     private String chargeId;

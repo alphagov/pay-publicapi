@@ -6,9 +6,11 @@ import com.jayway.jsonassert.JsonAssert;
 import com.jayway.restassured.response.ValidatableResponse;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Test;
+import uk.gov.pay.api.it.fixtures.PaymentNavigationLinksFixture;
 import uk.gov.pay.api.utils.DateTimeUtils;
 
 import java.io.InputStream;
@@ -28,6 +30,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockserver.model.HttpResponse.response;
+import static uk.gov.pay.api.it.fixtures.PaginatedPaymentSearchResultFixture.aPaginatedPaymentSearchResult;
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.*;
 
 public class PaymentResourceSearchITest extends PaymentResourceITestBase {
@@ -45,13 +48,19 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
     @Test
     public void searchPayments_shouldOnlyReturnAllowedProperties() {
-
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null,
-                aSuccessfulSearchResponse()
+        String payments = aPaginatedPaymentSearchResult()
+                .withCount(10)
+                .withPage(2)
+                .withTotal(20)
+                .withPayments(aSuccessfulSearchPayment()
                         .withMatchingInProgressState(TEST_STATE)
                         .withMatchingReference(TEST_REFERENCE)
-                        .numberOfResults(1)
-                        .build()
+                        .withNumberOfResults(1)
+                        .getResults())
+                .build();
+
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null,
+                payments
         );
 
         String responseBody = searchPayments(API_KEY, ImmutableMap.of("reference", TEST_REFERENCE))
@@ -88,12 +97,19 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         String SUCCEEDED_STATE = "confirmed";
 
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null,
-                aSuccessfulSearchResponse()
+        String payments = aPaginatedPaymentSearchResult()
+                .withCount(10)
+                .withPage(2)
+                .withTotal(20)
+                .withPayments(aSuccessfulSearchPayment()
                         .withMatchingSuccessState(SUCCEEDED_STATE)
                         .withMatchingReference(TEST_REFERENCE)
-                        .numberOfResults(1)
-                        .build()
+                        .withNumberOfResults(1)
+                        .getResults())
+                .build();
+
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null,
+                payments
         );
 
         searchPayments(API_KEY, ImmutableMap.of("reference", TEST_REFERENCE))
@@ -105,11 +121,17 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
     @Test
     public void searchPayments_filterByFullReference() throws Exception {
+        String payments = aPaginatedPaymentSearchResult()
+                .withCount(10)
+                .withPage(2)
+                .withTotal(20)
+                .withPayments(aSuccessfulSearchPayment()
+                        .withMatchingReference(TEST_REFERENCE)
+                        .getResults())
+                .build();
 
         connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null,
-                aSuccessfulSearchResponse()
-                        .withMatchingReference(TEST_REFERENCE)
-                        .build()
+                payments
         );
 
         ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of("reference", TEST_REFERENCE))
@@ -124,11 +146,17 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
     @Test
     public void searchPayments_filterByState() throws Exception {
+        String payments = aPaginatedPaymentSearchResult()
+                .withCount(10)
+                .withPage(2)
+                .withTotal(20)
+                .withPayments(aSuccessfulSearchPayment()
+                        .withMatchingInProgressState(TEST_STATE)
+                        .getResults())
+                .build();
 
         connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, TEST_STATE, null, null,
-                aSuccessfulSearchResponse()
-                        .withMatchingInProgressState(TEST_STATE)
-                        .build()
+                payments
         );
 
         ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of("state", TEST_STATE))
@@ -142,10 +170,17 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
     @Test
     public void searchPayments_filterByStateLowercase() throws Exception {
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, TEST_STATE, null, null,
-                aSuccessfulSearchResponse()
+        String payments = aPaginatedPaymentSearchResult()
+                .withCount(10)
+                .withPage(2)
+                .withTotal(20)
+                .withPayments(aSuccessfulSearchPayment()
                         .withMatchingInProgressState(TEST_STATE)
-                        .build()
+                        .getResults())
+                .build();
+
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, TEST_STATE, null, null,
+                payments
         );
 
         ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of("state", TEST_STATE.toLowerCase()))
@@ -159,11 +194,16 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
     @Test
     public void searchPayments_filterFromAndToDates() throws Exception {
+        String payments = aPaginatedPaymentSearchResult()
+                .withCount(10)
+                .withPage(2)
+                .withTotal(20)
+                .withPayments(aSuccessfulSearchPayment()
+                        .withCreatedDateBetween(TEST_FROM_DATE, TEST_TO_DATE).getResults())
+                .build();
 
         connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, null, TEST_FROM_DATE, TEST_TO_DATE,
-                aSuccessfulSearchResponse()
-                        .withCreatedDateBetween(TEST_FROM_DATE, TEST_TO_DATE)
-                        .build()
+                payments
         );
 
         ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of("from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
@@ -179,16 +219,21 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
     @Test
     public void searchPayments_filterByReferenceStateAndFromToDates() throws Exception {
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, TEST_STATE, TEST_FROM_DATE, TEST_TO_DATE,
-                aSuccessfulSearchResponse()
+        String payments = aPaginatedPaymentSearchResult()
+                .withCount(10)
+                .withPage(2)
+                .withTotal(20)
+                .withPayments(aSuccessfulSearchPayment()
                         .withMatchingReference(TEST_REFERENCE)
                         .withMatchingInProgressState(TEST_STATE)
-                        .withCreatedDateBetween(TEST_FROM_DATE, TEST_TO_DATE)
-                        .build()
+                        .withCreatedDateBetween(TEST_FROM_DATE, TEST_TO_DATE).getResults())
+                .build();
+
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, TEST_STATE, TEST_FROM_DATE, TEST_TO_DATE,
+                payments
         );
 
-        ValidatableResponse response = searchPayments(API_KEY,
-                ImmutableMap.of("reference", TEST_REFERENCE, "state", TEST_STATE, "from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
+        ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of("reference", TEST_REFERENCE, "state", TEST_STATE, "from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
                 .statusCode(200)
                 .contentType(JSON)
                 .body("results.size()", equalTo(3));
@@ -201,17 +246,75 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_errorIfConnectorResponseFails() throws Exception {
+    public void searchPayments_getsPaginatedResultsFromConnector() throws Exception {
+
+        PaymentNavigationLinksFixture links = new PaymentNavigationLinksFixture()
+                .withPrevLink("http://server:port/path?query=prev")
+                .withNextLink("http://server:port/path?query=next")
+                .withSelfLink("http://server:port/path?query=self")
+                .withFirstLink("http://server:port/path?query=first")
+                .withLastLink("http://server:port/path?query=last");
+
+        String payments = aPaginatedPaymentSearchResult()
+                .withCount(10)
+                .withPage(2)
+                .withTotal(40)
+                .withPayments(aSuccessfulSearchPayment()
+                        .withMatchingReference(TEST_REFERENCE)
+                        .withMatchingInProgressState(TEST_STATE)
+                        .withCreatedDateBetween(TEST_FROM_DATE, TEST_TO_DATE)
+                        .withNumberOfResults(10)
+                        .getResults())
+                .withLinks(links)
+                .build();
+
+        connectorMock.respondOk_whenSearchChargesWithPageAndSize(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, "2", "10",
+                payments
+        );
+        ImmutableMap<String, String> queryParams = ImmutableMap.of(
+                "reference", TEST_REFERENCE,
+                "state", TEST_STATE,
+                "page", "2",
+                "display_size", "10"
+        );
+        ValidatableResponse response = searchPayments(API_KEY, queryParams)
+                .statusCode(200)
+                .contentType(JSON)
+                .body("results.size()", equalTo(10))
+                .body("total", is(40))
+                .body("count", is(10))
+                .body("page", is(2))
+                .body("_links.next_page.href", Matchers.is(expectedChargesLocationFor("?query=next")))
+                .body("_links.prev_page.href", Matchers.is(expectedChargesLocationFor("?query=prev")))
+                .body("_links.first_page.href", Matchers.is(expectedChargesLocationFor("?query=first")))
+                .body("_links.last_page.href", Matchers.is(Matchers.is(expectedChargesLocationFor("?query=last"))))
+                .body("_links.self.href", Matchers.is(Matchers.is(expectedChargesLocationFor("?query=self"))));
+
+        List<Map<String, Object>> results = response.extract().body().jsonPath().getList("results");
+        assertThat(results, matchesField("reference", TEST_REFERENCE));
+        assertThat(results, matchesState(TEST_STATE));
+        assertThat(results, matchesCreatedDateInBetween(TEST_FROM_DATE, TEST_TO_DATE));
+
+    }
+
+    private String expectedChargesLocationFor(String queryParams) {
+        return "http://localhost:" + app.getLocalPort()
+                + SEARCH_PATH
+                + queryParams;
+    }
+
+    @Test
+    public void searchPayments_errorIfConnectorRespondsWith404() throws Exception {
         InputStream body = searchPayments(API_KEY,
                 ImmutableMap.of("reference", TEST_REFERENCE, "state", TEST_STATE, "from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
-                .statusCode(500)
+                .statusCode(404)
                 .contentType(JSON).extract()
                 .body().asInputStream();
 
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0498"))
-                .assertThat("$.description", is("Downstream system error"));
+                .assertThat("$.code", is("P0402"))
+                .assertThat("$.description", is("Page not found"));
     }
 
     @Test
@@ -238,7 +341,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
         return new TypeSafeMatcher<List<Map<String, Object>>>() {
             @Override
             protected boolean matchesSafely(List<Map<String, Object>> maps) {
-                return maps.stream().allMatch(result -> state.equals( ((Map<String, Object>)result.get("state")).get("status") ));
+                return maps.stream().allMatch(result -> state.equals(((Map<String, Object>) result.get("state")).get("status")));
             }
 
             @Override

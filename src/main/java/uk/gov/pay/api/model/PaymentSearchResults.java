@@ -1,6 +1,7 @@
 package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import uk.gov.pay.api.model.links.PaymentSearchNavigationLinks;
 
 import java.util.List;
 
@@ -12,4 +13,9 @@ public class PaymentSearchResults {
     public PaymentSearchResults(List<PaymentForSearchResult> payments) {
         this.payments = payments;
     }
+
+    public List<PaymentForSearchResult> getPayments() {
+        return payments;
+    }
+
 }

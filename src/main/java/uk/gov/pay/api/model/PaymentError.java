@@ -27,6 +27,7 @@ public class PaymentError {
         GET_PAYMENT_EVENTS_CONNECTOR_ERROR("P0398", "Downstream system error"),
 
         SEARCH_PAYMENTS_VALIDATION_ERROR("P0401", "Invalid parameters: %s. See Public API documentation for the correct data formats"),
+        SEARCH_PAYMENTS_NOT_FOUND("P0402", "Page not found"),
         SEARCH_PAYMENTS_CONNECTOR_ERROR("P0498", "Downstream system error"),
 
         CANCEL_PAYMENT_NOT_FOUND_ERROR("P0500", "Not found"),

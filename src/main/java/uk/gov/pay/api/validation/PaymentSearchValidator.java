@@ -7,6 +7,7 @@ import java.util.*;
 
 import static org.apache.commons.lang3.StringUtils.join;
 import static org.eclipse.jetty.util.StringUtil.isBlank;
+import static org.eclipse.jetty.util.StringUtil.isNotBlank;
 import static uk.gov.pay.api.model.PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 import static uk.gov.pay.api.resources.PaymentsResource.*;
@@ -17,18 +18,34 @@ public class PaymentSearchValidator {
     // we should really find a way to not have this anywhere but in the connector...
     // confirmed and captured should be removed once PP-541 ammendments are complete
     public static final Set<String> VALID_STATES =
-        new HashSet<>(Arrays.asList("created", "started", "submitted", "success", "failed", "cancelled", "error", "confirmed", "captured"));
+            new HashSet<>(Arrays.asList("created", "started", "submitted", "success", "failed", "cancelled", "error", "confirmed", "captured"));
 
-    public static void validateSearchParameters(String state, String reference, String fromDate, String toDate) {
+    public static void validateSearchParameters(String state, String reference, String fromDate, String toDate, String pageNumber, String displaySize) {
         List<String> validationErrors = new LinkedList<>();
-
-        validateState(state, validationErrors);
-        validateReference(reference, validationErrors);
-        validateFromDate(fromDate, validationErrors);
-        validateToDate(toDate, validationErrors);
-
+        try {
+            validateState(state, validationErrors);
+            validateReference(reference, validationErrors);
+            validateFromDate(fromDate, validationErrors);
+            validateToDate(toDate, validationErrors);
+            validatePage(pageNumber, validationErrors);
+            validateDisplaySize(displaySize, validationErrors);
+        } catch (Exception e) {
+            throw new ValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", "), e.getMessage()));
+        }
         if (!validationErrors.isEmpty()) {
             throw new ValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", ")));
+        }
+    }
+
+    private static void validatePage(String pageNumber, List<String> validationErrors) {
+        if (isNotBlank(pageNumber) && Integer.valueOf(pageNumber) < 1) {
+            validationErrors.add(PAGE);
+        }
+    }
+
+    private static void validateDisplaySize(String displaySize, List<String> validationErrors) {
+        if (isNotBlank(displaySize) && Integer.valueOf(displaySize) < 1) {
+            validationErrors.add(DISPLAY_SIZE);
         }
     }
 
