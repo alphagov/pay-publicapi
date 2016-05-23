@@ -219,7 +219,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     public void getPayment_ShouldNotIncludeCancelLinkIfPaymentCannotBeCancelled() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID,
-                new PaymentState("confirmed", true, null, null),
+                new PaymentState("success", true, null, null),
                 RETURN_URL, DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID);
 
         getPaymentResponse(API_KEY, CHARGE_ID)

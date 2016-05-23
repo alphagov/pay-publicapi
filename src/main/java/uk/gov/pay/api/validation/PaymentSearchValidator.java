@@ -16,9 +16,8 @@ import static uk.gov.pay.api.validation.PaymentRequestValidator.REFERENCE_MAX_LE
 
 public class PaymentSearchValidator {
     // we should really find a way to not have this anywhere but in the connector...
-    // confirmed and captured should be removed once PP-541 ammendments are complete
     public static final Set<String> VALID_STATES =
-            new HashSet<>(Arrays.asList("created", "started", "submitted", "success", "failed", "cancelled", "error", "confirmed", "captured"));
+            new HashSet<>(Arrays.asList("created", "started", "submitted", "success", "failed", "cancelled", "error"));
 
     public static void validateSearchParameters(String state, String reference, String fromDate, String toDate, String pageNumber, String displaySize) {
         List<String> validationErrors = new LinkedList<>();
