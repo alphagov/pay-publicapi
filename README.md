@@ -537,7 +537,7 @@ Content-Length: 44
 ------------------------------------------------------------------------------------------------
 ### GET /v1/payments
 
-This endpoint searches for transactions for the given account id.
+This endpoint searches for transactions for the given account id, with filters and pagination
 
 #### Request example
 
@@ -550,61 +550,119 @@ GET /v1/payments
 
 | Field                    | required | Description                               |
 | ------------------------ |:--------:| ----------------------------------------- |
-| `reference`              | - | There (partial or full) reference issued by the government service for this payment. |
-| `status`                 | - | The transaction of this payment |
-| `from_date`               | - | The initial date for search payments |
-| `to_date`                 | - | The end date for search payments|
+| `reference`            | - | There (partial or full) reference issued by the government service for this payment. |
+| `status`               | - | The transaction of this payment |
+| `from_date`            | - | The initial date for search payments |
+| `to_date`              | - | The end date for search payments|
+| `page`                 | - | To get the results from the specified page number, should be a non zero +ve number (optional, defaults to 1)|
+| `display_size`         | - | Number of records to be returned per page, should be a non zero +ve number (optional, defaults to 500)|
 
 #### Response example
 
 ```
-HTTP/1.1 200 OK
-Content-Type: application/json
 {
-    "results": [{     
-        "_links": {
-                "self" :{
-                    "href": "http://publicapi.co.uk/v1/payments/ab2341da231434",
-                    "method": "GET" 
-                },
-                "events" :{
-                    "href": "http://publicapi.co.uk/v1/payments/ab2341da231434/events",
-                    "method": "GET" 
-                },
-                "cancel" : {
-                    "params" : {},
-                    "type" : "",
-                    "href": "http://publicapi.co.uk/v1/payments/ab2341da231434/cancel",
-                    "method": "POST" 
-                }
+  "total": 5,
+  "count": 2,
+  "page": 2,
+  "results": [
+    {
+      "payment_id": "4hn0c8bbtfbnp5tmite2274h5c",
+      "payment_provider": "sandbox",
+      "amount": 1,
+      "state": {
+        "status": "started",
+        "finished": false
+      },
+      "description": "desc",
+      "return_url": "https://demoservice.pymnt.localdomain:443/return/rahul-ref",
+      "reference": "rahul-ref",
+      "created_date": "2016-05-23T15:22:50.972Z",
+      "_links": {
+        "self": {
+          "href": "https://publicapi.pymnt.localdomain/v1/payments/4hn0c8bbtfbnp5tmite2274h5c",
+          "method": "GET"
         },
-        "payment_id": "hu20sqlact5260q2nanm0q8u93",
-        "payment_provider": "worldpay",
-        "amount": 5000,
-        "status": "CREATED",
-        "description": "Your service description",
-        "return_url": "http://your.service.domain/your-reference"
-        "reference": "Ref-1234",
-        "created_date": "2016-05-13T18:20:33Z"
-     }]
-}
-```
+        "cancel": {
+          "href": "https://publicapi.pymnt.localdomain/v1/payments/4hn0c8bbtfbnp5tmite2274h5c/cancel",
+          "method": "POST"
+        },
+        "events": {
+          "href": "https://publicapi.pymnt.localdomain/v1/payments/4hn0c8bbtfbnp5tmite2274h5c/events",
+          "method": "GET"
+        }
+      }
+    },
+    {
+      "payment_id": "am6f5d1583563deb7ss5obju2",
+      "payment_provider": "sandbox",
+      "amount": 1,
+      "state": {
+        "status": "started",
+        "finished": false
+      },
+      "description": "desc",
+      "return_url": "https://demoservice.pymnt.localdomain:443/return/rahul-ref",
+      "reference": "rahul-ref",
+      "created_date": "2016-05-23T15:22:47.038Z",
+      "_links": {
+        "self": {
+          "href": "https://publicapi.pymnt.localdomain/v1/payments/am6f5d1583563deb7ss5obju2",
+          "method": "GET"
+        },
+        "cancel": {
+          "href": "https://publicapi.pymnt.localdomain/v1/payments/am6f5d1583563deb7ss5obju2/cancel",
+          "method": "POST"
+        },
+        "events": {
+          "href": "https://publicapi.pymnt.localdomain/v1/payments/am6f5d1583563deb7ss5obju2/events",
+          "method": "GET"
+        }
+      }
+    }
+  ],
+  "_links": {
+    "next_page": {
+      "href": "https://publicapi.pymnt.localdomain/v1/payments?page=3&display_size=2"
+    },
+    "self": {
+      "href": "https://publicapi.pymnt.localdomain/v1/payments?page=2&display_size=2"
+    },
+    "prev_page": {
+      "href": "https://publicapi.pymnt.localdomain/v1/payments?page=1&display_size=2"
+    },
+    "last_page": {
+      "href": "https://publicapi.pymnt.localdomain/v1/payments?page=3&display_size=2"
+    },
+    "first_page": {
+      "href": "https://publicapi.pymnt.localdomain/v1/payments?page=1&display_size=2"
+    }
+  }
+}```
 
 ##### Response field description
 
-| Field                    | Always present | Description                                                       |
-| ------------------------ |:--------------:| ----------------------------------------------------------------- |
-| `results`                | Yes            | List of payments                                                  |
-| `charge_id`              | Yes            | The unique identifier for this charge                             |
-| `amount`                 | Yes            | The amount of this charge in pence                                |
-| `description`            | Yes            | The payment description                                           |
-| `reference`              | Yes            | There reference issued by the government service for this payment |
-| `gateway_transaction_id` | Yes            | The gateway transaction reference associated to this charge       |
-| `status`                 | Yes            | The current external status of the charge                         |
-| `created_date`           | Yes            | The created date in ISO_8601 format (```yyyy-MM-ddTHH:mm:ssZ```)  |
-| `_links.self`            | Yes            | Link to the payment                                               |
-| `_links.events`          | Yes            | Link to payment events                                            |
-| `_links.cancel`          | No             | Link to cancel the payment (link only available when a payment can be cancelled (i.e. payment has one of the statuses - CREATED, IN PROGRESS |
+| Field                             | Always present | Description                                                       |
+| ------------------------          |:--------------:| ----------------------------------------------------------------- |
+| `total`                           | Yes            | Total number of payments found                                    |
+| `count`                           | Yes            | Number of payments displayed on this page                         |
+| `page`                            | Yes            | Page number of the current recordset                              |
+| `results`                         | Yes            | List of payments                                                  |
+| `results.payment_id`              | Yes            | The unique identifier for this payment                            |
+| `results.amount`                  | Yes            | The amount of this payment in pence                               |
+| `results.description`             | Yes            | The payment description                                           |
+| `results.reference`               | Yes            | There reference issued by the government service for this payment |
+| `results.gateway_transaction_id`  | Yes            | The gateway transaction reference associated to this payment      |
+| `results.status`                  | Yes            | The current external status of the payment                        |
+| `results.created_date`            | Yes            | The created date in ISO_8601 format (```yyyy-MM-ddTHH:mm:ssZ```)  |
+| `results._links.self`             | Yes            | Link to the payment                                               |
+| `results._links.events`           | Yes            | Link to payment events                                            |
+| `results._links.cancel`           | No             | Link to cancel the payment (link only available when a payment can be cancelled (i.e. payment has one of the statuses - CREATED, IN PROGRESS |
+| `_links.self.href`                | Yes            | Href link of the current page |
+| `_links.next_page.href`           | No             | Href link of the next page (based on the display_size requested) |
+| `_links.prev_page.href`           | No             | Href link of the previous page (based on the display_size requested) |
+| `_links.first_page.href`          | Yes            | Href link of the first page (based on the display_size requested) |
+| `_links.last_page.href`           | Yes            | Href link of the last page (based on the display_size requested) |
+```
 
 #### Search payments response errors
 
@@ -618,7 +676,21 @@ Content-Length: 44
 
 {
     "code" : "P0401"
-    "description" : "Invalid parameters: status, reference, from_date, to_date. See Public API documentation for the correct data formats"
+    "description" : "Invalid parameters: status, reference, from_date, to_date, page, display_size. See Public API documentation for the correct data formats"
+}
+```
+
+##### Page not found
+Requested Page not found
+
+```
+HTTP/1.1 404 Not Found
+Content-Type: application/json
+Content-Length: 44
+
+{
+    "code": "P0402"
+    "description": "Page not found"
 }
 ```
 
@@ -646,6 +718,7 @@ Content-Length: 44
 | Code               | Description                                      |
 | ------------------ | -------------------------------------------------|
 | `P0401`            | Request parameters have Validation errors        |
+| `P0402`            | Requested page not found                         |
 | `P0498`            | Connector response was unrecognised to PublicAPI |
 
 ## Responsible Disclosure
