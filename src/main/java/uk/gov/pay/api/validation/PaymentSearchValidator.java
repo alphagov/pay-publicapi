@@ -1,5 +1,6 @@
 package uk.gov.pay.api.validation;
 
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.pay.api.exception.ValidationException;
 import uk.gov.pay.api.utils.DateTimeUtils;
 
@@ -27,8 +28,8 @@ public class PaymentSearchValidator {
             validateReference(reference, validationErrors);
             validateFromDate(fromDate, validationErrors);
             validateToDate(toDate, validationErrors);
-            validatePage(pageNumber, validationErrors);
-            validateDisplaySize(displaySize, validationErrors);
+            validatePageIfNotNull(pageNumber, validationErrors);
+            validateDisplaySizeIfNotNull(displaySize, validationErrors);
         } catch (Exception e) {
             throw new ValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", "), e.getMessage()));
         }
@@ -37,14 +38,14 @@ public class PaymentSearchValidator {
         }
     }
 
-    private static void validatePage(String pageNumber, List<String> validationErrors) {
-        if (isNotBlank(pageNumber) && Integer.valueOf(pageNumber) < 1) {
+    private static void validatePageIfNotNull(String pageNumber, List<String> validationErrors) {
+        if (isNotBlank(pageNumber) && (!StringUtils.isNumeric(pageNumber) || Integer.valueOf(pageNumber) < 1)) {
             validationErrors.add(PAGE);
         }
     }
 
-    private static void validateDisplaySize(String displaySize, List<String> validationErrors) {
-        if (isNotBlank(displaySize) && Integer.valueOf(displaySize) < 1) {
+    private static void validateDisplaySizeIfNotNull(String displaySize, List<String> validationErrors) {
+        if (isNotBlank(displaySize) && (!StringUtils.isNumeric(displaySize) || Integer.valueOf(displaySize) < 1)) {
             validationErrors.add(DISPLAY_SIZE);
         }
     }
