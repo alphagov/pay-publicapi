@@ -1,0 +1,33 @@
+package uk.gov.pay.api.it;
+
+import com.jayway.jsonassert.JsonAssert;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.http.ContentType.JSON;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.core.Is.is;
+
+public class RequestDeniedResourceITest extends PaymentResourceITestBase {
+
+    @Test
+    public void requestDenied() throws IOException {
+
+        InputStream body = given().port(app.getLocalPort())
+                .header("x-naxsi_sig","rules violated")
+                .post("request-denied")
+                .then()
+                .statusCode(400)
+                .contentType(JSON).extract()
+                .body().asInputStream();
+
+        JsonAssert.with(body)
+                .assertThat("$.*", hasSize(2))
+                .assertThat("$.code", is("P0920"))
+                .assertThat("$.description", is("Request blocked by security rules. Please consult API documentation for more information."));
+
+    }
+}
