@@ -7,3 +7,5 @@ alpha_release-1.approver=raul.garcia@cabinet-office.gov.uk
 alpha_release-1.approve-date=2016-06-30:12:44:10
 
 stage.tag=alpha_staging-1
+
+stage.alpha_staging-1.date=2016-07-12:13:50:10
