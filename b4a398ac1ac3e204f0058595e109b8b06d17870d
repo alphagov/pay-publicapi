@@ -13,3 +13,5 @@ stage.alpha_staging-1.date=2016-07-12:13:50:10
 stage.alpha_staging-1.status=failed
 
 alpha_release-1.approver=imran.bohoran@digital.cabinet-office.gov.uk
+
+alpha_release-1.approve-date=2016-07-12:15:03:14
