@@ -34,7 +34,8 @@ public class PaymentError {
         CANCEL_PAYMENT_CONNECTOR_BAD_REQUEST_ERROR("P0501", "Cancellation of payment failed"),
         CANCEL_PAYMENT_CONNECTOR_ERROR("P0598", "Downstream system error"),
 
-        TOO_MANY_REQUESTS_ERROR("P0900", "Too many requests");
+        TOO_MANY_REQUESTS_ERROR("P0900", "Too many requests"),
+        REQUEST_DENIED_ERROR("P0920", "Request blocked by security rules. Please consult API documentation for more information.");
 
         private String value;
         private String format;
