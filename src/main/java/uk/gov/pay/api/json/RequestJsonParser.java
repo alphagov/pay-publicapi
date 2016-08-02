@@ -2,25 +2,30 @@ package uk.gov.pay.api.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import uk.gov.pay.api.exception.BadRequestException;
+import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.PaymentError;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.gov.pay.api.model.CreatePaymentRequest.*;
-import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_MISSING_FIELD_ERROR;
-import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
+import static uk.gov.pay.api.model.PaymentError.Code.*;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 
-class PaymentRequestJsonParser {
+class RequestJsonParser {
 
     static CreatePaymentRequest paymentRequestValueOf(JsonNode rootNode) {
 
-        Integer amount = parseInteger(rootNode, AMOUNT_FIELD_NAME);
+        Integer amount = parseInteger(rootNode, AMOUNT_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, CREATE_PAYMENT_MISSING_FIELD_ERROR);
         String reference = parseString(rootNode, REFERENCE_FIELD_NAME);
         String description = parseString(rootNode, DESCRIPTION_FIELD_NAME);
         String returnUrl = parseString(rootNode, RETURN_URL_FIELD_NAME, aPaymentError(RETURN_URL_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid URL format"));
 
         return new CreatePaymentRequest(amount, returnUrl, reference, description);
+    }
+
+    static CreatePaymentRefundRequest paymentRefundRequestValueOf(JsonNode rootNode) {
+        Integer amount = parseInteger(rootNode, AMOUNT_FIELD_NAME, CREATE_PAYMENT_REFUND_VALIDATION_ERROR, CREATE_PAYMENT_REFUND_MISSING_FIELD_ERROR);
+        return new CreatePaymentRefundRequest(amount);
     }
 
     private static String parseString(JsonNode node, String fieldName) {
@@ -34,10 +39,10 @@ class PaymentRequestJsonParser {
         return fieldValue;
     }
 
-    private static Integer parseInteger(JsonNode node, String fieldName) {
+    private static Integer parseInteger(JsonNode node, String fieldName, PaymentError.Code validationErrorCode, PaymentError.Code missingErrorCode) {
         JsonNode fieldNode = node.get(fieldName);
-        Integer fieldValue = getIntegerValue(fieldNode, aPaymentError(fieldName, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid numeric format"));
-        check(fieldValue != null, aPaymentError(fieldName, CREATE_PAYMENT_MISSING_FIELD_ERROR));
+        Integer fieldValue = getIntegerValue(fieldNode, aPaymentError(fieldName, validationErrorCode, "Must be a valid numeric format"));
+        check(fieldValue != null, aPaymentError(fieldName, missingErrorCode));
         return fieldValue;
     }
 

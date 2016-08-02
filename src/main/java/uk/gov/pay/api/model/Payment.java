@@ -3,10 +3,6 @@ package uk.gov.pay.api.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
-import java.util.List;
-
-import static java.util.Arrays.asList;
-
 public abstract class Payment {
     public static final String LINKS_JSON_ATTRIBUTE = "_links";
 
@@ -16,26 +12,22 @@ public abstract class Payment {
     @JsonProperty("payment_provider")
     private final String paymentProvider;
 
-    @JsonProperty("amount")
     private final long amount;
-
-    @JsonProperty("state")
     private final PaymentState state;
-
-    @JsonProperty("description")
     private final String description;
 
     @JsonProperty("return_url")
     private final String returnUrl;
-
-    @JsonProperty("reference")
     private final String reference;
 
     @JsonProperty("created_date")
     private final String createdDate;
 
+    @JsonProperty("refund_summary")
+    private final RefundSummary refundSummary;
+
     public Payment(String chargeId, long amount, PaymentState state, String returnUrl, String description,
-                    String reference, String paymentProvider, String createdDate) {
+                   String reference, String paymentProvider, String createdDate, RefundSummary refundSummary) {
         this.paymentId = chargeId;
         this.amount = amount;
         this.state = state;
@@ -44,6 +36,7 @@ public abstract class Payment {
         this.reference = reference;
         this.paymentProvider = paymentProvider;
         this.createdDate = createdDate;
+        this.refundSummary = refundSummary;
     }
 
     @ApiModelProperty(example = "2016-01-21T17:15:00Z")
@@ -84,6 +77,11 @@ public abstract class Payment {
     @ApiModelProperty(example = "worldpay")
     public String getPaymentProvider() {
         return paymentProvider;
+    }
+
+    @ApiModelProperty(dataType = "uk.gov.pay.api.model.RefundSummary")
+    public RefundSummary getRefundSummary() {
+        return refundSummary;
     }
 
     @Override

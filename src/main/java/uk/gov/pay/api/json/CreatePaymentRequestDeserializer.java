@@ -9,7 +9,7 @@ import uk.gov.pay.api.validation.PaymentRequestValidator;
 
 import java.io.IOException;
 
-import static uk.gov.pay.api.json.PaymentRequestJsonParser.paymentRequestValueOf;
+import static uk.gov.pay.api.json.RequestJsonParser.paymentRequestValueOf;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_PARSING_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 

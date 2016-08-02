@@ -25,11 +25,18 @@ public class PaymentSearchResultBuilder {
     public static final int DEFAULT_AMOUNT = 10000;
     public static final String DEFAULT_PAYMENT_PROVIDER = "worldpay";
 
+    private static class RefundSummary {
+        public String status;
+        public long amount_available;
+        public long amount_submitted;
+    }
+
     private static class TestPayment {
         public TestPaymentState state;
         public String charge_id, description, reference, created_date;
         public int amount;
         public String gateway_transaction_id, return_url, payment_provider;
+        public RefundSummary refund_summary = new RefundSummary();
     }
 
     private static class TestPaymentState {
@@ -167,6 +174,9 @@ public class PaymentSearchResultBuilder {
         payment.created_date = DEFAULT_CREATED_DATE;
         payment.return_url = DEFAULT_RETURN_URL;
         payment.payment_provider = DEFAULT_PAYMENT_PROVIDER;
+        payment.refund_summary.status = "available";
+        payment.refund_summary.amount_available = 100;
+        payment.refund_summary.amount_submitted = 300;
 
         return payment;
     }

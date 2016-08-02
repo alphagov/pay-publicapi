@@ -7,21 +7,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PaymentResult {
+public class ChargeFromResponse {
 
     @JsonProperty("charge_id")
     private String chargeId;
-    private Long amount;
-    private PaymentState state;
+
     @JsonProperty("return_url")
     private String returnUrl;
-    private String description;
-    private String reference;
+
     @JsonProperty("payment_provider")
     private String paymentProvider;
-    private String created_date;
+
     @JsonProperty("links")
     private List<PaymentConnectorResponseLink> links = new ArrayList<>();
+
+    @JsonProperty(value = "refund_summary")
+    private RefundSummary refundSummary;
+
+    private Long amount;
+    private PaymentState state;
+    private String description;
+    private String reference;
+    private String created_date;
 
     public String getChargeId() {
         return chargeId;
@@ -57,5 +64,9 @@ public class PaymentResult {
 
     public List<PaymentConnectorResponseLink> getLinks() {
         return links;
+    }
+
+    public RefundSummary getRefundSummary() {
+        return refundSummary;
     }
 }

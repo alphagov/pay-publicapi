@@ -59,9 +59,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                         .getResults())
                 .build();
 
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null,
-                payments
-        );
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null, payments);
 
         String responseBody = searchPayments(API_KEY, ImmutableMap.of("reference", TEST_REFERENCE))
                 .statusCode(200)
@@ -80,6 +78,11 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .body("results[0]._links.events.method", is("GET"))
                 .body("results[0]._links.cancel.href", is(paymentCancelLocationFor("0")))
                 .body("results[0]._links.cancel.method", is("POST"))
+                .body("results[0]._links.refunds.href", is(paymentRefundsLocationFor("0")))
+                .body("results[0]._links.refunds.method", is("GET"))
+                .body("results[0].refund_summary.status", is("available"))
+                .body("results[0].refund_summary.amount_available", is(100))
+                .body("results[0].refund_summary.amount_submitted", is(300))
                 .extract().asString();
 
         JsonAssert.with(responseBody)

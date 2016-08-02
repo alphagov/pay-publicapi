@@ -4,6 +4,7 @@ import com.jayway.jsonassert.JsonAssert;
 import com.jayway.restassured.response.ValidatableResponse;
 import org.junit.Test;
 import uk.gov.pay.api.model.PaymentState;
+import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
@@ -31,6 +32,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     private static final String CHARGE_ID = "ch_ab2341da231434l";
     private static final String CHARGE_TOKEN_ID = "token_1234567asdf";
     private static final PaymentState STATE = new PaymentState("created", false, null, null);
+    private static final RefundSummary REFUND_SUMMARY = new RefundSummary("pending", 100L, 50L);
     private static final String PAYMENT_PROVIDER = "Sandbox";
     private static final String RETURN_URL = "http://somewhere.gov.uk/rainbow/1";
     private static final String REFERENCE = "Some reference <script> alert('This is a ?{simple} XSS attack.')</script>";
@@ -48,7 +50,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         connectorMock.respondOk_whenCreateCharge(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID,
-                STATE, RETURN_URL, DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE);
+                STATE, RETURN_URL, DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE, REFUND_SUMMARY);
 
         String responseBody = postPaymentResponse(API_KEY, SUCCESS_PAYLOAD)
                 .statusCode(201)
@@ -62,6 +64,9 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .body("return_url", is(RETURN_URL))
                 .body("payment_provider", is(PAYMENT_PROVIDER))
                 .body("created_date", is(CREATED_DATE))
+                .body("refund_summary.status", is("pending"))
+                .body("refund_summary.amount_submitted", is(50))
+                .body("refund_summary.amount_available", is(100))
                 .body("_links.self.href", is(paymentLocationFor(CHARGE_ID)))
                 .body("_links.self.method", is("GET"))
                 .body("_links.next_url.href", is("http://Frontend/charge/" + CHARGE_TOKEN_ID))
@@ -74,7 +79,11 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .body("_links.events.method", is("GET"))
                 .body("_links.cancel.href", is(paymentCancelLocationFor(CHARGE_ID)))
                 .body("_links.cancel.method", is("POST"))
+                .body("_links.refunds.href", is(paymentRefundsLocationFor(CHARGE_ID)))
+                .body("_links.refunds.method", is("GET"))
                 .extract().body().asString();
+
+        System.out.println("responseBody >>>>>>>>>>>>>>>>> = " + responseBody);
 
         JsonAssert.with(responseBody)
                 .assertNotDefined("_links.self.type")
@@ -94,7 +103,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
 
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondOk_whenCreateCharge(minimumAmount, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID,
-                STATE, RETURN_URL, DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE);
+                STATE, RETURN_URL, DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE, REFUND_SUMMARY);
 
         postPaymentResponse(API_KEY, paymentPayload(minimumAmount, RETURN_URL, DESCRIPTION, REFERENCE))
                 .statusCode(201)
@@ -120,7 +129,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
 
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondOk_whenCreateCharge(amount, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID,
-                STATE, return_url, description, reference, PAYMENT_PROVIDER, CREATED_DATE);
+                STATE, return_url, description, reference, PAYMENT_PROVIDER, CREATED_DATE, REFUND_SUMMARY);
 
         String body = new JsonStringBuilder()
                 .add("amount", amount)
@@ -185,7 +194,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     public void getPayment_ReturnsPayment() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, STATE, RETURN_URL,
-                DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID);
+                DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID, REFUND_SUMMARY);
 
         getPaymentResponse(API_KEY, CHARGE_ID)
                 .statusCode(200)
@@ -198,6 +207,9 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .body("return_url", is(RETURN_URL))
                 .body("payment_provider", is(PAYMENT_PROVIDER))
                 .body("created_date", is(CREATED_DATE))
+                .body("refund_summary.status", is("pending"))
+                .body("refund_summary.amount_submitted", is(50))
+                .body("refund_summary.amount_available", is(100))
                 .body("_links.self.href", is(paymentLocationFor(CHARGE_ID)))
                 .body("_links.self.method", is("GET"))
                 .body("_links.events.href", is(paymentEventsLocationFor(CHARGE_ID)))
@@ -210,9 +222,10 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
                 .body("_links.events.href", is(paymentEventsLocationFor(CHARGE_ID)))
                 .body("_links.events.method", is("GET"))
-                .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
                 .body("_links.cancel.href", is(paymentCancelLocationFor(CHARGE_ID)))
-                .body("_links.cancel.method", is("POST"));
+                .body("_links.cancel.method", is("POST"))
+                .body("_links.refunds.href", is(paymentRefundsLocationFor(CHARGE_ID)))
+                .body("_links.refunds.method", is("GET"));
     }
 
     @Test
@@ -220,7 +233,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID,
                 new PaymentState("success", true, null, null),
-                RETURN_URL, DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID);
+                RETURN_URL, DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID, REFUND_SUMMARY);
 
         getPaymentResponse(API_KEY, CHARGE_ID)
                 .statusCode(200)

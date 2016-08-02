@@ -12,13 +12,14 @@ import static uk.gov.pay.api.validation.MaxLengthValidator.isValid;
 
 public class PaymentRequestValidator {
 
-    private static final String CONSTRAINT_GREATER_THAN_MESSAGE_INT_TEMPLATE = "Must be greater than or equal to %d";
-    private static final String CONSTRAINT_LESS_THAN_MESSAGE_INT_TEMPLATE = "Must be less than or equal to %d";
+    static final String CONSTRAINT_GREATER_THAN_MESSAGE_INT_TEMPLATE = "Must be greater than or equal to %d";
+    static final String CONSTRAINT_LESS_THAN_MESSAGE_INT_TEMPLATE = "Must be less than or equal to %d";
     private static final String CONSTRAINT_MESSAGE_STRING_TEMPLATE = "Must be less than or equal to %d characters length";
     private static final String URL_FORMAT_MESSAGE = "Must be a valid URL format";
 
-    private static final int AMOUNT_MAX_VALUE = 10000000;
-    private static final int AMOUNT_MIN_VALUE = 1;
+    static final int AMOUNT_MAX_VALUE = 10000000;
+    static final int AMOUNT_MIN_VALUE = 1;
+
     private static final int DESCRIPTION_MAX_LENGTH = 255;
     private static final int URL_MAX_LENGTH = 2000;
     static final int REFERENCE_MAX_LENGTH = 255;
