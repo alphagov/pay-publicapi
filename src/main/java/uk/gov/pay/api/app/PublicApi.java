@@ -84,7 +84,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         jersey.register(GetChargeExceptionMapper.class);
         jersey.register(GetEventsExceptionMapper.class);
         jersey.register(SearchChargesExceptionMapper.class);
-        jersey.register(CancelPaymentExceptionMapper.class);
+        jersey.register(CancelChargeExceptionMapper.class);
         jersey.register(ValidationExceptionMapper.class);
         jersey.register(BadRequestExceptionMapper.class);
         jersey.register(CreateRefundExceptionMapper.class);

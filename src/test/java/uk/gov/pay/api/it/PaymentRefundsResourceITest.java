@@ -83,7 +83,7 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         PaymentRefundJsonFixture refund_1 = new PaymentRefundJsonFixture(100L, CREATED_DATE, "100", "available", new ArrayList<>());
-        PaymentRefundJsonFixture refund_2 = new PaymentRefundJsonFixture(300L, CREATED_DATE, "300", "available", new ArrayList<>());
+        PaymentRefundJsonFixture refund_2 = new PaymentRefundJsonFixture(300L, CREATED_DATE, "300", "pending", new ArrayList<>());
 
         connectorMock.respondWithGetAllRefunds(GATEWAY_ACCOUNT_ID, CHARGE_ID, refund_1, refund_2);
 
@@ -100,7 +100,14 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
                 .body("_embedded.refunds[0].status", is("available"))
                 .body("_embedded.refunds[0]._links.size()", is(2))
                 .body("_embedded.refunds[0]._links.self.href", is(paymentRefundLocationFor(CHARGE_ID, "100")))
-                .body("_embedded.refunds[0]._links.payment.href", is(paymentLocationFor(CHARGE_ID)));
+                .body("_embedded.refunds[0]._links.payment.href", is(paymentLocationFor(CHARGE_ID)))
+                .body("_embedded.refunds[1].refund_id", is("300"))
+                .body("_embedded.refunds[1].created_date", is(CREATED_DATE))
+                .body("_embedded.refunds[1].amount", is(300))
+                .body("_embedded.refunds[1].status", is("pending"))
+                .body("_embedded.refunds[1]._links.size()", is(2))
+                .body("_embedded.refunds[1]._links.self.href", is(paymentRefundLocationFor(CHARGE_ID, "300")))
+                .body("_embedded.refunds[1]._links.payment.href", is(paymentLocationFor(CHARGE_ID)));
     }
 
     @Test

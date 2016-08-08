@@ -12,9 +12,9 @@ import static javax.ws.rs.core.Response.Status.*;
 import static uk.gov.pay.api.model.PaymentError.Code.*;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 
-public class CancelPaymentExceptionMapper implements ExceptionMapper<CancelChargeException> {
+public class CancelChargeExceptionMapper implements ExceptionMapper<CancelChargeException> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CancelPaymentExceptionMapper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CancelChargeExceptionMapper.class);
 
     @Override
     public Response toResponse(CancelChargeException exception) {
