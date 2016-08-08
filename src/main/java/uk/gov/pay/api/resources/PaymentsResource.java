@@ -240,6 +240,7 @@ public class PaymentsResource {
                         .addProperty("total", searchResponse.getTotal())
                         .addProperty("page", searchResponse.getPage());
 
+                addLink(halRepresentation, "self", transformIntoPublicUri(uriInfo, searchResponse.getLinks().getSelf()));
                 addLink(halRepresentation, "first_page", transformIntoPublicUri(uriInfo, searchResponse.getLinks().getFirstPage()));
                 addLink(halRepresentation, "last_page", transformIntoPublicUri(uriInfo, searchResponse.getLinks().getLastPage()));
                 addLink(halRepresentation, "prev_page", transformIntoPublicUri(uriInfo, searchResponse.getLinks().getPrevPage()));
