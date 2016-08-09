@@ -10,9 +10,10 @@ import static javax.ws.rs.HttpMethod.POST;
 @ApiModel(value = "linksForSearchResults", description = "links for search payment resource")
 public class PaymentLinksForSearch {
 
-    public static final String SELF = "self";
-    public static final String EVENTS = "events";
+    private static final String SELF = "self";
+    private static final String EVENTS = "events";
     private static final String CANCEL = "cancel";
+    private static final String REFUNDS = "refunds";
 
     @JsonProperty(value = SELF)
     private Link self;
@@ -22,6 +23,9 @@ public class PaymentLinksForSearch {
 
     @JsonProperty(value = EVENTS)
     private Link events;
+
+    @JsonProperty(value = REFUNDS)
+    private Link refunds;
 
     @ApiModelProperty(value = SELF, dataType = "uk.gov.pay.api.model.links.Link")
     public Link getSelf() {
@@ -38,6 +42,10 @@ public class PaymentLinksForSearch {
         return events;
     }
 
+    @ApiModelProperty(value = REFUNDS, dataType = "uk.gov.pay.api.model.links.Link")
+    public Link getRefunds() {
+        return refunds;
+    }
 
     public void addSelf(String href) {
         this.self = new Link(href, GET);
@@ -49,5 +57,9 @@ public class PaymentLinksForSearch {
 
     public void addCancel(String href) {
         this.cancel = new PostLink(href, POST);
+    }
+
+    public void addRefunds(String href) {
+        this.refunds = new Link(href, GET);
     }
 }

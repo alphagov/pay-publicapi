@@ -13,11 +13,12 @@ import static javax.ws.rs.HttpMethod.POST;
 @ApiModel(value = "allLinksForAPayment", description = "self,events and next links of a Payment")
 public class PaymentLinks {
 
-    public static final String SELF = "self";
+    private static final String SELF = "self";
     private static final String NEXT_URL = "next_url";
     private static final String NEXT_URL_POST = "next_url_post";
-    public static final String EVENTS = "events";
+    private static final String EVENTS = "events";
     private static final String CANCEL = "cancel";
+    private static final String REFUNDS = "refunds";
 
     @JsonProperty(value = SELF)
     private Link self;
@@ -31,9 +32,11 @@ public class PaymentLinks {
     @JsonProperty(value = EVENTS)
     private Link events;
 
+    @JsonProperty(value = REFUNDS)
+    private Link refunds;
+
     @JsonProperty(value = CANCEL)
     private PostLink cancel;
-
 
     @ApiModelProperty(value = SELF, dataType = "uk.gov.pay.api.model.links.Link")
     public Link getSelf() {
@@ -55,6 +58,11 @@ public class PaymentLinks {
         return events;
     }
 
+    @ApiModelProperty(value = REFUNDS, dataType = "uk.gov.pay.api.model.links.Link")
+    public Link getRefunds() {
+        return refunds;
+    }
+
     @ApiModelProperty(value = CANCEL, dataType = "uk.gov.pay.api.model.links.PostLink")
     public PostLink getCancel() {
         return cancel;
@@ -71,6 +79,10 @@ public class PaymentLinks {
 
     public void addEvents(String href) {
         this.events = new Link(href, GET);
+    }
+
+    public void addRefunds(String href) {
+        this.refunds = new Link(href, GET);
     }
 
     public void addCancel(String href) {

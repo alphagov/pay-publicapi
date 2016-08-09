@@ -73,7 +73,7 @@ public class JsonStringBuilder {
         try {
             return writer.writeValueAsString(object);
         } catch (JsonProcessingException e) {
-            throw new IllegalStateException("Error processing card details", e);
+            throw new IllegalStateException("Error processing json object to string", e);
         }
     }
 

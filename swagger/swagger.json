@@ -6,6 +6,10 @@
     "title" : "GOV.UK Pay Api"
   },
   "host" : "publicapi.pymnt.uk",
+  "tags" : [ {
+    "name" : "refunds",
+    "description" : "Public Api Endpoints for Refunds"
+  } ],
   "schemes" : [ "https" ],
   "paths" : {
     "/v1/payments" : {
@@ -235,9 +239,142 @@
           }
         }
       }
+    },
+    "/v1/payments/{paymentId}/refunds" : {
+      "get" : {
+        "tags" : [ "refunds" ],
+        "summary" : "Get all refunds for a payment.",
+        "description" : "Return refunds for a payment. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "operationId" : "getRefunds",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "paymentId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "404" : {
+            "description" : "Not found",
+            "schema" : {
+              "$ref" : "#/definitions/Payment Error"
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "schema" : {
+              "$ref" : "#/definitions/Payment Error"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "refunds" ],
+        "summary" : "Submit a refund for a payment",
+        "description" : "Return issued refund information. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "operationId" : "submitRefund",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "paymentId",
+          "in" : "path",
+          "description" : "paymentId",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "description" : "requestPayload",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/CreatePaymentRefundRequest"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "ACCEPTED"
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "404" : {
+            "description" : "Not found",
+            "schema" : {
+              "$ref" : "#/definitions/Payment Error"
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "schema" : {
+              "$ref" : "#/definitions/Payment Error"
+            }
+          }
+        }
+      }
+    },
+    "/v1/payments/{paymentId}/refunds/{refundId}" : {
+      "get" : {
+        "tags" : [ "refunds" ],
+        "summary" : "Find payment refund by ID",
+        "description" : "Return payment refund information by Refund ID The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "operationId" : "getRefundById",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "paymentId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "refundId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "404" : {
+            "description" : "Not found",
+            "schema" : {
+              "$ref" : "#/definitions/Payment Error"
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "schema" : {
+              "$ref" : "#/definitions/Payment Error"
+            }
+          }
+        }
+      }
     }
   },
   "definitions" : {
+    "CreatePaymentRefundRequest" : {
+      "type" : "object",
+      "required" : [ "amount" ],
+      "properties" : {
+        "amount" : {
+          "type" : "integer",
+          "format" : "int32",
+          "example" : "150000",
+          "description" : "Amount in pence. Can't be more than the available amount for refunds",
+          "minimum" : 1.0,
+          "maximum" : 1.0E7
+        }
+      },
+      "description" : "The Payment Refund Request Payload"
+    },
     "CreatePaymentRequest" : {
       "type" : "object",
       "required" : [ "amount", "description", "reference", "return_url" ],
@@ -367,6 +504,22 @@
     "PaymentForSearchResult" : {
       "type" : "object",
       "properties" : {
+        "amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "example" : "1200"
+        },
+        "state" : {
+          "$ref" : "#/definitions/Payment state"
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "Your Service Description"
+        },
+        "reference" : {
+          "type" : "string",
+          "example" : "your-reference"
+        },
         "payment_id" : {
           "type" : "string",
           "example" : "hu20sqlact5260q2nanm0q8u93",
@@ -377,35 +530,19 @@
           "example" : "worldpay",
           "readOnly" : true
         },
-        "amount" : {
-          "type" : "integer",
-          "format" : "int64",
-          "example" : "1200",
-          "readOnly" : true
-        },
-        "state" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/Payment state"
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "Your Service Description",
-          "readOnly" : true
-        },
         "return_url" : {
           "type" : "string",
           "example" : "http://your.service.domain/your-reference",
-          "readOnly" : true
-        },
-        "reference" : {
-          "type" : "string",
-          "example" : "your-reference",
           "readOnly" : true
         },
         "created_date" : {
           "type" : "string",
           "example" : "2016-01-21T17:15:00Z",
           "readOnly" : true
+        },
+        "refund_summary" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/Refund Summary"
         },
         "_links" : {
           "readOnly" : true,
@@ -428,6 +565,22 @@
     "PaymentWithAllLinks" : {
       "type" : "object",
       "properties" : {
+        "amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "example" : "1200"
+        },
+        "state" : {
+          "$ref" : "#/definitions/Payment state"
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "Your Service Description"
+        },
+        "reference" : {
+          "type" : "string",
+          "example" : "your-reference"
+        },
         "payment_id" : {
           "type" : "string",
           "example" : "hu20sqlact5260q2nanm0q8u93",
@@ -438,29 +591,9 @@
           "example" : "worldpay",
           "readOnly" : true
         },
-        "amount" : {
-          "type" : "integer",
-          "format" : "int64",
-          "example" : "1200",
-          "readOnly" : true
-        },
-        "state" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/Payment state"
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "Your Service Description",
-          "readOnly" : true
-        },
         "return_url" : {
           "type" : "string",
           "example" : "http://your.service.domain/your-reference",
-          "readOnly" : true
-        },
-        "reference" : {
-          "type" : "string",
-          "example" : "your-reference",
           "readOnly" : true
         },
         "created_date" : {
@@ -468,11 +601,38 @@
           "example" : "2016-01-21T17:15:00Z",
           "readOnly" : true
         },
+        "refund_summary" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/Refund Summary"
+        },
         "_links" : {
           "readOnly" : true,
           "$ref" : "#/definitions/allLinksForAPayment"
         }
       }
+    },
+    "Refund Summary" : {
+      "type" : "object",
+      "properties" : {
+        "status" : {
+          "type" : "string",
+          "example" : "available",
+          "description" : "Availability status of the refund"
+        },
+        "amount_available" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Amount available for refund in pence",
+          "readOnly" : true
+        },
+        "amount_submitted" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Amount submitted for refunds on this Payment in pence",
+          "readOnly" : true
+        }
+      },
+      "description" : "A structure representing the refunds availability"
     },
     "allLinksForAPayment" : {
       "type" : "object",
@@ -494,6 +654,11 @@
         },
         "events" : {
           "description" : "events",
+          "readOnly" : true,
+          "$ref" : "#/definitions/paymentLink"
+        },
+        "refunds" : {
+          "description" : "refunds",
           "readOnly" : true,
           "$ref" : "#/definitions/paymentLink"
         },
@@ -531,6 +696,11 @@
         },
         "events" : {
           "description" : "events",
+          "readOnly" : true,
+          "$ref" : "#/definitions/paymentLink"
+        },
+        "refunds" : {
+          "description" : "refunds",
           "readOnly" : true,
           "$ref" : "#/definitions/paymentLink"
         }

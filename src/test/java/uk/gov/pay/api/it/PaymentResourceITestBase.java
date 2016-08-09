@@ -57,6 +57,14 @@ public abstract class PaymentResourceITestBase {
         return paymentLocationFor(chargeId) + "/events";
     }
 
+    String paymentRefundsLocationFor(String chargeId) {
+        return paymentLocationFor(chargeId) + "/refunds";
+    }
+
+    String paymentRefundLocationFor(String chargeId, String refundId) {
+        return "http://localhost:" + app.getLocalPort() + PAYMENTS_PATH + chargeId + "/refunds/" +refundId;
+    }
+
     String paymentCancelLocationFor(String chargeId) {
         return paymentLocationFor(chargeId) + "/cancel";
     }

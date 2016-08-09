@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.api.it.fixtures.PaymentNavigationLinksFixture;
 import uk.gov.pay.api.model.PaymentState;
+import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
@@ -39,6 +40,7 @@ public class ResourcesFiltersITest extends PaymentResourceITestBase {
     private static final String CHARGE_ID = "ch_ab2341da231434l";
     private static final String CHARGE_TOKEN_ID = "token_1234567asdf";
     private static final PaymentState STATE = new PaymentState("created", false, null, null);
+    private static final RefundSummary REFUND_SUMMARY = new RefundSummary("pending", 100L, 50L);
     private static final String PAYMENT_PROVIDER = "Sandbox";
     private static final String RETURN_URL = "http://somewhere.gov.uk/rainbow/1";
     private static final String REFERENCE = "Some reference";
@@ -60,7 +62,7 @@ public class ResourcesFiltersITest extends PaymentResourceITestBase {
     public void createPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
 
         connectorMock.respondOk_whenCreateCharge(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID, STATE,
-                RETURN_URL, DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE);
+                RETURN_URL, DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE, REFUND_SUMMARY);
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> postPaymentResponse(API_KEY, PAYLOAD),
@@ -91,7 +93,7 @@ public class ResourcesFiltersITest extends PaymentResourceITestBase {
     public void getPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
 
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, STATE,
-                RETURN_URL, DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID);
+                RETURN_URL, DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID, REFUND_SUMMARY);
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> getPaymentResponse(API_KEY, CHARGE_ID),

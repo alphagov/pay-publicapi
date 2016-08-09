@@ -70,7 +70,7 @@ public class CreatePaymentRequestDeserializerTest {
                 "}";
 
         expectedException.expect(BadRequestException.class);
-        expectedException.expect(aBadRequestExceptionWithError("P0100", "Unable to parse JSON"));
+        expectedException.expect(aBadRequestExceptionWithError("P0197", "Unable to parse JSON"));
 
         deserializer.deserialize(jsonFactory.createParser(invalidJson), ctx);
     }

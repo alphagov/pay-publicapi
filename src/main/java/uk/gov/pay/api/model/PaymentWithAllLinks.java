@@ -13,24 +13,25 @@ public class PaymentWithAllLinks extends Payment {
     private PaymentLinks links = new PaymentLinks();
 
     private PaymentWithAllLinks(String chargeId, long amount, PaymentState state, String returnUrl, String description,
-                                String reference, String paymentProvider, String createdDate,
+                                String reference, String paymentProvider, String createdDate, RefundSummary refundSummary,
                                 List<PaymentConnectorResponseLink> paymentConnectorResponseLinks,
-                                URI selfLink, URI paymentEventsLink, URI paymentCancelUri) {
-        super(chargeId, amount, state, returnUrl, description, reference, paymentProvider, createdDate);
-
+                                URI selfLink, URI paymentEventsUri, URI paymentCancelUri, URI paymentRefundsUri) {
+        super(chargeId, amount, state, returnUrl, description, reference, paymentProvider, createdDate, refundSummary);
         this.links.addSelf(selfLink.toString());
         this.links.addKnownLinksValueOf(paymentConnectorResponseLinks);
-        this.links.addEvents(paymentEventsLink.toString());
+        this.links.addEvents(paymentEventsUri.toString());
+        this.links.addRefunds(paymentRefundsUri.toString());
 
         if (!state.isFinished()) {
             this.links.addCancel(paymentCancelUri.toString());
         }
     }
 
-    public static PaymentWithAllLinks valueOf(PaymentResult paymentConnector,
+    public static PaymentWithAllLinks valueOf(ChargeFromResponse paymentConnector,
                                               URI selfLink,
                                               URI paymentEventsUri,
-                                              URI paymentCancelUri) {
+                                              URI paymentCancelUri,
+                                              URI paymentRefundsUri) {
         return new PaymentWithAllLinks(
                 paymentConnector.getChargeId(),
                 paymentConnector.getAmount(),
@@ -40,10 +41,12 @@ public class PaymentWithAllLinks extends Payment {
                 paymentConnector.getReference(),
                 paymentConnector.getPaymentProvider(),
                 paymentConnector.getCreated_date(),
+                paymentConnector.getRefundSummary(),
                 paymentConnector.getLinks(),
                 selfLink,
                 paymentEventsUri,
-                paymentCancelUri
+                paymentCancelUri,
+                paymentRefundsUri
         );
     }
 

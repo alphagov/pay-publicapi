@@ -13,10 +13,11 @@ public class PaymentForSearchResult extends Payment {
 
     public PaymentForSearchResult(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                                   String reference, String paymentProvider, String createdDate,
-                                  URI selfLink, URI paymentEventsLink, URI paymentCancelLink) {
-        super(chargeId, amount, state, returnUrl, description, reference, paymentProvider, createdDate);
+                                  RefundSummary refundSummary, URI selfLink, URI paymentEventsLink, URI paymentCancelLink, URI paymentRefundsLink) {
+        super(chargeId, amount, state, returnUrl, description, reference, paymentProvider, createdDate, refundSummary);
         this.links.addSelf(selfLink.toString());
         this.links.addEvents(paymentEventsLink.toString());
+        this.links.addRefunds(paymentRefundsLink.toString());
 
         if (!state.isFinished()) {
             this.links.addCancel(paymentCancelLink.toString());
@@ -24,10 +25,12 @@ public class PaymentForSearchResult extends Payment {
     }
 
     public static PaymentForSearchResult valueOf(
-            PaymentResult paymentResult,
+            ChargeFromResponse paymentResult,
             URI selfLink,
             URI paymentEventsLink,
-            URI paymentCancelLink) {
+            URI paymentCancelLink,
+            URI paymentRefundsLink) {
+
         return new PaymentForSearchResult(
                 paymentResult.getChargeId(),
                 paymentResult.getAmount(),
@@ -37,10 +40,10 @@ public class PaymentForSearchResult extends Payment {
                 paymentResult.getReference(),
                 paymentResult.getPaymentProvider(),
                 paymentResult.getCreated_date(),
-                selfLink,
+                paymentResult.getRefundSummary(), selfLink,
                 paymentEventsLink,
-                paymentCancelLink
-        );
+                paymentCancelLink,
+                paymentRefundsLink);
     }
 
     @ApiModelProperty(dataType = "uk.gov.pay.api.model.links.PaymentLinksForSearch")

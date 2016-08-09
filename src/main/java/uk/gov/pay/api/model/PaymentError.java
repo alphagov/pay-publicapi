@@ -16,7 +16,7 @@ public class PaymentError {
 
         CREATE_PAYMENT_ACCOUNT_ERROR("P0199", "There is an error with this account. Please contact support"),
         CREATE_PAYMENT_CONNECTOR_ERROR("P0198", "Downstream system error"),
-        CREATE_PAYMENT_PARSING_ERROR("P0100", "Unable to parse JSON"),
+        CREATE_PAYMENT_PARSING_ERROR("P0197", "Unable to parse JSON"),
         CREATE_PAYMENT_MISSING_FIELD_ERROR("P0101", "Missing mandatory attribute: %s"),
         CREATE_PAYMENT_VALIDATION_ERROR("P0102", "Invalid attribute value: %s. %s"),
 
@@ -33,6 +33,19 @@ public class PaymentError {
         CANCEL_PAYMENT_NOT_FOUND_ERROR("P0500", "Not found"),
         CANCEL_PAYMENT_CONNECTOR_BAD_REQUEST_ERROR("P0501", "Cancellation of payment failed"),
         CANCEL_PAYMENT_CONNECTOR_ERROR("P0598", "Downstream system error"),
+
+        CREATE_PAYMENT_REFUND_CONNECTOR_ERROR("P0698", "Downstream system error"),
+        CREATE_PAYMENT_REFUND_PARSING_ERROR("P0697", "Unable to parse JSON"),
+        CREATE_PAYMENT_REFUND_NOT_FOUND_ERROR("P0600", "Not found"),
+        CREATE_PAYMENT_REFUND_MISSING_FIELD_ERROR("P0601", "Missing mandatory attribute: %s"),
+        CREATE_PAYMENT_REFUND_VALIDATION_ERROR("P0602", "Invalid attribute value: %s. %s"),
+        CREATE_PAYMENT_REFUND_NOT_AVAILABLE("P0603", "The payment is not available for refund. Payment refund status: %s"),
+
+        GET_PAYMENT_REFUND_NOT_FOUND_ERROR("P0700", "Not found"),
+        GET_PAYMENT_REFUND_CONNECTOR_ERROR("P0798", "Downstream system error"),
+
+        GET_PAYMENT_REFUNDS_NOT_FOUND_ERROR("P0800", "Not found"),
+        GET_PAYMENT_REFUNDS_CONNECTOR_ERROR("P0898", "Downstream system error"),
 
         TOO_MANY_REQUESTS_ERROR("P0900", "Too many requests"),
         REQUEST_DENIED_ERROR("P0920", "Request blocked by security rules. Please consult API documentation for more information.");

@@ -5,8 +5,10 @@ import org.junit.Test;
 import javax.ws.rs.core.Response;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
+import static uk.gov.pay.api.exception.ConnectorResponseErrorException.ConnectorErrorResponse;
 
 public class ConnectorResponseErrorExceptionTest {
 
@@ -22,8 +24,12 @@ public class ConnectorResponseErrorExceptionTest {
         ConnectorResponseErrorException exception = new ConnectorResponseErrorException(mockResponse);
 
         assertThat(exception.getErrorStatus(), is(400));
+        assertThat(exception.hasReason(), is(false));
+        assertThat(exception.getMessage(), is(mockResponse.toString()));
+        assertThat(exception.getReason(), is(nullValue()));
 
         verify(mockResponse).getStatus();
+        verify(mockResponse).readEntity(ConnectorErrorResponse.class);
         verify(mockResponse).close();
         verifyNoMoreInteractions(mockResponse);
     }

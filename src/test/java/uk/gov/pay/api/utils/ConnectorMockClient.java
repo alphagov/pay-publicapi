@@ -5,11 +5,12 @@ import org.mockserver.client.server.ForwardChainExpectation;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.model.HttpResponse;
 import org.mockserver.model.Parameter;
+import uk.gov.pay.api.it.fixtures.PaymentRefundJsonFixture;
 import uk.gov.pay.api.model.PaymentState;
+import uk.gov.pay.api.model.RefundSummary;
+import uk.gov.pay.api.model.links.Link;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
@@ -31,6 +32,8 @@ public class ConnectorMockClient {
     private static final String CONNECTOR_MOCK_CHARGES_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/charges";
     private static final String CONNECTOR_MOCK_CHARGE_PATH = CONNECTOR_MOCK_CHARGES_PATH + "/%s";
     private static final String CONNECTOR_MOCK_CHARGE_EVENTS_PATH = CONNECTOR_MOCK_CHARGE_PATH + "/events";
+    private static final String CONNECTOR_MOCK_CHARGE_REFUNDS_PATH = CONNECTOR_MOCK_CHARGE_PATH + "/refunds";
+    private static final String CONNECTOR_MOCK_CHARGE_REFUND_BY_ID_PATH = CONNECTOR_MOCK_CHARGE_REFUNDS_PATH + "/%s";
     private static final String REFERENCE_KEY = "reference";
     private static final String STATE_KEY = "state";
     private static final String FROM_DATE_KEY = "from_date";
@@ -53,8 +56,8 @@ public class ConnectorMockClient {
                 .build();
     }
 
-    private String createChargeResponse(long amount, String chargeId, PaymentState state, String returnUrl, String description,
-                                        String reference, String paymentProvider, String gatewayTransactionId, String createdDate, ImmutableMap<?, ?>... links) {
+    private String buildChargeResponse(long amount, String chargeId, PaymentState state, String returnUrl, String description,
+                                       String reference, String paymentProvider, String gatewayTransactionId, String createdDate, RefundSummary refundSummary, ImmutableMap<?, ?>... links) {
         JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
                 .add("charge_id", chargeId)
                 .add("amount", amount)
@@ -64,14 +67,31 @@ public class ConnectorMockClient {
                 .add("return_url", returnUrl)
                 .add("payment_provider", paymentProvider)
                 .add("created_date", createdDate)
-                .add("links", asList(links));
+                .add("links", asList(links))
+                .add("refund_summary", refundSummary);
+
         if (gatewayTransactionId != null) {
             jsonStringBuilder.add("gateway_transaction_id", gatewayTransactionId);
         }
         return jsonStringBuilder.build();
     }
 
-    private String createChargeEventsResponse(String chargeId, List<Map<String, String>> events, ImmutableMap<?, ?>... links) {
+    private String buildGetRefundResponse(String refundId, int amount, String status, String createdDate) {
+        List<Map<String, Link>> links = new ArrayList<>();
+        links.add(ImmutableMap.of("self", new Link("http://server:port/self-link")));
+        links.add(ImmutableMap.of("payment", new Link("http://server:port/payment-link")));
+
+        JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
+                .add("refund_id", refundId)
+                .add("amount", amount)
+                .add("status", status)
+                .add("created_date", createdDate)
+                .add("_links", links);
+
+        return jsonStringBuilder.build();
+    }
+
+    private String buildChargeEventsResponse(String chargeId, List<Map<String, String>> events, ImmutableMap<?, ?>... links) {
         return new JsonStringBuilder()
                 .add("charge_id", chargeId)
                 .add("events", events)
@@ -112,14 +132,14 @@ public class ConnectorMockClient {
     }
 
     public void respondOk_whenCreateCharge(int amount, String gatewayAccountId, String chargeId, String chargeTokenId, PaymentState state, String returnUrl,
-                                           String description, String reference, String paymentProvider, String createdDate) {
+                                           String description, String reference, String paymentProvider, String createdDate, RefundSummary refundSummary) {
 
         whenCreateCharge(amount, gatewayAccountId, returnUrl, description, reference)
                 .respond(response()
                         .withStatusCode(CREATED_201)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                         .withHeader(LOCATION, chargeLocation(gatewayAccountId, chargeId))
-                        .withBody(createChargeResponse(
+                        .withBody(buildChargeResponse(
                                 amount,
                                 chargeId,
                                 state,
@@ -129,12 +149,22 @@ public class ConnectorMockClient {
                                 paymentProvider,
                                 null,
                                 createdDate,
+                                refundSummary,
                                 validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
-                                validGetLink(nextUrl(chargeTokenId), "next_url"),
-                                validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",
+                                validGetLink(nextUrl(chargeTokenId), "next_url"), validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",
                                         new HashMap<String, String>() {{
                                             put("chargeTokenId", chargeTokenId);
                                         }}))));
+    }
+
+
+    public void respondAccepted_whenCreateARefund(int amount, String gatewayAccountId, String chargeId, String refundId, String status, String createdDate) {
+        whenCreateRefund(amount, gatewayAccountId, chargeId)
+                .respond(response()
+                        .withStatusCode(ACCEPTED_202)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withBody(buildGetRefundResponse(refundId, amount, status, createdDate))
+                );
     }
 
     public void respondOk_whenSearchCharges(String accountId, String reference, String state, String fromDate, String toDate, String expectedResponse) {
@@ -168,19 +198,67 @@ public class ConnectorMockClient {
     }
 
     public void respondWithChargeFound(long amount, String gatewayAccountId, String chargeId, PaymentState state, String returnUrl,
-                                       String description, String reference, String paymentProvider, String createdDate, String chargeTokenId) {
+                                       String description, String reference, String paymentProvider, String createdDate, String chargeTokenId, RefundSummary refundSummary) {
+
+        String chargeResponseBody = buildChargeResponse(amount, chargeId, state, returnUrl,
+                description, reference, paymentProvider, gatewayAccountId, createdDate, refundSummary,
+                validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
+                validGetLink(chargeLocation(gatewayAccountId, chargeId) + "/refunds", "refunds"),
+                validGetLink(nextUrl(chargeId), "next_url"), validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",
+                        new HashMap<String, String>() {{
+                            put("chargeTokenId", chargeTokenId);
+                        }}));
+
         whenGetCharge(gatewayAccountId, chargeId)
                 .respond(response()
                         .withStatusCode(OK_200)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withBody(createChargeResponse(amount, chargeId, state, returnUrl,
-                                description, reference, paymentProvider, gatewayAccountId, createdDate,
-                                validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
-                                validGetLink(nextUrl(chargeId), "next_url"),
-                                validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",
-                                        new HashMap<String, String>() {{
-                                            put("chargeTokenId", chargeTokenId);
-                                        }}))));
+                        .withBody(chargeResponseBody));
+    }
+
+    public void respondWithGetRefundById(String gatewayAccountId, String chargeId, String refundId, int amount, String refundStatus, String createdDate) {
+        String refundResponse = buildGetRefundResponse(refundId, amount, refundStatus, createdDate);
+        whenGetRefundById(gatewayAccountId, chargeId, refundId)
+                .respond(response()
+                        .withStatusCode(OK_200)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withBody(refundResponse));
+    }
+
+    public void respondWithGetAllRefunds(String gatewayAccountId, String chargeId, PaymentRefundJsonFixture... refunds) {
+
+        Map<String, List<PaymentRefundJsonFixture>> refundList = new HashMap<>();
+        refundList.put("refunds", Arrays.asList(refunds));
+
+        List<Map<String, Link>> links = new ArrayList<>();
+        links.add(ImmutableMap.of("self", new Link("http://server:port/self-link")));
+        links.add(ImmutableMap.of("payment", new Link("http://server:port/payment-link")));
+
+        JsonStringBuilder embedded = new JsonStringBuilder().noPrettyPrint();
+        embedded.add("refunds", refundList);
+
+        JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
+                .add("payment_id", chargeId)
+                .add("_links", links)
+                .add("_embedded", refundList);
+
+        whenGetAllRefunds(gatewayAccountId, chargeId)
+                .respond(response()
+                        .withStatusCode(OK_200)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withBody(jsonStringBuilder.build()));
+    }
+
+    public void respondRefundNotFound(String gatewayAccountId, String chargeId, String refundId) {
+        whenGetRefundById(gatewayAccountId, chargeId, refundId)
+                .respond(withStatusAndErrorMessage(BAD_REQUEST_400, String.format("Refund with id [%s] not found.", refundId)));
+
+    }
+
+    public void respondRefundWithError(String gatewayAccountId, String chargeId, String refundId) {
+        whenGetRefundById(gatewayAccountId, chargeId, refundId)
+                .respond(withStatusAndErrorMessage(INTERNAL_SERVER_ERROR_500, String.format("server error", refundId)));
+
     }
 
     public void respondWithChargeEventsFound(String gatewayAccountId, String chargeId, List<Map<String, String>> events) {
@@ -188,7 +266,7 @@ public class ConnectorMockClient {
                 .respond(response()
                         .withStatusCode(OK_200)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withBody(createChargeEventsResponse(chargeId, events, validGetLink(chargeEventsLocation(gatewayAccountId, chargeId), "self"))));
+                        .withBody(buildChargeEventsResponse(chargeId, events, validGetLink(chargeEventsLocation(gatewayAccountId, chargeId), "self"))));
     }
 
 
@@ -242,6 +320,28 @@ public class ConnectorMockClient {
         return mockClient.when(request()
                 .withMethod(GET)
                 .withPath(format(CONNECTOR_MOCK_CHARGE_PATH, gatewayAccountId, chargeId))
+        );
+    }
+
+    public ForwardChainExpectation whenCreateRefund(long amount, String gatewayAccountId, String chargeId) {
+        return mockClient.when(request()
+                .withMethod(POST)
+                .withPath(format(CONNECTOR_MOCK_CHARGE_REFUNDS_PATH, gatewayAccountId, chargeId))
+                .withBody("{\"amount\":" + amount + "}")
+        );
+    }
+
+    private ForwardChainExpectation whenGetRefundById(String gatewayAccountId, String chargeId, String refundId) {
+        return mockClient.when(request()
+                .withMethod(GET)
+                .withPath(format(CONNECTOR_MOCK_CHARGE_REFUND_BY_ID_PATH, gatewayAccountId, chargeId, refundId))
+        );
+    }
+
+    private ForwardChainExpectation whenGetAllRefunds(String gatewayAccountId, String chargeId) {
+        return mockClient.when(request()
+                .withMethod(GET)
+                .withPath(format(CONNECTOR_MOCK_CHARGE_REFUNDS_PATH, gatewayAccountId, chargeId))
         );
     }
 
@@ -319,5 +419,15 @@ public class ConnectorMockClient {
                         .withMethod(POST)
                         .withPath(connectorCancelChargePathFor(paymentId, accountId)),
                 once());
+    }
+
+    public void respondBadRequest_whenCreateARefund(String reason, int amount, String gatewayAccountId, String chargeId) {
+        whenCreateRefund(amount, gatewayAccountId, chargeId)
+                .respond(response()
+                        .withStatusCode(BAD_REQUEST_400)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withBody(new JsonStringBuilder()
+                                .add("reason", reason)
+                                .add("message", "A message that should be completely ignored (only log)").build()));
     }
 }

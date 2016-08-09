@@ -17,7 +17,7 @@ public class PaymentSearchResponse {
     private int page;
 
     @JsonProperty("results")
-    private List<PaymentResult> payments;
+    private List<ChargeFromResponse> payments;
 
     @JsonProperty("_links")
     private PaymentSearchNavigationLinks links = new PaymentSearchNavigationLinks();
@@ -34,7 +34,7 @@ public class PaymentSearchResponse {
         return page;
     }
 
-    public List<PaymentResult> getPayments() {
+    public List<ChargeFromResponse> getPayments() {
         return payments;
     }
 

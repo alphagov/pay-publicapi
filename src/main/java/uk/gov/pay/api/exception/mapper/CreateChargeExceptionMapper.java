@@ -30,6 +30,7 @@ public class CreateChargeExceptionMapper implements ExceptionMapper<CreateCharge
         }
 
         LOGGER.error("Connector invalid response was {}.\n Returning http status {} with error body {}", exception.getMessage(), INTERNAL_SERVER_ERROR, paymentError);
+
         return Response
                 .status(INTERNAL_SERVER_ERROR)
                 .entity(paymentError)
