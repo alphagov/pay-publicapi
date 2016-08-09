@@ -60,6 +60,9 @@ Useful links:
 |[`/v1/payments/{paymentId}/cancel`](#post-v1paymentspaymentidcancel)  | POST   |  cancels a payment |
 |[`/v1/payments/{paymentId}/events`](#get-v1paymentspaymentidevents)  | GET    |  returns all audit events for the payment referred by this ID  |
 |[`/v1/payments`](#get-v1payments)  | GET    |  search/filter payments           |
+|[`/v1/payments/{paymentId}/refunds`](#get-v1paymentspaymentidrefunds)| GET   |  returns a list of refunds for the payment|
+|[`/v1/payments/{paymentId}/refunds`](#post-v1paymentspaymentidrefunds)| POST |  creates a new refund for the payment     |
+|[`/v1/payments/{paymentId}/refunds/{refundId}`](#get-v1paymentspaymentidrefundsrefundid)| GET | returns a refund by ID   |
 
 ------------------------------------------------------------------------------------------------
 
@@ -122,6 +125,10 @@ Content-Type: application/json
             "href": "http://publicapi.co.uk/v1/payments/ab2341da231434/events",
             "method": "GET" 
         },
+        "refunds" :{
+            "href": "http://publicapi.co.uk/v1/payments/ab2341da231434/refunds",
+            "method": "GET" 
+        },
         "cancel" : {
             "params" : {},
             "type" : "",
@@ -136,7 +143,12 @@ Content-Type: application/json
     "return_url": "https://example.service.gov.uk/some-reference-to-this-payment",
     "reference": "some-reference-to-this-payment",
     "payment_provider": "Sandbox",
-    "created_date": "2016-01-15T16:30:56Z"
+    "created_date": "2016-01-15T16:30:56Z",
+    "refund_summary": {
+        "status": "available"
+        "amount_available": 14500
+        "amount_submitted": 0
+    }
 }
 ```
 
@@ -152,10 +164,15 @@ Content-Type: application/json
 | `reference`            | The reference issued by the government service for this payment                          |
 | `payment_provider`     | The payment provider for this payment                                                    |
 | `created_date`         | The payment creation date for this payment                                               |
+| `refund_summary.status`| Refund availability status of the payment                                                |
+| `refund_summary.amount_available`| Amount available for refunds                                                   |
+| `refund_summary.amount_submitted`| Total amount of refunds submitted for this payment                             |
+| `created_date`         | The payment creation date for this payment                                               |
 | `_links.self`          | Link to the payment                                                                      |
 | `_links.next_url`      | Where to navigate the user next as a GET                                                 |
 | `_links.next_url_post` | Where to navigate the user next as a POST                                                |
 | `_links.events`        | Link to payment events                                                |
+| `_links.refunds`       | Link to payment refunds                                                |
 | `_links.cancel`        | Link to cancel the payment (link only available when a payment can be cancelled (i.e. payment has one of the statuses - CREATED, IN PROGRESS |
 
 #### Payment creation response errors
@@ -276,6 +293,10 @@ Content-Type: application/json
             "href": "http://publicapi.co.uk/v1/payments/ab2341da231434/events",
             "method": "GET" 
         },
+        "refunds" :{
+            "href": "http://publicapi.co.uk/v1/payments/ab2341da231434/refunds",
+            "method": "GET" 
+        },
         "cancel" : {
             "params" : {},
             "type" : "",
@@ -290,7 +311,12 @@ Content-Type: application/json
     "return_url": "https://example.service.gov.uk/some-reference-to-this-payment",
     "reference" : "some-reference-to-this-payment",
     "payment_provider": "Sandbox",
-    "created_date": "2016-01-15T16:30:56Z"
+    "created_date": "2016-01-15T16:30:56Z",
+    "refund_summary": {
+        "status": "available"
+        "amount_available": 14500
+        "amount_submitted": 0
+    }
 }
 ```
 
@@ -447,7 +473,242 @@ Content-Type: application/json
 | `P0398`            | Connector response was unrecognised to PublicAPI |
 
 ------------------------------------------------------------------------------------------------
+### GET /v1/payments/{paymentId}/refunds
 
+Returns a list of refunds associated with a payment.
+
+#### Request example
+
+```
+GET /v1/payments/ab2341da231434/refunds
+Authorization: Bearer BEARER_TOKEN
+```
+
+#### Payment refunds response
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "payment_id": "ab2341da231434",
+  "_links": {
+    "self": {
+      "href": "http://publicapi.co.uk/v1/payments/ab2341da231434/refunds"
+    },
+    "payment": {
+      "href": "http://publicapi.co.uk/v1/payments/ab2341da231434"
+    }
+  },
+  "_embedded": {
+    "refunds": [
+      {
+  	    "_links": {
+          "self" :{
+            "href": "http://publicapi.co.uk/v1/payments/abc123/refunds/xyz123",
+          },
+         "payment" :{
+           "href": "http://publicapi.co.uk/v1/payments/abc123",
+         }
+       }
+       "refund_id": "xyz123",
+       "amount": 25000,
+       "status": "submitted",
+       "created_date": "2016-06-01 16:34:23",
+      },
+      {
+        "_links": {
+            "self" :{
+                "href": "http://publicapi.co.uk/v1/payments/abc123/refunds/xyz124"
+            },
+            "payment" :{
+                "href": "http://publicapi.co.uk/v1/payments/abc123"              
+            }
+          }
+          "refund_id": "xyz124",
+          "amount": 22000,
+          "status": "success",
+          "created_date": "2016-06-01 16:34:23",
+    ]
+  }
+}
+```
+
+##### Response field description
+
+| Field                  | Description                               |
+| ---------------------- | ----------------------------------------- |
+| `payment_id`           | The ID of the created payment             |
+| `_embedded.refunds.refund_id`               | The ID of this refund                    |
+| `_embedded.refunds.amount`          | The amount of refund                       |
+| `_embedded.refunds.status`               | Current status of the refund (submitted/success)             |
+| `_embedded.refunds.created_date`           | Date when the refund was created    |
+
+#### GET Payment Refunds response errors
+
+##### Payment not found
+
+```
+HTTP/1.1 404 Not Found
+Content-Type: application/json
+
+{
+    "code" : "P0800"
+    "description": "Not found"
+}
+```
+##### Response error fields description
+
+| Field              | Description                                                               |
+| ------------------ | --------------------------------------------------------------------------|
+| `code`             | The error reference. Format: P03XX                                        |
+| `description`      | The error description                                                     |
+
+------------------------------------------------------------------------------------------------
+### GET /v1/payments/{paymentId}/refunds/{refundId}
+
+Returns the refund by ID for the payment.
+
+#### Request example
+
+```
+GET /v1/payments/ab2341da231434/refunds/xyz124
+Authorization: Bearer BEARER_TOKEN
+```
+
+#### Payment refund response
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "amount": 1
+    "created_date": "2016-08-10T12:31:45.802Z"
+    "refund_id": "548g68390f2pbu1po9eifdqhaq"
+    "status": "submitted"
+    "_links": {
+        "self": {
+            "href": "http://publicapi.co.uk/v1/payments/abc123/refunds/xyz124"
+        }
+        "payment": {
+            "href": "http://publicapi.co.uk/v1/payments/abc123"
+        }
+    }
+}
+```
+
+##### Response field description
+
+| Field                  | Description                               |
+| ---------------------- | ----------------------------------------- |
+| `refund_id`            | The ID of the refund                      |
+| `amount`               | Amount in pence for the refund            |
+| `status`               | Current status of the refund (submitted/success)             |
+| `created_date`         | Date when the refund was created          |
+| `_links.self`          | Self link for this refund                 |
+| `_links.payment`       | Link for the payment of this refund       |
+
+#### GET Payment Refunds response errors
+
+##### Refud ID not found
+
+```
+HTTP/1.1 404 Not Found
+Content-Type: application/json
+
+{
+    "code" : "P0700"
+    "description": "Not found"
+}
+```
+##### Response error fields description
+
+| Field              | Description                                                               |
+| ------------------ | --------------------------------------------------------------------------|
+| `code`             | The error reference. Format: P03XX                                        |
+| `description`      | The error description                                                     |
+
+
+------------------------------------------------------------------------------------------------
+### POST /v1/payments/{paymentId}/refunds
+
+Creates a new refund associated with the payment.
+
+#### Request example
+
+```
+POST /v1/payments/ab2341da231434/refunds
+Authorization: Bearer BEARER_TOKEN
+{
+    "amount": 25000
+}
+```
+
+##### Request description
+
+BEARER_TOKEN: A valid bearer token for the account to associate the payment with.
+
+| Field                    | required | Description                               |
+| ------------------------ |:--------:| ----------------------------------------- |
+| `amount`                 | Yes      | Amount to refund in pence                 |
+
+#### Refund created response
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "_links": {
+        "self" :{
+            "href": "http://publicapi.co.uk/v1/payments/abc123/refunds/xyz123",
+
+        },
+
+        "payment_url" :{
+            "href": "http://publicapi.co.uk/v1/payments/abc123",
+
+        },
+    }
+    "refund_id": "x2aysfsg3a3s45z123",
+    "amount": 25000,
+    "status": "submitted",
+    "created_date": "2016-06-01 16:34:23",
+}
+```
+
+##### Response fields description
+
+| Field                  | Description                               |
+| ---------------------- | ----------------------------------------- |
+| `refund_id`            | The ID of the refund created             |
+| `amount`               | Amount of refund in pence                |
+| `status`               | Current status of the refund             |
+| `created_date`         | The creation date for this refund        |
+| `_links.self`          | Link to this refund                      |
+| `_links.payment`      | Link to the payment this refund relates to|
+
+#### POST Payment Refunds response errors
+
+##### Payment not found
+
+```
+HTTP/1.1 404 Not Found
+Content-Type: application/json
+
+{
+    "code" : "P0600"
+    "description": "Not found"
+}
+```
+##### Response error fields description
+
+| Field              | Description                                                               |
+| ------------------ | --------------------------------------------------------------------------|
+| `code`             | The error reference. Format: P03XX                                        |
+| `description`      | The error description                                                     |
+------------------------------------------------------------------------------------------------
 ### POST /v1/payments/{paymentId}/cancel
 
 This endpoint cancels a new payment. A payment can only be cancelled if it's state is one of the following (case-insensitive):
@@ -577,6 +838,11 @@ GET /v1/payments
       "return_url": "https://demoservice.pymnt.localdomain:443/return/rahul-ref",
       "reference": "rahul-ref",
       "created_date": "2016-05-23T15:22:50.972Z",
+      "refund_summary": {
+         "status": "pending"
+         "amount_available": 1
+         "amount_submitted": 0
+      }
       "_links": {
         "self": {
           "href": "https://publicapi.pymnt.localdomain/v1/payments/4hn0c8bbtfbnp5tmite2274h5c",
@@ -588,6 +854,10 @@ GET /v1/payments
         },
         "events": {
           "href": "https://publicapi.pymnt.localdomain/v1/payments/4hn0c8bbtfbnp5tmite2274h5c/events",
+          "method": "GET"
+        },
+        "refunds": {
+          "href": "https://publicapi.pymnt.localdomain/v1/payments/br0ih3laeacuf3845j4q77d11p/refunds"
           "method": "GET"
         }
       }
@@ -604,6 +874,11 @@ GET /v1/payments
       "return_url": "https://demoservice.pymnt.localdomain:443/return/rahul-ref",
       "reference": "rahul-ref",
       "created_date": "2016-05-23T15:22:47.038Z",
+      "refund_summary": {
+         "status": "pending"
+         "amount_available": 1
+         "amount_submitted": 0
+      }
       "_links": {
         "self": {
           "href": "https://publicapi.pymnt.localdomain/v1/payments/am6f5d1583563deb7ss5obju2",
@@ -615,6 +890,10 @@ GET /v1/payments
         },
         "events": {
           "href": "https://publicapi.pymnt.localdomain/v1/payments/am6f5d1583563deb7ss5obju2/events",
+          "method": "GET"
+        }
+        "refunds": {
+          "href": "https://publicapi.pymnt.localdomain/v1/payments/br0ih3laeacuf3845j4q77d11p/refunds"
           "method": "GET"
         }
       }
@@ -654,8 +933,12 @@ GET /v1/payments
 | `results.gateway_transaction_id`  | Yes            | The gateway transaction reference associated to this payment      |
 | `results.status`                  | Yes            | The current external status of the payment                        |
 | `results.created_date`            | Yes            | The created date in ISO_8601 format (```yyyy-MM-ddTHH:mm:ssZ```)  |
+| `results.refund_summary.status`   | Yes            | The refund status of this payment                                 |
+| `results.refund_summary.amount_available`| Yes     | The amount available for refunds for this payment                 |
+| `results.refund_summary.amount_submitted`| Yes     | The total refund amount submitted for this payment                |
 | `results._links.self`             | Yes            | Link to the payment                                               |
 | `results._links.events`           | Yes            | Link to payment events                                            |
+| `results._links.refunds`          | Yes            | Link to payment refunds                                           |
 | `results._links.cancel`           | No             | Link to cancel the payment (link only available when a payment can be cancelled (i.e. payment has one of the statuses - CREATED, IN PROGRESS |
 | `_links.self.href`                | Yes            | Href link of the current page |
 | `_links.next_page.href`           | No             | Href link of the next page (based on the display_size requested) |
