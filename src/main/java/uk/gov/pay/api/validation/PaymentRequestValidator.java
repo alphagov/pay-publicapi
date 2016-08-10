@@ -23,6 +23,7 @@ public class PaymentRequestValidator {
     private static final int DESCRIPTION_MAX_LENGTH = 255;
     private static final int URL_MAX_LENGTH = 2000;
     static final int REFERENCE_MAX_LENGTH = 255;
+    static final int EMAIL_MAX_LENGTH = 254;
 
     private URLValidator urlValidator;
 

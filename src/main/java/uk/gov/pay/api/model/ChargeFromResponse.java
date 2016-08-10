@@ -28,6 +28,7 @@ public class ChargeFromResponse {
     private PaymentState state;
     private String description;
     private String reference;
+    private String email;
     private String created_date;
 
     public String getChargeId() {
@@ -52,6 +53,10 @@ public class ChargeFromResponse {
 
     public String getReference() {
         return reference;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public String getPaymentProvider() {
