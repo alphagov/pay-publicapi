@@ -44,6 +44,7 @@ public class ResourcesFiltersITest extends PaymentResourceITestBase {
     private static final String PAYMENT_PROVIDER = "Sandbox";
     private static final String RETURN_URL = "http://somewhere.gov.uk/rainbow/1";
     private static final String REFERENCE = "Some reference";
+    private static final String EMAIL = "alice.111@mail.fake";
     private static final String DESCRIPTION = "Some description";
     private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
     private static final String CREATED_DATE = DateTimeUtils.toUTCDateString(TIMESTAMP);
@@ -62,7 +63,7 @@ public class ResourcesFiltersITest extends PaymentResourceITestBase {
     public void createPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
 
         connectorMock.respondOk_whenCreateCharge(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID, STATE,
-                RETURN_URL, DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE, REFUND_SUMMARY);
+                RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, REFUND_SUMMARY);
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> postPaymentResponse(API_KEY, PAYLOAD),
@@ -93,7 +94,7 @@ public class ResourcesFiltersITest extends PaymentResourceITestBase {
     public void getPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
 
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, STATE,
-                RETURN_URL, DESCRIPTION, REFERENCE, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID, REFUND_SUMMARY);
+                RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID, REFUND_SUMMARY);
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> getPaymentResponse(API_KEY, CHARGE_ID),
@@ -163,9 +164,7 @@ public class ResourcesFiltersITest extends PaymentResourceITestBase {
                         .withNumberOfResults(1).getResults())
                 .build();
 
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, REFERENCE, null, null, null,
-                payments
-        );
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, REFERENCE, null, null, null, null, payments);
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> searchPayments(API_KEY, ImmutableMap.of("reference", REFERENCE)),

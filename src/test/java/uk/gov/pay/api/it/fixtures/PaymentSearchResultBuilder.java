@@ -23,6 +23,7 @@ public class PaymentSearchResultBuilder {
     public static final String DEFAULT_CREATED_DATE = DateTimeUtils.toUTCDateString(ZonedDateTime.now());
     public static final String DEFAULT_RETURN_URL = "http://example.com/service";
     public static final int DEFAULT_AMOUNT = 10000;
+    public static final String DEFAULT_EMAIL = "alice.111@mail.fake";
     public static final String DEFAULT_PAYMENT_PROVIDER = "worldpay";
 
     private static class RefundSummary {
@@ -33,7 +34,7 @@ public class PaymentSearchResultBuilder {
 
     private static class TestPayment {
         public TestPaymentState state;
-        public String charge_id, description, reference, created_date;
+        public String charge_id, description, reference, email, created_date;
         public int amount;
         public String gateway_transaction_id, return_url, payment_provider;
         public RefundSummary refund_summary = new RefundSummary();
@@ -82,6 +83,7 @@ public class PaymentSearchResultBuilder {
     private int noOfResults = DEFAULT_NUMBER_OF_RESULTS;
 
     private String reference = null;
+    private String email = null;
     private TestPaymentState state = null;
     private String fromDate = null;
     private String toDate = null;
@@ -93,6 +95,11 @@ public class PaymentSearchResultBuilder {
 
     public PaymentSearchResultBuilder withMatchingReference(String reference) {
         this.reference = reference;
+        return this;
+    }
+
+    public PaymentSearchResultBuilder withMatchingEmail(String email) {
+        this.email = email;
         return this;
     }
 
@@ -168,6 +175,7 @@ public class PaymentSearchResultBuilder {
         payment.charge_id = "" + i;
         payment.description = "description-" + i;
         payment.reference = randomUUID().toString();
+        payment.email = DEFAULT_EMAIL;
         payment.state = state;
         payment.amount = DEFAULT_AMOUNT;
         payment.gateway_transaction_id = randomUUID().toString();

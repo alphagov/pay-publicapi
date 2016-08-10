@@ -14,7 +14,7 @@ public class PaymentForSearchResult extends Payment {
     public PaymentForSearchResult(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                                   String reference, String email, String paymentProvider, String createdDate,
                                   RefundSummary refundSummary, URI selfLink, URI paymentEventsLink, URI paymentCancelLink, URI paymentRefundsLink) {
-        super(chargeId, amount, state, returnUrl, description, reference, paymentProvider, createdDate, refundSummary);
+        super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate, refundSummary);
         this.links.addSelf(selfLink.toString());
         this.links.addEvents(paymentEventsLink.toString());
         this.links.addRefunds(paymentRefundsLink.toString());
