@@ -310,6 +310,7 @@ Content-Type: application/json
     "status": "CREATED",
     "return_url": "https://example.service.gov.uk/some-reference-to-this-payment",
     "reference" : "some-reference-to-this-payment",
+    "email": "mail@email.com",
     "payment_provider": "Sandbox",
     "created_date": "2016-01-15T16:30:56Z",
     "refund_summary": {
@@ -817,6 +818,7 @@ GET /v1/payments
 | `to_date`              | - | The end date for search payments|
 | `page`                 | - | To get the results from the specified page number, should be a non zero +ve number (optional, defaults to 1)|
 | `display_size`         | - | Number of records to be returned per page, should be a non zero +ve number (optional, defaults to 500)|
+| `email`                | - | Email ID of the payment user to search for          |
 
 #### Response example
 
@@ -837,6 +839,7 @@ GET /v1/payments
       "description": "desc",
       "return_url": "https://demoservice.pymnt.localdomain:443/return/rahul-ref",
       "reference": "rahul-ref",
+      "email": "mail@email.com",
       "created_date": "2016-05-23T15:22:50.972Z",
       "refund_summary": {
          "status": "pending"
@@ -873,6 +876,7 @@ GET /v1/payments
       "description": "desc",
       "return_url": "https://demoservice.pymnt.localdomain:443/return/rahul-ref",
       "reference": "rahul-ref",
+      "email": "mail@email.com",
       "created_date": "2016-05-23T15:22:47.038Z",
       "refund_summary": {
          "status": "pending"
@@ -930,6 +934,7 @@ GET /v1/payments
 | `results.amount`                  | Yes            | The amount of this payment in pence                               |
 | `results.description`             | Yes            | The payment description                                           |
 | `results.reference`               | Yes            | There reference issued by the government service for this payment |
+| `results.email`                   | Yes            | The email address of the user of this payment                     |
 | `results.gateway_transaction_id`  | Yes            | The gateway transaction reference associated to this payment      |
 | `results.status`                  | Yes            | The current external status of the payment                        |
 | `results.created_date`            | Yes            | The created date in ISO_8601 format (```yyyy-MM-ddTHH:mm:ssZ```)  |
