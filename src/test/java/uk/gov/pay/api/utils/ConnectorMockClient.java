@@ -35,6 +35,7 @@ public class ConnectorMockClient {
     private static final String CONNECTOR_MOCK_CHARGE_REFUNDS_PATH = CONNECTOR_MOCK_CHARGE_PATH + "/refunds";
     private static final String CONNECTOR_MOCK_CHARGE_REFUND_BY_ID_PATH = CONNECTOR_MOCK_CHARGE_REFUNDS_PATH + "/%s";
     private static final String REFERENCE_KEY = "reference";
+    private static final String EMAIL_KEY = "email";
     private static final String STATE_KEY = "state";
     private static final String FROM_DATE_KEY = "from_date";
     private static final String TO_DATE_KEY = "to_date";
@@ -57,11 +58,12 @@ public class ConnectorMockClient {
     }
 
     private String buildChargeResponse(long amount, String chargeId, PaymentState state, String returnUrl, String description,
-                                       String reference, String paymentProvider, String gatewayTransactionId, String createdDate, RefundSummary refundSummary, ImmutableMap<?, ?>... links) {
+                                       String reference, String email, String paymentProvider, String gatewayTransactionId, String createdDate, RefundSummary refundSummary, ImmutableMap<?, ?>... links) {
         JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
                 .add("charge_id", chargeId)
                 .add("amount", amount)
                 .add("reference", reference)
+                .add("email", email)
                 .add("description", description)
                 .add("state", state)
                 .add("return_url", returnUrl)
@@ -132,7 +134,7 @@ public class ConnectorMockClient {
     }
 
     public void respondOk_whenCreateCharge(int amount, String gatewayAccountId, String chargeId, String chargeTokenId, PaymentState state, String returnUrl,
-                                           String description, String reference, String paymentProvider, String createdDate, RefundSummary refundSummary) {
+                                           String description, String reference, String email, String paymentProvider, String createdDate, RefundSummary refundSummary) {
 
         whenCreateCharge(amount, gatewayAccountId, returnUrl, description, reference)
                 .respond(response()
@@ -146,6 +148,7 @@ public class ConnectorMockClient {
                                 returnUrl,
                                 description,
                                 reference,
+                                email,
                                 paymentProvider,
                                 null,
                                 createdDate,
@@ -167,8 +170,8 @@ public class ConnectorMockClient {
                 );
     }
 
-    public void respondOk_whenSearchCharges(String accountId, String reference, String state, String fromDate, String toDate, String expectedResponse) {
-        whenSearchCharges(accountId, reference, state, fromDate, toDate)
+    public void respondOk_whenSearchCharges(String accountId, String reference, String email, String state, String fromDate, String toDate, String expectedResponse) {
+        whenSearchCharges(accountId, reference, email, state, fromDate, toDate)
                 .respond(response()
                         .withStatusCode(OK_200)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
@@ -177,8 +180,8 @@ public class ConnectorMockClient {
 
     }
 
-    public void respondOk_whenSearchChargesWithPageAndSize(String accountId, String reference, String page, String displaySize, String expectedResponse) {
-        whenSearchCharges(accountId, reference, null, null, null, page, displaySize)
+    public void respondOk_whenSearchChargesWithPageAndSize(String accountId, String reference, String email, String page, String displaySize, String expectedResponse) {
+        whenSearchCharges(accountId, reference, email, null, null, null, page, displaySize)
                 .respond(response()
                         .withStatusCode(OK_200)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
@@ -198,10 +201,10 @@ public class ConnectorMockClient {
     }
 
     public void respondWithChargeFound(long amount, String gatewayAccountId, String chargeId, PaymentState state, String returnUrl,
-                                       String description, String reference, String paymentProvider, String createdDate, String chargeTokenId, RefundSummary refundSummary) {
+                                       String description, String reference, String email, String paymentProvider, String createdDate, String chargeTokenId, RefundSummary refundSummary) {
 
         String chargeResponseBody = buildChargeResponse(amount, chargeId, state, returnUrl,
-                description, reference, paymentProvider, gatewayAccountId, createdDate, refundSummary,
+                description, reference, email, paymentProvider, gatewayAccountId, createdDate, refundSummary,
                 validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
                 validGetLink(chargeLocation(gatewayAccountId, chargeId) + "/refunds", "refunds"),
                 validGetLink(nextUrl(chargeId), "next_url"), validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",
@@ -352,23 +355,26 @@ public class ConnectorMockClient {
         );
     }
 
-    public ForwardChainExpectation whenSearchCharges(String gatewayAccountId, String reference, String state, String fromDate, String toDate) {
-        return whenSearchCharges(gatewayAccountId, reference, state, fromDate, toDate, null, null);
+    public ForwardChainExpectation whenSearchCharges(String gatewayAccountId, String reference, String email, String state, String fromDate, String toDate) {
+        return whenSearchCharges(gatewayAccountId, reference, email, state, fromDate, toDate, null, null);
     }
 
-    public ForwardChainExpectation whenSearchCharges(String gatewayAccountId, String reference, String state, String fromDate, String toDate, String page, String displaySize) {
+    public ForwardChainExpectation whenSearchCharges(String gatewayAccountId, String reference, String email, String state, String fromDate, String toDate, String page, String displaySize) {
         return mockClient.when(request()
                 .withMethod(GET)
                 .withPath(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId))
                 .withHeader(ACCEPT, APPLICATION_JSON)
-                .withQueryStringParameters(notNullQueryParamsFrom(reference, state, fromDate, toDate, page, displaySize))
+                .withQueryStringParameters(notNullQueryParamsFrom(reference, email, state, fromDate, toDate, page, displaySize))
         );
     }
 
-    private Parameter[] notNullQueryParamsFrom(String reference, String state, String fromDate, String toDate, String page, String displaySize) {
+    private Parameter[] notNullQueryParamsFrom(String reference, String email, String state, String fromDate, String toDate, String page, String displaySize) {
         List<Parameter> params = newArrayList();
         if (isNotBlank(reference)) {
             params.add(Parameter.param(REFERENCE_KEY, reference));
+        }
+        if (isNotBlank(email)) {
+            params.add(Parameter.param(EMAIL_KEY, email));
         }
         if (isNotBlank(state)) {
             params.add(Parameter.param(STATE_KEY, state));

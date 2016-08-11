@@ -19,6 +19,7 @@ public abstract class Payment {
     @JsonProperty("return_url")
     private final String returnUrl;
     private final String reference;
+    private final String email;
 
     @JsonProperty("created_date")
     private final String createdDate;
@@ -27,13 +28,14 @@ public abstract class Payment {
     private final RefundSummary refundSummary;
 
     public Payment(String chargeId, long amount, PaymentState state, String returnUrl, String description,
-                   String reference, String paymentProvider, String createdDate, RefundSummary refundSummary) {
+                   String reference, String email, String paymentProvider, String createdDate, RefundSummary refundSummary) {
         this.paymentId = chargeId;
         this.amount = amount;
         this.state = state;
         this.returnUrl = returnUrl;
         this.description = description;
         this.reference = reference;
+        this.email = email;
         this.paymentProvider = paymentProvider;
         this.createdDate = createdDate;
         this.refundSummary = refundSummary;
@@ -74,6 +76,11 @@ public abstract class Payment {
         return reference;
     }
 
+    @ApiModelProperty(example = "your email")
+    public String getEmail() {
+        return email;
+    }
+
     @ApiModelProperty(example = "worldpay")
     public String getPaymentProvider() {
         return paymentProvider;
@@ -94,6 +101,7 @@ public abstract class Payment {
                 ", returnUrl='" + returnUrl + '\'' +
                 ", description='" + description + '\'' +
                 ", reference='" + reference + '\'' +
+                ", email='" + email + '\'' +
                 ", createdDate='" + createdDate + '\'' +
                 '}';
     }

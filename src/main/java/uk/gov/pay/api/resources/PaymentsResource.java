@@ -42,6 +42,7 @@ public class PaymentsResource {
     public static final String API_VERSION_PATH = "/v1";
 
     public static final String REFERENCE_KEY = "reference";
+    public static final String EMAIL_KEY = "email";
     public static final String STATE_KEY = "state";
     public static final String FROM_DATE_KEY = "from_date";
     public static final String TO_DATE_KEY = "to_date";
@@ -184,6 +185,8 @@ public class PaymentsResource {
                                    @Auth String accountId,
                                    @ApiParam(value = "Your payment reference to search", hidden = false)
                                    @QueryParam(REFERENCE_KEY) String reference,
+                                   @ApiParam(value = "The user email used in the payment to be searched", hidden = false)
+                                   @QueryParam(EMAIL_KEY) String email,
                                    @ApiParam(value = "State of payments to be searched. Example=success", hidden = false, allowableValues = "range[created,started,submitted,success,failed,cancelled,error")
                                    @QueryParam(STATE_KEY) String state,
                                    @ApiParam(value = "From date of payments to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z", hidden = false)
@@ -197,12 +200,14 @@ public class PaymentsResource {
                                    @Context UriInfo uriInfo) {
 
         logger.info("Payments search request - [ {} ]",
-                format("reference:%s, status: %s, fromDate: %s, toDate: %s, page: %s, display_size: %s", reference, state, fromDate, toDate, pageNumber, displaySize));
+                format("reference:%s, email: %s, status: %s, fromDate: %s, toDate: %s, page: %s, display_size: %s",
+                        reference, email, state, fromDate, toDate, pageNumber, displaySize));
 
-        validateSearchParameters(state, reference, fromDate, toDate, pageNumber, displaySize);
+        validateSearchParameters(state, reference, email, fromDate, toDate, pageNumber, displaySize);
 
         List<Pair<String, String>> queryParams = asList(
                 Pair.of(REFERENCE_KEY, reference),
+                Pair.of(EMAIL_KEY, email),
                 Pair.of(STATE_KEY, state),
                 Pair.of(FROM_DATE_KEY, fromDate),
                 Pair.of(TO_DATE_KEY, toDate),

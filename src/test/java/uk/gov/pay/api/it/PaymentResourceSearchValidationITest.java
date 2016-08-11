@@ -21,8 +21,10 @@ public class PaymentResourceSearchValidationITest extends PaymentResourceITestBa
 
     private static final String VALID_REFERENCE = "test_reference";
     private static final String VALID_STATE = "success";
+    private static final String VALID_EMAIL = "alice.111@mail.fake";
     private static final String VALID_FROM_DATE = "2016-01-28T00:00:00Z";
     private static final String VALID_TO_DATE = "2016-01-28T12:00:00Z";
+    private static final String INVALID_EMAIL = RandomStringUtils.randomAlphanumeric(254) + "@mail.fake";
 
     private static final String SEARCH_PATH = "/v1/payments";
 
@@ -34,7 +36,12 @@ public class PaymentResourceSearchValidationITest extends PaymentResourceITestBa
     @Test
     public void searchPayments_errorWhenToDateIsNotInZoneDateTimeFormat() throws Exception {
         InputStream body = searchPayments(API_KEY,
-                ImmutableMap.of("reference", VALID_REFERENCE, "state", VALID_STATE, "from_date", VALID_FROM_DATE, "to_date", "2016-01-01 00:00"))
+                ImmutableMap.of(
+                        "reference", VALID_REFERENCE,
+                        "email", VALID_EMAIL,
+                        "state", VALID_STATE,
+                        "from_date", VALID_FROM_DATE,
+                        "to_date", "2016-01-01 00:00"))
                 .statusCode(422)
                 .contentType(JSON).extract()
                 .body().asInputStream();
@@ -48,7 +55,12 @@ public class PaymentResourceSearchValidationITest extends PaymentResourceITestBa
     @Test
     public void searchPayments_errorWhenFromDateIsNotInZoneDateTimeFormat() throws Exception {
         InputStream body = searchPayments(API_KEY,
-                ImmutableMap.of("reference", VALID_REFERENCE, "state", VALID_STATE, "from_date", "2016-01-01 00:00", "to_date", VALID_TO_DATE))
+                ImmutableMap.of(
+                        "reference", VALID_REFERENCE,
+                        "email", VALID_EMAIL,
+                        "state", VALID_STATE,
+                        "from_date", "2016-01-01 00:00",
+                        "to_date", VALID_TO_DATE))
                 .statusCode(422)
                 .contentType(JSON).extract()
                 .body().asInputStream();
@@ -62,7 +74,12 @@ public class PaymentResourceSearchValidationITest extends PaymentResourceITestBa
     @Test
     public void searchPayments_errorWhenStatusNotMatchingWithExpectedExternalStatuses() throws Exception {
         InputStream body = searchPayments(API_KEY,
-                ImmutableMap.of("reference", VALID_REFERENCE, "state", "invalid state", "from_date", VALID_FROM_DATE, "to_date", VALID_TO_DATE))
+                ImmutableMap.of(
+                        "reference", VALID_REFERENCE,
+                        "email", VALID_EMAIL,
+                        "state", "invalid state",
+                        "from_date", VALID_FROM_DATE,
+                        "to_date", VALID_TO_DATE))
                 .statusCode(422)
                 .contentType(JSON).extract()
                 .body().asInputStream();
@@ -76,7 +93,12 @@ public class PaymentResourceSearchValidationITest extends PaymentResourceITestBa
     @Test
     public void searchPayments_errorWhenReferenceSizeIsLongerThan255() throws Exception {
         InputStream body = searchPayments(API_KEY,
-                ImmutableMap.of("reference", RandomStringUtils.randomAlphanumeric(256), "state", VALID_STATE, "from_date", VALID_FROM_DATE, "to_date", VALID_TO_DATE))
+                ImmutableMap.of(
+                        "reference", RandomStringUtils.randomAlphanumeric(256),
+                        "email", VALID_EMAIL,
+                        "state", VALID_STATE,
+                        "from_date", VALID_FROM_DATE,
+                        "to_date", VALID_TO_DATE))
                 .statusCode(422)
                 .contentType(JSON).extract()
                 .body().asInputStream();
@@ -88,9 +110,33 @@ public class PaymentResourceSearchValidationITest extends PaymentResourceITestBa
     }
 
     @Test
+    public void searchPayments_errorWhenEmailSizeIsLongerThan254() throws Exception {
+        InputStream body = searchPayments(API_KEY,
+                ImmutableMap.of(
+                        "reference", "ref",
+                        "email", RandomStringUtils.randomAlphanumeric(254) + "@mail.fake",
+                        "state", VALID_STATE,
+                        "from_date", VALID_FROM_DATE,
+                        "to_date", VALID_TO_DATE))
+                .statusCode(422)
+                .contentType(JSON).extract()
+                .body().asInputStream();
+
+        JsonAssert.with(body)
+                .assertThat("$.*", hasSize(2))
+                .assertThat("$.code", is("P0401"))
+                .assertThat("$.description", is("Invalid parameters: email. See Public API documentation for the correct data formats"));
+    }
+
+    @Test
     public void searchPayments_errorWhenToDateNotInZoneDateTimeFormat_andInvalidStatus() throws Exception {
         InputStream body = searchPayments(API_KEY,
-                ImmutableMap.of("reference", VALID_REFERENCE, "state", "invalid state", "from_date", VALID_FROM_DATE, "to_date", "2016-01-01 00:00"))
+                ImmutableMap.of(
+                        "reference", VALID_REFERENCE,
+                        "email", VALID_EMAIL,
+                        "state", "invalid state",
+                        "from_date", VALID_FROM_DATE,
+                        "to_date", "2016-01-01 00:00"))
                 .statusCode(422)
                 .contentType(JSON).extract()
                 .body().asInputStream();
@@ -104,7 +150,12 @@ public class PaymentResourceSearchValidationITest extends PaymentResourceITestBa
     @Test
     public void searchPayments_errorWhenFromAndToDatesAreNotInZoneDateTimeFormat() throws Exception {
         InputStream body = searchPayments(API_KEY,
-                ImmutableMap.of("reference", VALID_REFERENCE, "state", VALID_STATE, "from_date", "12345", "to_date", "2016-01-01 00:00"))
+                ImmutableMap.of(
+                        "reference", VALID_REFERENCE,
+                        "email", VALID_EMAIL,
+                        "state", VALID_STATE,
+                        "from_date", "12345",
+                        "to_date", "2016-01-01 00:00"))
                 .statusCode(422)
                 .contentType(JSON).extract()
                 .body().asInputStream();
@@ -118,7 +169,12 @@ public class PaymentResourceSearchValidationITest extends PaymentResourceITestBa
     @Test
     public void searchPayments_errorWhenAllFieldsAreInvalid() throws Exception {
         InputStream body = searchPayments(API_KEY,
-                ImmutableMap.of("reference", RandomStringUtils.randomAlphanumeric(256), "state", "invalid state", "from_date", "12345", "to_date", "98765"))
+                ImmutableMap.of(
+                        "reference", RandomStringUtils.randomAlphanumeric(256),
+                        "email", INVALID_EMAIL,
+                        "state", "invalid state",
+                        "from_date", "12345",
+                        "to_date", "98765"))
                 .statusCode(422)
                 .contentType(JSON).extract()
                 .body().asInputStream();
@@ -128,7 +184,7 @@ public class PaymentResourceSearchValidationITest extends PaymentResourceITestBa
         JsonAssert.with(json)
                 .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", is("P0401"))
-                .assertThat("$.description", is("Invalid parameters: state, reference, from_date, to_date. See Public API documentation for the correct data formats"));
+                .assertThat("$.description", is("Invalid parameters: state, reference, email, from_date, to_date. See Public API documentation for the correct data formats"));
     }
 
     private ValidatableResponse searchPayments(String bearerToken, ImmutableMap<String, String> queryParams) {
