@@ -25,6 +25,12 @@
           "required" : false,
           "type" : "string"
         }, {
+          "name" : "email",
+          "in" : "query",
+          "description" : "The user email used in the payment to be searched",
+          "required" : false,
+          "type" : "string"
+        }, {
           "name" : "state",
           "in" : "query",
           "description" : "State of payments to be searched. Example=success",
@@ -520,6 +526,10 @@
           "type" : "string",
           "example" : "your-reference"
         },
+        "email" : {
+          "type" : "string",
+          "example" : "your email"
+        },
         "payment_id" : {
           "type" : "string",
           "example" : "hu20sqlact5260q2nanm0q8u93",
@@ -580,6 +590,10 @@
         "reference" : {
           "type" : "string",
           "example" : "your-reference"
+        },
+        "email" : {
+          "type" : "string",
+          "example" : "your email"
         },
         "payment_id" : {
           "type" : "string",
