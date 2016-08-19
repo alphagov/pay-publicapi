@@ -51,7 +51,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         connectorMock.respondOk_whenCreateCharge(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID,
-                STATE, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, REFUND_SUMMARY);
+                STATE, RETURN_URL, DESCRIPTION, REFERENCE, null, PAYMENT_PROVIDER, CREATED_DATE, REFUND_SUMMARY);
 
         String responseBody = postPaymentResponse(API_KEY, SUCCESS_PAYLOAD)
                 .statusCode(201)
@@ -60,7 +60,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .body("payment_id", is(CHARGE_ID))
                 .body("amount", is(9999999))
                 .body("reference", is(REFERENCE))
-                .body("email", is(EMAIL))
+                .body("email", nullValue())
                 .body("description", is(DESCRIPTION))
                 .body("state.status", is(STATE.getStatus()))
                 .body("return_url", is(RETURN_URL))
