@@ -32,6 +32,7 @@ public class PaymentError {
 
         CANCEL_PAYMENT_NOT_FOUND_ERROR("P0500", "Not found"),
         CANCEL_PAYMENT_CONNECTOR_BAD_REQUEST_ERROR("P0501", "Cancellation of payment failed"),
+        CANCEL_PAYMENT_CONNECTOR_CONFLICT_ERROR("P0502", "Cancellation of payment failed"),
         CANCEL_PAYMENT_CONNECTOR_ERROR("P0598", "Downstream system error"),
 
         CREATE_PAYMENT_REFUND_CONNECTOR_ERROR("P0698", "Downstream system error"),

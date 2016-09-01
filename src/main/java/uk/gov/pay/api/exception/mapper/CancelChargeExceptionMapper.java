@@ -29,6 +29,9 @@ public class CancelChargeExceptionMapper implements ExceptionMapper<CancelCharge
         } else if (errorStatus == BAD_REQUEST.getStatusCode()) {
             paymentError = aPaymentError(CANCEL_PAYMENT_CONNECTOR_BAD_REQUEST_ERROR);
             status = BAD_REQUEST;
+        } else if (errorStatus == CONFLICT.getStatusCode()) {
+            paymentError = aPaymentError(CANCEL_PAYMENT_CONNECTOR_CONFLICT_ERROR);
+            status = CONFLICT;
         } else {
             paymentError = aPaymentError(CANCEL_PAYMENT_CONNECTOR_ERROR);
             status = INTERNAL_SERVER_ERROR;

@@ -12,6 +12,7 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.eclipse.jetty.http.HttpStatus.CONFLICT_409;
+import static org.eclipse.jetty.http.HttpStatus.LENGTH_REQUIRED_411;
 import static org.hamcrest.Matchers.hasSize;
 
 public class PaymentsCancelResourceITest extends PaymentResourceITestBase {
@@ -71,9 +72,25 @@ public class PaymentsCancelResourceITest extends PaymentResourceITestBase {
     }
 
     @Test
-    public void cancelPayment_returns500_whenConnectorResponseIsUnexpected() throws IOException {
+    public void cancelPayment_returns409_whenConnectorReturns409() throws IOException {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respond_WhenCancelCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID, "some backend error message", CONFLICT_409);
+
+        InputStream body = postCancelPaymentResponse(TEST_CHARGE_ID)
+                .statusCode(409)
+                .contentType(JSON).extract()
+                .body().asInputStream();
+
+        JsonAssert.with(body)
+                .assertThat("$.*", hasSize(2))
+                .assertThat("$.code", Is.is("P0502"))
+                .assertThat("$.description", Is.is("Cancellation of payment failed"));
+    }
+
+    @Test
+    public void cancelPayment_returns500_whenConnectorResponseIsUnexpected() throws IOException {
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMock.respond_WhenCancelCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID, "some backend error message", LENGTH_REQUIRED_411);
 
         InputStream body = postCancelPaymentResponse(TEST_CHARGE_ID)
                 .statusCode(500)
