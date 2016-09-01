@@ -336,6 +336,7 @@ public class PaymentsResource {
             @ApiResponse(code = 400, message = "Cancellation of payment failed", response = PaymentError.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
+            @ApiResponse(code = 409, message = "Conflict", response = PaymentError.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)
     })
     public Response cancelPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
