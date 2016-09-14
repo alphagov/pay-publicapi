@@ -163,6 +163,7 @@ Content-Type: application/json
 | `return_url`           | The URL where the user should be redirected to when the payment workflow is finished.    |
 | `reference`            | The reference issued by the government service for this payment                          |
 | `payment_provider`     | The payment provider for this payment                                                    |
+| `card_brand`           | The card brand used for this payment                                                     |
 | `created_date`         | The payment creation date for this payment                                               |
 | `refund_summary.status`| Refund availability status of the payment                                                |
 | `refund_summary.amount_available`| Amount available for refunds                                                   |
