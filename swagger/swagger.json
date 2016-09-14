@@ -200,6 +200,12 @@
               "$ref" : "#/definitions/Payment Error"
             }
           },
+          "409" : {
+            "description" : "Conflict",
+            "schema" : {
+              "$ref" : "#/definitions/Payment Error"
+            }
+          },
           "500" : {
             "description" : "Downstream system error",
             "schema" : {
@@ -540,6 +546,11 @@
           "example" : "worldpay",
           "readOnly" : true
         },
+        "card_brand_label" : {
+          "type" : "string",
+          "example" : "Visa",
+          "readOnly" : true
+        },
         "return_url" : {
           "type" : "string",
           "example" : "http://your.service.domain/your-reference",
@@ -603,6 +614,12 @@
         "payment_provider" : {
           "type" : "string",
           "example" : "worldpay",
+          "readOnly" : true
+        },
+        "card_brand_label" : {
+          "type" : "string",
+          "example" : "Visa",
+          "description" : "Card Brand used for payment",
           "readOnly" : true
         },
         "return_url" : {

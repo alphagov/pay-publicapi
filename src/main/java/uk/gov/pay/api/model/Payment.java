@@ -14,6 +14,9 @@ public abstract class Payment {
     @JsonProperty("payment_provider")
     private final String paymentProvider;
 
+    @JsonProperty("card_brand_label")
+    private final String cardBrandLabel;
+
     private final long amount;
     private final PaymentState state;
     private final String description;
@@ -30,7 +33,8 @@ public abstract class Payment {
     private final RefundSummary refundSummary;
 
     public Payment(String chargeId, long amount, PaymentState state, String returnUrl, String description,
-                   String reference, String email, String paymentProvider, String createdDate, RefundSummary refundSummary) {
+                   String reference, String email, String paymentProvider, String cardBrandLabel,
+                   String createdDate, RefundSummary refundSummary) {
         this.paymentId = chargeId;
         this.amount = amount;
         this.state = state;
@@ -39,6 +43,7 @@ public abstract class Payment {
         this.reference = reference;
         this.email = email;
         this.paymentProvider = paymentProvider;
+        this.cardBrandLabel = cardBrandLabel;
         this.createdDate = createdDate;
         this.refundSummary = refundSummary;
     }
@@ -88,6 +93,11 @@ public abstract class Payment {
         return paymentProvider;
     }
 
+    @ApiModelProperty(value = "Card Brand", example = "Visa")
+    public String getCardBrandLabel(){
+        return cardBrandLabel;
+    }
+
     @ApiModelProperty(dataType = "uk.gov.pay.api.model.RefundSummary")
     public RefundSummary getRefundSummary() {
         return refundSummary;
@@ -98,6 +108,7 @@ public abstract class Payment {
         return "Payment{" +
                 "paymentId='" + paymentId + '\'' +
                 ", paymentProvider='" + paymentProvider + '\'' +
+                ", cardBrandLabel='" + cardBrandLabel + '\'' +
                 ", amount=" + amount +
                 ", state='" + state + '\'' +
                 ", returnUrl='" + returnUrl + '\'' +
