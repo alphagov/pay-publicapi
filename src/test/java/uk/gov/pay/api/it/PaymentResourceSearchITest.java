@@ -38,6 +38,8 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
     private static final String TEST_REFERENCE = "test_reference";
     private static final String TEST_EMAIL = "alice.111@mail.fake";
     private static final String TEST_STATE = "created";
+    private static final String TEST_CARD_BRAND = "master-card";
+    private static final String TEST_CARD_BRAND_LABEL = "Mastercard";
     private static final String TEST_FROM_DATE = "2016-01-28T00:00:00Z";
     private static final String TEST_TO_DATE = "2016-01-28T12:00:00Z";
     private static final String SEARCH_PATH = "/v1/payments";
@@ -60,7 +62,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                         .getResults())
                 .build();
 
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null, null, payments);
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null, null, null, payments);
 
         String responseBody = searchPayments(API_KEY, ImmutableMap.of("reference", TEST_REFERENCE))
                 .statusCode(200)
@@ -113,7 +115,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                         .getResults())
                 .build();
 
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null, null,
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null, null, null,
                 payments
         );
 
@@ -135,7 +137,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                         .getResults())
                 .build();
 
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null, null,
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null, null, null,
                 payments
         );
 
@@ -160,7 +162,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                         .getResults())
                 .build();
 
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, null, TEST_STATE, null, null,
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, null, TEST_STATE, null, null, null,
                 payments
         );
 
@@ -184,7 +186,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                         .getResults())
                 .build();
 
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, null, TEST_STATE, null, null,
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, null, TEST_STATE, null, null, null,
                 payments
         );
 
@@ -208,7 +210,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                         .getResults())
                 .build();
 
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, TEST_EMAIL, null, null, null, payments);
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, TEST_EMAIL, null, null, null, null, payments);
 
         ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of(
                 "email", TEST_EMAIL))
@@ -231,7 +233,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                         .getResults())
                 .build();
 
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, "alice", null, null, null, payments);
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, "alice", null, null, null, null, payments);
 
         ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of(
                 "email", "alice"))
@@ -253,7 +255,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                         .withCreatedDateBetween(TEST_FROM_DATE, TEST_TO_DATE).getResults())
                 .build();
 
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null,  null, null, TEST_FROM_DATE, TEST_TO_DATE,
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null,  null, null, null, TEST_FROM_DATE, TEST_TO_DATE,
                 payments
         );
 
@@ -281,7 +283,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                         .withCreatedDateBetween(TEST_FROM_DATE, TEST_TO_DATE).getResults())
                 .build();
 
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, TEST_EMAIL, TEST_STATE, TEST_FROM_DATE, TEST_TO_DATE,
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, TEST_EMAIL, TEST_STATE, null, TEST_FROM_DATE, TEST_TO_DATE,
                 payments
         );
 
@@ -379,7 +381,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
     @Test
     public void searchPayments_errorIfConnectorResponseIsInvalid() throws Exception {
-        connectorMock.whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, TEST_EMAIL, TEST_STATE, TEST_FROM_DATE, TEST_TO_DATE)
+        connectorMock.whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, TEST_EMAIL, TEST_STATE, null, TEST_FROM_DATE, TEST_TO_DATE)
                 .respond(response()
                         .withStatusCode(OK_200)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
@@ -400,6 +402,29 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", is("P0498"))
                 .assertThat("$.description", is("Downstream system error"));
+    }
+
+    @Test
+    public void searchPayments_filterByCardBrand() throws Exception {
+        String payments = aPaginatedPaymentSearchResult()
+                .withCount(1)
+                .withPage(1)
+                .withTotal(2)
+                .withPayments(aSuccessfulSearchPayment()
+                        .withMatchingCardBrand(TEST_CARD_BRAND_LABEL)
+                        .getResults())
+                .build();
+
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, null, null, TEST_CARD_BRAND, null, null, payments);
+
+        ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of(
+                "card_brand", TEST_CARD_BRAND))
+                .statusCode(200)
+                .contentType(JSON)
+                .body("results.size()", equalTo(3));
+
+        List<Map<String, Object>> results = response.extract().body().jsonPath().getList("results");
+        assertThat(results, matchesField("card_brand", TEST_CARD_BRAND_LABEL));
     }
 
     private Matcher<? super List<Map<String, Object>>> matchesState(final String state) {

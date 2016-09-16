@@ -25,6 +25,9 @@ public class PaymentSearchResultBuilder {
     public static final int DEFAULT_AMOUNT = 10000;
     public static final String DEFAULT_EMAIL = "alice.111@mail.fake";
     public static final String DEFAULT_PAYMENT_PROVIDER = "worldpay";
+    public static final String DEFAULT_CARD_BRAND = "master-card";
+    public static final String DEFAULT_CARD_BRAND_LABEL = "Mastercard";
+
 
     private static class RefundSummary {
         public String status;
@@ -36,7 +39,7 @@ public class PaymentSearchResultBuilder {
         public TestPaymentState state;
         public String charge_id, description, reference, email, created_date;
         public int amount;
-        public String gateway_transaction_id, return_url, payment_provider;
+        public String gateway_transaction_id, return_url, payment_provider, card_brand;
         public RefundSummary refund_summary = new RefundSummary();
     }
 
@@ -85,6 +88,7 @@ public class PaymentSearchResultBuilder {
     private String reference = null;
     private String email = null;
     private TestPaymentState state = null;
+    private String cardBrand = null;
     private String fromDate = null;
     private String toDate = null;
 
@@ -110,6 +114,11 @@ public class PaymentSearchResultBuilder {
 
     public PaymentSearchResultBuilder withMatchingSuccessState(String status) {
         this.state = new TestPaymentSuccessState(status);
+        return this;
+    }
+
+    public PaymentSearchResultBuilder withMatchingCardBrand(String cardBrand){
+        this.cardBrand = cardBrand;
         return this;
     }
 
@@ -165,6 +174,10 @@ public class PaymentSearchResultBuilder {
             defaultPaymentResult.created_date = DateTimeUtils.toUTCDateString(updatedFromDate);
         }
 
+        if(cardBrand != null){
+            defaultPaymentResult.card_brand = cardBrand;
+        }
+
         return defaultPaymentResult;
     }
 
@@ -182,6 +195,7 @@ public class PaymentSearchResultBuilder {
         payment.created_date = DEFAULT_CREATED_DATE;
         payment.return_url = DEFAULT_RETURN_URL;
         payment.payment_provider = DEFAULT_PAYMENT_PROVIDER;
+        payment.card_brand = DEFAULT_CARD_BRAND_LABEL;
         payment.refund_summary.status = "available";
         payment.refund_summary.amount_available = 100;
         payment.refund_summary.amount_submitted = 300;

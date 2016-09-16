@@ -14,8 +14,8 @@ public abstract class Payment {
     @JsonProperty("payment_provider")
     private final String paymentProvider;
 
-    @JsonProperty("card_brand_label")
-    private final String cardBrandLabel;
+    @JsonProperty("card_brand")
+    private final String cardBrand;
 
     private final long amount;
     private final PaymentState state;
@@ -43,7 +43,7 @@ public abstract class Payment {
         this.reference = reference;
         this.email = email;
         this.paymentProvider = paymentProvider;
-        this.cardBrandLabel = cardBrandLabel;
+        this.cardBrand = cardBrandLabel;
         this.createdDate = createdDate;
         this.refundSummary = refundSummary;
     }
@@ -94,8 +94,8 @@ public abstract class Payment {
     }
 
     @ApiModelProperty(value = "Card Brand", example = "Visa")
-    public String getCardBrandLabel(){
-        return cardBrandLabel;
+    public String getCardBrand(){
+        return cardBrand;
     }
 
     @ApiModelProperty(dataType = "uk.gov.pay.api.model.RefundSummary")
@@ -108,7 +108,7 @@ public abstract class Payment {
         return "Payment{" +
                 "paymentId='" + paymentId + '\'' +
                 ", paymentProvider='" + paymentProvider + '\'' +
-                ", cardBrandLabel='" + cardBrandLabel + '\'' +
+                ", cardBrandLabel='" + cardBrand + '\'' +
                 ", amount=" + amount +
                 ", state='" + state + '\'' +
                 ", returnUrl='" + returnUrl + '\'' +
