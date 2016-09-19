@@ -873,6 +873,7 @@ GET /v1/payments
     {
       "payment_id": "am6f5d1583563deb7ss5obju2",
       "payment_provider": "sandbox",
+      "card_brand": "",
       "amount": 1,
       "state": {
         "status": "started",
