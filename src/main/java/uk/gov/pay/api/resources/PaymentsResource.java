@@ -208,6 +208,10 @@ public class PaymentsResource {
 
         validateSearchParameters(state, reference, email, cardBrand, fromDate, toDate, pageNumber, displaySize);
 
+        if(isNotBlank(cardBrand)){
+            cardBrand = cardBrand.toLowerCase();
+        }
+
         List<Pair<String, String>> queryParams = asList(
                 Pair.of(REFERENCE_KEY, reference),
                 Pair.of(EMAIL_KEY, email),

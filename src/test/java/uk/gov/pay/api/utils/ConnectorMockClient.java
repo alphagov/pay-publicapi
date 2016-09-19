@@ -387,7 +387,7 @@ public class ConnectorMockClient {
             params.add(Parameter.param(STATE_KEY, state));
         }
         if (isNotBlank(cardBrand)) {
-            params.add(Parameter.param(CARD_BRAND_KEY, CARD_BRAND));
+            params.add(Parameter.param(CARD_BRAND_KEY, CARD_BRAND.toLowerCase()));
         }
         if (isNotBlank(fromDate)) {
             params.add(Parameter.param(FROM_DATE_KEY, fromDate));

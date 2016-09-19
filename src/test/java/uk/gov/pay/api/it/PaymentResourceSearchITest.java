@@ -40,6 +40,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
     private static final String TEST_STATE = "created";
     private static final String TEST_CARD_BRAND = "master-card";
     private static final String TEST_CARD_BRAND_LABEL = "Mastercard";
+    private static final String TEST_CARD_BRAND_MIXED_CASE = "Master-Card";
     private static final String TEST_FROM_DATE = "2016-01-28T00:00:00Z";
     private static final String TEST_TO_DATE = "2016-01-28T12:00:00Z";
     private static final String SEARCH_PATH = "/v1/payments";
@@ -406,6 +407,30 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
     @Test
     public void searchPayments_filterByCardBrand() throws Exception {
+        ValidatableResponse response = getResultForSearchByCardBrand(TEST_CARD_BRAND);
+        response
+                .statusCode(200)
+                .contentType(JSON)
+                .body("results.size()", equalTo(3));
+
+        List<Map<String, Object>> results = response.extract().body().jsonPath().getList("results");
+        assertThat(results, matchesField("card_brand", TEST_CARD_BRAND_LABEL));
+    }
+
+    @Test
+    public void searchPayments_filterByCardBrandMixedCase() throws Exception {
+
+        ValidatableResponse response = getResultForSearchByCardBrand(TEST_CARD_BRAND_MIXED_CASE);
+        response
+                .statusCode(200)
+                .contentType(JSON)
+                .body("results.size()", equalTo(3));
+
+        List<Map<String, Object>> results = response.extract().body().jsonPath().getList("results");
+        assertThat(results, matchesField("card_brand", TEST_CARD_BRAND_LABEL));
+    }
+
+    private ValidatableResponse getResultForSearchByCardBrand(String cardBrand){
         String payments = aPaginatedPaymentSearchResult()
                 .withCount(1)
                 .withPage(1)
@@ -418,13 +443,23 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
         connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, null, null, TEST_CARD_BRAND, null, null, payments);
 
         ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of(
-                "card_brand", TEST_CARD_BRAND))
-                .statusCode(200)
-                .contentType(JSON)
-                .body("results.size()", equalTo(3));
+                "card_brand", cardBrand));
 
-        List<Map<String, Object>> results = response.extract().body().jsonPath().getList("results");
-        assertThat(results, matchesField("card_brand", TEST_CARD_BRAND_LABEL));
+        return response;
+    }
+
+    @Test
+    public void searchPayments_filterByInvalidCardBrand() throws Exception {
+        InputStream body = searchPayments(API_KEY,
+                ImmutableMap.of("card_brand", "my_credit_card"))
+                .statusCode(404)
+                .contentType(JSON).extract()
+                .body().asInputStream();
+
+        JsonAssert.with(body)
+                .assertThat("$.*", hasSize(2))
+                .assertThat("$.description", is("Page not found"));
+
     }
 
     private Matcher<? super List<Map<String, Object>>> matchesState(final String state) {
