@@ -835,6 +835,7 @@ GET /v1/payments
     {
       "payment_id": "4hn0c8bbtfbnp5tmite2274h5c",
       "payment_provider": "sandbox",
+      "card_brand": "",
       "amount": 1,
       "state": {
         "status": "started",
@@ -936,7 +937,7 @@ GET /v1/payments
 | `results`                         | Yes            | List of payments                                                  |
 | `results.payment_id`              | Yes            | The unique identifier for this payment                            |
 | `results.amount`                  | Yes            | The amount of this payment in pence                               |
-| `results.card_brand`              | No             | The card brand used for this payment                              |
+| `results.card_brand`              | Yes            | The card brand used for this payment                              |
 | `results.description`             | Yes            | The payment description                                           |
 | `results.reference`               | Yes            | There reference issued by the government service for this payment |
 | `results.email`                   | Yes            | The email address of the user of this payment                     |
