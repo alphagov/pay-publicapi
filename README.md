@@ -143,6 +143,7 @@ Content-Type: application/json
     "return_url": "https://example.service.gov.uk/some-reference-to-this-payment",
     "reference": "some-reference-to-this-payment",
     "payment_provider": "Sandbox",
+    "card_brand": "Mastercard",
     "created_date": "2016-01-15T16:30:56Z",
     "refund_summary": {
         "status": "available"
@@ -313,6 +314,7 @@ Content-Type: application/json
     "reference" : "some-reference-to-this-payment",
     "email": "mail@email.com",
     "payment_provider": "Sandbox",
+    "card_brand": "Visa",
     "created_date": "2016-01-15T16:30:56Z",
     "refund_summary": {
         "status": "available"
@@ -811,15 +813,16 @@ GET /v1/payments
 
 ##### Query Parameters description
 
-| Field                    | required | Description                               |
-| ------------------------ |:--------:| ----------------------------------------- |
-| `reference`            | - | There (partial or full) reference issued by the government service for this payment. |
-| `status`               | - | The transaction of this payment |
-| `from_date`            | - | The initial date for search payments |
-| `to_date`              | - | The end date for search payments|
-| `page`                 | - | To get the results from the specified page number, should be a non zero +ve number (optional, defaults to 1)|
-| `display_size`         | - | Number of records to be returned per page, should be a non zero +ve number (optional, defaults to 500)|
-| `email`                | - | Email ID of the payment user to search for          |
+| Field                     | required | Description                               |
+| ------------------------  |:--------:| ----------------------------------------- |
+| `reference`               | - | There (partial or full) reference issued by the government service for this payment. |
+| `status`                  | - | The transaction of this payment |
+| `from_date`               | - | The initial date for search payments |
+| `to_date`                 | - | The end date for search payments|
+| `card_brand`              | - | The card brand for search payments|
+| `page`                    | - | To get the results from the specified page number, should be a non zero +ve number (optional, defaults to 1)|
+| `display_size`            | - | Number of records to be returned per page, should be a non zero +ve number (optional, defaults to 500)|
+| `email`                   | - | Email ID of the payment user to search for          |
 
 #### Response example
 
@@ -933,6 +936,7 @@ GET /v1/payments
 | `results`                         | Yes            | List of payments                                                  |
 | `results.payment_id`              | Yes            | The unique identifier for this payment                            |
 | `results.amount`                  | Yes            | The amount of this payment in pence                               |
+| `results.card_brand`              | No             | The card brand used for this payment                              |
 | `results.description`             | Yes            | The payment description                                           |
 | `results.reference`               | Yes            | There reference issued by the government service for this payment |
 | `results.email`                   | Yes            | The email address of the user of this payment                     |
@@ -946,11 +950,11 @@ GET /v1/payments
 | `results._links.events`           | Yes            | Link to payment events                                            |
 | `results._links.refunds`          | Yes            | Link to payment refunds                                           |
 | `results._links.cancel`           | No             | Link to cancel the payment (link only available when a payment can be cancelled (i.e. payment has one of the statuses - CREATED, IN PROGRESS |
-| `_links.self.href`                | Yes            | Href link of the current page |
-| `_links.next_page.href`           | No             | Href link of the next page (based on the display_size requested) |
+| `_links.self.href`                | Yes            | Href link of the current page                                     |
+| `_links.next_page.href`           | No             | Href link of the next page (based on the display_size requested)  |
 | `_links.prev_page.href`           | No             | Href link of the previous page (based on the display_size requested) |
 | `_links.first_page.href`          | Yes            | Href link of the first page (based on the display_size requested) |
-| `_links.last_page.href`           | Yes            | Href link of the last page (based on the display_size requested) |
+| `_links.last_page.href`           | Yes            | Href link of the last page (based on the display_size requested)  |
 ```
 
 #### Search payments response errors
