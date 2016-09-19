@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
 @JsonInclude(value= JsonInclude.Include.NON_NULL)
-public abstract class Payment {
+public abstract class           Payment {
     public static final String LINKS_JSON_ATTRIBUTE = "_links";
 
     @JsonProperty("payment_id")
@@ -103,7 +103,6 @@ public abstract class Payment {
                 ", returnUrl='" + returnUrl + '\'' +
                 ", description='" + description + '\'' +
                 ", reference='" + reference + '\'' +
-                ", email='" + email + '\'' +
                 ", createdDate='" + createdDate + '\'' +
                 '}';
     }
