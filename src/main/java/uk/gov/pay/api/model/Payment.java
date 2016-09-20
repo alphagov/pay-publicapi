@@ -33,7 +33,7 @@ public abstract class Payment {
     private final RefundSummary refundSummary;
 
     public Payment(String chargeId, long amount, PaymentState state, String returnUrl, String description,
-                   String reference, String email, String paymentProvider, String cardBrandLabel,
+                   String reference, String email, String paymentProvider, String cardBrand,
                    String createdDate, RefundSummary refundSummary) {
         this.paymentId = chargeId;
         this.amount = amount;
@@ -43,7 +43,7 @@ public abstract class Payment {
         this.reference = reference;
         this.email = email;
         this.paymentProvider = paymentProvider;
-        this.cardBrand = cardBrandLabel;
+        this.cardBrand = cardBrand;
         this.createdDate = createdDate;
         this.refundSummary = refundSummary;
     }
