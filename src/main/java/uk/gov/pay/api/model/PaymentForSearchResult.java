@@ -40,7 +40,7 @@ public class PaymentForSearchResult extends Payment {
                 paymentResult.getReference(),
                 paymentResult.getEmail(),
                 paymentResult.getPaymentProvider(),
-                paymentResult.getCardLabel(),
+                paymentResult.getCardBrand(),
                 paymentResult.getCreated_date(),
                 paymentResult.getRefundSummary(), selfLink,
                 paymentEventsLink,

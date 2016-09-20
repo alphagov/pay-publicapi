@@ -41,7 +41,7 @@ public class PaymentWithAllLinks extends Payment {
                 paymentConnector.getReference(),
                 paymentConnector.getEmail(),
                 paymentConnector.getPaymentProvider(),
-                paymentConnector.getCardLabel(),
+                paymentConnector.getCardBrand(),
                 paymentConnector.getCreated_date(),
                 paymentConnector.getRefundSummary(),
                 paymentConnector.getLinks(),
