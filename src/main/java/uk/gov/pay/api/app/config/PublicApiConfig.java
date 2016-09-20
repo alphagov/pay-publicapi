@@ -8,6 +8,8 @@ import javax.validation.constraints.NotNull;
 
 public class PublicApiConfig extends Configuration {
     @NotNull
+    private String baseUrl;
+    @NotNull
     private String connectorUrl;
     @NotNull
     private String publicAuthUrl;
@@ -26,6 +28,10 @@ public class PublicApiConfig extends Configuration {
 
     public RestClientConfig getRestClientConfig() {
         return restClientConfig;
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
     }
 
     public String getConnectorUrl() {

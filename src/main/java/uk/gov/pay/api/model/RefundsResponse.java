@@ -3,6 +3,7 @@ package uk.gov.pay.api.model;
 import black.door.hate.HalResource;
 import uk.gov.pay.api.resources.RefundsFromConnector;
 
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.List;
@@ -19,18 +20,18 @@ public class RefundsResponse extends HalResourceResponse {
         super(refundHalRepresentation, location);
     }
 
-    public static RefundsResponse valueOf(RefundsFromConnector refundsEntity, UriInfo uriInfo) {
+    public static RefundsResponse valueOf(RefundsFromConnector refundsEntity, String baseUrl) {
 
-        URI selfLink = uriInfo.getBaseUriBuilder()
+        URI selfLink = UriBuilder.fromUri(baseUrl)
                 .path(PAYMENT_REFUNDS_PATH)
                 .build(refundsEntity.getPaymentId());
 
-        URI paymentLink = uriInfo.getBaseUriBuilder()
+        URI paymentLink = UriBuilder.fromUri(baseUrl)
                 .path(PAYMENT_BY_ID_PATH)
                 .build(refundsEntity.getPaymentId());
 
         List<HalResource> refundHalResources = refundsEntity.getEmbedded().getRefunds().stream()
-                .map(refund -> RefundResponse.valueOf(refund, refundsEntity.getPaymentId(), uriInfo))
+                .map(refund -> RefundResponse.valueOf(refund, refundsEntity.getPaymentId(), baseUrl))
                 .collect(Collectors.toList());
 
         HalRepresentationBuilder refundHalRepresentation = builder()
