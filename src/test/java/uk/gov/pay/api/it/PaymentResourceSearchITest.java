@@ -361,9 +361,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
     }
 
     private String expectedChargesLocationFor(String queryParams) {
-        return "http://localhost:" + app.getLocalPort()
-                + SEARCH_PATH
-                + queryParams;
+        return "http://publicapi.url" + SEARCH_PATH + queryParams;
     }
 
     @Test

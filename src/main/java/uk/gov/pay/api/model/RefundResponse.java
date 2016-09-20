@@ -2,6 +2,7 @@ package uk.gov.pay.api.model;
 
 import uk.gov.pay.api.resources.RefundFromConnector;
 
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 
@@ -15,12 +16,12 @@ public class RefundResponse extends HalResourceResponse {
         super(refundHalRepresentation, location);
     }
 
-    public static RefundResponse valueOf(RefundFromConnector refundEntity, String paymentId, UriInfo uriInfo) {
-        URI selfLink = uriInfo.getBaseUriBuilder()
+    public static RefundResponse valueOf(RefundFromConnector refundEntity, String paymentId, String baseUrl) {
+        URI selfLink = UriBuilder.fromUri(baseUrl)
                 .path(PAYMENT_REFUND_BY_ID_PATH)
                 .build(paymentId, refundEntity.getRefundId());
 
-        URI paymentLink = uriInfo.getBaseUriBuilder()
+        URI paymentLink = UriBuilder.fromUri(baseUrl)
                 .path(PAYMENT_BY_ID_PATH)
                 .build(paymentId);
 

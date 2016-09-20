@@ -50,7 +50,7 @@ public abstract class PaymentResourceITestBase {
     }
 
     String paymentLocationFor(String chargeId) {
-        return "http://localhost:" + app.getLocalPort() + PAYMENTS_PATH + chargeId;
+        return "http://publicapi.url" + PAYMENTS_PATH + chargeId;
     }
 
     String paymentEventsLocationFor(String chargeId) {
@@ -62,7 +62,7 @@ public abstract class PaymentResourceITestBase {
     }
 
     String paymentRefundLocationFor(String chargeId, String refundId) {
-        return "http://localhost:" + app.getLocalPort() + PAYMENTS_PATH + chargeId + "/refunds/" +refundId;
+        return "http://publicapi.url" + PAYMENTS_PATH + chargeId + "/refunds/" +refundId;
     }
 
     String paymentCancelLocationFor(String chargeId) {

@@ -52,10 +52,12 @@ public class PaymentRefundsResource {
     private static final String CONNECTOR_CHARGE_REFUNDS_RESOURCE = CONNECTOR_CHARGE_RESOURCE + "/refunds";
     private static final String CONNECTOR_CHARGE_REFUND_BY_ID_RESOURCE = CONNECTOR_CHARGE_REFUNDS_RESOURCE + "/%s";
 
+    private final String baseUrl;
     private final Client client;
     private final String connectorUrl;
 
-    public PaymentRefundsResource(Client client, String connectorUrl) {
+    public PaymentRefundsResource(String baseUrl, Client client, String connectorUrl) {
+        this.baseUrl = baseUrl;
         this.client = client;
         this.connectorUrl = connectorUrl;
     }
@@ -73,8 +75,7 @@ public class PaymentRefundsResource {
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response getRefunds(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
-                               @PathParam(PATH_PAYMENT_KEY) String paymentId,
-                               @Context UriInfo uriInfo) {
+                               @PathParam(PATH_PAYMENT_KEY) String paymentId) {
 
         logger.info("Get refunds for payment request - paymentId={}", paymentId);
         Response connectorResponse = client
@@ -85,7 +86,7 @@ public class PaymentRefundsResource {
         if (connectorResponse.getStatus() == SC_OK) {
             RefundsFromConnector refundsFromConnector = connectorResponse.readEntity(RefundsFromConnector.class);
             logger.debug("refund returned - [ {} ]", refundsFromConnector);
-            RefundsResponse refundsResponse = RefundsResponse.valueOf(refundsFromConnector, uriInfo);
+            RefundsResponse refundsResponse = RefundsResponse.valueOf(refundsFromConnector, baseUrl);
 
             return Response.ok(refundsResponse.serialize()).build();
         }
@@ -109,8 +110,7 @@ public class PaymentRefundsResource {
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response getRefundById(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
                                   @PathParam(PATH_PAYMENT_KEY) String paymentId,
-                                  @PathParam(PATH_REFUND_KEY) String refundId,
-                                  @Context UriInfo uriInfo) {
+                                  @PathParam(PATH_REFUND_KEY) String refundId) {
 
         logger.info("Payment refund request - paymentId={}, refundId={}", paymentId, refundId);
         Response connectorResponse = client
@@ -122,7 +122,7 @@ public class PaymentRefundsResource {
             RefundFromConnector refundFromConnector = connectorResponse.readEntity(RefundFromConnector.class);
             logger.info("refund returned - [ {} ]", refundFromConnector);
 
-            RefundResponse refundResponse = RefundResponse.valueOf(refundFromConnector, paymentId, uriInfo);
+            RefundResponse refundResponse = RefundResponse.valueOf(refundFromConnector, paymentId, baseUrl);
             return Response.ok(refundResponse.serialize()).build();
         }
         throw new GetRefundException(connectorResponse);
@@ -143,8 +143,7 @@ public class PaymentRefundsResource {
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response submitRefund(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
                                  @ApiParam(value = "paymentId", required = true) @PathParam(PATH_PAYMENT_KEY) String paymentId,
-                                 @ApiParam(value = "requestPayload", required = true) CreatePaymentRefundRequest requestPayload,
-                                 @Context UriInfo uriInfo) {
+                                 @ApiParam(value = "requestPayload", required = true) CreatePaymentRefundRequest requestPayload) {
 
         logger.info("Create a refund for payment request - paymentId={}", paymentId);
         Response connectorResponse = client
@@ -155,7 +154,7 @@ public class PaymentRefundsResource {
         if (connectorResponse.getStatus() == ACCEPTED.getStatusCode()) {
             RefundFromConnector refundFromConnector = connectorResponse.readEntity(RefundFromConnector.class);
             logger.debug("created refund returned - [ {} ]", refundFromConnector);
-            RefundResponse refundResponse = RefundResponse.valueOf(refundFromConnector, paymentId, uriInfo);
+            RefundResponse refundResponse = RefundResponse.valueOf(refundFromConnector, paymentId, baseUrl);
 
             return Response.accepted(refundResponse.serialize()).build();
         }

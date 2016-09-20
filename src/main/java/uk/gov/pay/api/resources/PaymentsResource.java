@@ -71,11 +71,14 @@ public class PaymentsResource {
     private static final String CONNECTOR_CHARGE_EVENTS_RESOURCE = CONNECTOR_CHARGES_RESOURCE + "/%s" + "/events";
     private static final String CONNECTOR_ACCOUNT_CHARGE_CANCEL_RESOURCE = CONNECTOR_CHARGE_RESOURCE + "/cancel";
 
+    private final String baseUrl;
+
     private final Client client;
     private final String connectorUrl;
     private final ObjectMapper objectMapper;
 
-    public PaymentsResource(Client client, String connectorUrl, ObjectMapper objectMapper) {
+    public PaymentsResource(String baseUrl, Client client, String connectorUrl, ObjectMapper objectMapper) {
+        this.baseUrl = baseUrl;
         this.client = client;
         this.connectorUrl = connectorUrl;
         this.objectMapper = objectMapper;
@@ -96,8 +99,7 @@ public class PaymentsResource {
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response getPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
-                               @PathParam(PAYMENT_KEY) String paymentId,
-                               @Context UriInfo uriInfo) {
+                               @PathParam(PAYMENT_KEY) String paymentId) {
 
         logger.info("Payment request - paymentId={}", paymentId);
         Response connectorResponse = client
@@ -107,14 +109,14 @@ public class PaymentsResource {
 
         if (connectorResponse.getStatus() == SC_OK) {
             ChargeFromResponse chargeFromResponse = connectorResponse.readEntity(ChargeFromResponse.class);
-            URI paymentURI = getPaymentURI(uriInfo, chargeFromResponse.getChargeId());
+            URI paymentURI = getPaymentURI(baseUrl, chargeFromResponse.getChargeId());
 
             PaymentWithAllLinks payment = PaymentWithAllLinks.valueOf(
                     chargeFromResponse,
                     paymentURI,
-                    getPaymentEventsURI(uriInfo, chargeFromResponse.getChargeId()),
-                    getPaymentCancelURI(uriInfo, chargeFromResponse.getChargeId()),
-                    getPaymentRefundsURI(uriInfo, chargeFromResponse.getChargeId()));
+                    getPaymentEventsURI(baseUrl, chargeFromResponse.getChargeId()),
+                    getPaymentCancelURI(baseUrl, chargeFromResponse.getChargeId()),
+                    getPaymentRefundsURI(baseUrl, chargeFromResponse.getChargeId()));
 
             logger.info("Payment returned - [ {} ]", payment);
             return Response.ok(payment).build();
@@ -137,8 +139,7 @@ public class PaymentsResource {
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response getPaymentEvents(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
-                                     @PathParam(PAYMENT_KEY) String paymentId,
-                                     @Context UriInfo uriInfo) {
+                                     @PathParam(PAYMENT_KEY) String paymentId) {
 
         logger.info("Payment events request - payment_id={}", paymentId);
 
@@ -150,9 +151,9 @@ public class PaymentsResource {
         if (connectorResponse.getStatus() == SC_OK) {
 
             JsonNode payload = connectorResponse.readEntity(JsonNode.class);
-            URI paymentEventsLink = getPaymentEventsURI(uriInfo, payload.get(CHARGE_KEY).asText());
+            URI paymentEventsLink = getPaymentEventsURI(baseUrl, payload.get(CHARGE_KEY).asText());
 
-            URI paymentLink = getPaymentURI(uriInfo, payload.get(CHARGE_KEY).asText());
+            URI paymentLink = getPaymentURI(baseUrl, payload.get(CHARGE_KEY).asText());
 
             PaymentEvents response =
                     PaymentEvents.createPaymentEventsResponse(payload, paymentLink.toString())
@@ -241,10 +242,10 @@ public class PaymentsResource {
                         .stream()
                         .map(charge -> PaymentForSearchResult.valueOf(
                                 charge,
-                                getPaymentURI(uriInfo, charge.getChargeId()),
-                                getPaymentEventsURI(uriInfo, charge.getChargeId()),
-                                getPaymentCancelURI(uriInfo, charge.getChargeId()),
-                                getPaymentRefundsURI(uriInfo, charge.getChargeId())))
+                                getPaymentURI(baseUrl, charge.getChargeId()),
+                                getPaymentEventsURI(baseUrl, charge.getChargeId()),
+                                getPaymentCancelURI(baseUrl, charge.getChargeId()),
+                                getPaymentRefundsURI(baseUrl, charge.getChargeId())))
                         .collect(Collectors.toList());
 
                 HalRepresentation.HalRepresentationBuilder halRepresentation = HalRepresentation.builder()
@@ -253,11 +254,11 @@ public class PaymentsResource {
                         .addProperty("total", searchResponse.getTotal())
                         .addProperty("page", searchResponse.getPage());
 
-                addLink(halRepresentation, "self", transformIntoPublicUri(uriInfo, searchResponse.getLinks().getSelf()));
-                addLink(halRepresentation, "first_page", transformIntoPublicUri(uriInfo, searchResponse.getLinks().getFirstPage()));
-                addLink(halRepresentation, "last_page", transformIntoPublicUri(uriInfo, searchResponse.getLinks().getLastPage()));
-                addLink(halRepresentation, "prev_page", transformIntoPublicUri(uriInfo, searchResponse.getLinks().getPrevPage()));
-                addLink(halRepresentation, "next_page", transformIntoPublicUri(uriInfo, searchResponse.getLinks().getNextPage()));
+                addLink(halRepresentation, "self", transformIntoPublicUri(baseUrl, searchResponse.getLinks().getSelf()));
+                addLink(halRepresentation, "first_page", transformIntoPublicUri(baseUrl, searchResponse.getLinks().getFirstPage()));
+                addLink(halRepresentation, "last_page", transformIntoPublicUri(baseUrl, searchResponse.getLinks().getLastPage()));
+                addLink(halRepresentation, "prev_page", transformIntoPublicUri(baseUrl, searchResponse.getLinks().getPrevPage()));
+                addLink(halRepresentation, "next_page", transformIntoPublicUri(baseUrl, searchResponse.getLinks().getNextPage()));
 
                 return Response.ok(halRepresentation.build().toString()).build();
             } catch (IOException | ProcessingException | URISyntaxException e) {
@@ -273,11 +274,11 @@ public class PaymentsResource {
         }
     }
 
-    private URI transformIntoPublicUri(UriInfo uriInfo, uk.gov.pay.api.model.links.Link link) throws URISyntaxException {
+    private URI transformIntoPublicUri(String baseUrl, uk.gov.pay.api.model.links.Link link) throws URISyntaxException {
         if (link == null)
             return null;
 
-        return uriInfo.getBaseUriBuilder()
+        return UriBuilder.fromUri(baseUrl)
                 .path(PAYMENTS_PATH)
                 .replaceQuery(new URI(link.getHref()).getQuery())
                 .build();
@@ -301,8 +302,7 @@ public class PaymentsResource {
             @ApiResponse(code = 422, message = "Invalid attribute value: description. Must be less than or equal to 255 characters length", response = PaymentError.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response createNewPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
-                                     @ApiParam(value = "requestPayload", required = true) CreatePaymentRequest requestPayload,
-                                     @Context UriInfo uriInfo) {
+                                     @ApiParam(value = "requestPayload", required = true) CreatePaymentRequest requestPayload) {
 
         logger.info("Payment create request - [ {} ]", requestPayload);
 
@@ -313,13 +313,13 @@ public class PaymentsResource {
 
         if (connectorResponse.getStatus() == HttpStatus.SC_CREATED) {
             ChargeFromResponse chargeFromResponse = connectorResponse.readEntity(ChargeFromResponse.class);
-            URI paymentUri = getPaymentURI(uriInfo, chargeFromResponse.getChargeId());
+            URI paymentUri = getPaymentURI(baseUrl, chargeFromResponse.getChargeId());
             PaymentWithAllLinks payment = PaymentWithAllLinks.valueOf(
                     chargeFromResponse,
                     paymentUri,
-                    getPaymentEventsURI(uriInfo, chargeFromResponse.getChargeId()),
-                    getPaymentCancelURI(uriInfo, chargeFromResponse.getChargeId()),
-                    getPaymentRefundsURI(uriInfo, chargeFromResponse.getChargeId()));
+                    getPaymentEventsURI(baseUrl, chargeFromResponse.getChargeId()),
+                    getPaymentCancelURI(baseUrl, chargeFromResponse.getChargeId()),
+                    getPaymentRefundsURI(baseUrl, chargeFromResponse.getChargeId()));
 
             logger.info("Payment returned (created): [ {} ]", payment);
             return Response.created(paymentUri).entity(payment).build();
@@ -365,26 +365,26 @@ public class PaymentsResource {
         throw new CancelChargeException(connectorResponse);
     }
 
-    private URI getPaymentURI(UriInfo uriInfo, String chargeId) {
-        return uriInfo.getBaseUriBuilder()
+    private URI getPaymentURI(String baseUrl, String chargeId) {
+        return UriBuilder.fromUri(baseUrl)
                 .path(PAYMENT_BY_ID)
                 .build(chargeId);
     }
 
-    private URI getPaymentEventsURI(UriInfo uriInfo, String chargeId) {
-        return uriInfo.getBaseUriBuilder()
+    private URI getPaymentEventsURI(String baseUrl, String chargeId) {
+        return UriBuilder.fromUri(baseUrl)
                 .path(PAYMENT_EVENTS_BY_ID)
                 .build(chargeId);
     }
 
-    private URI getPaymentCancelURI(UriInfo uriInfo, String chargeId) {
-        return uriInfo.getBaseUriBuilder()
+    private URI getPaymentCancelURI(String baseUrl, String chargeId) {
+        return UriBuilder.fromUri(baseUrl)
                 .path(CANCEL_PAYMENT_PATH)
                 .build(chargeId);
     }
 
-    private URI getPaymentRefundsURI(UriInfo uriInfo, String chargeId) {
-        return uriInfo.getBaseUriBuilder()
+    private URI getPaymentRefundsURI(String baseUrl, String chargeId) {
+        return UriBuilder.fromUri(baseUrl)
                 .path(REFUNDS_PAYMENT_PATH)
                 .build(chargeId);
     }
