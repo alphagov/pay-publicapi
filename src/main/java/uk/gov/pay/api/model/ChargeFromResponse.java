@@ -20,6 +20,9 @@ public class ChargeFromResponse {
     @JsonProperty("payment_provider")
     private String paymentProvider;
 
+    @JsonProperty("card_brand")
+    private String cardBrand;
+
     @JsonProperty("links")
     private List<PaymentConnectorResponseLink> links = new ArrayList<>();
 
@@ -64,6 +67,8 @@ public class ChargeFromResponse {
     public String getPaymentProvider() {
         return paymentProvider;
     }
+
+    public String getCardBrand() { return cardBrand; }
 
     public String getCreated_date() {
         return created_date;

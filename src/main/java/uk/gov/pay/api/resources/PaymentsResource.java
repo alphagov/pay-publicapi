@@ -44,6 +44,7 @@ public class PaymentsResource {
     public static final String REFERENCE_KEY = "reference";
     public static final String EMAIL_KEY = "email";
     public static final String STATE_KEY = "state";
+    public static final String CARD_BRAND_KEY = "card_brand";
     public static final String FROM_DATE_KEY = "from_date";
     public static final String TO_DATE_KEY = "to_date";
     public static final String PAGE = "page";
@@ -189,6 +190,8 @@ public class PaymentsResource {
                                    @QueryParam(EMAIL_KEY) String email,
                                    @ApiParam(value = "State of payments to be searched. Example=success", hidden = false, allowableValues = "range[created,started,submitted,success,failed,cancelled,error")
                                    @QueryParam(STATE_KEY) String state,
+                                   @ApiParam(value = "Card brand used for payment. Example=master-card", hidden = false)
+                                   @QueryParam(CARD_BRAND_KEY) String cardBrand,
                                    @ApiParam(value = "From date of payments to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z", hidden = false)
                                    @QueryParam(FROM_DATE_KEY) String fromDate,
                                    @ApiParam(value = "To date of payments to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z", hidden = false)
@@ -200,15 +203,20 @@ public class PaymentsResource {
                                    @Context UriInfo uriInfo) {
 
         logger.info("Payments search request - [ {} ]",
-                format("reference:%s, email: %s, status: %s, fromDate: %s, toDate: %s, page: %s, display_size: %s",
-                        reference, email, state, fromDate, toDate, pageNumber, displaySize));
+                format("reference:%s, email: %s, status: %s, card_brand %s, fromDate: %s, toDate: %s, page: %s, display_size: %s",
+                        reference, email, state, cardBrand, fromDate, toDate, pageNumber, displaySize));
 
-        validateSearchParameters(state, reference, email, fromDate, toDate, pageNumber, displaySize);
+        validateSearchParameters(state, reference, email, cardBrand, fromDate, toDate, pageNumber, displaySize);
+
+        if(isNotBlank(cardBrand)){
+            cardBrand = cardBrand.toLowerCase();
+        }
 
         List<Pair<String, String>> queryParams = asList(
                 Pair.of(REFERENCE_KEY, reference),
                 Pair.of(EMAIL_KEY, email),
                 Pair.of(STATE_KEY, state),
+                Pair.of(CARD_BRAND_KEY, cardBrand),
                 Pair.of(FROM_DATE_KEY, fromDate),
                 Pair.of(TO_DATE_KEY, toDate),
                 Pair.of(PAGE, pageNumber),
