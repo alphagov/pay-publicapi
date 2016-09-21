@@ -15,7 +15,7 @@ public class RestClientFactory {
     public static final String TLSV1_2 = "TLSv1.2";
 
     public static Client buildClient(RestClientConfig clientConfig) {
-        Client client = null;
+        Client client;
         if (clientConfig.isDisabledSecureConnection()) {
             client = ClientBuilder.newBuilder().build();
         } else {
