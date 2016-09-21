@@ -5,7 +5,7 @@
     "version" : "1.0.0",
     "title" : "GOV.UK Pay Api"
   },
-  "host" : "publicapi.pymnt.uk",
+  "host" : "publicapi.payments.service.gov.uk",
   "tags" : [ {
     "name" : "refunds",
     "description" : "Public Api Endpoints for Refunds"
