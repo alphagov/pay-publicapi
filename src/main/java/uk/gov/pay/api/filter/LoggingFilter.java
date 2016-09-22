@@ -1,6 +1,7 @@
 package uk.gov.pay.api.filter;
 
 import com.google.common.base.Stopwatch;
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.MDC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static java.lang.String.format;
@@ -29,8 +29,7 @@ public class LoggingFilter implements Filter {
 
         String requestURL = ((HttpServletRequest) servletRequest).getRequestURI();
         String requestMethod = ((HttpServletRequest) servletRequest).getMethod();
-        Optional<String> requestIdMaybe = Optional.ofNullable(((HttpServletRequest) servletRequest).getHeader(HEADER_REQUEST_ID));
-        String requestId = requestIdMaybe.orElse("");
+        String requestId = StringUtils.defaultString(((HttpServletRequest)servletRequest).getHeader(HEADER_REQUEST_ID));
 
         MDC.put(HEADER_REQUEST_ID,requestId);
 

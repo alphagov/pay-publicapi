@@ -1,6 +1,7 @@
 package uk.gov.pay.api.filter;
 
 import com.google.common.base.Stopwatch;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -10,7 +11,6 @@ import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseContext;
 import javax.ws.rs.client.ClientResponseFilter;
 import java.io.IOException;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static java.lang.String.format;
@@ -25,8 +25,7 @@ public class RestClientLoggingFilter implements ClientRequestFilter, ClientRespo
     @Override
     public void filter(ClientRequestContext requestContext) throws IOException {
         timer.set(Stopwatch.createStarted());
-        Optional<String> requestIdMaybe = Optional.ofNullable(MDC.get(LoggingFilter.HEADER_REQUEST_ID));
-        requestId.set(requestIdMaybe.orElse(""));
+        requestId.set(StringUtils.defaultString(MDC.get(LoggingFilter.HEADER_REQUEST_ID)));
 
         requestContext.getHeaders().add(HEADER_REQUEST_ID, requestId.get());
         logger.info(format("[%s] - %s to %s began",
