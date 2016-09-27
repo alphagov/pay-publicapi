@@ -27,3 +27,5 @@ production-1.tag=FAILED-20
 production-1.FAILED-20.date=
 
 production-1.FAILED-20.status=failed
+
+production-1.tag=alpha_production-1-20
