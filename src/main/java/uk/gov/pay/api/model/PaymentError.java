@@ -110,7 +110,8 @@ public class PaymentError {
     public String toString() {
         return "PaymentError{" +
                 "field=" + field +
-                "code=" + code +
+                ", code=" + code.value() +
+                ", name=" + code +
                 ", description='" + description + '\'' +
                 '}';
     }
