@@ -21,3 +21,5 @@ staging-1.alpha_staging-1-20.status=success
 alpha_staging-1-20.approver=ian.maddison@digital.cabinet-office.gov.uk
 
 alpha_staging-1-20.approve-date=2016-09-27:13:02:01
+
+production-1.tag=FAILED-20
