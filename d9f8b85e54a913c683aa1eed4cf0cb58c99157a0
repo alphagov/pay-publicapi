@@ -15,3 +15,5 @@ staging-1.FAILED-20.status=failed
 staging-1.tag=alpha_staging-1-20
 
 staging-1.alpha_staging-1-20.date=2016-09-27:11:57:57
+
+staging-1.alpha_staging-1-20.status=success
