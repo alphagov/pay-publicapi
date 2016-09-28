@@ -3,6 +3,8 @@ package uk.gov.pay.api.model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.Optional;
+
 @ApiModel(value = "CreatePaymentRefundRequest", description = "The Payment Refund Request Payload")
 public class CreatePaymentRefundRequest {
 
@@ -29,8 +31,8 @@ public class CreatePaymentRefundRequest {
      * @return
      */
     @ApiModelProperty(value = "Amount in pence. It should be the available amount for refund", required = false, allowableValues = "range[1, 10000000]", example = "200000")
-    public Integer getRefundAmountAvailable() {
-        return refundAmountAvailable;
+    public Optional<Integer> getRefundAmountAvailable() {
+        return Optional.ofNullable(refundAmountAvailable);
     }
 
     @Override

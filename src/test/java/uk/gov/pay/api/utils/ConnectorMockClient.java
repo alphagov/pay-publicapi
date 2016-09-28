@@ -209,6 +209,11 @@ public class ConnectorMockClient {
                 .respond(withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg));
     }
 
+    public void respondPreconditionFailed_whenCreateRefund(int amount, int refundAmountAvailable, String gatewayAccountId, String errorMsg, String chargeId) {
+        whenCreateRefund(amount, refundAmountAvailable, gatewayAccountId, chargeId)
+                .respond(withStatusAndErrorMessage(PRECONDITION_FAILED_412, errorMsg));
+    }
+
     public void respondWithChargeFound(long amount, String gatewayAccountId, String chargeId, PaymentState state, String returnUrl,
                                        String description, String reference, String email, String paymentProvider, String cardBrand,
                                        String createdDate, String chargeTokenId, RefundSummary refundSummary) {

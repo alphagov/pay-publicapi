@@ -41,6 +41,7 @@ public class PaymentError {
         CREATE_PAYMENT_REFUND_MISSING_FIELD_ERROR("P0601", "Missing mandatory attribute: %s"),
         CREATE_PAYMENT_REFUND_VALIDATION_ERROR("P0602", "Invalid attribute value: %s. %s"),
         CREATE_PAYMENT_REFUND_NOT_AVAILABLE("P0603", "The payment is not available for refund. Payment refund status: %s"),
+        CREATE_PAYMENT_REFUND_AMOUNT_AVAILABLE_MISTMATCH("P0604", "Refund amount available mismatch."),
 
         GET_PAYMENT_REFUND_NOT_FOUND_ERROR("P0700", "Not found"),
         GET_PAYMENT_REFUND_CONNECTOR_ERROR("P0798", "Downstream system error"),
