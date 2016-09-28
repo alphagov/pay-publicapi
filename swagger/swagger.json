@@ -327,6 +327,9 @@
               "$ref" : "#/definitions/Payment Error"
             }
           },
+          "412" : {
+            "description" : "Refund amount available mismatch"
+          },
           "500" : {
             "description" : "Downstream system error",
             "schema" : {
@@ -387,6 +390,15 @@
           "format" : "int32",
           "example" : "150000",
           "description" : "Amount in pence. Can't be more than the available amount for refunds",
+          "minimum" : 1.0,
+          "maximum" : 1.0E7
+        },
+        "refund_amount_available" : {
+          "type" : "integer",
+          "format" : "int32",
+          "example" : "200000",
+          "description" : "Amount in pence. Total amount still available before issuing the refund",
+          "readOnly" : true,
           "minimum" : 1.0,
           "maximum" : 1.0E7
         }

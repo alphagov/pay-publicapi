@@ -1,5 +1,6 @@
 package uk.gov.pay.api.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -11,6 +12,7 @@ public class CreatePaymentRefundRequest {
     public static final String REFUND_AMOUNT_AVAILABLE="refund_amount_available";
 
     private int amount;
+    @JsonProperty("refund_amount_available")
     private Integer refundAmountAvailable;
 
     public CreatePaymentRefundRequest() {
@@ -30,7 +32,7 @@ public class CreatePaymentRefundRequest {
      * This field should be made compulsory at a later stage
      * @return
      */
-    @ApiModelProperty(value = "Amount in pence. It should be the available amount for refund", required = false, allowableValues = "range[1, 10000000]", example = "200000")
+    @ApiModelProperty(value = "Amount in pence. Total amount still available before issuing the refund", required = false, allowableValues = "range[1, 10000000]", example = "200000")
     public Optional<Integer> getRefundAmountAvailable() {
         return Optional.ofNullable(refundAmountAvailable);
     }

@@ -615,7 +615,7 @@ Content-Type: application/json
 
 #### GET Payment Refunds response errors
 
-##### Refud ID not found
+##### Refund ID not found
 
 ```
 HTTP/1.1 404 Not Found
@@ -645,7 +645,8 @@ Creates a new refund associated with the payment.
 POST /v1/payments/ab2341da231434/refunds
 Authorization: Bearer BEARER_TOKEN
 {
-    "amount": 25000
+    "amount": 25000,
+    "refund_amount_available": 30000
 }
 ```
 
@@ -653,9 +654,10 @@ Authorization: Bearer BEARER_TOKEN
 
 BEARER_TOKEN: A valid bearer token for the account to associate the payment with.
 
-| Field                    | required | Description                               |
-| ------------------------ |:--------:| ----------------------------------------- |
-| `amount`                 | Yes      | Amount to refund in pence                 |
+| Field                    | required | Description                                             |
+| ------------------------ |:--------:| ------------------------------------------------------- |
+| `amount`                 | Yes      | Amount to refund in pence                               |
+| `refund_amount_available`| No       | Total amount still available before issuing the refund  |
 
 #### Refund created response
 
@@ -691,7 +693,19 @@ Content-Type: application/json
 | `status`               | Current status of the refund             |
 | `created_date`         | The creation date for this refund        |
 | `_links.self`          | Link to this refund                      |
-| `_links.payment`      | Link to the payment this refund relates to|
+| `_links.payment`       | Link to the payment this refund relates to|
+
+##### Refund amount available mismatch
+
+```
+HTTP/1.1 412 Precondition Failed
+Content-Type: application/json
+
+{
+    "code" : "P0604"
+    "description": "Refund amount available mismatch"
+}
+```
 
 #### POST Payment Refunds response errors
 

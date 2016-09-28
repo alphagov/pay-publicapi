@@ -137,6 +137,7 @@ public class PaymentRefundsResource {
             @ApiResponse(code = 201, message = "ACCEPTED"),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
+            @ApiResponse(code = 412, message = "Refund amount available mismatch"),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response submitRefund(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
                                  @ApiParam(value = "paymentId", required = true) @PathParam(PATH_PAYMENT_KEY) String paymentId,
