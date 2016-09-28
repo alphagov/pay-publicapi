@@ -1,13 +1,11 @@
 package uk.gov.pay.api.model;
 
-import uk.gov.pay.api.resources.RefundFromConnector;
-
 import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 
-import static black.door.hate.HalRepresentation.*;
-import static uk.gov.pay.api.resources.PaymentRefundsResource.*;
+import static black.door.hate.HalRepresentation.HalRepresentationBuilder;
+import static black.door.hate.HalRepresentation.builder;
+import static uk.gov.pay.api.resources.PaymentRefundsResource.PAYMENT_BY_ID_PATH;
 import static uk.gov.pay.api.resources.PaymentRefundsResource.PAYMENT_REFUND_BY_ID_PATH;
 
 public class RefundResponse extends HalResourceResponse {
