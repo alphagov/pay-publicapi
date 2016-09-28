@@ -1,6 +1,7 @@
 package uk.gov.pay.api.utils;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.GsonBuilder;
 import org.mockserver.client.server.ForwardChainExpectation;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.model.HttpResponse;
@@ -84,7 +85,7 @@ public class ConnectorMockClient {
         return jsonStringBuilder.build();
     }
 
-    private String buildGetRefundResponse(String refundId, int amount, String status, String createdDate) {
+    private String buildGetRefundResponse(String refundId, int amount, int refundAmountAvailable, String status, String createdDate) {
         List<Map<String, Link>> links = new ArrayList<>();
         links.add(ImmutableMap.of("self", new Link("http://server:port/self-link")));
         links.add(ImmutableMap.of("payment", new Link("http://server:port/payment-link")));
@@ -92,6 +93,7 @@ public class ConnectorMockClient {
         JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
                 .add("refund_id", refundId)
                 .add("amount", amount)
+                .add("refund_amount_available", refundAmountAvailable)
                 .add("status", status)
                 .add("created_date", createdDate)
                 .add("_links", links);
@@ -168,12 +170,12 @@ public class ConnectorMockClient {
     }
 
 
-    public void respondAccepted_whenCreateARefund(int amount, String gatewayAccountId, String chargeId, String refundId, String status, String createdDate) {
-        whenCreateRefund(amount, gatewayAccountId, chargeId)
+    public void respondAccepted_whenCreateARefund(int amount, int refundAmountAvailable, String gatewayAccountId, String chargeId, String refundId, String status, String createdDate) {
+        whenCreateRefund(amount, refundAmountAvailable, gatewayAccountId, chargeId)
                 .respond(response()
                         .withStatusCode(ACCEPTED_202)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withBody(buildGetRefundResponse(refundId, amount, status, createdDate))
+                        .withBody(buildGetRefundResponse(refundId, amount, refundAmountAvailable, status, createdDate))
                 );
     }
 
@@ -226,8 +228,8 @@ public class ConnectorMockClient {
                         .withBody(chargeResponseBody));
     }
 
-    public void respondWithGetRefundById(String gatewayAccountId, String chargeId, String refundId, int amount, String refundStatus, String createdDate) {
-        String refundResponse = buildGetRefundResponse(refundId, amount, refundStatus, createdDate);
+    public void respondWithGetRefundById(String gatewayAccountId, String chargeId, String refundId, int amount, int totalRefundAmountAvailable, String refundStatus, String createdDate) {
+        String refundResponse = buildGetRefundResponse(refundId, amount, totalRefundAmountAvailable, refundStatus, createdDate);
         whenGetRefundById(gatewayAccountId, chargeId, refundId)
                 .respond(response()
                         .withStatusCode(OK_200)
@@ -333,11 +335,13 @@ public class ConnectorMockClient {
         );
     }
 
-    public ForwardChainExpectation whenCreateRefund(long amount, String gatewayAccountId, String chargeId) {
+    public ForwardChainExpectation whenCreateRefund(int amount, int refundAmountAvailable, String gatewayAccountId, String chargeId) {
+        String payload = new GsonBuilder().create().toJson(
+                ImmutableMap.of("amount", amount, "refund_amount_available", refundAmountAvailable));
         return mockClient.when(request()
                 .withMethod(POST)
                 .withPath(format(CONNECTOR_MOCK_CHARGE_REFUNDS_PATH, gatewayAccountId, chargeId))
-                .withBody("{\"amount\":" + amount + "}")
+                .withBody(payload)
         );
     }
 
@@ -437,8 +441,8 @@ public class ConnectorMockClient {
                 once());
     }
 
-    public void respondBadRequest_whenCreateARefund(String reason, int amount, String gatewayAccountId, String chargeId) {
-        whenCreateRefund(amount, gatewayAccountId, chargeId)
+    public void respondBadRequest_whenCreateARefund(String reason, int amount, int refundAmountAvailable, String gatewayAccountId, String chargeId) {
+        whenCreateRefund(amount, refundAmountAvailable, gatewayAccountId, chargeId)
                 .respond(response()
                         .withStatusCode(BAD_REQUEST_400)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)

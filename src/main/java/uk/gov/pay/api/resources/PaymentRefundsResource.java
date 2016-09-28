@@ -1,5 +1,7 @@
 package uk.gov.pay.api.resources;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.GsonBuilder;
 import io.dropwizard.auth.Auth;
 import io.swagger.annotations.*;
 import org.apache.commons.lang3.tuple.Pair;
@@ -8,17 +10,12 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.exception.CreateRefundException;
 import uk.gov.pay.api.exception.GetRefundException;
 import uk.gov.pay.api.exception.GetRefundsException;
-import uk.gov.pay.api.model.CreatePaymentRefundRequest;
-import uk.gov.pay.api.model.PaymentError;
-import uk.gov.pay.api.model.RefundResponse;
-import uk.gov.pay.api.model.RefundsResponse;
+import uk.gov.pay.api.model.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
 import java.util.Collections;
 import java.util.List;
 
@@ -146,10 +143,26 @@ public class PaymentRefundsResource {
                                  @ApiParam(value = "requestPayload", required = true) CreatePaymentRefundRequest requestPayload) {
 
         logger.info("Create a refund for payment request - paymentId={}", paymentId);
+
+        Integer refundAmountAvailable = requestPayload.getRefundAmountAvailable();
+        if (refundAmountAvailable == null) {
+            Response getChargeResponse = client
+                    .target(getConnectorUrl(format(CONNECTOR_CHARGE_RESOURCE, accountId, paymentId)))
+                    .request()
+                    .get();
+
+            ChargeFromResponse chargeFromResponse = getChargeResponse.readEntity(ChargeFromResponse.class);
+            refundAmountAvailable = Long.valueOf(chargeFromResponse.getRefundSummary().getAmountAvailable()).intValue();
+        }
+
+        ImmutableMap<String, Object> payloadMap = ImmutableMap.of("amount", requestPayload.getAmount(), "refund_amount_available", refundAmountAvailable);
+        String connectorPayload = new GsonBuilder().create().toJson(
+                payloadMap);
+
         Response connectorResponse = client
                 .target(getConnectorUrl(format(CONNECTOR_CHARGE_REFUNDS_RESOURCE, accountId, paymentId)))
                 .request()
-                .post(json("{\"amount\":" + requestPayload.getAmount() + "}"));
+                .post(json(connectorPayload));
 
         if (connectorResponse.getStatus() == ACCEPTED.getStatusCode()) {
             RefundFromConnector refundFromConnector = connectorResponse.readEntity(RefundFromConnector.class);

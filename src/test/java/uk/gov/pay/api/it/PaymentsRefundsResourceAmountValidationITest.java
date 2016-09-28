@@ -16,6 +16,8 @@ import static org.hamcrest.core.Is.is;
 
 public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourceITestBase {
 
+    private static final int REFUND_AMOUNT_AVAILABLE = 9000;
+
     @Before
     public void setUpBearerToken() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
@@ -262,7 +264,7 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
         int amount = 1000;
         String externalChargeId = "charge_12345";
 
-        connectorMock.respondBadRequest_whenCreateARefund("full", amount, GATEWAY_ACCOUNT_ID, externalChargeId);
+        connectorMock.respondBadRequest_whenCreateARefund("full", amount, REFUND_AMOUNT_AVAILABLE, GATEWAY_ACCOUNT_ID, externalChargeId);
 
         String refundRequest = "{\"amount\":" + amount + "}";
 
@@ -284,7 +286,7 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
         int amount = 1000;
         String externalChargeId = "charge_12345";
 
-        connectorMock.respondBadRequest_whenCreateARefund("pending", amount, GATEWAY_ACCOUNT_ID, externalChargeId);
+        connectorMock.respondBadRequest_whenCreateARefund("pending", amount, REFUND_AMOUNT_AVAILABLE, GATEWAY_ACCOUNT_ID, externalChargeId);
 
         String refundRequest = "{\"amount\":" + amount + "}";
 
