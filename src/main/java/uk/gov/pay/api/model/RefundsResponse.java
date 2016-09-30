@@ -1,10 +1,8 @@
 package uk.gov.pay.api.model;
 
 import black.door.hate.HalResource;
-import uk.gov.pay.api.resources.RefundsFromConnector;
 
 import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;

@@ -7,6 +7,7 @@ import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.PaymentError;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static uk.gov.pay.api.model.CreatePaymentRefundRequest.REFUND_AMOUNT_AVAILABLE;
 import static uk.gov.pay.api.model.CreatePaymentRequest.*;
 import static uk.gov.pay.api.model.PaymentError.Code.*;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
@@ -25,7 +26,8 @@ class RequestJsonParser {
 
     static CreatePaymentRefundRequest paymentRefundRequestValueOf(JsonNode rootNode) {
         Integer amount = parseInteger(rootNode, AMOUNT_FIELD_NAME, CREATE_PAYMENT_REFUND_VALIDATION_ERROR, CREATE_PAYMENT_REFUND_MISSING_FIELD_ERROR);
-        return new CreatePaymentRefundRequest(amount);
+        Integer refundAmountAvailable = rootNode.get(REFUND_AMOUNT_AVAILABLE) == null ? null : rootNode.get(REFUND_AMOUNT_AVAILABLE).asInt();
+        return new CreatePaymentRefundRequest(amount, refundAmountAvailable);
     }
 
     private static String parseString(JsonNode node, String fieldName) {
