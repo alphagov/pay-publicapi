@@ -1,6 +1,7 @@
 FROM openjdk:8-jre-alpine
 
 RUN apk update
+RUN apk upgrade
 
 RUN apk add bash
 
