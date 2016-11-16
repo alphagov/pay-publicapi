@@ -11,6 +11,8 @@ import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.api.it.fixtures.PaymentNavigationLinksFixture;
+import uk.gov.pay.api.model.Address;
+import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.utils.DateTimeUtils;
 
 import java.io.InputStream;
@@ -44,7 +46,8 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
     private static final String TEST_FROM_DATE = "2016-01-28T00:00:00Z";
     private static final String TEST_TO_DATE = "2016-01-28T12:00:00Z";
     private static final String SEARCH_PATH = "/v1/payments";
-
+    private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "county", "UK");
+    private static final CardDetails CARD_DETAILS = new CardDetails("1234", "Mr. Payment", "12/19", BILLING_ADDRESS, TEST_CARD_BRAND_LABEL);
     @Before
     public void mapBearerTokenToAccountId() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
@@ -59,6 +62,8 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .withPayments(aSuccessfulSearchPayment()
                         .withMatchingInProgressState(TEST_STATE)
                         .withMatchingReference(TEST_REFERENCE)
+                        .withMatchingCardBrand(TEST_CARD_BRAND_LABEL)
+                        .withMatchingCardDetails(CARD_DETAILS)
                         .withNumberOfResults(1)
                         .getResults())
                 .build();
@@ -88,6 +93,15 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .body("results[0].refund_summary.status", is("available"))
                 .body("results[0].refund_summary.amount_available", is(100))
                 .body("results[0].refund_summary.amount_submitted", is(300))
+                .body("results[0].card_details.card_brand", is(TEST_CARD_BRAND_LABEL))
+                .body("results[0].card_details.cardholder_name", is(CARD_DETAILS.getCardHolderName()))
+                .body("results[0].card_details.expiry_date", is(CARD_DETAILS.getExpiryDate()))
+                .body("results[0].card_details.last_digits_card_number", is(CARD_DETAILS.getLastDigitsCardNumber()))
+                .body("results[0].card_details.billing_address.line1", is(CARD_DETAILS.getBillingAddress().getLine1()))
+                .body("results[0].card_details.billing_address.line2", is(CARD_DETAILS.getBillingAddress().getLine2()))
+                .body("results[0].card_details.billing_address.postcode", is(CARD_DETAILS.getBillingAddress().getPostcode()))
+                .body("results[0].card_details.billing_address.county", is(CARD_DETAILS.getBillingAddress().getCounty()))
+                .body("results[0].card_details.billing_address.country", is(CARD_DETAILS.getBillingAddress().getCountry()))
                 .extract().asString();
 
         JsonAssert.with(responseBody)

@@ -381,6 +381,36 @@
     }
   },
   "definitions" : {
+    "Billing Address" : {
+      "type" : "object",
+      "properties" : {
+        "line1" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "line2" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "postcode" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "city" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "county" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "country" : {
+          "type" : "string",
+          "readOnly" : true
+        }
+      },
+      "description" : "A structure representing the billing address of a card"
+    },
     "CreatePaymentRefundRequest" : {
       "type" : "object",
       "required" : [ "amount" ],
@@ -480,6 +510,32 @@
       },
       "description" : "A List of Payment Events information"
     },
+    "Payment card details" : {
+      "type" : "object",
+      "properties" : {
+        "last_digits_card_number" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "cardholder_name" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "expiry_date" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "billing_address" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/Billing Address"
+        },
+        "card_brand" : {
+          "type" : "string",
+          "readOnly" : true
+        }
+      },
+      "description" : "A structure representing the payment card"
+    },
     "Payment state" : {
       "type" : "object",
       "required" : [ "code", "finished", "message", "status" ],
@@ -564,12 +620,6 @@
           "example" : "worldpay",
           "readOnly" : true
         },
-        "card_brand" : {
-          "type" : "string",
-          "example" : "Visa",
-          "description" : "Card Brand",
-          "readOnly" : true
-        },
         "return_url" : {
           "type" : "string",
           "example" : "http://your.service.domain/your-reference",
@@ -584,9 +634,19 @@
           "readOnly" : true,
           "$ref" : "#/definitions/Refund Summary"
         },
+        "card_details" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/Payment card details"
+        },
         "_links" : {
           "readOnly" : true,
           "$ref" : "#/definitions/linksForSearchResults"
+        },
+        "card_brand" : {
+          "type" : "string",
+          "example" : "Visa",
+          "description" : "Card Brand",
+          "readOnly" : true
         }
       }
     },
@@ -635,12 +695,6 @@
           "example" : "worldpay",
           "readOnly" : true
         },
-        "card_brand" : {
-          "type" : "string",
-          "example" : "Visa",
-          "description" : "Card Brand",
-          "readOnly" : true
-        },
         "return_url" : {
           "type" : "string",
           "example" : "http://your.service.domain/your-reference",
@@ -655,9 +709,19 @@
           "readOnly" : true,
           "$ref" : "#/definitions/Refund Summary"
         },
+        "card_details" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/Payment card details"
+        },
         "_links" : {
           "readOnly" : true,
           "$ref" : "#/definitions/allLinksForAPayment"
+        },
+        "card_brand" : {
+          "type" : "string",
+          "example" : "Visa",
+          "description" : "Card Brand",
+          "readOnly" : true
         }
       }
     },

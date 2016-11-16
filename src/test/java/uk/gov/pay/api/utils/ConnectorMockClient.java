@@ -7,6 +7,7 @@ import org.mockserver.client.server.MockServerClient;
 import org.mockserver.model.HttpResponse;
 import org.mockserver.model.Parameter;
 import uk.gov.pay.api.it.fixtures.PaymentRefundJsonFixture;
+import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.links.Link;
@@ -62,8 +63,8 @@ public class ConnectorMockClient {
     }
 
     private String buildChargeResponse(long amount, String chargeId, PaymentState state, String returnUrl, String description,
-                                       String reference, String email, String paymentProvider, String cardBrand,
-                                       String gatewayTransactionId, String createdDate, RefundSummary refundSummary, ImmutableMap<?, ?>... links) {
+                                       String reference, String email, String paymentProvider, String gatewayTransactionId,
+                                       String createdDate, RefundSummary refundSummary, CardDetails cardDetails, ImmutableMap<?, ?>... links) {
         JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
                 .add("charge_id", chargeId)
                 .add("amount", amount)
@@ -76,7 +77,8 @@ public class ConnectorMockClient {
                 .add("card_brand", CARD_BRAND_LABEL)
                 .add("created_date", createdDate)
                 .add("links", asList(links))
-                .add("refund_summary", refundSummary);
+                .add("refund_summary", refundSummary)
+                .add("card_details", cardDetails);
 
         if (gatewayTransactionId != null) {
             jsonStringBuilder.add("gateway_transaction_id", gatewayTransactionId);
@@ -142,7 +144,7 @@ public class ConnectorMockClient {
     }
 
     public void respondOk_whenCreateCharge(int amount, String gatewayAccountId, String chargeId, String chargeTokenId, PaymentState state, String returnUrl,
-                                           String description, String reference, String email, String paymentProvider, String cardBrand, String createdDate, RefundSummary refundSummary) {
+                                           String description, String reference, String email, String paymentProvider, String createdDate, RefundSummary refundSummary, CardDetails cardDetails) {
 
         whenCreateCharge(amount, gatewayAccountId, returnUrl, description, reference)
                 .respond(response()
@@ -158,10 +160,10 @@ public class ConnectorMockClient {
                                 reference,
                                 email,
                                 paymentProvider,
-                                cardBrand,
                                 null,
                                 createdDate,
                                 refundSummary,
+                                cardDetails,
                                 validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
                                 validGetLink(nextUrl(chargeTokenId), "next_url"), validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",
                                         new HashMap<String, String>() {{
@@ -215,11 +217,11 @@ public class ConnectorMockClient {
     }
 
     public void respondWithChargeFound(long amount, String gatewayAccountId, String chargeId, PaymentState state, String returnUrl,
-                                       String description, String reference, String email, String paymentProvider, String cardBrand,
-                                       String createdDate, String chargeTokenId, RefundSummary refundSummary) {
+                                       String description, String reference, String email, String paymentProvider, String createdDate,
+                                       String chargeTokenId, RefundSummary refundSummary, CardDetails cardDetails) {
 
         String chargeResponseBody = buildChargeResponse(amount, chargeId, state, returnUrl,
-                description, reference, email, paymentProvider, cardBrand, gatewayAccountId, createdDate, refundSummary,
+                description, reference, email, paymentProvider, gatewayAccountId, createdDate, refundSummary, cardDetails,
                 validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
                 validGetLink(chargeLocation(gatewayAccountId, chargeId) + "/refunds", "refunds"),
                 validGetLink(nextUrl(chargeId), "next_url"), validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",

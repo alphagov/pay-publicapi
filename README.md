@@ -316,6 +316,20 @@ Content-Type: application/json
     "payment_provider": "Sandbox",
     "card_brand": "Visa",
     "created_date": "2016-01-15T16:30:56Z",
+    "card_details": {  
+    	"last_digits_card_number":"1234",
+    	"cardholder_name":"Mr. Payment",
+    	"expiry_date":"12/19",
+    	"card_brand":"Mastercard"
+    	"billing_address":{  
+    	   "line1":"line1",
+    	   "line2":"line2",
+    	   "postcode":"AB2 DEF",
+    	   "city":"city",
+    	   "county":"county",
+    	   "country":"UK"
+    	}
+    },
     "refund_summary": {
         "status": "available"
         "amount_available": 14500
@@ -860,6 +874,20 @@ GET /v1/payments
       "reference": "rahul-ref",
       "email": "mail@email.com",
       "created_date": "2016-05-23T15:22:50.972Z",
+      "card_details": {  
+      	"last_digits_card_number":"1234",
+      	"cardholder_name":"Mr. Payment",
+      	"expiry_date":"12/19",
+      	"card_brand":"Mastercard"
+      	"billing_address":{  
+      	   "line1":"line1",
+      	   "line2":"line2",
+      	   "postcode":"ABC2 DEF",
+      	   "city":"city",
+      	   "county":"county",
+      	   "country":"UK"
+      	}
+      },
       "refund_summary": {
          "status": "pending"
          "amount_available": 1
@@ -898,6 +926,20 @@ GET /v1/payments
       "reference": "rahul-ref",
       "email": "mail@email.com",
       "created_date": "2016-05-23T15:22:47.038Z",
+      "card_details": {  
+      	"last_digits_card_number":"1234",
+      	"cardholder_name":"Mrs. Payment",
+      	"expiry_date":"12/19",
+      	"card_brand":"Mastercard"
+      	"billing_address":{  
+      	   "line1":"line1",
+      	   "line2":"line2",
+      	   "postcode":"IJK3 LMN",
+      	   "city":"city",
+      	   "county":"county",
+      	   "country":"UK"
+      	}
+      },
       "refund_summary": {
          "status": "pending"
          "amount_available": 1
@@ -950,22 +992,32 @@ GET /v1/payments
 | `count`                           | Yes            | Number of payments displayed on this page                         |
 | `page`                            | Yes            | Page number of the current recordset                              |
 | `results`                         | Yes            | List of payments                                                  |
-| `results.payment_id`              | Yes            | The unique identifier for this payment                            |
-| `results.amount`                  | Yes            | The amount of this payment in pence                               |
-| `results.card_brand`              | Yes            | The card brand used for this payment                              |
-| `results.description`             | Yes            | The payment description                                           |
-| `results.reference`               | Yes            | There reference issued by the government service for this payment |
-| `results.email`                   | Yes            | The email address of the user of this payment                     |
-| `results.gateway_transaction_id`  | Yes            | The gateway transaction reference associated to this payment      |
-| `results.status`                  | Yes            | The current external status of the payment                        |
-| `results.created_date`            | Yes            | The created date in ISO_8601 format (```yyyy-MM-ddTHH:mm:ssZ```)  |
-| `results.refund_summary.status`   | Yes            | The refund status of this payment                                 |
-| `results.refund_summary.amount_available`| Yes     | The amount available for refunds for this payment                 |
-| `results.refund_summary.amount_submitted`| Yes     | The total refund amount submitted for this payment                |
-| `results._links.self`             | Yes            | Link to the payment                                               |
-| `results._links.events`           | Yes            | Link to payment events                                            |
-| `results._links.refunds`          | Yes            | Link to payment refunds                                           |
-| `results._links.cancel`           | No             | Link to cancel the payment (link only available when a payment can be cancelled (i.e. payment has one of the statuses - CREATED, IN PROGRESS |
+| `results[i].payment_id`              | Yes            | The unique identifier for this payment                            |
+| `results[i].amount`                  | Yes            | The amount of this payment in pence                               |
+| `results[i].card_brand`              | Yes            | The card brand used for this payment                              |
+| `results[i].description`             | Yes            | The payment description                                           |
+| `results[i].reference`               | Yes            | There reference issued by the government service for this payment |
+| `results[i].email`                   | Yes            | The email address of the user of this payment                     |
+| `results[i].gateway_transaction_id`  | Yes            | The gateway transaction reference associated to this payment      |
+| `results[i].status`                  | Yes            | The current external status of the payment                        |
+| `results[i].created_date`            | Yes            | The created date in ISO_8601 format (```yyyy-MM-ddTHH:mm:ssZ```)  |
+| `results[i].refund_summary.status`   | Yes            | The refund status of this payment                                 |
+| `results[i].refund_summary.amount_available`| Yes     | The amount available for refunds for this payment                 |
+| `results[i].refund_summary.amount_submitted`| Yes     | The total refund amount submitted for this payment                |
+| `results[i].card_details.card_brand` | No             | The card brand used for this payment                              |
+| `results[i].card_details.cardholder_name` | No        | The card card holder name of this payment                         |
+| `results[i].card_details.expiry_date` | No            | The expiry date of this card                                      |
+| `results[i].card_details.last_digits_card_number` | No| The last 4 digits of this card                                    |
+| `results[i].card_details.billing_address.line1` | No  | The line 1 of the billing address                                 |
+| `results[i].card_details.billing_address.line2` | No  | The line 2 of the billing address                                 |
+| `results[i].card_details.billing_address.postcode` | No| The postcode of the billing address                              |
+| `results[i].card_details.billing_address.city` | No   | The city of the billing address                                   |
+| `results[i].card_details.billing_address.county` | No | The county of the billing address                                 |
+| `results[i].card_details.billing_address.country` | No| The country of the billing address                                |
+| `results[i]._links.self`             | Yes            | Link to the payment                                               |
+| `results[i]._links.events`           | Yes            | Link to payment events                                            |
+| `results[i]._links.refunds`          | Yes            | Link to payment refunds                                           |
+| `results[i]._links.cancel`           | No             | Link to cancel the payment (link only available when a payment can be cancelled (i.e. payment has one of the statuses - CREATED, IN PROGRESS |
 | `_links.self.href`                | Yes            | Href link of the current page                                     |
 | `_links.next_page.href`           | No             | Href link of the next page (based on the display_size requested)  |
 | `_links.prev_page.href`           | No             | Href link of the previous page (based on the display_size requested) |

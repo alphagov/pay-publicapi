@@ -28,6 +28,44 @@ public class PaymentSearchResultBuilder {
     public static final String DEFAULT_CARD_BRAND = "master-card";
     public static final String DEFAULT_CARD_BRAND_LABEL = "Mastercard";
 
+    private static class Address {
+        public String line1;
+        public String line2;
+        public String postcode;
+        public String city;
+        public String county;
+        public String country;
+
+        public Address() {
+        }
+
+        public Address(uk.gov.pay.api.model.Address billingAddress) {
+            this.line1 = billingAddress.getLine1();
+            this.line2 = billingAddress.getLine2();
+            this.postcode = billingAddress.getPostcode();
+            this.county = billingAddress.getCounty();
+            this.city = billingAddress.getCity();
+            this.country = billingAddress.getCountry();
+        }
+    }
+
+    private static class CardDetails {
+        public String last_digits_card_number;
+        public String cardholder_name;
+        public String expiry_date;
+        public Address billing_address;
+        public String card_brand;
+
+        public CardDetails(){}
+
+        public CardDetails(uk.gov.pay.api.model.CardDetails cardDetails) {
+            this.last_digits_card_number = cardDetails.getLastDigitsCardNumber();
+            this.cardholder_name = cardDetails.getCardHolderName();
+            this.expiry_date = cardDetails.getExpiryDate();
+            this.card_brand = cardDetails.getCardBrand();
+            this.billing_address =  new Address(cardDetails.getBillingAddress());
+        }
+    }
 
     private static class RefundSummary {
         public String status;
@@ -41,6 +79,7 @@ public class PaymentSearchResultBuilder {
         public int amount;
         public String gateway_transaction_id, return_url, payment_provider, card_brand;
         public RefundSummary refund_summary = new RefundSummary();
+        public CardDetails card_details = new CardDetails();
     }
 
     private static class TestPaymentState {
@@ -81,21 +120,26 @@ public class PaymentSearchResultBuilder {
         states.add(new TestPaymentState("started", false));
         states.add(new TestPaymentState("submitted", false));
         states.add(new TestPaymentSuccessState("success"));
-    };
+    }
 
     private int noOfResults = DEFAULT_NUMBER_OF_RESULTS;
 
     private String reference = null;
     private String email = null;
     private TestPaymentState state = null;
-    private String cardBrand = null;
     private String fromDate = null;
     private String toDate = null;
+    private CardDetails cardDetails = new CardDetails();
 
     public static PaymentSearchResultBuilder aSuccessfulSearchPayment() {
         return new PaymentSearchResultBuilder();
     }
 
+
+    public PaymentSearchResultBuilder withMatchingCardDetails(uk.gov.pay.api.model.CardDetails cardDetails) {
+        this.cardDetails = new CardDetails(cardDetails);
+        return this;
+    }
 
     public PaymentSearchResultBuilder withMatchingReference(String reference) {
         this.reference = reference;
@@ -117,8 +161,8 @@ public class PaymentSearchResultBuilder {
         return this;
     }
 
-    public PaymentSearchResultBuilder withMatchingCardBrand(String cardBrand){
-        this.cardBrand = cardBrand;
+    public PaymentSearchResultBuilder withMatchingCardBrand(String cardBrand) {
+        this.cardDetails.card_brand = cardBrand;
         return this;
     }
 
@@ -174,8 +218,9 @@ public class PaymentSearchResultBuilder {
             defaultPaymentResult.created_date = DateTimeUtils.toUTCDateString(updatedFromDate);
         }
 
-        if(cardBrand != null){
-            defaultPaymentResult.card_brand = cardBrand;
+        if (cardDetails != null) {
+            defaultPaymentResult.card_details = cardDetails;
+            defaultPaymentResult.card_brand = cardDetails.card_brand;
         }
 
         return defaultPaymentResult;
@@ -196,6 +241,7 @@ public class PaymentSearchResultBuilder {
         payment.return_url = DEFAULT_RETURN_URL;
         payment.payment_provider = DEFAULT_PAYMENT_PROVIDER;
         payment.card_brand = DEFAULT_CARD_BRAND_LABEL;
+        payment.card_details.card_brand=DEFAULT_CARD_BRAND_LABEL;
         payment.refund_summary.status = "available";
         payment.refund_summary.amount_available = 100;
         payment.refund_summary.amount_submitted = 300;
