@@ -9,6 +9,8 @@ import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.api.it.fixtures.PaymentNavigationLinksFixture;
+import uk.gov.pay.api.model.Address;
+import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
@@ -52,6 +54,8 @@ public class ResourcesFiltersITest extends PaymentResourceITestBase {
     private static final String CREATED_DATE = DateTimeUtils.toUTCDateString(TIMESTAMP);
     private static final Map<String, String> PAYMENT_CREATED = new ChargeEventBuilder(STATE, CREATED_DATE).build();
     private static final List<Map<String, String>> EVENTS = Collections.singletonList(PAYMENT_CREATED);
+    private static final Address BILLING_ADDRESS = new Address("line1","line2","NR2 5 6EG","city","county","UK");
+    private static final CardDetails CARD_DETAILS = new CardDetails("1234","Mr. Payment","12/19", BILLING_ADDRESS,"Visa");
 
     private static final String PAYLOAD = paymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE);
     private ExecutorService executor = Executors.newFixedThreadPool(2);
@@ -65,7 +69,7 @@ public class ResourcesFiltersITest extends PaymentResourceITestBase {
     public void createPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
 
         connectorMock.respondOk_whenCreateCharge(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID, STATE,
-                RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CARD_BRAND, CREATED_DATE, REFUND_SUMMARY);
+                RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, REFUND_SUMMARY, CARD_DETAILS);
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> postPaymentResponse(API_KEY, PAYLOAD),
@@ -96,7 +100,7 @@ public class ResourcesFiltersITest extends PaymentResourceITestBase {
     public void getPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
 
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, STATE,
-                RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CARD_BRAND, CREATED_DATE, CHARGE_TOKEN_ID, REFUND_SUMMARY);
+                RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID, REFUND_SUMMARY, CARD_DETAILS);
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> getPaymentResponse(API_KEY, CHARGE_ID),

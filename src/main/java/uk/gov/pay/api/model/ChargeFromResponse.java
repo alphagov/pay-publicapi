@@ -20,21 +20,23 @@ public class ChargeFromResponse {
     @JsonProperty("payment_provider")
     private String paymentProvider;
 
-    @JsonProperty("card_brand")
-    private String cardBrand;
-
     @JsonProperty("links")
     private List<PaymentConnectorResponseLink> links = new ArrayList<>();
 
     @JsonProperty(value = "refund_summary")
     private RefundSummary refundSummary;
 
+    @JsonProperty(value = "card_details")
+    private CardDetails cardDetails;
+
     private Long amount;
     private PaymentState state;
     private String description;
     private String reference;
     private String email;
-    private String created_date;
+
+    @JsonProperty(value = "created_date")
+    private String createdDate;
 
     public String getChargeId() {
         return chargeId;
@@ -68,10 +70,18 @@ public class ChargeFromResponse {
         return paymentProvider;
     }
 
-    public String getCardBrand() { return cardBrand; }
+    /**
+     * card brand is no longer a top level charge property. It is now at `card_details.card_brand` attribute
+     * We still need to support `v1` clients with a top level card brand attribute to keep support their integrations.
+     * @return
+     */
+    @JsonProperty("card_brand")
+    public String getCardBrand() {
+        return cardDetails != null ? cardDetails.getCardBrand() : "";
+    }
 
-    public String getCreated_date() {
-        return created_date;
+    public String getCreatedDate() {
+        return createdDate;
     }
 
     public List<PaymentConnectorResponseLink> getLinks() {
@@ -80,5 +90,9 @@ public class ChargeFromResponse {
 
     public RefundSummary getRefundSummary() {
         return refundSummary;
+    }
+
+    public CardDetails getCardDetails() {
+        return cardDetails;
     }
 }

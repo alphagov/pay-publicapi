@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
-@JsonInclude(value= JsonInclude.Include.NON_NULL)
-public abstract class           Payment {
+@JsonInclude(value = JsonInclude.Include.NON_NULL)
+public abstract class Payment {
     public static final String LINKS_JSON_ATTRIBUTE = "_links";
 
     @JsonProperty("payment_id")
@@ -13,9 +13,6 @@ public abstract class           Payment {
 
     @JsonProperty("payment_provider")
     private final String paymentProvider;
-
-    @JsonProperty("card_brand")
-    private final String cardBrand;
 
     private final long amount;
     private final PaymentState state;
@@ -32,9 +29,12 @@ public abstract class           Payment {
     @JsonProperty("refund_summary")
     private final RefundSummary refundSummary;
 
+    @JsonProperty("card_details")
+    private final CardDetails cardDetails;
+
     public Payment(String chargeId, long amount, PaymentState state, String returnUrl, String description,
-                   String reference, String email, String paymentProvider, String cardBrand,
-                   String createdDate, RefundSummary refundSummary) {
+                   String reference, String email, String paymentProvider, String createdDate,
+                   RefundSummary refundSummary, CardDetails cardDetails) {
         this.paymentId = chargeId;
         this.amount = amount;
         this.state = state;
@@ -43,9 +43,9 @@ public abstract class           Payment {
         this.reference = reference;
         this.email = email;
         this.paymentProvider = paymentProvider;
-        this.cardBrand = cardBrand;
         this.createdDate = createdDate;
         this.refundSummary = refundSummary;
+        this.cardDetails = cardDetails;
     }
 
     @ApiModelProperty(example = "2016-01-21T17:15:00Z")
@@ -93,9 +93,16 @@ public abstract class           Payment {
         return paymentProvider;
     }
 
-    @ApiModelProperty(value = "Card Brand", example = "Visa")
-    public String getCardBrand(){
-        return cardBrand;
+    /**
+     * card brand is no longer a top level charge property. It is now at `card_details.card_brand` attribute
+     * We still need to support `v1` clients with a top level card brand attribute to keep support their integrations.
+     * @return
+     */
+    @ApiModelProperty(value = "Card Brand", example = "Visa", notes = "Deprecated. Please use card_details.card_brand instead")
+    @JsonProperty("card_brand")
+    @Deprecated
+    public String getCardBrand() {
+        return cardDetails != null ? cardDetails.getCardBrand() : null;
     }
 
     @ApiModelProperty(dataType = "uk.gov.pay.api.model.RefundSummary")
@@ -103,12 +110,17 @@ public abstract class           Payment {
         return refundSummary;
     }
 
+    @ApiModelProperty(dataType = "uk.gov.pay.api.model.CardDetails")
+    public CardDetails getCardDetails() {
+        return cardDetails;
+    }
+
     @Override
     public String toString() {
         return "Payment{" +
                 "paymentId='" + paymentId + '\'' +
                 ", paymentProvider='" + paymentProvider + '\'' +
-                ", cardBrandLabel='" + cardBrand + '\'' +
+                ", cardBrandLabel='" + getCardBrand() + '\'' +
                 ", amount=" + amount +
                 ", state='" + state + '\'' +
                 ", returnUrl='" + returnUrl + '\'' +

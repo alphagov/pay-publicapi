@@ -12,9 +12,9 @@ public class PaymentForSearchResult extends Payment {
     private PaymentLinksForSearch links = new PaymentLinksForSearch();
 
     public PaymentForSearchResult(String chargeId, long amount, PaymentState state, String returnUrl, String description,
-                                  String reference, String email, String paymentProvider, String cardBrand, String createdDate,
-                                  RefundSummary refundSummary, URI selfLink, URI paymentEventsLink, URI paymentCancelLink, URI paymentRefundsLink) {
-        super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, cardBrand, createdDate, refundSummary);
+                                  String reference, String email, String paymentProvider, String createdDate,
+                                  RefundSummary refundSummary, CardDetails cardDetails, URI selfLink, URI paymentEventsLink, URI paymentCancelLink, URI paymentRefundsLink) {
+        super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate, refundSummary, cardDetails);
         this.links.addSelf(selfLink.toString());
         this.links.addEvents(paymentEventsLink.toString());
         this.links.addRefunds(paymentRefundsLink.toString());
@@ -40,9 +40,10 @@ public class PaymentForSearchResult extends Payment {
                 paymentResult.getReference(),
                 paymentResult.getEmail(),
                 paymentResult.getPaymentProvider(),
-                paymentResult.getCardBrand(),
-                paymentResult.getCreated_date(),
-                paymentResult.getRefundSummary(), selfLink,
+                paymentResult.getCreatedDate(),
+                paymentResult.getRefundSummary(),
+                paymentResult.getCardDetails(),
+                selfLink,
                 paymentEventsLink,
                 paymentCancelLink,
                 paymentRefundsLink);

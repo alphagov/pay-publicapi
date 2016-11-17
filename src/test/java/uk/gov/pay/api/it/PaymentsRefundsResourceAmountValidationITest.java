@@ -4,6 +4,8 @@ import com.jayway.jsonassert.JsonAssert;
 import com.jayway.restassured.response.ValidatableResponse;
 import org.junit.Before;
 import org.junit.Test;
+import uk.gov.pay.api.model.Address;
+import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.RefundSummary;
 
 import java.io.IOException;
@@ -18,6 +20,8 @@ import static org.hamcrest.core.Is.is;
 public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourceITestBase {
 
     private static final int REFUND_AMOUNT_AVAILABLE = 9000;
+    private static final Address BILLING_ADDRESS = new Address("line1","line2","NR2 5 6EG","city","county","UK");
+    private static final CardDetails CARD_DETAILS = new CardDetails("1234","Mr. Payment","12/19", BILLING_ADDRESS,"Visa");
 
     @Before
     public void setUpBearerToken() {
@@ -265,8 +269,8 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
         int amount = 1000;
         String externalChargeId = "charge_12345";
 
-        connectorMock.respondWithChargeFound(amount, GATEWAY_ACCOUNT_ID, externalChargeId, null, null, null, null, null, null, null, null, null,
-                new RefundSummary("available", REFUND_AMOUNT_AVAILABLE, 1000));
+        connectorMock.respondWithChargeFound(amount, GATEWAY_ACCOUNT_ID, externalChargeId, null, null, null, null, null, null, null, null,
+                new RefundSummary("available", REFUND_AMOUNT_AVAILABLE, 1000), CARD_DETAILS);
         connectorMock.respondBadRequest_whenCreateARefund("full", amount, REFUND_AMOUNT_AVAILABLE, GATEWAY_ACCOUNT_ID, externalChargeId);
 
         String refundRequest = "{\"amount\":" + amount + "}";
@@ -289,8 +293,8 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
         int amount = 1000;
         String externalChargeId = "charge_12345";
 
-        connectorMock.respondWithChargeFound(amount, GATEWAY_ACCOUNT_ID, externalChargeId, null, null, null, null, null, null, null, null, null,
-                new RefundSummary("available", REFUND_AMOUNT_AVAILABLE, 1000));
+        connectorMock.respondWithChargeFound(amount, GATEWAY_ACCOUNT_ID, externalChargeId, null, null, null, null, null, null, null, null,
+                new RefundSummary("available", REFUND_AMOUNT_AVAILABLE, 1000), CARD_DETAILS);
         connectorMock.respondBadRequest_whenCreateARefund("pending", amount, REFUND_AMOUNT_AVAILABLE, GATEWAY_ACCOUNT_ID, externalChargeId);
 
         String refundRequest = "{\"amount\":" + amount + "}";
