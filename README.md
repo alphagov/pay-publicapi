@@ -326,7 +326,6 @@ Content-Type: application/json
     	   "line2":"line2",
     	   "postcode":"AB2 DEF",
     	   "city":"city",
-    	   "county":"county",
     	   "country":"UK"
     	}
     },
@@ -884,7 +883,6 @@ GET /v1/payments
       	   "line2":"line2",
       	   "postcode":"ABC2 DEF",
       	   "city":"city",
-      	   "county":"county",
       	   "country":"UK"
       	}
       },
@@ -936,7 +934,6 @@ GET /v1/payments
       	   "line2":"line2",
       	   "postcode":"IJK3 LMN",
       	   "city":"city",
-      	   "county":"county",
       	   "country":"UK"
       	}
       },
@@ -1012,7 +1009,6 @@ GET /v1/payments
 | `results[i].card_details.billing_address.line2` | No  | The line 2 of the billing address                                 |
 | `results[i].card_details.billing_address.postcode` | No| The postcode of the billing address                              |
 | `results[i].card_details.billing_address.city` | No   | The city of the billing address                                   |
-| `results[i].card_details.billing_address.county` | No | The county of the billing address                                 |
 | `results[i].card_details.billing_address.country` | No| The country of the billing address                                |
 | `results[i]._links.self`             | Yes            | Link to the payment                                               |
 | `results[i]._links.events`           | Yes            | Link to payment events                                            |

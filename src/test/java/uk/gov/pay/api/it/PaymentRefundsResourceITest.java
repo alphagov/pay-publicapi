@@ -32,7 +32,7 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
     private static final String REFUND_ID = "111999";
     private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
     private static final String CREATED_DATE = DateTimeUtils.toUTCDateString(TIMESTAMP);
-    private static final Address BILLING_ADDRESS = new Address("line1","line2","NR2 5 6EG","city","county","UK");
+    private static final Address BILLING_ADDRESS = new Address("line1","line2","NR2 5 6EG","city","UK");
     private static final CardDetails CARD_DETAILS = new CardDetails("1234","Mr. Payment","12/19", BILLING_ADDRESS,"Visa");
 
     @Test

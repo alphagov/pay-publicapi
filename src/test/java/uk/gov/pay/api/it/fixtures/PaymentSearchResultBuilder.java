@@ -33,7 +33,6 @@ public class PaymentSearchResultBuilder {
         public String line2;
         public String postcode;
         public String city;
-        public String county;
         public String country;
 
         public Address() {
@@ -43,7 +42,6 @@ public class PaymentSearchResultBuilder {
             this.line1 = billingAddress.getLine1();
             this.line2 = billingAddress.getLine2();
             this.postcode = billingAddress.getPostcode();
-            this.county = billingAddress.getCounty();
             this.city = billingAddress.getCity();
             this.country = billingAddress.getCountry();
         }

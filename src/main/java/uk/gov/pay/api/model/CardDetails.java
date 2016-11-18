@@ -3,6 +3,7 @@ package uk.gov.pay.api.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.ALWAYS;
 
@@ -37,14 +38,17 @@ public class CardDetails {
         this.cardBrand = cardBrand;
     }
 
+    @ApiModelProperty(example = "1234")
     public String getLastDigitsCardNumber() {
         return lastDigitsCardNumber;
     }
 
+    @ApiModelProperty(example = "Mr. Card holder")
     public String getCardHolderName() {
         return cardHolderName;
     }
 
+    @ApiModelProperty(example = "12/20")
     public String getExpiryDate() {
         return expiryDate;
     }
@@ -53,6 +57,7 @@ public class CardDetails {
         return billingAddress;
     }
 
+    @ApiModelProperty(example = "Visa")
     public String getCardBrand() {
         return cardBrand;
     }

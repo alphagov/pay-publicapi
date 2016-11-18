@@ -386,26 +386,27 @@
       "properties" : {
         "line1" : {
           "type" : "string",
+          "example" : "address line 1",
           "readOnly" : true
         },
         "line2" : {
           "type" : "string",
+          "example" : "address line 2",
           "readOnly" : true
         },
         "postcode" : {
           "type" : "string",
+          "example" : "AB1 2CD",
           "readOnly" : true
         },
         "city" : {
           "type" : "string",
-          "readOnly" : true
-        },
-        "county" : {
-          "type" : "string",
+          "example" : "address city",
           "readOnly" : true
         },
         "country" : {
           "type" : "string",
+          "example" : "UK",
           "readOnly" : true
         }
       },
@@ -515,14 +516,17 @@
       "properties" : {
         "last_digits_card_number" : {
           "type" : "string",
+          "example" : "1234",
           "readOnly" : true
         },
         "cardholder_name" : {
           "type" : "string",
+          "example" : "Mr. Card holder",
           "readOnly" : true
         },
         "expiry_date" : {
           "type" : "string",
+          "example" : "12/20",
           "readOnly" : true
         },
         "billing_address" : {
@@ -531,6 +535,7 @@
         },
         "card_brand" : {
           "type" : "string",
+          "example" : "Visa",
           "readOnly" : true
         }
       },

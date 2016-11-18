@@ -37,7 +37,6 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     private static final PaymentState CAPTURED = new PaymentState("captured", false, null, null);
     private static final RefundSummary REFUND_SUMMARY = new RefundSummary("pending", 100L, 50L);
     private static final String PAYMENT_PROVIDER = "Sandbox";
-    private static final String CARD_BRAND = "master-card";
     private static final String CARD_BRAND_LABEL = "Mastercard";
     private static final String RETURN_URL = "http://somewhere.gov.uk/rainbow/1";
     private static final String REFERENCE = "Some reference <script> alert('This is a ?{simple} XSS attack.')</script>";
@@ -47,7 +46,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     private static final String CREATED_DATE = DateTimeUtils.toUTCDateString(TIMESTAMP);
     private static final Map<String, String> PAYMENT_CREATED = new ChargeEventBuilder(STATE, CREATED_DATE).build();
     private static final List<Map<String, String>> EVENTS = Collections.singletonList(PAYMENT_CREATED);
-    private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "county", "UK");
+    private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
     private static final CardDetails CARD_DETAILS = new CardDetails("1234", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL);
     private static final String SUCCESS_PAYLOAD = paymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL);
 
@@ -231,7 +230,6 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .body("card_details.billing_address.line1", is(CARD_DETAILS.getBillingAddress().getLine1()))
                 .body("card_details.billing_address.line2", is(CARD_DETAILS.getBillingAddress().getLine2()))
                 .body("card_details.billing_address.postcode", is(CARD_DETAILS.getBillingAddress().getPostcode()))
-                .body("card_details.billing_address.county", is(CARD_DETAILS.getBillingAddress().getCounty()))
                 .body("card_details.billing_address.country", is(CARD_DETAILS.getBillingAddress().getCountry()))
                 .body("_links.self.href", is(paymentLocationFor(CHARGE_ID)))
                 .body("_links.self.method", is("GET"))
