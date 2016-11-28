@@ -1,5 +1,8 @@
 package uk.gov.pay.api.app;
 
+import com.codahale.metrics.graphite.GraphiteReporter;
+import com.codahale.metrics.graphite.GraphiteSender;
+import com.codahale.metrics.graphite.GraphiteUDP;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -32,6 +35,7 @@ import uk.gov.pay.api.validation.PaymentRequestValidator;
 import uk.gov.pay.api.validation.URLValidator;
 
 import javax.ws.rs.client.Client;
+import java.util.concurrent.TimeUnit;
 
 import static java.util.EnumSet.of;
 import static javax.servlet.DispatcherType.REQUEST;
@@ -40,6 +44,8 @@ import static uk.gov.pay.api.validation.URLValidator.urlValidatorValueOf;
 
 public class PublicApi extends Application<PublicApiConfig> {
 
+    private static final String SERVICE_METRICS_NODE = "publicapi";
+    private static final int GRAPHITE_SENDING_PERIOD_SECONDS = 10;
     @Override
     public void initialize(Bootstrap<PublicApiConfig> bootstrap) {
         bootstrap.setConfigurationSourceProvider(
@@ -77,6 +83,8 @@ public class PublicApi extends Application<PublicApiConfig> {
         environment.jersey().register(AuthFactory.binder(new OAuthFactory<>(new AccountAuthenticator(client, config.getPublicAuthUrl()), "", String.class)));
 
         attachExceptionMappersTo(environment.jersey());
+
+        initialiseMetrics(config, environment);
     }
 
     private void attachExceptionMappersTo(JerseyEnvironment jersey) {
@@ -91,7 +99,13 @@ public class PublicApi extends Application<PublicApiConfig> {
         jersey.register(GetRefundExceptionMapper.class);
         jersey.register(GetRefundsExceptionMapper.class);
     }
-
+    private void initialiseMetrics(PublicApiConfig configuration, Environment environment) {
+        GraphiteSender graphiteUDP = new GraphiteUDP(configuration.getGraphiteHost(), Integer.valueOf(configuration.getGraphitePort()));
+        GraphiteReporter.forRegistry(environment.metrics())
+                .prefixedWith(SERVICE_METRICS_NODE)
+                .build(graphiteUDP)
+                .start(GRAPHITE_SENDING_PERIOD_SECONDS, TimeUnit.SECONDS);
+    }
     private void configureObjectMapper(PublicApiConfig config, ObjectMapper objectMapper) {
 
         URLValidator urlValidator = urlValidatorValueOf(config.getRestClientConfig().isDisabledSecureConnection());
