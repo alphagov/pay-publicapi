@@ -19,6 +19,10 @@ baseUrl: http://publicapi.url/
 connectorUrl: http://connector.url/
 publicAuthUrl: http://publicauth.url/v1/auth
 
+
+graphiteHost: ${METRICS_HOST:-localhost}
+graphitePort: ${METRICS_PORT:-8092}
+
 jerseyClientConfig:
   disabledSecureConnection: "true"
 

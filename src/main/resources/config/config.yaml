@@ -19,6 +19,9 @@ baseUrl: ${PUBLICAPI_BASE}
 connectorUrl: ${CONNECTOR_URL}
 publicAuthUrl: ${PUBLIC_AUTH_URL}
 
+graphiteHost: ${METRICS_HOST:-localhost}
+graphitePort: ${METRICS_PORT:-8092}
+
 jerseyClientConfig:
   disabledSecureConnection: ${DISABLE_INTERNAL_HTTPS}
 

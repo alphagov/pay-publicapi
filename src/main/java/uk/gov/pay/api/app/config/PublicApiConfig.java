@@ -13,7 +13,10 @@ public class PublicApiConfig extends Configuration {
     private String connectorUrl;
     @NotNull
     private String publicAuthUrl;
-
+    @NotNull
+    private String graphiteHost;
+    @NotNull
+    private String graphitePort;
     @Valid
     @NotNull
     @JsonProperty("jerseyClientConfig")
@@ -48,5 +51,12 @@ public class PublicApiConfig extends Configuration {
 
     public String getApiKeyHmacSecret(){
         return apiKeyHmacSecret;
+    }
+    public String getGraphiteHost() {
+        return graphiteHost;
+    }
+
+    public String getGraphitePort() {
+        return graphitePort;
     }
 }
