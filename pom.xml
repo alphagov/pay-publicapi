@@ -8,7 +8,7 @@
     <properties>
         <dropwizard.version>0.8.1</dropwizard.version>
         <mockserver.version>3.9.17</mockserver.version>
-        <swagger.jersey2.version>1.5.4</swagger.jersey2.version>
+        <swagger.jersey2.version>1.5.10</swagger.jersey2.version>
         <jersey2.version>2.17</jersey2.version>
         <hamcrest.version>1.3</hamcrest.version>
     </properties>
