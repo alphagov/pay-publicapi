@@ -134,7 +134,7 @@ public class PaymentRefundsResource {
                     "The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
             code = 202)
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "ACCEPTED"),
+            @ApiResponse(code = 202, message = "ACCEPTED"),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
             @ApiResponse(code = 412, message = "Refund amount available mismatch"),

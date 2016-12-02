@@ -315,7 +315,7 @@
           }
         } ],
         "responses" : {
-          "201" : {
+          "202" : {
             "description" : "ACCEPTED"
           },
           "401" : {
@@ -419,19 +419,19 @@
         "amount" : {
           "type" : "integer",
           "format" : "int32",
-          "example" : "150000",
+          "example" : 150000,
           "description" : "Amount in pence. Can't be more than the available amount for refunds",
-          "minimum" : 1.0,
-          "maximum" : 1.0E7
+          "minimum" : 1,
+          "maximum" : 10000000
         },
         "refund_amount_available" : {
           "type" : "integer",
           "format" : "int32",
-          "example" : "200000",
+          "example" : 200000,
           "description" : "Amount in pence. Total amount still available before issuing the refund",
           "readOnly" : true,
-          "minimum" : 1.0,
-          "maximum" : 1.0E7
+          "minimum" : 1,
+          "maximum" : 10000000
         }
       },
       "description" : "The Payment Refund Request Payload"
@@ -443,10 +443,10 @@
         "amount" : {
           "type" : "integer",
           "format" : "int32",
-          "example" : "12000",
+          "example" : 12000,
           "description" : "amount in pence",
-          "minimum" : 1.0,
-          "maximum" : 1.0E7
+          "minimum" : 1,
+          "maximum" : 10000000
         },
         "reference" : {
           "type" : "string",
@@ -598,7 +598,7 @@
         "amount" : {
           "type" : "integer",
           "format" : "int64",
-          "example" : "1200"
+          "example" : 1200
         },
         "state" : {
           "$ref" : "#/definitions/Payment state"
@@ -673,7 +673,7 @@
         "amount" : {
           "type" : "integer",
           "format" : "int64",
-          "example" : "1200"
+          "example" : 1200
         },
         "state" : {
           "$ref" : "#/definitions/Payment state"
