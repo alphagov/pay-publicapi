@@ -979,7 +979,8 @@ GET /v1/payments
       "href": "https://publicapi.pymnt.localdomain/v1/payments?page=1&display_size=2"
     }
   }
-}```
+}
+```
 
 ##### Response field description
 
@@ -1019,7 +1020,7 @@ GET /v1/payments
 | `_links.prev_page.href`           | No             | Href link of the previous page (based on the display_size requested) |
 | `_links.first_page.href`          | Yes            | Href link of the first page (based on the display_size requested) |
 | `_links.last_page.href`           | Yes            | Href link of the last page (based on the display_size requested)  |
-```
+
 
 #### Search payments response errors
 
