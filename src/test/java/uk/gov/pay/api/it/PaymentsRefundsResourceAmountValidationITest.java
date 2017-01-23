@@ -270,7 +270,7 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
         String externalChargeId = "charge_12345";
 
         connectorMock.respondWithChargeFound(amount, GATEWAY_ACCOUNT_ID, externalChargeId, null, null, null, null, null, null, null, null,
-                new RefundSummary("available", REFUND_AMOUNT_AVAILABLE, 1000), CARD_DETAILS);
+                new RefundSummary("available", REFUND_AMOUNT_AVAILABLE, 1000), null, CARD_DETAILS);
         connectorMock.respondBadRequest_whenCreateARefund("full", amount, REFUND_AMOUNT_AVAILABLE, GATEWAY_ACCOUNT_ID, externalChargeId);
 
         String refundRequest = "{\"amount\":" + amount + "}";
@@ -294,7 +294,7 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
         String externalChargeId = "charge_12345";
 
         connectorMock.respondWithChargeFound(amount, GATEWAY_ACCOUNT_ID, externalChargeId, null, null, null, null, null, null, null, null,
-                new RefundSummary("available", REFUND_AMOUNT_AVAILABLE, 1000), CARD_DETAILS);
+                new RefundSummary("available", REFUND_AMOUNT_AVAILABLE, 1000), null, CARD_DETAILS);
         connectorMock.respondBadRequest_whenCreateARefund("pending", amount, REFUND_AMOUNT_AVAILABLE, GATEWAY_ACCOUNT_ID, externalChargeId);
 
         String refundRequest = "{\"amount\":" + amount + "}";

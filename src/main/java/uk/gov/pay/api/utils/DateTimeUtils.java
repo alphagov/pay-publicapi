@@ -1,6 +1,7 @@
 package uk.gov.pay.api.utils;
 
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -10,6 +11,7 @@ public class DateTimeUtils {
     private static final ZoneId UTC = ZoneId.of("Z");
     private static DateTimeFormatter dateTimeFormatterUTC = DateTimeFormatter.ISO_INSTANT.withZone(UTC);
     private static DateTimeFormatter dateTimeFormatterAny = DateTimeFormatter.ISO_ZONED_DATE_TIME;
+    private static DateTimeFormatter localDateFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
 
     /**
      * Converts any valid ZonedDateTime String (ISO_8601) representation to a UTC ZonedDateTime
@@ -47,5 +49,20 @@ public class DateTimeUtils {
      */
     public static String toUTCDateString(ZonedDateTime dateTime) {
         return dateTime.format(dateTimeFormatterUTC);
+    }
+
+    /**
+     * Converts a LocalDateTime to a UTC ISO_8601 string representation
+     * <p>
+     * e.g. <br/>
+     * 1. LocalDateTime("2010-01-01") ==> "2010-12-01" <br/>
+     * 2. LocalDateTime("2010-12-31") ==> "2010-12-31" <br/>
+     * </p>
+     *
+     * @param zonedDateTime
+     * @return UTC ISO_8601 date string
+     */
+    public static String toLocalDateString(ZonedDateTime zonedDateTime) {
+        return zonedDateTime.withZoneSameInstant(ZoneOffset.UTC).toLocalDate().format(localDateFormatter);
     }
 }

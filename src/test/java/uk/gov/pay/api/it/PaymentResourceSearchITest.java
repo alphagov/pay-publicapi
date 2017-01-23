@@ -93,6 +93,8 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .body("results[0].refund_summary.status", is("available"))
                 .body("results[0].refund_summary.amount_available", is(100))
                 .body("results[0].refund_summary.amount_submitted", is(300))
+                .body("results[0].settlement_summary.capture_submit_time", is(DEFAULT_CAPTURE_SUBMIT_TIME))
+                .body("results[0].settlement_summary.captured_date", is(DEFAULT_CAPTURED_DATE))
                 .body("results[0].card_details.card_brand", is(TEST_CARD_BRAND_LABEL))
                 .body("results[0].card_details.cardholder_name", is(CARD_DETAILS.getCardHolderName()))
                 .body("results[0].card_details.expiry_date", is(CARD_DETAILS.getExpiryDate()))

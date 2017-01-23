@@ -22,6 +22,14 @@ public class DateTimeUtilsTest {
     }
 
     @Test
+    public void shouldConvertUTCZonedDateTimeToLocalDateString() throws Exception {
+        ZonedDateTime localDateTime = ZonedDateTime.of(2010, 11, 13, 12, 0, 0, 0, ZoneId.of("Z"));
+
+        String dateString = DateTimeUtils.toLocalDateString(localDateTime);
+        assertThat(dateString, is("2010-11-13"));
+    }
+
+    @Test
     public void shouldConvertNonUTCZonedDateTimeToAISO_8601_UTCString() throws Exception {
         ZonedDateTime localDateTime = ZonedDateTime.of(2010, 11, 13, 12, 0, 0, 0, ZoneId.of("Europe/Paris"));
 

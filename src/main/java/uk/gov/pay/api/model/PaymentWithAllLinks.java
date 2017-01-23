@@ -14,9 +14,9 @@ public class PaymentWithAllLinks extends Payment {
 
     private PaymentWithAllLinks(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                                 String reference, String email, String paymentProvider, String createdDate,
-                                RefundSummary refundSummary, CardDetails cardDetails, List<PaymentConnectorResponseLink> paymentConnectorResponseLinks,
+                                RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails, List<PaymentConnectorResponseLink> paymentConnectorResponseLinks,
                                 URI selfLink, URI paymentEventsUri, URI paymentCancelUri, URI paymentRefundsUri) {
-        super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate, refundSummary, cardDetails);
+        super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate, refundSummary, settlementSummary, cardDetails);
         this.links.addSelf(selfLink.toString());
         this.links.addKnownLinksValueOf(paymentConnectorResponseLinks);
         this.links.addEvents(paymentEventsUri.toString());
@@ -43,6 +43,7 @@ public class PaymentWithAllLinks extends Payment {
                 paymentConnector.getPaymentProvider(),
                 paymentConnector.getCreatedDate(),
                 paymentConnector.getRefundSummary(),
+                paymentConnector.getSettlementSummary(),
                 paymentConnector.getCardDetails(),
                 paymentConnector.getLinks(),
                 selfLink,

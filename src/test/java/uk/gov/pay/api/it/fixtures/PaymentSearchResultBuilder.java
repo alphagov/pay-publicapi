@@ -21,6 +21,8 @@ public class PaymentSearchResultBuilder {
     private static final int DEFAULT_NUMBER_OF_RESULTS = 3;
 
     public static final String DEFAULT_CREATED_DATE = DateTimeUtils.toUTCDateString(ZonedDateTime.now());
+    public static final String DEFAULT_CAPTURE_SUBMIT_TIME = DateTimeUtils.toUTCDateString(ZonedDateTime.now());
+    public static final String DEFAULT_CAPTURED_DATE = DateTimeUtils.toLocalDateString(ZonedDateTime.now());
     public static final String DEFAULT_RETURN_URL = "http://example.com/service";
     public static final int DEFAULT_AMOUNT = 10000;
     public static final String DEFAULT_EMAIL = "alice.111@mail.fake";
@@ -70,13 +72,17 @@ public class PaymentSearchResultBuilder {
         public long amount_available;
         public long amount_submitted;
     }
-
+    private static class SettlementSummary {
+        public String capture_submit_time;
+        public String captured_date;
+    }
     private static class TestPayment {
         public TestPaymentState state;
         public String charge_id, description, reference, email, created_date;
         public int amount;
         public String gateway_transaction_id, return_url, payment_provider, card_brand;
         public RefundSummary refund_summary = new RefundSummary();
+        public SettlementSummary settlement_summary = new SettlementSummary();
         public CardDetails card_details = new CardDetails();
     }
 
@@ -243,6 +249,8 @@ public class PaymentSearchResultBuilder {
         payment.refund_summary.status = "available";
         payment.refund_summary.amount_available = 100;
         payment.refund_summary.amount_submitted = 300;
+        payment.settlement_summary.capture_submit_time = DEFAULT_CAPTURE_SUBMIT_TIME;
+        payment.settlement_summary.captured_date = DEFAULT_CAPTURED_DATE;
 
         return payment;
     }

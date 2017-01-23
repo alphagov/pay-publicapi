@@ -157,7 +157,7 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
         String payload = new GsonBuilder().create().toJson(
                 ImmutableMap.of("amount", AMOUNT));
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, null, null, null, null, null, null, null, null,
-                new RefundSummary("available", 9000, 1000), CARD_DETAILS);
+                new RefundSummary("available", 9000, 1000), null, CARD_DETAILS);
 
         postRefundRequest(payload);
     }

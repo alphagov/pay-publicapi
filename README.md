@@ -150,6 +150,10 @@ Content-Type: application/json
         "amount_available": 14500
         "amount_submitted": 0
     }
+    "settlement_summary": {
+        "captured_date": "2016-01-15",
+        "capture_submit_time": "2016-01-15T16:30:56Z" 
+    }
 }
 ```
 
@@ -169,6 +173,8 @@ Content-Type: application/json
 | `refund_summary.status`| Refund availability status of the payment                                                |
 | `refund_summary.amount_available`| Amount available for refunds                                                   |
 | `refund_summary.amount_submitted`| Total amount of refunds submitted for this payment                             |
+| `settlement_summary.captured_date`| Date of the capture according to the payment gateway                          |
+| `settlement_summary.capture_submit_time`| Date and time of submission of the capture request, if present          |
 | `created_date`         | The payment creation date for this payment                                               |
 | `_links.self`          | Link to the payment                                                                      |
 | `_links.next_url`      | Where to navigate the user next as a GET                                                 |
@@ -333,6 +339,10 @@ Content-Type: application/json
         "status": "available"
         "amount_available": 14500
         "amount_submitted": 0
+    },
+    "settlement_summary": {
+        "captured_date": "2016-01-15",
+        "capture_submit_time": "2016-01-15T16:30:56Z" 
     }
 }
 ```
@@ -890,7 +900,11 @@ GET /v1/payments
          "status": "pending"
          "amount_available": 1
          "amount_submitted": 0
-      }
+      },
+      "settlement_summary": {
+          "captured_date": "2016-01-15",
+          "capture_submit_time": "2016-01-15T16:30:56Z" 
+      },
       "_links": {
         "self": {
           "href": "https://publicapi.pymnt.localdomain/v1/payments/4hn0c8bbtfbnp5tmite2274h5c",
@@ -941,7 +955,11 @@ GET /v1/payments
          "status": "pending"
          "amount_available": 1
          "amount_submitted": 0
-      }
+      },
+      "settlement_summary": {
+         "captured_date": "2016-01-15",
+         "capture_submit_time": "2016-01-15T16:30:56Z" 
+        },
       "_links": {
         "self": {
           "href": "https://publicapi.pymnt.localdomain/v1/payments/am6f5d1583563deb7ss5obju2",
@@ -1002,6 +1020,8 @@ GET /v1/payments
 | `results[i].refund_summary.status`   | Yes            | The refund status of this payment                                 |
 | `results[i].refund_summary.amount_available`| Yes     | The amount available for refunds for this payment                 |
 | `results[i].refund_summary.amount_submitted`| Yes     | The total refund amount submitted for this payment                |
+| `results[i].settlement_summary.captured_date`| No | Date of the capture according to the payment gateway                  |
+| `results[i].settlement_summary.capture_submit_time`| No | Date and time of submission of the capture request              |
 | `results[i].card_details.card_brand` | No             | The card brand used for this payment                              |
 | `results[i].card_details.cardholder_name` | No        | The card card holder name of this payment                         |
 | `results[i].card_details.expiry_date` | No            | The expiry date of this card                                      |

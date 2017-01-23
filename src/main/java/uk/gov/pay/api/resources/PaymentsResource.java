@@ -103,7 +103,7 @@ public class PaymentsResource {
 
         logger.info("Payment request - paymentId={}", paymentId);
         Response connectorResponse = client
-                .target(getConnectorUlr(format(CONNECTOR_CHARGE_RESOURCE, accountId, paymentId)))
+                .target(getConnectorUrl(format(CONNECTOR_CHARGE_RESOURCE, accountId, paymentId)))
                 .request()
                 .get();
 
@@ -144,7 +144,7 @@ public class PaymentsResource {
         logger.info("Payment events request - payment_id={}", paymentId);
 
         Response connectorResponse = client
-                .target(getConnectorUlr(format(CONNECTOR_CHARGE_EVENTS_RESOURCE, accountId, paymentId)))
+                .target(getConnectorUrl(format(CONNECTOR_CHARGE_EVENTS_RESOURCE, accountId, paymentId)))
                 .request()
                 .get();
 
@@ -224,7 +224,7 @@ public class PaymentsResource {
                 Pair.of(DISPLAY_SIZE, displaySize)
         );
         Response connectorResponse = client
-                .target(getConnectorUlr(format(CONNECTOR_CHARGES_RESOURCE, accountId), queryParams))
+                .target(getConnectorUrl(format(CONNECTOR_CHARGES_RESOURCE, accountId), queryParams))
                 .request()
                 .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
                 .get();
@@ -307,7 +307,7 @@ public class PaymentsResource {
         logger.info("Payment create request - [ {} ]", requestPayload);
 
         Response connectorResponse = client
-                .target(getConnectorUlr(format(CONNECTOR_CHARGES_RESOURCE, accountId)))
+                .target(getConnectorUrl(format(CONNECTOR_CHARGES_RESOURCE, accountId)))
                 .request()
                 .post(buildChargeRequestPayload(requestPayload));
 
@@ -353,7 +353,7 @@ public class PaymentsResource {
         logger.info("Payment cancel request - payment_id=[{}]", paymentId);
 
         Response connectorResponse = client
-                .target(getConnectorUlr(format(CONNECTOR_ACCOUNT_CHARGE_CANCEL_RESOURCE, accountId, paymentId)))
+                .target(getConnectorUrl(format(CONNECTOR_ACCOUNT_CHARGE_CANCEL_RESOURCE, accountId, paymentId)))
                 .request()
                 .post(Entity.json("{}"));
 
@@ -389,11 +389,11 @@ public class PaymentsResource {
                 .build(chargeId);
     }
 
-    private String getConnectorUlr(String urlPath) {
-        return getConnectorUlr(urlPath, Collections.emptyList());
+    private String getConnectorUrl(String urlPath) {
+        return getConnectorUrl(urlPath, Collections.emptyList());
     }
 
-    private String getConnectorUlr(String urlPath, List<Pair<String, String>> queryParams) {
+    private String getConnectorUrl(String urlPath, List<Pair<String, String>> queryParams) {
         UriBuilder builder = UriBuilder
                 .fromPath(connectorUrl)
                 .path(urlPath);
