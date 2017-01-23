@@ -29,12 +29,15 @@ public abstract class Payment {
     @JsonProperty("refund_summary")
     private final RefundSummary refundSummary;
 
+    @JsonProperty("settlement_summary")
+    private final SettlementSummary settlementSummary;
+
     @JsonProperty("card_details")
     private final CardDetails cardDetails;
 
     public Payment(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                    String reference, String email, String paymentProvider, String createdDate,
-                   RefundSummary refundSummary, CardDetails cardDetails) {
+                   RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails) {
         this.paymentId = chargeId;
         this.amount = amount;
         this.state = state;
@@ -45,6 +48,7 @@ public abstract class Payment {
         this.paymentProvider = paymentProvider;
         this.createdDate = createdDate;
         this.refundSummary = refundSummary;
+        this.settlementSummary = settlementSummary;
         this.cardDetails = cardDetails;
     }
 
@@ -108,6 +112,11 @@ public abstract class Payment {
     @ApiModelProperty(dataType = "uk.gov.pay.api.model.RefundSummary")
     public RefundSummary getRefundSummary() {
         return refundSummary;
+    }
+
+    @ApiModelProperty(dataType = "uk.gov.pay.api.model.SettlementSummary")
+    public SettlementSummary getSettlementSummary() {
+        return settlementSummary;
     }
 
     @ApiModelProperty(dataType = "uk.gov.pay.api.model.CardDetails")

@@ -3,10 +3,7 @@ package uk.gov.pay.api.it;
 import com.jayway.jsonassert.JsonAssert;
 import com.jayway.restassured.response.ValidatableResponse;
 import org.junit.Test;
-import uk.gov.pay.api.model.Address;
-import uk.gov.pay.api.model.CardDetails;
-import uk.gov.pay.api.model.PaymentState;
-import uk.gov.pay.api.model.RefundSummary;
+import uk.gov.pay.api.model.*;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
@@ -30,10 +27,14 @@ import static org.hamcrest.core.Is.is;
 
 public class PaymentsResourceITest extends PaymentResourceITestBase {
 
+    private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
+    private static final ZonedDateTime CAPTURED_DATE = ZonedDateTime.parse("2016-01-02T14:03:00Z");
+    private static final ZonedDateTime CAPTURE_SUBMIT_TIME = ZonedDateTime.parse("2016-01-02T15:02:00Z");
+    private static final SettlementSummary SETTLEMENT_SUMMARY = new SettlementSummary(DateTimeUtils.toUTCDateString(CAPTURE_SUBMIT_TIME), DateTimeUtils.toLocalDateString(CAPTURED_DATE));
     private static final int AMOUNT = 9999999;
     private static final String CHARGE_ID = "ch_ab2341da231434l";
     private static final String CHARGE_TOKEN_ID = "token_1234567asdf";
-    private static final PaymentState STATE = new PaymentState("created", false, null, null);
+    private static final PaymentState CREATED = new PaymentState("created", false, null, null);
     private static final PaymentState CAPTURED = new PaymentState("captured", false, null, null);
     private static final RefundSummary REFUND_SUMMARY = new RefundSummary("pending", 100L, 50L);
     private static final String PAYMENT_PROVIDER = "Sandbox";
@@ -42,9 +43,8 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     private static final String REFERENCE = "Some reference <script> alert('This is a ?{simple} XSS attack.')</script>";
     private static final String EMAIL = "alice.111@mail.fake";
     private static final String DESCRIPTION = "Some description <script> alert('This is a ?{simple} XSS attack.')</script>";
-    private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
     private static final String CREATED_DATE = DateTimeUtils.toUTCDateString(TIMESTAMP);
-    private static final Map<String, String> PAYMENT_CREATED = new ChargeEventBuilder(STATE, CREATED_DATE).build();
+    private static final Map<String, String> PAYMENT_CREATED = new ChargeEventBuilder(CREATED, CREATED_DATE).build();
     private static final List<Map<String, String>> EVENTS = Collections.singletonList(PAYMENT_CREATED);
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
     private static final CardDetails CARD_DETAILS = new CardDetails("1234", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL);
@@ -56,7 +56,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         connectorMock.respondOk_whenCreateCharge(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID,
-                STATE, RETURN_URL, DESCRIPTION, REFERENCE, null, PAYMENT_PROVIDER, CREATED_DATE, REFUND_SUMMARY, CARD_DETAILS);
+                CREATED, RETURN_URL, DESCRIPTION, REFERENCE, null, PAYMENT_PROVIDER, CREATED_DATE, REFUND_SUMMARY, null, CARD_DETAILS);
 
         String responseBody = postPaymentResponse(API_KEY, SUCCESS_PAYLOAD)
                 .statusCode(201)
@@ -67,7 +67,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .body("reference", is(REFERENCE))
                 .body("email", nullValue())
                 .body("description", is(DESCRIPTION))
-                .body("state.status", is(STATE.getStatus()))
+                .body("state.status", is(CREATED.getStatus()))
                 .body("return_url", is(RETURN_URL))
                 .body("payment_provider", is(PAYMENT_PROVIDER))
                 .body("card_brand", is(CARD_BRAND_LABEL))
@@ -109,7 +109,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
 
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondOk_whenCreateCharge(minimumAmount, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID,
-                STATE, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, REFUND_SUMMARY, CARD_DETAILS);
+                CREATED, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, REFUND_SUMMARY, null, CARD_DETAILS);
 
         postPaymentResponse(API_KEY, paymentPayload(minimumAmount, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL))
                 .statusCode(201)
@@ -137,7 +137,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
 
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondOk_whenCreateCharge(amount, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID,
-                STATE, return_url, description, reference, email, PAYMENT_PROVIDER, CREATED_DATE, REFUND_SUMMARY, CARD_DETAILS);
+                CREATED, return_url, description, reference, email, PAYMENT_PROVIDER, CREATED_DATE, REFUND_SUMMARY, null, CARD_DETAILS);
 
         String body = new JsonStringBuilder()
                 .add("amount", amount)
@@ -206,7 +206,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     public void getPayment_ReturnsPayment() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CAPTURED, RETURN_URL,
-                DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID, REFUND_SUMMARY, CARD_DETAILS);
+                DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID, REFUND_SUMMARY, SETTLEMENT_SUMMARY, CARD_DETAILS);
 
         getPaymentResponse(API_KEY, CHARGE_ID)
                 .statusCode(200)
@@ -224,6 +224,8 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .body("refund_summary.status", is("pending"))
                 .body("refund_summary.amount_submitted", is(50))
                 .body("refund_summary.amount_available", is(100))
+                .body("settlement_summary.capture_submit_time", is(DateTimeUtils.toUTCDateString(CAPTURE_SUBMIT_TIME)))
+                .body("settlement_summary.captured_date", is(DateTimeUtils.toLocalDateString(CAPTURED_DATE)))
                 .body("card_details.card_brand", is(CARD_BRAND_LABEL))
                 .body("card_details.cardholder_name", is(CARD_DETAILS.getCardHolderName()))
                 .body("card_details.expiry_date", is(CARD_DETAILS.getExpiryDate()))
@@ -254,12 +256,25 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID,
                 new PaymentState("success", true, null, null),
-                RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID, REFUND_SUMMARY, CARD_DETAILS);
+                RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID, REFUND_SUMMARY, null, CARD_DETAILS);
 
         getPaymentResponse(API_KEY, CHARGE_ID)
                 .statusCode(200)
                 .contentType(JSON)
                 .body("_links.cancel", is(nullValue()));
+    }
+    @Test
+    public void getPayment_ShouldNotIncludeSettlementFieldsIfNull() {
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID,
+                CREATED, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID, REFUND_SUMMARY, new SettlementSummary(null, null), CARD_DETAILS);
+
+        getPaymentResponse(API_KEY, CHARGE_ID)
+                .statusCode(200)
+                .contentType(JSON)
+                .root("settlement_summary")
+                .body("containsKey('capture_submit_time')", is(false))
+                .body("containsKey('captured_date')", is(false));
     }
 
     @Test
@@ -320,7 +335,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .body("_links.self.href", is(paymentEventsLocationFor(CHARGE_ID)))
                 .body("events", hasSize(1))
                 .body("events[0].payment_id", is(CHARGE_ID))
-                .body("events[0].state.status", is(STATE.getStatus()))
+                .body("events[0].state.status", is(CREATED.getStatus()))
                 .body("events[0].updated", is("2016-01-01T12:00:00Z"))
                 .body("events[0]._links.payment_url.href", is(paymentLocationFor(CHARGE_ID)));
     }

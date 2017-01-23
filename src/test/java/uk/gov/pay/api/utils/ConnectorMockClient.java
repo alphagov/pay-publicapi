@@ -10,6 +10,7 @@ import uk.gov.pay.api.it.fixtures.PaymentRefundJsonFixture;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
+import uk.gov.pay.api.model.SettlementSummary;
 import uk.gov.pay.api.model.links.Link;
 
 import java.util.*;
@@ -64,7 +65,7 @@ public class ConnectorMockClient {
 
     private String buildChargeResponse(long amount, String chargeId, PaymentState state, String returnUrl, String description,
                                        String reference, String email, String paymentProvider, String gatewayTransactionId,
-                                       String createdDate, RefundSummary refundSummary, CardDetails cardDetails, ImmutableMap<?, ?>... links) {
+                                       String createdDate, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails, ImmutableMap<?, ?>... links) {
         JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
                 .add("charge_id", chargeId)
                 .add("amount", amount)
@@ -78,6 +79,7 @@ public class ConnectorMockClient {
                 .add("created_date", createdDate)
                 .add("links", asList(links))
                 .add("refund_summary", refundSummary)
+                .add("settlement_summary", settlementSummary)
                 .add("card_details", cardDetails);
 
         if (gatewayTransactionId != null) {
@@ -144,7 +146,7 @@ public class ConnectorMockClient {
     }
 
     public void respondOk_whenCreateCharge(int amount, String gatewayAccountId, String chargeId, String chargeTokenId, PaymentState state, String returnUrl,
-                                           String description, String reference, String email, String paymentProvider, String createdDate, RefundSummary refundSummary, CardDetails cardDetails) {
+                                           String description, String reference, String email, String paymentProvider, String createdDate, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails) {
 
         whenCreateCharge(amount, gatewayAccountId, returnUrl, description, reference)
                 .respond(response()
@@ -163,6 +165,7 @@ public class ConnectorMockClient {
                                 null,
                                 createdDate,
                                 refundSummary,
+                                settlementSummary,
                                 cardDetails,
                                 validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
                                 validGetLink(nextUrl(chargeTokenId), "next_url"), validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",
@@ -218,10 +221,9 @@ public class ConnectorMockClient {
 
     public void respondWithChargeFound(long amount, String gatewayAccountId, String chargeId, PaymentState state, String returnUrl,
                                        String description, String reference, String email, String paymentProvider, String createdDate,
-                                       String chargeTokenId, RefundSummary refundSummary, CardDetails cardDetails) {
-
+                                       String chargeTokenId, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails) {
         String chargeResponseBody = buildChargeResponse(amount, chargeId, state, returnUrl,
-                description, reference, email, paymentProvider, gatewayAccountId, createdDate, refundSummary, cardDetails,
+                description, reference, email, paymentProvider, gatewayAccountId, createdDate, refundSummary, settlementSummary, cardDetails,
                 validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
                 validGetLink(chargeLocation(gatewayAccountId, chargeId) + "/refunds", "refunds"),
                 validGetLink(nextUrl(chargeId), "next_url"), validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",

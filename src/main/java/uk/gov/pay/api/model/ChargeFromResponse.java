@@ -26,6 +26,9 @@ public class ChargeFromResponse {
     @JsonProperty(value = "refund_summary")
     private RefundSummary refundSummary;
 
+    @JsonProperty(value = "settlement_summary")
+    private SettlementSummary settlementSummary;
+
     @JsonProperty(value = "card_details")
     private CardDetails cardDetails;
 
@@ -90,6 +93,10 @@ public class ChargeFromResponse {
 
     public RefundSummary getRefundSummary() {
         return refundSummary;
+    }
+
+    public SettlementSummary getSettlementSummary() {
+        return settlementSummary;
     }
 
     public CardDetails getCardDetails() {
