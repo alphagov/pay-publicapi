@@ -19,13 +19,13 @@ public class PaymentRequestValidatorTest {
     @Test
     public void validateMinimumAmount_shouldSuccessValue(){
         PaymentRequestValidator paymentRequestValidator = new PaymentRequestValidator(URLValidator.SECURITY_ENABLED);
-        CreatePaymentRequest paymentRequest = new CreatePaymentRequest(1, "https://return.to/return_url", "reference", "description");
+        CreatePaymentRequest paymentRequest = new CreatePaymentRequest(1, "https://return.to/return_url", "reference", "description", null);
     }
 
     @Test
     public void validateMinimumAmount_shouldFailValue() throws Exception{
         PaymentRequestValidator paymentRequestValidator = new PaymentRequestValidator(URLValidator.SECURITY_ENABLED);
-        CreatePaymentRequest paymentRequest = new CreatePaymentRequest(PaymentRequestValidator.AMOUNT_MAX_VALUE + 1, "https://return.to/return_url", "reference", "description");
+        CreatePaymentRequest paymentRequest = new CreatePaymentRequest(PaymentRequestValidator.AMOUNT_MAX_VALUE + 1, "https://return.to/return_url", "reference", "description", null);
         expectedException.expect(ValidationException.class);
         paymentRequestValidator.validate(paymentRequest);
     }
@@ -33,13 +33,13 @@ public class PaymentRequestValidatorTest {
     @Test
     public void validateMaximumAmount_shouldSuccessValue(){
         PaymentRequestValidator paymentRequestValidator = new PaymentRequestValidator(URLValidator.SECURITY_ENABLED);
-        CreatePaymentRequest paymentRequest = new CreatePaymentRequest(100, "https://return.to/return_url", "reference", "description");
+        CreatePaymentRequest paymentRequest = new CreatePaymentRequest(100, "https://return.to/return_url", "reference", "description", null);
     }
 
     @Test
     public void validateMaximumAmount_shouldFailValue() throws Exception{
         PaymentRequestValidator paymentRequestValidator = new PaymentRequestValidator(URLValidator.SECURITY_ENABLED);
-        CreatePaymentRequest paymentRequest = new CreatePaymentRequest(PaymentRequestValidator.AMOUNT_MAX_VALUE + 1, "https://return.to/return_url", "reference", "description");
+        CreatePaymentRequest paymentRequest = new CreatePaymentRequest(PaymentRequestValidator.AMOUNT_MAX_VALUE + 1, "https://return.to/return_url", "reference", "description", null);
         expectedException.expect(ValidationException.class);
         paymentRequestValidator.validate(paymentRequest);
     }

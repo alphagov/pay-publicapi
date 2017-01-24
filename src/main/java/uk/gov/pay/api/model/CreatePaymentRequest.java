@@ -11,17 +11,20 @@ public class CreatePaymentRequest {
     public static final String RETURN_URL_FIELD_NAME="return_url";
     public static final String REFERENCE_FIELD_NAME="reference";
     public static final String DESCRIPTION_FIELD_NAME="description";
+    public static final String DYNAMIC_3D_SECURE_FIELD_NAME="dynamic_3ds";
 
     private int amount;
     private String returnUrl;
     private String reference;
     private String description;
+    private String dynamic3ds;
 
-    public CreatePaymentRequest(int amount, String returnUrl, String reference, String description) {
+    public CreatePaymentRequest(int amount, String returnUrl, String reference, String description, String dynamic3ds) {
         this.amount = amount;
         this.returnUrl = returnUrl;
         this.reference = reference;
         this.description = description;
+        this.dynamic3ds = dynamic3ds;
     }
 
     @ApiModelProperty(value = "service return url", required = true, example = "https://service-name.gov.uk/transactions/12345")
@@ -45,6 +48,11 @@ public class CreatePaymentRequest {
         return description;
     }
 
+    @ApiModelProperty(value = "use dynamic 3DS", required = false, example = "true")
+    public String getDynamic3ds() {
+        return dynamic3ds;
+    }
+
     @Override
     public String toString() {
         return "CreatePaymentRequest{" +
@@ -52,6 +60,7 @@ public class CreatePaymentRequest {
                 ", returnUrl='" + returnUrl + '\'' +
                 ", reference='" + reference + '\'' +
                 ", description='" + description + '\'' +
+                ", dynamic3DS='" + dynamic3ds + '\'' +
                 '}';
     }
 }

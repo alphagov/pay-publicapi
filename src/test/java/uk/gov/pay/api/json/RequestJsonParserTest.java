@@ -8,6 +8,8 @@ import org.junit.rules.ExpectedException;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.CreatePaymentRequest;
 
+import java.io.IOException;
+
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -40,6 +42,29 @@ public class RequestJsonParserTest {
         assertThat(createPaymentRequest.getReference(), is("Some reference"));
         assertThat(createPaymentRequest.getDescription(), is("Some description"));
         assertThat(createPaymentRequest.getReturnUrl(), is("http://somewhere.gov.uk/rainbow/1"));
+    }
+
+    @Test
+    public void parsePaymentRequest_whenDynamic3dsIsSupplied() throws IOException {
+        String payload = "{" +
+                "  \"amount\" : -1000," +
+                "  \"reference\" : \"Some reference\"," +
+                "  \"description\" : \"Some description\"," +
+                "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"," +
+                "  \"dynamic_3ds\" : true" +
+                "}";
+
+        JsonNode jsonNode = objectMapper.readTree(payload);
+
+        CreatePaymentRequest createPaymentRequest = paymentRequestValueOf(jsonNode);
+
+        assertThat(createPaymentRequest, is(notNullValue()));
+        assertThat(createPaymentRequest.getAmount(), is(-1000));
+        assertThat(createPaymentRequest.getReference(), is("Some reference"));
+        assertThat(createPaymentRequest.getDescription(), is("Some description"));
+        assertThat(createPaymentRequest.getReturnUrl(), is("http://somewhere.gov.uk/rainbow/1"));
+        assertThat(createPaymentRequest.getDynamic3ds(), is("true"));
+
     }
 
     @Test
@@ -149,4 +174,5 @@ public class RequestJsonParserTest {
 
         paymentRefundRequestValueOf(jsonNode);
     }
+
 }
