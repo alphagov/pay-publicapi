@@ -11,3 +11,5 @@ staging-1.tag=alpha_staging-1-32
 staging-1.alpha_staging-1-32.date=2017-03-01:11:45:10
 
 staging-1.alpha_staging-1-32.status=success
+
+production-1.tag=alpha_production-1-32
