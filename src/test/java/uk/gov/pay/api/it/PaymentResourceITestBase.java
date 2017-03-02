@@ -37,16 +37,16 @@ public abstract class PaymentResourceITestBase {
 
     @Before
     public void setup() {
-        connectorMock = new ConnectorMockClient(connectorMockRule.getHttpPort(), connectorBaseUrl());
-        publicAuthMock = new PublicAuthMockClient(publicAuthMockRule.getHttpPort());
+        connectorMock = new ConnectorMockClient(connectorMockRule.getPort(), connectorBaseUrl());
+        publicAuthMock = new PublicAuthMockClient(publicAuthMockRule.getPort());
     }
 
     private String connectorBaseUrl() {
-        return "http://localhost:" + connectorMockRule.getHttpPort();
+        return "http://localhost:" + connectorMockRule.getPort();
     }
 
     private String publicAuthBaseUrl() {
-        return "http://localhost:" + publicAuthMockRule.getHttpPort() + "/v1/auth";
+        return "http://localhost:" + publicAuthMockRule.getPort() + "/v1/auth";
     }
 
     String paymentLocationFor(String chargeId) {

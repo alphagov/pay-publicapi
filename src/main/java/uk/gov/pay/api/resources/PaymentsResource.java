@@ -10,6 +10,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.*;
 import uk.gov.pay.api.model.*;
 import uk.gov.pay.api.utils.JsonStringBuilder;
@@ -98,12 +99,12 @@ public class PaymentsResource {
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
-    public Response getPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
+    public Response getPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                @PathParam(PAYMENT_KEY) String paymentId) {
 
         logger.info("Payment request - paymentId={}", paymentId);
         Response connectorResponse = client
-                .target(getConnectorUrl(format(CONNECTOR_CHARGE_RESOURCE, accountId, paymentId)))
+                .target(getConnectorUrl(format(CONNECTOR_CHARGE_RESOURCE, account.getName(), paymentId)))
                 .request()
                 .get();
 
@@ -138,13 +139,13 @@ public class PaymentsResource {
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
-    public Response getPaymentEvents(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
+    public Response getPaymentEvents(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                      @PathParam(PAYMENT_KEY) String paymentId) {
 
         logger.info("Payment events request - payment_id={}", paymentId);
 
         Response connectorResponse = client
-                .target(getConnectorUrl(format(CONNECTOR_CHARGE_EVENTS_RESOURCE, accountId, paymentId)))
+                .target(getConnectorUrl(format(CONNECTOR_CHARGE_EVENTS_RESOURCE, account.getName(), paymentId)))
                 .request()
                 .get();
 
@@ -184,7 +185,7 @@ public class PaymentsResource {
             @ApiResponse(code = 422, message = "Invalid parameters: from_date, to_date, status. See Public API documentation for the correct data formats", response = PaymentError.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response searchPayments(@ApiParam(value = "accountId", hidden = true)
-                                   @Auth String accountId,
+                                   @Auth Account account,
                                    @ApiParam(value = "Your payment reference to search", hidden = false)
                                    @QueryParam(REFERENCE_KEY) String reference,
                                    @ApiParam(value = "The user email used in the payment to be searched", hidden = false)
@@ -224,7 +225,7 @@ public class PaymentsResource {
                 Pair.of(DISPLAY_SIZE, displaySize)
         );
         Response connectorResponse = client
-                .target(getConnectorUrl(format(CONNECTOR_CHARGES_RESOURCE, accountId), queryParams))
+                .target(getConnectorUrl(format(CONNECTOR_CHARGES_RESOURCE, account.getName()), queryParams))
                 .request()
                 .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
                 .get();
@@ -301,13 +302,13 @@ public class PaymentsResource {
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 422, message = "Invalid attribute value: description. Must be less than or equal to 255 characters length", response = PaymentError.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
-    public Response createNewPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
+    public Response createNewPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                      @ApiParam(value = "requestPayload", required = true) CreatePaymentRequest requestPayload) {
 
         logger.info("Payment create request - [ {} ]", requestPayload);
 
         Response connectorResponse = client
-                .target(getConnectorUrl(format(CONNECTOR_CHARGES_RESOURCE, accountId)))
+                .target(getConnectorUrl(format(CONNECTOR_CHARGES_RESOURCE, account.getName())))
                 .request()
                 .post(buildChargeRequestPayload(requestPayload));
 
@@ -347,13 +348,13 @@ public class PaymentsResource {
             @ApiResponse(code = 409, message = "Conflict", response = PaymentError.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)
     })
-    public Response cancelPayment(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
+    public Response cancelPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                   @PathParam(PAYMENT_KEY) String paymentId) {
 
         logger.info("Payment cancel request - payment_id=[{}]", paymentId);
 
         Response connectorResponse = client
-                .target(getConnectorUrl(format(CONNECTOR_ACCOUNT_CHARGE_CANCEL_RESOURCE, accountId, paymentId)))
+                .target(getConnectorUrl(format(CONNECTOR_ACCOUNT_CHARGE_CANCEL_RESOURCE, account.getName(), paymentId)))
                 .request()
                 .post(Entity.json("{}"));
 
