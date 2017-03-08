@@ -7,14 +7,16 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.dropwizard.Application;
-import io.dropwizard.auth.AuthFactory;
-import io.dropwizard.auth.oauth.OAuthFactory;
+import io.dropwizard.auth.AuthDynamicFeature;
+import io.dropwizard.auth.AuthValueFactoryProvider;
+import io.dropwizard.auth.oauth.OAuthCredentialAuthFilter;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import uk.gov.pay.api.app.config.PublicApiConfig;
+import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.auth.AccountAuthenticator;
 import uk.gov.pay.api.exception.mapper.*;
 import uk.gov.pay.api.filter.AuthorizationValidationFilter;
@@ -80,7 +82,12 @@ public class PublicApi extends Application<PublicApiConfig> {
         environment.servlets().addFilter("LoggingFilter", new LoggingFilter())
                 .addMappingForUrlPatterns(of(REQUEST), true, API_VERSION_PATH + "/*");
 
-        environment.jersey().register(AuthFactory.binder(new OAuthFactory<>(new AccountAuthenticator(client, config.getPublicAuthUrl()), "", String.class)));
+        environment.jersey().register(new AuthDynamicFeature(
+                new OAuthCredentialAuthFilter.Builder<Account>()
+                        .setAuthenticator(new AccountAuthenticator(client, config.getPublicAuthUrl()))
+                        .setPrefix("Bearer")
+                        .buildAuthFilter()));
+        environment.jersey().register(new AuthValueFactoryProvider.Binder<>(Account.class));
 
         attachExceptionMappersTo(environment.jersey());
 

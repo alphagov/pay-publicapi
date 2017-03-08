@@ -7,6 +7,7 @@ import io.swagger.annotations.*;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateRefundException;
 import uk.gov.pay.api.exception.GetRefundException;
 import uk.gov.pay.api.exception.GetRefundsException;
@@ -71,12 +72,12 @@ public class PaymentRefundsResource {
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
-    public Response getRefunds(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
+    public Response getRefunds(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                @PathParam(PATH_PAYMENT_KEY) String paymentId) {
 
         logger.info("Get refunds for payment request - paymentId={}", paymentId);
         Response connectorResponse = client
-                .target(getConnectorUrl(format(CONNECTOR_CHARGE_REFUNDS_RESOURCE, accountId, paymentId)))
+                .target(getConnectorUrl(format(CONNECTOR_CHARGE_REFUNDS_RESOURCE, account.getName(), paymentId)))
                 .request()
                 .get();
 
@@ -105,13 +106,13 @@ public class PaymentRefundsResource {
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
-    public Response getRefundById(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
+    public Response getRefundById(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                   @PathParam(PATH_PAYMENT_KEY) String paymentId,
                                   @PathParam(PATH_REFUND_KEY) String refundId) {
 
         logger.info("Payment refund request - paymentId={}, refundId={}", paymentId, refundId);
         Response connectorResponse = client
-                .target(getConnectorUrl(format(CONNECTOR_CHARGE_REFUND_BY_ID_RESOURCE, accountId, paymentId, refundId)))
+                .target(getConnectorUrl(format(CONNECTOR_CHARGE_REFUND_BY_ID_RESOURCE, account.getName(), paymentId, refundId)))
                 .request()
                 .get();
 
@@ -139,7 +140,7 @@ public class PaymentRefundsResource {
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
             @ApiResponse(code = 412, message = "Refund amount available mismatch"),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
-    public Response submitRefund(@ApiParam(value = "accountId", hidden = true) @Auth String accountId,
+    public Response submitRefund(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                  @ApiParam(value = "paymentId", required = true) @PathParam(PATH_PAYMENT_KEY) String paymentId,
                                  @ApiParam(value = "requestPayload", required = true) CreatePaymentRefundRequest requestPayload) {
 
@@ -148,7 +149,7 @@ public class PaymentRefundsResource {
         Integer refundAmountAvailable = requestPayload.getRefundAmountAvailable()
                 .orElseGet(() -> {
                     Response getChargeResponse = client
-                            .target(getConnectorUrl(format(CONNECTOR_CHARGE_RESOURCE, accountId, paymentId)))
+                            .target(getConnectorUrl(format(CONNECTOR_CHARGE_RESOURCE, account.getName(), paymentId)))
                             .request()
                             .get();
 
@@ -161,7 +162,7 @@ public class PaymentRefundsResource {
                 payloadMap);
 
         Response connectorResponse = client
-                .target(getConnectorUrl(format(CONNECTOR_CHARGE_REFUNDS_RESOURCE, accountId, paymentId)))
+                .target(getConnectorUrl(format(CONNECTOR_CHARGE_REFUNDS_RESOURCE, account.getName(), paymentId)))
                 .request()
                 .post(json(connectorPayload));
 

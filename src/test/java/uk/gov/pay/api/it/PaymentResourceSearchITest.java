@@ -325,11 +325,11 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
     public void searchPayments_getsPaginatedResultsFromConnector() throws Exception {
 
         PaymentNavigationLinksFixture links = new PaymentNavigationLinksFixture()
-                .withPrevLink("http://server:port/path?query=prev")
-                .withNextLink("http://server:port/path?query=next")
-                .withSelfLink("http://server:port/path?query=self")
-                .withFirstLink("http://server:port/path?query=first")
-                .withLastLink("http://server:port/path?query=last");
+                .withPrevLink("http://server:port/path?query=prev&from_date=2016-01-01T23:59:59Z")
+                .withNextLink("http://server:port/path?query=next&from_date=2016-01-01T23:59:59Z")
+                .withSelfLink("http://server:port/path?query=self&from_date=2016-01-01T23:59:59Z")
+                .withFirstLink("http://server:port/path?query=first&from_date=2016-01-01T23:59:59Z")
+                .withLastLink("http://server:port/path?query=last&from_date=2016-01-01T23:59:59Z");
 
         String payments = aPaginatedPaymentSearchResult()
                 .withCount(10)
@@ -361,11 +361,11 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .body("total", is(40))
                 .body("count", is(10))
                 .body("page", is(2))
-                .body("_links.next_page.href", Matchers.is(expectedChargesLocationFor("?query=next")))
-                .body("_links.prev_page.href", Matchers.is(expectedChargesLocationFor("?query=prev")))
-                .body("_links.first_page.href", Matchers.is(expectedChargesLocationFor("?query=first")))
-                .body("_links.last_page.href", Matchers.is(Matchers.is(expectedChargesLocationFor("?query=last"))))
-                .body("_links.self.href", Matchers.is(Matchers.is(expectedChargesLocationFor("?query=self"))));
+                .body("_links.next_page.href", Matchers.is(expectedChargesLocationFor("?query=next&from_date=2016-01-01T23%3A59%3A59Z")))
+                .body("_links.prev_page.href", Matchers.is(expectedChargesLocationFor("?query=prev&from_date=2016-01-01T23%3A59%3A59Z")))
+                .body("_links.first_page.href", Matchers.is(expectedChargesLocationFor("?query=first&from_date=2016-01-01T23%3A59%3A59Z")))
+                .body("_links.last_page.href", Matchers.is(Matchers.is(expectedChargesLocationFor("?query=last&from_date=2016-01-01T23%3A59%3A59Z"))))
+                .body("_links.self.href", Matchers.is(Matchers.is(expectedChargesLocationFor("?query=self&from_date=2016-01-01T23%3A59%3A59Z"))));
 
         List<Map<String, Object>> results = response.extract().body().jsonPath().getList("results");
         assertThat(results, matchesField("reference", TEST_REFERENCE));
