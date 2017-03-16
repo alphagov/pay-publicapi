@@ -8,4 +8,4 @@ The team's pull request checklist can be found [here](https://github.com/alphago
 ## Contributions from beyond the team
 If you have an idea to share or a feature to request to raise please contact the GOV.UK Pay team govuk-pay-support@digital.cabinet-office.gov.uk. 
 
-If this is a security issue please do not submit a pull request or raise a Github issue, instead, please read the disclosure process [here](https://github.com/alphagov/pay-adminusers/blob/master/README.md#responsible-disclosure).
+If this is a security issue please do not submit a pull request or raise a Github issue, instead, please read the disclosure process [here](/README.md#responsible-disclosure).
