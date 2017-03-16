@@ -56,14 +56,14 @@ The [API Specification](docs/api_specification.md) provides more detail on the p
 
 | Path                                                   | Method | Description                        |
 | ------------------------------------------------------ | ------ | ---------------------------------- |
-|[`/v1/payments`](#post-v1payments)                      | POST   |  creates a payment                 |
-|[`/v1/payments/{paymentId}`](#get-v1paymentspaymentid)  | GET    |  returns a payment by ID           |
-|[`/v1/payments/{paymentId}/cancel`](#post-v1paymentspaymentidcancel)  | POST   |  cancels a payment |
-|[`/v1/payments/{paymentId}/events`](#get-v1paymentspaymentidevents)  | GET    |  returns all audit events for the payment referred by this ID  |
-|[`/v1/payments`](#get-v1payments)  | GET    |  search/filter payments           |
-|[`/v1/payments/{paymentId}/refunds`](#get-v1paymentspaymentidrefunds)| GET   |  returns a list of refunds for the payment|
-|[`/v1/payments/{paymentId}/refunds`](#post-v1paymentspaymentidrefunds)| POST |  creates a new refund for the payment     |
-|[`/v1/payments/{paymentId}/refunds/{refundId}`](#get-v1paymentspaymentidrefundsrefundid)| GET | returns a refund by ID   |
+|[`/v1/payments`](docs/api_specification.md#post-v1payments)                      | POST   |  creates a payment                 |
+|[`/v1/payments/{paymentId}`](docs/api_specification.md#get-v1paymentspaymentid)  | GET    |  returns a payment by ID           |
+|[`/v1/payments/{paymentId}/cancel`](docs/api_specification.md#post-v1paymentspaymentidcancel)  | POST   |  cancels a payment |
+|[`/v1/payments/{paymentId}/events`](docs/api_specification.md#get-v1paymentspaymentidevents)  | GET    |  returns all audit events for the payment referred by this ID  |
+|[`/v1/payments`](docs/api_specification.md#get-v1payments)  | GET    |  search/filter payments           |
+|[`/v1/payments/{paymentId}/refunds`](docs/api_specification.md#get-v1paymentspaymentidrefunds)| GET   |  returns a list of refunds for the payment|
+|[`/v1/payments/{paymentId}/refunds`](docs/api_specification.md#post-v1paymentspaymentidrefunds)| POST |  creates a new refund for the payment     |
+|[`/v1/payments/{paymentId}/refunds/{refundId}`](docs/api_specification.md#get-v1paymentspaymentidrefundsrefundid)| GET | returns a refund by ID   |
 
 ------------------------------------------------------------------------------------------------
 
