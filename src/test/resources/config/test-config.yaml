@@ -1,10 +1,10 @@
 server:
   applicationConnectors:
     - type: http
-      port: 9010
+      port: 0
   adminConnectors:
     - type: http
-      port: 9011
+      port: 0
 
 logging:
     level: INFO
