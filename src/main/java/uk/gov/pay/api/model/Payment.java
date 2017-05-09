@@ -126,6 +126,7 @@ public abstract class Payment {
 
     @Override
     public String toString() {
+        // Some services put PII in the description, so don’t include it in the stringification
         return "Payment{" +
                 "paymentId='" + paymentId + '\'' +
                 ", paymentProvider='" + paymentProvider + '\'' +
@@ -133,7 +134,6 @@ public abstract class Payment {
                 ", amount=" + amount +
                 ", state='" + state + '\'' +
                 ", returnUrl='" + returnUrl + '\'' +
-                ", description='" + description + '\'' +
                 ", reference='" + reference + '\'' +
                 ", createdDate='" + createdDate + '\'' +
                 '}';
