@@ -11,3 +11,5 @@ staging-2.tag=alpha_staging-2-40
 staging-2.alpha_staging-2-40.date=2017-05-15:16:15:39
 
 staging-2.alpha_staging-2-40.status=success
+
+production-2.tag=FAILED-40
