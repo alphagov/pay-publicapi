@@ -767,7 +767,7 @@
         "capture_submit_time" : {
           "type" : "string",
           "example" : "2016-01-21T17:15:00Z",
-          "description" : "Date and time capture request has been submitted",
+          "description" : "Date and time capture request has been submitted (may be null if capture request was not immediately acknowledged by payment gateway)",
           "readOnly" : true
         },
         "captured_date" : {
