@@ -64,6 +64,11 @@
             <artifactId>jersey-media-jaxb</artifactId>
             <version>${jersey2.version}</version>
         </dependency>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2.2</version>
+        </dependency>
         <!-- testing -->
         <dependency>
             <groupId>io.dropwizard</groupId>
