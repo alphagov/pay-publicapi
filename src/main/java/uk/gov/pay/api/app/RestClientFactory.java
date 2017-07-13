@@ -2,6 +2,7 @@ package uk.gov.pay.api.app;
 
 import org.glassfish.jersey.SslConfigurator;
 import uk.gov.pay.api.app.config.RestClientConfig;
+import uk.gov.pay.api.filter.XRayHttpClientFilter;
 import uk.gov.pay.api.filter.RestClientLoggingFilter;
 
 import javax.net.ssl.SSLContext;
@@ -27,7 +28,8 @@ public class RestClientFactory {
             SSLContext sslContext = sslConfig.createSSLContext();
             client = ClientBuilder.newBuilder().sslContext(sslContext).build();
         }
-        client.register(RestClientLoggingFilter.class);
+        client.register(RestClientLoggingFilter.class)
+                .register(XRayHttpClientFilter.class);
         return client;
     }
 
