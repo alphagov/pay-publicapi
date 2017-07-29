@@ -1,4 +1,4 @@
-FROM openjdk:8-jre-alpine
+FROM govukpay/openjdk:8-jre-alpine
 
 RUN apk update
 RUN apk upgrade
