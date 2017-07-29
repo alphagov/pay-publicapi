@@ -5,7 +5,6 @@ RUN apk upgrade
 
 RUN apk add bash
 
-ENV JAVA_HOME /usr/lib/jvm/java-8-*/
 ENV PORT 8080
 ENV ADMIN_PORT 8081
 
