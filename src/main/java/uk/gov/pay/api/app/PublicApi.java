@@ -115,7 +115,7 @@ public class PublicApi extends Application<PublicApiConfig> {
     }
     private void configureObjectMapper(PublicApiConfig config, ObjectMapper objectMapper) {
 
-        URLValidator urlValidator = urlValidatorValueOf(config.getRestClientConfig().isDisabledSecureConnection());
+        URLValidator urlValidator = urlValidatorValueOf(config.getAllowHttpForReturnUrl());
         CreatePaymentRequestDeserializer paymentRequestDeserializer = new CreatePaymentRequestDeserializer(new PaymentRequestValidator(urlValidator));
         CreatePaymentRefundRequestDeserializer paymentRefundRequestDeserializer = new CreatePaymentRefundRequestDeserializer(new PaymentRefundRequestValidator());
 

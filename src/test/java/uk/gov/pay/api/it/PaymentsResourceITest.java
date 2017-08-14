@@ -39,7 +39,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     private static final RefundSummary REFUND_SUMMARY = new RefundSummary("pending", 100L, 50L);
     private static final String PAYMENT_PROVIDER = "Sandbox";
     private static final String CARD_BRAND_LABEL = "Mastercard";
-    private static final String RETURN_URL = "http://somewhere.gov.uk/rainbow/1";
+    private static final String RETURN_URL = "https://somewhere.gov.uk/rainbow/1";
     private static final String REFERENCE = "Some reference <script> alert('This is a ?{simple} XSS attack.')</script>";
     private static final String EMAIL = "alice.111@mail.fake";
     private static final String DESCRIPTION = "Some description <script> alert('This is a ?{simple} XSS attack.')</script>";
@@ -133,7 +133,7 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
         String reference = randomAlphanumeric(255);
         String description = randomAlphanumeric(255);
         String email = randomAlphanumeric(254) + "@mail.fake";
-        String return_url = "http://govdemopay.gov.uk?data=" + randomAlphanumeric(1970);
+        String return_url = "https://govdemopay.gov.uk?data=" + randomAlphanumeric(1969);
 
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondOk_whenCreateCharge(amount, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID,

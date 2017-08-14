@@ -29,4 +29,6 @@ rateLimiter:
   rate: ${RATE_LIMITER_VALUE:-25}
   perMillis: ${RATE_LIMITER_PER_MILLIS:-1000}
 
+allowHttpForReturnUrl: ${ALLOW_HTTP_FOR_RETURN_URL:-false}
+
 apiKeyHmacSecret: ${TOKEN_API_HMAC_SECRET}

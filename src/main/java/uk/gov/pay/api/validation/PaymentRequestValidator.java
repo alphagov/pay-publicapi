@@ -20,8 +20,8 @@ public class PaymentRequestValidator {
     static final int AMOUNT_MAX_VALUE = 10000000;
     static final int AMOUNT_MIN_VALUE = 1;
 
-    private static final int DESCRIPTION_MAX_LENGTH = 255;
-    private static final int URL_MAX_LENGTH = 2000;
+    static final int DESCRIPTION_MAX_LENGTH = 255;
+    static final int URL_MAX_LENGTH = 2000;
     static final int REFERENCE_MAX_LENGTH = 255;
     static final int EMAIL_MAX_LENGTH = 254;
     static final int CARD_BRAND_MAX_LENGTH = 20;

@@ -46,7 +46,7 @@ public class ResourcesFiltersITest extends PaymentResourceITestBase {
     private static final String PAYMENT_PROVIDER = "Sandbox";
     private static final String CARD_BRAND = "master-card";
     private static final String CARD_BRAND_LABEL = "Mastercard";
-    private static final String RETURN_URL = "http://somewhere.gov.uk/rainbow/1";
+    private static final String RETURN_URL = "https://somewhere.gov.uk/rainbow/1";
     private static final String REFERENCE = "Some reference";
     private static final String EMAIL = "alice.111@mail.fake";
     private static final String DESCRIPTION = "Some description";

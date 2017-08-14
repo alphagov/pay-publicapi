@@ -7,16 +7,26 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 public class PublicApiConfig extends Configuration {
+
     @NotNull
     private String baseUrl;
+
     @NotNull
     private String connectorUrl;
+
     @NotNull
     private String publicAuthUrl;
+
     @NotNull
     private String graphiteHost;
     @NotNull
     private String graphitePort;
+
+    @NotNull
+    private Boolean allowHttpForReturnUrl;
+
+    private String apiKeyHmacSecret;
+
     @Valid
     @NotNull
     @JsonProperty("jerseyClientConfig")
@@ -26,12 +36,6 @@ public class PublicApiConfig extends Configuration {
     @NotNull
     @JsonProperty("rateLimiter")
     private RateLimiterConfig rateLimiterConfig;
-
-    private String apiKeyHmacSecret;
-
-    public RestClientConfig getRestClientConfig() {
-        return restClientConfig;
-    }
 
     public String getBaseUrl() {
         return baseUrl;
@@ -45,13 +49,6 @@ public class PublicApiConfig extends Configuration {
         return publicAuthUrl;
     }
 
-    public RateLimiterConfig getRateLimiterConfig() {
-        return rateLimiterConfig;
-    }
-
-    public String getApiKeyHmacSecret(){
-        return apiKeyHmacSecret;
-    }
     public String getGraphiteHost() {
         return graphiteHost;
     }
@@ -59,4 +56,21 @@ public class PublicApiConfig extends Configuration {
     public String getGraphitePort() {
         return graphitePort;
     }
+
+    public Boolean getAllowHttpForReturnUrl() {
+        return allowHttpForReturnUrl;
+    }
+
+    public String getApiKeyHmacSecret() {
+        return apiKeyHmacSecret;
+    }
+
+    public RestClientConfig getRestClientConfig() {
+        return restClientConfig;
+    }
+
+    public RateLimiterConfig getRateLimiterConfig() {
+        return rateLimiterConfig;
+    }
+
 }

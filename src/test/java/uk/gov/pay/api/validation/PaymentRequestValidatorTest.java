@@ -13,34 +13,80 @@ public class PaymentRequestValidatorTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
-    private static final String SUCCESSFUL_TEST_EMAIL = "alice.111@mail.fake";
-    private static final String UNSUCCESSFUL_TEST_EMAIL = randomAlphanumeric(255) + "@mail.fake";
+
+    private static final int VALID_AMOUNT = 100;
+    private static final String VALID_RETURN_URL = "https://www.example.com/return_url";
+    private static final String VALID_REFERENCE = "reference";
+    private static final String VALID_DESCRIPTION = "description";
+
+    private final PaymentRequestValidator paymentRequestValidator = new PaymentRequestValidator(URLValidator.SECURITY_ENABLED);
 
     @Test
-    public void validateMinimumAmount_shouldSuccessValue(){
-        PaymentRequestValidator paymentRequestValidator = new PaymentRequestValidator(URLValidator.SECURITY_ENABLED);
-        CreatePaymentRequest paymentRequest = new CreatePaymentRequest(1, "https://return.to/return_url", "reference", "description");
+    public void validParameters_shouldSuccessValue() {
+        CreatePaymentRequest createPaymentRequest = createPaymentRequest(VALID_AMOUNT, VALID_RETURN_URL, VALID_REFERENCE, VALID_DESCRIPTION);
+        paymentRequestValidator.validate(createPaymentRequest);
     }
 
     @Test
-    public void validateMinimumAmount_shouldFailValue() throws Exception{
-        PaymentRequestValidator paymentRequestValidator = new PaymentRequestValidator(URLValidator.SECURITY_ENABLED);
-        CreatePaymentRequest paymentRequest = new CreatePaymentRequest(PaymentRequestValidator.AMOUNT_MAX_VALUE + 1, "https://return.to/return_url", "reference", "description");
+    public void validateMinimumAmount_shouldSuccessValue() {
+        CreatePaymentRequest createPaymentRequest = createPaymentRequest(PaymentRequestValidator.AMOUNT_MIN_VALUE, VALID_RETURN_URL, VALID_REFERENCE, VALID_DESCRIPTION);
+        paymentRequestValidator.validate(createPaymentRequest);
+    }
+
+    @Test
+    public void validateMinimumAmount_shouldFailValue() throws Exception {
+        CreatePaymentRequest createPaymentRequest = createPaymentRequest(PaymentRequestValidator.AMOUNT_MIN_VALUE - 1, VALID_RETURN_URL, VALID_REFERENCE, VALID_DESCRIPTION);
+        expectedException.expect(ValidationException.class);
+        paymentRequestValidator.validate(createPaymentRequest);
+    }
+
+    @Test
+    public void validateMaximumAmount_shouldSuccessValue() {
+        CreatePaymentRequest createPaymentRequest = createPaymentRequest(PaymentRequestValidator.AMOUNT_MAX_VALUE, VALID_RETURN_URL, VALID_REFERENCE, VALID_DESCRIPTION);
+        paymentRequestValidator.validate(createPaymentRequest);
+    }
+
+    @Test
+    public void validateMaximumAmount_shouldFailValue() throws Exception {
+        CreatePaymentRequest paymentRequest = createPaymentRequest(PaymentRequestValidator.AMOUNT_MAX_VALUE + 1, VALID_RETURN_URL, VALID_REFERENCE, VALID_DESCRIPTION);
         expectedException.expect(ValidationException.class);
         paymentRequestValidator.validate(paymentRequest);
     }
 
     @Test
-    public void validateMaximumAmount_shouldSuccessValue(){
-        PaymentRequestValidator paymentRequestValidator = new PaymentRequestValidator(URLValidator.SECURITY_ENABLED);
-        CreatePaymentRequest paymentRequest = new CreatePaymentRequest(100, "https://return.to/return_url", "reference", "description");
-    }
-
-    @Test
-    public void validateMaximumAmount_shouldFailValue() throws Exception{
-        PaymentRequestValidator paymentRequestValidator = new PaymentRequestValidator(URLValidator.SECURITY_ENABLED);
-        CreatePaymentRequest paymentRequest = new CreatePaymentRequest(PaymentRequestValidator.AMOUNT_MAX_VALUE + 1, "https://return.to/return_url", "reference", "description");
+    public void validateReturnUrlMaxLength_shouldFailValue() throws Exception {
+        String invalidMaxLengthReturnUrl = "https://" + randomAlphanumeric(PaymentRequestValidator.URL_MAX_LENGTH) + ".com/";
+        CreatePaymentRequest paymentRequest = createPaymentRequest(VALID_AMOUNT, invalidMaxLengthReturnUrl, VALID_REFERENCE, VALID_DESCRIPTION);
         expectedException.expect(ValidationException.class);
         paymentRequestValidator.validate(paymentRequest);
     }
+
+    @Test
+    public void validateReturnUrlNotHttps_shouldFailValue() throws Exception {
+        String validHttpOnlyUrl = "http://www.example.com/";
+        CreatePaymentRequest paymentRequest = createPaymentRequest(VALID_AMOUNT, validHttpOnlyUrl, VALID_REFERENCE, VALID_DESCRIPTION);
+        expectedException.expect(ValidationException.class);
+        paymentRequestValidator.validate(paymentRequest);
+    }
+
+    @Test
+    public void validateReferenceMaxLength_shouldFailValue() throws Exception {
+        String invalidMaxLengthReference = randomAlphanumeric(PaymentRequestValidator.REFERENCE_MAX_LENGTH + 1);
+        CreatePaymentRequest paymentRequest = createPaymentRequest(VALID_AMOUNT, VALID_RETURN_URL, invalidMaxLengthReference, VALID_DESCRIPTION);
+        expectedException.expect(ValidationException.class);
+        paymentRequestValidator.validate(paymentRequest);
+    }
+
+    @Test
+    public void validateDescriptionMaxLength_shouldFailValue() throws Exception {
+        String invalidMaxLengthDescription = randomAlphanumeric(PaymentRequestValidator.DESCRIPTION_MAX_LENGTH + 1);
+        CreatePaymentRequest paymentRequest = createPaymentRequest(VALID_AMOUNT, VALID_RETURN_URL, VALID_REFERENCE, invalidMaxLengthDescription);
+        expectedException.expect(ValidationException.class);
+        paymentRequestValidator.validate(paymentRequest);
+    }
+
+    private CreatePaymentRequest createPaymentRequest(int amount, String returnUrl, String reference, String description) {
+        return new CreatePaymentRequest(amount, returnUrl, reference, description);
+    }
+
 }
