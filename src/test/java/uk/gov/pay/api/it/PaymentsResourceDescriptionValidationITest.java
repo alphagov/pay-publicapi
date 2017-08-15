@@ -146,7 +146,7 @@ public class PaymentsResourceDescriptionValidationITest extends PaymentResourceI
                 "  \"amount\" : 9900," +
                 "  \"description\" : \"" + aVeryLongReference + "\"," +
                 "  \"reference\" : \"Some reference\"," +
-                "  \"return_url\" : \"http://my-payments.com\"" +
+                "  \"return_url\" : \"https://www.example.com/return_url\"" +
                 "}";
 
         InputStream body = postPaymentResponse(API_KEY, payload)

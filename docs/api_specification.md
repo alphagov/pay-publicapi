@@ -27,7 +27,7 @@ BEARER_TOKEN: A valid bearer token for the account to associate the payment with
 | ------------------------ |:--------:| ----------------------------------------- |
 | `amount`                 | Yes      | Amount to pay in pence                           |
 | `description`            | Yes      | Payment description                              |
-| `return_url`             | Yes      | The URL where the user should be redirected to when the payment workflow is finished.         |
+| `return_url`             | Yes      | The URL where the user should be redirected to when the payment workflow is finished (**must be HTTPS only**).         |
 | `reference`              | Yes      | There reference issued by the government service for this payment         |
 
 ### Payment created response
