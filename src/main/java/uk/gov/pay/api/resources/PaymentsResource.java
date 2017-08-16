@@ -50,6 +50,9 @@ public class PaymentsResource {
     public static final String TO_DATE_KEY = "to_date";
     public static final String PAGE = "page";
     public static final String DISPLAY_SIZE = "display_size";
+    public static final String TRANSACTION_TYPE_KEY = "transactionType";
+    public static final String TRANSACTION_TYPE_KEY_VALUE = "charge";
+
 
     private static final String PAYMENT_KEY = "paymentId";
     private static final String DESCRIPTION_KEY = "description";
@@ -221,6 +224,7 @@ public class PaymentsResource {
                 Pair.of(CARD_BRAND_KEY, cardBrand),
                 Pair.of(FROM_DATE_KEY, fromDate),
                 Pair.of(TO_DATE_KEY, toDate),
+                Pair.of(TRANSACTION_TYPE_KEY, TRANSACTION_TYPE_KEY_VALUE),
                 Pair.of(PAGE, pageNumber),
                 Pair.of(DISPLAY_SIZE, displaySize)
         );
