@@ -1,5 +1,9 @@
 package uk.gov.pay.api.app;
 
+import com.amazonaws.xray.AWSXRay;
+import com.amazonaws.xray.AWSXRayRecorderBuilder;
+import com.amazonaws.xray.javax.servlet.AWSXRayServletFilter;
+import com.amazonaws.xray.strategy.sampling.LocalizedSamplingStrategy;
 import com.codahale.metrics.graphite.GraphiteReporter;
 import com.codahale.metrics.graphite.GraphiteSender;
 import com.codahale.metrics.graphite.GraphiteUDP;
@@ -37,6 +41,7 @@ import uk.gov.pay.api.validation.PaymentRequestValidator;
 import uk.gov.pay.api.validation.URLValidator;
 
 import javax.ws.rs.client.Client;
+import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.EnumSet.of;
@@ -62,6 +67,8 @@ public class PublicApi extends Application<PublicApiConfig> {
     public void run(PublicApiConfig config, Environment environment) throws Exception {
         final Client client = RestClientFactory.buildClient(config.getRestClientConfig());
 
+        initialiseXRay();
+
         ObjectMapper objectMapper = environment.getObjectMapper();
         configureObjectMapper(config, objectMapper);
 
@@ -80,6 +87,9 @@ public class PublicApi extends Application<PublicApiConfig> {
                 .addMappingForUrlPatterns(of(REQUEST), true, API_VERSION_PATH + "/*");
 
         environment.servlets().addFilter("LoggingFilter", new LoggingFilter())
+                .addMappingForUrlPatterns(of(REQUEST), true, API_VERSION_PATH + "/*");
+
+        environment.servlets().addFilter("XRayHttpClientFilter", new AWSXRayServletFilter("pay-publicapi"))
                 .addMappingForUrlPatterns(of(REQUEST), true, API_VERSION_PATH + "/*");
 
         environment.jersey().register(new AuthDynamicFeature(
@@ -113,6 +123,14 @@ public class PublicApi extends Application<PublicApiConfig> {
                 .build(graphiteUDP)
                 .start(GRAPHITE_SENDING_PERIOD_SECONDS, TimeUnit.SECONDS);
     }
+
+    private void initialiseXRay(){
+        AWSXRayRecorderBuilder builder = AWSXRayRecorderBuilder.standard();
+        URL ruleFile = PublicApi.class.getResource("/sampling-rules.json");
+        builder.withSamplingStrategy(new LocalizedSamplingStrategy(ruleFile));
+        AWSXRay.setGlobalRecorder(builder.build());
+    }
+
     private void configureObjectMapper(PublicApiConfig config, ObjectMapper objectMapper) {
 
         URLValidator urlValidator = urlValidatorValueOf(config.getAllowHttpForReturnUrl());
