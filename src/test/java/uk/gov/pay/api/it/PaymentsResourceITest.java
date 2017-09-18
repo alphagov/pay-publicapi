@@ -394,13 +394,13 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
                 .statusCode(401);
     }
 
-    @Test
-    public void createPayment_Returns_WhenPublicAuthInaccessible() {
-        publicAuthMock.respondWithError();
-
-        postPaymentResponse(API_KEY, SUCCESS_PAYLOAD)
-                .statusCode(503);
-    }
+//    @Test
+//    public void createPayment_Returns_WhenPublicAuthInaccessible() {
+//        publicAuthMock.respondWithError();
+//
+//        postPaymentResponse(API_KEY, SUCCESS_PAYLOAD)
+//                .statusCode(503);
+//    }
 
     private static String paymentPayload(long amount, String returnUrl, String description, String reference, String email) {
         return new JsonStringBuilder()
