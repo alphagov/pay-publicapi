@@ -1,9 +1,8 @@
-package uk.gov.pay.api.utils;
+package uk.gov.pay.api.utils.mocks;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
 import org.mockserver.client.server.ForwardChainExpectation;
-import org.mockserver.client.server.MockServerClient;
 import org.mockserver.model.HttpResponse;
 import org.mockserver.model.Parameter;
 import uk.gov.pay.api.it.fixtures.PaymentRefundJsonFixture;
@@ -12,6 +11,7 @@ import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.SettlementSummary;
 import uk.gov.pay.api.model.links.Link;
+import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import java.util.*;
 
@@ -29,11 +29,8 @@ import static org.mockserver.model.HttpResponse.response;
 import static org.mockserver.verify.VerificationTimes.once;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonString;
 
-public class ConnectorMockClient {
+public class ConnectorMockClient extends BaseConnectorMockClient {
 
-    private static final String CONNECTOR_MOCK_ACCOUNTS_PATH = "/v1/api/accounts/%s";
-    private static final String CONNECTOR_MOCK_CHARGES_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/charges";
-    private static final String CONNECTOR_MOCK_CHARGE_PATH = CONNECTOR_MOCK_CHARGES_PATH + "/%s";
     private static final String CONNECTOR_MOCK_CHARGE_EVENTS_PATH = CONNECTOR_MOCK_CHARGE_PATH + "/events";
     private static final String CONNECTOR_MOCK_CHARGE_REFUNDS_PATH = CONNECTOR_MOCK_CHARGE_PATH + "/refunds";
     private static final String CONNECTOR_MOCK_CHARGE_REFUND_BY_ID_PATH = CONNECTOR_MOCK_CHARGE_REFUNDS_PATH + "/%s";
@@ -46,21 +43,8 @@ public class ConnectorMockClient {
     private static final String FROM_DATE_KEY = "from_date";
     private static final String TO_DATE_KEY = "to_date";
 
-    private final MockServerClient mockClient;
-    private final String baseUrl;
-
     public ConnectorMockClient(int port, String baseUrl) {
-        this.mockClient = new MockServerClient("localhost", port);
-        this.baseUrl = baseUrl;
-    }
-
-    private String createChargePayload(long amount, String returnUrl, String description, String reference) {
-        return new JsonStringBuilder()
-                .add("amount", amount)
-                .add("reference", reference)
-                .add("description", description)
-                .add("return_url", returnUrl)
-                .build();
+        super(port, baseUrl);
     }
 
     private String buildChargeResponse(long amount, String chargeId, PaymentState state, String returnUrl, String description,
@@ -113,32 +97,9 @@ public class ConnectorMockClient {
                 .build();
     }
 
-    private ImmutableMap<String, String> validGetLink(String href, String rel) {
-        return ImmutableMap.of(
-                "href", href,
-                "rel", rel,
-                "method", GET);
-    }
-
-    private ImmutableMap<String, Object> validPostLink(String href, String rel, String type, Map<String, String> params) {
-        return ImmutableMap.of(
-                "href", href,
-                "rel", rel,
-                "type", type,
-                "params", params,
-                "method", POST);
-    }
-
-    private String nextUrlPost() {
-        return "http://Frontend/charge/";
-    }
-
-    private String nextUrl(String tokenId) {
-        return nextUrlPost() + tokenId;
-    }
-
-    private String chargeLocation(String accountId, String chargeId) {
-        return baseUrl + format(CONNECTOR_MOCK_CHARGE_PATH, accountId, chargeId);
+    @Override
+    String nextUrlPost() {
+        return "http://frontend_credit_card/charge/";
     }
 
     private String chargeEventsLocation(String accountId, String chargeId) {
@@ -337,14 +298,7 @@ public class ConnectorMockClient {
         );
     }
 
-    private ForwardChainExpectation whenGetCharge(String gatewayAccountId, String chargeId) {
-        return mockClient.when(request()
-                .withMethod(GET)
-                .withPath(format(CONNECTOR_MOCK_CHARGE_PATH, gatewayAccountId, chargeId))
-        );
-    }
-
-    public ForwardChainExpectation whenCreateRefund(int amount, int refundAmountAvailable, String gatewayAccountId, String chargeId) {
+    private ForwardChainExpectation whenCreateRefund(int amount, int refundAmountAvailable, String gatewayAccountId, String chargeId) {
         String payload = new GsonBuilder().create().toJson(
                 ImmutableMap.of("amount", amount, "refund_amount_available", refundAmountAvailable));
         return mockClient.when(request()
@@ -434,14 +388,6 @@ public class ConnectorMockClient {
                 .withBody(jsonString("message", errorMsg));
     }
 
-    public void verifyCreateChargeConnectorRequest(int amount, String gatewayAccountId, String returnUrl, String description, String reference) {
-        mockClient.verify(request()
-                        .withMethod(POST)
-                        .withPath(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId))
-                        .withBody(createChargePayload(amount, returnUrl, description, reference)),
-                once()
-        );
-    }
 
     public void verifyCancelCharge(String paymentId, String accountId) {
         mockClient.verify(request()
