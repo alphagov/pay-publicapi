@@ -99,7 +99,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     @Override
     String nextUrlPost() {
-        return "http://frontend_credit_card/charge/";
+        return "http://frontend_card/charge/";
     }
 
     private String chargeEventsLocation(String accountId, String chargeId) {

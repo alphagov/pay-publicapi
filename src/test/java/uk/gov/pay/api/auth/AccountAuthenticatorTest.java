@@ -22,7 +22,7 @@ import static javax.ws.rs.core.Response.Status.*;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static uk.gov.pay.api.model.TokenPaymentType.CREDIT_CARD;
+import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 
 public class AccountAuthenticatorTest {
@@ -72,7 +72,7 @@ public class AccountAuthenticatorTest {
         when(mockResponse.readEntity(JsonNode.class)).thenReturn(response);
         Optional<Account> maybeAccount = accountAuthenticator.authenticate(bearerToken);
         Assert.assertThat(maybeAccount.get().getName(), is(accountName));
-        Assert.assertThat(maybeAccount.get().getPaymentType(), is(CREDIT_CARD));
+        Assert.assertThat(maybeAccount.get().getPaymentType(), is(CARD));
     }
 
     @Test

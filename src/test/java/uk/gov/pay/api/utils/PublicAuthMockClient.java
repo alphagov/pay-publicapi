@@ -26,7 +26,7 @@ public class PublicAuthMockClient {
     }
 
     public void mapBearerTokenToAccountId(String bearerToken, String gatewayAccountId) {
-        mapBearerTokenToAccountId(bearerToken, gatewayAccountId, TokenPaymentType.CREDIT_CARD);
+        mapBearerTokenToAccountId(bearerToken, gatewayAccountId, TokenPaymentType.CARD);
     }
 
     public void mapBearerTokenToAccountId(String bearerToken, String gatewayAccountId, TokenPaymentType tokenType) {

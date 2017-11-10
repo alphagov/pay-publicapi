@@ -16,6 +16,7 @@ import java.util.Optional;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.Response.Status.OK;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+import static uk.gov.pay.api.model.TokenPaymentType.*;
 import static uk.gov.pay.api.model.TokenPaymentType.fromString;
 
 public class AccountAuthenticator implements Authenticator<String, Account> {

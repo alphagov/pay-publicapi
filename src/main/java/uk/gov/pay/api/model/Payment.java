@@ -1,43 +1,42 @@
 package uk.gov.pay.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
+@ApiModel(value = "Payment", discriminator = "paymentType", subTypes = {
+        CardPayment.class, DirectDebitPayment.class })
 public abstract class Payment {
     public static final String LINKS_JSON_ATTRIBUTE = "_links";
 
     @JsonProperty("payment_id")
-    private final String paymentId;
+    protected final String paymentId;
 
     @JsonProperty("payment_provider")
-    private final String paymentProvider;
+    protected final String paymentProvider;
 
-    private final long amount;
-    private final PaymentState state;
-    private final String description;
+    protected final long amount;
+    protected final PaymentState state;
+    protected final String description;
 
     @JsonProperty("return_url")
-    private final String returnUrl;
-    private final String reference;
-    private final String email;
+    protected final String returnUrl;
+    protected final String reference;
+    protected final String email;
 
     @JsonProperty("created_date")
-    private final String createdDate;
+    protected final String createdDate;
 
-    @JsonProperty("refund_summary")
-    private final RefundSummary refundSummary;
-
-    @JsonProperty("settlement_summary")
-    private final SettlementSummary settlementSummary;
-
-    @JsonProperty("card_details")
-    private final CardDetails cardDetails;
+    //Used by Swagger to document the right model in the PaymentsResource
+    @JsonIgnore
+    protected String paymentType;
 
     public Payment(String chargeId, long amount, PaymentState state, String returnUrl, String description,
-                   String reference, String email, String paymentProvider, String createdDate,
-                   RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails) {
+                   String reference, String email, String paymentProvider, String createdDate) {
         this.paymentId = chargeId;
         this.amount = amount;
         this.state = state;
@@ -47,9 +46,6 @@ public abstract class Payment {
         this.email = email;
         this.paymentProvider = paymentProvider;
         this.createdDate = createdDate;
-        this.refundSummary = refundSummary;
-        this.settlementSummary = settlementSummary;
-        this.cardDetails = cardDetails;
     }
 
     @ApiModelProperty(example = "2016-01-21T17:15:00Z")
@@ -95,47 +91,5 @@ public abstract class Payment {
     @ApiModelProperty(example = "worldpay")
     public String getPaymentProvider() {
         return paymentProvider;
-    }
-
-    /**
-     * card brand is no longer a top level charge property. It is now at `card_details.card_brand` attribute
-     * We still need to support `v1` clients with a top level card brand attribute to keep support their integrations.
-     * @return
-     */
-    @ApiModelProperty(value = "Card Brand", example = "Visa", notes = "Deprecated. Please use card_details.card_brand instead")
-    @JsonProperty("card_brand")
-    @Deprecated
-    public String getCardBrand() {
-        return cardDetails != null ? cardDetails.getCardBrand() : null;
-    }
-
-    @ApiModelProperty(dataType = "uk.gov.pay.api.model.RefundSummary")
-    public RefundSummary getRefundSummary() {
-        return refundSummary;
-    }
-
-    @ApiModelProperty(dataType = "uk.gov.pay.api.model.SettlementSummary")
-    public SettlementSummary getSettlementSummary() {
-        return settlementSummary;
-    }
-
-    @ApiModelProperty(dataType = "uk.gov.pay.api.model.CardDetails")
-    public CardDetails getCardDetails() {
-        return cardDetails;
-    }
-
-    @Override
-    public String toString() {
-        // Some services put PII in the description, so don’t include it in the stringification
-        return "Payment{" +
-                "paymentId='" + paymentId + '\'' +
-                ", paymentProvider='" + paymentProvider + '\'' +
-                ", cardBrandLabel='" + getCardBrand() + '\'' +
-                ", amount=" + amount +
-                ", state='" + state + '\'' +
-                ", returnUrl='" + returnUrl + '\'' +
-                ", reference='" + reference + '\'' +
-                ", createdDate='" + createdDate + '\'' +
-                '}';
     }
 }
