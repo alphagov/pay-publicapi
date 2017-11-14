@@ -31,6 +31,7 @@ BEARER_TOKEN: A valid bearer token for the account to associate the payment with
 | `reference`              | Yes      | There reference issued by the government service for this payment         |
 
 ### Payment created response
+In case of a card payment:
 
 ```
 HTTP/1.1 201 Created
@@ -91,6 +92,43 @@ Content-Type: application/json
 }
 ```
 
+  
+In case of a direct debit payment:
+
+```
+HTTP/1.1 201 Created
+Location: http://publicapi.co.uk/v1/payments/ab2341da231434
+Content-Type: application/json
+
+{
+    "_links": {
+        "self" :{
+            "href": "http://publicapi.co.uk/v1/payments/ab2341da231434",
+            "method": "GET" 
+        },
+        "next_url" : {
+            "href": "http://frontend-dd.co.uk/charge/1?chargeTokenId=82347",
+            "method": "GET" 
+        },
+        "next_url_post" : {
+            "params" : {
+                "chargeTokenId" : "82347"
+            },
+            "type" : "application/x-www-form-urlencoded",
+            "href": "http://frontend-dd.co.uk/charge/1?chargeTokenId=82347",
+            "method": "POST" 
+        }
+    },
+    "payment_id": "ab2341da231434",
+    "amount": 50000,
+    "description": "Payment description",
+    "status": "CREATED",
+    "return_url": "https://example.service.gov.uk/some-reference-to-this-payment",
+    "reference": "some-reference-to-this-payment",
+    "payment_provider": "Sandbox",
+    "created_date": "2016-01-15T16:30:56Z",
+}
+```
 #### Response fields description
 
 | Field                  | Description                               |
@@ -210,6 +248,7 @@ Authorization: Bearer BEARER_TOKEN
 ```
 
 ### Payment response
+In case of a card payment:
 
 ```
 HTTP/1.1 200 OK
@@ -278,6 +317,41 @@ Content-Type: application/json
         "captured_date": "2016-01-15",
         "capture_submit_time": "2016-01-15T16:30:56Z" 
     }
+}
+```
+
+In case of a direct debit payment:
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+    "_links": {
+        "self" :{
+            "href": "http://publicapi.co.uk/v1/payments/ab2341da231434",
+            "method": "GET" 
+        },
+        "next_url" : {
+            "href": "http://frontend-dd.co.uk/charge/ab2341da231434?chargeTokenId=82347",
+            "method": "GET" 
+        },
+        "next_url_post" : {
+            "params" : {},
+            "type" : "",
+            "href": "http://frontend-dd.co.uk/charge/1?chargeTokenId=82347",
+            "method": "POST" 
+        }
+    },
+    "payment_id": "ab2341da231434",
+    "amount": 50000,
+    "description": "Payment description",
+    "status": "CREATED",
+    "return_url": "https://example.service.gov.uk/some-reference-to-this-payment",
+    "reference" : "some-reference-to-this-payment",
+    "email": "mail@email.com",
+    "payment_provider": "Sandbox",
+    "created_date": "2016-01-15T16:30:56Z"
 }
 ```
 
