@@ -412,6 +412,33 @@
       },
       "description" : "A structure representing the billing address of a card"
     },
+    "Card Payment" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Payment"
+      }, {
+        "type" : "object",
+        "properties" : {
+          "refund_summary" : {
+            "readOnly" : true,
+            "$ref" : "#/definitions/Refund Summary"
+          },
+          "settlement_summary" : {
+            "readOnly" : true,
+            "$ref" : "#/definitions/Settlement Summary"
+          },
+          "card_details" : {
+            "readOnly" : true,
+            "$ref" : "#/definitions/Payment card details"
+          },
+          "card_brand" : {
+            "type" : "string",
+            "example" : "Visa",
+            "description" : "Card Brand",
+            "readOnly" : true
+          }
+        }
+      } ]
+    },
     "CreatePaymentRefundRequest" : {
       "type" : "object",
       "required" : [ "amount" ],
@@ -466,6 +493,59 @@
         }
       },
       "description" : "The Payment Request Payload"
+    },
+    "Direct Debit Payment" : {
+      "allOf" : [ {
+        "$ref" : "#/definitions/Payment"
+      }, {
+        "type" : "object"
+      } ]
+    },
+    "Payment" : {
+      "type" : "object",
+      "discriminator" : "paymentType",
+      "properties" : {
+        "amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "example" : "1200"
+        },
+        "state" : {
+          "$ref" : "#/definitions/Payment state"
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "Your Service Description"
+        },
+        "reference" : {
+          "type" : "string",
+          "example" : "your-reference"
+        },
+        "email" : {
+          "type" : "string",
+          "example" : "your email"
+        },
+        "payment_id" : {
+          "type" : "string",
+          "example" : "hu20sqlact5260q2nanm0q8u93",
+          "readOnly" : true
+        },
+        "payment_provider" : {
+          "type" : "string",
+          "example" : "worldpay",
+          "readOnly" : true
+        },
+        "return_url" : {
+          "type" : "string",
+          "example" : "http://your.service.domain/your-reference",
+          "readOnly" : true
+        },
+        "created_date" : {
+          "type" : "string",
+          "example" : "2016-01-21T17:15:00Z",
+          "readOnly" : true
+        }
+      }
     },
     "Payment Error" : {
       "type" : "object",
@@ -592,73 +672,6 @@
       },
       "description" : "A List of Payment Events information"
     },
-    "PaymentForSearchResult" : {
-      "type" : "object",
-      "properties" : {
-        "amount" : {
-          "type" : "integer",
-          "format" : "int64",
-          "example" : "1200"
-        },
-        "state" : {
-          "$ref" : "#/definitions/Payment state"
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "Your Service Description"
-        },
-        "reference" : {
-          "type" : "string",
-          "example" : "your-reference"
-        },
-        "email" : {
-          "type" : "string",
-          "example" : "your email"
-        },
-        "payment_id" : {
-          "type" : "string",
-          "example" : "hu20sqlact5260q2nanm0q8u93",
-          "readOnly" : true
-        },
-        "payment_provider" : {
-          "type" : "string",
-          "example" : "worldpay",
-          "readOnly" : true
-        },
-        "return_url" : {
-          "type" : "string",
-          "example" : "http://your.service.domain/your-reference",
-          "readOnly" : true
-        },
-        "created_date" : {
-          "type" : "string",
-          "example" : "2016-01-21T17:15:00Z",
-          "readOnly" : true
-        },
-        "refund_summary" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/Refund Summary"
-        },
-        "settlement_summary" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/Settlement Summary"
-        },
-        "card_details" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/Payment card details"
-        },
-        "_links" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/linksForSearchResults"
-        },
-        "card_brand" : {
-          "type" : "string",
-          "example" : "Visa",
-          "description" : "Card Brand",
-          "readOnly" : true
-        }
-      }
-    },
     "PaymentSearchResults" : {
       "type" : "object",
       "properties" : {
@@ -666,7 +679,7 @@
           "type" : "array",
           "readOnly" : true,
           "items" : {
-            "$ref" : "#/definitions/PaymentForSearchResult"
+            "$ref" : "#/definitions/Card Payment"
           }
         }
       }
@@ -674,67 +687,12 @@
     "PaymentWithAllLinks" : {
       "type" : "object",
       "properties" : {
-        "amount" : {
-          "type" : "integer",
-          "format" : "int64",
-          "example" : "1200"
-        },
-        "state" : {
-          "$ref" : "#/definitions/Payment state"
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "Your Service Description"
-        },
-        "reference" : {
-          "type" : "string",
-          "example" : "your-reference"
-        },
-        "email" : {
-          "type" : "string",
-          "example" : "your email"
-        },
-        "payment_id" : {
-          "type" : "string",
-          "example" : "hu20sqlact5260q2nanm0q8u93",
-          "readOnly" : true
-        },
-        "payment_provider" : {
-          "type" : "string",
-          "example" : "worldpay",
-          "readOnly" : true
-        },
-        "return_url" : {
-          "type" : "string",
-          "example" : "http://your.service.domain/your-reference",
-          "readOnly" : true
-        },
-        "created_date" : {
-          "type" : "string",
-          "example" : "2016-01-21T17:15:00Z",
-          "readOnly" : true
-        },
-        "refund_summary" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/Refund Summary"
-        },
-        "settlement_summary" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/Settlement Summary"
-        },
-        "card_details" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/Payment card details"
+        "payment" : {
+          "$ref" : "#/definitions/Payment"
         },
         "_links" : {
           "readOnly" : true,
           "$ref" : "#/definitions/allLinksForAPayment"
-        },
-        "card_brand" : {
-          "type" : "string",
-          "example" : "Visa",
-          "description" : "Card Brand",
-          "readOnly" : true
         }
       }
     },
