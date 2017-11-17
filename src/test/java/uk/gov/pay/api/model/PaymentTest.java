@@ -2,6 +2,7 @@ package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
+import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 
 import java.io.IOException;
 import java.net.URI;
@@ -41,7 +42,7 @@ public class PaymentTest {
                 "\"finished\":false" +
                 "}}", ChargeFromResponse.class);
 
-        Payment payment = PaymentWithAllLinks.valueOf(paymentFromConnector, selfUri, eventsUri, cancelUri, refundsUri);
+        PaymentWithAllLinks payment = PaymentWithAllLinks.valueOf(paymentFromConnector, selfUri, eventsUri, cancelUri, refundsUri);
 
         assertThat(payment.toString(), not(containsString("user@example.com")));
         assertThat(payment.toString(), not(containsString("last_digits_card_number")));

@@ -6,8 +6,10 @@ import org.junit.Rule;
 import org.mockserver.junit.MockServerRule;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
+import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
-import uk.gov.pay.api.utils.ConnectorMockClient;
+import uk.gov.pay.api.utils.mocks.ConnectorDDMockClient;
+import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 
 import static io.dropwizard.testing.ConfigOverride.config;
@@ -23,6 +25,9 @@ public abstract class PaymentResourceITestBase {
     public MockServerRule connectorMockRule = new MockServerRule(this);
 
     @Rule
+    public MockServerRule connectorDDMockRule = new MockServerRule(this);
+
+    @Rule
     public MockServerRule publicAuthMockRule = new MockServerRule(this);
 
     @Rule
@@ -30,19 +35,26 @@ public abstract class PaymentResourceITestBase {
             PublicApi.class
             , resourceFilePath("config/test-config.yaml")
             , config("connectorUrl", connectorBaseUrl())
+            , config("connectorDDUrl", connectorDDBaseUrl())
             , config("publicAuthUrl", publicAuthBaseUrl()));
 
     protected ConnectorMockClient connectorMock;
+    protected ConnectorDDMockClient connectorDDMock;
     protected PublicAuthMockClient publicAuthMock;
 
     @Before
     public void setup() {
         connectorMock = new ConnectorMockClient(connectorMockRule.getPort(), connectorBaseUrl());
+        connectorDDMock = new ConnectorDDMockClient(connectorDDMockRule.getPort(), connectorDDBaseUrl());
         publicAuthMock = new PublicAuthMockClient(publicAuthMockRule.getPort());
     }
 
     private String connectorBaseUrl() {
         return "http://localhost:" + connectorMockRule.getPort();
+    }
+
+    private String connectorDDBaseUrl() {
+        return "http://localhost:" + connectorDDMockRule.getPort();
     }
 
     private String publicAuthBaseUrl() {
@@ -51,6 +63,10 @@ public abstract class PaymentResourceITestBase {
 
     String paymentLocationFor(String chargeId) {
         return "http://publicapi.url" + PAYMENTS_PATH + chargeId;
+    }
+
+    String frontendUrlFor(TokenPaymentType paymentType) {
+        return "http://frontend_"+paymentType.toString().toLowerCase()+"/charge/";
     }
 
     String paymentEventsLocationFor(String chargeId) {

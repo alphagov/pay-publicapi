@@ -6,7 +6,7 @@ import uk.gov.pay.api.model.links.PaymentLinksForSearch;
 
 import java.net.URI;
 
-public class PaymentForSearchResult extends Payment {
+public class PaymentForSearchResult extends CardPayment {
 
     @JsonProperty(LINKS_JSON_ATTRIBUTE)
     private PaymentLinksForSearch links = new PaymentLinksForSearch();

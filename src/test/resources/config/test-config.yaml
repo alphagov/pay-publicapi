@@ -16,7 +16,8 @@ logging:
         logFormat: "[%thread] %highlight(%-5level) %cyan(%logger{15}) - %msg %n"
 
 baseUrl: http://publicapi.url/
-connectorUrl: http://connector.url/
+connectorUrl: http://connector_card.url/
+connectorDDUrl: http://connector_direct_debit.url/
 publicAuthUrl: http://publicauth.url/v1/auth
 
 
