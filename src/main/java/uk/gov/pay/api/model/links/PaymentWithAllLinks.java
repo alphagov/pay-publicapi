@@ -108,4 +108,9 @@ public class PaymentWithAllLinks {
                 return PaymentWithAllLinks.valueOf(paymentConnector, selfLink, paymentEventsUri, paymentCancelUri, paymentRefundsUri);
         }
     }
+
+    @Override
+    public String toString() {
+        return getPayment().toString();
+    }
 }
