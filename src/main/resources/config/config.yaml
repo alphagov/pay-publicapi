@@ -13,7 +13,7 @@ logging:
         threshold: ALL
         timeZone: UTC
         target: stdout
-        logFormat: "[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] %highlight(%-5level) %cyan(%logger{15}) - %msg %n"
+        logFormat: "[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] [%-5level] [%logger{15}] [requestID=%X{X-Request-Id}] - %msg %n"
 
 baseUrl: ${PUBLICAPI_BASE}
 connectorUrl: ${CONNECTOR_URL}
