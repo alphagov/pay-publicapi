@@ -18,17 +18,21 @@ import java.security.cert.CertificateFactory;
 public class TrustStoreLoader {
     private static final Logger logger = LoggerFactory.getLogger(TrustStoreLoader.class);
 
-    private static final String CERTS_PATH;
+    private static String CERTS_PATH;
     private static final String TRUST_STORE_PASSWORD = "";
 
-    private static final KeyStore TRUST_STORE;
+    private static KeyStore TRUST_STORE;
 
-    static {
+
+    private static KeyStore initialiseTrustStore() {
+        logger.info("Initialising Trust Store.");
         CERTS_PATH = System.getenv("CERTS_PATH");
 
+        KeyStore keyStore;
+
         try {
-            TRUST_STORE = KeyStore.getInstance(KeyStore.getDefaultType());
-            TRUST_STORE.load(null, TRUST_STORE_PASSWORD.toCharArray());
+            keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keyStore.load(null, TRUST_STORE_PASSWORD.toCharArray());
         } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException e) {
             throw new RuntimeException("Could not create a keystore", e);
         }
@@ -40,7 +44,7 @@ public class TrustStoreLoader {
                         try {
                             CertificateFactory cf = CertificateFactory.getInstance("X.509");
                             Certificate cert = cf.generateCertificate(new ByteArrayInputStream(Files.readAllBytes(certPath)));
-                            TRUST_STORE.setCertificateEntry(certPath.getFileName().toString(), cert);
+                            keyStore.setCertificateEntry(certPath.getFileName().toString(), cert);
                             logger.info("Loaded cert " + certPath);
                         } catch (SecurityException | KeyStoreException | CertificateException | IOException e) {
                             logger.error("Could not load " + certPath, e);
@@ -53,9 +57,18 @@ public class TrustStoreLoader {
                 logger.error("Error walking certs directory", ioe);
             }
         }
+        logger.info("Finished Trust Store initialisation.");
+        return keyStore;
     }
 
     public static KeyStore getTrustStore() {
+        if (TRUST_STORE == null) {
+            synchronized (TrustStoreLoader.class) {
+                if (TRUST_STORE == null) {
+                    TRUST_STORE = initialiseTrustStore();
+                }
+            }
+        }
         return TRUST_STORE;
     }
 
