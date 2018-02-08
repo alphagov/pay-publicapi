@@ -62,6 +62,11 @@ public class PublicApi extends Application<PublicApiConfig> {
     public void run(PublicApiConfig config, Environment environment) throws Exception {
         final Client client = RestClientFactory.buildClient(config.getRestClientConfig());
 
+        /*
+        Add explicit wait to test if the problem is a delay in loading certificates
+         */
+        Thread.sleep(config.getWait());
+
         ObjectMapper objectMapper = environment.getObjectMapper();
         configureObjectMapper(config, objectMapper);
 

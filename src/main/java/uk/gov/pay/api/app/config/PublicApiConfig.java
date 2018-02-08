@@ -40,6 +40,9 @@ public class PublicApiConfig extends Configuration {
     @JsonProperty("rateLimiter")
     private RateLimiterConfig rateLimiterConfig;
 
+    @JsonProperty("wait")
+    private int wait;
+
     public String getBaseUrl() {
         return baseUrl;
     }
@@ -79,4 +82,7 @@ public class PublicApiConfig extends Configuration {
         return rateLimiterConfig;
     }
 
+    public int getWait() {
+        return wait;
+    }
 }

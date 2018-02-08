@@ -33,3 +33,6 @@ rateLimiter:
 allowHttpForReturnUrl: ${ALLOW_HTTP_FOR_RETURN_URL:-false}
 
 apiKeyHmacSecret: ${TOKEN_API_HMAC_SECRET}
+
+wait: 60000
+
