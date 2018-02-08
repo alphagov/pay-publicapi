@@ -13,7 +13,9 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 
 public class TrustStoreLoader {
     private static final Logger logger = LoggerFactory.getLogger(TrustStoreLoader.class);
@@ -69,10 +71,60 @@ public class TrustStoreLoader {
                 }
             }
         }
+        checkTrustStore(TRUST_STORE);
         return TRUST_STORE;
     }
 
     public static String getTrustStorePassword() {
         return new String(TRUST_STORE_PASSWORD);
+    }
+
+    private static KeyStore checkTrustStore(final KeyStore keyStore) {
+        final String CERTS_PATH = System.getenv("CERTS_PATH");
+
+        if (CERTS_PATH != null) {
+            try {
+
+                Files.walk(Paths.get(CERTS_PATH)).forEach(certPath -> {
+                    if (Files.isRegularFile(certPath)) {
+                        try {
+                            String certificateAlias = certPath.getFileName().toString();
+                            int time = 0;
+                            while (true) {
+                                Certificate certificate = keyStore.getCertificate(certificateAlias);
+
+                                if (certificate instanceof X509Certificate) {
+                                    try {
+                                        ((X509Certificate) certificate).checkValidity();
+                                        logger.info("Certificate '{}' is active for current date", certificateAlias);
+                                    } catch (CertificateExpiredException cee) {
+                                        logger.error("Certificate '{}' is not valid.", certificateAlias);
+                                    }
+                                    break;
+                                }
+                                try {
+                                    if (time > 90) break;
+                                    Thread.sleep(1000);
+                                    time++;
+                                    logger.info("Retrying validation for certificate '{}'", certificateAlias);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            logger.info("Certificate '{}' is correctly loaded.", certificateAlias);
+                        } catch (SecurityException | KeyStoreException | CertificateException e) {
+                            logger.error("Could not verify certificate '" + certPath + "'", e);
+                        }
+                    }
+                });
+            } catch (NoSuchFileException nsfe) {
+                logger.warn("Did not find any certificates to verify");
+            } catch (IOException ioe) {
+                logger.error("Error walking certs directory", ioe);
+            }
+        }
+        logger.info("Finished Trust Store verification.");
+
+        return keyStore;
     }
 }
