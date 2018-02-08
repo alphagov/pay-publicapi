@@ -1,7 +1,6 @@
 package uk.gov.pay.api.auth;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.dropwizard.auth.AuthenticationException;
 import io.dropwizard.auth.Authenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,11 +15,12 @@ import java.util.Optional;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.Response.Status.OK;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
-import static uk.gov.pay.api.model.TokenPaymentType.*;
+import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.model.TokenPaymentType.fromString;
 
 public class AccountAuthenticator implements Authenticator<String, Account> {
-    private static Logger logger = LoggerFactory.getLogger(AccountAuthenticator.class);
+
+    private static Logger LOGGER = LoggerFactory.getLogger(AccountAuthenticator.class);
 
     private final Client client;
     private final String publicAuthUrl;
@@ -31,25 +31,34 @@ public class AccountAuthenticator implements Authenticator<String, Account> {
     }
 
     @Override
-    public Optional<Account> authenticate(String bearerToken) throws AuthenticationException {
+    public Optional<Account> authenticate(String bearerToken) {
+
+        LOGGER.info(">>> Http Client SSLContext : {}", client.getSslContext());
+
         Response response = client.target(publicAuthUrl).request()
                 .header(AUTHORIZATION, "Bearer " + bearerToken)
                 .accept(MediaType.APPLICATION_JSON)
                 .get();
+
         if (response.getStatus() == OK.getStatusCode()) {
-            JsonNode responseEntity = response.readEntity(JsonNode.class);
-            String accountId = responseEntity.get("account_id").asText();
-            String tokenType = Optional.ofNullable(responseEntity.get("token_type"))
-                    .map(JsonNode::asText).orElse(CARD.toString());
-            TokenPaymentType tokenPaymentType = fromString(tokenType);
-            return Optional.of(new Account(accountId, tokenPaymentType));
+            Optional<Account> account = retrieveAccountFromResponse(response);
+            return account;
         } else if (response.getStatus() == UNAUTHORIZED.getStatusCode()) {
             response.close();
             return Optional.empty();
-        } else {
-            response.close();
-            logger.warn("Unexpected status code " + response.getStatus() + " from auth.");
-            throw new ServiceUnavailableException();
         }
+
+        response.close();
+        LOGGER.warn("Unexpected status code " + response.getStatus() + " from auth.");
+        throw new ServiceUnavailableException();
+    }
+
+    private Optional<Account> retrieveAccountFromResponse(Response response) {
+        JsonNode responseEntity = response.readEntity(JsonNode.class);
+        String accountId = responseEntity.get("account_id").asText();
+        String tokenType = Optional.ofNullable(responseEntity.get("token_type"))
+                .map(JsonNode::asText).orElse(CARD.toString());
+        TokenPaymentType tokenPaymentType = fromString(tokenType);
+        return Optional.of(new Account(accountId, tokenPaymentType));
     }
 }
