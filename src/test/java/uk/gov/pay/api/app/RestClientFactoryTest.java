@@ -7,6 +7,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.api.app.config.RestClientConfig;
+import uk.gov.pay.api.utils.TrustStoreLoader;
 
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.client.Client;
@@ -30,6 +31,7 @@ public class RestClientFactoryTest {
     @Before
     public void before() throws Exception {
         keyStoreDir = Files.createTempDir();
+        TrustStoreLoader.initialiseTrustStore();
         KeyStoreUtil.createKeyStoreWithCerts(keyStoreDir, keyStoreFile, keyStorePassword.toCharArray());
     }
 
@@ -39,7 +41,7 @@ public class RestClientFactoryTest {
     }
 
     @Test
-    public void jerseyClient_shouldUseSSLWhenSecureInternalCommunicationIsOn() throws Exception {
+    public void jerseyClient_shouldUseSSLWhenSecureInternalCommunicationIsOn() {
         //given
         RestClientConfig clientConfiguration = mock(RestClientConfig.class);
         when(clientConfiguration.isDisabledSecureConnection()).thenReturn(false);
@@ -54,7 +56,7 @@ public class RestClientFactoryTest {
     }
 
     @Test
-    public void jerseyClient_shouldNotUseSSLWhenSecureInternalCommunicationIsOff() throws Exception {
+    public void jerseyClient_shouldNotUseSSLWhenSecureInternalCommunicationIsOff() {
         //given
         RestClientConfig clientConfiguration = mock(RestClientConfig.class);
         when(clientConfiguration.isDisabledSecureConnection()).thenReturn(true);

@@ -15,8 +15,6 @@ import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.auth.AccountAuthenticator;
@@ -43,24 +41,13 @@ import uk.gov.pay.api.resources.HealthCheckResource;
 import uk.gov.pay.api.resources.PaymentRefundsResource;
 import uk.gov.pay.api.resources.PaymentsResource;
 import uk.gov.pay.api.resources.RequestDeniedResource;
+import uk.gov.pay.api.utils.BuildTrustStoreCommand;
 import uk.gov.pay.api.validation.PaymentRefundRequestValidator;
 import uk.gov.pay.api.validation.PaymentRequestValidator;
 import uk.gov.pay.api.validation.URLValidator;
 
 import javax.ws.rs.client.Client;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Paths;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateExpiredException;
-import java.security.cert.X509Certificate;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 import static java.util.EnumSet.of;
 import static javax.servlet.DispatcherType.REQUEST;
@@ -69,9 +56,6 @@ import static uk.gov.pay.api.validation.URLValidator.urlValidatorValueOf;
 
 public class PublicApi extends Application<PublicApiConfig> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PublicApi.class);
-
-    private static final String TRUST_STORE_PASSWORD = "";
     private static final String SERVICE_METRICS_NODE = "publicapi";
     private static final int GRAPHITE_SENDING_PERIOD_SECONDS = 10;
 
@@ -83,6 +67,7 @@ public class PublicApi extends Application<PublicApiConfig> {
                         new EnvironmentVariableSubstitutor(false)
                 )
         );
+        bootstrap.addCommand(new BuildTrustStoreCommand());
     }
 
     @Override

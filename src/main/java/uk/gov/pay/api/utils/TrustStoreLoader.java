@@ -4,6 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -18,17 +21,21 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
 public class TrustStoreLoader {
+
     private static final Logger logger = LoggerFactory.getLogger(TrustStoreLoader.class);
 
-    private static String CERTS_PATH;
+    private static final String CERTS_PATH = "CERTS_PATH";
     private static final String TRUST_STORE_PASSWORD = "";
+    public static final String KEY_STORE_FILE_LOCATION = "/tmp/cacerts";
 
     private static KeyStore TRUST_STORE;
 
 
-    private static KeyStore initialiseTrustStore() {
+    public static KeyStore initialiseTrustStore() {
+
         logger.info("Initialising Trust Store.");
-        CERTS_PATH = System.getenv("CERTS_PATH");
+
+        String CERTS_PATH = System.getenv(TrustStoreLoader.CERTS_PATH);
 
         KeyStore keyStore;
 
@@ -60,14 +67,44 @@ public class TrustStoreLoader {
             }
         }
         logger.info("Finished Trust Store initialisation.");
+        File keyStoreFile = new File(KEY_STORE_FILE_LOCATION);
+        try {
+            keyStoreFile.createNewFile();
+            FileOutputStream out = new FileOutputStream(keyStoreFile);
+            keyStore.store(out, "changeit".toCharArray());
+        } catch (CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException e) {
+            throw new RuntimeException("Could't save trust store to file.", e);
+        }
         return keyStore;
+    }
+
+    private static KeyStore loadTrustStore() {
+
+        String trustStoreDefaultLocation = KEY_STORE_FILE_LOCATION;
+
+        KeyStore newKeyStore;
+
+        try {
+
+            FileInputStream myKeys = new FileInputStream(trustStoreDefaultLocation);
+
+            newKeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            newKeyStore.load(myKeys, "changeit".toCharArray());
+
+            myKeys.close();
+
+        } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException e) {
+            throw new RuntimeException("Could not load trust store from '" + trustStoreDefaultLocation + "'", e);
+        }
+
+        return newKeyStore;
     }
 
     public static KeyStore getTrustStore() {
         if (TRUST_STORE == null) {
             synchronized (TrustStoreLoader.class) {
                 if (TRUST_STORE == null) {
-                    TRUST_STORE = initialiseTrustStore();
+                    TRUST_STORE = loadTrustStore();
                 }
             }
         }
@@ -76,10 +113,10 @@ public class TrustStoreLoader {
     }
 
     public static String getTrustStorePassword() {
-        return new String(TRUST_STORE_PASSWORD);
+        return TRUST_STORE_PASSWORD;
     }
 
-    private static KeyStore checkTrustStore(final KeyStore keyStore) {
+    public static void checkTrustStore(final KeyStore keyStore) {
         final String CERTS_PATH = System.getenv("CERTS_PATH");
 
         if (CERTS_PATH != null) {
@@ -111,7 +148,6 @@ public class TrustStoreLoader {
                                     e.printStackTrace();
                                 }
                             }
-                            logger.info("Certificate '{}' is correctly loaded.", certificateAlias);
                         } catch (SecurityException | KeyStoreException | CertificateException e) {
                             logger.error("Could not verify certificate '" + certPath + "'", e);
                         }
@@ -124,7 +160,5 @@ public class TrustStoreLoader {
             }
         }
         logger.info("Finished Trust Store verification.");
-
-        return keyStore;
     }
 }
