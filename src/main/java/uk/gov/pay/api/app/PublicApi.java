@@ -15,6 +15,8 @@ import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.auth.AccountAuthenticator;
@@ -47,7 +49,9 @@ import uk.gov.pay.api.validation.PaymentRequestValidator;
 import uk.gov.pay.api.validation.URLValidator;
 
 import javax.ws.rs.client.Client;
+import javax.ws.rs.core.Response;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 
 import static java.util.EnumSet.of;
 import static javax.servlet.DispatcherType.REQUEST;
@@ -55,6 +59,8 @@ import static uk.gov.pay.api.resources.PaymentsResource.API_VERSION_PATH;
 import static uk.gov.pay.api.validation.URLValidator.urlValidatorValueOf;
 
 public class PublicApi extends Application<PublicApiConfig> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PublicApi.class);
 
     private static final String SERVICE_METRICS_NODE = "publicapi";
     private static final int GRAPHITE_SENDING_PERIOD_SECONDS = 10;
@@ -74,6 +80,22 @@ public class PublicApi extends Application<PublicApiConfig> {
     public void run(PublicApiConfig config, Environment environment) {
 
         final Client client = RestClientFactory.buildClient(config.getRestClientConfig());
+
+
+        IntStream.of(1, 2, 3)
+                .forEach((number -> {
+                    try {
+                        Response response = client.target(config.getConnectorUrl())
+                                .path("/v1/api/accounts")
+                                .request()
+                                .get();
+                        LOGGER.info(">>> Test connector client call retry " + number + " -> Response: " + response.getStatus());
+                    } catch (Exception e) {
+
+                    }
+                }));
+
+
 
         ObjectMapper objectMapper = environment.getObjectMapper();
         configureObjectMapper(config, objectMapper);

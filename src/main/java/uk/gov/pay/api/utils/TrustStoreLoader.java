@@ -25,7 +25,7 @@ public class TrustStoreLoader {
     private static final Logger logger = LoggerFactory.getLogger(TrustStoreLoader.class);
 
     private static final String CERTS_PATH = "CERTS_PATH";
-    private static final String TRUST_STORE_PASSWORD = "";
+    private static final String TRUST_STORE_PASSWORD = "changeit";
     public static final String KEY_STORE_FILE_LOCATION = "/tmp/cacerts";
 
     private static KeyStore TRUST_STORE;
