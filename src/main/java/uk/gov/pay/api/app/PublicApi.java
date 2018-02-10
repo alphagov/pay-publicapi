@@ -80,23 +80,7 @@ public class PublicApi extends Application<PublicApiConfig> {
     public void run(PublicApiConfig config, Environment environment) {
 
         final Client client = RestClientFactory.buildClient(config.getRestClientConfig());
-
-
-        IntStream.of(1, 2, 3)
-                .forEach((number -> {
-                    try {
-                        Response response = client.target(config.getConnectorUrl())
-                                .path("/v1/api/accounts")
-                                .request()
-                                .get();
-                        LOGGER.info(">>> Test connector client call retry " + number + " -> Response: " + response.getStatus());
-                    } catch (Exception e) {
-
-                    }
-                }));
-
-
-
+        
         ObjectMapper objectMapper = environment.getObjectMapper();
         configureObjectMapper(config, objectMapper);
 
