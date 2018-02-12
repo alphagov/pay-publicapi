@@ -50,7 +50,8 @@ pipeline {
         branch 'master'
       }
       steps {
-        deploy("publicapi", "test", null, true)
+        deploy("publicapi", "test", null, false, false)
+        deployEcs("publicapi", "test", null, true, true)
       }
     }
   }
