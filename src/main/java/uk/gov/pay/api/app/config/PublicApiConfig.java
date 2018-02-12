@@ -2,6 +2,7 @@ package uk.gov.pay.api.app.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
+import io.dropwizard.client.HttpClientConfiguration;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -34,6 +35,9 @@ public class PublicApiConfig extends Configuration {
     @NotNull
     @JsonProperty("jerseyClientConfig")
     private RestClientConfig restClientConfig;
+
+    @JsonProperty("httpClient")
+    private HttpClientConfiguration httpClientConfiguration;
 
     @Valid
     @NotNull
@@ -79,4 +83,7 @@ public class PublicApiConfig extends Configuration {
         return rateLimiterConfig;
     }
 
+    public HttpClientConfiguration getHttpClientConfiguration() {
+        return httpClientConfiguration;
+    }
 }

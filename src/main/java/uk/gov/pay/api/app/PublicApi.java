@@ -10,15 +10,26 @@ import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.auth.oauth.OAuthCredentialAuthFilter;
+import io.dropwizard.client.HttpClientBuilder;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.apache.http.client.HttpClient;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.auth.AccountAuthenticator;
-import uk.gov.pay.api.exception.mapper.*;
+import uk.gov.pay.api.exception.mapper.BadRequestExceptionMapper;
+import uk.gov.pay.api.exception.mapper.CancelChargeExceptionMapper;
+import uk.gov.pay.api.exception.mapper.CreateChargeExceptionMapper;
+import uk.gov.pay.api.exception.mapper.CreateRefundExceptionMapper;
+import uk.gov.pay.api.exception.mapper.GetChargeExceptionMapper;
+import uk.gov.pay.api.exception.mapper.GetEventsExceptionMapper;
+import uk.gov.pay.api.exception.mapper.GetRefundExceptionMapper;
+import uk.gov.pay.api.exception.mapper.GetRefundsExceptionMapper;
+import uk.gov.pay.api.exception.mapper.SearchChargesExceptionMapper;
+import uk.gov.pay.api.exception.mapper.ValidationExceptionMapper;
 import uk.gov.pay.api.filter.AuthorizationValidationFilter;
 import uk.gov.pay.api.filter.LoggingFilter;
 import uk.gov.pay.api.filter.RateLimiter;
@@ -32,6 +43,7 @@ import uk.gov.pay.api.resources.HealthCheckResource;
 import uk.gov.pay.api.resources.PaymentRefundsResource;
 import uk.gov.pay.api.resources.PaymentsResource;
 import uk.gov.pay.api.resources.RequestDeniedResource;
+import uk.gov.pay.api.utils.BuildTrustStoreCommand;
 import uk.gov.pay.api.validation.PaymentRefundRequestValidator;
 import uk.gov.pay.api.validation.PaymentRequestValidator;
 import uk.gov.pay.api.validation.URLValidator;
@@ -56,11 +68,18 @@ public class PublicApi extends Application<PublicApiConfig> {
                         new EnvironmentVariableSubstitutor(false)
                 )
         );
+        bootstrap.addCommand(new BuildTrustStoreCommand());
     }
 
     @Override
-    public void run(PublicApiConfig config, Environment environment) throws Exception {
+    public void run(PublicApiConfig config, Environment environment) {
+
         final Client client = RestClientFactory.buildClient(config.getRestClientConfig());
+
+        HttpClient apacheHttpClient = new HttpClientBuilder(environment)
+                .using(config.getHttpClientConfiguration())
+                .build(getName());
+
 
         ObjectMapper objectMapper = environment.getObjectMapper();
         configureObjectMapper(config, objectMapper);
@@ -84,7 +103,7 @@ public class PublicApi extends Application<PublicApiConfig> {
 
         environment.jersey().register(new AuthDynamicFeature(
                 new OAuthCredentialAuthFilter.Builder<Account>()
-                        .setAuthenticator(new AccountAuthenticator(client, config.getPublicAuthUrl()))
+                        .setAuthenticator(new AccountAuthenticator(apacheHttpClient, config.getPublicAuthUrl()))
                         .setPrefix("Bearer")
                         .buildAuthFilter()));
         environment.jersey().register(new AuthValueFactoryProvider.Binder<>(Account.class));
