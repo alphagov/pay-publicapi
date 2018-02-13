@@ -1,6 +1,8 @@
 package uk.gov.pay.api.app;
 
 import org.glassfish.jersey.SslConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.filter.RestClientLoggingFilter;
 
@@ -12,7 +14,11 @@ import static uk.gov.pay.api.utils.TrustStoreLoader.getTrustStore;
 import static uk.gov.pay.api.utils.TrustStoreLoader.getTrustStorePassword;
 
 public class RestClientFactory {
-    public static final String TLSV1_2 = "TLSv1.2";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RestClientFactory.class);
+
+
+    private static final String TLSV1_2 = "TLSv1.2";
 
     public static Client buildClient(RestClientConfig clientConfig) {
         Client client;
@@ -25,6 +31,7 @@ public class RestClientFactory {
                     .securityProtocol(TLSV1_2);
 
             SSLContext sslContext = sslConfig.createSSLContext();
+            LOGGER.info(">>> Loading SSLContext : {}", sslContext);
             client = ClientBuilder.newBuilder().sslContext(sslContext).build();
         }
         client.register(RestClientLoggingFilter.class);

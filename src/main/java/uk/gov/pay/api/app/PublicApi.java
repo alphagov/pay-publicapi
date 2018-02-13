@@ -15,10 +15,21 @@ import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.auth.AccountAuthenticator;
-import uk.gov.pay.api.exception.mapper.*;
+import uk.gov.pay.api.exception.mapper.BadRequestExceptionMapper;
+import uk.gov.pay.api.exception.mapper.CancelChargeExceptionMapper;
+import uk.gov.pay.api.exception.mapper.CreateChargeExceptionMapper;
+import uk.gov.pay.api.exception.mapper.CreateRefundExceptionMapper;
+import uk.gov.pay.api.exception.mapper.GetChargeExceptionMapper;
+import uk.gov.pay.api.exception.mapper.GetEventsExceptionMapper;
+import uk.gov.pay.api.exception.mapper.GetRefundExceptionMapper;
+import uk.gov.pay.api.exception.mapper.GetRefundsExceptionMapper;
+import uk.gov.pay.api.exception.mapper.SearchChargesExceptionMapper;
+import uk.gov.pay.api.exception.mapper.ValidationExceptionMapper;
 import uk.gov.pay.api.filter.AuthorizationValidationFilter;
 import uk.gov.pay.api.filter.LoggingFilter;
 import uk.gov.pay.api.filter.RateLimiter;
@@ -32,12 +43,15 @@ import uk.gov.pay.api.resources.HealthCheckResource;
 import uk.gov.pay.api.resources.PaymentRefundsResource;
 import uk.gov.pay.api.resources.PaymentsResource;
 import uk.gov.pay.api.resources.RequestDeniedResource;
+import uk.gov.pay.api.utils.BuildTrustStoreCommand;
 import uk.gov.pay.api.validation.PaymentRefundRequestValidator;
 import uk.gov.pay.api.validation.PaymentRequestValidator;
 import uk.gov.pay.api.validation.URLValidator;
 
 import javax.ws.rs.client.Client;
+import javax.ws.rs.core.Response;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 
 import static java.util.EnumSet.of;
 import static javax.servlet.DispatcherType.REQUEST;
@@ -46,8 +60,11 @@ import static uk.gov.pay.api.validation.URLValidator.urlValidatorValueOf;
 
 public class PublicApi extends Application<PublicApiConfig> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(PublicApi.class);
+
     private static final String SERVICE_METRICS_NODE = "publicapi";
     private static final int GRAPHITE_SENDING_PERIOD_SECONDS = 10;
+
     @Override
     public void initialize(Bootstrap<PublicApiConfig> bootstrap) {
         bootstrap.setConfigurationSourceProvider(
@@ -56,12 +73,14 @@ public class PublicApi extends Application<PublicApiConfig> {
                         new EnvironmentVariableSubstitutor(false)
                 )
         );
+        bootstrap.addCommand(new BuildTrustStoreCommand());
     }
 
     @Override
-    public void run(PublicApiConfig config, Environment environment) throws Exception {
-        final Client client = RestClientFactory.buildClient(config.getRestClientConfig());
+    public void run(PublicApiConfig config, Environment environment) {
 
+        final Client client = RestClientFactory.buildClient(config.getRestClientConfig());
+        
         ObjectMapper objectMapper = environment.getObjectMapper();
         configureObjectMapper(config, objectMapper);
 
@@ -106,6 +125,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         jersey.register(GetRefundExceptionMapper.class);
         jersey.register(GetRefundsExceptionMapper.class);
     }
+
     private void initialiseMetrics(PublicApiConfig configuration, Environment environment) {
         GraphiteSender graphiteUDP = new GraphiteUDP(configuration.getGraphiteHost(), Integer.valueOf(configuration.getGraphitePort()));
         GraphiteReporter.forRegistry(environment.metrics())
@@ -113,6 +133,7 @@ public class PublicApi extends Application<PublicApiConfig> {
                 .build(graphiteUDP)
                 .start(GRAPHITE_SENDING_PERIOD_SECONDS, TimeUnit.SECONDS);
     }
+
     private void configureObjectMapper(PublicApiConfig config, ObjectMapper objectMapper) {
 
         URLValidator urlValidator = urlValidatorValueOf(config.getAllowHttpForReturnUrl());
