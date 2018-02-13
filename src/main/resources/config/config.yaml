@@ -27,7 +27,7 @@ jerseyClientConfig:
   disabledSecureConnection: ${DISABLE_INTERNAL_HTTPS}
 
 httpClient:
-  timeout: 500ms
+  timeout: 1s
   connectionTimeout: 500ms
   timeToLive: 1h
   cookiesEnabled: false
