@@ -5,21 +5,44 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.auth.Auth;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.exception.*;
-import uk.gov.pay.api.model.*;
+import uk.gov.pay.api.exception.CancelChargeException;
+import uk.gov.pay.api.exception.CreateChargeException;
+import uk.gov.pay.api.exception.GetChargeException;
+import uk.gov.pay.api.exception.GetEventsException;
+import uk.gov.pay.api.exception.SearchChargesException;
+import uk.gov.pay.api.model.ChargeFromResponse;
+import uk.gov.pay.api.model.CreatePaymentRequest;
+import uk.gov.pay.api.model.PaymentError;
+import uk.gov.pay.api.model.PaymentEvents;
+import uk.gov.pay.api.model.PaymentForSearchResult;
+import uk.gov.pay.api.model.PaymentSearchResponse;
+import uk.gov.pay.api.model.PaymentSearchResults;
+import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
-import uk.gov.pay.api.utils.JsonStringBuilder;
 
-import javax.ws.rs.*;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -29,11 +52,10 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.http.HttpStatus.SC_OK;
-import static uk.gov.pay.api.model.TokenPaymentType.*;
+import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 import static uk.gov.pay.api.validation.PaymentSearchValidator.validateSearchParameters;
 
 @Path("/")
@@ -57,9 +79,7 @@ public class PaymentsResource {
 
 
     private static final String PAYMENT_KEY = "paymentId";
-    private static final String DESCRIPTION_KEY = "description";
-    private static final String AMOUNT_KEY = "amount";
-    private static final String SERVICE_RETURN_URL = "return_url";
+
     private static final String CHARGE_KEY = "charge_id";
 
     private static final String PAYMENTS_PATH = API_VERSION_PATH + "/payments";
@@ -74,22 +94,22 @@ public class PaymentsResource {
     private static final String CONNECTOR_ACCOUNT_RESOURCE = API_VERSION_PATH + "/api/accounts/%s";
     private static final String CONNECTOR_CHARGES_RESOURCE = CONNECTOR_ACCOUNT_RESOURCE + "/charges";
     private static final String CONNECTOR_CHARGE_RESOURCE = CONNECTOR_CHARGES_RESOURCE + "/%s";
-    private static final String CONNECTOR_CHARGE_EVENTS_RESOURCE = CONNECTOR_CHARGES_RESOURCE + "/%s" + "/events";
-    private static final String CONNECTOR_ACCOUNT_CHARGE_CANCEL_RESOURCE = CONNECTOR_CHARGE_RESOURCE + "/cancel";
 
     private final String baseUrl;
 
-    private final Client client;
+    private final HttpClient client;
     private final String connectorUrl;
     private final String connectorDDUrl;
     private final ObjectMapper objectMapper;
+    private final ConnectorClient connectorClient;
 
-    public PaymentsResource(String baseUrl, Client client, String connectorUrl, String connectorDDUrl, ObjectMapper objectMapper) {
+    public PaymentsResource(String baseUrl, HttpClient client, String connectorUrl, String connectorDDUrl, ObjectMapper objectMapper) {
         this.baseUrl = baseUrl;
         this.client = client;
         this.connectorUrl = connectorUrl;
         this.connectorDDUrl = connectorDDUrl;
         this.objectMapper = objectMapper;
+        this.connectorClient = new ConnectorClient(client, connectorUrl, connectorDDUrl);
     }
 
     @GET
@@ -110,12 +130,8 @@ public class PaymentsResource {
                                @PathParam(PAYMENT_KEY) String paymentId) {
 
         logger.info("Payment request - paymentId={}", paymentId);
-        Response connectorResponse = client
-                .target(getConnectorUrl(
-                        account.getPaymentType(),
-                        format(CONNECTOR_CHARGE_RESOURCE, account.getName(), paymentId)))
-                .request()
-                .get();
+
+        Response connectorResponse = this.connectorClient.getPayment(paymentId, account);
 
         if (connectorResponse.getStatus() == SC_OK) {
             ChargeFromResponse chargeFromResponse = connectorResponse.readEntity(ChargeFromResponse.class);
@@ -154,12 +170,7 @@ public class PaymentsResource {
 
         logger.info("Payment events request - payment_id={}", paymentId);
 
-        Response connectorResponse = client
-                .target(getConnectorUrl(
-                        account.getPaymentType(),
-                        format(CONNECTOR_CHARGE_EVENTS_RESOURCE, account.getName(), paymentId)))
-                .request()
-                .get();
+        Response connectorResponse = this.connectorClient.getPaymentEvents(paymentId, account);
 
         if (connectorResponse.getStatus() == SC_OK) {
 
@@ -237,14 +248,8 @@ public class PaymentsResource {
                 Pair.of(PAGE, pageNumber),
                 Pair.of(DISPLAY_SIZE, displaySize)
         );
-        Response connectorResponse = client
-                .target(getConnectorUrl(
-                        account.getPaymentType(),
-                        format(CONNECTOR_CHARGES_RESOURCE, account.getName()),
-                        queryParams))
-                .request()
-                .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
-                .get();
+
+        Response connectorResponse = this.connectorClient.getCharges(account, queryParams);
 
         logger.info("response from connector form charge search: " + connectorResponse);
 
@@ -323,12 +328,7 @@ public class PaymentsResource {
 
         logger.info("Payment create request - [ {} ]", requestPayload);
 
-        Response connectorResponse = client
-                .target(getConnectorUrl(
-                        account.getPaymentType(),
-                        format(CONNECTOR_CHARGES_RESOURCE, account.getName())))
-                .request()
-                .post(buildChargeRequestPayload(requestPayload));
+        Response connectorResponse = this.connectorClient.createPayment(requestPayload, account);
 
         if (connectorResponse.getStatus() == HttpStatus.SC_CREATED) {
             ChargeFromResponse chargeFromResponse = connectorResponse.readEntity(ChargeFromResponse.class);
@@ -371,12 +371,7 @@ public class PaymentsResource {
 
         logger.info("Payment cancel request - payment_id=[{}]", paymentId);
 
-        Response connectorResponse = client
-                .target(getConnectorUrl(
-                        account.getPaymentType(),
-                        format(CONNECTOR_ACCOUNT_CHARGE_CANCEL_RESOURCE, account.getName(), paymentId)))
-                .request()
-                .post(Entity.json("{}"));
+        Response connectorResponse = this.connectorClient.cancelPayment(paymentId, account);
 
         if (connectorResponse.getStatus() == HttpStatus.SC_NO_CONTENT) {
             connectorResponse.close();
@@ -427,18 +422,5 @@ public class PaymentsResource {
             }
         });
         return builder.toString();
-    }
-
-    private Entity buildChargeRequestPayload(CreatePaymentRequest requestPayload) {
-        int amount = requestPayload.getAmount();
-        String reference = requestPayload.getReference();
-        String description = requestPayload.getDescription();
-        String returnUrl = requestPayload.getReturnUrl();
-        return json(new JsonStringBuilder()
-                .add(AMOUNT_KEY, amount)
-                .add(REFERENCE_KEY, reference)
-                .add(DESCRIPTION_KEY, description)
-                .add(SERVICE_RETURN_URL, returnUrl)
-                .build());
     }
 }

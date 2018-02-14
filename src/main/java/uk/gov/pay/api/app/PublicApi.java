@@ -86,7 +86,7 @@ public class PublicApi extends Application<PublicApiConfig> {
 
         environment.healthChecks().register("ping", new Ping());
         environment.jersey().register(new HealthCheckResource(environment));
-        environment.jersey().register(new PaymentsResource(config.getBaseUrl(), client, config.getConnectorUrl(), config.getConnectorDDUrl(), objectMapper));
+        environment.jersey().register(new PaymentsResource(config.getBaseUrl(), apacheHttpClient, config.getConnectorUrl(), config.getConnectorDDUrl(), objectMapper));
         environment.jersey().register(new PaymentRefundsResource(config.getBaseUrl(), client, config.getConnectorUrl()));
         environment.jersey().register(new RequestDeniedResource());
 
