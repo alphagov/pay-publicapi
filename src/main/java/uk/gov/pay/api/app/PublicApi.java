@@ -10,13 +10,11 @@ import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.auth.oauth.OAuthCredentialAuthFilter;
-import io.dropwizard.client.HttpClientBuilder;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import org.apache.http.client.HttpClient;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.auth.AccountAuthenticator;
@@ -76,11 +74,6 @@ public class PublicApi extends Application<PublicApiConfig> {
 
         final Client client = RestClientFactory.buildClient(config.getRestClientConfig());
 
-        HttpClient apacheHttpClient = new HttpClientBuilder(environment)
-                .using(config.getHttpClientConfiguration())
-                .build(getName());
-
-
         ObjectMapper objectMapper = environment.getObjectMapper();
         configureObjectMapper(config, objectMapper);
 
@@ -103,7 +96,7 @@ public class PublicApi extends Application<PublicApiConfig> {
 
         environment.jersey().register(new AuthDynamicFeature(
                 new OAuthCredentialAuthFilter.Builder<Account>()
-                        .setAuthenticator(new AccountAuthenticator(apacheHttpClient, config.getPublicAuthUrl()))
+                        .setAuthenticator(new AccountAuthenticator(client, config.getPublicAuthUrl()))
                         .setPrefix("Bearer")
                         .buildAuthFilter()));
         environment.jersey().register(new AuthValueFactoryProvider.Binder<>(Account.class));
