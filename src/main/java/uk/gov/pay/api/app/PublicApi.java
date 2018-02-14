@@ -18,7 +18,16 @@ import io.dropwizard.setup.Environment;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.auth.AccountAuthenticator;
-import uk.gov.pay.api.exception.mapper.*;
+import uk.gov.pay.api.exception.mapper.BadRequestExceptionMapper;
+import uk.gov.pay.api.exception.mapper.CancelChargeExceptionMapper;
+import uk.gov.pay.api.exception.mapper.CreateChargeExceptionMapper;
+import uk.gov.pay.api.exception.mapper.CreateRefundExceptionMapper;
+import uk.gov.pay.api.exception.mapper.GetChargeExceptionMapper;
+import uk.gov.pay.api.exception.mapper.GetEventsExceptionMapper;
+import uk.gov.pay.api.exception.mapper.GetRefundExceptionMapper;
+import uk.gov.pay.api.exception.mapper.GetRefundsExceptionMapper;
+import uk.gov.pay.api.exception.mapper.SearchChargesExceptionMapper;
+import uk.gov.pay.api.exception.mapper.ValidationExceptionMapper;
 import uk.gov.pay.api.filter.AuthorizationValidationFilter;
 import uk.gov.pay.api.filter.LoggingFilter;
 import uk.gov.pay.api.filter.RateLimiter;
@@ -32,6 +41,7 @@ import uk.gov.pay.api.resources.HealthCheckResource;
 import uk.gov.pay.api.resources.PaymentRefundsResource;
 import uk.gov.pay.api.resources.PaymentsResource;
 import uk.gov.pay.api.resources.RequestDeniedResource;
+import uk.gov.pay.api.utils.BuildTrustStoreCommand;
 import uk.gov.pay.api.validation.PaymentRefundRequestValidator;
 import uk.gov.pay.api.validation.PaymentRequestValidator;
 import uk.gov.pay.api.validation.URLValidator;
@@ -56,10 +66,12 @@ public class PublicApi extends Application<PublicApiConfig> {
                         new EnvironmentVariableSubstitutor(false)
                 )
         );
+        bootstrap.addCommand(new BuildTrustStoreCommand());
     }
 
     @Override
-    public void run(PublicApiConfig config, Environment environment) throws Exception {
+    public void run(PublicApiConfig config, Environment environment) {
+
         final Client client = RestClientFactory.buildClient(config.getRestClientConfig());
 
         ObjectMapper objectMapper = environment.getObjectMapper();

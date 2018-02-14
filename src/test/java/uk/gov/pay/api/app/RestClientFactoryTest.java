@@ -10,7 +10,13 @@ import uk.gov.pay.api.app.config.RestClientConfig;
 
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.client.Client;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;

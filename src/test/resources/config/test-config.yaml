@@ -27,6 +27,16 @@ graphitePort: ${METRICS_PORT:-8092}
 jerseyClientConfig:
   disabledSecureConnection: "true"
 
+httpClient:
+  timeout: 500ms
+  connectionTimeout: 500ms
+  timeToLive: 1h
+  cookiesEnabled: false
+  maxConnections: 1024
+  maxConnectionsPerRoute: 1024
+  keepAlive: 0ms
+  retries: 0
+
 rateLimiter:
   rate: 1
   perMillis: 1000
