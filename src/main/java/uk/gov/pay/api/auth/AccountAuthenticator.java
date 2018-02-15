@@ -31,18 +31,15 @@ public class AccountAuthenticator implements Authenticator<String, Account> {
     }
 
     @Override
-    public Optional<Account> authenticate(String bearerToken) throws AuthenticationException {
+    public Optional<Account> authenticate(String bearerToken) {
+
         Response response = client.target(publicAuthUrl).request()
                 .header(AUTHORIZATION, "Bearer " + bearerToken)
                 .accept(MediaType.APPLICATION_JSON)
                 .get();
+
         if (response.getStatus() == OK.getStatusCode()) {
-            JsonNode responseEntity = response.readEntity(JsonNode.class);
-            String accountId = responseEntity.get("account_id").asText();
-            String tokenType = Optional.ofNullable(responseEntity.get("token_type"))
-                    .map(JsonNode::asText).orElse(CARD.toString());
-            TokenPaymentType tokenPaymentType = fromString(tokenType);
-            return Optional.of(new Account(accountId, tokenPaymentType));
+            return readAccountFromResponse(response);
         } else if (response.getStatus() == UNAUTHORIZED.getStatusCode()) {
             response.close();
             return Optional.empty();
@@ -51,5 +48,14 @@ public class AccountAuthenticator implements Authenticator<String, Account> {
             logger.warn("Unexpected status code " + response.getStatus() + " from auth.");
             throw new ServiceUnavailableException();
         }
+    }
+
+    private Optional<Account> readAccountFromResponse(Response response) {
+        JsonNode responseEntity = response.readEntity(JsonNode.class);
+        String accountId = responseEntity.get("account_id").asText();
+        String tokenType = Optional.ofNullable(responseEntity.get("token_type"))
+                .map(JsonNode::asText).orElse(CARD.toString());
+        TokenPaymentType tokenPaymentType = fromString(tokenType);
+        return Optional.of(new Account(accountId, tokenPaymentType));
     }
 }

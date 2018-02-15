@@ -18,7 +18,16 @@ import io.dropwizard.setup.Environment;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.auth.AccountAuthenticator;
-import uk.gov.pay.api.exception.mapper.*;
+import uk.gov.pay.api.exception.mapper.BadRequestExceptionMapper;
+import uk.gov.pay.api.exception.mapper.CancelChargeExceptionMapper;
+import uk.gov.pay.api.exception.mapper.CreateChargeExceptionMapper;
+import uk.gov.pay.api.exception.mapper.CreateRefundExceptionMapper;
+import uk.gov.pay.api.exception.mapper.GetChargeExceptionMapper;
+import uk.gov.pay.api.exception.mapper.GetEventsExceptionMapper;
+import uk.gov.pay.api.exception.mapper.GetRefundExceptionMapper;
+import uk.gov.pay.api.exception.mapper.GetRefundsExceptionMapper;
+import uk.gov.pay.api.exception.mapper.SearchChargesExceptionMapper;
+import uk.gov.pay.api.exception.mapper.ValidationExceptionMapper;
 import uk.gov.pay.api.filter.AuthorizationValidationFilter;
 import uk.gov.pay.api.filter.LoggingFilter;
 import uk.gov.pay.api.filter.RateLimiter;
@@ -37,6 +46,7 @@ import uk.gov.pay.api.validation.PaymentRequestValidator;
 import uk.gov.pay.api.validation.URLValidator;
 
 import javax.ws.rs.client.Client;
+import javax.ws.rs.core.MediaType;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.EnumSet.of;
@@ -48,6 +58,7 @@ public class PublicApi extends Application<PublicApiConfig> {
 
     private static final String SERVICE_METRICS_NODE = "publicapi";
     private static final int GRAPHITE_SENDING_PERIOD_SECONDS = 10;
+
     @Override
     public void initialize(Bootstrap<PublicApiConfig> bootstrap) {
         bootstrap.setConfigurationSourceProvider(
@@ -59,8 +70,11 @@ public class PublicApi extends Application<PublicApiConfig> {
     }
 
     @Override
-    public void run(PublicApiConfig config, Environment environment) throws Exception {
+    public void run(PublicApiConfig config, Environment environment) {
+
         final Client client = RestClientFactory.buildClient(config.getRestClientConfig());
+
+        initialRequestToLoadSSLContextProperly(client);
 
         ObjectMapper objectMapper = environment.getObjectMapper();
         configureObjectMapper(config, objectMapper);
@@ -94,6 +108,21 @@ public class PublicApi extends Application<PublicApiConfig> {
         initialiseMetrics(config, environment);
     }
 
+    /*
+    Adding an extra request at startup until we find a resolution for the following jersey client bug (JERSEY-3124).
+    @see <a href="https://jersey.github.io/release-notes/2.24.html">https://jersey.github.io/release-notes/2.24.html</a>
+     */
+    private void initialRequestToLoadSSLContextProperly(Client client) {
+
+        try {
+            client.target("https://connector.pymnt.localdomain/accounts").request()
+                    .accept(MediaType.APPLICATION_JSON)
+                    .get();
+        } catch (Exception e) {
+            //swallow
+        }
+    }
+
     private void attachExceptionMappersTo(JerseyEnvironment jersey) {
         jersey.register(CreateChargeExceptionMapper.class);
         jersey.register(GetChargeExceptionMapper.class);
@@ -106,6 +135,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         jersey.register(GetRefundExceptionMapper.class);
         jersey.register(GetRefundsExceptionMapper.class);
     }
+
     private void initialiseMetrics(PublicApiConfig configuration, Environment environment) {
         GraphiteSender graphiteUDP = new GraphiteUDP(configuration.getGraphiteHost(), Integer.valueOf(configuration.getGraphitePort()));
         GraphiteReporter.forRegistry(environment.metrics())
@@ -113,6 +143,7 @@ public class PublicApi extends Application<PublicApiConfig> {
                 .build(graphiteUDP)
                 .start(GRAPHITE_SENDING_PERIOD_SECONDS, TimeUnit.SECONDS);
     }
+
     private void configureObjectMapper(PublicApiConfig config, ObjectMapper objectMapper) {
 
         URLValidator urlValidator = urlValidatorValueOf(config.getAllowHttpForReturnUrl());
