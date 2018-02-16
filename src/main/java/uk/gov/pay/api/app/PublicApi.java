@@ -45,8 +45,8 @@ import uk.gov.pay.api.validation.PaymentRefundRequestValidator;
 import uk.gov.pay.api.validation.PaymentRequestValidator;
 import uk.gov.pay.api.validation.URLValidator;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.core.MediaType;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.EnumSet.of;
@@ -74,7 +74,7 @@ public class PublicApi extends Application<PublicApiConfig> {
 
         final Client client = RestClientFactory.buildClient(config.getRestClientConfig());
 
-        initialRequestToLoadSSLContextProperly(client);
+        initialiseSSLSocketFactory();
 
         ObjectMapper objectMapper = environment.getObjectMapper();
         configureObjectMapper(config, objectMapper);
@@ -109,18 +109,11 @@ public class PublicApi extends Application<PublicApiConfig> {
     }
 
     /*
-    Adding an extra request at startup until we find a resolution for the following jersey client bug (JERSEY-3124).
+    Adding a call to initialise SSL socket factory at startup until we find a resolution for the following jersey client bug (JERSEY-3124).
     @see <a href="https://jersey.github.io/release-notes/2.24.html">https://jersey.github.io/release-notes/2.24.html</a>
      */
-    private void initialRequestToLoadSSLContextProperly(Client client) {
-
-        try {
-            client.target("https://connector.pymnt.localdomain/accounts").request()
-                    .accept(MediaType.APPLICATION_JSON)
-                    .get();
-        } catch (Exception e) {
-            //swallow
-        }
+    private void initialiseSSLSocketFactory() {
+        HttpsURLConnection.getDefaultSSLSocketFactory();
     }
 
     private void attachExceptionMappersTo(JerseyEnvironment jersey) {
