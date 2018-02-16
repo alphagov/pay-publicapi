@@ -1,8 +1,11 @@
 package uk.gov.pay.api.validation;
 
-import org.apache.commons.validator.routines.UrlValidator;
 
 import static org.apache.commons.validator.routines.UrlValidator.ALLOW_LOCAL_URLS;
+
+import org.apache.commons.validator.routines.DomainValidator;
+import org.apache.commons.validator.routines.DomainValidator.ArrayType;
+import org.apache.commons.validator.routines.UrlValidator;
 
 public enum URLValidator  {
     SECURITY_ENABLED {
@@ -21,6 +24,11 @@ public enum URLValidator  {
             return URL_VALIDATOR.isValid(value);
         }
     };
+
+    static {
+        String[] otherValidTlds = new String[]{"internal"};
+        DomainValidator.updateTLDOverride(ArrayType.GENERIC_PLUS, otherValidTlds);
+    }
 
     public static URLValidator urlValidatorValueOf(boolean isDisabledSecureConnection) {
         return isDisabledSecureConnection ? SECURITY_DISABLED : SECURITY_ENABLED;
