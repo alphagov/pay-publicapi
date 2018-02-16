@@ -39,6 +39,7 @@ import uk.gov.pay.api.json.CreatePaymentRefundRequestDeserializer;
 import uk.gov.pay.api.json.CreatePaymentRequestDeserializer;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.CreatePaymentRequest;
+import uk.gov.pay.api.resources.ConnectorClient;
 import uk.gov.pay.api.resources.HealthCheckResource;
 import uk.gov.pay.api.resources.PaymentRefundsResource;
 import uk.gov.pay.api.resources.PaymentsResource;
@@ -84,9 +85,11 @@ public class PublicApi extends Application<PublicApiConfig> {
         ObjectMapper objectMapper = environment.getObjectMapper();
         configureObjectMapper(config, objectMapper);
 
+        final ConnectorClient connectorClient = new ConnectorClient(apacheHttpClient, config.getConnectorUrl(), config.getConnectorDDUrl());
+
         environment.healthChecks().register("ping", new Ping());
         environment.jersey().register(new HealthCheckResource(environment));
-        environment.jersey().register(new PaymentsResource(config.getBaseUrl(), apacheHttpClient, config.getConnectorUrl(), config.getConnectorDDUrl(), objectMapper));
+        environment.jersey().register(new PaymentsResource(config.getBaseUrl(), connectorClient, objectMapper));
         environment.jersey().register(new PaymentRefundsResource(config.getBaseUrl(), client, config.getConnectorUrl()));
         environment.jersey().register(new RequestDeniedResource());
 

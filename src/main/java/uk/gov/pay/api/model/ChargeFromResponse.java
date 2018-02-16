@@ -102,4 +102,23 @@ public class ChargeFromResponse {
     public CardDetails getCardDetails() {
         return cardDetails;
     }
+
+    @Override
+    public String toString() {
+        return "ChargeFromResponse{" +
+                "chargeId='" + chargeId + '\'' +
+                ", returnUrl='" + returnUrl + '\'' +
+                ", paymentProvider='" + paymentProvider + '\'' +
+                ", links=" + links +
+                ", refundSummary=" + refundSummary +
+                ", settlementSummary=" + settlementSummary +
+                ", cardDetails=" + cardDetails +
+                ", amount=" + amount +
+                ", state=" + state +
+                ", description='" + description + '\'' +
+                ", reference='" + reference + '\'' +
+                ", email='" + email + '\'' +
+                ", createdDate='" + createdDate + '\'' +
+                '}';
+    }
 }

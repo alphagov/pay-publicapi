@@ -13,12 +13,10 @@ abstract class ApiClient {
 
     private static final ObjectMapper OBJECT_MAPPER = Jackson.newObjectMapper();
 
-    private final String apiName;
     private final HttpClient httpClient;
 
 
     ApiClient(HttpClient httpClient) {
-        this.apiName = this.getClass().getSimpleName();
         this.httpClient = httpClient;
     }
 
