@@ -67,6 +67,16 @@ public class URLValidatorTest {
     }
 
     @Test
+    public void whenIsEnabledSecureConnection_allowingInternalDomains() {
+        assertThat(SECURITY_ENABLED.isValid("https://staging.service.core.internal/claim/pay/id/receiver"), is(true));
+    }
+
+    @Test
+    public void whenIsEnabledSecureConnection_disallowingEvilDomains() {
+        assertThat(SECURITY_ENABLED.isValid("https://an.evil/claim/pay/id/receiver"), is(false));
+    }
+
+    @Test
     public void whenUrlIsBlank_shouldFailValidation_whenDisabledSecureConnection() {
         assertThat(SECURITY_DISABLED.isValid("   "), is(false));
     }
