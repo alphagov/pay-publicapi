@@ -194,7 +194,7 @@ public class PaymentsResource {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = PaymentSearchResults.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 422, message = "Invalid parameters: from_date, to_date, status. See Public API documentation for the correct data formats", response = PaymentError.class),
+            @ApiResponse(code = 422, message = "Invalid parameters: from_date, to_date, status, display_size. See Public API documentation for the correct data formats", response = PaymentError.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response searchPayments(@ApiParam(value = "accountId", hidden = true)
                                    @Auth Account account,
@@ -212,7 +212,7 @@ public class PaymentsResource {
                                    @QueryParam(TO_DATE_KEY) String toDate,
                                    @ApiParam(value = "Page number requested for the search, should be a positive integer (optional, defaults to 1)", hidden = false)
                                    @QueryParam(PAGE) String pageNumber,
-                                   @ApiParam(value = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500)", hidden = false)
+                                   @ApiParam(value = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)", hidden = false)
                                    @QueryParam(DISPLAY_SIZE) String displaySize,
                                    @Context UriInfo uriInfo) {
 

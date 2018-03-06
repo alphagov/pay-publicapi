@@ -187,6 +187,27 @@ public class PaymentResourceSearchValidationITest extends PaymentResourceITestBa
                 .assertThat("$.description", is("Invalid parameters: state, reference, email, from_date, to_date. See Public API documentation for the correct data formats"));
     }
 
+    @Test
+    public void searchPayments_errorWhenDisplaySizeInvalid() throws Exception {
+        InputStream body = searchPayments(API_KEY,
+                ImmutableMap.<String, String>builder()
+                        .put("reference", VALID_REFERENCE)
+                        .put("email", VALID_EMAIL)
+                        .put("state", VALID_STATE)
+                        .put("from_date", VALID_FROM_DATE)
+                        .put("to_date", VALID_TO_DATE)
+                        .put("display_size", "501")
+                        .build())
+                .statusCode(422)
+                .contentType(JSON).extract()
+                .body().asInputStream();
+
+        JsonAssert.with(body)
+                .assertThat("$.*", hasSize(2))
+                .assertThat("$.code", is("P0401"))
+                .assertThat("$.description", is("Invalid parameters: display_size. See Public API documentation for the correct data formats"));
+    }
+
     private ValidatableResponse searchPayments(String bearerToken, ImmutableMap<String, String> queryParams) {
         return given().port(app.getLocalPort())
                 .accept(JSON)

@@ -49,7 +49,7 @@ public class PaymentSearchValidator {
     }
 
     private static void validateDisplaySizeIfNotNull(String displaySize, List<String> validationErrors) {
-        if (isNotBlank(displaySize) && (!StringUtils.isNumeric(displaySize) || Integer.valueOf(displaySize) < 1)) {
+        if (isNotBlank(displaySize) && (!StringUtils.isNumeric(displaySize) || Integer.valueOf(displaySize) < 1 || Integer.valueOf(displaySize) > 500)) {
             validationErrors.add(DISPLAY_SIZE);
         }
     }

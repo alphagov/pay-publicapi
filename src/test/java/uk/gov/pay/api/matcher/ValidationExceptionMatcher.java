@@ -33,7 +33,7 @@ public class ValidationExceptionMatcher extends TypeSafeMatcher<ValidationExcept
                 .appendText(" PaymentError. { code = ")
                 .appendValue(code)
                 .appendText(", description = ")
-                .appendValue(description)
+                .appendValue(this.description)
                 .appendText(" }");
     }
 }

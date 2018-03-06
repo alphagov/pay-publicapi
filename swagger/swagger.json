@@ -64,7 +64,7 @@
         }, {
           "name" : "display_size",
           "in" : "query",
-          "description" : "Number of results to be shown per page, should be a positive integer (optional, defaults to 500)",
+          "description" : "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)",
           "required" : false,
           "type" : "string"
         } ],
@@ -79,7 +79,7 @@
             "description" : "Credentials are required to access this resource"
           },
           "422" : {
-            "description" : "Invalid parameters: from_date, to_date, status. See Public API documentation for the correct data formats",
+            "description" : "Invalid parameters: from_date, to_date, status, display_size. See Public API documentation for the correct data formats",
             "schema" : {
               "$ref" : "#/definitions/Payment Error"
             }
