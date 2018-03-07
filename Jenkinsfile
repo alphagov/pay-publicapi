@@ -14,6 +14,8 @@ pipeline {
 
   environment {
     DOCKER_HOST = "unix:///var/run/docker.sock"
+    HOSTED_GRAPHITE_ACCOUNT_ID = credentials('graphite_account_id')
+    HOSTED_GRAPHITE_API_KEY = credentials('graphite_api_key')
   }
 
   stages {
@@ -21,13 +23,26 @@ pipeline {
       steps {
         sh 'mvn clean package'
       }
+      post {
+        failure {
+          postMetric("publicapi.maven-build.failure", 1, "new")
+        }
+        success {
+          postSuccessfulMetrics("publicapi.maven-build")
+        }
+      }
     }
     stage('Docker Build') {
       steps {
         script {
-          buildApp{
+          buildAppWithMetrics {
             app = "publicapi"
           }
+        }
+      }
+      post {
+        failure {
+          postMetric("publicapi.docker-build.failure", 1, "new")
         }
       }
     }
@@ -39,9 +54,14 @@ pipeline {
     stage('Docker Tag') {
       steps {
         script {
-          dockerTag {
+          dockerTagWithMetrics {
             app = "publicapi"
           }
+        }
+      }
+      post {
+        failure {
+          postMetric("publicapi.docker-tag.failure", 1, "new")
         }
       }
     }
@@ -50,9 +70,16 @@ pipeline {
         branch 'master'
       }
       steps {
-        deploy("publicapi", "test", null, false, false)
         deployEcs("publicapi", "test", null, true, true)
       }
+    }
+  }
+  post {
+    failure {
+      postMetric("publicapi.failure", 1, "new")
+    }
+    success {
+      postSuccessfulMetrics("publicapi")
     }
   }
 }
