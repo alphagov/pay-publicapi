@@ -144,13 +144,9 @@ pipeline {
            when { branch 'master' }
            steps { runCardSmokeTest() }
          }
-         stage('Product Smoke Test') {
-           when { branch 'master' }
-           steps { runProductsSmokeTest() }
-         }
          stage('Direct Debit Smoke Test') {
            when { branch 'master' }
-           steps { runProductsSmokeTest() }
+           steps { runDirectDebitSmokeTest() }
          }
        }
      }
