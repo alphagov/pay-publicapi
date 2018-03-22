@@ -129,14 +129,48 @@ pipeline {
         }
       }
     }
-    stage('Deploy') {
-      when {
-        branch 'master'
-      }
-      steps {
-        deployEcs("publicapi", "test", null, true, true)
-      }
-    }
+     stage('Deploy') {
+       when {
+         branch 'master'
+       }
+       steps {
+         deployEcs("publicapi", "test", null, false, false)
+       }
+     }
+     stage('Smoke Tests') {
+       failFast true
+       parallel {
+         stage('Card Smoke Test') {
+           when { branch 'master' }
+           steps { runCardSmokeTest() }
+         }
+         stage('Direct Debit Smoke Test') {
+           when { branch 'master' }
+           steps { runDirectDebitSmokeTest() }
+         }
+       }
+     }
+     stage('Complete') {
+       failFast true
+       parallel {
+         stage('Tag Build') {
+           when {
+             branch 'master'
+           }
+           steps {
+             tagDeployment("publicapi")
+           }
+         }
+         stage('Trigger Deploy Notification') {
+           when {
+             branch 'master'
+           }
+           steps {
+             triggerGraphiteDeployEvent("publicapi")
+           }
+         }
+       }
+     }
   }
   post {
     failure {
