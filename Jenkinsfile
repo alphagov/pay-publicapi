@@ -134,7 +134,7 @@ pipeline {
          branch 'master'
        }
        steps {
-         deployEcs("publicapi", "test", null, false, false)
+         deployEcs("publicapi")
        }
      }
      stage('Smoke Tests') {
