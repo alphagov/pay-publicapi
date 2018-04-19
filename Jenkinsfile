@@ -69,17 +69,6 @@ pipeline {
                 runCardPaymentsE2E("publicapi")
             }
         }
-        stage('Products End-to-End Tests') {
-            when {
-                anyOf {
-                  branch 'master'
-                  environment name: 'RUN_END_TO_END_ON_PR', value: 'true'
-                }
-            }
-            steps {
-                runProductsE2E("publicapi")
-            }
-        }
         stage('Direct-Debit End-to-End Tests') {
             when {
                 anyOf {
