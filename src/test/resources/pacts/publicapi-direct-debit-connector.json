@@ -1,0 +1,83 @@
+{
+  "consumer": {
+    "name": "publicapi"
+  },
+  "provider": {
+    "name": "direct-debit-connector"
+  },
+  "interactions": [
+    {
+      "description": "a create charge request",
+      "request": {
+        "method": "POST",
+        "path": "/v1/api/accounts/GATEWAY_ACCOUNT_ID/charges",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "amount": 100,
+          "reference": "a reference",
+          "description": "a description",
+          "return_url": "https://somewhere.gov.uk/rainbow/1"
+        },
+        "matchingRules": {
+          "body": {
+            "$.amount": {
+              "matchers": [{"match": "type"}]
+            },
+            "$.reference": {
+              "matchers": [{"match": "type"}]
+            },
+            "$.description": {
+              "matchers": [{"match": "type"}]
+            },
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Content-Type": "application/json",
+          "Location": "/v1/api/accounts/GATEWAY_ACCOUNT_ID/charges/ch_ab2341da231434l"
+        },
+        "body": {
+          "charge_id": "ch_ab2341da231434l",
+          "amount": "100",
+          "reference": "a reference",
+          "email": "alice.111@mail.fake",
+          "description": "a description",
+          "state": {
+            "status": "created"
+          },
+          "return_url": "https://somewhere.gov.uk/rainbow/1",
+          "payment_provider": "Sandbox",
+          "created_date": "2016-01-01T12:00:00Z"
+        },
+        "matchingRules": {
+          "$.body.account_id": {
+            "match": "type"
+          },
+          "$.body.token_type": {
+            "match": "type"
+          }
+        },
+        "generators": {
+          "body": {
+            "$.created_date": {
+              "type": "DateTime",
+              "format": "yyyy-MM-ddTHH:mm:ssZ"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pactSpecification": {
+      "version": "3.0.0"
+    },
+    "pact-jvm": {
+      "version": "3.5.16"
+    }
+  }
+}
