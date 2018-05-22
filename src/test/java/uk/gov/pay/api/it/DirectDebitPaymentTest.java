@@ -1,9 +1,11 @@
 package uk.gov.pay.api.it;
 
 import au.com.dius.pact.consumer.PactVerification;
+import com.jayway.jsonassert.JsonAssert;
 import com.jayway.restassured.response.ValidatableResponse;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 import org.apache.http.client.fluent.Executor;
+import org.exparity.hamcrest.date.DateMatchers;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,6 +21,8 @@ import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import javax.ws.rs.core.HttpHeaders;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
@@ -72,7 +76,7 @@ public class DirectDebitPaymentTest {
                 .contentType(JSON)
                 .header(HttpHeaders.LOCATION, is(paymentLocationFor(CHARGE_ID)))
                 .body("payment_id", is(CHARGE_ID))
-                .body("amount", is(9999999))
+                .body("amount", is(AMOUNT))
                 .body("reference", is(REFERENCE))
                 .body("description", is(DESCRIPTION))
                 .body("state.status", is(CREATED.getStatus()))
@@ -94,6 +98,12 @@ public class DirectDebitPaymentTest {
                 .body("_links.events", is(nullValue()))
                 .body("_links.refunds", is(nullValue()))
                 .extract().body().asString();
+
+        JsonAssert.with(responseBody)
+                .assertNotDefined("_links.self.type")
+                .assertNotDefined("_links.self.params")
+                .assertNotDefined("_links.next_url.type")
+                .assertNotDefined("_links.next_url.params");
     }
 
     private ValidatableResponse postPaymentResponse(String bearerToken, String payload) {

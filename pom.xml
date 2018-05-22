@@ -133,12 +133,6 @@
             <version>${pact.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>au.com.dius</groupId>
-            <artifactId>pact-jvm-consumer-java8_2.12</artifactId>
-            <version>${pact.version}</version>
-            <scope>test</scope>
-        </dependency>
 
         <!-- swagger -->
         <!-- the excluded dependencies are already pulled by io.dropwizard:dropwizard-jersey transitively -->

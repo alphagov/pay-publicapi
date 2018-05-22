@@ -12,23 +12,10 @@
         "method": "POST",
         "path": "/v1/api/accounts/GATEWAY_ACCOUNT_ID/charges",
         "body": {
-          "amount": "100",
+          "amount": 100,
           "reference": "a reference",
           "description": "a description",
           "return_url": "https://somewhere.gov.uk/rainbow/1"
-        },
-        "matchingRules": {
-          "body": {
-            "$.amount": {
-              "matchers": [{"match": "type"}]
-            },
-            "$.reference": {
-              "matchers": [{"match": "type"}]
-            },
-            "$.description": {
-              "matchers": [{"match": "type"}]
-            }
-          }
         }
       },
       "response": {
@@ -49,7 +36,28 @@
           },
           "return_url": "https://somewhere.gov.uk/rainbow/1",
           "payment_provider": "Sandbox",
-          "created_date": "2016-01-01T12:00:00Z"
+          "created_date": "2016-01-01T12:00:00Z",
+          "links": [
+            {
+              "href": "http://localhost/v1/api/accounts/GATEWAY_ACCOUNT_ID/charges/ch_ab2341da231434l",
+              "rel": "self",
+              "method": "GET"
+            },
+            {
+              "href": "http://frontend_direct_debit/charge/token_1234567asdf",
+              "rel": "next_url",
+              "method": "GET"
+            },
+            {
+              "href": "http://frontend_direct_debit/charge/",
+              "rel": "next_url_post",
+              "type": "application/x-www-form-urlencoded",
+              "params": {
+                "chargeTokenId": "token_1234567asdf"
+              },
+              "method": "POST"
+            }
+          ]
         },
         "matchingRules": {
           "body": {
@@ -78,15 +86,7 @@
               "matchers": [{"match": "type"}]
             },
             "$.created_date": {
-              "matchers": [{ "date": "yyyy-MM-ddTHH:mm:ssZ" }]
-            }
-          }
-        },
-        "generators": {
-          "body": {
-            "$.created_date": {
-              "type": "DateTime",
-              "format": "yyyy-MM-ddTHH:mm:ssZ"
+              "matchers": [{ "date": "yyyy-MM-dd'T'HH:mm:ssZ" }]
             }
           }
         }
