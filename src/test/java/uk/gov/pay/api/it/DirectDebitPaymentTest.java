@@ -5,7 +5,6 @@ import com.jayway.jsonassert.JsonAssert;
 import com.jayway.restassured.response.ValidatableResponse;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 import org.apache.http.client.fluent.Executor;
-import org.exparity.hamcrest.date.DateMatchers;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,8 +20,6 @@ import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import javax.ws.rs.core.HttpHeaders;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;

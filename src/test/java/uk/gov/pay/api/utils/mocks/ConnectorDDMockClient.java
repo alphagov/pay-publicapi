@@ -22,31 +22,7 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
     public ConnectorDDMockClient(int port, String baseUrl) {
         super(port, baseUrl);
     }
-
-    public void respondOk_whenCreatePaymentRequest(int amount, String gatewayAccountId, String chargeId, String chargeTokenId, PaymentState state, String returnUrl,
-                                           String description, String reference, String email, String paymentProvider, String createdDate) {
-        whenCreateCharge(amount, gatewayAccountId, returnUrl, description, reference)
-                .respond(response()
-                        .withStatusCode(CREATED_201)
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withHeader(LOCATION, chargeLocation(gatewayAccountId, chargeId))
-                        .withBody(buildPaymentRequestResponse(
-                                amount,
-                                chargeId,
-                                state,
-                                returnUrl,
-                                description,
-                                reference,
-                                email,
-                                paymentProvider,
-                                createdDate,
-                                validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
-                                validGetLink(nextUrl(chargeTokenId), "next_url"), validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",
-                                        new HashMap<String, String>() {{
-                                            put("chargeTokenId", chargeTokenId);
-                                        }}))));
-    }
-
+    
     public void respondWithChargeFound(
             long amount, String gatewayAccountId, String chargeId, PaymentState state, String returnUrl,
             String description, String reference, String email, String paymentProvider, String createdDate,

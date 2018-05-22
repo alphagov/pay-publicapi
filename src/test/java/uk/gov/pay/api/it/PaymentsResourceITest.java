@@ -24,7 +24,8 @@ import static org.apache.http.HttpStatus.SC_NOT_ACCEPTABLE;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
-import static uk.gov.pay.api.model.TokenPaymentType.*;
+import static uk.gov.pay.api.model.TokenPaymentType.CARD;
+import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 
 public class PaymentsResourceITest extends PaymentResourceITestBase {
 
@@ -102,52 +103,6 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
 
         connectorMock.verifyCreateChargeConnectorRequest(AMOUNT, GATEWAY_ACCOUNT_ID, RETURN_URL, DESCRIPTION, REFERENCE);
     }
-
-    @Test
-    public void createDirectDebitPayment() {
-
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
-
-        connectorDDMock.respondOk_whenCreatePaymentRequest(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID,
-                CREATED, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE);
-
-        String responseBody = postPaymentResponse(API_KEY, SUCCESS_PAYLOAD)
-                .statusCode(201)
-                .contentType(JSON)
-                .header(HttpHeaders.LOCATION, is(paymentLocationFor(CHARGE_ID)))
-                .body("payment_id", is(CHARGE_ID))
-                .body("amount", is(9999999))
-                .body("reference", is(REFERENCE))
-                .body("description", is(DESCRIPTION))
-                .body("state.status", is(CREATED.getStatus()))
-                .body("return_url", is(RETURN_URL))
-                .body("email", is(EMAIL))
-                .body("payment_provider", is(PAYMENT_PROVIDER))
-                .body("created_date", is(CREATED_DATE))
-                .body("_links.self.href", is(paymentLocationFor(CHARGE_ID)))
-                .body("_links.self.method", is("GET"))
-                .body("_links.next_url.href", is(frontendUrlFor(DIRECT_DEBIT) + CHARGE_TOKEN_ID))
-                .body("_links.next_url.method", is("GET"))
-                .body("_links.next_url_post.href", is(frontendUrlFor(DIRECT_DEBIT)))
-                .body("_links.next_url_post.method", is("POST"))
-                .body("_links.next_url_post.type", is("application/x-www-form-urlencoded"))
-                .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
-                .body("card_brand", is(nullValue()))
-                .body("refund_summary", is(nullValue()))
-                .body("_links.cancel", is(nullValue()))
-                .body("_links.events", is(nullValue()))
-                .body("_links.refunds", is(nullValue()))
-                .extract().body().asString();
-
-        JsonAssert.with(responseBody)
-                .assertNotDefined("_links.self.type")
-                .assertNotDefined("_links.self.params")
-                .assertNotDefined("_links.next_url.type")
-                .assertNotDefined("_links.next_url.params");
-
-        connectorDDMock.verifyCreateChargeConnectorRequest(AMOUNT, GATEWAY_ACCOUNT_ID, RETURN_URL, DESCRIPTION, REFERENCE);
-    }
-
 
     @Test
     public void createPayment_withMinimumAmount() {
