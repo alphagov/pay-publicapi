@@ -328,6 +328,7 @@ public class PaymentsResource {
                         account.getPaymentType(),
                         format(CONNECTOR_CHARGES_RESOURCE, account.getName())))
                 .request()
+                .accept(MediaType.APPLICATION_JSON)
                 .post(buildChargeRequestPayload(requestPayload));
 
         if (connectorResponse.getStatus() == HttpStatus.SC_CREATED) {

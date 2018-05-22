@@ -12,7 +12,6 @@
         "method": "GET",
         "path": "/v1/auth",
         "headers": {
-          "Accept": "application/json",
           "Authorization": "Bearer TEST_BEARER_TOKENp837h5j7oje0huchp4ocibv1qq534lmn"
         }
       },
@@ -37,7 +36,7 @@
     }
   ],
   "metadata": {
-    "pactSpecification": {
+    "pact-specification": {
       "version": "3.0.0"
     },
     "pact-jvm": {

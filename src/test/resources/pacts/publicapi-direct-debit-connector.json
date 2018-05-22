@@ -11,11 +11,8 @@
       "request": {
         "method": "POST",
         "path": "/v1/api/accounts/GATEWAY_ACCOUNT_ID/charges",
-        "headers": {
-          "Content-Type": "application/json"
-        },
         "body": {
-          "amount": 100,
+          "amount": "100",
           "reference": "a reference",
           "description": "a description",
           "return_url": "https://somewhere.gov.uk/rainbow/1"
@@ -30,7 +27,7 @@
             },
             "$.description": {
               "matchers": [{"match": "type"}]
-            },
+            }
           }
         }
       },
@@ -47,18 +44,42 @@
           "email": "alice.111@mail.fake",
           "description": "a description",
           "state": {
-            "status": "created"
+            "status": "created",
+            "finished": "false"
           },
           "return_url": "https://somewhere.gov.uk/rainbow/1",
           "payment_provider": "Sandbox",
           "created_date": "2016-01-01T12:00:00Z"
         },
         "matchingRules": {
-          "$.body.account_id": {
-            "match": "type"
-          },
-          "$.body.token_type": {
-            "match": "type"
+          "body": {
+            "$.charge_id": {
+              "matchers": [{"match": "type"}]
+            },
+            "$.amount": {
+              "matchers": [{"match": "type"}]
+            },
+            "$.reference": {
+              "matchers": [{"match": "type"}]
+            },
+            "$.email": {
+              "matchers": [{"match": "type"}]
+            },
+            "$.description": {
+              "matchers": [{"match": "type"}]
+            },
+            "$.state.status": {
+              "matchers": [{"match": "type"}]
+            },
+            "$.return_url": {
+              "matchers": [{"match": "type"}]
+            },
+            "$.payment_provider": {
+              "matchers": [{"match": "type"}]
+            },
+            "$.created_date": {
+              "matchers": [{ "date": "yyyy-MM-ddTHH:mm:ssZ" }]
+            }
           }
         },
         "generators": {
@@ -73,7 +94,7 @@
     }
   ],
   "metadata": {
-    "pactSpecification": {
+    "pact-specification": {
       "version": "3.0.0"
     },
     "pact-jvm": {
