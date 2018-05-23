@@ -25,8 +25,8 @@ public class PactProviderRule extends PactProviderRuleMk2 {
         HashMap<String, RequestResponsePact> pacts = new HashMap<>();
         for (Method m : target.getClass().getMethods()) {
             Optional.ofNullable(m.getAnnotation(Pacts.class)).ifPresent(pactsAnnotation -> Arrays.stream(pactsAnnotation.pacts()).forEach(fileName -> {
-                RequestResponsePact pact = (RequestResponsePact) PactReader.loadPact(new FileSource<>(new File(Resources.getResource(String.format("pacts/%s.json", fileName)).getFile())));
-                if (pact.getProvider().getName().equals(provider)) {
+                if (fileName.contains(provider)) {
+                    RequestResponsePact pact = (RequestResponsePact) PactReader.loadPact(new FileSource<>(new File(Resources.getResource(String.format("pacts/%s.json", fileName)).getFile())));
                     pacts.put(provider, pact);
                 }
             }));

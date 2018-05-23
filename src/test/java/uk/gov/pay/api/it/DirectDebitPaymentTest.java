@@ -67,7 +67,7 @@ public class DirectDebitPaymentTest {
     @Test
     @PactVerification({"direct-debit-connector", "publicauth"})
     @Pacts(pacts = {"publicapi-publicauth", "publicapi-direct-debit-connector"})
-    public void createDirectDebitPayment() {
+    public void createPayment() {
         String responseBody = postPaymentResponse(API_KEY, SUCCESS_PAYLOAD)
                 .statusCode(201)
                 .contentType(JSON)
