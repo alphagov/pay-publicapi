@@ -37,6 +37,7 @@ import uk.gov.pay.api.json.CreatePaymentRefundRequestDeserializer;
 import uk.gov.pay.api.json.CreatePaymentRequestDeserializer;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.CreatePaymentRequest;
+import uk.gov.pay.api.resources.AgreementsResource;
 import uk.gov.pay.api.resources.HealthCheckResource;
 import uk.gov.pay.api.resources.PaymentRefundsResource;
 import uk.gov.pay.api.resources.PaymentsResource;
@@ -84,6 +85,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         environment.jersey().register(new PaymentsResource(config.getBaseUrl(), client, config.getConnectorUrl(), config.getConnectorDDUrl(), objectMapper));
         environment.jersey().register(new PaymentRefundsResource(config.getBaseUrl(), client, config.getConnectorUrl()));
         environment.jersey().register(new RequestDeniedResource());
+        environment.jersey().register(new AgreementsResource(config.getBaseUrl(), client, config.getConnectorDDUrl(), objectMapper));
 
         RateLimiter rateLimiter = new RateLimiter(config.getRateLimiterConfig().getRate(), config.getRateLimiterConfig().getPerMillis());
 

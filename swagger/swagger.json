@@ -12,6 +12,53 @@
   } ],
   "schemes" : [ "https" ],
   "paths" : {
+    "/v1/agreements" : {
+      "post" : {
+        "summary" : "Create new agreement",
+        "description" : "Create a new agreement",
+        "operationId" : "newAgreement",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "requestPayload",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/CreateAgreementRequest"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "schema" : {
+              "$ref" : "#/definitions/AgreementRequestCreate"
+            }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "schema" : {
+              "$ref" : "#/definitions/Payment Error"
+            }
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "422" : {
+            "description" : "Invalid attribute value: description. Must be less than or equal to 255 characters length",
+            "schema" : {
+              "$ref" : "#/definitions/Payment Error"
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "schema" : {
+              "$ref" : "#/definitions/Payment Error"
+            }
+          }
+        }
+      }
+    },
     "/v1/payments" : {
       "get" : {
         "summary" : "Search payments",
@@ -381,6 +428,45 @@
     }
   },
   "definitions" : {
+    "AgreementRequestCreate" : {
+      "type" : "object",
+      "required" : [ "agreement_id", "email", "name", "status", "type" ],
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "example" : "Service Name agreement",
+          "description" : "agreement name",
+          "readOnly" : true
+        },
+        "email" : {
+          "type" : "string",
+          "example" : "email@example.com",
+          "description" : "email",
+          "readOnly" : true
+        },
+        "type" : {
+          "type" : "string",
+          "example" : "on demand",
+          "description" : "agreement type",
+          "readOnly" : true,
+          "enum" : [ "ON_DEMAND" ]
+        },
+        "agreement_id" : {
+          "type" : "string",
+          "example" : "jhjcvaiqlediuhh23d89hd3",
+          "description" : "agreement id",
+          "readOnly" : true
+        },
+        "status" : {
+          "type" : "string",
+          "example" : "CREATED",
+          "description" : "agreement status",
+          "readOnly" : true,
+          "enum" : [ "CREATED" ]
+        }
+      },
+      "description" : "The Agreement Payload to create a new Agreement"
+    },
     "Billing Address" : {
       "type" : "object",
       "properties" : {
@@ -438,6 +524,32 @@
           }
         }
       } ]
+    },
+    "CreateAgreementRequest" : {
+      "type" : "object",
+      "required" : [ "email", "name", "type" ],
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "example" : "Service Name agreement",
+          "description" : "agreement name",
+          "readOnly" : true
+        },
+        "email" : {
+          "type" : "string",
+          "example" : "email@example.com",
+          "description" : "email",
+          "readOnly" : true
+        },
+        "type" : {
+          "type" : "string",
+          "example" : "on demand",
+          "description" : "agreement type",
+          "readOnly" : true,
+          "enum" : [ "ON_DEMAND" ]
+        }
+      },
+      "description" : "The Payload to create a new Agreement"
     },
     "CreatePaymentRefundRequest" : {
       "type" : "object",

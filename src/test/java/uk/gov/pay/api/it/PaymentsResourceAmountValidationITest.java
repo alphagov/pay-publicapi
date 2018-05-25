@@ -1,16 +1,13 @@
 package uk.gov.pay.api.it;
 
 import com.jayway.jsonassert.JsonAssert;
-import com.jayway.restassured.response.ValidatableResponse;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
-import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 
@@ -312,15 +309,5 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 .assertThat("$.field", is("amount"))
                 .assertThat("$.code", is("P0101"))
                 .assertThat("$.description", is("Missing mandatory attribute: amount"));
-    }
-
-    private ValidatableResponse postPaymentResponse(String bearerToken, String payload) {
-        return given().port(app.getLocalPort())
-                .body(payload)
-                .accept(JSON)
-                .contentType(JSON)
-                .header(AUTHORIZATION, "Bearer " + bearerToken)
-                .post(PAYMENTS_PATH)
-                .then();
     }
 }
