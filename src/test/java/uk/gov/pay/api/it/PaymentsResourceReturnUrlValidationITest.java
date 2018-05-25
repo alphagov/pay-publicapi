@@ -1,7 +1,6 @@
 package uk.gov.pay.api.it;
 
 import com.jayway.jsonassert.JsonAssert;
-import com.jayway.restassured.response.ValidatableResponse;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,9 +8,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
-import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 
@@ -254,15 +251,5 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
                 .assertThat("$.field", is("return_url"))
                 .assertThat("$.code", is("P0102"))
                 .assertThat("$.description", is("Invalid attribute value: return_url. Must be a valid URL format"));
-    }
-
-    private ValidatableResponse postPaymentResponse(String bearerToken, String payload) {
-        return given().port(app.getLocalPort())
-                .body(payload)
-                .accept(JSON)
-                .contentType(JSON)
-                .header(AUTHORIZATION, "Bearer " + bearerToken)
-                .post(PAYMENTS_PATH)
-                .then();
     }
 }
