@@ -3,7 +3,11 @@ package uk.gov.pay.api.it;
 import com.jayway.jsonassert.JsonAssert;
 import com.jayway.restassured.response.ValidatableResponse;
 import org.junit.Test;
-import uk.gov.pay.api.model.*;
+import uk.gov.pay.api.model.Address;
+import uk.gov.pay.api.model.CardDetails;
+import uk.gov.pay.api.model.PaymentState;
+import uk.gov.pay.api.model.RefundSummary;
+import uk.gov.pay.api.model.SettlementSummary;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
@@ -26,8 +30,9 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
+import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 
-public class PaymentsResourceITest extends PaymentResourceITestBase {
+public class CardPaymentsResourceITest extends PaymentResourceITestBase {
 
     private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
     private static final ZonedDateTime CAPTURED_DATE = ZonedDateTime.parse("2016-01-02T14:03:00Z");
@@ -254,39 +259,6 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPayment_ReturnsDirectDebitPayment() {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
-
-        connectorDDMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CREATED, RETURN_URL,
-                DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID);
-
-        getPaymentResponse(API_KEY, CHARGE_ID)
-                .statusCode(200)
-                .contentType(JSON)
-                .body("payment_id", is(CHARGE_ID))
-                .body("reference", is(REFERENCE))
-                .body("email", is(EMAIL))
-                .body("description", is(DESCRIPTION))
-                .body("amount", is(AMOUNT))
-                .body("state.status", is(CREATED.getStatus()))
-                .body("return_url", is(RETURN_URL))
-                .body("payment_provider", is(PAYMENT_PROVIDER))
-                .body("created_date", is(CREATED_DATE))
-                .body("_links.self.href", is(paymentLocationFor(CHARGE_ID)))
-                .body("_links.self.method", is("GET"))
-                .body("_links.next_url.href", is(frontendUrlFor(DIRECT_DEBIT) + CHARGE_ID))
-                .body("_links.next_url.method", is("GET"))
-                .body("_links.next_url_post.href", is(frontendUrlFor(DIRECT_DEBIT)))
-                .body("_links.next_url_post.method", is("POST"))
-                .body("_links.next_url_post.type", is("application/x-www-form-urlencoded"))
-                .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
-                .body("_links.cancel", is(nullValue()))
-                .body("_links.events", is(nullValue()))
-                .body("_links.refunds", is(nullValue()));
-        ;
-    }
-
-    @Test
     public void getPayment_ShouldNotIncludeCancelLinkIfPaymentCannotBeCancelled() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID,
@@ -436,38 +408,11 @@ public class PaymentsResourceITest extends PaymentResourceITestBase {
         postPaymentResponse(API_KEY, SUCCESS_PAYLOAD)
                 .statusCode(503);
     }
-
-    private static String paymentPayload(long amount, String returnUrl, String description, String reference, String email) {
-        return new JsonStringBuilder()
-                .add("amount", amount)
-                .add("reference", reference)
-                .add("email", email)
-                .add("description", description)
-                .add("return_url", returnUrl)
-                .build();
-    }
-
-    private ValidatableResponse getPaymentResponse(String bearerToken, String paymentId) {
-        return given().port(app.getLocalPort())
-                .header(AUTHORIZATION, "Bearer " + bearerToken)
-                .get(PAYMENTS_PATH + paymentId)
-                .then();
-    }
-
+    
     private ValidatableResponse getPaymentEventsResponse(String bearerToken, String paymentId) {
         return given().port(app.getLocalPort())
                 .header(AUTHORIZATION, "Bearer " + bearerToken)
                 .get(String.format("/v1/payments/%s/events", paymentId))
-                .then();
-    }
-
-    private ValidatableResponse postPaymentResponse(String bearerToken, String payload) {
-        return given().port(app.getLocalPort())
-                .body(payload)
-                .accept(JSON)
-                .contentType(JSON)
-                .header(AUTHORIZATION, "Bearer " + bearerToken)
-                .post(PAYMENTS_PATH)
                 .then();
     }
 }

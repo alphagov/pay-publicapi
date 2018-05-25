@@ -44,8 +44,6 @@ public class ResourcesFiltersITest extends PaymentResourceITestBase {
     private static final PaymentState CREATED = new PaymentState("created", false, null, null);
     private static final RefundSummary REFUND_SUMMARY = new RefundSummary("pending", 100L, 50L);
     private static final String PAYMENT_PROVIDER = "Sandbox";
-    private static final String CARD_BRAND = "master-card";
-    private static final String CARD_BRAND_LABEL = "Mastercard";
     private static final String RETURN_URL = "https://somewhere.gov.uk/rainbow/1";
     private static final String REFERENCE = "Some reference";
     private static final String EMAIL = "alice.111@mail.fake";
@@ -289,27 +287,10 @@ public class ResourcesFiltersITest extends PaymentResourceITestBase {
                 .build();
     }
 
-    private ValidatableResponse getPaymentResponse(String bearerToken, String paymentId) {
-        return given().port(app.getLocalPort())
-                .header(AUTHORIZATION, "Bearer " + bearerToken)
-                .get(PAYMENTS_PATH + paymentId)
-                .then();
-    }
-
     private ValidatableResponse getPaymentEventsResponse(String bearerToken, String paymentId) {
         return given().port(app.getLocalPort())
                 .header(AUTHORIZATION, "Bearer " + bearerToken)
                 .get(String.format("/v1/payments/%s/events", paymentId))
-                .then();
-    }
-
-    private ValidatableResponse postPaymentResponse(String bearerToken, String payload) {
-        return given().port(app.getLocalPort())
-                .body(payload)
-                .accept(JSON)
-                .contentType(JSON)
-                .header(AUTHORIZATION, "Bearer " + bearerToken)
-                .post(PAYMENTS_PATH)
                 .then();
     }
 
