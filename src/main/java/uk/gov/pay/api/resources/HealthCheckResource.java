@@ -1,5 +1,6 @@
 package uk.gov.pay.api.resources;
 
+import com.codahale.metrics.annotation.Timed;
 import com.codahale.metrics.health.HealthCheck;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableMap;
@@ -28,6 +29,7 @@ public class HealthCheckResource {
     }
 
     @GET
+    @Timed
     @Path(HEALTHCHECK)
     @Produces(APPLICATION_JSON)
     public Response healthCheck() throws JsonProcessingException {

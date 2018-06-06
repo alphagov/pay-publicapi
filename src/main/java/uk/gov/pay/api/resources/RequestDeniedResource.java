@@ -1,5 +1,6 @@
 package uk.gov.pay.api.resources;
 
+import com.codahale.metrics.annotation.Timed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +18,7 @@ public class RequestDeniedResource {
     private static final Logger logger = LoggerFactory.getLogger(RequestDeniedResource.class);
 
     @GET
+    @Timed
     @Path("request-denied")
     @Produces(APPLICATION_JSON)
     public Response requestDeniedGet(@HeaderParam("x-naxsi_sig") String naxsiViolatedRules) {
@@ -24,6 +26,7 @@ public class RequestDeniedResource {
     }
 
     @POST
+    @Timed
     @Path("request-denied")
     @Produces(APPLICATION_JSON)
     public Response requestDeniedPost(@HeaderParam("x-naxsi_sig") String naxsiViolatedRules) {
@@ -31,6 +34,7 @@ public class RequestDeniedResource {
     }
 
     @PUT
+    @Timed
     @Path("request-denied")
     @Produces(APPLICATION_JSON)
     public Response requestDeniedPut(@HeaderParam("x-naxsi_sig") String naxsiViolatedRules) {
@@ -38,6 +42,7 @@ public class RequestDeniedResource {
     }
 
     @DELETE
+    @Timed
     @Path("request-denied")
     @Produces(APPLICATION_JSON)
     public Response requestDeniedDelete(@HeaderParam("x-naxsi_sig") String naxsiViolatedRules) {
