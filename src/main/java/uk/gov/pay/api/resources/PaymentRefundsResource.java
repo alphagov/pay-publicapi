@@ -1,5 +1,6 @@
 package uk.gov.pay.api.resources;
 
+import com.codahale.metrics.annotation.Timed;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
 import io.dropwizard.auth.Auth;
@@ -61,6 +62,7 @@ public class PaymentRefundsResource {
     }
 
     @GET
+    @Timed
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Get all refunds for a payment.",
@@ -93,6 +95,7 @@ public class PaymentRefundsResource {
     }
 
     @GET
+    @Timed
     @Path("/{refundId}")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
@@ -127,6 +130,7 @@ public class PaymentRefundsResource {
     }
 
     @POST
+    @Timed
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     @ApiOperation(

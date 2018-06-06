@@ -1,6 +1,7 @@
 package uk.gov.pay.api.resources;
 
 import black.door.hate.HalRepresentation;
+import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -93,6 +94,7 @@ public class PaymentsResource {
     }
 
     @GET
+    @Timed
     @Path(PAYMENT_BY_ID)
     @Produces(APPLICATION_JSON)
     @ApiOperation(
@@ -136,6 +138,7 @@ public class PaymentsResource {
     }
 
     @GET
+    @Timed
     @Path(PAYMENT_EVENTS_BY_ID)
     @Produces(APPLICATION_JSON)
     @ApiOperation(
@@ -181,6 +184,7 @@ public class PaymentsResource {
     }
 
     @GET
+    @Timed
     @Path(PAYMENTS_PATH)
     @Produces(APPLICATION_JSON)
     @ApiOperation(
@@ -302,6 +306,7 @@ public class PaymentsResource {
     }
 
     @POST
+    @Timed
     @Path(PAYMENTS_PATH)
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
@@ -350,6 +355,7 @@ public class PaymentsResource {
     }
 
     @POST
+    @Timed
     @Path(CANCEL_PAYMENT_PATH)
     @Produces(APPLICATION_JSON)
     @ApiOperation(
