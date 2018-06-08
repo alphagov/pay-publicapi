@@ -23,3 +23,5 @@ staging-2.FAILED-74.status=failed
 staging-2.tag=alpha_staging-2-74
 
 staging-2.alpha_staging-2-74.date=2018-06-08:16:31:23
+
+staging-2.alpha_staging-2-74.status=success
