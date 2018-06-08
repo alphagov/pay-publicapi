@@ -1,4 +1,4 @@
-package uk.gov.pay.api.it;
+package uk.gov.pay.api.it.directdebit.pact;
 
 import au.com.dius.pact.consumer.PactVerification;
 import com.jayway.jsonassert.JsonAssert;
