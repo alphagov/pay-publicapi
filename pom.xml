@@ -10,7 +10,7 @@
         <dropwizard.version>1.2.2</dropwizard.version>
         <guice.version>4.2.0</guice.version>
         <mockserver.version>3.10.4</mockserver.version>
-        <swagger.jersey2.version>1.5.18</swagger.jersey2.version>
+        <swagger.jersey2.version>1.5.20</swagger.jersey2.version>
         <hamcrest.version>1.3</hamcrest.version>
         <jackson.version>2.9.4</jackson.version>
         <logback.version>1.2.3</logback.version>
@@ -371,20 +371,24 @@
             <plugin>
                 <groupId>com.github.kongchen</groupId>
                 <artifactId>swagger-maven-plugin</artifactId>
-                <version>3.1.2</version>
+                <version>3.1.7</version>
                 <configuration>
                     <apiSources>
                         <apiSource>
                             <springmvc>false</springmvc>
-                            <locations>uk.gov.pay.api.resources</locations>
-                            <schemes>https</schemes>
+                            <locations>
+                                <location>uk.gov.pay.api.resources</location>
+                            </locations>
+                            <schemes>
+                                <scheme>https</scheme>
+                            </schemes>
                             <host>publicapi.payments.service.gov.uk</host>
                             <info>
-                                <title>GOV.UK Pay Api</title>
+                                <title>GOV.UK Pay API</title>
                                 <version>1.0.0</version>
-                                <description>GOV.UK Pay Api</description>
+                                <description>GOV.UK Pay API</description>
                             </info>
-                            <swaggerDirectory>swagger</swaggerDirectory>
+                            <swaggerDirectory>${basedir}/swagger</swaggerDirectory>
                         </apiSource>
                     </apiSources>
                 </configuration>
