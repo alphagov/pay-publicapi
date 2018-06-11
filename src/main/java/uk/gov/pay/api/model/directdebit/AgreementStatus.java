@@ -1,5 +1,11 @@
 package uk.gov.pay.api.model.directdebit;
 
 public enum AgreementStatus {
-    CREATED
+    CREATED,
+    STARTED,
+    PENDING,
+    SUBMITTED,
+    ACTIVE,
+    INACTIVE,
+    CANCELLED
 }

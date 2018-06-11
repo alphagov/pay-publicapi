@@ -69,26 +69,28 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                         .withBody(chargeResponseBody));
     }
 
-    public void respondOk_whenCreateAgreementRequest(String name, String email, AgreementType agreementType, String agreementId,
-                                                     AgreementStatus status, String gatewayAccountId) {
-        whenCreateAgreement(name, email, agreementType, gatewayAccountId)
+    public void respondOk_whenCreateAgreementRequest(String agreementId, AgreementType agreementType,
+                                                     String returnUrl, String createdDate,
+                                                     AgreementStatus state, String gatewayAccountId) {
+        whenCreateAgreement(returnUrl, agreementType, gatewayAccountId)
                 .respond(response()
                         .withStatusCode(CREATED_201)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                         .withHeader(LOCATION, format("%s/v1/api/accounts/%s/agreements/%s", baseUrl, gatewayAccountId, agreementId))
-                        .withBody(buildCreateAgreementResponse(name, email, agreementType, agreementId, status)
+                        .withBody(buildCreateAgreementResponse(agreementId, agreementType, returnUrl, createdDate, state)
                         )
                 );
     }
 
-    private String buildCreateAgreementResponse(String name, String email, AgreementType agreementType, String agreementId,
-                                                AgreementStatus status) {
+    private String buildCreateAgreementResponse(String agreementId, AgreementType agreementType,
+                                                String returnUrl, String createdDate,
+                                                AgreementStatus state) {
         return new JsonStringBuilder()
-                .add("name", name)
-                .add("email", email)
-                .add("type", agreementType)
                 .add("agreement_id", agreementId)
-                .add("status", status)
+                .add("agreement_type", agreementType)
+                .add("return_url", returnUrl)
+                .add("created_date", createdDate)
+                .add("state", state)
                 .build();
     }
 
@@ -116,22 +118,21 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
     }
 
 
-    private ForwardChainExpectation whenCreateAgreement(String name, String email, AgreementType agreementType, String gatewayAccountId) {
+    private ForwardChainExpectation whenCreateAgreement(String returnUrl, AgreementType agreementType, String gatewayAccountId) {
         return mockClient.when(request()
                 .withMethod(POST)
-                .withPath(format("/v1/api/accounts/%s/agreements", gatewayAccountId))
+                .withPath(format("/v1/api/accounts/%s/mandates", gatewayAccountId))
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                 .withBody(
-                        createAgreementPayload(name, email, agreementType)
+                        createAgreementPayload(returnUrl, agreementType)
                 )
         );
     }
 
-    private String createAgreementPayload(String name, String email, AgreementType agreementType) {
+    private String createAgreementPayload(String returnUrl, AgreementType agreementType) {
         return new JsonStringBuilder()
-                .add("name", name)
-                .add("email", email)
-                .add("type", agreementType)
+                .add("return_url", returnUrl)
+                .add("agreement_type", agreementType)
                 .build();
     }
 }
