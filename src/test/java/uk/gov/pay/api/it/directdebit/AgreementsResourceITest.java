@@ -4,9 +4,11 @@ import org.junit.Test;
 import uk.gov.pay.api.it.PaymentsResourceITest;
 import uk.gov.pay.api.model.directdebit.AgreementStatus;
 import uk.gov.pay.api.model.directdebit.AgreementType;
+import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import javax.ws.rs.core.HttpHeaders;
+import java.time.ZonedDateTime;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
@@ -16,21 +18,24 @@ import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 
 public class AgreementsResourceITest extends PaymentsResourceITest {
 
+    private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
+    private static final String CREATED_DATE = DateTimeUtils.toUTCDateString(TIMESTAMP);
+
     @Test
     public void createDirectDebitAgreement() {
 
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
 
         connectorDDMock.respondOk_whenCreateAgreementRequest(
-                "mock agreement",
-                "agreement@example.com",
-                AgreementType.ON_DEMAND,
                 "agreementId",
+                AgreementType.ON_DEMAND,
+                "https://service-name.gov.uk/transactions/12345",
+                CREATED_DATE,
                 AgreementStatus.CREATED,
                 GATEWAY_ACCOUNT_ID
         );
 
-        String payload = agreementPayload("mock agreement", "agreement@example.com", AgreementType.ON_DEMAND);
+        String payload = agreementPayload("https://service-name.gov.uk/transactions/12345", AgreementType.ON_DEMAND);
         given().port(app.getLocalPort())
                 .body(payload)
                 .accept(JSON)
@@ -41,19 +46,18 @@ public class AgreementsResourceITest extends PaymentsResourceITest {
                 .statusCode(201)
                 .contentType(JSON)
                 .header(HttpHeaders.LOCATION, is("http://publicapi.url/v1/agreements/agreementId"))
-                .body("name", is("mock agreement"))
-                .body("email", is("agreement@example.com"))
-                .body("type", is(AgreementType.ON_DEMAND.name()))
                 .body("agreement_id", is("agreementId"))
-                .body("status", is(AgreementStatus.CREATED.name()))
+                .body("agreement_type", is(AgreementType.ON_DEMAND.name()))
+                .body("return_url", is("https://service-name.gov.uk/transactions/12345"))
+                .body("created_date", is(CREATED_DATE))
+                .body("state", is(AgreementStatus.CREATED.name()))
                 .extract().body().asString();
     }
 
-    private static String agreementPayload(String name, String email, AgreementType agreementType) {
+    private static String agreementPayload(String returnUrl, AgreementType agreementType) {
         return new JsonStringBuilder()
-                .add("name", name)
-                .add("email", email)
-                .add("type", agreementType)
+                .add("return_url", returnUrl)
+                .add("agreement_type", agreementType)
                 .build();
     }
 }
