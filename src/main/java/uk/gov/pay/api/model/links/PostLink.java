@@ -8,7 +8,7 @@ import java.util.Map;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-@ApiModel(value = "paymentPOSTLink", description = "A POST link related to a payment")
+@ApiModel(value = "PostLink", description = "A POST link related to a payment")
 @JsonInclude(Include.NON_NULL)
 public class PostLink extends Link {
 

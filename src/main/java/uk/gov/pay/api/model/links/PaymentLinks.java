@@ -10,7 +10,7 @@ import java.util.List;
 import static javax.ws.rs.HttpMethod.GET;
 import static javax.ws.rs.HttpMethod.POST;
 
-@ApiModel(value = "allLinksForAPayment", description = "self,events and next links of a Payment")
+@ApiModel(value = "PaymentLinks", description = "self,events and next links of a Payment")
 public class PaymentLinks {
 
     private static final String SELF = "self";

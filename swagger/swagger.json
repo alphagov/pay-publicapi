@@ -81,13 +81,13 @@
           "422" : {
             "description" : "Invalid parameters: from_date, to_date, status, display_size. See Public API documentation for the correct data formats",
             "schema" : {
-              "$ref" : "#/definitions/Payment Error"
+              "$ref" : "#/definitions/PaymentError"
             }
           },
           "500" : {
             "description" : "Downstream system error",
             "schema" : {
-              "$ref" : "#/definitions/Payment Error"
+              "$ref" : "#/definitions/PaymentError"
             }
           }
         }
@@ -117,7 +117,7 @@
           "400" : {
             "description" : "Bad request",
             "schema" : {
-              "$ref" : "#/definitions/Payment Error"
+              "$ref" : "#/definitions/PaymentError"
             }
           },
           "401" : {
@@ -126,13 +126,13 @@
           "422" : {
             "description" : "Invalid attribute value: description. Must be less than or equal to 255 characters length",
             "schema" : {
-              "$ref" : "#/definitions/Payment Error"
+              "$ref" : "#/definitions/PaymentError"
             }
           },
           "500" : {
             "description" : "Downstream system error",
             "schema" : {
-              "$ref" : "#/definitions/Payment Error"
+              "$ref" : "#/definitions/PaymentError"
             }
           }
         }
@@ -163,13 +163,13 @@
           "404" : {
             "description" : "Not found",
             "schema" : {
-              "$ref" : "#/definitions/Payment Error"
+              "$ref" : "#/definitions/PaymentError"
             }
           },
           "500" : {
             "description" : "Downstream system error",
             "schema" : {
-              "$ref" : "#/definitions/Payment Error"
+              "$ref" : "#/definitions/PaymentError"
             }
           }
         }
@@ -194,7 +194,7 @@
           "400" : {
             "description" : "Cancellation of payment failed",
             "schema" : {
-              "$ref" : "#/definitions/Payment Error"
+              "$ref" : "#/definitions/PaymentError"
             }
           },
           "401" : {
@@ -203,19 +203,19 @@
           "404" : {
             "description" : "Not found",
             "schema" : {
-              "$ref" : "#/definitions/Payment Error"
+              "$ref" : "#/definitions/PaymentError"
             }
           },
           "409" : {
             "description" : "Conflict",
             "schema" : {
-              "$ref" : "#/definitions/Payment Error"
+              "$ref" : "#/definitions/PaymentError"
             }
           },
           "500" : {
             "description" : "Downstream system error",
             "schema" : {
-              "$ref" : "#/definitions/Payment Error"
+              "$ref" : "#/definitions/PaymentError"
             }
           }
         }
@@ -246,13 +246,13 @@
           "404" : {
             "description" : "Not found",
             "schema" : {
-              "$ref" : "#/definitions/Payment Error"
+              "$ref" : "#/definitions/PaymentError"
             }
           },
           "500" : {
             "description" : "Downstream system error",
             "schema" : {
-              "$ref" : "#/definitions/Payment Error"
+              "$ref" : "#/definitions/PaymentError"
             }
           }
         }
@@ -281,13 +281,13 @@
           "404" : {
             "description" : "Not found",
             "schema" : {
-              "$ref" : "#/definitions/Payment Error"
+              "$ref" : "#/definitions/PaymentError"
             }
           },
           "500" : {
             "description" : "Downstream system error",
             "schema" : {
-              "$ref" : "#/definitions/Payment Error"
+              "$ref" : "#/definitions/PaymentError"
             }
           }
         }
@@ -324,7 +324,7 @@
           "404" : {
             "description" : "Not found",
             "schema" : {
-              "$ref" : "#/definitions/Payment Error"
+              "$ref" : "#/definitions/PaymentError"
             }
           },
           "412" : {
@@ -333,7 +333,7 @@
           "500" : {
             "description" : "Downstream system error",
             "schema" : {
-              "$ref" : "#/definitions/Payment Error"
+              "$ref" : "#/definitions/PaymentError"
             }
           }
         }
@@ -367,13 +367,13 @@
           "404" : {
             "description" : "Not found",
             "schema" : {
-              "$ref" : "#/definitions/Payment Error"
+              "$ref" : "#/definitions/PaymentError"
             }
           },
           "500" : {
             "description" : "Downstream system error",
             "schema" : {
-              "$ref" : "#/definitions/Payment Error"
+              "$ref" : "#/definitions/PaymentError"
             }
           }
         }
@@ -547,24 +547,6 @@
         }
       }
     },
-    "Payment Error" : {
-      "type" : "object",
-      "properties" : {
-        "field" : {
-          "type" : "string",
-          "example" : "amount"
-        },
-        "code" : {
-          "type" : "string",
-          "example" : "P0102"
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "Invalid attribute value: amount. Must be less than or equal to 10000000"
-        }
-      },
-      "description" : "A Payment Error response"
-    },
     "Payment Event information" : {
       "type" : "object",
       "properties" : {
@@ -651,6 +633,24 @@
         }
       },
       "description" : "A structure representing the current state of the payment in its lifecycle."
+    },
+    "PaymentError" : {
+      "type" : "object",
+      "properties" : {
+        "field" : {
+          "type" : "string",
+          "example" : "amount"
+        },
+        "code" : {
+          "type" : "string",
+          "example" : "P0102"
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "Invalid attribute value: amount. Must be less than or equal to 10000000"
+        }
+      },
+      "description" : "A Payment Error response"
     },
     "PaymentEventsInformation" : {
       "type" : "object",

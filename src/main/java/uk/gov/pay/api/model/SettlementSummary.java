@@ -8,7 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import java.time.ZonedDateTime;
 
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
-@ApiModel(value="Settlement Summary", description = "A structure representing information about a settlement")
+@ApiModel(value="SettlementSummary", description = "A structure representing information about a settlement")
 public class SettlementSummary {
 
     @JsonProperty("capture_submit_time")

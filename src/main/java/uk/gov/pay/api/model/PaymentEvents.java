@@ -11,7 +11,7 @@ import java.util.List;
 import static com.google.common.collect.Lists.newArrayList;
 import static uk.gov.pay.api.model.PaymentEvent.createPaymentEvent;
 
-@ApiModel(value="PaymentEventsInformation", description = "A List of Payment Events information")
+@ApiModel(value="PaymentEvents", description = "A List of Payment Events information")
 public class PaymentEvents {
     public static final String EVENTS = "events";
     @JsonProperty("payment_id")

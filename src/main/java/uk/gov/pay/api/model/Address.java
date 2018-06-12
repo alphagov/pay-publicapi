@@ -10,7 +10,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(NON_NULL)
-@ApiModel(value = "Billing Address", description = "A structure representing the billing address of a card")
+@ApiModel(value = "Address", description = "A structure representing the billing address of a card")
 public class Address {
 
     private String line1;

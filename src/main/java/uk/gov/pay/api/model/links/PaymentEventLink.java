@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 import static javax.ws.rs.HttpMethod.GET;
 
-@ApiModel(value = "payment-event-link", description = "Resource link for a payment of a payment event")
+@ApiModel(value = "PaymentEventLink", description = "Resource link for a payment of a payment event")
 public class PaymentEventLink {
 
     public static final String PAYMENT_LINK = "payment_url";
