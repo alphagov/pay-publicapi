@@ -29,13 +29,14 @@ pipeline {
         script {
           def long stepBuildTime = System.currentTimeMillis()
           def commit = gitCommit()
+          def branchName = gitBranchName()
 
           withCredentials([
                   string(credentialsId: 'pact_broker_username', variable: 'PACT_BROKER_USERNAME'),
                   string(credentialsId: 'pact_broker_password', variable: 'PACT_BROKER_PASSWORD')]
           ) {
               sh "mvn clean package pact:publish -DPACT_BROKER_URL=https://pact-broker-test.cloudapps.digital -DPACT_CONSUMER_VERSION=${commit}" +
-                      " -DPACT_BROKER_USERNAME=${PACT_BROKER_USERNAME} -DPACT_BROKER_PASSWORD=${PACT_BROKER_PASSWORD}"
+                      " -DPACT_BROKER_USERNAME=${PACT_BROKER_USERNAME} -DPACT_BROKER_PASSWORD=${PACT_BROKER_PASSWORD} -DPACT_CONSUMER_TAG=${branchName}"
           }
           postSuccessfulMetrics("publicapi.maven-build", stepBuildTime)
         }
