@@ -5,13 +5,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.pay.api.app.config.PublicApiConfig;
 
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 import static uk.gov.pay.api.utils.ApiKeyGenerator.apiKeyValueOf;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -21,6 +24,8 @@ public class AuthorizationValidationFilterTest {
     private AuthorizationValidationFilter authorizationValidationFilter;
 
     @Mock
+    private PublicApiConfig mockConfiguration;
+    @Mock
     private HttpServletRequest mockRequest;
     @Mock
     private HttpServletResponse mockResponse;
@@ -29,7 +34,9 @@ public class AuthorizationValidationFilterTest {
 
     @Before
     public void setup() {
-        authorizationValidationFilter = new AuthorizationValidationFilter(SECRET_KEY);
+        when(mockConfiguration.getApiKeyHmacSecret()).thenReturn(SECRET_KEY);
+        
+        authorizationValidationFilter = new AuthorizationValidationFilter(mockConfiguration);
     }
 
     @Test

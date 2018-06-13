@@ -4,17 +4,34 @@ import com.codahale.metrics.annotation.Timed;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
 import io.dropwizard.auth.Auth;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateRefundException;
 import uk.gov.pay.api.exception.GetRefundException;
 import uk.gov.pay.api.exception.GetRefundsException;
-import uk.gov.pay.api.model.*;
+import uk.gov.pay.api.model.ChargeFromResponse;
+import uk.gov.pay.api.model.CreatePaymentRefundRequest;
+import uk.gov.pay.api.model.PaymentError;
+import uk.gov.pay.api.model.RefundFromConnector;
+import uk.gov.pay.api.model.RefundResponse;
+import uk.gov.pay.api.model.RefundsFromConnector;
+import uk.gov.pay.api.model.RefundsResponse;
 
-import javax.ws.rs.*;
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
@@ -55,10 +72,11 @@ public class PaymentRefundsResource {
     private final Client client;
     private final String connectorUrl;
 
-    public PaymentRefundsResource(String baseUrl, Client client, String connectorUrl) {
-        this.baseUrl = baseUrl;
+    @Inject
+    public PaymentRefundsResource(Client client, PublicApiConfig configuration) {
         this.client = client;
-        this.connectorUrl = connectorUrl;
+        this.baseUrl = configuration.getBaseUrl();
+        this.connectorUrl = configuration.getConnectorUrl();
     }
 
     @GET

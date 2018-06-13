@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableMap;
 import io.dropwizard.setup.Environment;
 
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -24,6 +25,7 @@ public class HealthCheckResource {
 
     Environment environment;
 
+    @Inject
     public HealthCheckResource(Environment environment) {
         this.environment = environment;
     }

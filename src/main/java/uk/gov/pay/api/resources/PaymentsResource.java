@@ -6,21 +6,50 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.auth.Auth;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.exception.*;
-import uk.gov.pay.api.model.*;
+import uk.gov.pay.api.exception.CancelChargeException;
+import uk.gov.pay.api.exception.CreateChargeException;
+import uk.gov.pay.api.exception.GetChargeException;
+import uk.gov.pay.api.exception.GetEventsException;
+import uk.gov.pay.api.exception.SearchChargesException;
+import uk.gov.pay.api.model.ChargeFromResponse;
+import uk.gov.pay.api.model.CreatePaymentRequest;
+import uk.gov.pay.api.model.PaymentError;
+import uk.gov.pay.api.model.PaymentEvents;
+import uk.gov.pay.api.model.PaymentForSearchResult;
+import uk.gov.pay.api.model.PaymentSearchResponse;
+import uk.gov.pay.api.model.PaymentSearchResults;
+import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
-import javax.ws.rs.*;
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -34,7 +63,7 @@ import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.http.HttpStatus.SC_OK;
-import static uk.gov.pay.api.model.TokenPaymentType.*;
+import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 import static uk.gov.pay.api.validation.PaymentSearchValidator.validateSearchParameters;
 
 @Path("/")
@@ -85,11 +114,12 @@ public class PaymentsResource {
     private final String connectorDDUrl;
     private final ObjectMapper objectMapper;
 
-    public PaymentsResource(String baseUrl, Client client, String connectorUrl, String connectorDDUrl, ObjectMapper objectMapper) {
-        this.baseUrl = baseUrl;
+    @Inject
+    public PaymentsResource(Client client, ObjectMapper objectMapper, PublicApiConfig configuration) {
         this.client = client;
-        this.connectorUrl = connectorUrl;
-        this.connectorDDUrl = connectorDDUrl;
+        this.baseUrl = configuration.getBaseUrl();
+        this.connectorUrl = configuration.getConnectorUrl();
+        this.connectorDDUrl = configuration.getConnectorDDUrl();
         this.objectMapper = objectMapper;
     }
 
