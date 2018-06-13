@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-@ApiModel(value = "paymentLink", description = "A link related to a payment")
+@ApiModel(value = "Link", description = "A link related to a payment")
 @JsonInclude(Include.NON_NULL)
 public class Link {
 

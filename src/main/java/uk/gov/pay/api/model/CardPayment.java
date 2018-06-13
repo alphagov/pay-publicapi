@@ -9,7 +9,7 @@ import static uk.gov.pay.api.model.TokenPaymentType.*;
 
 
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
-@ApiModel(value = "Card Payment")
+@ApiModel(value = "CardPayment")
 public class CardPayment extends Payment  {
 
     @JsonProperty("refund_summary")

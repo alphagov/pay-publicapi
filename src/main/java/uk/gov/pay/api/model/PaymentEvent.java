@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.links.PaymentEventLink;
 
-@ApiModel(value="Payment Event information", description = "A List of Payment Events information")
+@ApiModel(value="PaymentEvent", description = "A List of Payment Events information")
 public class PaymentEvent {
     @JsonProperty("payment_id")
     private final String paymentId;

@@ -8,7 +8,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static com.google.common.collect.ObjectArrays.concat;
 import static java.lang.String.format;
 
-@ApiModel(value = "Payment Error", description = "A Payment Error response")
+@ApiModel(value = "PaymentError", description = "A Payment Error response")
 @JsonInclude(NON_NULL)
 public class PaymentError {
 

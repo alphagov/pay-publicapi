@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(value="Refund Summary", description = "A structure representing the refunds availability")
+@ApiModel(value="RefundSummary", description = "A structure representing the refunds availability")
 public class RefundSummary {
 
     private String status;

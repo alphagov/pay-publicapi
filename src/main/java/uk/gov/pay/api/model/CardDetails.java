@@ -8,7 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.ALWAYS;
 
 @JsonInclude(ALWAYS)
-@ApiModel(value = "Payment card details", description = "A structure representing the payment card")
+@ApiModel(value = "CardDetails", description = "A structure representing the payment card")
 public class CardDetails {
 
     @JsonProperty("last_digits_card_number")

@@ -9,7 +9,7 @@ import static uk.gov.pay.api.model.TokenPaymentType.*;
 
 
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
-@ApiModel(value = "Direct Debit Payment")
+@ApiModel(value = "DirectDebitPayment")
 public class DirectDebitPayment extends Payment  {
 
     public DirectDebitPayment(String chargeId, long amount, PaymentState state, String returnUrl, String description,

@@ -9,7 +9,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@ApiModel(value="Payment state", description = "A structure representing the current state of the payment in its lifecycle.")
+@ApiModel(value="PaymentState", description = "A structure representing the current state of the payment in its lifecycle.")
 public class PaymentState {
     @JsonProperty("status")
     private String status;
