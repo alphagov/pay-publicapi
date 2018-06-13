@@ -6,6 +6,8 @@ import com.codahale.metrics.graphite.GraphiteUDP;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
@@ -16,6 +18,7 @@ import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import uk.gov.pay.api.app.config.PublicApiConfig;
+import uk.gov.pay.api.app.config.PublicApiModule;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.auth.AccountAuthenticator;
 import uk.gov.pay.api.exception.mapper.BadRequestExceptionMapper;
@@ -70,24 +73,27 @@ public class PublicApi extends Application<PublicApiConfig> {
     }
 
     @Override
-    public void run(PublicApiConfig config, Environment environment) {
+    public void run(PublicApiConfig configuration, Environment environment) {
 
-        final Client client = RestClientFactory.buildClient(config.getRestClientConfig());
+        final Client client = RestClientFactory.buildClient(configuration.getRestClientConfig());
 
         initialiseSSLSocketFactory();
 
         ObjectMapper objectMapper = environment.getObjectMapper();
-        configureObjectMapper(config, objectMapper);
+        configureObjectMapper(configuration, objectMapper);
+        
+        final Injector injector = Guice.createInjector(new PublicApiModule(configuration, environment));
 
         environment.healthChecks().register("ping", new Ping());
         environment.jersey().register(new HealthCheckResource(environment));
-        environment.jersey().register(new PaymentsResource(config.getBaseUrl(), client, config.getConnectorUrl(), config.getConnectorDDUrl(), objectMapper));
-        environment.jersey().register(new PaymentRefundsResource(config.getBaseUrl(), client, config.getConnectorUrl()));
+        environment.jersey().register(new PaymentsResource(configuration.getBaseUrl(), client, configuration.getConnectorUrl(),
+                configuration.getConnectorDDUrl(), objectMapper));
+        environment.jersey().register(new PaymentRefundsResource(configuration.getBaseUrl(), client, configuration.getConnectorUrl()));
         environment.jersey().register(new RequestDeniedResource());
 
-        RateLimiter rateLimiter = new RateLimiter(config.getRateLimiterConfig().getRate(), config.getRateLimiterConfig().getPerMillis());
+        RateLimiter rateLimiter = new RateLimiter(configuration.getRateLimiterConfig().getRate(), configuration.getRateLimiterConfig().getPerMillis());
 
-        environment.servlets().addFilter("AuthorizationValidationFilter", new AuthorizationValidationFilter(config.getApiKeyHmacSecret()))
+        environment.servlets().addFilter("AuthorizationValidationFilter", new AuthorizationValidationFilter(configuration.getApiKeyHmacSecret()))
                 .addMappingForUrlPatterns(of(REQUEST), true, API_VERSION_PATH + "/*");
 
         environment.servlets().addFilter("RateLimiterFilter", new RateLimiterFilter(rateLimiter, objectMapper))
@@ -98,14 +104,14 @@ public class PublicApi extends Application<PublicApiConfig> {
 
         environment.jersey().register(new AuthDynamicFeature(
                 new OAuthCredentialAuthFilter.Builder<Account>()
-                        .setAuthenticator(new AccountAuthenticator(client, config.getPublicAuthUrl()))
+                        .setAuthenticator(new AccountAuthenticator(client, configuration.getPublicAuthUrl()))
                         .setPrefix("Bearer")
                         .buildAuthFilter()));
         environment.jersey().register(new AuthValueFactoryProvider.Binder<>(Account.class));
 
         attachExceptionMappersTo(environment.jersey());
 
-        initialiseMetrics(config, environment);
+        initialiseMetrics(configuration, environment);
     }
 
     /*
