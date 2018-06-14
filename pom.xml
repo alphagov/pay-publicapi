@@ -14,10 +14,11 @@
         <jackson.version>2.9.4</jackson.version>
         <logback.version>1.2.3</logback.version>
         <pact.version>3.5.16</pact.version>
-        <PACT_BROKER_URL></PACT_BROKER_URL>
-        <PACT_BROKER_USERNAME></PACT_BROKER_USERNAME>
-        <PACT_BROKER_PASSWORD></PACT_BROKER_PASSWORD>
-        <PACT_CONSUMER_VERSION></PACT_CONSUMER_VERSION>
+        <PACT_BROKER_URL/>
+        <PACT_BROKER_USERNAME/>
+        <PACT_BROKER_PASSWORD/>
+        <PACT_CONSUMER_VERSION/>
+        <PACT_CONSUMER_TAG/>
     </properties>
 
     <dependencies>
@@ -246,6 +247,9 @@
                     <pactBrokerUsername>${PACT_BROKER_USERNAME}</pactBrokerUsername>
                     <pactBrokerPassword>${PACT_BROKER_PASSWORD}</pactBrokerPassword>
                     <projectVersion>${PACT_CONSUMER_VERSION}</projectVersion>
+                    <tags>
+                        <tag>${PACT_CONSUMER_TAG}</tag>
+                    </tags>
                     <trimSnapshot>true</trimSnapshot>
                 </configuration>
             </plugin>
