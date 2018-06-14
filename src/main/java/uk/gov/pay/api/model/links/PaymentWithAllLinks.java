@@ -37,6 +37,10 @@ public class PaymentWithAllLinks {
         return payment;
     }
 
+    public String getPaymentId() {
+        return payment.getPaymentId();
+    }
+
     private PaymentWithAllLinks(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                                 String reference, String email, String paymentProvider, String createdDate,
                                 RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails, List<PaymentConnectorResponseLink> paymentConnectorResponseLinks,

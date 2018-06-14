@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CancelChargeException;
-import uk.gov.pay.api.exception.CreateChargeException;
 import uk.gov.pay.api.exception.GetChargeException;
 import uk.gov.pay.api.exception.GetEventsException;
 import uk.gov.pay.api.exception.SearchChargesException;
@@ -31,7 +30,8 @@ import uk.gov.pay.api.model.PaymentSearchResponse;
 import uk.gov.pay.api.model.PaymentSearchResults;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
-import uk.gov.pay.api.utils.JsonStringBuilder;
+import uk.gov.pay.api.service.CreatePaymentService;
+import uk.gov.pay.api.service.PublicApiUriGenerator;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -46,7 +46,6 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
@@ -59,7 +58,6 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.http.HttpStatus.SC_OK;
@@ -75,17 +73,24 @@ public class PaymentsResource {
     private final String baseUrl;
 
     private final Client client;
+    private final CreatePaymentService createPaymentService;
+    private final ObjectMapper objectMapper;
+    private final PublicApiUriGenerator publicApiUriGenerator;
+
     private final String connectorUrl;
     private final String connectorDDUrl;
-    private final ObjectMapper objectMapper;
 
     @Inject
-    public PaymentsResource(Client client, ObjectMapper objectMapper, PublicApiConfig configuration) {
+    public PaymentsResource(Client client, CreatePaymentService createPaymentService, 
+                            ObjectMapper objectMapper, PublicApiConfig configuration, 
+                            PublicApiUriGenerator publicApiUriGenerator) {
         this.client = client;
+        this.createPaymentService = createPaymentService;
         this.baseUrl = configuration.getBaseUrl();
         this.connectorUrl = configuration.getConnectorUrl();
         this.connectorDDUrl = configuration.getConnectorDDUrl();
         this.objectMapper = objectMapper;
+        this.publicApiUriGenerator = publicApiUriGenerator;
     }
 
     @GET
@@ -107,24 +112,32 @@ public class PaymentsResource {
                                @PathParam("paymentId") String paymentId) {
 
         logger.info("Payment request - paymentId={}", paymentId);
+        String url = account.getPaymentType().equals(DIRECT_DEBIT) ? connectorDDUrl : connectorUrl;
+        UriBuilder builder = UriBuilder
+                .fromPath(url)
+                .path(format("/v1/api/accounts/%s/charges/%s", account.getAccountId(), paymentId));
+
+        Collections.<Pair<String, String>>emptyList().stream().forEach(pair -> {
+            if (isNotBlank(pair.getRight())) {
+                builder.queryParam(pair.getKey(), pair.getValue());
+            }
+        });
         Response connectorResponse = client
-                .target(getConnectorUrl(
-                        account.getPaymentType(),
-                        format("/v1/api/accounts/%s/charges/%s", account.getAccountId(), paymentId)))
+                .target(builder.toString())
                 .request()
                 .get();
 
         if (connectorResponse.getStatus() == SC_OK) {
             ChargeFromResponse chargeFromResponse = connectorResponse.readEntity(ChargeFromResponse.class);
-            URI paymentURI = getPaymentURI(baseUrl, chargeFromResponse.getChargeId());
+            URI paymentURI = publicApiUriGenerator.getPaymentURI(baseUrl, chargeFromResponse.getChargeId());
 
             PaymentWithAllLinks payment = PaymentWithAllLinks.getPaymentWithLinks(
                     account.getPaymentType(),
                     chargeFromResponse,
                     paymentURI,
-                    getPaymentEventsURI(baseUrl, chargeFromResponse.getChargeId()),
-                    getPaymentCancelURI(baseUrl, chargeFromResponse.getChargeId()),
-                    getPaymentRefundsURI(baseUrl, chargeFromResponse.getChargeId()));
+                    publicApiUriGenerator.getPaymentEventsURI(baseUrl, chargeFromResponse.getChargeId()),
+                    publicApiUriGenerator.getPaymentCancelURI(baseUrl, chargeFromResponse.getChargeId()),
+                    publicApiUriGenerator.getPaymentRefundsURI(baseUrl, chargeFromResponse.getChargeId()));
 
             logger.info("Payment returned - [ {} ]", payment);
             return Response.ok(payment).build();
@@ -152,19 +165,27 @@ public class PaymentsResource {
 
         logger.info("Payment events request - payment_id={}", paymentId);
 
+        String url = account.getPaymentType().equals(DIRECT_DEBIT) ? connectorDDUrl : connectorUrl;
+        UriBuilder builder = UriBuilder
+                .fromPath(url)
+                .path(format("/v1/api/accounts/%s/charges/%s/events", account.getAccountId(), paymentId));
+
+        Collections.<Pair<String, String>>emptyList().stream().forEach(pair -> {
+            if (isNotBlank(pair.getRight())) {
+                builder.queryParam(pair.getKey(), pair.getValue());
+            }
+        });
         Response connectorResponse = client
-                .target(getConnectorUrl(
-                        account.getPaymentType(),
-                        format("/v1/api/accounts/%s/charges/%s/events", account.getAccountId(), paymentId)))
+                .target(builder.toString())
                 .request()
                 .get();
 
         if (connectorResponse.getStatus() == SC_OK) {
 
             JsonNode payload = connectorResponse.readEntity(JsonNode.class);
-            URI paymentEventsLink = getPaymentEventsURI(baseUrl, payload.get("charge_id").asText());
+            URI paymentEventsLink = publicApiUriGenerator.getPaymentEventsURI(baseUrl, payload.get("charge_id").asText());
 
-            URI paymentLink = getPaymentURI(baseUrl, payload.get("charge_id").asText());
+            URI paymentLink = publicApiUriGenerator.getPaymentURI(baseUrl, payload.get("charge_id").asText());
 
             PaymentEvents response =
                     PaymentEvents.createPaymentEventsResponse(payload, paymentLink.toString())
@@ -221,7 +242,7 @@ public class PaymentsResource {
 
         validateSearchParameters(state, reference, email, cardBrand, fromDate, toDate, pageNumber, displaySize);
 
-        if(isNotBlank(cardBrand)){
+        if (isNotBlank(cardBrand)) {
             cardBrand = cardBrand.toLowerCase();
         }
 
@@ -236,11 +257,18 @@ public class PaymentsResource {
                 Pair.of("page", pageNumber),
                 Pair.of("display_size", displaySize)
         );
+        String url = account.getPaymentType().equals(DIRECT_DEBIT) ? connectorDDUrl : connectorUrl;
+        UriBuilder builder = UriBuilder
+                .fromPath(url)
+                .path(format("/v1/api/accounts/%s/charges", account.getAccountId()));
+
+        queryParams.stream().forEach(pair -> {
+            if (isNotBlank(pair.getRight())) {
+                builder.queryParam(pair.getKey(), pair.getValue());
+            }
+        });
         Response connectorResponse = client
-                .target(getConnectorUrl(
-                        account.getPaymentType(),
-                        format("/v1/api/accounts/%s" + "/charges", account.getAccountId()),
-                        queryParams))
+                .target(builder.toString())
                 .request()
                 .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
                 .get();
@@ -252,16 +280,17 @@ public class PaymentsResource {
                 JsonNode responseJson = connectorResponse.readEntity(JsonNode.class);
                 logger.debug("json response from connector from charge search: " + responseJson);
 
-                TypeReference<PaymentSearchResponse> typeRef = new TypeReference<PaymentSearchResponse>() {};
+                TypeReference<PaymentSearchResponse> typeRef = new TypeReference<PaymentSearchResponse>() {
+                };
                 PaymentSearchResponse searchResponse = objectMapper.readValue(responseJson.traverse(), typeRef);
                 List<PaymentForSearchResult> paymentsForSearchResults = searchResponse.getPayments()
                         .stream()
                         .map(charge -> PaymentForSearchResult.valueOf(
                                 charge,
-                                getPaymentURI(baseUrl, charge.getChargeId()),
-                                getPaymentEventsURI(baseUrl, charge.getChargeId()),
-                                getPaymentCancelURI(baseUrl, charge.getChargeId()),
-                                getPaymentRefundsURI(baseUrl, charge.getChargeId())))
+                                publicApiUriGenerator.getPaymentURI(baseUrl, charge.getChargeId()),
+                                publicApiUriGenerator.getPaymentEventsURI(baseUrl, charge.getChargeId()),
+                                publicApiUriGenerator.getPaymentCancelURI(baseUrl, charge.getChargeId()),
+                                publicApiUriGenerator.getPaymentRefundsURI(baseUrl, charge.getChargeId())))
                         .collect(Collectors.toList());
 
                 HalRepresentation.HalRepresentationBuilder halRepresentation = HalRepresentation.builder()
@@ -320,33 +349,17 @@ public class PaymentsResource {
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response createNewPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                      @ApiParam(value = "requestPayload", required = true) CreatePaymentRequest requestPayload) {
-
         logger.info("Payment create request - [ {} ]", requestPayload);
 
-        Response connectorResponse = client
-                .target(getConnectorUrl(
-                        account.getPaymentType(),
-                        format("/v1/api/accounts/%s" + "/charges", account.getAccountId())))
-                .request()
-                .accept(MediaType.APPLICATION_JSON)
-                .post(buildChargeRequestPayload(requestPayload));
+        PaymentWithAllLinks createdPayment = createPaymentService.invoke(account, requestPayload);
 
-        if (connectorResponse.getStatus() == HttpStatus.SC_CREATED) {
-            ChargeFromResponse chargeFromResponse = connectorResponse.readEntity(ChargeFromResponse.class);
-            URI paymentUri = getPaymentURI(baseUrl, chargeFromResponse.getChargeId());
-            PaymentWithAllLinks payment = PaymentWithAllLinks.getPaymentWithLinks(
-                    account.getPaymentType(),
-                    chargeFromResponse,
-                    paymentUri,
-                    getPaymentEventsURI(baseUrl, chargeFromResponse.getChargeId()),
-                    getPaymentCancelURI(baseUrl, chargeFromResponse.getChargeId()),
-                    getPaymentRefundsURI(baseUrl, chargeFromResponse.getChargeId()));
-            logger.info("Payment returned (created): [ {} ]", payment);
-            return Response.created(paymentUri).entity(payment).build();
+        Response response = Response
+                .created(publicApiUriGenerator.getPaymentURI(baseUrl, createdPayment.getPaymentId()))
+                .entity(createdPayment)
+                .build();
 
-        }
-
-        throw new CreateChargeException(connectorResponse);
+        logger.info("Payment returned (created): [ {} ]", createdPayment);
+        return response;
     }
 
     @POST
@@ -373,10 +386,18 @@ public class PaymentsResource {
 
         logger.info("Payment cancel request - payment_id=[{}]", paymentId);
 
+        String url = account.getPaymentType().equals(DIRECT_DEBIT) ? connectorDDUrl : connectorUrl;
+        UriBuilder builder = UriBuilder
+                .fromPath(url)
+                .path(format("/v1/api/accounts/%s/charges/%s/cancel", account.getAccountId(), paymentId));
+
+        Collections.<Pair<String, String>>emptyList().stream().forEach(pair -> {
+            if (isNotBlank(pair.getRight())) {
+                builder.queryParam(pair.getKey(), pair.getValue());
+            }
+        });
         Response connectorResponse = client
-                .target(getConnectorUrl(
-                        account.getPaymentType(),
-                        format("/v1/api/accounts/%s/charges/%s/cancel", account.getAccountId(), paymentId)))
+                .target(builder.toString())
                 .request()
                 .post(Entity.json("{}"));
 
@@ -388,37 +409,23 @@ public class PaymentsResource {
         throw new CancelChargeException(connectorResponse);
     }
 
-    private URI getPaymentURI(String baseUrl, String chargeId) {
-        return UriBuilder.fromUri(baseUrl)
-                .path("/v1/payments/{paymentId}")
-                .build(chargeId);
-    }
-
-    private URI getPaymentEventsURI(String baseUrl, String chargeId) {
-        return UriBuilder.fromUri(baseUrl)
-                .path("/v1/payments/{paymentId}/events")
-                .build(chargeId);
-    }
-
-    private URI getPaymentCancelURI(String baseUrl, String chargeId) {
-        return UriBuilder.fromUri(baseUrl)
-                .path("/v1/payments/{paymentId}/cancel")
-                .build(chargeId);
-    }
-
-    private URI getPaymentRefundsURI(String baseUrl, String chargeId) {
-        return UriBuilder.fromUri(baseUrl)
-                .path("/v1/payments/{paymentId}/refunds")
-                .build(chargeId);
-    }
-
     private String getConnectorUrl(TokenPaymentType paymentType, String urlPath) {
-        return getConnectorUrl(paymentType, urlPath, Collections.emptyList());
+        String url = paymentType.equals(DIRECT_DEBIT) ? connectorDDUrl : connectorUrl;
+        UriBuilder builder = UriBuilder
+                .fromPath(url)
+                .path(urlPath);
+
+        Collections.<Pair<String, String>>emptyList().stream().forEach(pair -> {
+            if (isNotBlank(pair.getRight())) {
+                builder.queryParam(pair.getKey(), pair.getValue());
+            }
+        });
+        return builder.toString();
     }
 
 
     private String getConnectorUrl(TokenPaymentType paymentType, String urlPath, List<Pair<String, String>> queryParams) {
-        String url = paymentType.equals(DIRECT_DEBIT)? connectorDDUrl : connectorUrl;
+        String url = paymentType.equals(DIRECT_DEBIT) ? connectorDDUrl : connectorUrl;
         UriBuilder builder = UriBuilder
                 .fromPath(url)
                 .path(urlPath);
@@ -429,18 +436,5 @@ public class PaymentsResource {
             }
         });
         return builder.toString();
-    }
-
-    private Entity buildChargeRequestPayload(CreatePaymentRequest requestPayload) {
-        int amount = requestPayload.getAmount();
-        String reference = requestPayload.getReference();
-        String description = requestPayload.getDescription();
-        String returnUrl = requestPayload.getReturnUrl();
-        return json(new JsonStringBuilder()
-                .add("amount", amount)
-                .add("reference", reference)
-                .add("description", description)
-                .add("return_url", returnUrl)
-                .build());
     }
 }
