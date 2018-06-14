@@ -3,10 +3,10 @@ package uk.gov.pay.api.auth;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
-import io.dropwizard.auth.AuthenticationException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import uk.gov.pay.api.app.config.PublicApiConfig;
 
 import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.client.Client;
@@ -18,7 +18,9 @@ import java.util.Map;
 import java.util.Optional;
 
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
-import static javax.ws.rs.core.Response.Status.*;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.OK;
+import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -40,7 +42,9 @@ public class AccountAuthenticatorTest {
         WebTarget mockTarget = mock(WebTarget.class);
         Invocation.Builder mockRequest = mock(Invocation.Builder.class);
         mockResponse = mock(Response.class);
-        accountAuthenticator = new AccountAuthenticator(publicAuthMock, "");
+        PublicApiConfig mockConfiguration = mock(PublicApiConfig.class);
+        when(mockConfiguration.getPublicAuthUrl()).thenReturn("");
+        accountAuthenticator = new AccountAuthenticator(publicAuthMock, mockConfiguration);
         when(publicAuthMock.target("")).thenReturn(mockTarget);
         when(mockTarget.request()).thenReturn(mockRequest);
         when(mockRequest.header(AUTHORIZATION, "Bearer " + bearerToken)).thenReturn(mockRequest);
@@ -49,7 +53,7 @@ public class AccountAuthenticatorTest {
     }
 
     @Test
-    public void shouldReturnValidAccount() throws AuthenticationException {
+    public void shouldReturnValidAccount() {
         Map<String, String> responseEntity = ImmutableMap.of(
                 "account_id", accountName,
                 "token_type", "DIRECT_DEBIT"
@@ -63,7 +67,7 @@ public class AccountAuthenticatorTest {
     }
 
     @Test
-    public void shouldReturnCCAccount_ifTokenTypeIsMissing() throws AuthenticationException {
+    public void shouldReturnCCAccount_ifTokenTypeIsMissing() {
         Map<String, String> responseEntity = ImmutableMap.of(
                 "account_id", accountName
         );
@@ -76,14 +80,14 @@ public class AccountAuthenticatorTest {
     }
 
     @Test
-    public void shouldNotReturnAccount_ifUnauthorised() throws AuthenticationException {
+    public void shouldNotReturnAccount_ifUnauthorised() {
         when(mockResponse.getStatus()).thenReturn(UNAUTHORIZED.getStatusCode());
         Optional<Account> maybeAccount = accountAuthenticator.authenticate(bearerToken);
         Assert.assertThat(maybeAccount.isPresent(), is(false));
     }
 
     @Test(expected = ServiceUnavailableException.class)
-    public void shouldThrow_ifUnknownResponse() throws AuthenticationException {
+    public void shouldThrow_ifUnknownResponse() {
         when(mockResponse.getStatus()).thenReturn(NOT_FOUND.getStatusCode());
         accountAuthenticator.authenticate(bearerToken);
     }

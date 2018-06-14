@@ -38,7 +38,6 @@ import uk.gov.pay.api.resources.PaymentsResource;
 import uk.gov.pay.api.resources.RequestDeniedResource;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.ws.rs.client.Client;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.EnumSet.of;
@@ -62,9 +61,7 @@ public class PublicApi extends Application<PublicApiConfig> {
 
     @Override
     public void run(PublicApiConfig configuration, Environment environment) {
-
-        final Client client = RestClientFactory.buildClient(configuration.getRestClientConfig());
-
+        
         initialiseSSLSocketFactory();
         
         final Injector injector = Guice.createInjector(new PublicApiModule(configuration, environment));
@@ -87,7 +84,7 @@ public class PublicApi extends Application<PublicApiConfig> {
 
         environment.jersey().register(new AuthDynamicFeature(
                 new OAuthCredentialAuthFilter.Builder<Account>()
-                        .setAuthenticator(new AccountAuthenticator(client, configuration.getPublicAuthUrl()))
+                        .setAuthenticator(injector.getInstance(AccountAuthenticator.class))
                         .setPrefix("Bearer")
                         .buildAuthFilter()));
         environment.jersey().register(new AuthValueFactoryProvider.Binder<>(Account.class));
