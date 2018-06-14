@@ -145,7 +145,7 @@ public class PaymentsResource {
         Response connectorResponse = client
                 .target(getConnectorUrl(
                         account.getPaymentType(),
-                        format(CONNECTOR_CHARGE_RESOURCE, account.getName(), paymentId)))
+                        format(CONNECTOR_CHARGE_RESOURCE, account.getAccountId(), paymentId)))
                 .request()
                 .get();
 
@@ -190,7 +190,7 @@ public class PaymentsResource {
         Response connectorResponse = client
                 .target(getConnectorUrl(
                         account.getPaymentType(),
-                        format(CONNECTOR_CHARGE_EVENTS_RESOURCE, account.getName(), paymentId)))
+                        format(CONNECTOR_CHARGE_EVENTS_RESOURCE, account.getAccountId(), paymentId)))
                 .request()
                 .get();
 
@@ -274,7 +274,7 @@ public class PaymentsResource {
         Response connectorResponse = client
                 .target(getConnectorUrl(
                         account.getPaymentType(),
-                        format(CONNECTOR_CHARGES_RESOURCE, account.getName()),
+                        format(CONNECTOR_CHARGES_RESOURCE, account.getAccountId()),
                         queryParams))
                 .request()
                 .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
@@ -361,7 +361,7 @@ public class PaymentsResource {
         Response connectorResponse = client
                 .target(getConnectorUrl(
                         account.getPaymentType(),
-                        format(CONNECTOR_CHARGES_RESOURCE, account.getName())))
+                        format(CONNECTOR_CHARGES_RESOURCE, account.getAccountId())))
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .post(buildChargeRequestPayload(requestPayload));
@@ -411,7 +411,7 @@ public class PaymentsResource {
         Response connectorResponse = client
                 .target(getConnectorUrl(
                         account.getPaymentType(),
-                        format(CONNECTOR_ACCOUNT_CHARGE_CANCEL_RESOURCE, account.getName(), paymentId)))
+                        format(CONNECTOR_ACCOUNT_CHARGE_CANCEL_RESOURCE, account.getAccountId(), paymentId)))
                 .request()
                 .post(Entity.json("{}"));
 

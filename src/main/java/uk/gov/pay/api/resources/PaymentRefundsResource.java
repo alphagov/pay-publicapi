@@ -97,7 +97,7 @@ public class PaymentRefundsResource {
 
         logger.info("Get refunds for payment request - paymentId={}", paymentId);
         Response connectorResponse = client
-                .target(getConnectorUrl(format(CONNECTOR_CHARGE_REFUNDS_RESOURCE, account.getName(), paymentId)))
+                .target(getConnectorUrl(format(CONNECTOR_CHARGE_REFUNDS_RESOURCE, account.getAccountId(), paymentId)))
                 .request()
                 .get();
 
@@ -133,7 +133,7 @@ public class PaymentRefundsResource {
 
         logger.info("Payment refund request - paymentId={}, refundId={}", paymentId, refundId);
         Response connectorResponse = client
-                .target(getConnectorUrl(format(CONNECTOR_CHARGE_REFUND_BY_ID_RESOURCE, account.getName(), paymentId, refundId)))
+                .target(getConnectorUrl(format(CONNECTOR_CHARGE_REFUND_BY_ID_RESOURCE, account.getAccountId(), paymentId, refundId)))
                 .request()
                 .get();
 
@@ -171,7 +171,7 @@ public class PaymentRefundsResource {
         Integer refundAmountAvailable = requestPayload.getRefundAmountAvailable()
                 .orElseGet(() -> {
                     Response getChargeResponse = client
-                            .target(getConnectorUrl(format(CONNECTOR_CHARGE_RESOURCE, account.getName(), paymentId)))
+                            .target(getConnectorUrl(format(CONNECTOR_CHARGE_RESOURCE, account.getAccountId(), paymentId)))
                             .request()
                             .get();
 
@@ -184,7 +184,7 @@ public class PaymentRefundsResource {
                 payloadMap);
 
         Response connectorResponse = client
-                .target(getConnectorUrl(format(CONNECTOR_CHARGE_REFUNDS_RESOURCE, account.getName(), paymentId)))
+                .target(getConnectorUrl(format(CONNECTOR_CHARGE_REFUNDS_RESOURCE, account.getAccountId(), paymentId)))
                 .request()
                 .post(json(connectorPayload));
 

@@ -34,7 +34,7 @@ public class AccountAuthenticatorTest {
     private Response mockResponse;
 
     private final String bearerToken = "aaa";
-    private final String accountName = "accountName";
+    private final String accountId = "accountId";
 
     @Before
     public void setup() {
@@ -55,27 +55,28 @@ public class AccountAuthenticatorTest {
     @Test
     public void shouldReturnValidAccount() {
         Map<String, String> responseEntity = ImmutableMap.of(
-                "account_id", accountName,
+                "account_id", accountId,
                 "token_type", "DIRECT_DEBIT"
         );
         JsonNode response = objectMapper.valueToTree(responseEntity);
         when(mockResponse.getStatus()).thenReturn(OK.getStatusCode());
         when(mockResponse.readEntity(JsonNode.class)).thenReturn(response);
         Optional<Account> maybeAccount = accountAuthenticator.authenticate(bearerToken);
-        Assert.assertThat(maybeAccount.get().getName(), is(accountName));
+        Assert.assertThat(maybeAccount.get().getName(), is(accountId));
+        Assert.assertThat(maybeAccount.get().getAccountId(), is(accountId));
         Assert.assertThat(maybeAccount.get().getPaymentType(), is(DIRECT_DEBIT));
     }
 
     @Test
     public void shouldReturnCCAccount_ifTokenTypeIsMissing() {
         Map<String, String> responseEntity = ImmutableMap.of(
-                "account_id", accountName
+                "account_id", accountId
         );
         JsonNode response = objectMapper.valueToTree(responseEntity);
         when(mockResponse.getStatus()).thenReturn(OK.getStatusCode());
         when(mockResponse.readEntity(JsonNode.class)).thenReturn(response);
         Optional<Account> maybeAccount = accountAuthenticator.authenticate(bearerToken);
-        Assert.assertThat(maybeAccount.get().getName(), is(accountName));
+        Assert.assertThat(maybeAccount.get().getName(), is(accountId));
         Assert.assertThat(maybeAccount.get().getPaymentType(), is(CARD));
     }
 
