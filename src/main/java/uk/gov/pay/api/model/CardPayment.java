@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import static uk.gov.pay.api.model.TokenPaymentType.*;
+import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 
 
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
