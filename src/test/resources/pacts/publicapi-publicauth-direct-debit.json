@@ -8,6 +8,15 @@
   "interactions": [
     {
       "description": "an authorization request",
+      "providerStates": [
+        {
+          "name": "A bearer token exists",
+          "params": {
+            "type": "DIRECT_DEBIT",
+            "id": "p837h5j7oje0huchp4ocibv1qq534lmn"
+          }
+        }
+      ],
       "request": {
         "method": "GET",
         "path": "/v1/auth",

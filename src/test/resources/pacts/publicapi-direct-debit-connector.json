@@ -15,7 +15,7 @@
           "amount": 100,
           "reference": "a reference",
           "description": "a description",
-          "return_url": "https://somewhere.gov.uk/rainbow/1"
+          "return_url": "https://example.com/return"
         }
       },
       "response": {
@@ -28,13 +28,13 @@
           "charge_id": "ch_ab2341da231434l",
           "amount": "100",
           "reference": "a reference",
-          "email": "alice.111@mail.fake",
+          "email": "pact-test@example.com",
           "description": "a description",
           "state": {
             "status": "created",
             "finished": "false"
           },
-          "return_url": "https://somewhere.gov.uk/rainbow/1",
+          "return_url": "https://example.com/return",
           "payment_provider": "Sandbox",
           "created_date": "2016-01-01T12:00:00Z",
           "links": [
