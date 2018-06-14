@@ -31,7 +31,6 @@ public class CreatePaymentServiceTest {
 
     @Mock
     private PublicApiConfig configuration;
-
     private PublicApiUriGenerator publicApiUriGenerator;
     private ConnectorUriGenerator connectorUriGenerator;
     

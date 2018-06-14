@@ -28,8 +28,8 @@ import uk.gov.pay.api.model.PaymentEvents;
 import uk.gov.pay.api.model.PaymentForSearchResult;
 import uk.gov.pay.api.model.PaymentSearchResponse;
 import uk.gov.pay.api.model.PaymentSearchResults;
-import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
+import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.CreatePaymentService;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
 
@@ -52,7 +52,6 @@ import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,7 +60,6 @@ import static java.util.Arrays.asList;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.http.HttpStatus.SC_OK;
-import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 import static uk.gov.pay.api.validation.PaymentSearchValidator.validateSearchParameters;
 
 @Path("/")
@@ -76,14 +74,15 @@ public class PaymentsResource {
     private final CreatePaymentService createPaymentService;
     private final ObjectMapper objectMapper;
     private final PublicApiUriGenerator publicApiUriGenerator;
+    private final ConnectorUriGenerator connectorUriGenerator;
 
     private final String connectorUrl;
     private final String connectorDDUrl;
 
     @Inject
-    public PaymentsResource(Client client, CreatePaymentService createPaymentService, 
-                            ObjectMapper objectMapper, PublicApiConfig configuration, 
-                            PublicApiUriGenerator publicApiUriGenerator) {
+    public PaymentsResource(Client client, CreatePaymentService createPaymentService,
+                            ObjectMapper objectMapper, PublicApiConfig configuration,
+                            PublicApiUriGenerator publicApiUriGenerator, ConnectorUriGenerator connectorUriGenerator) {
         this.client = client;
         this.createPaymentService = createPaymentService;
         this.baseUrl = configuration.getBaseUrl();
@@ -91,6 +90,7 @@ public class PaymentsResource {
         this.connectorDDUrl = configuration.getConnectorDDUrl();
         this.objectMapper = objectMapper;
         this.publicApiUriGenerator = publicApiUriGenerator;
+        this.connectorUriGenerator = connectorUriGenerator;
     }
 
     @GET
@@ -112,18 +112,9 @@ public class PaymentsResource {
                                @PathParam("paymentId") String paymentId) {
 
         logger.info("Payment request - paymentId={}", paymentId);
-        String url = account.getPaymentType().equals(DIRECT_DEBIT) ? connectorDDUrl : connectorUrl;
-        UriBuilder builder = UriBuilder
-                .fromPath(url)
-                .path(format("/v1/api/accounts/%s/charges/%s", account.getAccountId(), paymentId));
-
-        Collections.<Pair<String, String>>emptyList().stream().forEach(pair -> {
-            if (isNotBlank(pair.getRight())) {
-                builder.queryParam(pair.getKey(), pair.getValue());
-            }
-        });
+        
         Response connectorResponse = client
-                .target(builder.toString())
+                .target(connectorUriGenerator.chargeURI(account, paymentId))
                 .request()
                 .get();
 
@@ -165,18 +156,8 @@ public class PaymentsResource {
 
         logger.info("Payment events request - payment_id={}", paymentId);
 
-        String url = account.getPaymentType().equals(DIRECT_DEBIT) ? connectorDDUrl : connectorUrl;
-        UriBuilder builder = UriBuilder
-                .fromPath(url)
-                .path(format("/v1/api/accounts/%s/charges/%s/events", account.getAccountId(), paymentId));
-
-        Collections.<Pair<String, String>>emptyList().stream().forEach(pair -> {
-            if (isNotBlank(pair.getRight())) {
-                builder.queryParam(pair.getKey(), pair.getValue());
-            }
-        });
         Response connectorResponse = client
-                .target(builder.toString())
+                .target(connectorUriGenerator.chargeEventsURI(account, paymentId))
                 .request()
                 .get();
 
@@ -257,18 +238,9 @@ public class PaymentsResource {
                 Pair.of("page", pageNumber),
                 Pair.of("display_size", displaySize)
         );
-        String url = account.getPaymentType().equals(DIRECT_DEBIT) ? connectorDDUrl : connectorUrl;
-        UriBuilder builder = UriBuilder
-                .fromPath(url)
-                .path(format("/v1/api/accounts/%s/charges", account.getAccountId()));
-
-        queryParams.stream().forEach(pair -> {
-            if (isNotBlank(pair.getRight())) {
-                builder.queryParam(pair.getKey(), pair.getValue());
-            }
-        });
+        
         Response connectorResponse = client
-                .target(builder.toString())
+                .target(connectorUriGenerator.chargesURI(account, queryParams))
                 .request()
                 .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
                 .get();
@@ -385,19 +357,9 @@ public class PaymentsResource {
                                   @PathParam("paymentId") String paymentId) {
 
         logger.info("Payment cancel request - payment_id=[{}]", paymentId);
-
-        String url = account.getPaymentType().equals(DIRECT_DEBIT) ? connectorDDUrl : connectorUrl;
-        UriBuilder builder = UriBuilder
-                .fromPath(url)
-                .path(format("/v1/api/accounts/%s/charges/%s/cancel", account.getAccountId(), paymentId));
-
-        Collections.<Pair<String, String>>emptyList().stream().forEach(pair -> {
-            if (isNotBlank(pair.getRight())) {
-                builder.queryParam(pair.getKey(), pair.getValue());
-            }
-        });
+        
         Response connectorResponse = client
-                .target(builder.toString())
+                .target(connectorUriGenerator.cancelURI(account, paymentId))
                 .request()
                 .post(Entity.json("{}"));
 
@@ -407,34 +369,5 @@ public class PaymentsResource {
         }
 
         throw new CancelChargeException(connectorResponse);
-    }
-
-    private String getConnectorUrl(TokenPaymentType paymentType, String urlPath) {
-        String url = paymentType.equals(DIRECT_DEBIT) ? connectorDDUrl : connectorUrl;
-        UriBuilder builder = UriBuilder
-                .fromPath(url)
-                .path(urlPath);
-
-        Collections.<Pair<String, String>>emptyList().stream().forEach(pair -> {
-            if (isNotBlank(pair.getRight())) {
-                builder.queryParam(pair.getKey(), pair.getValue());
-            }
-        });
-        return builder.toString();
-    }
-
-
-    private String getConnectorUrl(TokenPaymentType paymentType, String urlPath, List<Pair<String, String>> queryParams) {
-        String url = paymentType.equals(DIRECT_DEBIT) ? connectorDDUrl : connectorUrl;
-        UriBuilder builder = UriBuilder
-                .fromPath(url)
-                .path(urlPath);
-
-        queryParams.stream().forEach(pair -> {
-            if (isNotBlank(pair.getRight())) {
-                builder.queryParam(pair.getKey(), pair.getValue());
-            }
-        });
-        return builder.toString();
     }
 }
