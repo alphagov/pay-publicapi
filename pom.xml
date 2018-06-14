@@ -8,6 +8,7 @@
 
     <properties>
         <dropwizard.version>1.2.2</dropwizard.version>
+        <guice.version>4.2.0</guice.version>
         <mockserver.version>3.10.4</mockserver.version>
         <swagger.jersey2.version>1.5.18</swagger.jersey2.version>
         <hamcrest.version>1.3</hamcrest.version>
@@ -36,6 +37,11 @@
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-client</artifactId>
             <version>${dropwizard.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>${guice.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-validator</groupId>

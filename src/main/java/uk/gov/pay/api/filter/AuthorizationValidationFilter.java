@@ -2,8 +2,15 @@ package uk.gov.pay.api.filter;
 
 import com.google.common.io.BaseEncoding;
 import org.apache.commons.codec.digest.HmacUtils;
+import uk.gov.pay.api.app.config.PublicApiConfig;
 
-import javax.servlet.*;
+import javax.inject.Inject;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -17,12 +24,13 @@ public class AuthorizationValidationFilter implements Filter {
 
     private String apiKeyHmacSecret;
 
-    public AuthorizationValidationFilter(String apiKeyHmacSecret) {
-        this.apiKeyHmacSecret = apiKeyHmacSecret;
+    @Inject
+    public AuthorizationValidationFilter(PublicApiConfig configuration) {
+        this.apiKeyHmacSecret = configuration.getApiKeyHmacSecret();
     }
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {}
+    public void init(FilterConfig filterConfig) {}
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {

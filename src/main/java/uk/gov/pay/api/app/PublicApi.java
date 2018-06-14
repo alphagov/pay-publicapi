@@ -3,9 +3,8 @@ package uk.gov.pay.api.app;
 import com.codahale.metrics.graphite.GraphiteReporter;
 import com.codahale.metrics.graphite.GraphiteSender;
 import com.codahale.metrics.graphite.GraphiteUDP;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
@@ -16,6 +15,7 @@ import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import uk.gov.pay.api.app.config.PublicApiConfig;
+import uk.gov.pay.api.app.config.PublicApiModule;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.auth.AccountAuthenticator;
 import uk.gov.pay.api.exception.mapper.BadRequestExceptionMapper;
@@ -30,29 +30,19 @@ import uk.gov.pay.api.exception.mapper.SearchChargesExceptionMapper;
 import uk.gov.pay.api.exception.mapper.ValidationExceptionMapper;
 import uk.gov.pay.api.filter.AuthorizationValidationFilter;
 import uk.gov.pay.api.filter.LoggingFilter;
-import uk.gov.pay.api.filter.RateLimiter;
 import uk.gov.pay.api.filter.RateLimiterFilter;
 import uk.gov.pay.api.healthcheck.Ping;
-import uk.gov.pay.api.json.CreatePaymentRefundRequestDeserializer;
-import uk.gov.pay.api.json.CreatePaymentRequestDeserializer;
-import uk.gov.pay.api.model.CreatePaymentRefundRequest;
-import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.resources.HealthCheckResource;
 import uk.gov.pay.api.resources.PaymentRefundsResource;
 import uk.gov.pay.api.resources.PaymentsResource;
 import uk.gov.pay.api.resources.RequestDeniedResource;
-import uk.gov.pay.api.validation.PaymentRefundRequestValidator;
-import uk.gov.pay.api.validation.PaymentRequestValidator;
-import uk.gov.pay.api.validation.URLValidator;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.ws.rs.client.Client;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.EnumSet.of;
 import static javax.servlet.DispatcherType.REQUEST;
 import static uk.gov.pay.api.resources.PaymentsResource.API_VERSION_PATH;
-import static uk.gov.pay.api.validation.URLValidator.urlValidatorValueOf;
 
 public class PublicApi extends Application<PublicApiConfig> {
 
@@ -70,42 +60,38 @@ public class PublicApi extends Application<PublicApiConfig> {
     }
 
     @Override
-    public void run(PublicApiConfig config, Environment environment) {
-
-        final Client client = RestClientFactory.buildClient(config.getRestClientConfig());
-
+    public void run(PublicApiConfig configuration, Environment environment) {
+        
         initialiseSSLSocketFactory();
-
-        ObjectMapper objectMapper = environment.getObjectMapper();
-        configureObjectMapper(config, objectMapper);
+        
+        final Injector injector = Guice.createInjector(new PublicApiModule(configuration, environment));
 
         environment.healthChecks().register("ping", new Ping());
-        environment.jersey().register(new HealthCheckResource(environment));
-        environment.jersey().register(new PaymentsResource(config.getBaseUrl(), client, config.getConnectorUrl(), config.getConnectorDDUrl(), objectMapper));
-        environment.jersey().register(new PaymentRefundsResource(config.getBaseUrl(), client, config.getConnectorUrl()));
-        environment.jersey().register(new RequestDeniedResource());
-
-        RateLimiter rateLimiter = new RateLimiter(config.getRateLimiterConfig().getRate(), config.getRateLimiterConfig().getPerMillis());
-
-        environment.servlets().addFilter("AuthorizationValidationFilter", new AuthorizationValidationFilter(config.getApiKeyHmacSecret()))
+        
+        environment.jersey().register(injector.getInstance(HealthCheckResource.class));
+        environment.jersey().register(injector.getInstance(PaymentsResource.class));
+        environment.jersey().register(injector.getInstance(PaymentRefundsResource.class));
+        environment.jersey().register(injector.getInstance(RequestDeniedResource.class));
+        
+        environment.servlets().addFilter("AuthorizationValidationFilter", injector.getInstance(AuthorizationValidationFilter.class))
                 .addMappingForUrlPatterns(of(REQUEST), true, API_VERSION_PATH + "/*");
 
-        environment.servlets().addFilter("RateLimiterFilter", new RateLimiterFilter(rateLimiter, objectMapper))
+        environment.servlets().addFilter("RateLimiterFilter", injector.getInstance(RateLimiterFilter.class))
                 .addMappingForUrlPatterns(of(REQUEST), true, API_VERSION_PATH + "/*");
 
-        environment.servlets().addFilter("LoggingFilter", new LoggingFilter())
+        environment.servlets().addFilter("LoggingFilter", injector.getInstance(LoggingFilter.class))
                 .addMappingForUrlPatterns(of(REQUEST), true, API_VERSION_PATH + "/*");
 
         environment.jersey().register(new AuthDynamicFeature(
                 new OAuthCredentialAuthFilter.Builder<Account>()
-                        .setAuthenticator(new AccountAuthenticator(client, config.getPublicAuthUrl()))
+                        .setAuthenticator(injector.getInstance(AccountAuthenticator.class))
                         .setPrefix("Bearer")
                         .buildAuthFilter()));
         environment.jersey().register(new AuthValueFactoryProvider.Binder<>(Account.class));
 
         attachExceptionMappersTo(environment.jersey());
 
-        initialiseMetrics(config, environment);
+        initialiseMetrics(configuration, environment);
     }
 
     /*
@@ -135,20 +121,6 @@ public class PublicApi extends Application<PublicApiConfig> {
                 .prefixedWith(SERVICE_METRICS_NODE)
                 .build(graphiteUDP)
                 .start(GRAPHITE_SENDING_PERIOD_SECONDS, TimeUnit.SECONDS);
-    }
-
-    private void configureObjectMapper(PublicApiConfig config, ObjectMapper objectMapper) {
-
-        URLValidator urlValidator = urlValidatorValueOf(config.getAllowHttpForReturnUrl());
-        CreatePaymentRequestDeserializer paymentRequestDeserializer = new CreatePaymentRequestDeserializer(new PaymentRequestValidator(urlValidator));
-        CreatePaymentRefundRequestDeserializer paymentRefundRequestDeserializer = new CreatePaymentRefundRequestDeserializer(new PaymentRefundRequestValidator());
-
-        SimpleModule publicApiDeserializationModule = new SimpleModule("publicApiDeserializationModule");
-        publicApiDeserializationModule.addDeserializer(CreatePaymentRequest.class, paymentRequestDeserializer);
-        publicApiDeserializationModule.addDeserializer(CreatePaymentRefundRequest.class, paymentRefundRequestDeserializer);
-
-        objectMapper.configure(DeserializationFeature.ACCEPT_FLOAT_AS_INT, false);
-        objectMapper.registerModule(publicApiDeserializationModule);
     }
 
     public static void main(String[] args) throws Exception {
