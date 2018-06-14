@@ -42,7 +42,6 @@ import java.util.concurrent.TimeUnit;
 
 import static java.util.EnumSet.of;
 import static javax.servlet.DispatcherType.REQUEST;
-import static uk.gov.pay.api.resources.PaymentsResource.API_VERSION_PATH;
 
 public class PublicApi extends Application<PublicApiConfig> {
 
@@ -74,13 +73,13 @@ public class PublicApi extends Application<PublicApiConfig> {
         environment.jersey().register(injector.getInstance(RequestDeniedResource.class));
         
         environment.servlets().addFilter("AuthorizationValidationFilter", injector.getInstance(AuthorizationValidationFilter.class))
-                .addMappingForUrlPatterns(of(REQUEST), true, API_VERSION_PATH + "/*");
+                .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");
 
         environment.servlets().addFilter("RateLimiterFilter", injector.getInstance(RateLimiterFilter.class))
-                .addMappingForUrlPatterns(of(REQUEST), true, API_VERSION_PATH + "/*");
+                .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");
 
         environment.servlets().addFilter("LoggingFilter", injector.getInstance(LoggingFilter.class))
-                .addMappingForUrlPatterns(of(REQUEST), true, API_VERSION_PATH + "/*");
+                .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");
 
         environment.jersey().register(new AuthDynamicFeature(
                 new OAuthCredentialAuthFilter.Builder<Account>()
