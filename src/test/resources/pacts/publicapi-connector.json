@@ -28,7 +28,7 @@
           "charge_id": "ch_ab2341da231434l",
           "amount": "100",
           "reference": "a reference",
-          "email": "alice.111@mail.fake",
+          "email": null,
           "description": "a description",
           "state": {
             "status": "created",
@@ -39,7 +39,7 @@
           "created_date": "2016-01-01T12:00:00Z",
           "links": [
             {
-              "href": "http://localhost/v1/api/accounts/GATEWAY_ACCOUNT_ID/charges/ch_ab2341da231434l",
+              "href": "http://connector.service.backend/v1/api/accounts/GATEWAY_ACCOUNT_ID/charges/ch_ab2341da231434l",
               "rel": "self",
               "method": "GET"
             },
