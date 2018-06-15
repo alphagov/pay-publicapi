@@ -35,9 +35,8 @@ public class DirectDebitPaymentTest {
     private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
     private static final int AMOUNT = 100;
     private static final String CHARGE_ID = "ch_ab2341da231434l";
-    private static final String CHARGE_TOKEN_ID = "token_1234567asdf";
-    private static final PaymentState CREATED = new PaymentState("created", false, null, null);
-    private static final String PAYMENT_PROVIDER = "Sandbox";
+    private static final String CHARGE_TOKEN_ID = "ebf23f8c-6a9d-4f7d-afd5-bcc7b1b6a0e2";
+    private static final PaymentState STARTED = new PaymentState("started", false, null, null);
     private static final String RETURN_URL = "https://somewhere.gov.uk/rainbow/1";
     private static final String REFERENCE = "a reference";
     private static final String EMAIL = "alice.111@mail.fake";
@@ -76,10 +75,8 @@ public class DirectDebitPaymentTest {
                 .body("amount", is(AMOUNT))
                 .body("reference", is(REFERENCE))
                 .body("description", is(DESCRIPTION))
-                .body("state.status", is(CREATED.getStatus()))
+                .body("state.status", is(STARTED.getStatus()))
                 .body("return_url", is(RETURN_URL))
-                .body("email", is(EMAIL))
-                .body("payment_provider", is(PAYMENT_PROVIDER))
                 .body("created_date", is(CREATED_DATE))
                 .body("_links.self.href", is(paymentLocationFor(CHARGE_ID)))
                 .body("_links.self.method", is("GET"))
