@@ -237,7 +237,7 @@
           "200" : {
             "description" : "OK",
             "schema" : {
-              "$ref" : "#/definitions/PaymentEventsInformation"
+              "$ref" : "#/definitions/PaymentEvents"
             }
           },
           "401" : {
@@ -381,7 +381,7 @@
     }
   },
   "definitions" : {
-    "Billing Address" : {
+    "Address" : {
       "type" : "object",
       "properties" : {
         "line1" : {
@@ -412,7 +412,37 @@
       },
       "description" : "A structure representing the billing address of a card"
     },
-    "Card Payment" : {
+    "CardDetails" : {
+      "type" : "object",
+      "properties" : {
+        "last_digits_card_number" : {
+          "type" : "string",
+          "example" : "1234",
+          "readOnly" : true
+        },
+        "cardholder_name" : {
+          "type" : "string",
+          "example" : "Mr. Card holder",
+          "readOnly" : true
+        },
+        "expiry_date" : {
+          "type" : "string",
+          "example" : "12/20",
+          "readOnly" : true
+        },
+        "billing_address" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/Address"
+        },
+        "card_brand" : {
+          "type" : "string",
+          "example" : "Visa",
+          "readOnly" : true
+        }
+      },
+      "description" : "A structure representing the payment card"
+    },
+    "CardPayment" : {
       "allOf" : [ {
         "$ref" : "#/definitions/Payment"
       }, {
@@ -420,15 +450,15 @@
         "properties" : {
           "refund_summary" : {
             "readOnly" : true,
-            "$ref" : "#/definitions/Refund Summary"
+            "$ref" : "#/definitions/RefundSummary"
           },
           "settlement_summary" : {
             "readOnly" : true,
-            "$ref" : "#/definitions/Settlement Summary"
+            "$ref" : "#/definitions/SettlementSummary"
           },
           "card_details" : {
             "readOnly" : true,
-            "$ref" : "#/definitions/Payment card details"
+            "$ref" : "#/definitions/CardDetails"
           },
           "card_brand" : {
             "type" : "string",
@@ -494,12 +524,28 @@
       },
       "description" : "The Payment Request Payload"
     },
-    "Direct Debit Payment" : {
+    "DirectDebitPayment" : {
       "allOf" : [ {
         "$ref" : "#/definitions/Payment"
       }, {
         "type" : "object"
       } ]
+    },
+    "Link" : {
+      "type" : "object",
+      "properties" : {
+        "href" : {
+          "type" : "string",
+          "example" : "https://an.example.link/from/payment/platform",
+          "readOnly" : true
+        },
+        "method" : {
+          "type" : "string",
+          "example" : "GET",
+          "readOnly" : true
+        }
+      },
+      "description" : "A link related to a payment"
     },
     "Payment" : {
       "type" : "object",
@@ -511,7 +557,7 @@
           "example" : "1200"
         },
         "state" : {
-          "$ref" : "#/definitions/Payment state"
+          "$ref" : "#/definitions/PaymentState"
         },
         "description" : {
           "type" : "string",
@@ -547,7 +593,25 @@
         }
       }
     },
-    "Payment Event information" : {
+    "PaymentError" : {
+      "type" : "object",
+      "properties" : {
+        "field" : {
+          "type" : "string",
+          "example" : "amount"
+        },
+        "code" : {
+          "type" : "string",
+          "example" : "P0102"
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "Invalid attribute value: amount. Must be less than or equal to 10000000"
+        }
+      },
+      "description" : "A Payment Error response"
+    },
+    "PaymentEvent" : {
       "type" : "object",
       "properties" : {
         "payment_id" : {
@@ -558,7 +622,7 @@
         "state" : {
           "description" : "state",
           "readOnly" : true,
-          "$ref" : "#/definitions/Payment state"
+          "$ref" : "#/definitions/PaymentState"
         },
         "updated" : {
           "type" : "string",
@@ -568,42 +632,117 @@
         },
         "_links" : {
           "readOnly" : true,
-          "$ref" : "#/definitions/payment-event-link"
+          "$ref" : "#/definitions/PaymentEventLink"
         }
       },
       "description" : "A List of Payment Events information"
     },
-    "Payment card details" : {
+    "PaymentEventLink" : {
       "type" : "object",
       "properties" : {
-        "last_digits_card_number" : {
-          "type" : "string",
-          "example" : "1234",
-          "readOnly" : true
-        },
-        "cardholder_name" : {
-          "type" : "string",
-          "example" : "Mr. Card holder",
-          "readOnly" : true
-        },
-        "expiry_date" : {
-          "type" : "string",
-          "example" : "12/20",
-          "readOnly" : true
-        },
-        "billing_address" : {
+        "payment_url" : {
+          "description" : "payment_url",
           "readOnly" : true,
-          "$ref" : "#/definitions/Billing Address"
-        },
-        "card_brand" : {
-          "type" : "string",
-          "example" : "Visa",
-          "readOnly" : true
+          "$ref" : "#/definitions/Link"
         }
       },
-      "description" : "A structure representing the payment card"
+      "description" : "Resource link for a payment of a payment event"
     },
-    "Payment state" : {
+    "PaymentEvents" : {
+      "type" : "object",
+      "properties" : {
+        "events" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/PaymentEvent"
+          }
+        },
+        "payment_id" : {
+          "type" : "string",
+          "example" : "hu20sqlact5260q2nanm0q8u93",
+          "readOnly" : true
+        },
+        "_links" : {
+          "$ref" : "#/definitions/PaymentLinks"
+        }
+      },
+      "description" : "A List of Payment Events information"
+    },
+    "PaymentLinks" : {
+      "type" : "object",
+      "properties" : {
+        "self" : {
+          "description" : "self",
+          "readOnly" : true,
+          "$ref" : "#/definitions/Link"
+        },
+        "next_url" : {
+          "description" : "next_url",
+          "readOnly" : true,
+          "$ref" : "#/definitions/Link"
+        },
+        "next_url_post" : {
+          "description" : "next_url_post",
+          "readOnly" : true,
+          "$ref" : "#/definitions/PostLink"
+        },
+        "events" : {
+          "description" : "events",
+          "readOnly" : true,
+          "$ref" : "#/definitions/Link"
+        },
+        "refunds" : {
+          "description" : "refunds",
+          "readOnly" : true,
+          "$ref" : "#/definitions/Link"
+        },
+        "cancel" : {
+          "description" : "cancel",
+          "readOnly" : true,
+          "$ref" : "#/definitions/PostLink"
+        }
+      },
+      "description" : "self,events and next links of a Payment"
+    },
+    "PaymentLinksForSearch" : {
+      "type" : "object",
+      "properties" : {
+        "self" : {
+          "description" : "self",
+          "readOnly" : true,
+          "$ref" : "#/definitions/Link"
+        },
+        "cancel" : {
+          "description" : "cancel",
+          "readOnly" : true,
+          "$ref" : "#/definitions/PostLink"
+        },
+        "events" : {
+          "description" : "events",
+          "readOnly" : true,
+          "$ref" : "#/definitions/Link"
+        },
+        "refunds" : {
+          "description" : "refunds",
+          "readOnly" : true,
+          "$ref" : "#/definitions/Link"
+        }
+      },
+      "description" : "links for search payment resource"
+    },
+    "PaymentSearchResults" : {
+      "type" : "object",
+      "properties" : {
+        "results" : {
+          "type" : "array",
+          "readOnly" : true,
+          "items" : {
+            "$ref" : "#/definitions/CardPayment"
+          }
+        }
+      }
+    },
+    "PaymentState" : {
       "type" : "object",
       "required" : [ "code", "finished", "message", "status" ],
       "properties" : {
@@ -634,56 +773,6 @@
       },
       "description" : "A structure representing the current state of the payment in its lifecycle."
     },
-    "PaymentError" : {
-      "type" : "object",
-      "properties" : {
-        "field" : {
-          "type" : "string",
-          "example" : "amount"
-        },
-        "code" : {
-          "type" : "string",
-          "example" : "P0102"
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "Invalid attribute value: amount. Must be less than or equal to 10000000"
-        }
-      },
-      "description" : "A Payment Error response"
-    },
-    "PaymentEventsInformation" : {
-      "type" : "object",
-      "properties" : {
-        "events" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/Payment Event information"
-          }
-        },
-        "payment_id" : {
-          "type" : "string",
-          "example" : "hu20sqlact5260q2nanm0q8u93",
-          "readOnly" : true
-        },
-        "_links" : {
-          "$ref" : "#/definitions/linksForEvents"
-        }
-      },
-      "description" : "A List of Payment Events information"
-    },
-    "PaymentSearchResults" : {
-      "type" : "object",
-      "properties" : {
-        "results" : {
-          "type" : "array",
-          "readOnly" : true,
-          "items" : {
-            "$ref" : "#/definitions/Card Payment"
-          }
-        }
-      }
-    },
     "PaymentWithAllLinks" : {
       "type" : "object",
       "properties" : {
@@ -692,152 +781,11 @@
         },
         "_links" : {
           "readOnly" : true,
-          "$ref" : "#/definitions/allLinksForAPayment"
+          "$ref" : "#/definitions/PaymentLinks"
         }
       }
     },
-    "Refund Summary" : {
-      "type" : "object",
-      "properties" : {
-        "status" : {
-          "type" : "string",
-          "example" : "available",
-          "description" : "Availability status of the refund"
-        },
-        "amount_available" : {
-          "type" : "integer",
-          "format" : "int64",
-          "description" : "Amount available for refund in pence",
-          "readOnly" : true
-        },
-        "amount_submitted" : {
-          "type" : "integer",
-          "format" : "int64",
-          "description" : "Amount submitted for refunds on this Payment in pence",
-          "readOnly" : true
-        }
-      },
-      "description" : "A structure representing the refunds availability"
-    },
-    "Settlement Summary" : {
-      "type" : "object",
-      "properties" : {
-        "capture_submit_time" : {
-          "type" : "string",
-          "example" : "2016-01-21T17:15:00Z",
-          "description" : "Date and time capture request has been submitted (may be null if capture request was not immediately acknowledged by payment gateway)",
-          "readOnly" : true
-        },
-        "captured_date" : {
-          "type" : "string",
-          "example" : "2016-01-21",
-          "description" : "Date of the capture event",
-          "readOnly" : true
-        }
-      },
-      "description" : "A structure representing information about a settlement"
-    },
-    "allLinksForAPayment" : {
-      "type" : "object",
-      "properties" : {
-        "self" : {
-          "description" : "self",
-          "readOnly" : true,
-          "$ref" : "#/definitions/paymentLink"
-        },
-        "next_url" : {
-          "description" : "next_url",
-          "readOnly" : true,
-          "$ref" : "#/definitions/paymentLink"
-        },
-        "next_url_post" : {
-          "description" : "next_url_post",
-          "readOnly" : true,
-          "$ref" : "#/definitions/paymentPOSTLink"
-        },
-        "events" : {
-          "description" : "events",
-          "readOnly" : true,
-          "$ref" : "#/definitions/paymentLink"
-        },
-        "refunds" : {
-          "description" : "refunds",
-          "readOnly" : true,
-          "$ref" : "#/definitions/paymentLink"
-        },
-        "cancel" : {
-          "description" : "cancel",
-          "readOnly" : true,
-          "$ref" : "#/definitions/paymentPOSTLink"
-        }
-      },
-      "description" : "self,events and next links of a Payment"
-    },
-    "linksForEvents" : {
-      "type" : "object",
-      "properties" : {
-        "self" : {
-          "description" : "self",
-          "readOnly" : true,
-          "$ref" : "#/definitions/paymentLink"
-        }
-      },
-      "description" : "links for events resource"
-    },
-    "linksForSearchResults" : {
-      "type" : "object",
-      "properties" : {
-        "self" : {
-          "description" : "self",
-          "readOnly" : true,
-          "$ref" : "#/definitions/paymentLink"
-        },
-        "cancel" : {
-          "description" : "cancel",
-          "readOnly" : true,
-          "$ref" : "#/definitions/paymentPOSTLink"
-        },
-        "events" : {
-          "description" : "events",
-          "readOnly" : true,
-          "$ref" : "#/definitions/paymentLink"
-        },
-        "refunds" : {
-          "description" : "refunds",
-          "readOnly" : true,
-          "$ref" : "#/definitions/paymentLink"
-        }
-      },
-      "description" : "links for search payment resource"
-    },
-    "payment-event-link" : {
-      "type" : "object",
-      "properties" : {
-        "payment_url" : {
-          "description" : "payment_url",
-          "readOnly" : true,
-          "$ref" : "#/definitions/paymentLink"
-        }
-      },
-      "description" : "Resource link for a payment of a payment event"
-    },
-    "paymentLink" : {
-      "type" : "object",
-      "properties" : {
-        "href" : {
-          "type" : "string",
-          "example" : "https://an.example.link/from/payment/platform",
-          "readOnly" : true
-        },
-        "method" : {
-          "type" : "string",
-          "example" : "GET",
-          "readOnly" : true
-        }
-      },
-      "description" : "A link related to a payment"
-    },
-    "paymentPOSTLink" : {
+    "PostLink" : {
       "type" : "object",
       "properties" : {
         "type" : {
@@ -863,6 +811,47 @@
         }
       },
       "description" : "A POST link related to a payment"
+    },
+    "RefundSummary" : {
+      "type" : "object",
+      "properties" : {
+        "status" : {
+          "type" : "string",
+          "example" : "available",
+          "description" : "Availability status of the refund"
+        },
+        "amount_available" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Amount available for refund in pence",
+          "readOnly" : true
+        },
+        "amount_submitted" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Amount submitted for refunds on this Payment in pence",
+          "readOnly" : true
+        }
+      },
+      "description" : "A structure representing the refunds availability"
+    },
+    "SettlementSummary" : {
+      "type" : "object",
+      "properties" : {
+        "capture_submit_time" : {
+          "type" : "string",
+          "example" : "2016-01-21T17:15:00Z",
+          "description" : "Date and time capture request has been submitted (may be null if capture request was not immediately acknowledged by payment gateway)",
+          "readOnly" : true
+        },
+        "captured_date" : {
+          "type" : "string",
+          "example" : "2016-01-21",
+          "description" : "Date of the capture event",
+          "readOnly" : true
+        }
+      },
+      "description" : "A structure representing information about a settlement"
     }
   }
 }
