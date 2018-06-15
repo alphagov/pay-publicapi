@@ -1,4 +1,4 @@
-package uk.gov.pay.api.model.directdebit;
+package uk.gov.pay.api.model.directdebit.agreement;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;

@@ -1,4 +1,4 @@
-package uk.gov.pay.api.model.directdebit;
+package uk.gov.pay.api.model.directdebit.agreement;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
@@ -18,6 +18,14 @@ public class CreateAgreementResponse {
     private String returnUrl;
     private String createdDate;
     private AgreementStatus state;
+
+    public CreateAgreementResponse(String agreementId, AgreementType agreementType, String returnUrl, String createdDate, AgreementStatus state) {
+        this.agreementId = agreementId;
+        this.agreementType = agreementType;
+        this.returnUrl = returnUrl;
+        this.createdDate = createdDate;
+        this.state = state;
+    }
 
     @ApiModelProperty(value = "agreement id", required = true, example = "jhjcvaiqlediuhh23d89hd3")
     @JsonProperty(value = AGREEMENT_ID_FIELD_NAME)

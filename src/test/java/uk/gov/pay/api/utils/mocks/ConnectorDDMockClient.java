@@ -3,8 +3,8 @@ package uk.gov.pay.api.utils.mocks;
 import com.google.common.collect.ImmutableMap;
 import org.mockserver.client.server.ForwardChainExpectation;
 import uk.gov.pay.api.model.PaymentState;
-import uk.gov.pay.api.model.directdebit.AgreementStatus;
-import uk.gov.pay.api.model.directdebit.AgreementType;
+import uk.gov.pay.api.model.directdebit.agreement.AgreementStatus;
+import uk.gov.pay.api.model.directdebit.agreement.AgreementType;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import java.util.HashMap;
