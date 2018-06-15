@@ -1,4 +1,4 @@
-package uk.gov.pay.api.it;
+package uk.gov.pay.api.it.pact.directdebit;
 
 import au.com.dius.pact.consumer.PactVerification;
 import com.jayway.jsonassert.JsonAssert;
@@ -10,16 +10,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
-import uk.gov.pay.api.model.PaymentState;
-import uk.gov.pay.api.model.TokenPaymentType;
+import uk.gov.pay.api.it.pact.PaymentBaseTest;
 import uk.gov.pay.api.pact.PactProviderRule;
 import uk.gov.pay.api.pact.Pacts;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
-import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import javax.ws.rs.core.HttpHeaders;
-import java.time.ZonedDateTime;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
@@ -30,19 +27,10 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 
-public class DirectDebitPaymentTest {
+public class DirectDebitPaymentTest extends PaymentBaseTest {
 
-    private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
-    private static final int AMOUNT = 100;
     private static final String CHARGE_ID = "ch_ab2341da231434l";
     private static final String CHARGE_TOKEN_ID = "token_1234567asdf";
-    private static final PaymentState CREATED = new PaymentState("created", false, null, null);
-    private static final String PAYMENT_PROVIDER = "Sandbox";
-    private static final String RETURN_URL = "https://somewhere.gov.uk/rainbow/1";
-    private static final String REFERENCE = "a reference";
-    private static final String EMAIL = "alice.111@mail.fake";
-    private static final String DESCRIPTION = "a description";
-    private static final String CREATED_DATE = DateTimeUtils.toUTCDateString(TIMESTAMP);
     private static final String SUCCESS_PAYLOAD = paymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL);
 
     //Must use same secret set int configured test-config.xml
@@ -52,9 +40,6 @@ public class DirectDebitPaymentTest {
     
     @Rule
     public PactProviderRule directDebitConnector = new PactProviderRule("direct-debit-connector", this);
-    
-    @Rule
-    public PactProviderRule publicAuth = new PactProviderRule("publicauth", this);
     
     @Rule 
     public DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
@@ -66,7 +51,7 @@ public class DirectDebitPaymentTest {
     
     @Test
     @PactVerification({"direct-debit-connector", "publicauth"})
-    @Pacts(pacts = {"publicapi-publicauth", "publicapi-direct-debit-connector"})
+    @Pacts(pacts = {"publicapi-publicauth-direct-debit", "publicapi-direct-debit-connector"})
     public void createPayment() {
         String responseBody = postPaymentResponse(API_KEY, SUCCESS_PAYLOAD)
                 .statusCode(201)
@@ -79,7 +64,7 @@ public class DirectDebitPaymentTest {
                 .body("state.status", is(CREATED.getStatus()))
                 .body("return_url", is(RETURN_URL))
                 .body("email", is(EMAIL))
-                .body("payment_provider", is(PAYMENT_PROVIDER))
+                .body("payment_provider", is(SANDBOX_PAYMENT_PROVIDER))
                 .body("created_date", is(CREATED_DATE))
                 .body("_links.self.href", is(paymentLocationFor(CHARGE_ID)))
                 .body("_links.self.method", is("GET"))
@@ -121,14 +106,6 @@ public class DirectDebitPaymentTest {
                 .add("description", description)
                 .add("return_url", returnUrl)
                 .build();
-    }
-
-    String paymentLocationFor(String chargeId) {
-        return "http://publicapi.url" + PAYMENTS_PATH + chargeId;
-    }
-
-    String frontendUrlFor(TokenPaymentType paymentType) {
-        return "http://frontend_"+paymentType.toString().toLowerCase()+"/charge/";
     }
 
     // Close idle connections - see https://github.com/DiUS/pact-jvm/issues/342

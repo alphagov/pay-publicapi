@@ -1,0 +1,55 @@
+{
+  "consumer": {
+    "name": "publicapi"
+  },
+  "provider": {
+    "name": "publicauth"
+  },
+  "interactions": [
+    {
+      "description": "an authorization request",
+      "providerStates": [
+        {
+          "name": "A bearer token exists",
+          "params": {
+            "type": "DIRECT_DEBIT",
+            "id": "p837h5j7oje0huchp4ocibv1qq534lmn"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/v1/auth",
+        "headers": {
+          "Authorization": "Bearer TEST_BEARER_TOKENp837h5j7oje0huchp4ocibv1qq534lmn"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "account_id": "GATEWAY_ACCOUNT_ID",
+          "token_type": "DIRECT_DEBIT"
+        },
+        "matchingRules": {
+          "$.body.account_id": {
+            "match": "type"
+          },
+          "$.body.token_type": {
+            "match": "type"
+          }
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pact-specification": {
+      "version": "3.0.0"
+    },
+    "pact-jvm": {
+      "version": "3.5.16"
+    }
+  }
+}
