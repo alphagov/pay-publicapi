@@ -63,7 +63,6 @@ public class PostLink extends Link {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(super.hashCode(), type, params);
     }
 }

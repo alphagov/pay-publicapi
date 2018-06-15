@@ -91,7 +91,6 @@ public class PaymentState {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(status, finished, message, code);
     }
 }

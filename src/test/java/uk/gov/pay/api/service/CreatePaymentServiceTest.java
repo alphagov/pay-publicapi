@@ -30,6 +30,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreatePaymentServiceTest {
+
     private CreatePaymentService createPaymentService;
 
     @Rule
@@ -46,9 +47,8 @@ public class CreatePaymentServiceTest {
     public void setup() {
         when(configuration.getConnectorUrl()).thenReturn(connectorRule.getUrl()); // We will actually send real requests here, which will be intercepted by pact
 
-        when(configuration.getBaseUrl()).thenReturn("http://publicapi.test.localhost/"); // Has to match what is in the Pact
+        when(configuration.getBaseUrl()).thenReturn("http://publicapi.test.localhost/");
 
-        // These can be concrete implementations, because they're simple
         publicApiUriGenerator = new PublicApiUriGenerator(configuration);
         connectorUriGenerator = new ConnectorUriGenerator(configuration);
         client = RestClientFactory.buildClient(new RestClientConfig(false));
