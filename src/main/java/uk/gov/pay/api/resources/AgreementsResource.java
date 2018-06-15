@@ -16,7 +16,6 @@ import uk.gov.pay.api.exception.CreateAgreementException;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.directdebit.agreement.CreateAgreementRequest;
 import uk.gov.pay.api.model.directdebit.agreement.CreateAgreementResponse;
-import uk.gov.pay.api.model.directdebit.agreement.connector.CreateMandateResponse;
 import uk.gov.pay.api.model.directdebit.agreement.support.Utils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
@@ -31,6 +30,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.util.Map;
 
 import static java.lang.String.format;
 import static javax.ws.rs.client.Entity.json;
@@ -81,8 +81,8 @@ public class AgreementsResource {
                 .post(buildAgreementRequestPayload(createAgreementRequest));
 
         if (connectorResponse.getStatus() == HttpStatus.SC_CREATED) {
-            CreateMandateResponse createMandateResponse = connectorResponse.readEntity(CreateMandateResponse.class);
-            CreateAgreementResponse createAgreementResponse = Utils.createMandateResponse2CreateAgreementResponse(createMandateResponse);
+            Map connectorResponseMap = connectorResponse.readEntity(Map.class);
+            CreateAgreementResponse createAgreementResponse = Utils.map2CreateAgreementResponse(connectorResponseMap);
             URI agreementUri = UriBuilder.fromUri(baseUrl)
                     .path("/v1/agreements/{agreementId}")
                     .build(createAgreementResponse.getAgreementId());

@@ -3,17 +3,18 @@ package uk.gov.pay.api.model.directdebit.agreement.support;
 import uk.gov.pay.api.model.directdebit.agreement.AgreementStatus;
 import uk.gov.pay.api.model.directdebit.agreement.AgreementType;
 import uk.gov.pay.api.model.directdebit.agreement.CreateAgreementResponse;
-import uk.gov.pay.api.model.directdebit.agreement.connector.CreateMandateResponse;
+
+import java.util.Map;
 
 public class Utils {
 
-    public static CreateAgreementResponse createMandateResponse2CreateAgreementResponse(CreateMandateResponse createMandateResponse) {
+    public static CreateAgreementResponse map2CreateAgreementResponse(Map<String, String> response) {
         CreateAgreementResponse createAgreementResponse = new CreateAgreementResponse(
-                createMandateResponse.getMandateId(),
-                AgreementType.valueOf(createMandateResponse.getMandateType().toString().toUpperCase()),
-                createMandateResponse.getReturnUrl(),
-                createMandateResponse.getCreatedDate(),
-                AgreementStatus.valueOf(createMandateResponse.getState().toString().toUpperCase())
+                response.get("mandate_id"),
+                AgreementType.valueOf(response.get("mandate_type").toString()),
+                response.get("return_url"),
+                response.get("created_date"),
+                AgreementStatus.valueOf(response.get("state").toString())
         );
 
         return createAgreementResponse;

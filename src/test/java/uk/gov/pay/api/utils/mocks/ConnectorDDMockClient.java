@@ -69,25 +69,25 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                         .withBody(chargeResponseBody));
     }
 
-    public void respondOk_whenCreateAgreementRequest(String agreementId, AgreementType agreementType,
+    public void respondOk_whenCreateAgreementRequest(String mandateId, AgreementType agreementType,
                                                      String returnUrl, String createdDate,
                                                      AgreementStatus state, String gatewayAccountId) {
         whenCreateAgreement(returnUrl, agreementType, gatewayAccountId)
                 .respond(response()
                         .withStatusCode(CREATED_201)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withHeader(LOCATION, format("%s/v1/api/accounts/%s/agreements/%s", baseUrl, gatewayAccountId, agreementId))
-                        .withBody(buildCreateAgreementResponse(agreementId, agreementType, returnUrl, createdDate, state)
+                        .withHeader(LOCATION, format("%s/v1/api/accounts/%s/agreements/%s", baseUrl, gatewayAccountId, mandateId))
+                        .withBody(buildCreateAgreementResponse(mandateId, agreementType, returnUrl, createdDate, state)
                         )
                 );
     }
 
-    private String buildCreateAgreementResponse(String agreementId, AgreementType agreementType,
+    private String buildCreateAgreementResponse(String mandateId, AgreementType agreementType,
                                                 String returnUrl, String createdDate,
                                                 AgreementStatus state) {
         return new JsonStringBuilder()
-                .add("agreement_id", agreementId)
-                .add("agreement_type", agreementType)
+                .add("mandate_id", mandateId)
+                .add("mandate_type", agreementType)
                 .add("return_url", returnUrl)
                 .add("created_date", createdDate)
                 .add("state", state)
