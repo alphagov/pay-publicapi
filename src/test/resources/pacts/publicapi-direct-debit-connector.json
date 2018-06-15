@@ -1,20 +1,28 @@
 {
-  "consumer": {
-    "name": "publicapi"
-  },
   "provider": {
     "name": "direct-debit-connector"
+  },
+  "consumer": {
+    "name": "publicapi"
   },
   "interactions": [
     {
       "description": "a create charge request",
+      "providerStates": [
+        {
+          "name": "a gateway account with external id exists",
+          "params": {
+            "gateway_account_id": "GATEWAY_ACCOUNT_ID"
+          }
+        }
+      ],
       "request": {
         "method": "POST",
         "path": "/v1/api/accounts/GATEWAY_ACCOUNT_ID/charges",
         "body": {
           "amount": 100,
-          "reference": "a reference",
           "description": "a description",
+          "reference": "a reference",
           "return_url": "https://somewhere.gov.uk/rainbow/1"
         }
       },
@@ -22,71 +30,112 @@
         "status": 201,
         "headers": {
           "Content-Type": "application/json",
-          "Location": "/v1/api/accounts/GATEWAY_ACCOUNT_ID/charges/ch_ab2341da231434l"
+          "Location": "http://localhost:1234/v1/api/accounts/GATEWAY_ACCOUNT_ID/charges/ch_ab2341da231434l"
         },
         "body": {
+          "amount": 100,
           "charge_id": "ch_ab2341da231434l",
-          "amount": "100",
-          "reference": "a reference",
-          "email": "alice.111@mail.fake",
-          "description": "a description",
-          "state": {
-            "status": "created",
-            "finished": "false"
-          },
           "return_url": "https://somewhere.gov.uk/rainbow/1",
-          "payment_provider": "Sandbox",
+          "description": "a description",
+          "reference": "a reference",
           "created_date": "2016-01-01T12:00:00Z",
           "links": [
             {
-              "href": "http://localhost/v1/api/accounts/GATEWAY_ACCOUNT_ID/charges/ch_ab2341da231434l",
-              "rel": "self",
-              "method": "GET"
+              "href": "http://localhost:1234/v1/api/accounts/GATEWAY_ACCOUNT_ID/charges/ch_ab2341da231434l",
+              "method": "GET",
+              "rel": "self"
             },
             {
-              "href": "http://frontend_direct_debit/charge/token_1234567asdf",
-              "rel": "next_url",
-              "method": "GET"
+              "href": "http://frontend_direct_debit/charge/ebf23f8c-6a9d-4f7d-afd5-bcc7b1b6a0e2",
+              "method": "GET",
+              "rel": "next_url"
             },
             {
               "href": "http://frontend_direct_debit/charge/",
-              "rel": "next_url_post",
-              "type": "application/x-www-form-urlencoded",
+              "method": "POST",
               "params": {
-                "chargeTokenId": "token_1234567asdf"
+                "chargeTokenId": "ebf23f8c-6a9d-4f7d-afd5-bcc7b1b6a0e2"
               },
-              "method": "POST"
+              "rel": "next_url_post",
+              "type": "application/x-www-form-urlencoded"
             }
-          ]
+          ],
+          "state": {
+            "finished": false,
+            "status": "started"
+          }
         },
         "matchingRules": {
+          "header": {
+            "Location": {
+              "matchers": [
+                {
+                  "regex": "http:\/\/.*\/v1\/api\/accounts\/GATEWAY_ACCOUNT_ID\/charges\/[a-z0-9]*"
+                }
+              ]
+            }
+          },
           "body": {
+            "$.links[0].href": {
+              "matchers": [
+                {
+                  "regex": "http:\/\/.*\/v1\/api\/accounts\/GATEWAY_ACCOUNT_ID\/charges\/[a-z0-9]*"
+                }
+              ]
+            },
+            "$.links[1].href": {
+              "matchers": [
+                {
+                  "regex": "http:\/\/.*(?i)frontend.*\/secure\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                }
+              ]
+            },
+            "$.links[2].href": {
+              "matchers": [
+                {
+                  "regex": "http:\/\/.*(?i)frontend.*\/secure"
+                }
+              ]
+            },
+            "$.links[2].params.chargeTokenId": {
+              "matchers": [
+                {
+                  "regex": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                }
+              ]
+            },
             "$.charge_id": {
-              "matchers": [{"match": "type"}]
-            },
-            "$.amount": {
-              "matchers": [{"match": "type"}]
-            },
-            "$.reference": {
-              "matchers": [{"match": "type"}]
-            },
-            "$.email": {
-              "matchers": [{"match": "type"}]
-            },
-            "$.description": {
-              "matchers": [{"match": "type"}]
-            },
-            "$.state.status": {
-              "matchers": [{"match": "type"}]
-            },
-            "$.return_url": {
-              "matchers": [{"match": "type"}]
-            },
-            "$.payment_provider": {
-              "matchers": [{"match": "type"}]
+              "matchers": [
+                { "match": "type" }
+              ],
+              "combine": "AND"
             },
             "$.created_date": {
-              "matchers": [{ "date": "yyyy-MM-dd'T'HH:mm:ssZ" }]
+              "matchers": [
+                {
+                  "match": "date",
+                  "date": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.description": {
+              "matchers": [
+                { "match": "type" }
+              ],
+              "combine": "AND"
+            },
+            "$.payment_provider": {
+              "matchers": [
+                { "match": "type" }
+              ],
+              "combine": "AND"
+            },
+            "$.state.status": {
+              "matchers": [
+                { "match": "type" }
+              ],
+              "combine": "AND"
             }
           }
         }
