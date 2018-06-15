@@ -11,7 +11,6 @@ import static org.eclipse.jetty.util.StringUtil.isBlank;
 import static org.eclipse.jetty.util.StringUtil.isNotBlank;
 import static uk.gov.pay.api.model.PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
-import static uk.gov.pay.api.resources.PaymentsResource.*;
 import static uk.gov.pay.api.validation.MaxLengthValidator.isValid;
 import static uk.gov.pay.api.validation.PaymentRequestValidator.CARD_BRAND_MAX_LENGTH;
 import static uk.gov.pay.api.validation.PaymentRequestValidator.EMAIL_MAX_LENGTH;
@@ -44,49 +43,49 @@ public class PaymentSearchValidator {
 
     private static void validatePageIfNotNull(String pageNumber, List<String> validationErrors) {
         if (isNotBlank(pageNumber) && (!StringUtils.isNumeric(pageNumber) || Integer.valueOf(pageNumber) < 1)) {
-            validationErrors.add(PAGE);
+            validationErrors.add("page");
         }
     }
 
     private static void validateDisplaySizeIfNotNull(String displaySize, List<String> validationErrors) {
         if (isNotBlank(displaySize) && (!StringUtils.isNumeric(displaySize) || Integer.valueOf(displaySize) < 1 || Integer.valueOf(displaySize) > 500)) {
-            validationErrors.add(DISPLAY_SIZE);
+            validationErrors.add("display_size");
         }
     }
 
     private static void validateToDate(String toDate, List<String> validationErrors) {
         if (!validateDate(toDate)) {
-            validationErrors.add(TO_DATE_KEY);
+            validationErrors.add("to_date");
         }
     }
 
     private static void validateFromDate(String fromDate, List<String> validationErrors) {
         if (!validateDate(fromDate)) {
-            validationErrors.add(FROM_DATE_KEY);
+            validationErrors.add("from_date");
         }
     }
 
     private static void validateReference(String reference, List<String> validationErrors) {
         if (!isValid(reference, REFERENCE_MAX_LENGTH)) {
-            validationErrors.add(REFERENCE_KEY);
+            validationErrors.add("reference");
         }
     }
 
     private static void validateEmail(String email, List<String> validationErrors) {
         if (!isValid(email, EMAIL_MAX_LENGTH)) {
-            validationErrors.add(EMAIL_KEY);
+            validationErrors.add("email");
         }
     }
 
     private static void validateCardBrand(String cardBrand, List<String> validationErrors) {
         if (!isValid(cardBrand, CARD_BRAND_MAX_LENGTH)) {
-            validationErrors.add(CARD_BRAND_KEY);
+            validationErrors.add("card_brand");
         }
     }
 
     private static void validateState(String state, List<String> validationErrors) {
         if (!validateState(state)) {
-            validationErrors.add(STATE_KEY);
+            validationErrors.add("state");
         }
     }
 

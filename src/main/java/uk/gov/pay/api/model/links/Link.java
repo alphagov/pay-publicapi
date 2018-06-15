@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.Objects;
+
 import static com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @ApiModel(value = "Link", description = "A link related to a payment")
@@ -16,7 +18,7 @@ public class Link {
     @JsonProperty(value = "method")
     private String method;
 
-    Link(String href, String method) {
+    public Link(String href, String method) {
         this.href = href;
         this.method = method;
     }
@@ -43,5 +45,19 @@ public class Link {
                 "href='" + href + '\'' +
                 ", method='" + method + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Link link = (Link) o;
+        return Objects.equals(href, link.href) &&
+                Objects.equals(method, link.method);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(href, method);
     }
 }

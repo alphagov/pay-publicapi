@@ -6,17 +6,21 @@ import java.security.Principal;
 
 public class Account implements Principal {
 
-    private final String name;
+    private final String accountId;
     private final TokenPaymentType paymentType;
 
-    public Account(String name, TokenPaymentType paymentType) {
-        this.name = name;
+    public Account(String accountId, TokenPaymentType paymentType) {
+        this.accountId = accountId;
         this.paymentType = paymentType;
     }
 
     @Override
     public String getName() {
-        return name;
+        return getAccountId();
+    }
+    
+    public String getAccountId() {
+        return accountId;
     }
 
     public TokenPaymentType getPaymentType() {

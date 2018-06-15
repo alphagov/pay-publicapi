@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CancelChargeException;
-import uk.gov.pay.api.exception.CreateChargeException;
 import uk.gov.pay.api.exception.GetChargeException;
 import uk.gov.pay.api.exception.GetEventsException;
 import uk.gov.pay.api.exception.SearchChargesException;
@@ -29,9 +28,10 @@ import uk.gov.pay.api.model.PaymentEvents;
 import uk.gov.pay.api.model.PaymentForSearchResult;
 import uk.gov.pay.api.model.PaymentSearchResponse;
 import uk.gov.pay.api.model.PaymentSearchResults;
-import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
-import uk.gov.pay.api.utils.JsonStringBuilder;
+import uk.gov.pay.api.service.ConnectorUriGenerator;
+import uk.gov.pay.api.service.CreatePaymentService;
+import uk.gov.pay.api.service.PublicApiUriGenerator;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -46,86 +46,52 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.http.HttpStatus.SC_OK;
-import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 import static uk.gov.pay.api.validation.PaymentSearchValidator.validateSearchParameters;
 
 @Path("/")
 @Api(value = "/", description = "Public Api Endpoints")
 @Produces({"application/json"})
 public class PaymentsResource {
+
     private static final Logger logger = LoggerFactory.getLogger(PaymentsResource.class);
-
-    public static final String API_VERSION_PATH = "/v1";
-
-    public static final String REFERENCE_KEY = "reference";
-    public static final String EMAIL_KEY = "email";
-    public static final String STATE_KEY = "state";
-    public static final String CARD_BRAND_KEY = "card_brand";
-    public static final String FROM_DATE_KEY = "from_date";
-    public static final String TO_DATE_KEY = "to_date";
-    public static final String PAGE = "page";
-    public static final String DISPLAY_SIZE = "display_size";
-    public static final String TRANSACTION_TYPE_KEY = "transactionType";
-    public static final String TRANSACTION_TYPE_KEY_VALUE = "charge";
-
-
-    private static final String PAYMENT_KEY = "paymentId";
-    private static final String DESCRIPTION_KEY = "description";
-    private static final String AMOUNT_KEY = "amount";
-    private static final String SERVICE_RETURN_URL = "return_url";
-    private static final String CHARGE_KEY = "charge_id";
-
-    private static final String PAYMENTS_PATH = API_VERSION_PATH + "/payments";
-    private static final String PAYMENTS_ID_PLACEHOLDER = "{" + PAYMENT_KEY + "}";
-    private static final String PAYMENT_BY_ID = API_VERSION_PATH + "/payments/" + PAYMENTS_ID_PLACEHOLDER;
-    private static final String PAYMENT_EVENTS_BY_ID = API_VERSION_PATH + "/payments/" + PAYMENTS_ID_PLACEHOLDER + "/events";
-
-    private static final String CANCEL_PATH_SUFFIX = "/cancel";
-    private static final String CANCEL_PAYMENT_PATH = API_VERSION_PATH + "/payments/" + PAYMENTS_ID_PLACEHOLDER + CANCEL_PATH_SUFFIX;
-    private static final String REFUNDS_PAYMENT_PATH = PAYMENT_BY_ID + "/refunds";
-
-    private static final String CONNECTOR_ACCOUNT_RESOURCE = API_VERSION_PATH + "/api/accounts/%s";
-    private static final String CONNECTOR_CHARGES_RESOURCE = CONNECTOR_ACCOUNT_RESOURCE + "/charges";
-    private static final String CONNECTOR_CHARGE_RESOURCE = CONNECTOR_CHARGES_RESOURCE + "/%s";
-    private static final String CONNECTOR_CHARGE_EVENTS_RESOURCE = CONNECTOR_CHARGES_RESOURCE + "/%s" + "/events";
-    private static final String CONNECTOR_ACCOUNT_CHARGE_CANCEL_RESOURCE = CONNECTOR_CHARGE_RESOURCE + "/cancel";
 
     private final String baseUrl;
 
     private final Client client;
-    private final String connectorUrl;
-    private final String connectorDDUrl;
+    private final CreatePaymentService createPaymentService;
     private final ObjectMapper objectMapper;
+    private final PublicApiUriGenerator publicApiUriGenerator;
+    private final ConnectorUriGenerator connectorUriGenerator;
 
     @Inject
-    public PaymentsResource(Client client, ObjectMapper objectMapper, PublicApiConfig configuration) {
+    public PaymentsResource(Client client, CreatePaymentService createPaymentService,
+                            ObjectMapper objectMapper, PublicApiConfig configuration,
+                            PublicApiUriGenerator publicApiUriGenerator, ConnectorUriGenerator connectorUriGenerator) {
         this.client = client;
+        this.createPaymentService = createPaymentService;
         this.baseUrl = configuration.getBaseUrl();
-        this.connectorUrl = configuration.getConnectorUrl();
-        this.connectorDDUrl = configuration.getConnectorDDUrl();
         this.objectMapper = objectMapper;
+        this.publicApiUriGenerator = publicApiUriGenerator;
+        this.connectorUriGenerator = connectorUriGenerator;
     }
 
     @GET
     @Timed
-    @Path(PAYMENT_BY_ID)
+    @Path("/v1/payments/{paymentId}")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Find payment by ID",
@@ -139,27 +105,26 @@ public class PaymentsResource {
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response getPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                               @PathParam(PAYMENT_KEY) String paymentId) {
+                               @PathParam("paymentId") String paymentId) {
 
         logger.info("Payment request - paymentId={}", paymentId);
+        
         Response connectorResponse = client
-                .target(getConnectorUrl(
-                        account.getPaymentType(),
-                        format(CONNECTOR_CHARGE_RESOURCE, account.getName(), paymentId)))
+                .target(connectorUriGenerator.chargeURI(account, paymentId))
                 .request()
                 .get();
 
         if (connectorResponse.getStatus() == SC_OK) {
             ChargeFromResponse chargeFromResponse = connectorResponse.readEntity(ChargeFromResponse.class);
-            URI paymentURI = getPaymentURI(baseUrl, chargeFromResponse.getChargeId());
+            URI paymentURI = publicApiUriGenerator.getPaymentURI(chargeFromResponse.getChargeId());
 
             PaymentWithAllLinks payment = PaymentWithAllLinks.getPaymentWithLinks(
                     account.getPaymentType(),
                     chargeFromResponse,
                     paymentURI,
-                    getPaymentEventsURI(baseUrl, chargeFromResponse.getChargeId()),
-                    getPaymentCancelURI(baseUrl, chargeFromResponse.getChargeId()),
-                    getPaymentRefundsURI(baseUrl, chargeFromResponse.getChargeId()));
+                    publicApiUriGenerator.getPaymentEventsURI(chargeFromResponse.getChargeId()),
+                    publicApiUriGenerator.getPaymentCancelURI(chargeFromResponse.getChargeId()),
+                    publicApiUriGenerator.getPaymentRefundsURI(chargeFromResponse.getChargeId()));
 
             logger.info("Payment returned - [ {} ]", payment);
             return Response.ok(payment).build();
@@ -169,7 +134,7 @@ public class PaymentsResource {
 
     @GET
     @Timed
-    @Path(PAYMENT_EVENTS_BY_ID)
+    @Path("/v1/payments/{paymentId}/events")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Return payment events by ID",
@@ -183,23 +148,21 @@ public class PaymentsResource {
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response getPaymentEvents(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                                     @PathParam(PAYMENT_KEY) String paymentId) {
+                                     @PathParam("paymentId") String paymentId) {
 
         logger.info("Payment events request - payment_id={}", paymentId);
 
         Response connectorResponse = client
-                .target(getConnectorUrl(
-                        account.getPaymentType(),
-                        format(CONNECTOR_CHARGE_EVENTS_RESOURCE, account.getName(), paymentId)))
+                .target(connectorUriGenerator.chargeEventsURI(account, paymentId))
                 .request()
                 .get();
 
         if (connectorResponse.getStatus() == SC_OK) {
 
             JsonNode payload = connectorResponse.readEntity(JsonNode.class);
-            URI paymentEventsLink = getPaymentEventsURI(baseUrl, payload.get(CHARGE_KEY).asText());
+            URI paymentEventsLink = publicApiUriGenerator.getPaymentEventsURI(payload.get("charge_id").asText());
 
-            URI paymentLink = getPaymentURI(baseUrl, payload.get(CHARGE_KEY).asText());
+            URI paymentLink = publicApiUriGenerator.getPaymentURI(payload.get("charge_id").asText());
 
             PaymentEvents response =
                     PaymentEvents.createPaymentEventsResponse(payload, paymentLink.toString())
@@ -215,7 +178,7 @@ public class PaymentsResource {
 
     @GET
     @Timed
-    @Path(PAYMENTS_PATH)
+    @Path("/v1/payments")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Search payments",
@@ -233,21 +196,21 @@ public class PaymentsResource {
     public Response searchPayments(@ApiParam(value = "accountId", hidden = true)
                                    @Auth Account account,
                                    @ApiParam(value = "Your payment reference to search", hidden = false)
-                                   @QueryParam(REFERENCE_KEY) String reference,
+                                   @QueryParam("reference") String reference,
                                    @ApiParam(value = "The user email used in the payment to be searched", hidden = false)
-                                   @QueryParam(EMAIL_KEY) String email,
+                                   @QueryParam("email") String email,
                                    @ApiParam(value = "State of payments to be searched. Example=success", hidden = false, allowableValues = "range[created,started,submitted,success,failed,cancelled,error")
-                                   @QueryParam(STATE_KEY) String state,
+                                   @QueryParam("state") String state,
                                    @ApiParam(value = "Card brand used for payment. Example=master-card", hidden = false)
-                                   @QueryParam(CARD_BRAND_KEY) String cardBrand,
+                                   @QueryParam("card_brand") String cardBrand,
                                    @ApiParam(value = "From date of payments to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z", hidden = false)
-                                   @QueryParam(FROM_DATE_KEY) String fromDate,
+                                   @QueryParam("from_date") String fromDate,
                                    @ApiParam(value = "To date of payments to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z", hidden = false)
-                                   @QueryParam(TO_DATE_KEY) String toDate,
+                                   @QueryParam("to_date") String toDate,
                                    @ApiParam(value = "Page number requested for the search, should be a positive integer (optional, defaults to 1)", hidden = false)
-                                   @QueryParam(PAGE) String pageNumber,
+                                   @QueryParam("page") String pageNumber,
                                    @ApiParam(value = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)", hidden = false)
-                                   @QueryParam(DISPLAY_SIZE) String displaySize,
+                                   @QueryParam("display_size") String displaySize,
                                    @Context UriInfo uriInfo) {
 
         logger.info("Payments search request - [ {} ]",
@@ -256,26 +219,24 @@ public class PaymentsResource {
 
         validateSearchParameters(state, reference, email, cardBrand, fromDate, toDate, pageNumber, displaySize);
 
-        if(isNotBlank(cardBrand)){
+        if (isNotBlank(cardBrand)) {
             cardBrand = cardBrand.toLowerCase();
         }
 
         List<Pair<String, String>> queryParams = asList(
-                Pair.of(REFERENCE_KEY, reference),
-                Pair.of(EMAIL_KEY, email),
-                Pair.of(STATE_KEY, state),
-                Pair.of(CARD_BRAND_KEY, cardBrand),
-                Pair.of(FROM_DATE_KEY, fromDate),
-                Pair.of(TO_DATE_KEY, toDate),
-                Pair.of(TRANSACTION_TYPE_KEY, TRANSACTION_TYPE_KEY_VALUE),
-                Pair.of(PAGE, pageNumber),
-                Pair.of(DISPLAY_SIZE, displaySize)
+                Pair.of("reference", reference),
+                Pair.of("email", email),
+                Pair.of("state", state),
+                Pair.of("card_brand", cardBrand),
+                Pair.of("from_date", fromDate),
+                Pair.of("to_date", toDate),
+                Pair.of("transactionType", "charge"),
+                Pair.of("page", pageNumber),
+                Pair.of("display_size", displaySize)
         );
+        
         Response connectorResponse = client
-                .target(getConnectorUrl(
-                        account.getPaymentType(),
-                        format(CONNECTOR_CHARGES_RESOURCE, account.getName()),
-                        queryParams))
+                .target(connectorUriGenerator.chargesURI(account, queryParams))
                 .request()
                 .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
                 .get();
@@ -293,10 +254,10 @@ public class PaymentsResource {
                         .stream()
                         .map(charge -> PaymentForSearchResult.valueOf(
                                 charge,
-                                getPaymentURI(baseUrl, charge.getChargeId()),
-                                getPaymentEventsURI(baseUrl, charge.getChargeId()),
-                                getPaymentCancelURI(baseUrl, charge.getChargeId()),
-                                getPaymentRefundsURI(baseUrl, charge.getChargeId())))
+                                publicApiUriGenerator.getPaymentURI(charge.getChargeId()),
+                                publicApiUriGenerator.getPaymentEventsURI(charge.getChargeId()),
+                                publicApiUriGenerator.getPaymentCancelURI(charge.getChargeId()),
+                                publicApiUriGenerator.getPaymentRefundsURI(charge.getChargeId())))
                         .collect(Collectors.toList());
 
                 HalRepresentation.HalRepresentationBuilder halRepresentation = HalRepresentation.builder()
@@ -330,14 +291,14 @@ public class PaymentsResource {
             return null;
 
         return UriBuilder.fromUri(baseUrl)
-                .path(PAYMENTS_PATH)
+                .path("/v1/payments")
                 .replaceQuery(new URI(link.getHref()).getQuery())
                 .build();
     }
 
     @POST
     @Timed
-    @Path(PAYMENTS_PATH)
+    @Path("/v1/payments")
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     @ApiOperation(
@@ -355,38 +316,22 @@ public class PaymentsResource {
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response createNewPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                      @ApiParam(value = "requestPayload", required = true) CreatePaymentRequest requestPayload) {
-
         logger.info("Payment create request - [ {} ]", requestPayload);
 
-        Response connectorResponse = client
-                .target(getConnectorUrl(
-                        account.getPaymentType(),
-                        format(CONNECTOR_CHARGES_RESOURCE, account.getName())))
-                .request()
-                .accept(MediaType.APPLICATION_JSON)
-                .post(buildChargeRequestPayload(requestPayload));
+        PaymentWithAllLinks createdPayment = createPaymentService.create(account, requestPayload);
 
-        if (connectorResponse.getStatus() == HttpStatus.SC_CREATED) {
-            ChargeFromResponse chargeFromResponse = connectorResponse.readEntity(ChargeFromResponse.class);
-            URI paymentUri = getPaymentURI(baseUrl, chargeFromResponse.getChargeId());
-            PaymentWithAllLinks payment = PaymentWithAllLinks.getPaymentWithLinks(
-                    account.getPaymentType(),
-                    chargeFromResponse,
-                    paymentUri,
-                    getPaymentEventsURI(baseUrl, chargeFromResponse.getChargeId()),
-                    getPaymentCancelURI(baseUrl, chargeFromResponse.getChargeId()),
-                    getPaymentRefundsURI(baseUrl, chargeFromResponse.getChargeId()));
-            logger.info("Payment returned (created): [ {} ]", payment);
-            return Response.created(paymentUri).entity(payment).build();
+        Response response = Response
+                .created(publicApiUriGenerator.getPaymentURI(createdPayment.getPayment().getPaymentId()))
+                .entity(createdPayment)
+                .build();
 
-        }
-
-        throw new CreateChargeException(connectorResponse);
+        logger.info("Payment returned (created): [ {} ]", createdPayment);
+        return response;
     }
 
     @POST
     @Timed
-    @Path(CANCEL_PAYMENT_PATH)
+    @Path("/v1/payments/{paymentId}/cancel")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Cancel payment",
@@ -404,14 +349,12 @@ public class PaymentsResource {
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)
     })
     public Response cancelPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                                  @PathParam(PAYMENT_KEY) String paymentId) {
+                                  @PathParam("paymentId") String paymentId) {
 
         logger.info("Payment cancel request - payment_id=[{}]", paymentId);
-
+        
         Response connectorResponse = client
-                .target(getConnectorUrl(
-                        account.getPaymentType(),
-                        format(CONNECTOR_ACCOUNT_CHARGE_CANCEL_RESOURCE, account.getName(), paymentId)))
+                .target(connectorUriGenerator.cancelURI(account, paymentId))
                 .request()
                 .post(Entity.json("{}"));
 
@@ -421,61 +364,5 @@ public class PaymentsResource {
         }
 
         throw new CancelChargeException(connectorResponse);
-    }
-
-    private URI getPaymentURI(String baseUrl, String chargeId) {
-        return UriBuilder.fromUri(baseUrl)
-                .path(PAYMENT_BY_ID)
-                .build(chargeId);
-    }
-
-    private URI getPaymentEventsURI(String baseUrl, String chargeId) {
-        return UriBuilder.fromUri(baseUrl)
-                .path(PAYMENT_EVENTS_BY_ID)
-                .build(chargeId);
-    }
-
-    private URI getPaymentCancelURI(String baseUrl, String chargeId) {
-        return UriBuilder.fromUri(baseUrl)
-                .path(CANCEL_PAYMENT_PATH)
-                .build(chargeId);
-    }
-
-    private URI getPaymentRefundsURI(String baseUrl, String chargeId) {
-        return UriBuilder.fromUri(baseUrl)
-                .path(REFUNDS_PAYMENT_PATH)
-                .build(chargeId);
-    }
-
-    private String getConnectorUrl(TokenPaymentType paymentType, String urlPath) {
-        return getConnectorUrl(paymentType, urlPath, Collections.emptyList());
-    }
-
-
-    private String getConnectorUrl(TokenPaymentType paymentType, String urlPath, List<Pair<String, String>> queryParams) {
-        String url = paymentType.equals(DIRECT_DEBIT)? connectorDDUrl : connectorUrl;
-        UriBuilder builder = UriBuilder
-                .fromPath(url)
-                .path(urlPath);
-
-        queryParams.stream().forEach(pair -> {
-            if (isNotBlank(pair.getRight())) {
-                builder.queryParam(pair.getKey(), pair.getValue());
-            }
-        });
-        return builder.toString();
-    }
-
-    private Entity buildChargeRequestPayload(CreatePaymentRequest requestPayload) {
-        int amount = requestPayload.getAmount();
-        String reference = requestPayload.getReference();
-        String description = requestPayload.getDescription();
-        String returnUrl = requestPayload.getReturnUrl();
-        return json(new JsonStringBuilder()
-                .add(AMOUNT_KEY, amount)
-                .add(REFERENCE_KEY, reference)
-                .add(DESCRIPTION_KEY, description)
-                .add(SERVICE_RETURN_URL, returnUrl)
-                .build());
     }
 }
