@@ -18,6 +18,7 @@ import javax.ws.rs.core.Response;
 import static javax.ws.rs.client.Entity.json;
 
 public class CreatePaymentService {
+
     private final String baseUrl;
     private final Client client;
     private final PublicApiUriGenerator publicApiUriGenerator;
@@ -31,7 +32,7 @@ public class CreatePaymentService {
         this.connectorUriGenerator = connectorUriGenerator;
     }
 
-    public PaymentWithAllLinks invoke(Account account, CreatePaymentRequest requestPayload) {
+    public PaymentWithAllLinks create(Account account, CreatePaymentRequest requestPayload) {
         Response connectorResponse = createCharge(account, requestPayload);
 
         if (!createdSuccessfully(connectorResponse)) {

@@ -66,6 +66,7 @@ import static uk.gov.pay.api.validation.PaymentSearchValidator.validateSearchPar
 @Api(value = "/", description = "Public Api Endpoints")
 @Produces({"application/json"})
 public class PaymentsResource {
+
     private static final Logger logger = LoggerFactory.getLogger(PaymentsResource.class);
 
     private final String baseUrl;
@@ -323,7 +324,7 @@ public class PaymentsResource {
                                      @ApiParam(value = "requestPayload", required = true) CreatePaymentRequest requestPayload) {
         logger.info("Payment create request - [ {} ]", requestPayload);
 
-        PaymentWithAllLinks createdPayment = createPaymentService.invoke(account, requestPayload);
+        PaymentWithAllLinks createdPayment = createPaymentService.create(account, requestPayload);
 
         Response response = Response
                 .created(publicApiUriGenerator.getPaymentURI(baseUrl, createdPayment.getPaymentId()))

@@ -62,7 +62,7 @@ public class CreatePaymentServiceTest {
     public void testCreatePayment() {
         Account account = new Account("GATEWAY_ACCOUNT_ID", TokenPaymentType.CARD);
         CreatePaymentRequest requestPayload = new CreatePaymentRequest(100, "https://somewhere.gov.uk/rainbow/1", "a reference", "a description");
-        PaymentWithAllLinks paymentResponse = createPaymentService.invoke(account, requestPayload);
+        PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
 
         assertThat(paymentResponse.getPaymentId(), is("ch_ab2341da231434l"));
         assertThat(paymentResponse.getPayment().getAmount(), is(100L));
