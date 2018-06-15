@@ -2,8 +2,8 @@ package uk.gov.pay.api.it.directdebit;
 
 import org.junit.Test;
 import uk.gov.pay.api.it.PaymentsResourceITest;
-import uk.gov.pay.api.model.directdebit.AgreementStatus;
-import uk.gov.pay.api.model.directdebit.AgreementType;
+import uk.gov.pay.api.model.directdebit.agreement.AgreementStatus;
+import uk.gov.pay.api.model.directdebit.agreement.AgreementType;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
