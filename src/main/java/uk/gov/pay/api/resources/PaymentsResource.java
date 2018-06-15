@@ -327,7 +327,7 @@ public class PaymentsResource {
         PaymentWithAllLinks createdPayment = createPaymentService.create(account, requestPayload);
 
         Response response = Response
-                .created(publicApiUriGenerator.getPaymentURI(baseUrl, createdPayment.getPaymentId()))
+                .created(publicApiUriGenerator.getPaymentURI(baseUrl, createdPayment.getPayment().getPaymentId()))
                 .entity(createdPayment)
                 .build();
 

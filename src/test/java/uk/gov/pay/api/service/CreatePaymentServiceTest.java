@@ -64,7 +64,7 @@ public class CreatePaymentServiceTest {
         CreatePaymentRequest requestPayload = new CreatePaymentRequest(100, "https://somewhere.gov.uk/rainbow/1", "a reference", "a description");
         PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
 
-        assertThat(paymentResponse.getPaymentId(), is("ch_ab2341da231434l"));
+        assertThat(paymentResponse.getPayment().getPaymentId(), is("ch_ab2341da231434l"));
         assertThat(paymentResponse.getPayment().getAmount(), is(100L));
         assertThat(paymentResponse.getPayment().getReference(), is("a reference"));
         assertThat(paymentResponse.getPayment().getDescription(), is("a description"));
