@@ -27,7 +27,7 @@ public class AgreementsResourceITest extends PaymentsResourceITest {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
 
         connectorDDMock.respondOk_whenCreateAgreementRequest(
-                "agreementId",
+                "mandateId",
                 AgreementType.ON_DEMAND,
                 "https://service-name.gov.uk/transactions/12345",
                 CREATED_DATE,
@@ -45,8 +45,8 @@ public class AgreementsResourceITest extends PaymentsResourceITest {
                 .then()
                 .statusCode(201)
                 .contentType(JSON)
-                .header(HttpHeaders.LOCATION, is("http://publicapi.url/v1/agreements/agreementId"))
-                .body("agreement_id", is("agreementId"))
+                .header(HttpHeaders.LOCATION, is("http://publicapi.url/v1/agreements/mandateId"))
+                .body("agreement_id", is("mandateId"))
                 .body("agreement_type", is(AgreementType.ON_DEMAND.name()))
                 .body("return_url", is("https://service-name.gov.uk/transactions/12345"))
                 .body("created_date", is(CREATED_DATE))
