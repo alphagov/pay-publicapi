@@ -145,6 +145,15 @@ pipeline {
          }
        }
      }
+     stage('Pact Tag') {
+       when {
+         branch 'master'
+       }
+       steps {
+         echo 'Tagging consumer pact with "test"'
+         tagPact("publicapi", gitCommit(), "test")
+       }
+     }
      stage('Complete') {
        failFast true
        parallel {
