@@ -35,7 +35,7 @@
             "finished": "false"
           },
           "return_url": "https://example.com/return",
-          "payment_provider": "Sandbox",
+          "payment_provider": "sandbox",
           "created_date": "2016-01-01T12:00:00Z",
           "links": [
             {

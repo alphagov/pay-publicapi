@@ -29,11 +29,8 @@ import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 
 public class DirectDebitPaymentTest extends PaymentBaseTest {
 
-    private static final int AMOUNT = 100;
     private static final String CHARGE_ID = "ch_ab2341da231434l";
     private static final String CHARGE_TOKEN_ID = "token_1234567asdf";
-    private static final String REFERENCE = "a reference";
-    private static final String DESCRIPTION = "a description";
     private static final String SUCCESS_PAYLOAD = paymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL);
 
     //Must use same secret set int configured test-config.xml
@@ -43,9 +40,6 @@ public class DirectDebitPaymentTest extends PaymentBaseTest {
     
     @Rule
     public PactProviderRule directDebitConnector = new PactProviderRule("direct-debit-connector", this);
-    
-    @Rule
-    public PactProviderRule publicAuth = new PactProviderRule("publicauth", this);
     
     @Rule 
     public DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
