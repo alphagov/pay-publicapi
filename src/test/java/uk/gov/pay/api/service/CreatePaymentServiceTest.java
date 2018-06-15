@@ -49,7 +49,7 @@ public class CreatePaymentServiceTest {
         when(configuration.getBaseUrl()).thenReturn("http://publicapi.test.localhost/"); // Has to match what is in the Pact
 
         // These can be concrete implementations, because they're simple
-        publicApiUriGenerator = new PublicApiUriGenerator();
+        publicApiUriGenerator = new PublicApiUriGenerator(configuration);
         connectorUriGenerator = new ConnectorUriGenerator(configuration);
         client = RestClientFactory.buildClient(new RestClientConfig(false));
 

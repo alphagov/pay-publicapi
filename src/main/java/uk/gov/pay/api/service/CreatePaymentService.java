@@ -47,10 +47,10 @@ public class CreatePaymentService {
         return PaymentWithAllLinks.getPaymentWithLinks(
                     account.getPaymentType(),
                     chargeFromResponse,
-                    publicApiUriGenerator.getPaymentURI(baseUrl, chargeFromResponse.getChargeId()),
-                    publicApiUriGenerator.getPaymentEventsURI(baseUrl, chargeFromResponse.getChargeId()),
-                    publicApiUriGenerator.getPaymentCancelURI(baseUrl, chargeFromResponse.getChargeId()),
-                    publicApiUriGenerator.getPaymentRefundsURI(baseUrl, chargeFromResponse.getChargeId()));
+                    publicApiUriGenerator.getPaymentURI(chargeFromResponse.getChargeId()),
+                    publicApiUriGenerator.getPaymentEventsURI(chargeFromResponse.getChargeId()),
+                    publicApiUriGenerator.getPaymentCancelURI(chargeFromResponse.getChargeId()),
+                    publicApiUriGenerator.getPaymentRefundsURI(chargeFromResponse.getChargeId()));
     }
 
     private boolean createdSuccessfully(Response connectorResponse) {

@@ -77,9 +77,6 @@ public class PaymentsResource {
     private final PublicApiUriGenerator publicApiUriGenerator;
     private final ConnectorUriGenerator connectorUriGenerator;
 
-    private final String connectorUrl;
-    private final String connectorDDUrl;
-
     @Inject
     public PaymentsResource(Client client, CreatePaymentService createPaymentService,
                             ObjectMapper objectMapper, PublicApiConfig configuration,
@@ -87,8 +84,6 @@ public class PaymentsResource {
         this.client = client;
         this.createPaymentService = createPaymentService;
         this.baseUrl = configuration.getBaseUrl();
-        this.connectorUrl = configuration.getConnectorUrl();
-        this.connectorDDUrl = configuration.getConnectorDDUrl();
         this.objectMapper = objectMapper;
         this.publicApiUriGenerator = publicApiUriGenerator;
         this.connectorUriGenerator = connectorUriGenerator;
@@ -121,15 +116,15 @@ public class PaymentsResource {
 
         if (connectorResponse.getStatus() == SC_OK) {
             ChargeFromResponse chargeFromResponse = connectorResponse.readEntity(ChargeFromResponse.class);
-            URI paymentURI = publicApiUriGenerator.getPaymentURI(baseUrl, chargeFromResponse.getChargeId());
+            URI paymentURI = publicApiUriGenerator.getPaymentURI(chargeFromResponse.getChargeId());
 
             PaymentWithAllLinks payment = PaymentWithAllLinks.getPaymentWithLinks(
                     account.getPaymentType(),
                     chargeFromResponse,
                     paymentURI,
-                    publicApiUriGenerator.getPaymentEventsURI(baseUrl, chargeFromResponse.getChargeId()),
-                    publicApiUriGenerator.getPaymentCancelURI(baseUrl, chargeFromResponse.getChargeId()),
-                    publicApiUriGenerator.getPaymentRefundsURI(baseUrl, chargeFromResponse.getChargeId()));
+                    publicApiUriGenerator.getPaymentEventsURI(chargeFromResponse.getChargeId()),
+                    publicApiUriGenerator.getPaymentCancelURI(chargeFromResponse.getChargeId()),
+                    publicApiUriGenerator.getPaymentRefundsURI(chargeFromResponse.getChargeId()));
 
             logger.info("Payment returned - [ {} ]", payment);
             return Response.ok(payment).build();
@@ -165,9 +160,9 @@ public class PaymentsResource {
         if (connectorResponse.getStatus() == SC_OK) {
 
             JsonNode payload = connectorResponse.readEntity(JsonNode.class);
-            URI paymentEventsLink = publicApiUriGenerator.getPaymentEventsURI(baseUrl, payload.get("charge_id").asText());
+            URI paymentEventsLink = publicApiUriGenerator.getPaymentEventsURI(payload.get("charge_id").asText());
 
-            URI paymentLink = publicApiUriGenerator.getPaymentURI(baseUrl, payload.get("charge_id").asText());
+            URI paymentLink = publicApiUriGenerator.getPaymentURI(payload.get("charge_id").asText());
 
             PaymentEvents response =
                     PaymentEvents.createPaymentEventsResponse(payload, paymentLink.toString())
@@ -253,17 +248,16 @@ public class PaymentsResource {
                 JsonNode responseJson = connectorResponse.readEntity(JsonNode.class);
                 logger.debug("json response from connector from charge search: " + responseJson);
 
-                TypeReference<PaymentSearchResponse> typeRef = new TypeReference<PaymentSearchResponse>() {
-                };
+                TypeReference<PaymentSearchResponse> typeRef = new TypeReference<PaymentSearchResponse>() {};
                 PaymentSearchResponse searchResponse = objectMapper.readValue(responseJson.traverse(), typeRef);
                 List<PaymentForSearchResult> paymentsForSearchResults = searchResponse.getPayments()
                         .stream()
                         .map(charge -> PaymentForSearchResult.valueOf(
                                 charge,
-                                publicApiUriGenerator.getPaymentURI(baseUrl, charge.getChargeId()),
-                                publicApiUriGenerator.getPaymentEventsURI(baseUrl, charge.getChargeId()),
-                                publicApiUriGenerator.getPaymentCancelURI(baseUrl, charge.getChargeId()),
-                                publicApiUriGenerator.getPaymentRefundsURI(baseUrl, charge.getChargeId())))
+                                publicApiUriGenerator.getPaymentURI(charge.getChargeId()),
+                                publicApiUriGenerator.getPaymentEventsURI(charge.getChargeId()),
+                                publicApiUriGenerator.getPaymentCancelURI(charge.getChargeId()),
+                                publicApiUriGenerator.getPaymentRefundsURI(charge.getChargeId())))
                         .collect(Collectors.toList());
 
                 HalRepresentation.HalRepresentationBuilder halRepresentation = HalRepresentation.builder()
@@ -327,7 +321,7 @@ public class PaymentsResource {
         PaymentWithAllLinks createdPayment = createPaymentService.create(account, requestPayload);
 
         Response response = Response
-                .created(publicApiUriGenerator.getPaymentURI(baseUrl, createdPayment.getPayment().getPaymentId()))
+                .created(publicApiUriGenerator.getPaymentURI(createdPayment.getPayment().getPaymentId()))
                 .entity(createdPayment)
                 .build();
 
