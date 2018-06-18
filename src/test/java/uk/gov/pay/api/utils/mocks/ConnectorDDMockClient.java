@@ -3,8 +3,8 @@ package uk.gov.pay.api.utils.mocks;
 import com.google.common.collect.ImmutableMap;
 import org.mockserver.client.server.ForwardChainExpectation;
 import uk.gov.pay.api.model.PaymentState;
-import uk.gov.pay.api.model.directdebit.agreement.AgreementStatus;
-import uk.gov.pay.api.model.directdebit.agreement.AgreementType;
+import uk.gov.pay.api.model.directdebit.agreement.MandateState;
+import uk.gov.pay.api.model.directdebit.agreement.MandateType;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import java.util.HashMap;
@@ -26,30 +26,6 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
         super(port, baseUrl);
     }
 
-    public void respondOk_whenCreatePaymentRequest(int amount, String gatewayAccountId, String chargeId, String chargeTokenId, PaymentState state, String returnUrl,
-                                                   String description, String reference, String email, String paymentProvider, String createdDate) {
-        whenCreateCharge(amount, gatewayAccountId, returnUrl, description, reference)
-                .respond(response()
-                        .withStatusCode(CREATED_201)
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withHeader(LOCATION, chargeLocation(gatewayAccountId, chargeId))
-                        .withBody(buildPaymentRequestResponse(
-                                amount,
-                                chargeId,
-                                state,
-                                returnUrl,
-                                description,
-                                reference,
-                                email,
-                                paymentProvider,
-                                createdDate,
-                                validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
-                                validGetLink(nextUrl(chargeTokenId), "next_url"), validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",
-                                        new HashMap<String, String>() {{
-                                            put("chargeTokenId", chargeTokenId);
-                                        }}))));
-    }
-
     public void respondWithChargeFound(
             long amount, String gatewayAccountId, String chargeId, PaymentState state, String returnUrl,
             String description, String reference, String email, String paymentProvider, String createdDate,
@@ -69,28 +45,41 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                         .withBody(chargeResponseBody));
     }
 
-    public void respondOk_whenCreateAgreementRequest(String mandateId, AgreementType agreementType,
+    public void respondOk_whenCreateAgreementRequest(String mandateId, MandateType mandateType,
                                                      String returnUrl, String createdDate,
-                                                     AgreementStatus state, String gatewayAccountId) {
-        whenCreateAgreement(returnUrl, agreementType, gatewayAccountId)
+                                                     MandateState state, String gatewayAccountId,
+                                                     String chargeTokenId) {
+        whenCreateAgreement(returnUrl, mandateType, gatewayAccountId)
                 .respond(response()
                         .withStatusCode(CREATED_201)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withHeader(LOCATION, format("%s/v1/api/accounts/%s/agreements/%s", baseUrl, gatewayAccountId, mandateId))
-                        .withBody(buildCreateAgreementResponse(mandateId, agreementType, returnUrl, createdDate, state)
-                        )
+                        .withHeader(LOCATION, format("%s/v1/api/accounts/%s/mandates/%s", baseUrl, gatewayAccountId, mandateId))
+                        .withBody(buildCreateAgreementResponse(
+                                mandateId,
+                                mandateType,
+                                returnUrl,
+                                createdDate,
+                                state,
+                                validGetLink(mandateLocation(gatewayAccountId, mandateId), "self"),
+                                validGetLink(nextUrl(chargeTokenId), "next_url"),
+                                validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",
+                                        new HashMap<String, String>() {{
+                                            put("chargeTokenId", chargeTokenId);
+                                        }})
+                        ))
                 );
     }
 
-    private String buildCreateAgreementResponse(String mandateId, AgreementType agreementType,
+    private String buildCreateAgreementResponse(String mandateId, MandateType mandateType,
                                                 String returnUrl, String createdDate,
-                                                AgreementStatus state) {
+                                                MandateState state, ImmutableMap<?, ?>... links) {
         return new JsonStringBuilder()
                 .add("mandate_id", mandateId)
-                .add("mandate_type", agreementType)
+                .add("mandate_type", mandateType)
                 .add("return_url", returnUrl)
                 .add("created_date", createdDate)
                 .add("state", state)
+                .add("links", asList(links))
                 .build();
     }
 
@@ -118,21 +107,21 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
     }
 
 
-    private ForwardChainExpectation whenCreateAgreement(String returnUrl, AgreementType agreementType, String gatewayAccountId) {
+    private ForwardChainExpectation whenCreateAgreement(String returnUrl, MandateType mandateType, String gatewayAccountId) {
         return mockClient.when(request()
                 .withMethod(POST)
                 .withPath(format("/v1/api/accounts/%s/mandates", gatewayAccountId))
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                 .withBody(
-                        createAgreementPayload(returnUrl, agreementType)
+                        createAgreementPayload(returnUrl, mandateType)
                 )
         );
     }
 
-    private String createAgreementPayload(String returnUrl, AgreementType agreementType) {
+    private String createAgreementPayload(String returnUrl, MandateType mandateType) {
         return new JsonStringBuilder()
                 .add("return_url", returnUrl)
-                .add("agreement_type", agreementType)
+                .add("agreement_type", mandateType)
                 .build();
     }
 }

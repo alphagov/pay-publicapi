@@ -1,9 +1,11 @@
 package uk.gov.pay.api.it.directdebit;
 
 import org.junit.Test;
-import uk.gov.pay.api.it.PaymentsResourceITest;
+import uk.gov.pay.api.it.PaymentResourceITestBase;
 import uk.gov.pay.api.model.directdebit.agreement.AgreementStatus;
 import uk.gov.pay.api.model.directdebit.agreement.AgreementType;
+import uk.gov.pay.api.model.directdebit.agreement.MandateState;
+import uk.gov.pay.api.model.directdebit.agreement.MandateType;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
@@ -16,10 +18,11 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 
-public class AgreementsResourceITest extends PaymentsResourceITest {
+public class AgreementsResourceITest extends PaymentResourceITestBase {
 
     private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
     private static final String CREATED_DATE = DateTimeUtils.toUTCDateString(TIMESTAMP);
+    private static final String CHARGE_TOKEN_ID = "token_1234567asdf";
 
     @Test
     public void createDirectDebitAgreement() {
@@ -28,11 +31,12 @@ public class AgreementsResourceITest extends PaymentsResourceITest {
 
         connectorDDMock.respondOk_whenCreateAgreementRequest(
                 "mandateId",
-                AgreementType.ON_DEMAND,
+                MandateType.ON_DEMAND,
                 "https://service-name.gov.uk/transactions/12345",
                 CREATED_DATE,
-                AgreementStatus.CREATED,
-                GATEWAY_ACCOUNT_ID
+                new MandateState("created", false),
+                GATEWAY_ACCOUNT_ID,
+                CHARGE_TOKEN_ID
         );
 
         String payload = agreementPayload("https://service-name.gov.uk/transactions/12345", AgreementType.ON_DEMAND);
@@ -47,10 +51,18 @@ public class AgreementsResourceITest extends PaymentsResourceITest {
                 .contentType(JSON)
                 .header(HttpHeaders.LOCATION, is("http://publicapi.url/v1/agreements/mandateId"))
                 .body("agreement_id", is("mandateId"))
-                .body("agreement_type", is(AgreementType.ON_DEMAND.name()))
+                .body("agreement_type", is(AgreementType.ON_DEMAND.toString()))
                 .body("return_url", is("https://service-name.gov.uk/transactions/12345"))
                 .body("created_date", is(CREATED_DATE))
-                .body("state", is(AgreementStatus.CREATED.name()))
+                .body("state", is(AgreementStatus.CREATED.toString()))
+                .body("_links.self.href", is(connectorDDMock.mandateLocation(GATEWAY_ACCOUNT_ID, "mandateId")))
+                .body("_links.self.method", is("GET"))
+                .body("_links.next_url.href", is(frontendUrlFor(DIRECT_DEBIT) + CHARGE_TOKEN_ID))
+                .body("_links.next_url.method", is("GET"))
+                .body("_links.next_url_post.href", is(frontendUrlFor(DIRECT_DEBIT)))
+                .body("_links.next_url_post.method", is("POST"))
+                .body("_links.next_url_post.type", is("application/x-www-form-urlencoded"))
+                .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
                 .extract().body().asString();
     }
 
