@@ -4,7 +4,11 @@ import org.apache.commons.lang3.StringUtils;
 import uk.gov.pay.api.exception.ValidationException;
 import uk.gov.pay.api.utils.DateTimeUtils;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import static org.apache.commons.lang3.StringUtils.join;
 import static org.eclipse.jetty.util.StringUtil.isBlank;
@@ -12,6 +16,7 @@ import static org.eclipse.jetty.util.StringUtil.isNotBlank;
 import static uk.gov.pay.api.model.PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 import static uk.gov.pay.api.validation.MaxLengthValidator.isValid;
+import static uk.gov.pay.api.validation.PaymentRequestValidator.AGREEMENT_ID_MAX_LENGTH;
 import static uk.gov.pay.api.validation.PaymentRequestValidator.CARD_BRAND_MAX_LENGTH;
 import static uk.gov.pay.api.validation.PaymentRequestValidator.EMAIL_MAX_LENGTH;
 import static uk.gov.pay.api.validation.PaymentRequestValidator.REFERENCE_MAX_LENGTH;
@@ -22,7 +27,9 @@ public class PaymentSearchValidator {
     public static final Set<String> VALID_STATES =
             new HashSet<>(Arrays.asList("created", "started", "submitted", "success", "failed", "cancelled", "error"));
 
-    public static void validateSearchParameters(String state, String reference, String email, String cardBrand, String fromDate, String toDate, String pageNumber, String displaySize) {
+    public static void validateSearchParameters(String state, String reference, String email, String cardBrand, 
+                                                String fromDate, String toDate, String pageNumber, 
+                                                String displaySize, String agreement) {
         List<String> validationErrors = new LinkedList<>();
         try {
             validateState(state, validationErrors);
@@ -33,11 +40,18 @@ public class PaymentSearchValidator {
             validateToDate(toDate, validationErrors);
             validatePageIfNotNull(pageNumber, validationErrors);
             validateDisplaySizeIfNotNull(displaySize, validationErrors);
+            validateAgreement(agreement, validationErrors);
         } catch (Exception e) {
             throw new ValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", "), e.getMessage()));
         }
         if (!validationErrors.isEmpty()) {
             throw new ValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", ")));
+        }
+    }
+
+    private static void validateAgreement(String agreement, List<String> validationErrors) {
+        if (!isValid(agreement, AGREEMENT_ID_MAX_LENGTH)){
+                validationErrors.add("agreement");
         }
     }
 

@@ -37,6 +37,11 @@ public class ConnectorUriGenerator {
         String path = String.format("/v1/api/accounts/%s/charges/%s/events", account.getAccountId(), paymentId);
         return buildConnectorUri(account, path);
     }
+    
+    public String directDebitTransactionsURI(Account account, List<Pair<String, String>> queryParams) {
+        String path = String.format("/v1/api/accounts/%s/transactions/view", account.getAccountId());
+        return buildConnectorUri(account, path, queryParams);
+    }
 
     private String buildConnectorUri(Account account, String path) {
         return buildConnectorUri(account, path, Collections.emptyList());

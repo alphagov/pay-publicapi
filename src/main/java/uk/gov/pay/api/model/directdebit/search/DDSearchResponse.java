@@ -1,28 +1,29 @@
-package uk.gov.pay.api.model;
+package uk.gov.pay.api.model.directdebit.search;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import uk.gov.pay.api.model.IPaymentSearchPagination;
 import uk.gov.pay.api.model.links.PaymentSearchNavigationLinks;
 
 import java.util.List;
 
-public class PaymentSearchResponse implements IPaymentSearchPagination {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class DDSearchResponse implements IPaymentSearchPagination {
 
     @JsonProperty("total")
     private int total;
-
     @JsonProperty("count")
     private int count;
-
     @JsonProperty("page")
     private int page;
-
     @JsonProperty("results")
-    private List<ChargeFromResponse> payments;
-
+    private List<DDTransactionFromResponse> payments;
     @JsonProperty("_links")
     private PaymentSearchNavigationLinks links = new PaymentSearchNavigationLinks();
-
-    public List<ChargeFromResponse> getPayments() {
+    
+    public List<DDTransactionFromResponse> getPayments() {
         return payments;
     }
     @Override
