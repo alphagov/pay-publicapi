@@ -12,9 +12,12 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.exception.SearchChargesException;
+import uk.gov.pay.api.model.IPaymentSearchPagination;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.PaymentForSearchResult;
 import uk.gov.pay.api.model.PaymentSearchResponse;
+import uk.gov.pay.api.model.directdebit.search.DDSearchResponse;
+import uk.gov.pay.api.model.directdebit.search.DDTransactionForSearch;
 import uk.gov.pay.api.model.links.Link;
 
 import javax.inject.Inject;
@@ -50,6 +53,7 @@ public class PaymentSearchService {
     private static final String DISPLAY_SIZE = "display_size";
     private static final String TRANSACTION_TYPE_KEY = "transactionType";
     private static final String TRANSACTION_TYPE_KEY_VALUE = "charge";
+    private static final String MANDATE_KEY = "mandate";
     private final ConnectorUriGenerator connectorUriGenerator;
     private final Client client;
     private final ObjectMapper objectMapper;
@@ -70,11 +74,11 @@ public class PaymentSearchService {
     }
     
     public HalRepresentation doSearch(Account account, String reference, String email, String state, String cardBrand,
-                             String fromDate, String toDate, String pageNumber, String displaySize, String agreement) {
+                             String fromDate, String toDate, String pageNumber, String displaySize, String mandateId) {
 
         if (!isDirectDebitAccount(account)) {
             validateSearchParameters(state, reference, email, cardBrand, fromDate, toDate, pageNumber, displaySize);
-            if (agreement != null) {
+            if (mandateId != null) {
                 throw new BadRequestException(PaymentError
                         .aPaymentError(PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR, "agreement"));
             }
@@ -104,37 +108,91 @@ public class PaymentSearchService {
             logger.info("response from connector form charge search: " + connectorResponse);
 
             if (connectorResponse.getStatus() == SC_OK) {
-                try {
-                    JsonNode responseJson = connectorResponse.readEntity(JsonNode.class);
-                    TypeReference<PaymentSearchResponse> typeRef = new TypeReference<PaymentSearchResponse>() {};
-                    PaymentSearchResponse searchResponse = objectMapper.readValue(responseJson.traverse(), typeRef);
-                    List<PaymentForSearchResult> chargeFromResponses = searchResponse.getPayments()
-                            .stream()
-                            .map(charge -> PaymentForSearchResult.valueOf(
-                                    charge,
-                                    paymentUriGenerator.getPaymentURI(baseUrl, charge.getChargeId()),
-                                    paymentUriGenerator.getPaymentEventsURI(baseUrl, charge.getChargeId()),
-                                    paymentUriGenerator.getPaymentCancelURI(baseUrl, charge.getChargeId()),
-                                    paymentUriGenerator.getPaymentRefundsURI(baseUrl, charge.getChargeId())))
-                            .collect(Collectors.toList());
-                    HalRepresentation.HalRepresentationBuilder halRepresentation = HalRepresentation.builder()
-                            .addProperty("results", chargeFromResponses)
-                            .addProperty("count", searchResponse.getCount())
-                            .addProperty("total", searchResponse.getTotal())
-                            .addProperty("page", searchResponse.getPage());
-                    addLink(halRepresentation, "self", transformIntoPublicUri(baseUrl, searchResponse.getLinks().getSelf()));
-                    addLink(halRepresentation, "first_page", transformIntoPublicUri(baseUrl, searchResponse.getLinks().getFirstPage()));
-                    addLink(halRepresentation, "last_page", transformIntoPublicUri(baseUrl, searchResponse.getLinks().getLastPage()));
-                    addLink(halRepresentation, "prev_page", transformIntoPublicUri(baseUrl, searchResponse.getLinks().getPrevPage()));
-                    addLink(halRepresentation, "next_page", transformIntoPublicUri(baseUrl, searchResponse.getLinks().getNextPage()));
-                
-                    return halRepresentation.build();
-                } catch (IOException | ProcessingException | URISyntaxException ex) {
-                    throw new SearchChargesException(ex);
-                }
+                return processConnectorResponse(connectorResponse);
             }
             throw new SearchChargesException(connectorResponse);
         }
+        if (mandateId != null) {
+            List<Pair<String, String>> queryParams = asList(
+                    Pair.of(MANDATE_KEY, mandateId));
+            Response response = client
+                    .target(connectorUriGenerator.directDebitTransactionsURI(account, queryParams))
+                    .request()
+                    .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
+                    .get();
+            if (response.getStatus() == SC_OK) {
+                return processDirectDebitMandateResponse(response);
+            }
+            throw new SearchChargesException(response);
+        }
+        return processDirectDebitSearchResponse(null);
+    }
+    
+    private HalRepresentation.HalRepresentationBuilder decoratePagination(HalRepresentation.HalRepresentationBuilder halRepresentationBuilder, IPaymentSearchPagination pagination) {
+        try {
+            halRepresentationBuilder
+                    .addProperty("count", pagination.getCount())
+                    .addProperty("total", pagination.getTotal())
+                    .addProperty("page", pagination.getPage());
+            addLink(halRepresentationBuilder, "self", transformIntoPublicUri(baseUrl, pagination.getLinks().getSelf()));
+            addLink(halRepresentationBuilder, "first_page", transformIntoPublicUri(baseUrl, pagination.getLinks().getFirstPage()));
+            addLink(halRepresentationBuilder, "last_page", transformIntoPublicUri(baseUrl, pagination.getLinks().getLastPage()));
+            addLink(halRepresentationBuilder, "prev_page", transformIntoPublicUri(baseUrl, pagination.getLinks().getPrevPage()));
+            addLink(halRepresentationBuilder, "next_page", transformIntoPublicUri(baseUrl, pagination.getLinks().getNextPage()));
+        } catch (URISyntaxException ex) {
+            throw new SearchChargesException(ex);
+        }
+        return halRepresentationBuilder;
+    }
+    
+    private HalRepresentation processConnectorResponse(Response connectorResponse) {
+        try {
+            JsonNode responseJson = connectorResponse.readEntity(JsonNode.class);
+            TypeReference<PaymentSearchResponse> typeRef = new TypeReference<PaymentSearchResponse>() {};
+            PaymentSearchResponse searchResponse = objectMapper.readValue(responseJson.traverse(), typeRef);
+            List<PaymentForSearchResult> chargeFromResponses = searchResponse.getPayments()
+                    .stream()
+                    .map(charge -> PaymentForSearchResult.valueOf(
+                            charge,
+                            paymentUriGenerator.getPaymentURI(baseUrl, charge.getChargeId()),
+                            paymentUriGenerator.getPaymentEventsURI(baseUrl, charge.getChargeId()),
+                            paymentUriGenerator.getPaymentCancelURI(baseUrl, charge.getChargeId()),
+                            paymentUriGenerator.getPaymentRefundsURI(baseUrl, charge.getChargeId())))
+                    .collect(Collectors.toList());
+            HalRepresentation.HalRepresentationBuilder halRepresentation = HalRepresentation.builder()
+                    .addProperty("results", chargeFromResponses);
+
+            return decoratePagination(halRepresentation, searchResponse).build();
+        } catch (IOException | ProcessingException ex) {
+            throw new SearchChargesException(ex);
+        }
+    }
+    
+    private HalRepresentation processDirectDebitMandateResponse(Response directDebitConnectorMandateResponse) {
+        try {
+            JsonNode responseJson = directDebitConnectorMandateResponse.readEntity(JsonNode.class);
+            TypeReference<DDSearchResponse> typeRef =
+                    new TypeReference<DDSearchResponse>() {
+                    };
+            DDSearchResponse searchResponse = objectMapper.readValue(responseJson.traverse(), typeRef);
+            List<DDTransactionForSearch> transactionFromResponse =
+                    searchResponse
+                            .getPayments()
+                            .stream()
+                            .map(transaction -> DDTransactionForSearch.valueOf(
+                                    transaction,
+                                    paymentUriGenerator.getPaymentURI(baseUrl, transaction.getTransactionId())
+                            )).collect(Collectors.toList());
+            HalRepresentation.HalRepresentationBuilder halRepresentation = HalRepresentation.builder()
+                    .addProperty("payer", searchResponse.getPayer())
+                    .addProperty("results", transactionFromResponse);
+            return decoratePagination(halRepresentation, searchResponse).build();
+        } catch (IOException | ProcessingException ex) {
+            throw new SearchChargesException(ex);
+        }
+    }
+    
+    private HalRepresentation processDirectDebitSearchResponse(Response response) {
         throw new NotImplementedException("Direct Debit search is not yet implemented");
     }
 

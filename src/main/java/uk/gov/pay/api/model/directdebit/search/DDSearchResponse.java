@@ -1,11 +1,13 @@
-package uk.gov.pay.api.model;
+package uk.gov.pay.api.model.directdebit.search;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import uk.gov.pay.api.model.IPaymentSearchPagination;
 import uk.gov.pay.api.model.links.PaymentSearchNavigationLinks;
 
 import java.util.List;
 
-public class PaymentSearchResponse implements IPaymentSearchPagination {
+
+public class DDSearchResponse implements IPaymentSearchPagination {
 
     @JsonProperty("total")
     private int total;
@@ -15,9 +17,12 @@ public class PaymentSearchResponse implements IPaymentSearchPagination {
 
     @JsonProperty("page")
     private int page;
+    
+    @JsonProperty("payer")
+    private DDPayer payer;
 
     @JsonProperty("results")
-    private List<ChargeFromResponse> payments;
+    private List<DDTransactionFromResponse> payments;
 
     @JsonProperty("_links")
     private PaymentSearchNavigationLinks links = new PaymentSearchNavigationLinks();
@@ -34,7 +39,9 @@ public class PaymentSearchResponse implements IPaymentSearchPagination {
         return page;
     }
 
-    public List<ChargeFromResponse> getPayments() {
+    public DDPayer getPayer() { return payer; }
+
+    public List<DDTransactionFromResponse> getPayments() {
         return payments;
     }
     @Override
