@@ -28,12 +28,4 @@ public class CreateAgreementRequest {
     public AgreementType getAgreementType() {
         return agreementType;
     }
-
-    @Override
-    public String toString() {
-        return "CreateAgreementRequest{" +
-                "returnUrl='" + returnUrl + "'" +
-                ", agreementType='" + agreementType + "'" +
-                '}';
-    }
 }

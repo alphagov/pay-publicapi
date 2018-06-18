@@ -65,7 +65,7 @@ public abstract class PaymentResourceITestBase {
         return "http://publicapi.url" + PAYMENTS_PATH + chargeId;
     }
 
-    String frontendUrlFor(TokenPaymentType paymentType) {
+    protected String frontendUrlFor(TokenPaymentType paymentType) {
         return "http://frontend_"+paymentType.toString().toLowerCase()+"/charge/";
     }
 
