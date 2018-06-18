@@ -61,6 +61,23 @@ pipeline {
         }
       }
     }
+    stage('Contract Tests') {
+        steps {
+            script {
+                env.PACT_TAG = gitBranchName()
+            }
+            ws('contract-tests-wp') {
+                runPactProviderTests("pay-direct-debit-connector", "${env.PACT_TAG}")
+            }
+        }
+        post {
+            always {
+                ws('contract-tests-wp') {
+                    deleteDir()
+                }
+            }
+        }
+    }
     stage('Tests') {
       failFast true
       parallel {
