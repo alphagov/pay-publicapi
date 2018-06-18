@@ -7,8 +7,8 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(value = "CreateAgreementResponse", description = "The Agreement Payload to create a new Agreement")
 public class CreateAgreementResponse {
 
-    public static final String AGREEMENT_ID_FIELD_NAME = "agreement_id";
-    public static final String AGREEMENT_TYPE_FIELD_NAME = "agreement_type";
+    public static final String AGREEMENT_ID_FIELD_NAME = "mandate_id";
+    public static final String AGREEMENT_TYPE_FIELD_NAME = "mandate_type";
     public static final String RETURN_URL_FIELD_NAME = "return_url";
     public static final String CREATED_DATE_FIELD_NAME = "created_date";
     public static final String STATE_FIELD_NAME = "state";
