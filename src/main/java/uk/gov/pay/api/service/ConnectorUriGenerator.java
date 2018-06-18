@@ -45,7 +45,7 @@ public class ConnectorUriGenerator {
     private String buildConnectorUri(Account account, String path, List<Pair<String, String>> queryParams) {
         UriBuilder builder = UriBuilder.fromPath(connectorBaseUrlForAccount(account)).path(path);
 
-        queryParams.stream().forEach(pair -> {
+        queryParams.forEach(pair -> {
             if (isNotBlank(pair.getRight())) {
                 builder.queryParam(pair.getKey(), pair.getValue());
             }
