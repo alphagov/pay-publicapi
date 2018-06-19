@@ -17,6 +17,15 @@ public class CreateAgreementRequest {
     private String returnUrl;
     private AgreementType agreementType;
 
+    // required for Jackson
+    private CreateAgreementRequest() {
+    }
+
+    public CreateAgreementRequest(String returnUrl, AgreementType agreementType) {
+        this.returnUrl = returnUrl;
+        this.agreementType = agreementType;
+    }
+
     @ApiModelProperty(value = "agreement return url", required = true, example = "https://service-name.gov.uk/transactions/12345")
     @JsonProperty(value = RETURN_URL_FIELD_NAME)
     public String getReturnUrl() {

@@ -29,7 +29,7 @@ public class CreateAgreementService {
     private Client client;
 
     @Inject
-    public CreateAgreementService(PublicApiConfig configuration, Client client) {
+    public CreateAgreementService(Client client, PublicApiConfig configuration) {
         this.connectorDDUrl = configuration.getConnectorDDUrl();
         this.client = client;
     }

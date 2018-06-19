@@ -20,7 +20,7 @@ public class CreateAgreementResponse {
     private String returnUrl;
     private String createdDate;
     private AgreementStatus state;
-    private AgreementLinks links = new AgreementLinks();
+    private AgreementLinks links;
 
     private CreateAgreementResponse(String agreementId,
                                     AgreementType agreementType,

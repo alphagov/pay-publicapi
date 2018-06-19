@@ -1,0 +1,159 @@
+{
+  "provider": {
+    "name": "direct-debit-connector"
+  },
+  "consumer": {
+    "name": "publicapi"
+  },
+  "interactions": [
+    {
+      "description": "Create a mandate request",
+      "providerStates": [
+        {
+          "name": "a gateway account with external id exists",
+          "params": {
+            "gateway_account_id": "GATEWAY_ACCOUNT_ID"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/v1/api/accounts/GATEWAY_ACCOUNT_ID/mandates",
+        "body": {
+          "return_url": "https://example.com/return",
+          "agreement_type": "ON_DEMAND"
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Content-Type": "application/json",
+          "Location": "http://localhost:1234/v1/api/accounts/GATEWAY_ACCOUNT_ID/mandates/test_mandate_id_xyz"
+        },
+        "body": {
+          "mandate_id": "test_mandate_id_xyz",
+          "mandate_type": "ON_DEMAND",
+          "return_url": "https://example.com/return",
+          "created_date": "2016-01-01T12:00:00.000Z",
+          "state": {
+            "status": "created",
+            "finished": false
+          },
+          "links": [
+            {
+              "href": "http://localhost:1234/v1/api/accounts/GATEWAY_ACCOUNT_ID/mandates/test_mandate_id_xyz",
+              "rel": "self",
+              "method": "GET"
+            },
+            {
+              "href": "http://frontend_direct_debit/secure/token_1234567asdf",
+              "rel": "next_url",
+              "method": "GET"
+            },
+            {
+              "href": "http://frontend_direct_debit/secure/",
+              "rel": "next_url_post",
+              "type": "application/x-www-form-urlencoded",
+              "params": {
+                "chargeTokenId": "token_1234567asdf"
+              },
+              "method": "POST"
+            }
+          ]
+        },
+        "matchingRules": {
+          "header": {
+            "Location": {
+              "matchers": [
+                {
+                  "regex": "http:\/\/.*\/v1\/api\/accounts\/GATEWAY_ACCOUNT_ID\/mandates\/[a-z0-9]*"
+                }
+              ]
+            }
+          },
+          "body": {
+            "$.mandate_id": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.mandate_type": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.return_url": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.created_date": {
+              "matchers": [
+                {
+                  "match": "date",
+                  "date": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                }
+              ]
+            },
+            "$.state.status": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.state.finished": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.links[0].href": {
+              "matchers": [
+                {
+                  "regex": "http:\/\/.*\/v1\/api\/accounts\/GATEWAY_ACCOUNT_ID\/mandates\/[a-z0-9]*"
+                }
+              ]
+            },
+            "$.links[1].href": {
+              "matchers": [
+                {
+                  "regex": "http:\/\/.*(?i)frontend_direct_debit.*\/secure\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                }
+              ]
+            },
+            "$.links[2].href": {
+              "matchers": [
+                {
+                  "regex": "http:\/\/.*(?i)frontend_direct_debit.*\/secure"
+                }
+              ]
+            },
+            "$.links[2].params.chargeTokenId": {
+              "matchers": [
+                {
+                  "regex": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pact-specification": {
+      "version": "3.0.0"
+    },
+    "pact-jvm": {
+      "version": "3.5.16"
+    }
+  }
+}
