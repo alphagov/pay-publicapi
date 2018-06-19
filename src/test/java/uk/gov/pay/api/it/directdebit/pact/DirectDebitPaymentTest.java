@@ -12,11 +12,11 @@ import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
 import uk.gov.pay.api.model.PaymentState;
-import uk.gov.pay.api.pact.PactProviderRule;
-import uk.gov.pay.api.pact.Pacts;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
+import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
+import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
 import javax.ws.rs.core.HttpHeaders;
 import java.time.ZonedDateTime;
