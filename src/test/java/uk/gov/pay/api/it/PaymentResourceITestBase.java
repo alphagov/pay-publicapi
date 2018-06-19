@@ -8,9 +8,9 @@ import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
+import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorDDMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
 
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
@@ -61,12 +61,16 @@ public abstract class PaymentResourceITestBase {
         return "http://localhost:" + publicAuthMockRule.getPort() + "/v1/auth";
     }
 
-    String paymentLocationFor(String chargeId) {
+    protected String paymentLocationFor(String chargeId) {
         return "http://publicapi.url" + PAYMENTS_PATH + chargeId;
     }
 
-    protected String frontendUrlFor(TokenPaymentType paymentType) {
-        return "http://frontend_"+paymentType.toString().toLowerCase()+"/charge/";
+    String frontendUrlFor(TokenPaymentType paymentType) {
+        return "http://frontend_" + paymentType.toString().toLowerCase() + "/charge/";
+    }
+
+    protected String directDebitFrontendSecureUrl() {
+        return "http://frontend_direct_debit/secure/";
     }
 
     String paymentEventsLocationFor(String chargeId) {
@@ -78,7 +82,7 @@ public abstract class PaymentResourceITestBase {
     }
 
     String paymentRefundLocationFor(String chargeId, String refundId) {
-        return "http://publicapi.url" + PAYMENTS_PATH + chargeId + "/refunds/" +refundId;
+        return "http://publicapi.url" + PAYMENTS_PATH + chargeId + "/refunds/" + refundId;
     }
 
     String paymentCancelLocationFor(String chargeId) {

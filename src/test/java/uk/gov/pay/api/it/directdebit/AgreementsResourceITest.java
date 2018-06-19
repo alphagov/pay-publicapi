@@ -57,12 +57,41 @@ public class AgreementsResourceITest extends PaymentResourceITestBase {
                 .body("state", is(AgreementStatus.CREATED.toString()))
                 .body("_links.self.href", is(connectorDDMock.mandateLocation(GATEWAY_ACCOUNT_ID, "mandateId")))
                 .body("_links.self.method", is("GET"))
-                .body("_links.next_url.href", is(frontendUrlFor(DIRECT_DEBIT) + CHARGE_TOKEN_ID))
+                .body("_links.next_url.href", is(directDebitFrontendSecureUrl() + CHARGE_TOKEN_ID))
                 .body("_links.next_url.method", is("GET"))
-                .body("_links.next_url_post.href", is(frontendUrlFor(DIRECT_DEBIT)))
+                .body("_links.next_url_post.href", is(directDebitFrontendSecureUrl()))
                 .body("_links.next_url_post.method", is("POST"))
                 .body("_links.next_url_post.type", is("application/x-www-form-urlencoded"))
                 .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
+                .extract().body().asString();
+    }
+
+    @Test
+    public void createPayment_respondsWith500_whenConnectorResponseIsAnUnrecognisedError() throws Exception {
+
+        String errorMessage = "something went wrong";
+
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
+
+        connectorDDMock.respondBadRequest_whenCreateAgreementRequest(
+                MandateType.ON_DEMAND,
+                "https://service-name.gov.uk/transactions/12345",
+                GATEWAY_ACCOUNT_ID,
+                errorMessage
+        );
+
+        String payload = agreementPayload("https://service-name.gov.uk/transactions/12345", AgreementType.ON_DEMAND);
+        String s = given().port(app.getLocalPort())
+                .body(payload)
+                .accept(JSON)
+                .contentType(JSON)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
+                .post("/v1/agreements")
+                .then()
+                .statusCode(500)
+                .contentType(JSON)
+                .body("code", is("P0198"))
+                .body("description", is("Downstream system error"))
                 .extract().body().asString();
     }
 

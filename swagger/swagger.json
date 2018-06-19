@@ -1,9 +1,9 @@
 {
   "swagger" : "2.0",
   "info" : {
-    "description" : "GOV.UK Pay Api",
+    "description" : "GOV.UK Pay API",
     "version" : "1.0.0",
-    "title" : "GOV.UK Pay Api"
+    "title" : "GOV.UK Pay API"
   },
   "host" : "publicapi.payments.service.gov.uk",
   "tags" : [ {
@@ -12,6 +12,120 @@
   } ],
   "schemes" : [ "https" ],
   "paths" : {
+    "/healthcheck" : {
+      "get" : {
+        "operationId" : "healthCheck",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/request-denied" : {
+      "get" : {
+        "operationId" : "requestDeniedGet",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "x-naxsi_sig",
+          "in" : "header",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      },
+      "post" : {
+        "operationId" : "requestDeniedPost",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "x-naxsi_sig",
+          "in" : "header",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      },
+      "put" : {
+        "operationId" : "requestDeniedPut",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "x-naxsi_sig",
+          "in" : "header",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      },
+      "delete" : {
+        "operationId" : "requestDeniedDelete",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "x-naxsi_sig",
+          "in" : "header",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/v1/agreements" : {
+      "post" : {
+        "summary" : "Create a new agreement",
+        "description" : "Create a new agreement",
+        "operationId" : "newAgreement",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "requestPayload",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/CreateAgreementRequest"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "schema" : {
+              "$ref" : "#/definitions/CreateAgreementResponse"
+            }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "schema" : {
+              "$ref" : "#/definitions/PaymentError"
+            }
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "schema" : {
+              "$ref" : "#/definitions/PaymentError"
+            }
+          }
+        }
+      }
+    },
     "/v1/payments" : {
       "get" : {
         "summary" : "Search payments",
@@ -65,6 +179,12 @@
           "name" : "display_size",
           "in" : "query",
           "description" : "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "agreement",
+          "in" : "query",
+          "description" : "Direct Debit Agreement Id",
           "required" : false,
           "type" : "string"
         } ],
@@ -412,6 +532,27 @@
       },
       "description" : "A structure representing the billing address of a card"
     },
+    "AgreementLinks" : {
+      "type" : "object",
+      "properties" : {
+        "self" : {
+          "description" : "self",
+          "readOnly" : true,
+          "$ref" : "#/definitions/Link"
+        },
+        "next_url" : {
+          "description" : "next_url",
+          "readOnly" : true,
+          "$ref" : "#/definitions/Link"
+        },
+        "next_url_post" : {
+          "description" : "next_url_post",
+          "readOnly" : true,
+          "$ref" : "#/definitions/PostLink"
+        }
+      },
+      "description" : "self and next links of an Agreement"
+    },
     "CardDetails" : {
       "type" : "object",
       "properties" : {
@@ -469,6 +610,69 @@
         }
       } ]
     },
+    "CreateAgreementRequest" : {
+      "type" : "object",
+      "required" : [ "agreement_type", "return_url" ],
+      "properties" : {
+        "return_url" : {
+          "type" : "string",
+          "example" : "https://service-name.gov.uk/transactions/12345",
+          "description" : "agreement return url",
+          "readOnly" : true
+        },
+        "agreement_type" : {
+          "type" : "string",
+          "example" : "ON_DEMAND",
+          "description" : "agreement type",
+          "readOnly" : true,
+          "enum" : [ "ON_DEMAND", "ONE_OFF" ]
+        }
+      },
+      "description" : "The Payload to create a new Agreement"
+    },
+    "CreateAgreementResponse" : {
+      "type" : "object",
+      "required" : [ "_links", "agreement_id", "agreement_type", "created_date", "return_url", "state" ],
+      "properties" : {
+        "agreement_id" : {
+          "type" : "string",
+          "example" : "jhjcvaiqlediuhh23d89hd3",
+          "description" : "agreement id",
+          "readOnly" : true
+        },
+        "agreement_type" : {
+          "type" : "string",
+          "example" : "ON_DEMAND",
+          "description" : "agreement type",
+          "readOnly" : true,
+          "enum" : [ "ON_DEMAND", "ONE_OFF" ]
+        },
+        "return_url" : {
+          "type" : "string",
+          "example" : "https://service-name.gov.uk/transactions/12345",
+          "description" : "service return url",
+          "readOnly" : true
+        },
+        "created_date" : {
+          "type" : "string",
+          "description" : "agreement created date",
+          "readOnly" : true
+        },
+        "state" : {
+          "type" : "string",
+          "example" : "CREATED",
+          "description" : "agreement state",
+          "readOnly" : true,
+          "enum" : [ "CREATED", "STARTED", "PENDING", "SUBMITTED", "ACTIVE", "INACTIVE", "CANCELLED" ]
+        },
+        "_links" : {
+          "description" : "links",
+          "readOnly" : true,
+          "$ref" : "#/definitions/AgreementLinks"
+        }
+      },
+      "description" : "The Agreement Payload to create a new Agreement"
+    },
     "CreatePaymentRefundRequest" : {
       "type" : "object",
       "required" : [ "amount" ],
@@ -476,19 +680,19 @@
         "amount" : {
           "type" : "integer",
           "format" : "int32",
-          "example" : "150000",
+          "example" : 150000,
           "description" : "Amount in pence. Can't be more than the available amount for refunds",
-          "minimum" : 1.0,
-          "maximum" : 1.0E7
+          "minimum" : 1,
+          "maximum" : 10000000
         },
         "refund_amount_available" : {
           "type" : "integer",
           "format" : "int32",
-          "example" : "200000",
+          "example" : 200000,
           "description" : "Amount in pence. Total amount still available before issuing the refund",
           "readOnly" : true,
-          "minimum" : 1.0,
-          "maximum" : 1.0E7
+          "minimum" : 1,
+          "maximum" : 10000000
         }
       },
       "description" : "The Payment Refund Request Payload"
@@ -500,10 +704,10 @@
         "amount" : {
           "type" : "integer",
           "format" : "int32",
-          "example" : "12000",
+          "example" : 12000,
           "description" : "amount in pence",
-          "minimum" : 1.0,
-          "maximum" : 1.0E7
+          "minimum" : 1,
+          "maximum" : 10000000
         },
         "reference" : {
           "type" : "string",
@@ -554,7 +758,7 @@
         "amount" : {
           "type" : "integer",
           "format" : "int64",
-          "example" : "1200"
+          "example" : 1200
         },
         "state" : {
           "$ref" : "#/definitions/PaymentState"
@@ -755,8 +959,7 @@
         "finished" : {
           "type" : "boolean",
           "description" : "Whether the payment has finished",
-          "readOnly" : true,
-          "default" : false
+          "readOnly" : true
         },
         "message" : {
           "type" : "string",

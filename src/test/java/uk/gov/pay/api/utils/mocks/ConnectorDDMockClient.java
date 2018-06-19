@@ -2,6 +2,7 @@ package uk.gov.pay.api.utils.mocks;
 
 import com.google.common.collect.ImmutableMap;
 import org.mockserver.client.server.ForwardChainExpectation;
+import org.mockserver.model.HttpResponse;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.directdebit.agreement.MandateState;
 import uk.gov.pay.api.model.directdebit.agreement.MandateType;
@@ -15,10 +16,12 @@ import static javax.ws.rs.HttpMethod.POST;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.HttpHeaders.LOCATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
 import static org.eclipse.jetty.http.HttpStatus.CREATED_201;
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
+import static uk.gov.pay.api.utils.JsonStringBuilder.jsonString;
 
 public class ConnectorDDMockClient extends BaseConnectorMockClient {
 
@@ -70,6 +73,14 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                 );
     }
 
+    public void respondBadRequest_whenCreateAgreementRequest(MandateType mandateType,
+                                                             String returnUrl,
+                                                             String gatewayAccountId,
+                                                             String errorMsg) {
+        whenCreateAgreement(returnUrl, mandateType, gatewayAccountId)
+                .respond(withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg));
+    }
+
     private String buildCreateAgreementResponse(String mandateId, MandateType mandateType,
                                                 String returnUrl, String createdDate,
                                                 MandateState state, ImmutableMap<?, ?>... links) {
@@ -103,9 +114,8 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
 
     @Override
     String nextUrlPost() {
-        return "http://frontend_direct_debit/charge/";
+        return "http://frontend_direct_debit/secure/";
     }
-
 
     private ForwardChainExpectation whenCreateAgreement(String returnUrl, MandateType mandateType, String gatewayAccountId) {
         return mockClient.when(request()
@@ -123,5 +133,12 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                 .add("return_url", returnUrl)
                 .add("agreement_type", mandateType)
                 .build();
+    }
+
+    private HttpResponse withStatusAndErrorMessage(int statusCode, String errorMsg) {
+        return response()
+                .withStatusCode(statusCode)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                .withBody(jsonString("message", errorMsg));
     }
 }
