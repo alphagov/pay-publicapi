@@ -3,7 +3,10 @@ package uk.gov.pay.api.it;
 import com.jayway.jsonassert.JsonAssert;
 import com.jayway.restassured.response.ValidatableResponse;
 import org.junit.Test;
-import uk.gov.pay.api.model.*;
+import uk.gov.pay.api.model.Address;
+import uk.gov.pay.api.model.CardDetails;
+import uk.gov.pay.api.model.PaymentState;
+import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
