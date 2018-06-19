@@ -37,7 +37,7 @@ public class PaymentWithAllLinks {
         return payment;
     }
 
-    private PaymentWithAllLinks(String chargeId, long amount, PaymentState state, String returnUrl, String description,
+    public PaymentWithAllLinks(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                                 String reference, String email, String paymentProvider, String createdDate,
                                 RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails, List<PaymentConnectorResponseLink> paymentConnectorResponseLinks,
                                 URI selfLink, URI paymentEventsUri, URI paymentCancelUri, URI paymentRefundsUri) {
