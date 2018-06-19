@@ -67,6 +67,10 @@ The [API Specification](docs/api_specification.md) provides more detail on the p
 |[`/v1/agreements`](docs/api_specification.md#post-v1agreements) | POST | create and agreement |
 ------------------------------------------------------------------------------------------------
 
+## Dependencies
+
+- https://www.mock-server.com/ is used for mocking dependent services
+
 ## Licence
 
 [MIT License](LICENSE)
