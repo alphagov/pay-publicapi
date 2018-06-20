@@ -20,14 +20,8 @@ public class CreateAgreementExceptionMapper implements ExceptionMapper<CreateAgr
 
     @Override
     public Response toResponse(CreateAgreementException exception) {
-
-        PaymentError paymentError;
-
-        if (exception.getErrorStatus() == NOT_FOUND.getStatusCode()) {
-            paymentError = aPaymentError(CREATE_PAYMENT_ACCOUNT_ERROR);
-        } else {
-            paymentError = aPaymentError(CREATE_PAYMENT_CONNECTOR_ERROR);
-        }
+        PaymentError paymentError = exception.getErrorStatus() == NOT_FOUND.getStatusCode() ?
+                aPaymentError(CREATE_PAYMENT_ACCOUNT_ERROR) : aPaymentError(CREATE_PAYMENT_CONNECTOR_ERROR);
 
         LOGGER.error("Direct Debit connector invalid response was {}.\n Returning http status {} with error body {}", exception.getMessage(), INTERNAL_SERVER_ERROR, paymentError);
 
