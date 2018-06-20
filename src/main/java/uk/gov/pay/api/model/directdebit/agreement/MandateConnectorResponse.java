@@ -12,6 +12,7 @@ public class MandateConnectorResponse {
 
     private String mandateId;
     private String mandateType;
+    private String reference;
     private String returnUrl;
     private String createdDate;
     private MandateState state;
@@ -19,12 +20,17 @@ public class MandateConnectorResponse {
 
     @JsonProperty(value = "mandate_id")
     public String getMandateId() {
-        return this.mandateId;
+        return mandateId;
     }
 
     @JsonProperty(value = "mandate_type")
     public String getMandateType() {
-        return this.mandateType;
+        return mandateType;
+    }
+
+    @JsonProperty(value = "reference")
+    public String getReference() {
+        return reference;
     }
 
     @JsonProperty(value = "return_url")

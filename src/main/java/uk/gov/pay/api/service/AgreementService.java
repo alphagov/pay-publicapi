@@ -22,6 +22,7 @@ import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import static java.lang.String.format;
 import static javax.ws.rs.client.Entity.json;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class AgreementService {
 
@@ -105,10 +106,15 @@ public class AgreementService {
     }
 
     private Entity buildAgreementRequestPayload(CreateAgreementRequest requestPayload) {
-        return json(new JsonStringBuilder()
+        JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
                 .add(CreateAgreementRequest.RETURN_URL_FIELD_NAME, requestPayload.getReturnUrl())
-                .add(CreateAgreementRequest.AGREEMENT_TYPE_FIELD_NAME, requestPayload.getAgreementType().toString())
-                .build());
+                .add(CreateAgreementRequest.AGREEMENT_TYPE_FIELD_NAME, requestPayload.getAgreementType().toString());
+        
+        if (isNotBlank(requestPayload.getReference())) {
+            jsonStringBuilder.add(CreateAgreementRequest.REFERENCE_FIELD_NAME, requestPayload.getReference());
+        }
+
+        return json(jsonStringBuilder.build());
     }
 
 }

@@ -7,32 +7,34 @@
   },
   "interactions": [
     {
-      "description": "Create a mandate request",
+      "description": "Create a mandate request with reference",
       "providerStates": [
         {
           "name": "a gateway account with external id exists",
           "params": {
-            "gateway_account_id": "9ddfcc27-acf5-43f9-92d5-52247540714b"
+            "gateway_account_id": "7959d395-e720-4081-9e8a-a534cf76460a"
           }
         }
       ],
       "request": {
         "method": "POST",
-        "path": "/v1/api/accounts/9ddfcc27-acf5-43f9-92d5-52247540714b/mandates",
+        "path": "/v1/api/accounts/7959d395-e720-4081-9e8a-a534cf76460a/mandates",
         "body": {
           "return_url": "https://example.com/return",
-          "agreement_type": "ON_DEMAND"
+          "agreement_type": "ON_DEMAND",
+          "reference": "serviceref123"
         }
       },
       "response": {
         "status": 201,
         "headers": {
           "Content-Type": "application/json",
-          "Location": "http://localhost:1234/v1/api/accounts/9ddfcc27-acf5-43f9-92d5-52247540714b/mandates/test_mandate_id_xyz"
+          "Location": "http://localhost:1234/v1/api/accounts/7959d395-e720-4081-9e8a-a534cf76460a/mandates/test_mandate_id_xyz"
         },
         "body": {
           "mandate_id": "test_mandate_id_xyz",
           "mandate_type": "ON_DEMAND",
+          "reference": "serviceref123",
           "return_url": "https://example.com/return",
           "created_date": "2016-01-01T12:00:00.000Z",
           "state": {
@@ -41,7 +43,7 @@
           },
           "links": [
             {
-              "href": "http://localhost:1234/v1/api/accounts/9ddfcc27-acf5-43f9-92d5-52247540714b/mandates/mandateId",
+              "href": "http://localhost:1234/v1/api/accounts/7959d395-e720-4081-9e8a-a534cf76460a/mandates/mandateId",
               "rel": "self",
               "method": "GET"
             },
@@ -66,7 +68,7 @@
             "Location": {
               "matchers": [
                 {
-                  "regex": "http:\/\/.*\/v1\/api\/accounts\/9ddfcc27-acf5-43f9-92d5-52247540714b\/mandates\/[a-z0-9]*"
+                  "regex": "http:\/\/.*\/v1\/api\/accounts\/7959d395-e720-4081-9e8a-a534cf76460a\/mandates\/[a-z0-9]*"
                 }
               ]
             }
@@ -80,6 +82,13 @@
               ]
             },
             "$.mandate_type": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.reference": {
               "matchers": [
                 {
                   "match": "type"
@@ -118,7 +127,7 @@
             "$.links[0].href": {
               "matchers": [
                 {
-                  "regex": "http:\/\/.*\/v1\/api\/accounts\/9ddfcc27-acf5-43f9-92d5-52247540714b\/mandates\/[a-z0-9]*"
+                  "regex": "http:\/\/.*\/v1\/api\/accounts\/7959d395-e720-4081-9e8a-a534cf76460a\/mandates\/[a-z0-9]*"
                 }
               ]
             },
