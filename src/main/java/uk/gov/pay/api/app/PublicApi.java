@@ -20,6 +20,7 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.auth.AccountAuthenticator;
 import uk.gov.pay.api.exception.mapper.BadRequestExceptionMapper;
 import uk.gov.pay.api.exception.mapper.CancelChargeExceptionMapper;
+import uk.gov.pay.api.exception.mapper.CreateAgreementExceptionMapper;
 import uk.gov.pay.api.exception.mapper.CreateChargeExceptionMapper;
 import uk.gov.pay.api.exception.mapper.CreateRefundExceptionMapper;
 import uk.gov.pay.api.exception.mapper.GetChargeExceptionMapper;
@@ -32,6 +33,7 @@ import uk.gov.pay.api.filter.AuthorizationValidationFilter;
 import uk.gov.pay.api.filter.LoggingFilter;
 import uk.gov.pay.api.filter.RateLimiterFilter;
 import uk.gov.pay.api.healthcheck.Ping;
+import uk.gov.pay.api.resources.AgreementsResource;
 import uk.gov.pay.api.resources.HealthCheckResource;
 import uk.gov.pay.api.resources.PaymentRefundsResource;
 import uk.gov.pay.api.resources.PaymentsResource;
@@ -60,18 +62,18 @@ public class PublicApi extends Application<PublicApiConfig> {
 
     @Override
     public void run(PublicApiConfig configuration, Environment environment) {
-        
         initialiseSSLSocketFactory();
-        
+
         final Injector injector = Guice.createInjector(new PublicApiModule(configuration, environment));
 
         environment.healthChecks().register("ping", new Ping());
-        
+
         environment.jersey().register(injector.getInstance(HealthCheckResource.class));
         environment.jersey().register(injector.getInstance(PaymentsResource.class));
         environment.jersey().register(injector.getInstance(PaymentRefundsResource.class));
         environment.jersey().register(injector.getInstance(RequestDeniedResource.class));
-        
+        environment.jersey().register(injector.getInstance(AgreementsResource.class));
+
         environment.servlets().addFilter("AuthorizationValidationFilter", injector.getInstance(AuthorizationValidationFilter.class))
                 .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");
 
@@ -93,9 +95,10 @@ public class PublicApi extends Application<PublicApiConfig> {
         initialiseMetrics(configuration, environment);
     }
 
-    /*
-    Adding a call to initialise SSL socket factory at startup until we find a resolution for the following jersey client bug (JERSEY-3124).
-    @see <a href="https://jersey.github.io/release-notes/2.24.html">https://jersey.github.io/release-notes/2.24.html</a>
+    /**
+     * Adding a call to initialise SSL socket factory at startup until we find a resolution for the following jersey client bug (JERSEY-3124).
+     *
+     * @see <a href="https://jersey.github.io/release-notes/2.24.html">https://jersey.github.io/release-notes/2.24.html</a>
      */
     private void initialiseSSLSocketFactory() {
         HttpsURLConnection.getDefaultSSLSocketFactory();
@@ -112,6 +115,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         jersey.register(CreateRefundExceptionMapper.class);
         jersey.register(GetRefundExceptionMapper.class);
         jersey.register(GetRefundsExceptionMapper.class);
+        jersey.register(CreateAgreementExceptionMapper.class);
     }
 
     private void initialiseMetrics(PublicApiConfig configuration, Environment environment) {

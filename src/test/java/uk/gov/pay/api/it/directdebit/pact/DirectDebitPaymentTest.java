@@ -1,4 +1,4 @@
-package uk.gov.pay.api.it;
+package uk.gov.pay.api.it.directdebit.pact;
 
 import au.com.dius.pact.consumer.PactVerification;
 import com.jayway.jsonassert.JsonAssert;
@@ -10,8 +10,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
+import uk.gov.pay.api.it.PaymentResourceITestBase;
 import uk.gov.pay.api.model.PaymentState;
-import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.pact.PactProviderRule;
 import uk.gov.pay.api.pact.Pacts;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
@@ -28,9 +28,8 @@ import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
-import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 
-public class DirectDebitPaymentTest {
+public class DirectDebitPaymentTest extends PaymentResourceITestBase {
 
     private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
     private static final int AMOUNT = 100;
@@ -80,9 +79,9 @@ public class DirectDebitPaymentTest {
                 .body("created_date", is(CREATED_DATE))
                 .body("_links.self.href", is(paymentLocationFor(CHARGE_ID)))
                 .body("_links.self.method", is("GET"))
-                .body("_links.next_url.href", is(frontendUrlFor(DIRECT_DEBIT) + CHARGE_TOKEN_ID))
+                .body("_links.next_url.href", is(directDebitFrontendSecureUrl() + CHARGE_TOKEN_ID))
                 .body("_links.next_url.method", is("GET"))
-                .body("_links.next_url_post.href", is(frontendUrlFor(DIRECT_DEBIT)))
+                .body("_links.next_url_post.href", is(directDebitFrontendSecureUrl()))
                 .body("_links.next_url_post.method", is("POST"))
                 .body("_links.next_url_post.type", is("application/x-www-form-urlencoded"))
                 .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
@@ -118,14 +117,6 @@ public class DirectDebitPaymentTest {
                 .add("description", description)
                 .add("return_url", returnUrl)
                 .build();
-    }
-
-    String paymentLocationFor(String chargeId) {
-        return "http://publicapi.url" + PAYMENTS_PATH + chargeId;
-    }
-
-    String frontendUrlFor(TokenPaymentType paymentType) {
-        return "http://frontend_"+paymentType.toString().toLowerCase()+"/charge/";
     }
 
     // Close idle connections - see https://github.com/DiUS/pact-jvm/issues/342

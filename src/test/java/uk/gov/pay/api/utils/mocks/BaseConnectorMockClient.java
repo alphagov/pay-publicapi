@@ -3,25 +3,16 @@ package uk.gov.pay.api.utils.mocks;
 import com.google.common.collect.ImmutableMap;
 import org.mockserver.client.server.ForwardChainExpectation;
 import org.mockserver.client.server.MockServerClient;
-import uk.gov.pay.api.model.CardDetails;
-import uk.gov.pay.api.model.PaymentState;
-import uk.gov.pay.api.model.RefundSummary;
-import uk.gov.pay.api.model.SettlementSummary;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static java.lang.String.format;
-import static java.util.Arrays.asList;
 import static javax.ws.rs.HttpMethod.GET;
 import static javax.ws.rs.HttpMethod.POST;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
-import static javax.ws.rs.core.HttpHeaders.LOCATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.eclipse.jetty.http.HttpStatus.CREATED_201;
 import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
 import static org.mockserver.verify.VerificationTimes.once;
 
 public abstract class BaseConnectorMockClient {
@@ -29,6 +20,8 @@ public abstract class BaseConnectorMockClient {
     static String CONNECTOR_MOCK_ACCOUNTS_PATH = "/v1/api/accounts/%s";
     static String CONNECTOR_MOCK_CHARGES_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/charges";
     static String CONNECTOR_MOCK_CHARGE_PATH = CONNECTOR_MOCK_CHARGES_PATH + "/%s";
+    static String CONNECTOR_MOCK_MANDATES_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/mandates";
+    static String CONNECTOR_MOCK_MANDATE_PATH = CONNECTOR_MOCK_MANDATES_PATH + "/%s";
 
     final MockServerClient mockClient;
     final String baseUrl;
@@ -57,6 +50,11 @@ public abstract class BaseConnectorMockClient {
     String chargeLocation(String accountId, String chargeId) {
         return baseUrl + format(CONNECTOR_MOCK_CHARGE_PATH, accountId, chargeId);
     }
+
+    public String mandateLocation(String accountId, String mandateId) {
+        return baseUrl + format(CONNECTOR_MOCK_MANDATE_PATH, accountId, mandateId);
+    }
+
     abstract String nextUrlPost();
 
     String nextUrl(String tokenId) {
