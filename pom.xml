@@ -22,6 +22,17 @@
         <PACT_CONSUMER_TAG/>
     </properties>
 
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-govuk-pay-pay-java-commons</id>
+            <name>bintray</name>
+            <url>https://dl.bintray.com/govuk-pay/pay-java-commons</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>io.dropwizard</groupId>
@@ -90,6 +101,12 @@
             <version>24.0-jre</version>
         </dependency>
         <!-- testing -->
+        <dependency>
+            <groupId>uk.gov.pay</groupId>
+            <artifactId>testing</artifactId>
+            <version>1.0.0-3</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-testing</artifactId>

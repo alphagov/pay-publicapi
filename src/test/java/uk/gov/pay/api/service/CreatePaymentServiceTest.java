@@ -17,8 +17,8 @@ import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.links.Link;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.model.links.PostLink;
-import uk.gov.pay.api.pact.PactProviderRule;
-import uk.gov.pay.api.pact.Pacts;
+import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
+import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
 import javax.ws.rs.client.Client;
 import java.util.Collections;
