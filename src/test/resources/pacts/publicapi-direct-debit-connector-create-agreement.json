@@ -12,13 +12,13 @@
         {
           "name": "a gateway account with external id exists",
           "params": {
-            "gateway_account_id": "GATEWAY_ACCOUNT_ID"
+            "gateway_account_id": "9ddfcc27-acf5-43f9-92d5-52247540714b"
           }
         }
       ],
       "request": {
         "method": "POST",
-        "path": "/v1/api/accounts/GATEWAY_ACCOUNT_ID/mandates",
+        "path": "/v1/api/accounts/9ddfcc27-acf5-43f9-92d5-52247540714b/mandates",
         "body": {
           "return_url": "https://example.com/return",
           "agreement_type": "ON_DEMAND"
@@ -28,7 +28,7 @@
         "status": 201,
         "headers": {
           "Content-Type": "application/json",
-          "Location": "http://localhost:1234/v1/api/accounts/GATEWAY_ACCOUNT_ID/mandates/test_mandate_id_xyz"
+          "Location": "http://localhost:1234/v1/api/accounts/9ddfcc27-acf5-43f9-92d5-52247540714b/mandates/test_mandate_id_xyz"
         },
         "body": {
           "mandate_id": "test_mandate_id_xyz",
@@ -41,7 +41,7 @@
           },
           "links": [
             {
-              "href": "http://localhost:1234/v1/api/accounts/GATEWAY_ACCOUNT_ID/mandates/test_mandate_id_xyz",
+              "href": "http://localhost:1234/v1/api/accounts/9ddfcc27-acf5-43f9-92d5-52247540714b/mandates/mandateId",
               "rel": "self",
               "method": "GET"
             },
@@ -66,7 +66,7 @@
             "Location": {
               "matchers": [
                 {
-                  "regex": "http:\/\/.*\/v1\/api\/accounts\/GATEWAY_ACCOUNT_ID\/mandates\/[a-z0-9]*"
+                  "regex": "http:\/\/.*\/v1\/api\/accounts\/9ddfcc27-acf5-43f9-92d5-52247540714b\/mandates\/[a-z0-9]*"
                 }
               ]
             }
@@ -118,21 +118,21 @@
             "$.links[0].href": {
               "matchers": [
                 {
-                  "regex": "http:\/\/.*\/v1\/api\/accounts\/GATEWAY_ACCOUNT_ID\/mandates\/[a-z0-9]*"
+                  "regex": "http:\/\/.*\/v1\/api\/accounts\/9ddfcc27-acf5-43f9-92d5-52247540714b\/mandates\/[a-z0-9]*"
                 }
               ]
             },
             "$.links[1].href": {
               "matchers": [
                 {
-                  "regex": "http:\/\/.*(?i)frontend_direct_debit.*\/secure\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                  "regex": "http:\/\/.*\/secure\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
                 }
               ]
             },
             "$.links[2].href": {
               "matchers": [
                 {
-                  "regex": "http:\/\/.*(?i)frontend_direct_debit.*\/secure"
+                  "regex": "http:\/\/.*\/secure"
                 }
               ]
             },

@@ -73,10 +73,10 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                 );
     }
 
-    public void respondBadRequest_whenCreateAgreementRequest(String mandateId, MandateType mandateType,
-                                                             String returnUrl, String createdDate,
-                                                             MandateState state, String gatewayAccountId,
-                                                             String chargeTokenId, String errorMsg) {
+    public void respondBadRequest_whenCreateAgreementRequest(MandateType mandateType,
+                                                             String returnUrl,
+                                                             String gatewayAccountId,
+                                                             String errorMsg) {
         whenCreateAgreement(returnUrl, mandateType, gatewayAccountId)
                 .respond(withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg));
     }

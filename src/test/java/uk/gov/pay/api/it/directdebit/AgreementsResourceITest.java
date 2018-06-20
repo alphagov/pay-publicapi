@@ -74,13 +74,9 @@ public class AgreementsResourceITest extends PaymentResourceITestBase {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
 
         connectorDDMock.respondBadRequest_whenCreateAgreementRequest(
-                "mandateId",
                 MandateType.ON_DEMAND,
                 "https://service-name.gov.uk/transactions/12345",
-                CREATED_DATE,
-                new MandateState("created", false),
                 GATEWAY_ACCOUNT_ID,
-                CHARGE_TOKEN_ID,
                 errorMessage
         );
 
