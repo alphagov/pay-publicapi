@@ -63,7 +63,7 @@ public class AgreementError {
         this.description = format(code.getFormat(), concat(fieldName, parameters));
     }
 
-    @ApiModelProperty(example = "amount")
+    @ApiModelProperty(example = "return_url")
     public String getField() {
         return field;
     }
@@ -73,7 +73,7 @@ public class AgreementError {
         return code.value();
     }
 
-    @ApiModelProperty(example = "Invalid attribute value: amount. Must be less than or equal to 10000000")
+    @ApiModelProperty(example = "Invalid attribute value: return_url. Must be a valid url.")
     public String getDescription() {
         return description;
     }
