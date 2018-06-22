@@ -67,7 +67,7 @@ public class AgreementsResourceITest extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPayment_respondsWith500_whenConnectorResponseIsAnUnrecognisedError() throws Exception {
+    public void createPayment_respondsWith500_whenConnectorResponseIsAnUnrecognisedError() {
 
         String errorMessage = "something went wrong";
 
@@ -95,6 +95,44 @@ public class AgreementsResourceITest extends PaymentResourceITestBase {
                 .extract().body().asString();
     }
 
+    @Test
+    public void shouldGetADirectDebitAgreement() {
+
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
+
+        final String mandateId = "mandateId";
+        connectorDDMock.respondOk_whenGetAgreementRequest(
+                mandateId,
+                MandateType.ON_DEMAND,
+                "https://service-name.gov.uk/transactions/12345",
+                new MandateState("created", false),
+                GATEWAY_ACCOUNT_ID,
+                CHARGE_TOKEN_ID
+        );
+
+        given().port(app.getLocalPort())
+                .accept(JSON)
+                .contentType(JSON)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
+                .get("/v1/agreements/" + mandateId)
+                .then()
+                .statusCode(200)
+                .contentType(JSON)
+                .body("agreement_id", is(mandateId))
+                .body("agreement_type", is(AgreementType.ON_DEMAND.toString()))
+                .body("return_url", is("https://service-name.gov.uk/transactions/12345"))
+                .body("state", is(AgreementStatus.CREATED.toString()))
+                .body("_links.self.href", is(connectorDDMock.mandateLocation(GATEWAY_ACCOUNT_ID, "mandateId")))
+                .body("_links.self.method", is("GET"))
+                .body("_links.next_url.href", is(directDebitFrontendSecureUrl() + CHARGE_TOKEN_ID))
+                .body("_links.next_url.method", is("GET"))
+                .body("_links.next_url_post.href", is(directDebitFrontendSecureUrl()))
+                .body("_links.next_url_post.method", is("POST"))
+                .body("_links.next_url_post.type", is("application/x-www-form-urlencoded"))
+                .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
+                .extract().body().asString();
+    }
+    
     private static String agreementPayload(String returnUrl, AgreementType agreementType) {
         return new JsonStringBuilder()
                 .add("return_url", returnUrl)

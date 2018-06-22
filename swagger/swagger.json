@@ -126,6 +126,43 @@
         }
       }
     },
+    "/v1/agreements/{agreementId}" : {
+      "get" : {
+        "summary" : "Find agreement by ID",
+        "description" : "Return information about the payment The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "operationId" : "getPayment",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "agreementId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/PaymentWithAllLinks"
+            }
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "404" : {
+            "description" : "Not found",
+            "schema" : {
+              "$ref" : "#/definitions/AgreementError"
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "schema" : {
+              "$ref" : "#/definitions/AgreementError"
+            }
+          }
+        }
+      }
+    },
     "/v1/payments" : {
       "get" : {
         "summary" : "Search payments",
@@ -531,6 +568,24 @@
         }
       },
       "description" : "A structure representing the billing address of a card"
+    },
+    "AgreementError" : {
+      "type" : "object",
+      "properties" : {
+        "field" : {
+          "type" : "string",
+          "example" : "return_url"
+        },
+        "code" : {
+          "type" : "string",
+          "example" : "P0102"
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "Invalid attribute value: return_url. Must be a valid url."
+        }
+      },
+      "description" : "An Agreement Error response"
     },
     "AgreementLinks" : {
       "type" : "object",

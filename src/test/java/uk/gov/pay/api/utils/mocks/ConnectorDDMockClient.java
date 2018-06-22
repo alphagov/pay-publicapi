@@ -16,6 +16,7 @@ import static javax.ws.rs.HttpMethod.POST;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.HttpHeaders.LOCATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.HttpMethod.GET;
 import static org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
 import static org.eclipse.jetty.http.HttpStatus.CREATED_201;
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
@@ -72,7 +73,25 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                         ))
                 );
     }
-
+    public void respondOk_whenGetAgreementRequest(String mandateId, MandateType mandateType, String returnUrl, MandateState state, String gatewayAccountId, String chargeTokenId) {
+        whenGetAgreement(mandateId, gatewayAccountId)
+                .respond(response()
+                        .withStatusCode(200)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withBody(buildGetAgreementResponse(
+                                mandateId,
+                                mandateType,
+                                returnUrl,
+                                state,
+                                validGetLink(mandateLocation(gatewayAccountId, mandateId), "self"),
+                                validGetLink(nextUrl(chargeTokenId), "next_url"),
+                                validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",
+                                        new HashMap<String, String>() {{
+                                            put("chargeTokenId", chargeTokenId);
+                                        }})
+                        ))
+                );
+    }
     public void respondBadRequest_whenCreateAgreementRequest(MandateType mandateType,
                                                              String returnUrl,
                                                              String gatewayAccountId,
@@ -94,6 +113,18 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                 .build();
     }
 
+    private String buildGetAgreementResponse(String mandateId, MandateType mandateType,
+            String returnUrl,
+            MandateState state, ImmutableMap<?, ?>... links) {
+        return new JsonStringBuilder()
+                .add("mandate_id", mandateId)
+                .add("mandate_type", mandateType)
+                .add("return_url", returnUrl)
+                .add("state", state)
+                .add("links", asList(links))
+                .build();
+    }
+    
     private String buildPaymentRequestResponse(long amount, String chargeId, PaymentState state, String returnUrl, String description,
                                                String reference, String email, String paymentProvider,
                                                String createdDate, ImmutableMap<?, ?>... links) {
@@ -128,6 +159,14 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
         );
     }
 
+
+    private ForwardChainExpectation whenGetAgreement(String mandateId, String gatewayAccountId) {
+        return mockClient.when(request()
+                .withMethod(GET)
+                .withPath(format("/v1/api/accounts/%s/mandates/%s", gatewayAccountId, mandateId))
+        );
+    }
+    
     private String createAgreementPayload(String returnUrl, MandateType mandateType) {
         return new JsonStringBuilder()
                 .add("return_url", returnUrl)

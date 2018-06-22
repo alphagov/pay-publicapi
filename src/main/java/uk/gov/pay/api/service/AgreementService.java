@@ -54,7 +54,7 @@ public class AgreementService {
         if (isFound(connectorResponse)) {
             MandateConnectorResponse mandate = connectorResponse.readEntity(MandateConnectorResponse.class);
             GetAgreementResponse createAgreementResponse = GetAgreementResponse.from(mandate);
-            LOGGER.info("Agreement returned (created): [ {} ]", createAgreementResponse);
+            LOGGER.info("Agreement returned (get): [ {} ]", createAgreementResponse);
             return createAgreementResponse;
         }
         throw new GetAgreementException(connectorResponse);
