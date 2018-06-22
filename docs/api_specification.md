@@ -1106,3 +1106,66 @@ Content-Length: 44
 | `P0401`            | Request parameters have Validation errors        |
 | `P0402`            | Requested page not found                         |
 | `P0498`            | Connector response was unrecognised to PublicAPI |
+
+## POST /v1/agreements
+
+This endpoint creates a new agreement.
+
+### Request example
+
+```
+POST /v1/agreements
+Authorization: Bearer BEARER_TOKEN
+Content-Type: application/json
+
+{
+    "return_url": "https://example.service.gov.uk/some-reference-to-this-agreement",
+    "agreement_type": "ON_DEMAND",
+    "reference" : "some-reference-to-this-agreement"
+}
+```
+
+#### Request description
+
+BEARER_TOKEN: A valid bearer token for the account to associate the agreement with.
+
+| Field                    | required | Description                               |
+| ------------------------ |:--------:| ----------------------------------------- |
+| `return_url`             | Yes      | The URL where the user should be redirected to when the agreement workflow is finished (**must be HTTPS only**). |
+| `agreement_type`         | Yes      | The type of agreement, eg ON_DEMAND, ONE_OFF |
+| `reference`              | No       | An optional reference that will be created by the service for easier identification of the future payments in their system. If not specified will be null |
+
+### Agreement created response
+
+```
+HTTP/1.1 201 Created
+Location: http://publicapi.co.uk/v1/agreements/ab2341da231434
+Content-Type: application/json
+
+{
+    "_links": {
+        "self" :{
+            "href": "http://publicapi.co.uk/v1/agreements/ab2341da231434",
+            "method": "GET" 
+        },
+        "next_url" : {
+            "href": "http://frontend.co.uk/secure/?chargeTokenId=82347",
+            "method": "GET" 
+        },
+        "next_url_post" : {
+            "params" : {
+                "chargeTokenId" : "82347"
+            },
+            "type" : "application/x-www-form-urlencoded",
+            "href": "http://frontend.co.uk/secure/?chargeTokenId=82347",
+            "method": "POST" 
+        }
+    },
+    "agreement_id": "ab2341da231434",
+    "agreement_type": "ON_DEMAND",
+    "reference": "some-reference-to-this-agreement",
+    "return_url": "https://example.service.gov.uk/some-reference-to-this-agreement",
+    "created_date": "2018-01-15T16:30:56Z"
+    "state": "CREATED"
+}
+```
