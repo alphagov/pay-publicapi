@@ -311,7 +311,7 @@
           "200" : {
             "description" : "OK",
             "schema" : {
-              "$ref" : "#/definitions/PaymentWithAllLinks"
+              "$ref" : "#/definitions/CreateAgreementResponse"
             }
           },
           "401" : {
