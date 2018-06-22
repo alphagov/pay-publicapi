@@ -16,6 +16,7 @@ import uk.gov.pay.api.exception.GetAgreementException;
 import uk.gov.pay.api.model.directdebit.agreement.CreateAgreementRequest;
 import uk.gov.pay.api.model.directdebit.agreement.CreateAgreementResponse;
 import uk.gov.pay.api.model.directdebit.agreement.GetAgreementResponse;
+import uk.gov.pay.api.model.directdebit.agreement.MandateConnectorRequest;
 import uk.gov.pay.api.model.directdebit.agreement.MandateConnectorResponse;
 import uk.gov.pay.api.model.links.directdebit.AgreementLinks;
 import uk.gov.pay.api.utils.JsonStringBuilder;
@@ -40,7 +41,7 @@ public class AgreementService {
     }
 
     public CreateAgreementResponse create(Account account, CreateAgreementRequest createAgreementRequest) {
-        Response connectorResponse = createAgreement(account, createAgreementRequest);
+        Response connectorResponse = createAgreement(account, MandateConnectorRequest.from(createAgreementRequest));
         if (isCreated(connectorResponse)) {
             MandateConnectorResponse mandate = connectorResponse.readEntity(MandateConnectorResponse.class);
             AgreementLinks agreementLinks = createLinksFromMandateResponse(mandate);
@@ -70,21 +71,13 @@ public class AgreementService {
         agreementLinks.addKnownLinksValueOf(mandate.getLinks());
         return agreementLinks;
     }
-    
-    private boolean isFound(Response connectorResponse) {
-        return connectorResponse.getStatus() == HttpStatus.SC_OK;
-    }
 
-    private boolean isCreated(Response connectorResponse) {
-        return connectorResponse.getStatus() == HttpStatus.SC_CREATED;
-    }
-
-    private Response createAgreement(Account account, CreateAgreementRequest createAgreementRequest) {
+    Response createAgreement(Account account, MandateConnectorRequest mandateConnectorRequest) {
         return client
                 .target(getDDConnectorUrl(format("/v1/api/accounts/%s/mandates", account.getName())))
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
-                .post(buildAgreementRequestPayload(createAgreementRequest));
+                .post(buildMandateConnectorRequestPayload(mandateConnectorRequest));
     }
 
     private Response getAgreement(Account account, String agreementId) {
@@ -97,24 +90,32 @@ public class AgreementService {
                 .get();
     }
 
+    private Entity buildMandateConnectorRequestPayload(MandateConnectorRequest requestPayload) {
+        JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
+                .add(MandateConnectorRequest.RETURN_URL_FIELD_NAME, requestPayload.getReturnUrl())
+                .add(MandateConnectorRequest.AGREEMENT_TYPE_FIELD_NAME, requestPayload.getAgreementType().toString());
+
+        if (isNotBlank(requestPayload.getServiceReference())) {
+            jsonStringBuilder.add(MandateConnectorRequest.SERVICE_REFERENCE_FIELD_NAME, requestPayload.getServiceReference());
+        }
+
+        return json(jsonStringBuilder.build());
+    }
+
+    private boolean isFound(Response connectorResponse) {
+        return connectorResponse.getStatus() == HttpStatus.SC_OK;
+    }
+
+    private boolean isCreated(Response connectorResponse) {
+        return connectorResponse.getStatus() == HttpStatus.SC_CREATED;
+    }
+
     private String getDDConnectorUrl(String urlPath) {
         UriBuilder builder = UriBuilder
                 .fromPath(connectorDDUrl)
                 .path(urlPath);
 
         return builder.toString();
-    }
-
-    private Entity buildAgreementRequestPayload(CreateAgreementRequest requestPayload) {
-        JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
-                .add(CreateAgreementRequest.RETURN_URL_FIELD_NAME, requestPayload.getReturnUrl())
-                .add(CreateAgreementRequest.AGREEMENT_TYPE_FIELD_NAME, requestPayload.getAgreementType().toString());
-        
-        if (isNotBlank(requestPayload.getReference())) {
-            jsonStringBuilder.add(CreateAgreementRequest.REFERENCE_FIELD_NAME, requestPayload.getReference());
-        }
-
-        return json(jsonStringBuilder.build());
     }
 
 }

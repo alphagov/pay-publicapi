@@ -22,7 +22,7 @@
         "body": {
           "return_url": "https://example.com/return",
           "agreement_type": "ON_DEMAND",
-          "reference": "serviceref123"
+          "service_reference": "serviceref123"
         }
       },
       "response": {
@@ -34,7 +34,7 @@
         "body": {
           "mandate_id": "test_mandate_id_xyz",
           "mandate_type": "ON_DEMAND",
-          "reference": "serviceref123",
+          "service_reference": "serviceref123",
           "return_url": "https://example.com/return",
           "created_date": "2016-01-01T12:00:00.000Z",
           "state": {
@@ -88,7 +88,7 @@
                 }
               ]
             },
-            "$.reference": {
+            "$.service_reference": {
               "matchers": [
                 {
                   "match": "type"

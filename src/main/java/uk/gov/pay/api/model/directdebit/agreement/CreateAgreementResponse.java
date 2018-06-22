@@ -43,8 +43,8 @@ public class CreateAgreementResponse {
     public static CreateAgreementResponse from(MandateConnectorResponse mandate, AgreementLinks links) {
         return new CreateAgreementResponse(
                 mandate.getMandateId(),
-                AgreementType.valueOf(mandate.getMandateType()),
-                mandate.getReference(),
+                AgreementType.valueOf(mandate.getMandateType().toString()),
+                mandate.getServiceReference(),
                 mandate.getReturnUrl(),
                 mandate.getCreatedDate(),
                 AgreementStatus.valueOf(mandate.getState().getStatus().toUpperCase()),
