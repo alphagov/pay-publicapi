@@ -58,7 +58,7 @@ public class CreatePaymentServiceTest {
 
     @Test
     @PactVerification({"connector"})
-    @Pacts(pacts = {"publicapi-connector"})
+    @Pacts(pacts = {"publicapi-connector"}, publish = false)
     public void testCreatePayment() {
         Account account = new Account("GATEWAY_ACCOUNT_ID", TokenPaymentType.CARD);
         CreatePaymentRequest requestPayload = new CreatePaymentRequest(100, "https://somewhere.gov.uk/rainbow/1", "a reference", "a description");
