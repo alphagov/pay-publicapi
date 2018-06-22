@@ -10,21 +10,16 @@
       "description": "Get a mandate",
       "providerStates": [
         {
-          "name": "a gateway account with external id exists",
+          "name": "a gateway account with external id and a mandate with external id exist",
           "params": {
-            "gateway_account_id": "9ddfcc27-acf5-43f9-92d5-52247540714b"
-          }
-        },
-        {
-          "name": "a mandate with external id exists",
-          "params": {
+            "gateway_account_id": "9ddfcc27-acf5-43f9-92d5-52247540714c",
             "mandate_id": "test_mandate_id_xyz"
           }
         }
       ],
       "request": {
         "method": "GET",
-        "path": "/v1/api/accounts/9ddfcc27-acf5-43f9-92d5-52247540714b/mandates/test_mandate_id_xyz"
+        "path": "/v1/api/accounts/9ddfcc27-acf5-43f9-92d5-52247540714c/mandates/test_mandate_id_xyz"
       },
       "response": {
         "status": 200,
@@ -35,14 +30,13 @@
           "mandate_id": "test_mandate_id_xyz",
           "mandate_type": "ON_DEMAND",
           "return_url": "https://example.com/return",
-          "created_date": "2016-01-01T12:00:00.000Z",
           "state": {
             "status": "created",
             "finished": false
           },
           "links": [
             {
-              "href": "http://localhost:1234/v1/api/accounts/9ddfcc27-acf5-43f9-92d5-52247540714b/mandates/test_mandate_id_xyz",
+              "href": "http://localhost:1234/v1/api/accounts/9ddfcc27-acf5-43f9-92d5-52247540714c/mandates/test_mandate_id_xyz",
               "rel": "self",
               "method": "GET"
             },
@@ -110,7 +104,7 @@
             "$.links[0].href": {
               "matchers": [
                 {
-                  "regex": "http:\/\/.*\/v1\/api\/accounts\/9ddfcc27-acf5-43f9-92d5-52247540714b\/mandates\/[a-z0-9]*"
+                  "regex": "http:\/\/.*\/v1\/api\/accounts\/9ddfcc27-acf5-43f9-92d5-52247540714c\/mandates\/test_mandate_id_xyz"
                 }
               ]
             },
