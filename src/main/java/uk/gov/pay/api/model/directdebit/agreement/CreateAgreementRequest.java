@@ -45,7 +45,7 @@ public class CreateAgreementRequest {
         return agreementType;
     }
 
-    @ApiModelProperty(value = "agreement reference", required = true, example = "serviceref123")
+    @ApiModelProperty(value = "agreement reference", example = "serviceref123")
     @JsonProperty(value = REFERENCE_FIELD_NAME)
     public String getReference() {
         return reference;
