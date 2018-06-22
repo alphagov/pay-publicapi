@@ -39,7 +39,7 @@ public class AgreementsResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(AgreementsResource.class);
 
     private final String baseUrl;
-    private AgreementService agreementService;
+    private final AgreementService agreementService;
 
 
     @Inject

@@ -1,6 +1,8 @@
 package uk.gov.pay.api.service;
 
 import au.com.dius.pact.consumer.PactVerification;
+import java.net.URI;
+import java.net.URISyntaxException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,33 +39,34 @@ public class AgreementServiceTest {
     public PactProviderRule ddConnectorRule = new PactProviderRule("direct-debit-connector", this);
 
     @Mock
-    private PublicApiConfig configuration;
-
+    private PublicApiConfig mockConfiguration;
+    @Mock
+    private PublicApiUriGenerator mockPublicApiUriGenerator;
+    
     @Before
     public void setup() {
         // We will actually send real requests here, which will be intercepted by pact
-        when(configuration.getConnectorDDUrl()).thenReturn(ddConnectorRule.getUrl());
-
+        when(mockConfiguration.getConnectorDDUrl()).thenReturn(ddConnectorRule.getUrl());
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
-
-        agreementService = new AgreementService(client, configuration);
+        agreementService = new AgreementService(client, mockConfiguration, mockPublicApiUriGenerator);
     }
 
     @Test
     @PactVerification({"direct-debit-connector"})
     @Pacts(pacts = {"publicapi-direct-debit-connector-create-agreement"})
-    public void shouldCreateAMandateSuccessfully() {
+    public void shouldCreateAMandateSuccessfully() throws URISyntaxException {
         Account account = new Account("9ddfcc27-acf5-43f9-92d5-52247540714b", TokenPaymentType.DIRECT_DEBIT);
         CreateAgreementRequest requestPayload = new CreateAgreementRequest(
                 "https://example.com/return", AgreementType.ON_DEMAND);
+        String agreementId = "test_mandate_id_xyz";
+        when(mockPublicApiUriGenerator.getAgreementURI(agreementId)).thenReturn(new URI("https://publicapi.test/v1/agreements/agreementid"));
         CreateAgreementResponse agreementResponse = agreementService.create(account, requestPayload);
-
-        assertThat(agreementResponse.getAgreementId(), is("test_mandate_id_xyz"));
+        assertThat(agreementResponse.getAgreementId(), is(agreementId));
         assertThat(agreementResponse.getAgreementType(), is(AgreementType.ON_DEMAND));
         assertThat(agreementResponse.getCreatedDate(), is("2016-01-01T12:00:00.000Z"));
         assertThat(agreementResponse.getReturnUrl(), is("https://example.com/return"));
         assertThat(agreementResponse.getState(), is(AgreementStatus.CREATED));
-        assertThat(agreementResponse.getLinks().getSelf(), is(new Link("http://localhost:1234/v1/api/accounts/9ddfcc27-acf5-43f9-92d5-52247540714b/mandates/mandateId", "GET")));
+        assertThat(agreementResponse.getLinks().getSelf(), is(new Link("https://publicapi.test/v1/agreements/agreementid", "GET")));
         assertThat(agreementResponse.getLinks().getNextUrl(), is(new Link("http://frontend_direct_debit/secure/token_1234567asdf", "GET")));
         PostLink expectedLink = new PostLink("http://frontend_direct_debit/secure/", "POST", "application/x-www-form-urlencoded", Collections.singletonMap("chargeTokenId", "token_1234567asdf"));
         assertThat(agreementResponse.getLinks().getNextUrlPost(), is(expectedLink));
@@ -72,16 +75,16 @@ public class AgreementServiceTest {
     @Test
     @PactVerification({"direct-debit-connector"})
     @Pacts(pacts = {"publicapi-direct-debit-connector-get-agreement"})
-    public void shouldGetAMandateSuccessfully() {
+    public void shouldGetAMandateSuccessfully() throws URISyntaxException {
         Account account = new Account("9ddfcc27-acf5-43f9-92d5-52247540714c", TokenPaymentType.DIRECT_DEBIT);
         String agreementId = "test_mandate_id_xyz";
+        when(mockPublicApiUriGenerator.getAgreementURI(agreementId)).thenReturn(new URI("https://publicapi.test/v1/agreements/agreementid"));
         GetAgreementResponse getAgreementResponse = agreementService.get(account, agreementId);
-
-        assertThat(getAgreementResponse.getAgreementId(), is("test_mandate_id_xyz"));
+        assertThat(getAgreementResponse.getAgreementId(), is(agreementId));
         assertThat(getAgreementResponse.getAgreementType(), is(AgreementType.ON_DEMAND));
         assertThat(getAgreementResponse.getReturnUrl(), is("https://example.com/return"));
         assertThat(getAgreementResponse.getState(), is(AgreementStatus.CREATED));
-        assertThat(getAgreementResponse.getLinks().getSelf(), is(new Link("http://localhost:1234/v1/api/accounts/9ddfcc27-acf5-43f9-92d5-52247540714c/mandates/test_mandate_id_xyz", "GET")));
+        assertThat(getAgreementResponse.getLinks().getSelf(), is(new Link("https://publicapi.test/v1/agreements/agreementid", "GET")));
         assertThat(getAgreementResponse.getLinks().getNextUrl(), is(new Link("http://frontend_direct_debit/secure/token_1234567asdf", "GET")));
         PostLink expectedLink = new PostLink("http://frontend_direct_debit/secure/", "POST", "application/x-www-form-urlencoded", Collections.singletonMap("chargeTokenId", "token_1234567asdf"));
         assertThat(getAgreementResponse.getLinks().getNextUrlPost(), is(expectedLink));

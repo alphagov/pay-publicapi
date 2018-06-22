@@ -9,6 +9,8 @@ import uk.gov.pay.api.model.links.PostLink;
 
 import java.util.List;
 
+import static javax.ws.rs.HttpMethod.GET;
+
 @ApiModel(value = "AgreementLinks", description = "self and next links of an Agreement")
 public class AgreementLinks {
 
@@ -41,16 +43,8 @@ public class AgreementLinks {
     }
 
     public void addKnownLinksValueOf(List<PaymentConnectorResponseLink> chargeLinks) {
-        addSelfIfPresent(chargeLinks);
         addNextUrlIfPresent(chargeLinks);
         addNextUrlPostIfPresent(chargeLinks);
-    }
-
-    private void addSelfIfPresent(List<PaymentConnectorResponseLink> chargeLinks) {
-        chargeLinks.stream()
-                .filter(link -> SELF.equals(link.getRel()))
-                .findFirst()
-                .ifPresent(chargeLink -> this.self = new Link(chargeLink.getHref(), chargeLink.getMethod()));
     }
 
     private void addNextUrlPostIfPresent(List<PaymentConnectorResponseLink> chargeLinks) {
@@ -65,5 +59,9 @@ public class AgreementLinks {
                 .filter(link -> NEXT_URL.equals(link.getRel()))
                 .findFirst()
                 .ifPresent(chargeLink -> this.nextUrl = new Link(chargeLink.getHref(), chargeLink.getMethod()));
+    }
+
+    public void addSelf(String href) {
+        this.self = new Link(href, GET);
     }
 }

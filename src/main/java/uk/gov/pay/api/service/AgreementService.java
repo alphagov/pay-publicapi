@@ -1,5 +1,11 @@
 package uk.gov.pay.api.service;
 
+import javax.inject.Inject;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,14 +17,8 @@ import uk.gov.pay.api.model.directdebit.agreement.CreateAgreementRequest;
 import uk.gov.pay.api.model.directdebit.agreement.CreateAgreementResponse;
 import uk.gov.pay.api.model.directdebit.agreement.GetAgreementResponse;
 import uk.gov.pay.api.model.directdebit.agreement.MandateConnectorResponse;
+import uk.gov.pay.api.model.links.directdebit.AgreementLinks;
 import uk.gov.pay.api.utils.JsonStringBuilder;
-
-import javax.inject.Inject;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 
 import static java.lang.String.format;
 import static javax.ws.rs.client.Entity.json;
@@ -28,21 +28,23 @@ public class AgreementService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AgreementService.class);
 
     private final String connectorDDUrl;
-    private Client client;
-
+    private final Client client;
+    private final PublicApiUriGenerator publicApiUriGenerator;
     @Inject
-    public AgreementService(Client client, PublicApiConfig configuration) {
+    public AgreementService(Client client, PublicApiConfig configuration,
+            PublicApiUriGenerator publicApiUriGenerator) {
         this.connectorDDUrl = configuration.getConnectorDDUrl();
         this.client = client;
+        this.publicApiUriGenerator = publicApiUriGenerator;
     }
 
     public CreateAgreementResponse create(Account account, CreateAgreementRequest createAgreementRequest) {
         Response connectorResponse = createAgreement(account, createAgreementRequest);
         if (isCreated(connectorResponse)) {
             MandateConnectorResponse mandate = connectorResponse.readEntity(MandateConnectorResponse.class);
-            CreateAgreementResponse createAgreementResponse = CreateAgreementResponse.from(mandate);
+            AgreementLinks agreementLinks = createLinksFromMandateResponse(mandate);
+            CreateAgreementResponse createAgreementResponse = CreateAgreementResponse.from(mandate, agreementLinks);
             LOGGER.info("Agreement returned (created): [ {} ]", createAgreementResponse);
-
             return createAgreementResponse;
         }
 
@@ -53,17 +55,24 @@ public class AgreementService {
         Response connectorResponse = getAgreement(account, agreementId);
         if (isFound(connectorResponse)) {
             MandateConnectorResponse mandate = connectorResponse.readEntity(MandateConnectorResponse.class);
-            GetAgreementResponse createAgreementResponse = GetAgreementResponse.from(mandate);
+            AgreementLinks agreementLinks = createLinksFromMandateResponse(mandate);
+            GetAgreementResponse createAgreementResponse = GetAgreementResponse.from(mandate, agreementLinks);
             LOGGER.info("Agreement returned (get): [ {} ]", createAgreementResponse);
             return createAgreementResponse;
         }
         throw new GetAgreementException(connectorResponse);
     }
 
+    private AgreementLinks createLinksFromMandateResponse(MandateConnectorResponse mandate) {
+        AgreementLinks agreementLinks = new AgreementLinks();
+        agreementLinks.addSelf(publicApiUriGenerator.getAgreementURI(mandate.getMandateId()).toString());
+        agreementLinks.addKnownLinksValueOf(mandate.getLinks());
+        return agreementLinks;
+    }
     private boolean isFound(Response connectorResponse) {
         return connectorResponse.getStatus() == HttpStatus.SC_OK;
     }
-    
+
     private boolean isCreated(Response connectorResponse) {
         return connectorResponse.getStatus() == HttpStatus.SC_CREATED;
     }
@@ -85,7 +94,7 @@ public class AgreementService {
                 .accept(MediaType.APPLICATION_JSON)
                 .get();
     }
-    
+
     private String getDDConnectorUrl(String urlPath) {
         UriBuilder builder = UriBuilder
                 .fromPath(connectorDDUrl)

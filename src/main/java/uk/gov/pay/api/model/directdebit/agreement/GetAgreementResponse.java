@@ -32,10 +32,7 @@ public class GetAgreementResponse {
         this.links = links;
     }
 
-    public static GetAgreementResponse from(MandateConnectorResponse mandate) {
-        AgreementLinks links = new AgreementLinks();
-        links.addKnownLinksValueOf(mandate.getLinks());
-
+    public static GetAgreementResponse from(MandateConnectorResponse mandate, AgreementLinks links) {
         return new GetAgreementResponse(
                 mandate.getMandateId(),
                 AgreementType.valueOf(mandate.getMandateType()),

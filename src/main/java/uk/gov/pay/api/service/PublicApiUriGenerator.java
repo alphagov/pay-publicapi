@@ -38,5 +38,11 @@ public class PublicApiUriGenerator {
                 .path("/v1/payments/{paymentId}/refunds")
                 .build(chargeId);
     }
+    
+    public URI getAgreementURI(String agreementId) {
+        return UriBuilder.fromUri(baseUrl)
+                .path("/v1/agreements/{agreementId}")
+                .build(agreementId);
+    }
 
 }
