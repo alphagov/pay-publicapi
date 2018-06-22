@@ -16,6 +16,7 @@ import uk.gov.pay.api.model.directdebit.agreement.AgreementStatus;
 import uk.gov.pay.api.model.directdebit.agreement.AgreementType;
 import uk.gov.pay.api.model.directdebit.agreement.CreateAgreementRequest;
 import uk.gov.pay.api.model.directdebit.agreement.CreateAgreementResponse;
+import uk.gov.pay.api.model.directdebit.agreement.GetAgreementResponse;
 import uk.gov.pay.api.model.links.Link;
 import uk.gov.pay.api.model.links.PostLink;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
@@ -29,8 +30,8 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CreateAgreementServiceTest {
-    private CreateAgreementService createAgreementService;
+public class AgreementServiceTest {
+    private AgreementService agreementService;
 
     @Rule
     public PactProviderRule ddConnectorRule = new PactProviderRule("direct-debit-connector", this);
@@ -45,7 +46,7 @@ public class CreateAgreementServiceTest {
 
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
 
-        createAgreementService = new CreateAgreementService(client, configuration);
+        agreementService = new AgreementService(client, configuration);
     }
 
     @Test
@@ -55,7 +56,7 @@ public class CreateAgreementServiceTest {
         Account account = new Account("9ddfcc27-acf5-43f9-92d5-52247540714b", TokenPaymentType.DIRECT_DEBIT);
         CreateAgreementRequest requestPayload = new CreateAgreementRequest(
                 "https://example.com/return", AgreementType.ON_DEMAND);
-        CreateAgreementResponse agreementResponse = createAgreementService.create(account, requestPayload);
+        CreateAgreementResponse agreementResponse = agreementService.create(account, requestPayload);
 
         assertThat(agreementResponse.getAgreementId(), is("test_mandate_id_xyz"));
         assertThat(agreementResponse.getAgreementType(), is(AgreementType.ON_DEMAND));
@@ -66,5 +67,23 @@ public class CreateAgreementServiceTest {
         assertThat(agreementResponse.getLinks().getNextUrl(), is(new Link("http://frontend_direct_debit/secure/token_1234567asdf", "GET")));
         PostLink expectedLink = new PostLink("http://frontend_direct_debit/secure/", "POST", "application/x-www-form-urlencoded", Collections.singletonMap("chargeTokenId", "token_1234567asdf"));
         assertThat(agreementResponse.getLinks().getNextUrlPost(), is(expectedLink));
+    }
+
+    @Test
+    @PactVerification({"direct-debit-connector"})
+    @Pacts(pacts = {"publicapi-direct-debit-connector-get-agreement"})
+    public void shouldGetAMandateSuccessfully() {
+        Account account = new Account("9ddfcc27-acf5-43f9-92d5-52247540714c", TokenPaymentType.DIRECT_DEBIT);
+        String agreementId = "test_mandate_id_xyz";
+        GetAgreementResponse getAgreementResponse = agreementService.get(account, agreementId);
+
+        assertThat(getAgreementResponse.getAgreementId(), is("test_mandate_id_xyz"));
+        assertThat(getAgreementResponse.getAgreementType(), is(AgreementType.ON_DEMAND));
+        assertThat(getAgreementResponse.getReturnUrl(), is("https://example.com/return"));
+        assertThat(getAgreementResponse.getState(), is(AgreementStatus.CREATED));
+        assertThat(getAgreementResponse.getLinks().getSelf(), is(new Link("http://localhost:1234/v1/api/accounts/9ddfcc27-acf5-43f9-92d5-52247540714c/mandates/test_mandate_id_xyz", "GET")));
+        assertThat(getAgreementResponse.getLinks().getNextUrl(), is(new Link("http://frontend_direct_debit/secure/token_1234567asdf", "GET")));
+        PostLink expectedLink = new PostLink("http://frontend_direct_debit/secure/", "POST", "application/x-www-form-urlencoded", Collections.singletonMap("chargeTokenId", "token_1234567asdf"));
+        assertThat(getAgreementResponse.getLinks().getNextUrlPost(), is(expectedLink));
     }
 }
