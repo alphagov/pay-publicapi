@@ -43,7 +43,7 @@
           },
           "links": [
             {
-              "href": "http://localhost:1234/v1/api/accounts/7959d395-e720-4081-9e8a-a534cf76460a/mandates/mandateId",
+              "href": "http://localhost:1234/v1/api/accounts/7959d395-e720-4081-9e8a-a534cf76460a/mandates/test_mandate_id_xyz",
               "rel": "self",
               "method": "GET"
             },

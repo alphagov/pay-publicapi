@@ -33,15 +33,16 @@ public class AgreementService {
     private final Client client;
     private final PublicApiUriGenerator publicApiUriGenerator;
     @Inject
-    public AgreementService(Client client, PublicApiConfig configuration,
-            PublicApiUriGenerator publicApiUriGenerator) {
+    public AgreementService(Client client,
+                            PublicApiConfig configuration,
+                            PublicApiUriGenerator publicApiUriGenerator) {
         this.connectorDDUrl = configuration.getConnectorDDUrl();
         this.client = client;
         this.publicApiUriGenerator = publicApiUriGenerator;
     }
 
     public CreateAgreementResponse create(Account account, CreateAgreementRequest createAgreementRequest) {
-        Response connectorResponse = createAgreement(account, MandateConnectorRequest.from(createAgreementRequest));
+        Response connectorResponse = createMandate(account, MandateConnectorRequest.from(createAgreementRequest));
         if (isCreated(connectorResponse)) {
             MandateConnectorResponse mandate = connectorResponse.readEntity(MandateConnectorResponse.class);
             AgreementLinks agreementLinks = createLinksFromMandateResponse(mandate);
@@ -54,7 +55,7 @@ public class AgreementService {
     }
 
     public GetAgreementResponse get(Account account, String agreementId) {
-        Response connectorResponse = getAgreement(account, agreementId);
+        Response connectorResponse = getMandate(account, agreementId);
         if (isFound(connectorResponse)) {
             MandateConnectorResponse mandate = connectorResponse.readEntity(MandateConnectorResponse.class);
             AgreementLinks agreementLinks = createLinksFromMandateResponse(mandate);
@@ -72,7 +73,7 @@ public class AgreementService {
         return agreementLinks;
     }
 
-    Response createAgreement(Account account, MandateConnectorRequest mandateConnectorRequest) {
+    Response createMandate(Account account, MandateConnectorRequest mandateConnectorRequest) {
         return client
                 .target(getDDConnectorUrl(format("/v1/api/accounts/%s/mandates", account.getName())))
                 .request()
@@ -80,11 +81,11 @@ public class AgreementService {
                 .post(buildMandateConnectorRequestPayload(mandateConnectorRequest));
     }
 
-    private Response getAgreement(Account account, String agreementId) {
+    Response getMandate(Account account, String mandateExternalId) {
         return client
                 .target(getDDConnectorUrl(format("/v1/api/accounts/%s/mandates/%s",
                         account.getName(),
-                        agreementId)))
+                        mandateExternalId)))
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get();
