@@ -26,7 +26,6 @@ import uk.gov.pay.api.model.directdebit.agreement.AgreementError;
 import uk.gov.pay.api.model.directdebit.agreement.CreateAgreementRequest;
 import uk.gov.pay.api.model.directdebit.agreement.CreateAgreementResponse;
 import uk.gov.pay.api.model.directdebit.agreement.GetAgreementResponse;
-import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.service.AgreementService;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -39,7 +38,7 @@ public class AgreementsResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(AgreementsResource.class);
 
     private final String baseUrl;
-    private AgreementService agreementService;
+    private final AgreementService agreementService;
 
 
     @Inject
