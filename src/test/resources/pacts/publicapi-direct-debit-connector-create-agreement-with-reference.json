@@ -34,7 +34,6 @@
         "body": {
           "mandate_id": "test_mandate_id_xyz",
           "mandate_type": "ON_DEMAND",
-          "service_reference": "serviceref123",
           "return_url": "https://example.com/return",
           "created_date": "2016-01-01T12:00:00.000Z",
           "state": {
@@ -44,8 +43,8 @@
           "links": [
             {
               "href": "http://localhost:1234/v1/api/accounts/7959d395-e720-4081-9e8a-a534cf76460a/mandates/mandateId",
-              "rel": "self",
-              "method": "GET"
+              "method": "GET",
+              "rel": "self"
             },
             {
               "href": "http://frontend_direct_debit/secure/token_1234567asdf",
@@ -64,93 +63,102 @@
           ]
         },
         "matchingRules": {
-          "header": {
-            "Location": {
-              "matchers": [
-                {
-                  "regex": "http:\/\/.*\/v1\/api\/accounts\/7959d395-e720-4081-9e8a-a534cf76460a\/mandates\/[a-z0-9]*"
-                }
-              ]
-            }
-          },
           "body": {
-            "$.mandate_id": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ]
-            },
-            "$.mandate_type": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ]
-            },
-            "$.service_reference": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ]
-            },
-            "$.return_url": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ]
-            },
             "$.created_date": {
               "matchers": [
                 {
                   "match": "date",
                   "date": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
                 }
-              ]
+              ],
+              "combine": "AND"
             },
-            "$.state.status": {
+            "$.links[0].href": {
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "http://.*/v1/api/accounts/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/mandates/[a-z0-9]*"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.links[1].href": {
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "http://.*/secure/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.links[2].href": {
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "http://.*/secure"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.links[2].params.chargeTokenId": {
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.mandate_id": {
               "matchers": [
                 {
                   "match": "type"
                 }
-              ]
+              ],
+              "combine": "AND"
+            },
+            "$.mandate_type": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.return_url": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
             },
             "$.state.finished": {
               "matchers": [
                 {
                   "match": "type"
                 }
-              ]
+              ],
+              "combine": "AND"
             },
-            "$.links[0].href": {
+            "$.state.status": {
               "matchers": [
                 {
-                  "regex": "http:\/\/.*\/v1\/api\/accounts\/7959d395-e720-4081-9e8a-a534cf76460a\/mandates\/[a-z0-9]*"
+                  "match": "type"
                 }
-              ]
-            },
-            "$.links[1].href": {
+              ],
+              "combine": "AND"
+            }
+          },
+          "header": {
+            "Location": {
               "matchers": [
                 {
-                  "regex": "http:\/\/.*\/secure\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                  "match": "regex",
+                  "regex": "http://.*/v1/api/accounts/7959d395-e720-4081-9e8a-a534cf76460a/mandates/[a-z0-9]*"
                 }
-              ]
-            },
-            "$.links[2].href": {
-              "matchers": [
-                {
-                  "regex": "http:\/\/.*\/secure"
-                }
-              ]
-            },
-            "$.links[2].params.chargeTokenId": {
-              "matchers": [
-                {
-                  "regex": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
-                }
-              ]
+              ],
+              "combine": "AND"
             }
           }
         }
