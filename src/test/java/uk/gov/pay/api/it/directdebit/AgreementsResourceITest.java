@@ -55,7 +55,7 @@ public class AgreementsResourceITest extends PaymentResourceITestBase {
                 .body("return_url", is("https://service-name.gov.uk/transactions/12345"))
                 .body("created_date", is(CREATED_DATE))
                 .body("state", is(AgreementStatus.CREATED.toString()))
-                .body("_links.self.href", is(connectorDDMock.mandateLocation(GATEWAY_ACCOUNT_ID, "mandateId")))
+                .body("_links.self.href", is(mandateLocationFor("mandateId")))
                 .body("_links.self.method", is("GET"))
                 .body("_links.next_url.href", is(directDebitFrontendSecureUrl() + CHARGE_TOKEN_ID))
                 .body("_links.next_url.method", is("GET"))
@@ -122,7 +122,7 @@ public class AgreementsResourceITest extends PaymentResourceITestBase {
                 .body("agreement_type", is(AgreementType.ON_DEMAND.toString()))
                 .body("return_url", is("https://service-name.gov.uk/transactions/12345"))
                 .body("state", is(AgreementStatus.CREATED.toString()))
-                .body("_links.self.href", is(connectorDDMock.mandateLocation(GATEWAY_ACCOUNT_ID, "mandateId")))
+                .body("_links.self.href", is(mandateLocationFor(mandateId)))
                 .body("_links.self.method", is("GET"))
                 .body("_links.next_url.href", is(directDebitFrontendSecureUrl() + CHARGE_TOKEN_ID))
                 .body("_links.next_url.method", is("GET"))
@@ -132,7 +132,10 @@ public class AgreementsResourceITest extends PaymentResourceITestBase {
                 .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
                 .extract().body().asString();
     }
-    
+
+    protected String mandateLocationFor(String mandateId) {
+        return "http://publicapi.url/v1/agreements/" + mandateId;
+    }
     private static String agreementPayload(String returnUrl, AgreementType agreementType) {
         return new JsonStringBuilder()
                 .add("return_url", returnUrl)
