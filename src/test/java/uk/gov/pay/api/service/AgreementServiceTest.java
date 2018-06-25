@@ -25,6 +25,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
 import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
@@ -67,6 +68,7 @@ public class AgreementServiceTest {
 
         assertThat(mandateConnectorResponse.getMandateId(), is(MANDATE_ID));
         assertThat(mandateConnectorResponse.getMandateType(), is(MandateType.ON_DEMAND));
+        assertThat(mandateConnectorResponse.getServiceReference(), is(nullValue()));
         assertThat(mandateConnectorResponse.getCreatedDate(), is("2016-01-01T12:00:00.000Z"));
         assertThat(mandateConnectorResponse.getReturnUrl(), is("https://example.com/return"));
         assertThat(mandateConnectorResponse.getState(), is(new MandateState("created", false)));

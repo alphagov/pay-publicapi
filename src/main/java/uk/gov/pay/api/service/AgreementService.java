@@ -1,11 +1,5 @@
 package uk.gov.pay.api.service;
 
-import javax.inject.Inject;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +15,13 @@ import uk.gov.pay.api.model.directdebit.agreement.MandateConnectorResponse;
 import uk.gov.pay.api.model.links.directdebit.AgreementLinks;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
+import javax.inject.Inject;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+
 import static java.lang.String.format;
 import static javax.ws.rs.client.Entity.json;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -32,6 +33,7 @@ public class AgreementService {
     private final String connectorDDUrl;
     private final Client client;
     private final PublicApiUriGenerator publicApiUriGenerator;
+
     @Inject
     public AgreementService(Client client,
                             PublicApiConfig configuration,
@@ -94,7 +96,7 @@ public class AgreementService {
     private Entity buildMandateConnectorRequestPayload(MandateConnectorRequest requestPayload) {
         JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
                 .add(MandateConnectorRequest.RETURN_URL_FIELD_NAME, requestPayload.getReturnUrl())
-                .add(MandateConnectorRequest.AGREEMENT_TYPE_FIELD_NAME, requestPayload.getAgreementType().toString());
+                .add(MandateConnectorRequest.AGREEMENT_TYPE_FIELD_NAME, requestPayload.getAgreementType());
 
         if (isNotBlank(requestPayload.getServiceReference())) {
             jsonStringBuilder.add(MandateConnectorRequest.SERVICE_REFERENCE_FIELD_NAME, requestPayload.getServiceReference());
