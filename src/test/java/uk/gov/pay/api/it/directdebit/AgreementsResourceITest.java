@@ -55,7 +55,7 @@ public class AgreementsResourceITest extends PaymentResourceITestBase {
                 .body("return_url", is("https://service-name.gov.uk/transactions/12345"))
                 .body("created_date", is(CREATED_DATE))
                 .body("state", is(AgreementStatus.CREATED.toString()))
-                .body("_links.self.href", is(connectorDDMock.mandateLocation(GATEWAY_ACCOUNT_ID, "mandateId")))
+                .body("_links.self.href", is(mandateLocationFor("mandateId")))
                 .body("_links.self.method", is("GET"))
                 .body("_links.next_url.href", is(directDebitFrontendSecureUrl() + CHARGE_TOKEN_ID))
                 .body("_links.next_url.method", is("GET"))

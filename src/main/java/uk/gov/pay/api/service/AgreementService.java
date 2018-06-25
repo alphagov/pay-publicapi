@@ -69,6 +69,7 @@ public class AgreementService {
         agreementLinks.addKnownLinksValueOf(mandate.getLinks());
         return agreementLinks;
     }
+    
     private boolean isFound(Response connectorResponse) {
         return connectorResponse.getStatus() == HttpStatus.SC_OK;
     }
