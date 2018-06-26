@@ -2,6 +2,7 @@ package uk.gov.pay.api.service;
 
 import au.com.dius.pact.consumer.PactVerification;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,7 +59,7 @@ public class CreatePaymentServiceTest {
 
     @Test
     @PactVerification({"connector"})
-    @Pacts(pacts = {"publicapi-connector"}, publish = false)
+    @Pacts(pacts = {"publicapi-connector-create-payment"}, publish = false)
     public void testCreatePayment() {
         Account account = new Account("GATEWAY_ACCOUNT_ID", TokenPaymentType.CARD);
         CreatePaymentRequest requestPayload = new CreatePaymentRequest(100, "https://somewhere.gov.uk/rainbow/1", "a reference", "a description");
@@ -79,9 +80,10 @@ public class CreatePaymentServiceTest {
         assertThat(paymentResponse.getLinks().getNextUrlPost(), is(expectedLink));
     }
 
+    @Ignore("We will add this test after we’ve completed the Direct Debit connector part")
     @Test
     @PactVerification({"connector"})
-    @Pacts(pacts = {"publicapi-direct-debit-connector"})
+    @Pacts(pacts = {"publicapi-direct-debit-connector-collect-payment"})
     public void testCollectPayment() {
         Account account = new Account("GATEWAY_ACCOUNT_ID", TokenPaymentType.CARD);
         CreatePaymentRequest requestPayload = new CreatePaymentRequest(100, "https://somewhere.gov.uk/rainbow/1", "a reference", "a description");

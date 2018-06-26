@@ -64,7 +64,7 @@ public class DirectDebitPaymentTest extends PaymentResourceITestBase {
     
     @Test
     @PactVerification({"direct-debit-connector", "publicauth"})
-    @Pacts(pacts = {"publicapi-direct-debit-connector"})
+    @Pacts(pacts = {"publicapi-direct-debit-connector-create-payment"})
     @Pacts(pacts = {"publicapi-publicauth"}, publish = false)
     public void createPayment() {
         String responseBody = postPaymentResponse(API_KEY, SUCCESS_PAYLOAD)
