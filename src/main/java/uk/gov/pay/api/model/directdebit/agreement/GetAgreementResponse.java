@@ -21,10 +21,10 @@ public class GetAgreementResponse {
     private AgreementLinks links;
 
     private GetAgreementResponse(String agreementId,
-                                    AgreementType agreementType,
-                                    String returnUrl,
-                                    AgreementStatus state,
-                                    AgreementLinks links) {
+                                 AgreementType agreementType,
+                                 String returnUrl,
+                                 AgreementStatus state,
+                                 AgreementLinks links) {
         this.agreementId = agreementId;
         this.agreementType = agreementType;
         this.returnUrl = returnUrl;
@@ -35,7 +35,7 @@ public class GetAgreementResponse {
     public static GetAgreementResponse from(MandateConnectorResponse mandate, AgreementLinks links) {
         return new GetAgreementResponse(
                 mandate.getMandateId(),
-                AgreementType.valueOf(mandate.getMandateType()),
+                AgreementType.valueOf(mandate.getMandateType().toString()),
                 mandate.getReturnUrl(),
                 AgreementStatus.valueOf(mandate.getState().getStatus().toUpperCase()),
                 links);

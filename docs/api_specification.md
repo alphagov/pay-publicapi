@@ -14,7 +14,7 @@ Content-Type: application/json
 {
     "amount": 50000,
     "description": "Payment description",
-    "return_url": "https://example.service.gov.uk/some-reference-to-this-payment",
+    "return_url": "https://service.example.com/some-reference-to-this-payment",
     "reference" : "some-reference-to-this-payment"
 }
 ```
@@ -35,17 +35,17 @@ In case of a card payment:
 
 ```
 HTTP/1.1 201 Created
-Location: http://publicapi.co.uk/v1/payments/ab2341da231434
+Location: https://publicapi.example.com/v1/payments/ab2341da231434
 Content-Type: application/json
 
 {
     "_links": {
         "self" :{
-            "href": "http://publicapi.co.uk/v1/payments/ab2341da231434",
+            "href": "https://publicapi.example.com/v1/payments/ab2341da231434",
             "method": "GET" 
         },
         "next_url" : {
-            "href": "http://frontend.co.uk/charge/1?chargeTokenId=82347",
+            "href": "https://frontend.example.com/charge/1?chargeTokenId=82347",
             "method": "GET" 
         },
         "next_url_post" : {
@@ -53,21 +53,21 @@ Content-Type: application/json
                 "chargeTokenId" : "82347"
             },
             "type" : "application/x-www-form-urlencoded",
-            "href": "http://frontend.co.uk/charge/1?chargeTokenId=82347",
+            "href": "https://frontend.example.com/charge/1?chargeTokenId=82347",
             "method": "POST" 
         },
         "events" :{
-            "href": "http://publicapi.co.uk/v1/payments/ab2341da231434/events",
+            "href": "https://publicapi.example.com/v1/payments/ab2341da231434/events",
             "method": "GET" 
         },
         "refunds" :{
-            "href": "http://publicapi.co.uk/v1/payments/ab2341da231434/refunds",
+            "href": "https://publicapi.example.com/v1/payments/ab2341da231434/refunds",
             "method": "GET" 
         },
         "cancel" : {
             "params" : {},
             "type" : "",
-            "href": "http://publicapi.co.uk/v1/payments/ab2341da231434/cancel",
+            "href": "https://publicapi.example.com/v1/payments/ab2341da231434/cancel",
             "method": "POST" 
         }
     },
@@ -75,7 +75,7 @@ Content-Type: application/json
     "amount": 50000,
     "description": "Payment description",
     "status": "CREATED",
-    "return_url": "https://example.service.gov.uk/some-reference-to-this-payment",
+    "return_url": "https://service.example.com/some-reference-to-this-payment",
     "reference": "some-reference-to-this-payment",
     "payment_provider": "Sandbox",
     "card_brand": "Mastercard",
@@ -97,17 +97,17 @@ In case of a direct debit payment:
 
 ```
 HTTP/1.1 201 Created
-Location: http://publicapi.co.uk/v1/payments/ab2341da231434
+Location: https://publicapi.example.com/v1/payments/ab2341da231434
 Content-Type: application/json
 
 {
     "_links": {
         "self" :{
-            "href": "http://publicapi.co.uk/v1/payments/ab2341da231434",
+            "href": "https://publicapi.example.com/v1/payments/ab2341da231434",
             "method": "GET" 
         },
         "next_url" : {
-            "href": "http://frontend-dd.co.uk/charge/1?chargeTokenId=82347",
+            "href": "https://frontend.example.com/charge/1?chargeTokenId=82347",
             "method": "GET" 
         },
         "next_url_post" : {
@@ -115,7 +115,7 @@ Content-Type: application/json
                 "chargeTokenId" : "82347"
             },
             "type" : "application/x-www-form-urlencoded",
-            "href": "http://frontend-dd.co.uk/charge/1?chargeTokenId=82347",
+            "href": "https://frontend.example.com/charge/1?chargeTokenId=82347",
             "method": "POST" 
         }
     },
@@ -123,7 +123,7 @@ Content-Type: application/json
     "amount": 50000,
     "description": "Payment description",
     "status": "CREATED",
-    "return_url": "https://example.service.gov.uk/some-reference-to-this-payment",
+    "return_url": "https://service.example.com/some-reference-to-this-payment",
     "reference": "some-reference-to-this-payment",
     "payment_provider": "Sandbox",
     "created_date": "2016-01-15T16:30:56Z",
@@ -257,31 +257,31 @@ Content-Type: application/json
 {
     "_links": {
         "self" :{
-            "href": "http://publicapi.co.uk/v1/payments/ab2341da231434",
+            "href": "https://publicapi.example.com/v1/payments/ab2341da231434",
             "method": "GET" 
         },
         "next_url" : {
-            "href": "http://frontend.co.uk/charge/ab2341da231434?chargeTokenId=82347",
+            "href": "https://frontend.example.com/charge/ab2341da231434?chargeTokenId=82347",
             "method": "GET" 
         },
         "next_url_post" : {
             "params" : {},
             "type" : "",
-            "href": "http://frontend.co.uk/charge/1?chargeTokenId=82347",
+            "href": "https://frontend.example.com/charge/1?chargeTokenId=82347",
             "method": "POST" 
         },
         "events" :{
-            "href": "http://publicapi.co.uk/v1/payments/ab2341da231434/events",
+            "href": "https://publicapi.example.com/v1/payments/ab2341da231434/events",
             "method": "GET" 
         },
         "refunds" :{
-            "href": "http://publicapi.co.uk/v1/payments/ab2341da231434/refunds",
+            "href": "https://publicapi.example.com/v1/payments/ab2341da231434/refunds",
             "method": "GET" 
         },
         "cancel" : {
             "params" : {},
             "type" : "",
-            "href": "http://publicapi.co.uk/v1/payments/ab2341da231434/cancel",
+            "href": "https://publicapi.example.com/v1/payments/ab2341da231434/cancel",
             "method": "POST"
         }
     },
@@ -289,7 +289,7 @@ Content-Type: application/json
     "amount": 50000,
     "description": "Payment description",
     "status": "CREATED",
-    "return_url": "https://example.service.gov.uk/some-reference-to-this-payment",
+    "return_url": "https://service.example.com/some-reference-to-this-payment",
     "reference" : "some-reference-to-this-payment",
     "email": "mail@email.com",
     "payment_provider": "Sandbox",
@@ -329,17 +329,17 @@ Content-Type: application/json
 {
     "_links": {
         "self" :{
-            "href": "http://publicapi.co.uk/v1/payments/ab2341da231434",
+            "href": "https://publicapi.example.com/v1/payments/ab2341da231434",
             "method": "GET" 
         },
         "next_url" : {
-            "href": "http://frontend-dd.co.uk/charge/ab2341da231434?chargeTokenId=82347",
+            "href": "https://frontend.example.com/secure/ab2341da231434",
             "method": "GET" 
         },
         "next_url_post" : {
             "params" : {},
             "type" : "",
-            "href": "http://frontend-dd.co.uk/charge/1?chargeTokenId=82347",
+            "href": "https://frontend.example.com/secure/ab2341da231434",
             "method": "POST" 
         }
     },
@@ -347,7 +347,7 @@ Content-Type: application/json
     "amount": 50000,
     "description": "Payment description",
     "status": "CREATED",
-    "return_url": "https://example.service.gov.uk/some-reference-to-this-payment",
+    "return_url": "https://service.example.com/some-reference-to-this-payment",
     "reference" : "some-reference-to-this-payment",
     "email": "mail@email.com",
     "payment_provider": "Sandbox",
@@ -426,7 +426,7 @@ Content-Type: application/json
             "_links": {
                 "payment_url" : {
                     "method": "GET",
-                    "href": "http://publicapi.co.uk/v1/payments/ab2341da231434"
+                    "href": "https://publicapi.example.com/v1/payments/ab2341da231434"
                 }
             }
         },
@@ -437,7 +437,7 @@ Content-Type: application/json
             "_links": {
                 "payment_url" : {
                     "method": "GET",
-                    "href": "http://publicapi.co.uk/v1/payments/ab2341da231434"
+                    "href": "https://publicapi.example.com/v1/payments/ab2341da231434"
                 }
             }
         },
@@ -448,14 +448,14 @@ Content-Type: application/json
             "_links": {
                 "payment_url" : {
                     "method": "GET",
-                    "href": "http://publicapi.co.uk/v1/payments/ab2341da231434"
+                    "href": "https://publicapi.example.com/v1/payments/ab2341da231434"
                 }
             }
         }
     ],
     "_links": {
         "self" :{
-            "href": "http://publicapi.co.uk/v1/payments/ab2341da231434",
+            "href": "https://publicapi.example.com/v1/payments/ab2341da231434",
             "method": "GET" 
         }           
     },
@@ -529,10 +529,10 @@ Content-Type: application/json
   "payment_id": "ab2341da231434",
   "_links": {
     "self": {
-      "href": "http://publicapi.co.uk/v1/payments/ab2341da231434/refunds"
+      "href": "https://publicapi.example.com/v1/payments/ab2341da231434/refunds"
     },
     "payment": {
-      "href": "http://publicapi.co.uk/v1/payments/ab2341da231434"
+      "href": "https://publicapi.example.com/v1/payments/ab2341da231434"
     }
   },
   "_embedded": {
@@ -540,10 +540,10 @@ Content-Type: application/json
       {
   	    "_links": {
           "self" :{
-            "href": "http://publicapi.co.uk/v1/payments/abc123/refunds/xyz123",
+            "href": "https://publicapi.example.com/v1/payments/abc123/refunds/xyz123",
           },
          "payment" :{
-           "href": "http://publicapi.co.uk/v1/payments/abc123",
+           "href": "https://publicapi.example.com/v1/payments/abc123",
          }
        }
        "refund_id": "xyz123",
@@ -554,10 +554,10 @@ Content-Type: application/json
       {
         "_links": {
             "self" :{
-                "href": "http://publicapi.co.uk/v1/payments/abc123/refunds/xyz124"
+                "href": "https://publicapi.example.com/v1/payments/abc123/refunds/xyz124"
             },
             "payment" :{
-                "href": "http://publicapi.co.uk/v1/payments/abc123"              
+                "href": "https://publicapi.example.com/v1/payments/abc123"              
             }
           }
           "refund_id": "xyz124",
@@ -624,10 +624,10 @@ Content-Type: application/json
     "status": "submitted"
     "_links": {
         "self": {
-            "href": "http://publicapi.co.uk/v1/payments/abc123/refunds/xyz124"
+            "href": "https://publicapi.example.com/v1/payments/abc123/refunds/xyz124"
         }
         "payment": {
-            "href": "http://publicapi.co.uk/v1/payments/abc123"
+            "href": "https://publicapi.example.com/v1/payments/abc123"
         }
     }
 }
@@ -699,12 +699,12 @@ Content-Type: application/json
 {
     "_links": {
         "self" :{
-            "href": "http://publicapi.co.uk/v1/payments/abc123/refunds/xyz123",
+            "href": "https://publicapi.example.com/v1/payments/abc123/refunds/xyz123",
 
         },
 
         "payment_url" :{
-            "href": "http://publicapi.co.uk/v1/payments/abc123",
+            "href": "https://publicapi.example.com/v1/payments/abc123",
 
         },
     }
@@ -887,7 +887,7 @@ GET /v1/payments
         "finished": false
       },
       "description": "desc",
-      "return_url": "https://demoservice.pymnt.localdomain:443/return/rahul-ref",
+      "return_url": "https://demoservice.example.com//return/rahul-ref",
       "reference": "rahul-ref",
       "email": "mail@email.com",
       "created_date": "2016-05-23T15:22:50.972Z",
@@ -915,19 +915,19 @@ GET /v1/payments
       },
       "_links": {
         "self": {
-          "href": "https://publicapi.pymnt.localdomain/v1/payments/4hn0c8bbtfbnp5tmite2274h5c",
+          "href": "https://publicapi.example.com/v1/payments/4hn0c8bbtfbnp5tmite2274h5c",
           "method": "GET"
         },
         "cancel": {
-          "href": "https://publicapi.pymnt.localdomain/v1/payments/4hn0c8bbtfbnp5tmite2274h5c/cancel",
+          "href": "https://publicapi.example.com/v1/payments/4hn0c8bbtfbnp5tmite2274h5c/cancel",
           "method": "POST"
         },
         "events": {
-          "href": "https://publicapi.pymnt.localdomain/v1/payments/4hn0c8bbtfbnp5tmite2274h5c/events",
+          "href": "https://publicapi.example.com/v1/payments/4hn0c8bbtfbnp5tmite2274h5c/events",
           "method": "GET"
         },
         "refunds": {
-          "href": "https://publicapi.pymnt.localdomain/v1/payments/br0ih3laeacuf3845j4q77d11p/refunds"
+          "href": "https://publicapi.example.com/v1/payments/br0ih3laeacuf3845j4q77d11p/refunds"
           "method": "GET"
         }
       }
@@ -942,7 +942,7 @@ GET /v1/payments
         "finished": false
       },
       "description": "desc",
-      "return_url": "https://demoservice.pymnt.localdomain:443/return/rahul-ref",
+      "return_url": "https://demoservice.example.com/return/rahul-ref",
       "reference": "rahul-ref",
       "email": "mail@email.com",
       "created_date": "2016-05-23T15:22:47.038Z",
@@ -970,19 +970,19 @@ GET /v1/payments
         },
       "_links": {
         "self": {
-          "href": "https://publicapi.pymnt.localdomain/v1/payments/am6f5d1583563deb7ss5obju2",
+          "href": "https://publicapi.example.com/v1/payments/am6f5d1583563deb7ss5obju2",
           "method": "GET"
         },
         "cancel": {
-          "href": "https://publicapi.pymnt.localdomain/v1/payments/am6f5d1583563deb7ss5obju2/cancel",
+          "href": "https://publicapi.example.com/v1/payments/am6f5d1583563deb7ss5obju2/cancel",
           "method": "POST"
         },
         "events": {
-          "href": "https://publicapi.pymnt.localdomain/v1/payments/am6f5d1583563deb7ss5obju2/events",
+          "href": "https://publicapi.example.com/v1/payments/am6f5d1583563deb7ss5obju2/events",
           "method": "GET"
         }
         "refunds": {
-          "href": "https://publicapi.pymnt.localdomain/v1/payments/br0ih3laeacuf3845j4q77d11p/refunds"
+          "href": "https://publicapi.example.com/v1/payments/br0ih3laeacuf3845j4q77d11p/refunds"
           "method": "GET"
         }
       }
@@ -990,19 +990,19 @@ GET /v1/payments
   ],
   "_links": {
     "next_page": {
-      "href": "https://publicapi.pymnt.localdomain/v1/payments?page=3&display_size=2"
+      "href": "https://publicapi.example.com/v1/payments?page=3&display_size=2"
     },
     "self": {
-      "href": "https://publicapi.pymnt.localdomain/v1/payments?page=2&display_size=2"
+      "href": "https://publicapi.example.com/v1/payments?page=2&display_size=2"
     },
     "prev_page": {
-      "href": "https://publicapi.pymnt.localdomain/v1/payments?page=1&display_size=2"
+      "href": "https://publicapi.example.com/v1/payments?page=1&display_size=2"
     },
     "last_page": {
-      "href": "https://publicapi.pymnt.localdomain/v1/payments?page=3&display_size=2"
+      "href": "https://publicapi.example.com/v1/payments?page=3&display_size=2"
     },
     "first_page": {
-      "href": "https://publicapi.pymnt.localdomain/v1/payments?page=1&display_size=2"
+      "href": "https://publicapi.example.com/v1/payments?page=1&display_size=2"
     }
   }
 }
@@ -1106,3 +1106,66 @@ Content-Length: 44
 | `P0401`            | Request parameters have Validation errors        |
 | `P0402`            | Requested page not found                         |
 | `P0498`            | Connector response was unrecognised to PublicAPI |
+
+## POST /v1/agreements
+
+This endpoint creates a new agreement.
+
+### Request example
+
+```
+POST /v1/agreements
+Authorization: Bearer BEARER_TOKEN
+Content-Type: application/json
+
+{
+    "return_url": "https://service.example.com/some-reference-to-this-agreement",
+    "agreement_type": "ON_DEMAND",
+    "reference" : "some-reference-to-this-agreement"
+}
+```
+
+#### Request description
+
+BEARER_TOKEN: A valid bearer token for the account to associate the agreement with.
+
+| Field                    | required | Description                               |
+| ------------------------ |:--------:| ----------------------------------------- |
+| `return_url`             | Yes      | The URL where the user should be redirected to when the agreement workflow is finished (**must be HTTPS only**). |
+| `agreement_type`         | Yes      | The type of agreement, eg ON_DEMAND, ONE_OFF |
+| `reference`              | No       | An optional reference that will be created by the service for easier identification of the future payments in their system. If not specified will be null |
+
+### Agreement created response
+
+```
+HTTP/1.1 201 Created
+Location: https://publicapi.example.com/v1/agreements/ab2341da231434
+Content-Type: application/json
+
+{
+    "_links": {
+        "self" :{
+            "href": "https://publicapi.example.com/v1/agreements/ab2341da231434",
+            "method": "GET" 
+        },
+        "next_url" : {
+            "href": "https://frontend.example.com/secure/ab2341da231434",
+            "method": "GET" 
+        },
+        "next_url_post" : {
+            "params" : {
+                "chargeTokenId" : "82347"
+            },
+            "type" : "application/x-www-form-urlencoded",
+            "href": "https://frontend.example.com/secure/ab2341da231434",
+            "method": "POST" 
+        }
+    },
+    "agreement_id": "ab2341da231434",
+    "agreement_type": "ON_DEMAND",
+    "reference": "some-reference-to-this-agreement",
+    "return_url": "https://service.example.com/some-reference-to-this-agreement",
+    "created_date": "2018-01-15T16:30:56Z"
+    "state": "CREATED"
+}
+```

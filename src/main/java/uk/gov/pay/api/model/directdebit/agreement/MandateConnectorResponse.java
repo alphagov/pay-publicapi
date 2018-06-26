@@ -11,7 +11,8 @@ import java.util.List;
 public class MandateConnectorResponse {
 
     private String mandateId;
-    private String mandateType;
+    private MandateType mandateType;
+    private String serviceReference;
     private String returnUrl;
     private String createdDate;
     private MandateState state;
@@ -19,12 +20,17 @@ public class MandateConnectorResponse {
 
     @JsonProperty(value = "mandate_id")
     public String getMandateId() {
-        return this.mandateId;
+        return mandateId;
     }
 
     @JsonProperty(value = "mandate_type")
-    public String getMandateType() {
-        return this.mandateType;
+    public MandateType getMandateType() {
+        return mandateType;
+    }
+
+    @JsonProperty(value = "service_reference")
+    public String getServiceReference() {
+        return serviceReference;
     }
 
     @JsonProperty(value = "return_url")

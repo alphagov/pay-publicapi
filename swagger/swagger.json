@@ -311,7 +311,7 @@
           "200" : {
             "description" : "OK",
             "schema" : {
-              "$ref" : "#/definitions/PaymentWithAllLinks"
+              "$ref" : "#/definitions/CreateAgreementResponse"
             }
           },
           "401" : {
@@ -681,6 +681,12 @@
           "description" : "agreement type",
           "readOnly" : true,
           "enum" : [ "ON_DEMAND", "ONE_OFF" ]
+        },
+        "reference" : {
+          "type" : "string",
+          "example" : "serviceref123",
+          "description" : "agreement reference",
+          "readOnly" : true
         }
       },
       "description" : "The Payload to create a new Agreement"
@@ -701,6 +707,12 @@
           "description" : "agreement type",
           "readOnly" : true,
           "enum" : [ "ON_DEMAND", "ONE_OFF" ]
+        },
+        "reference" : {
+          "type" : "string",
+          "example" : "serviceref123",
+          "description" : "agreement reference",
+          "readOnly" : true
         },
         "return_url" : {
           "type" : "string",

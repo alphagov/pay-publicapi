@@ -10,6 +10,7 @@ public class CreateAgreementResponse {
 
     public static final String AGREEMENT_ID_FIELD_NAME = "agreement_id";
     public static final String AGREEMENT_TYPE_FIELD_NAME = "agreement_type";
+    public static final String REFERENCE_FIELD_NAME = "reference";
     public static final String RETURN_URL_FIELD_NAME = "return_url";
     public static final String CREATED_DATE_FIELD_NAME = "created_date";
     public static final String STATE_FIELD_NAME = "state";
@@ -17,6 +18,7 @@ public class CreateAgreementResponse {
 
     private String agreementId;
     private AgreementType agreementType;
+    private String reference;
     private String returnUrl;
     private String createdDate;
     private AgreementStatus state;
@@ -24,12 +26,14 @@ public class CreateAgreementResponse {
 
     private CreateAgreementResponse(String agreementId,
                                     AgreementType agreementType,
+                                    String reference,
                                     String returnUrl,
                                     String createdDate,
                                     AgreementStatus state,
                                     AgreementLinks links) {
         this.agreementId = agreementId;
         this.agreementType = agreementType;
+        this.reference = reference;
         this.returnUrl = returnUrl;
         this.createdDate = createdDate;
         this.state = state;
@@ -39,7 +43,8 @@ public class CreateAgreementResponse {
     public static CreateAgreementResponse from(MandateConnectorResponse mandate, AgreementLinks links) {
         return new CreateAgreementResponse(
                 mandate.getMandateId(),
-                AgreementType.valueOf(mandate.getMandateType()),
+                AgreementType.valueOf(mandate.getMandateType().toString()),
+                mandate.getServiceReference(),
                 mandate.getReturnUrl(),
                 mandate.getCreatedDate(),
                 AgreementStatus.valueOf(mandate.getState().getStatus().toUpperCase()),
@@ -49,13 +54,19 @@ public class CreateAgreementResponse {
     @ApiModelProperty(value = "agreement id", required = true, example = "jhjcvaiqlediuhh23d89hd3")
     @JsonProperty(value = AGREEMENT_ID_FIELD_NAME)
     public String getAgreementId() {
-        return this.agreementId;
+        return agreementId;
     }
 
     @ApiModelProperty(value = "agreement type", required = true, example = "ON_DEMAND")
     @JsonProperty(value = AGREEMENT_TYPE_FIELD_NAME)
     public AgreementType getAgreementType() {
-        return this.agreementType;
+        return agreementType;
+    }
+
+    @ApiModelProperty(value = "agreement reference", example = "serviceref123")
+    @JsonProperty(value = REFERENCE_FIELD_NAME)
+    public String getReference() {
+        return reference;
     }
 
     @ApiModelProperty(value = "service return url", required = true, example = "https://service-name.gov.uk/transactions/12345")
