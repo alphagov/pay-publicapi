@@ -9,7 +9,7 @@ import uk.gov.pay.api.validation.PaymentRefundRequestValidator;
 
 import java.io.IOException;
 
-import static uk.gov.pay.api.json.RequestJsonParser.paymentRefundRequestValueOf;
+import static uk.gov.pay.api.json.RequestJsonParser.parseRefundRequest;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_REFUND_PARSING_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 
@@ -28,7 +28,7 @@ public class CreatePaymentRefundRequestDeserializer extends StdDeserializer<Crea
         CreatePaymentRefundRequest paymentRefundRequest;
 
         try {
-            paymentRefundRequest = paymentRefundRequestValueOf(parser.readValueAsTree());
+            paymentRefundRequest = parseRefundRequest(parser.readValueAsTree());
         } catch (IOException e) {
             throw new BadRequestException(aPaymentError(CREATE_PAYMENT_REFUND_PARSING_ERROR));
         }

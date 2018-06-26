@@ -28,7 +28,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"amount\" : -123," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
+                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
         InputStream body = postPaymentResponse(API_KEY, payload)
@@ -51,7 +51,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"amount\" : 10000001," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
+                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
         InputStream body = postPaymentResponse(API_KEY, payload)
@@ -74,7 +74,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"amount\" : null," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
+                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
         InputStream body = postPaymentResponse(API_KEY, payload)
@@ -98,7 +98,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"amount\" : \"hola world!\"," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
+                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
         InputStream body = postPaymentResponse(API_KEY, payload)
@@ -121,7 +121,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"amount\" : { \"whatever\": 1 }," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
+                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
         InputStream body = postPaymentResponse(API_KEY, payload)
@@ -144,7 +144,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"amount\" : \"    \"," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
+                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
         InputStream body = postPaymentResponse(API_KEY, payload)
@@ -166,7 +166,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
         String payload = "{" +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
+                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
         InputStream body = postPaymentResponse(API_KEY, payload)
@@ -189,7 +189,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"amount\" : 0x1000," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
+                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
         InputStream body = postPaymentResponse(API_KEY, payload)
@@ -211,7 +211,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"amount\" : 0B101," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
+                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
         InputStream body = postPaymentResponse(API_KEY, payload)
@@ -233,7 +233,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"amount\" : 017," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
+                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
         InputStream body = postPaymentResponse(API_KEY, payload)
@@ -255,7 +255,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"amount\" : %00," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
+                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
         InputStream body = postPaymentResponse(API_KEY, payload)
@@ -277,7 +277,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 "  \"amount\" : 27.55," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://somewhere.gov.uk/rainbow/1\"" +
+                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
         InputStream body = postPaymentResponse(API_KEY, payload)

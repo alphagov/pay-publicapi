@@ -29,7 +29,7 @@ public class PaymentsResourceReferenceValidationITest extends PaymentResourceITe
                 "  \"amount\" : 9900," +
                 "  \"reference\" : 1234," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://my-payments.com\"" +
+                "  \"return_url\" : \"https://example.com\"" +
                 "}";
 
         InputStream body = postPaymentResponse(API_KEY, payload)
@@ -52,7 +52,7 @@ public class PaymentsResourceReferenceValidationITest extends PaymentResourceITe
                 "  \"amount\" : 9900," +
                 "  \"reference\" : \"\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://my-payments.com\"" +
+                "  \"return_url\" : \"https://example.com\"" +
                 "}";
 
         InputStream body = postPaymentResponse(API_KEY, payload)
@@ -75,7 +75,7 @@ public class PaymentsResourceReferenceValidationITest extends PaymentResourceITe
                 "  \"amount\" : 9900," +
                 "  \"reference\" : \"    \"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://my-payments.com\"" +
+                "  \"return_url\" : \"https://example.com\"" +
                 "}";
 
         InputStream body = postPaymentResponse(API_KEY, payload)
@@ -97,7 +97,7 @@ public class PaymentsResourceReferenceValidationITest extends PaymentResourceITe
         String payload = "{" +
                 "  \"amount\" : 9900," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://my-payments.com\"" +
+                "  \"return_url\" : \"https://example.com\"" +
                 "}";
 
         InputStream body = postPaymentResponse(API_KEY, payload)
@@ -121,7 +121,7 @@ public class PaymentsResourceReferenceValidationITest extends PaymentResourceITe
                 "  \"amount\" : 9900," +
                 "  \"reference\" : null," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://my-payments.com\"" +
+                "  \"return_url\" : \"https://example.com\"" +
                 "}";
 
         InputStream body = postPaymentResponse(API_KEY, payload)
@@ -169,7 +169,7 @@ public class PaymentsResourceReferenceValidationITest extends PaymentResourceITe
                 "  \"amount\" : 9900," +
                 "  \"reference\" : " +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://my-payments.com\"" +
+                "  \"return_url\" : \"https://example.com\"" +
                 "}";
 
         InputStream body = postPaymentResponse(API_KEY, payload)
@@ -191,7 +191,7 @@ public class PaymentsResourceReferenceValidationITest extends PaymentResourceITe
                 "  \"amount\" : 9900," +
                 "  \"reference\" : {\"whatever\" : 1}," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"http://my-payments.com\"" +
+                "  \"return_url\" : \"https://example.com\"" +
                 "}";
 
         InputStream body = postPaymentResponse(API_KEY, payload)

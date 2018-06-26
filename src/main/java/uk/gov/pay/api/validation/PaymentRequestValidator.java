@@ -8,7 +8,6 @@ import static java.lang.String.format;
 import static uk.gov.pay.api.model.CreatePaymentRequest.*;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
-import static uk.gov.pay.api.validation.MaxLengthValidator.isValid;
 
 public class PaymentRequestValidator {
 
@@ -25,6 +24,7 @@ public class PaymentRequestValidator {
     static final int REFERENCE_MAX_LENGTH = 255;
     static final int EMAIL_MAX_LENGTH = 254;
     static final int CARD_BRAND_MAX_LENGTH = 20;
+    static final int AGREEMENT_ID_MAX_LENGTH = 26;
 
     private URLValidator urlValidator;
 
@@ -33,10 +33,20 @@ public class PaymentRequestValidator {
     }
 
     public void validate(CreatePaymentRequest paymentRequest) {
+        if (paymentRequest.hasAgreementId()) {
+            validateAgreementId(paymentRequest.getAgreementId());
+        } 
+        if (paymentRequest.hasReturnUrl()) {
+            validateReturnUrl(paymentRequest.getReturnUrl());
+        }
         validateAmount(paymentRequest.getAmount());
-        validateReturnUrl(paymentRequest.getReturnUrl());
         validateReference(paymentRequest.getReference());
         validateDescription(paymentRequest.getDescription());
+    }
+
+    private void validateAgreementId(String agreementId) {
+        validate(MaxLengthValidator.isValid(agreementId, AGREEMENT_ID_MAX_LENGTH),
+                aPaymentError(AGREEMENT_ID_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, format(CONSTRAINT_MESSAGE_STRING_TEMPLATE, AGREEMENT_ID_MAX_LENGTH)));
     }
 
     private void validateAmount(int amount) {
@@ -48,7 +58,7 @@ public class PaymentRequestValidator {
     }
 
     private void validateReturnUrl(String returnUrl) {
-        validate(isValid(returnUrl, URL_MAX_LENGTH),
+        validate(MaxLengthValidator.isValid(returnUrl, URL_MAX_LENGTH),
                 aPaymentError(RETURN_URL_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, format(CONSTRAINT_MESSAGE_STRING_TEMPLATE, URL_MAX_LENGTH)));
 
         validate(urlValidator.isValid(returnUrl),
@@ -56,12 +66,12 @@ public class PaymentRequestValidator {
     }
 
     private void validateReference(String reference) {
-        validate(isValid(reference, REFERENCE_MAX_LENGTH),
+        validate(MaxLengthValidator.isValid(reference, REFERENCE_MAX_LENGTH),
                 aPaymentError(REFERENCE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, format(CONSTRAINT_MESSAGE_STRING_TEMPLATE, REFERENCE_MAX_LENGTH)));
     }
 
     private void validateDescription(String description) {
-        validate(isValid(description, DESCRIPTION_MAX_LENGTH),
+        validate(MaxLengthValidator.isValid(description, DESCRIPTION_MAX_LENGTH),
                 aPaymentError(DESCRIPTION_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, format(CONSTRAINT_MESSAGE_STRING_TEMPLATE, DESCRIPTION_MAX_LENGTH)));
     }
 
