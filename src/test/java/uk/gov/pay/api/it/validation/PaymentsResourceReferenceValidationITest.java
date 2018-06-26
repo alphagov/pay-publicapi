@@ -1,10 +1,11 @@
-package uk.gov.pay.api.it;
+package uk.gov.pay.api.it.validation;
 
 import com.jayway.jsonassert.JsonAssert;
 import com.jayway.restassured.response.ValidatableResponse;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
+import uk.gov.pay.api.it.PaymentResourceITestBase;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +16,7 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 
-public class PaymentsResourceDescriptionValidationITest extends PaymentResourceITestBase {
+public class PaymentsResourceReferenceValidationITest extends PaymentResourceITestBase {
 
     @Before
     public void setUpBearerToken() {
@@ -23,12 +24,12 @@ public class PaymentsResourceDescriptionValidationITest extends PaymentResourceI
     }
 
     @Test
-    public void createPayment_responseWith400_whenDescriptionIsNumeric() throws IOException {
+    public void createPayment_responseWith400_whenReferenceIsNumeric() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
-                "  \"description\" : 1234," +
-                "  \"reference\" : \"Some reference\"," +
+                "  \"reference\" : 1234," +
+                "  \"description\" : \"Some description\"," +
                 "  \"return_url\" : \"https://example.com\"" +
                 "}";
 
@@ -40,18 +41,18 @@ public class PaymentsResourceDescriptionValidationITest extends PaymentResourceI
 
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(3))
-                .assertThat("$.field", is("description"))
+                .assertThat("$.field", is("reference"))
                 .assertThat("$.code", is("P0102"))
-                .assertThat("$.description", is("Invalid attribute value: description. Must be a valid string format"));
+                .assertThat("$.description", is("Invalid attribute value: reference. Must be a valid string format"));
     }
 
     @Test
-    public void createPayment_responseWith400_whenDescriptionIsEmpty() throws IOException {
+    public void createPayment_responseWith400_whenReferenceIsEmpty() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
-                "  \"description\" : \"\"," +
-                "  \"reference\" : \"Some reference\"," +
+                "  \"reference\" : \"\"," +
+                "  \"description\" : \"Some description\"," +
                 "  \"return_url\" : \"https://example.com\"" +
                 "}";
 
@@ -63,18 +64,18 @@ public class PaymentsResourceDescriptionValidationITest extends PaymentResourceI
 
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(3))
-                .assertThat("$.field", is("description"))
+                .assertThat("$.field", is("reference"))
                 .assertThat("$.code", is("P0101"))
-                .assertThat("$.description", is("Missing mandatory attribute: description"));
+                .assertThat("$.description", is("Missing mandatory attribute: reference"));
     }
 
     @Test
-    public void createPayment_responseWith400_whenDescriptionIsBlank() throws IOException {
+    public void createPayment_responseWith400_whenReferenceIsBlank() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
-                "  \"description\" : \"    \"," +
-                "  \"reference\" : \"Some reference\"," +
+                "  \"reference\" : \"    \"," +
+                "  \"description\" : \"Some description\"," +
                 "  \"return_url\" : \"https://example.com\"" +
                 "}";
 
@@ -86,17 +87,17 @@ public class PaymentsResourceDescriptionValidationITest extends PaymentResourceI
 
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(3))
-                .assertThat("$.field", is("description"))
+                .assertThat("$.field", is("reference"))
                 .assertThat("$.code", is("P0101"))
-                .assertThat("$.description", is("Missing mandatory attribute: description"));
+                .assertThat("$.description", is("Missing mandatory attribute: reference"));
     }
 
     @Test
-    public void createPayment_responseWith400_whenDescriptionIsMissing() throws IOException {
+    public void createPayment_responseWith400_whenReferenceIsMissing() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
-                "  \"reference\" : \"Some reference\"," +
+                "  \"description\" : \"Some description\"," +
                 "  \"return_url\" : \"https://example.com\"" +
                 "}";
 
@@ -108,19 +109,19 @@ public class PaymentsResourceDescriptionValidationITest extends PaymentResourceI
 
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(3))
-                .assertThat("$.field", is("description"))
+                .assertThat("$.field", is("reference"))
                 .assertThat("$.code", is("P0101"))
-                .assertThat("$.description", is("Missing mandatory attribute: description"));
+                .assertThat("$.description", is("Missing mandatory attribute: reference"));
     }
 
     @Test
-    public void createPayment_responseWith400_whenDescriptionIsNull() throws IOException {
+    public void createPayment_responseWith400_whenReferenceIsNull() throws IOException {
 
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
-                "  \"description\" : null," +
-                "  \"reference\" : \"Some reference\"," +
+                "  \"reference\" : null," +
+                "  \"description\" : \"Some description\"," +
                 "  \"return_url\" : \"https://example.com\"" +
                 "}";
 
@@ -132,20 +133,20 @@ public class PaymentsResourceDescriptionValidationITest extends PaymentResourceI
 
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(3))
-                .assertThat("$.field", is("description"))
+                .assertThat("$.field", is("reference"))
                 .assertThat("$.code", is("P0101"))
-                .assertThat("$.description", is("Missing mandatory attribute: description"));
+                .assertThat("$.description", is("Missing mandatory attribute: reference"));
     }
 
     @Test
-    public void createPayment_responseWith422_whenDescriptionSizeIsGreaterThanMaxLength() throws IOException {
+    public void createPayment_responseWith422_whenReferenceSizeIsGreaterThanMaxLength() throws IOException {
 
         String aVeryLongReference = RandomStringUtils.randomAlphanumeric(256);
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
-                "  \"description\" : \"" + aVeryLongReference + "\"," +
-                "  \"reference\" : \"Some reference\"," +
+                "  \"reference\" : \"" + aVeryLongReference + "\"," +
+                "  \"description\" : \"Some description\"," +
                 "  \"return_url\" : \"https://www.example.com/return_url\"" +
                 "}";
 
@@ -157,18 +158,18 @@ public class PaymentsResourceDescriptionValidationITest extends PaymentResourceI
 
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(3))
-                .assertThat("$.field", is("description"))
+                .assertThat("$.field", is("reference"))
                 .assertThat("$.code", is("P0102"))
-                .assertThat("$.description", is("Invalid attribute value: description. Must be less than or equal to 255 characters length"));
+                .assertThat("$.description", is("Invalid attribute value: reference. Must be less than or equal to 255 characters length"));
     }
 
     @Test
-    public void createPayment_responseWith400_whenDescriptionHasNotAValidJsonValue() throws IOException {
+    public void createPayment_responseWith400_whenReferenceHasNotAValidJsonValue() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
-                "  \"description\" : " +
-                "  \"reference\" : \"Some reference\"," +
+                "  \"reference\" : " +
+                "  \"description\" : \"Some description\"," +
                 "  \"return_url\" : \"https://example.com\"" +
                 "}";
 
@@ -185,12 +186,12 @@ public class PaymentsResourceDescriptionValidationITest extends PaymentResourceI
     }
 
     @Test
-    public void createPayment_responseWith400_whenDescriptionFieldIsNotExpectedJsonField() throws IOException {
+    public void createPayment_responseWith400_whenReferenceFieldIsNotExpectedJsonField() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
-                "  \"description\" : {\"whatever\" : 1}," +
-                "  \"reference\" : \"Some reference\"," +
+                "  \"reference\" : {\"whatever\" : 1}," +
+                "  \"description\" : \"Some description\"," +
                 "  \"return_url\" : \"https://example.com\"" +
                 "}";
 
@@ -202,9 +203,9 @@ public class PaymentsResourceDescriptionValidationITest extends PaymentResourceI
 
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(3))
-                .assertThat("$.field", is("description"))
+                .assertThat("$.field", is("reference"))
                 .assertThat("$.code", is("P0102"))
-                .assertThat("$.description", is("Invalid attribute value: description. Must be a valid string format"));
+                .assertThat("$.description", is("Invalid attribute value: reference. Must be a valid string format"));
     }
 
     private ValidatableResponse postPaymentResponse(String bearerToken, String payload) {
