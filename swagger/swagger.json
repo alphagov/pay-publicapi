@@ -311,7 +311,7 @@
           "200" : {
             "description" : "OK",
             "schema" : {
-              "$ref" : "#/definitions/CreateAgreementResponse"
+              "$ref" : "#/definitions/PaymentWithAllLinks"
             }
           },
           "401" : {
@@ -766,7 +766,7 @@
     },
     "CreatePaymentRequest" : {
       "type" : "object",
-      "required" : [ "amount", "description", "reference", "return_url" ],
+      "required" : [ "amount", "description", "reference" ],
       "properties" : {
         "amount" : {
           "type" : "integer",
@@ -790,6 +790,12 @@
           "type" : "string",
           "example" : "https://service-name.gov.uk/transactions/12345",
           "description" : "service return url",
+          "readOnly" : true
+        },
+        "agreement_id" : {
+          "type" : "string",
+          "example" : "33890b55-b9ea-4e2f-90fd-77ae0e9009e2\n",
+          "description" : "ID of the agreement being used to collect the payment",
           "readOnly" : true
         }
       },
