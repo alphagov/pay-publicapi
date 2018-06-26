@@ -1,4 +1,4 @@
-package uk.gov.pay.api.it;
+package uk.gov.pay.api.it.validation;
 
 
 import com.google.common.collect.ImmutableMap;
@@ -8,6 +8,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
+import uk.gov.pay.api.it.PaymentResourceITestBase;
 
 import java.io.InputStream;
 

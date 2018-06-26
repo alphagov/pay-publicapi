@@ -8,23 +8,34 @@ import uk.gov.pay.api.model.PaymentError;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.gov.pay.api.model.CreatePaymentRefundRequest.REFUND_AMOUNT_AVAILABLE;
-import static uk.gov.pay.api.model.CreatePaymentRequest.*;
-import static uk.gov.pay.api.model.PaymentError.Code.*;
+import static uk.gov.pay.api.model.CreatePaymentRequest.AGREEMENT_ID_FIELD_NAME;
+import static uk.gov.pay.api.model.CreatePaymentRequest.AMOUNT_FIELD_NAME;
+import static uk.gov.pay.api.model.CreatePaymentRequest.DESCRIPTION_FIELD_NAME;
+import static uk.gov.pay.api.model.CreatePaymentRequest.REFERENCE_FIELD_NAME;
+import static uk.gov.pay.api.model.CreatePaymentRequest.RETURN_URL_FIELD_NAME;
+import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_MISSING_FIELD_ERROR;
+import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_REFUND_MISSING_FIELD_ERROR;
+import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_REFUND_VALIDATION_ERROR;
+import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 
 class RequestJsonParser {
 
-    static CreatePaymentRequest paymentRequestValueOf(JsonNode rootNode) {
+    static CreatePaymentRequest parsePaymentRequest(JsonNode paymentRequest) {
+        Integer amount = parseInteger(paymentRequest, AMOUNT_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, CREATE_PAYMENT_MISSING_FIELD_ERROR);
+        String reference = parseString(paymentRequest, REFERENCE_FIELD_NAME);
+        String description = parseString(paymentRequest, DESCRIPTION_FIELD_NAME);
 
-        Integer amount = parseInteger(rootNode, AMOUNT_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, CREATE_PAYMENT_MISSING_FIELD_ERROR);
-        String reference = parseString(rootNode, REFERENCE_FIELD_NAME);
-        String description = parseString(rootNode, DESCRIPTION_FIELD_NAME);
-        String returnUrl = parseString(rootNode, RETURN_URL_FIELD_NAME, aPaymentError(RETURN_URL_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid URL format"));
-
-        return new CreatePaymentRequest(amount, returnUrl, reference, description);
+        if (paymentRequest.has("agreement_id")) {
+            String agreementId = parseString(paymentRequest, AGREEMENT_ID_FIELD_NAME, aPaymentError(AGREEMENT_ID_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid agreement ID"));
+            return new CreatePaymentRequest(amount, null, reference, description, agreementId);
+        } else {
+            String returnUrl = parseString(paymentRequest, RETURN_URL_FIELD_NAME, aPaymentError(RETURN_URL_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid URL format"));
+            return new CreatePaymentRequest(amount, returnUrl, reference, description);
+        }
     }
 
-    static CreatePaymentRefundRequest paymentRefundRequestValueOf(JsonNode rootNode) {
+    static CreatePaymentRefundRequest parseRefundRequest(JsonNode rootNode) {
         Integer amount = parseInteger(rootNode, AMOUNT_FIELD_NAME, CREATE_PAYMENT_REFUND_VALIDATION_ERROR, CREATE_PAYMENT_REFUND_MISSING_FIELD_ERROR);
         Integer refundAmountAvailable = rootNode.get(REFUND_AMOUNT_AVAILABLE) == null ? null : rootNode.get(REFUND_AMOUNT_AVAILABLE).asInt();
         return new CreatePaymentRefundRequest(amount, refundAmountAvailable);
