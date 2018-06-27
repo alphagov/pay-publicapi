@@ -74,6 +74,13 @@
                 }
               ]
             },
+            "$.service_reference": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
             "$.mandate_type": {
               "matchers": [
                 {
