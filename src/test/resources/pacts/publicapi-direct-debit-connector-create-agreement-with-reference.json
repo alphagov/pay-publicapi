@@ -7,7 +7,7 @@
   },
   "interactions": [
     {
-      "description": "Create a mandate request with reference",
+      "description": "Create a mandate request with service reference",
       "providerStates": [
         {
           "name": "a gateway account with external id exists",
@@ -22,7 +22,7 @@
         "body": {
           "return_url": "https://example.com/return",
           "agreement_type": "ON_DEMAND",
-          "service_reference": "serviceref123"
+          "service_reference": "test_service_reference"
         }
       },
       "response": {
@@ -33,8 +33,9 @@
         },
         "body": {
           "mandate_id": "test_mandate_id_xyz",
+          "mandate_reference": "test_mandate_reference",
           "mandate_type": "ON_DEMAND",
-          "service_reference": "serviceref123",
+          "service_reference": "test_service_reference",
           "return_url": "https://example.com/return",
           "created_date": "2016-01-01T12:00:00.000Z",
           "state": {
@@ -75,6 +76,13 @@
           },
           "body": {
             "$.mandate_id": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.mandate_reference": {
               "matchers": [
                 {
                   "match": "type"

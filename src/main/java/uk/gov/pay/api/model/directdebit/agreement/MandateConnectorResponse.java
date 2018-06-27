@@ -12,6 +12,7 @@ public class MandateConnectorResponse {
 
     private String mandateId;
     private MandateType mandateType;
+    private String mandateReference;
     private String serviceReference;
     private String returnUrl;
     private String createdDate;
@@ -27,6 +28,9 @@ public class MandateConnectorResponse {
     public MandateType getMandateType() {
         return mandateType;
     }
+
+    @JsonProperty(value = "mandate_reference")
+    public String getMandateReference() { return mandateReference; }
 
     @JsonProperty(value = "service_reference")
     public String getServiceReference() {
@@ -52,4 +56,5 @@ public class MandateConnectorResponse {
     public List<PaymentConnectorResponseLink> getLinks() {
         return links;
     }
+
 }

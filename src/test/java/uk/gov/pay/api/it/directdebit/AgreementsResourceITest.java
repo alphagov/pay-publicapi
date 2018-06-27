@@ -23,23 +23,28 @@ public class AgreementsResourceITest extends PaymentResourceITestBase {
     private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
     private static final String CREATED_DATE = DateTimeUtils.toUTCDateString(TIMESTAMP);
     private static final String CHARGE_TOKEN_ID = "token_1234567asdf";
+    private static final String MANDATE_ID = "mandateId";
+    private static final String MANDATE_REFERENCE = "test_mandate_reference";
+    private static final String SERVICE_REFERENCE = "test_service_reference";
+    private static final String RETURN_URL = "https://service-name.gov.uk/transactions/12345";
 
     @Test
-    public void createDirectDebitAgreement() {
-
+    public void createDirectDebitAgreement_withReference() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
-
+        
         connectorDDMock.respondOk_whenCreateAgreementRequest(
-                "mandateId",
+                MANDATE_ID,
                 MandateType.ON_DEMAND,
-                "https://service-name.gov.uk/transactions/12345",
+                MANDATE_REFERENCE,
+                SERVICE_REFERENCE,
+                RETURN_URL,
                 CREATED_DATE,
                 new MandateState("created", false),
                 GATEWAY_ACCOUNT_ID,
                 CHARGE_TOKEN_ID
         );
 
-        String payload = agreementPayload("https://service-name.gov.uk/transactions/12345", AgreementType.ON_DEMAND);
+        String payload = agreementPayload(RETURN_URL, AgreementType.ON_DEMAND);
         given().port(app.getLocalPort())
                 .body(payload)
                 .accept(JSON)
@@ -50,12 +55,14 @@ public class AgreementsResourceITest extends PaymentResourceITestBase {
                 .statusCode(201)
                 .contentType(JSON)
                 .header(HttpHeaders.LOCATION, is("http://publicapi.url/v1/agreements/mandateId"))
-                .body("agreement_id", is("mandateId"))
+                .body("agreement_id", is(MANDATE_ID))
                 .body("agreement_type", is(AgreementType.ON_DEMAND.toString()))
-                .body("return_url", is("https://service-name.gov.uk/transactions/12345"))
+                .body("provider_id", is(MANDATE_REFERENCE))
+                .body("reference", is(SERVICE_REFERENCE))
+                .body("return_url", is(RETURN_URL))
                 .body("created_date", is(CREATED_DATE))
                 .body("state", is(AgreementStatus.CREATED.toString()))
-                .body("_links.self.href", is(mandateLocationFor("mandateId")))
+                .body("_links.self.href", is(mandateLocationFor(MANDATE_ID)))
                 .body("_links.self.method", is("GET"))
                 .body("_links.next_url.href", is(directDebitFrontendSecureUrl() + CHARGE_TOKEN_ID))
                 .body("_links.next_url.method", is("GET"))
@@ -81,7 +88,7 @@ public class AgreementsResourceITest extends PaymentResourceITestBase {
         );
 
         String payload = agreementPayload("https://service-name.gov.uk/transactions/12345", AgreementType.ON_DEMAND);
-        String s = given().port(app.getLocalPort())
+        given().port(app.getLocalPort())
                 .body(payload)
                 .accept(JSON)
                 .contentType(JSON)
@@ -96,15 +103,16 @@ public class AgreementsResourceITest extends PaymentResourceITestBase {
     }
 
     @Test
-    public void shouldGetADirectDebitAgreement() {
+    public void shouldGetADirectDebitAgreement_withReference() {
 
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
 
-        final String mandateId = "mandateId";
         connectorDDMock.respondOk_whenGetAgreementRequest(
-                mandateId,
+                MANDATE_ID,
                 MandateType.ON_DEMAND,
-                "https://service-name.gov.uk/transactions/12345",
+                MANDATE_REFERENCE,
+                SERVICE_REFERENCE,
+                RETURN_URL,
                 new MandateState("created", false),
                 GATEWAY_ACCOUNT_ID,
                 CHARGE_TOKEN_ID
@@ -114,15 +122,17 @@ public class AgreementsResourceITest extends PaymentResourceITestBase {
                 .accept(JSON)
                 .contentType(JSON)
                 .header(AUTHORIZATION, "Bearer " + API_KEY)
-                .get("/v1/agreements/" + mandateId)
+                .get("/v1/agreements/" + MANDATE_ID)
                 .then()
                 .statusCode(200)
                 .contentType(JSON)
-                .body("agreement_id", is(mandateId))
+                .body("agreement_id", is(MANDATE_ID))
                 .body("agreement_type", is(AgreementType.ON_DEMAND.toString()))
-                .body("return_url", is("https://service-name.gov.uk/transactions/12345"))
+                .body("provider_id", is(MANDATE_REFERENCE))
+                .body("reference", is(SERVICE_REFERENCE))
+                .body("return_url", is(RETURN_URL))
                 .body("state", is(AgreementStatus.CREATED.toString()))
-                .body("_links.self.href", is(mandateLocationFor(mandateId)))
+                .body("_links.self.href", is(mandateLocationFor(MANDATE_ID)))
                 .body("_links.self.method", is("GET"))
                 .body("_links.next_url.href", is(directDebitFrontendSecureUrl() + CHARGE_TOKEN_ID))
                 .body("_links.next_url.method", is("GET"))
@@ -133,9 +143,10 @@ public class AgreementsResourceITest extends PaymentResourceITestBase {
                 .extract().body().asString();
     }
 
-    protected String mandateLocationFor(String mandateId) {
+    private String mandateLocationFor(String mandateId) {
         return "http://publicapi.url/v1/agreements/" + mandateId;
     }
+
     private static String agreementPayload(String returnUrl, AgreementType agreementType) {
         return new JsonStringBuilder()
                 .add("return_url", returnUrl)

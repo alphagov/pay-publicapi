@@ -684,7 +684,7 @@
         },
         "reference" : {
           "type" : "string",
-          "example" : "serviceref123",
+          "example" : "test_service_reference",
           "description" : "agreement reference",
           "readOnly" : true
         }
@@ -693,7 +693,7 @@
     },
     "CreateAgreementResponse" : {
       "type" : "object",
-      "required" : [ "_links", "agreement_id", "agreement_type", "created_date", "return_url", "state" ],
+      "required" : [ "_links", "agreement_id", "agreement_type", "created_date", "provider_id", "return_url", "state" ],
       "properties" : {
         "agreement_id" : {
           "type" : "string",
@@ -708,9 +708,15 @@
           "readOnly" : true,
           "enum" : [ "ON_DEMAND", "ONE_OFF" ]
         },
+        "provider_id" : {
+          "type" : "string",
+          "example" : "jhjcvaiqlediuhh23d89hd3",
+          "description" : "provider id",
+          "readOnly" : true
+        },
         "reference" : {
           "type" : "string",
-          "example" : "serviceref123",
+          "example" : "test_service_reference",
           "description" : "agreement reference",
           "readOnly" : true
         },

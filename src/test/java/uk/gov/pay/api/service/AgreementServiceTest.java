@@ -34,6 +34,8 @@ import static org.mockito.Mockito.when;
 public class AgreementServiceTest {
 
     private static final String MANDATE_ID = "test_mandate_id_xyz";
+    private static final String MANDATE_REFERENCE = "test_mandate_reference";
+    private static final String SERVICE_REFERENCE = "test_service_reference";
 
     private AgreementService agreementService;
 
@@ -67,6 +69,7 @@ public class AgreementServiceTest {
         MandateConnectorResponse mandateConnectorResponse = connectorResponse.readEntity(MandateConnectorResponse.class);
 
         assertThat(mandateConnectorResponse.getMandateId(), is(MANDATE_ID));
+        assertThat(mandateConnectorResponse.getMandateReference(), is(MANDATE_REFERENCE));
         assertThat(mandateConnectorResponse.getMandateType(), is(MandateType.ON_DEMAND));
         assertThat(mandateConnectorResponse.getServiceReference(), is(nullValue()));
         assertThat(mandateConnectorResponse.getCreatedDate(), is("2016-01-01T12:00:00.000Z"));
@@ -103,14 +106,15 @@ public class AgreementServiceTest {
         MandateConnectorRequest mandateConnectorRequest = new MandateConnectorRequest(
                 "https://example.com/return",
                 AgreementType.ON_DEMAND,
-                "serviceref123"
+                SERVICE_REFERENCE
         );
         Response connectorResponse = agreementService.createMandate(account, mandateConnectorRequest);
         MandateConnectorResponse mandateConnectorResponse = connectorResponse.readEntity(MandateConnectorResponse.class);
 
         assertThat(mandateConnectorResponse.getMandateId(), is(MANDATE_ID));
+        assertThat(mandateConnectorResponse.getMandateReference(), is(MANDATE_REFERENCE));
         assertThat(mandateConnectorResponse.getMandateType(), is(MandateType.ON_DEMAND));
-        assertThat(mandateConnectorResponse.getServiceReference(), is("serviceref123"));
+        assertThat(mandateConnectorResponse.getServiceReference(), is(SERVICE_REFERENCE));
         assertThat(mandateConnectorResponse.getCreatedDate(), is("2016-01-01T12:00:00.000Z"));
         assertThat(mandateConnectorResponse.getReturnUrl(), is("https://example.com/return"));
         assertThat(mandateConnectorResponse.getState(), is(new MandateState("created", false)));
@@ -140,12 +144,14 @@ public class AgreementServiceTest {
     @Test
     @PactVerification({"direct-debit-connector"})
     @Pacts(pacts = {"publicapi-direct-debit-connector-get-agreement"})
-    public void shouldGetAMandateSuccessfully() {
+    public void shouldGetAMandateSuccessfully_withReference() {
         Account account = new Account("9ddfcc27-acf5-43f9-92d5-52247540714c", TokenPaymentType.DIRECT_DEBIT);
         Response connectorResponse = agreementService.getMandate(account, MANDATE_ID);
         MandateConnectorResponse mandateConnectorResponse = connectorResponse.readEntity(MandateConnectorResponse.class);
 
         assertThat(mandateConnectorResponse.getMandateId(), is(MANDATE_ID));
+        assertThat(mandateConnectorResponse.getMandateReference(), is(MANDATE_REFERENCE));
+        assertThat(mandateConnectorResponse.getServiceReference(), is(SERVICE_REFERENCE));
         assertThat(mandateConnectorResponse.getMandateType(), is(MandateType.ON_DEMAND));
         assertThat(mandateConnectorResponse.getReturnUrl(), is("https://example.com/return"));
         assertThat(mandateConnectorResponse.getState(), is(new MandateState("created", false)));

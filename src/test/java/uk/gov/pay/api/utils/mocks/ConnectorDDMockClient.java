@@ -12,11 +12,11 @@ import java.util.HashMap;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static javax.ws.rs.HttpMethod.GET;
 import static javax.ws.rs.HttpMethod.POST;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.HttpHeaders.LOCATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.HttpMethod.GET;
 import static org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
 import static org.eclipse.jetty.http.HttpStatus.CREATED_201;
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
@@ -49,9 +49,14 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                         .withBody(chargeResponseBody));
     }
 
-    public void respondOk_whenCreateAgreementRequest(String mandateId, MandateType mandateType,
-                                                     String returnUrl, String createdDate,
-                                                     MandateState state, String gatewayAccountId,
+    public void respondOk_whenCreateAgreementRequest(String mandateId,
+                                                     MandateType mandateType,
+                                                     String providerId,
+                                                     String serviceReference,
+                                                     String returnUrl,
+                                                     String createdDate,
+                                                     MandateState state,
+                                                     String gatewayAccountId,
                                                      String chargeTokenId) {
         whenCreateAgreement(returnUrl, mandateType, gatewayAccountId)
                 .respond(response()
@@ -61,6 +66,8 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                         .withBody(buildCreateAgreementResponse(
                                 mandateId,
                                 mandateType,
+                                providerId,
+                                serviceReference,
                                 returnUrl,
                                 createdDate,
                                 state,
@@ -73,7 +80,15 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                         ))
                 );
     }
-    public void respondOk_whenGetAgreementRequest(String mandateId, MandateType mandateType, String returnUrl, MandateState state, String gatewayAccountId, String chargeTokenId) {
+
+    public void respondOk_whenGetAgreementRequest(String mandateId,
+                                                  MandateType mandateType,
+                                                  String mandateReference,
+                                                  String serviceReference,
+                                                  String returnUrl,
+                                                  MandateState state,
+                                                  String gatewayAccountId,
+                                                  String chargeTokenId) {
         whenGetAgreement(mandateId, gatewayAccountId)
                 .respond(response()
                         .withStatusCode(200)
@@ -81,6 +96,8 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                         .withBody(buildGetAgreementResponse(
                                 mandateId,
                                 mandateType,
+                                mandateReference,
+                                serviceReference,
                                 returnUrl,
                                 state,
                                 validGetLink(mandateLocation(gatewayAccountId, mandateId), "self"),
@@ -92,6 +109,7 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                         ))
                 );
     }
+
     public void respondBadRequest_whenCreateAgreementRequest(MandateType mandateType,
                                                              String returnUrl,
                                                              String gatewayAccountId,
@@ -100,12 +118,19 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                 .respond(withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg));
     }
 
-    private String buildCreateAgreementResponse(String mandateId, MandateType mandateType,
-                                                String returnUrl, String createdDate,
-                                                MandateState state, ImmutableMap<?, ?>... links) {
+    private String buildCreateAgreementResponse(String mandateId,
+                                                MandateType mandateType,
+                                                String mandateReference,
+                                                String serviceReference,
+                                                String returnUrl,
+                                                String createdDate,
+                                                MandateState state,
+                                                ImmutableMap<?, ?>... links) {
         return new JsonStringBuilder()
                 .add("mandate_id", mandateId)
                 .add("mandate_type", mandateType)
+                .add("mandate_reference", mandateReference)
+                .add("service_reference", serviceReference)
                 .add("return_url", returnUrl)
                 .add("created_date", createdDate)
                 .add("state", state)
@@ -113,18 +138,24 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                 .build();
     }
 
-    private String buildGetAgreementResponse(String mandateId, MandateType mandateType,
-            String returnUrl,
-            MandateState state, ImmutableMap<?, ?>... links) {
+    private String buildGetAgreementResponse(String mandateId,
+                                             MandateType mandateType,
+                                             String mandateReference,
+                                             String serviceReference,
+                                             String returnUrl,
+                                             MandateState state,
+                                             ImmutableMap<?, ?>... links) {
         return new JsonStringBuilder()
                 .add("mandate_id", mandateId)
                 .add("mandate_type", mandateType)
+                .add("mandate_reference", mandateReference)
                 .add("return_url", returnUrl)
+                .add("service_reference", serviceReference)
                 .add("state", state)
                 .add("links", asList(links))
                 .build();
     }
-    
+
     private String buildPaymentRequestResponse(long amount, String chargeId, PaymentState state, String returnUrl, String description,
                                                String reference, String email, String paymentProvider,
                                                String createdDate, ImmutableMap<?, ?>... links) {
@@ -166,7 +197,7 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                 .withPath(format("/v1/api/accounts/%s/mandates/%s", gatewayAccountId, mandateId))
         );
     }
-    
+
     private String createAgreementPayload(String returnUrl, MandateType mandateType) {
         return new JsonStringBuilder()
                 .add("return_url", returnUrl)
