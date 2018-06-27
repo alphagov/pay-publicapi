@@ -61,7 +61,7 @@ public class CreatePaymentServiceTest {
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-create-payment"}, publish = false)
     public void testCreatePayment() {
-        Account account = new Account("GATEWAY_ACCOUNT_ID", TokenPaymentType.CARD);
+        Account account = new Account("123456", TokenPaymentType.CARD);
         CreatePaymentRequest requestPayload = new CreatePaymentRequest(100, "https://somewhere.gov.uk/rainbow/1", "a reference", "a description");
         PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
 
@@ -85,7 +85,7 @@ public class CreatePaymentServiceTest {
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-direct-debit-connector-collect-payment"})
     public void testCollectPayment() {
-        Account account = new Account("GATEWAY_ACCOUNT_ID", TokenPaymentType.CARD);
+        Account account = new Account("123456", TokenPaymentType.CARD);
         CreatePaymentRequest requestPayload = new CreatePaymentRequest(100, "https://somewhere.gov.uk/rainbow/1", "a reference", "a description");
         PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
 
