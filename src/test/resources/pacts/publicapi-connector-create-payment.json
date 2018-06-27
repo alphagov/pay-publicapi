@@ -8,6 +8,14 @@
   "interactions": [
     {
       "description": "a create charge request",
+      "providerStates": [
+        {
+          "name": "a gateway account with external id exists",
+          "params": {
+            "gateway_account_id": "GATEWAY_ACCOUNT_ID"
+          }
+        }
+      ],
       "request": {
         "method": "POST",
         "path": "/v1/api/accounts/GATEWAY_ACCOUNT_ID/charges",
