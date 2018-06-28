@@ -261,7 +261,6 @@ public class ResourcesFiltersITest extends PaymentResourceITestBase {
             @Override
             protected boolean matchesSafely(ValidatableResponse validatableResponse) {
                 ExtractableResponse<Response> extract = validatableResponse.extract();
-                System.out.println("extract.body().asString() = " + extract.body().asString());
                 return extract.statusCode() == statusCode
                         && publicApiErrorCode.equals(extract.body().<String>path("code"))
                         && expectedDescription.equals(extract.body().<String>path("description"));

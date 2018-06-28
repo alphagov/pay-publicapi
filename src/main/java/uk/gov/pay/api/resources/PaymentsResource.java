@@ -199,21 +199,11 @@ public class PaymentsResource {
                                    @Context UriInfo uriInfo) {
 
         logger.info("Payments search request - [ {} ]",
-                format("reference:%s, email: %s, status: %s, card_brand %s, fromDate: %s, toDate: %s, page: %s, display_size: %s",
-                        reference, email, state, cardBrand, fromDate, toDate, pageNumber, displaySize));
+                format("reference:%s, email: %s, status: %s, card_brand %s, fromDate: %s, toDate: %s, page: %s, display_size: %s, agreement: %s",
+                        reference, email, state, cardBrand, fromDate, toDate, pageNumber, displaySize, agreement));
         
-        HalRepresentation halRepresentation = paymentSearchService
-                .doSearch(account, 
-                        reference, 
-                        email,
-                        state,
-                        cardBrand,
-                        fromDate,
-                        toDate,
-                        pageNumber,
-                        displaySize,
-                        agreement);
-        return Response.ok(halRepresentation.toString()).build();
+        return  paymentSearchService.doSearch(account, reference, email, state, cardBrand, 
+                fromDate, toDate, pageNumber, displaySize, agreement);
     }
     
     @POST
