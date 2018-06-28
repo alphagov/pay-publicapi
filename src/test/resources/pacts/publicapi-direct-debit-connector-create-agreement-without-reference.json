@@ -7,7 +7,7 @@
   },
   "interactions": [
     {
-      "description": "Create a mandate request without reference",
+      "description": "Create a mandate request without service reference",
       "providerStates": [
         {
           "name": "a gateway account with external id exists",
@@ -32,6 +32,7 @@
         },
         "body": {
           "mandate_id": "test_mandate_id_xyz",
+          "mandate_reference": "test_mandate_reference",
           "mandate_type": "ON_DEMAND",
           "return_url": "https://example.com/return",
           "created_date": "2016-01-01T12:00:00.000Z",
@@ -73,6 +74,13 @@
           },
           "body": {
             "$.mandate_id": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.mandate_reference": {
               "matchers": [
                 {
                   "match": "type"
