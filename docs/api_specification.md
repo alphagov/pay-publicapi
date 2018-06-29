@@ -291,7 +291,7 @@ Content-Type: application/json
     "status": "CREATED",
     "return_url": "https://service.example.com/some-reference-to-this-payment",
     "reference" : "some-reference-to-this-payment",
-    "email": "mail@email.com",
+    "email": "mail@example.com",
     "payment_provider": "Sandbox",
     "card_brand": "Visa",
     "created_date": "2016-01-15T16:30:56Z",
@@ -349,7 +349,7 @@ Content-Type: application/json
     "status": "CREATED",
     "return_url": "https://service.example.com/some-reference-to-this-payment",
     "reference" : "some-reference-to-this-payment",
-    "email": "mail@email.com",
+    "email": "mail@example.com",
     "payment_provider": "Sandbox",
     "created_date": "2016-01-15T16:30:56Z"
 }
@@ -863,13 +863,14 @@ GET /v1/payments
 | `reference`               | - | There (partial or full) reference issued by the government service for this payment. |
 | `status`                  | - | The transaction of this payment |
 | `from_date`               | - | The initial date for search payments |
-| `to_date`                 | - | The end date for search payments|
-| `card_brand`              | - | The card brand for search payments|
+| `to_date`                 | - | The end date for search payments |
+| `card_brand`              | - | The card brand for search payments. For Card Payments only |
 | `page`                    | - | To get the results from the specified page number, should be a non zero +ve number (optional, defaults to 1)|
 | `display_size`            | - | Number of records to be returned per page, should be a non zero +ve number (optional, defaults to 500)|
 | `email`                   | - | Email ID of the payment user to search for          |
+| `agreement_id`            | - | Agreement id. Used by Direct Debit exclusively. If used for Card payment a BadRequestException is thrown. |
 
-### Response example
+### Response example for Card Payment
 
 ```
 {
@@ -889,7 +890,7 @@ GET /v1/payments
       "description": "desc",
       "return_url": "https://demoservice.example.com//return/rahul-ref",
       "reference": "rahul-ref",
-      "email": "mail@email.com",
+      "email": "mail@example.com",
       "created_date": "2016-05-23T15:22:50.972Z",
       "card_details": {  
       	"last_digits_card_number":"1234",
@@ -944,7 +945,7 @@ GET /v1/payments
       "description": "desc",
       "return_url": "https://demoservice.example.com/return/rahul-ref",
       "reference": "rahul-ref",
-      "email": "mail@email.com",
+      "email": "mail@example.com",
       "created_date": "2016-05-23T15:22:47.038Z",
       "card_details": {  
       	"last_digits_card_number":"1234",
@@ -1008,7 +1009,7 @@ GET /v1/payments
 }
 ```
 
-#### Response field description
+#### Response field description for Card Payment
 
 | Field                             | Always present | Description                                                       |
 | ------------------------          |:--------------:| ----------------------------------------------------------------- |
@@ -1049,7 +1050,75 @@ GET /v1/payments
 | `_links.first_page.href`          | Yes            | Href link of the first page (based on the display_size requested) |
 | `_links.last_page.href`           | Yes            | Href link of the last page (based on the display_size requested)  |
 
-
+### Response example for Direct Debit Payment
+```
+{
+    "total": 3,
+    "count": 1,
+    "page": 2,
+    "results": [
+        {
+            "amount": 200,
+            "state": {
+                "status": "pending",
+                "finished": false
+            },
+            "description": "A test payment 2",
+            "reference": "MBK71",
+            "email": "citizen@example.com",
+            "name": "Joe Bog",
+            "transaction_id": "t9037r9pfla4q0cao1mq1ad3a7",
+            "created_date": "2018-06-27T09:57:02.127Z",
+            "links": {
+                "self": {
+                    "href": "https://publicapi.example.com/v1/payments/t9037r9pfla4q0cao1mq1ad3a7",
+                    "method": "GET"
+                }
+            }
+        }
+    ],
+    "_links": {
+        "next_page": {
+            "href": "https://publicapi.example.com/v1/payments?&page_number=3&display_size=100"
+        },
+        "self": {
+            "href": "https://publicapi.example.com/v1/payments?&page_number=2&display_size=100"
+        },
+        "prev_page": {
+            "href": "https://publicapi.example.com/v1/payments?&page_number=1&display_size=100"
+        },
+        "last_page": {
+            "href": "https://publicapi.example.com/v1/payments?&page_number=3&display_size=100"
+        },
+        "first_page": {
+            "href": "https://publicapi.example.com/v1/payments?&page_number=1&display_size=100"
+        }
+    }
+}
+```
+#### Response field description for Direct Debit Payment
+```
+| Field                                 | Always present | Description                                                       |
+| ------------------------------------- |:--------------:| ----------------------------------------------------------------- |
+| `total`                               | Yes            | Total number of payments found                                    |
+| `count`                               | Yes            | Number of payments displayed on this page                         |
+| `page`                                | Yes            | Page number of the current recordset                              |
+| `results`                             | Yes            | List of payments                                                  |
+| `results[i].amount`                   | Yes            | The amount of this payment in pence                               |
+| `results[i].state`                    | Yes            | The current external status of the payment                        |
+| `results[i].description`              | Yes            | The payment description                                           |
+| `results[i].reference`                | Yes            | There reference issued by the government service for this payment |
+| `results[i].email`                    | Yes            | The email address of the user of this payment                     |
+| `results[i].name`                     | Yes            | The name of the user of this payment                              |
+| `results[i].transaction_id`           | Yes            | The transaction id associated to this payment                     |
+| `results[i].created_date`             | Yes            | The created date in ISO_8601 format (```yyyy-MM-ddTHH:mm:ssZ```)  |
+| `results[i]._links.self`              | Yes            | Link to the payment                      |
+| `_links.self.href`                    | Yes            | Href link of the current page                                     |
+| `_links.next_page.href`               | No             | Href link of the next page (based on the display_size requested)  |
+| `_links.prev_page.href`               | No             | Href link of the previous page (based on the display_size requested) |
+| `_links.first_page.href`              | Yes            | Href link of the first page (based on the display_size requested) |
+| `_links.last_page.href`               | Yes            | Href link of the last page (based on the display_size requested)  |
+```
 ### Search payments response errors
 
 #### Validation errors
