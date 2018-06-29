@@ -195,15 +195,15 @@ public class PaymentsResource {
                                    @ApiParam(value = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)", hidden = false)
                                    @QueryParam("display_size") String displaySize,
                                    @ApiParam(value = "Direct Debit Agreement Id", hidden = false)
-                                   @QueryParam("agreement") String agreement,
+                                   @QueryParam("agreement_id") String agreementId,
                                    @Context UriInfo uriInfo) {
 
         logger.info("Payments search request - [ {} ]",
-                format("reference:%s, email: %s, status: %s, card_brand %s, fromDate: %s, toDate: %s, page: %s, display_size: %s, agreement: %s",
-                        reference, email, state, cardBrand, fromDate, toDate, pageNumber, displaySize, agreement));
+                format("reference:%s, email: %s, status: %s, card_brand %s, fromDate: %s, toDate: %s, page: %s, display_size: %s, agreement_id: %s",
+                        reference, email, state, cardBrand, fromDate, toDate, pageNumber, displaySize, agreementId));
         
         return  paymentSearchService.doSearch(account, reference, email, state, cardBrand, 
-                fromDate, toDate, pageNumber, displaySize, agreement);
+                fromDate, toDate, pageNumber, displaySize, agreementId);
     }
     
     @POST

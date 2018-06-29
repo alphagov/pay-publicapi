@@ -52,7 +52,7 @@ public class PaymentSearchService {
     private static final String DISPLAY_SIZE = "display_size";
     private static final String TRANSACTION_TYPE_KEY = "transactionType";
     private static final String TRANSACTION_TYPE_KEY_VALUE = "charge";
-    private static final String AGREEMENT_KEY = "agreement";
+    private static final String AGREEMENT_KEY = "agreement_id";
     private final ConnectorUriGenerator connectorUriGenerator;
     private final Client client;
     private final ObjectMapper objectMapper;
@@ -73,14 +73,14 @@ public class PaymentSearchService {
     }
     
     public Response doSearch(Account account, String reference, String email, String state, String cardBrand,
-                             String fromDate, String toDate, String pageNumber, String displaySize, String agreement) {
+                             String fromDate, String toDate, String pageNumber, String displaySize, String agreementId) {
         List<Pair<String, String>> queryParams;
-        validateSearchParameters(state, reference, email, cardBrand, fromDate, toDate, pageNumber, displaySize, agreement);
+        validateSearchParameters(state, reference, email, cardBrand, fromDate, toDate, pageNumber, displaySize, agreementId);
         
         if (!isDirectDebitAccount(account)) {
-            if (agreement != null) {
+            if (agreementId != null) {
                 throw new BadRequestException(PaymentError
-                        .aPaymentError(PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR, "agreement"));
+                        .aPaymentError(PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR, "agreement_id"));
             }
             if (isNotBlank(cardBrand)) {
                 cardBrand = cardBrand.toLowerCase();
@@ -107,7 +107,7 @@ public class PaymentSearchService {
             throw new SearchChargesException(connectorResponse);
         }
         queryParams = asList(
-                Pair.of(AGREEMENT_KEY, agreement),
+                Pair.of(AGREEMENT_KEY, agreementId),
                 Pair.of(REFERENCE_KEY, reference),
                 Pair.of(EMAIL_KEY, email),
                 Pair.of(STATE_KEY, state),
@@ -116,12 +116,12 @@ public class PaymentSearchService {
                 Pair.of(PAGE, pageNumber),
                 Pair.of(DISPLAY_SIZE, displaySize));
         
-        Response ddConenctorResponse = getSearchResponse(account, queryParams);
-        logger.info("response from dd connector for transaction search: " + ddConenctorResponse);
-        if (ddConenctorResponse.getStatus() == SC_OK) {
-            return processDirectDebitResponse(ddConenctorResponse); 
+        Response ddConnectorResponse = getSearchResponse(account, queryParams);
+        logger.info("response from dd connector for transaction search: " + ddConnectorResponse);
+        if (ddConnectorResponse.getStatus() == SC_OK) {
+            return processDirectDebitResponse(ddConnectorResponse); 
         }
-        throw new SearchChargesException(ddConenctorResponse); 
+        throw new SearchChargesException(ddConnectorResponse); 
     }
     
     private Response getSearchResponse(Account account, List<Pair<String, String>> queryParams) {
