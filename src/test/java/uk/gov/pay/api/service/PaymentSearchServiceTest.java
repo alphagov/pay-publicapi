@@ -65,7 +65,7 @@ public class PaymentSearchServiceTest {
                     null, null, null, agreementId);
         } catch (uk.gov.pay.api.exception.BadRequestException ex) {
             assertThat(ex.getPaymentError().getCode(), is("P0401"));
-            assertThat(ex.getPaymentError().getDescription().contains("Invalid parameters: agreement."), is(true));
+            assertThat(ex.getPaymentError().getDescription().contains("Invalid parameters: agreement_id."), is(true));
         }
     }
     

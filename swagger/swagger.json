@@ -219,7 +219,7 @@
           "required" : false,
           "type" : "string"
         }, {
-          "name" : "agreement",
+          "name" : "agreement_id",
           "in" : "query",
           "description" : "Direct Debit Agreement Id",
           "required" : false,

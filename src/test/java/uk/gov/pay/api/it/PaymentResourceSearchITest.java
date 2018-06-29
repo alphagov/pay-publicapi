@@ -478,14 +478,14 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
     @Test
     public void searchPayments_withMandateId_whenCardPayment_shouldReturnABadRequestResponse() throws Exception{
         InputStream body = searchPayments(API_KEY,
-                ImmutableMap.of("agreement", "my_agreement"))
+                ImmutableMap.of("agreement_id", "my_agreement"))
                 .statusCode(400)
                 .contentType(JSON).extract()
                 .body().asInputStream();
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", is("P0401"))
-                .assertThat("$.description", is("Invalid parameters: agreement. See Public API documentation for the correct data formats"));
+                .assertThat("$.description", is("Invalid parameters: agreement_id. See Public API documentation for the correct data formats"));
     }
 
     private Matcher<? super List<Map<String, Object>>> matchesState(final String state) {
