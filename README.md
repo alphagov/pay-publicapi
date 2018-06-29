@@ -1,6 +1,7 @@
 # pay-publicapi
 GOV.UK Pay Public API service in Java (Dropwizard)
 
+
 ## Keystore setup for HTTPS outbound calls:
 
 Following variables are needed in order to import the trusted certificates and public keys to a java keystore, which will be used for secure outbound HTTPS calls.
