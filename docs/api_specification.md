@@ -291,7 +291,7 @@ Content-Type: application/json
     "status": "CREATED",
     "return_url": "https://service.example.com/some-reference-to-this-payment",
     "reference" : "some-reference-to-this-payment",
-    "email": "mail@example.om",
+    "email": "mail@example.com",
     "payment_provider": "Sandbox",
     "card_brand": "Visa",
     "created_date": "2016-01-15T16:30:56Z",
@@ -349,7 +349,7 @@ Content-Type: application/json
     "status": "CREATED",
     "return_url": "https://service.example.com/some-reference-to-this-payment",
     "reference" : "some-reference-to-this-payment",
-    "email": "mail@example.om",
+    "email": "mail@example.com",
     "payment_provider": "Sandbox",
     "created_date": "2016-01-15T16:30:56Z"
 }
@@ -868,7 +868,7 @@ GET /v1/payments
 | `page`                    | - | To get the results from the specified page number, should be a non zero +ve number (optional, defaults to 1)|
 | `display_size`            | - | Number of records to be returned per page, should be a non zero +ve number (optional, defaults to 500)|
 | `email`                   | - | Email ID of the payment user to search for          |
-| `agreement_id`            | - | Agreement id. Used by Direct Debit exclusively. If used for Card payment a BadRequestException is thrown |
+| `agreement_id`            | - | Agreement id. Used by Direct Debit exclusively. If used for Card payment a BadRequestException is thrown. |
 
 ### Response example for Card Payment
 
