@@ -7,7 +7,7 @@
     <artifactId>pay-publicapi</artifactId>
 
     <properties>
-        <dropwizard.version>1.2.5</dropwizard.version>
+        <dropwizard.version>1.2.8</dropwizard.version>
         <guice.version>4.2.0</guice.version>
         <mockserver.version>3.10.4</mockserver.version>
         <swagger.jersey2.version>1.5.20</swagger.jersey2.version>
