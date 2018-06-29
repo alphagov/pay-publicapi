@@ -1,8 +1,9 @@
 package uk.gov.pay.api.service;
 
 import au.com.dius.pact.consumer.PactVerification;
+import java.util.Collections;
+import javax.ws.rs.client.Client;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,9 +21,6 @@ import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.model.links.PostLink;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
-
-import javax.ws.rs.client.Client;
-import java.util.Collections;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
@@ -42,7 +40,8 @@ public class CreatePaymentServiceTest {
 
     @Before
     public void setup() {
-        when(configuration.getConnectorUrl()).thenReturn(connectorRule.getUrl()); // We will actually send real requests here, which will be intercepted by pact
+        when(configuration.getConnectorUrl()).thenReturn(connectorRule.getUrl()); // We will actually send real requests here, which will be intercepted by pact        
+        when(configuration.getConnectorDDUrl()).thenReturn(connectorRule.getUrl()); 
 
         when(configuration.getBaseUrl()).thenReturn("http://publicapi.test.localhost/");
 
@@ -81,7 +80,7 @@ public class CreatePaymentServiceTest {
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-direct-debit-connector-collect-payment"})
     public void testCollectPayment() {
-        Account account = new Account("DIRECT_DEBIT:jhsdfkwehrkuh", TokenPaymentType.CARD);
+        Account account = new Account("GATEWAY_ACCOUNT_ID", TokenPaymentType.DIRECT_DEBIT);
         CreatePaymentRequest requestPayload = new CreatePaymentRequest(100, null, "a reference", "a description", "test_mandate_id_xyz");
         PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
 

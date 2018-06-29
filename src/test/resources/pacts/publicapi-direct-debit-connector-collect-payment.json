@@ -12,14 +12,14 @@
         {
           "name": "a gateway account with external id and a mandate with external id exist",
           "params": {
-            "gateway_account_id": "DIRECT_DEBIT:jhsdfkwehrkuh",
+            "gateway_account_id": "GATEWAY_ACCOUNT_ID",
             "mandate_id": "test_mandate_id_xyz"
           }
         }
       ],
       "request": {
         "method": "POST",
-        "path": "/v1/api/accounts/DIRECT_DEBIT:jhsdfkwehrkuh/charges/collect",
+        "path": "/v1/api/accounts/GATEWAY_ACCOUNT_ID/charges/collect",
         "body": {
           "amount": 100,
           "reference": "a reference",
@@ -31,7 +31,7 @@
         "status": 201,
         "headers": {
           "Content-Type": "application/json",
-          "Location": "/v1/api/accounts/DIRECT_DEBIT:jhsdfkwehrkuh/charges/ch_ab2341da231434l"
+          "Location": "/v1/api/accounts/GATEWAY_ACCOUNT_ID/charges/ch_ab2341da231434l"
         },
         "body": {
           "charge_id": "ch_ab2341da231434l",
@@ -46,7 +46,7 @@
           "created_date": "2016-01-01T12:00:00Z",
           "links": [
             {
-              "href": "http://connector.service.backend/v1/api/accounts/123456/charges/ch_ab2341da231434l",
+              "href": "http://connector.service.backend/v1/api/accounts/GATEWAY_ACCOUNT_ID/charges/ch_ab2341da231434l",
               "rel": "self",
               "method": "GET"
             },
@@ -75,7 +75,7 @@
             "Location": {
               "matchers": [
                 {
-                  "regex": "https*:\/\/.*\/v1\/api\/accounts\/123456\/charges\/[a-z0-9]*"
+                  "regex": "https*:\/\/.*\/v1\/api\/accounts\/GATEWAY_ACCOUNT_ID\/charges\/[a-z0-9]*"
                 }
               ]
             }
@@ -84,7 +84,7 @@
             "$.links[0].href": {
               "matchers": [
                 {
-                  "regex": "https*:\/\/.*\/v1\/api\/accounts\/123456\/charges\/[a-z0-9]*"
+                  "regex": "https*:\/\/.*\/v1\/api\/accounts\/GATEWAY_ACCOUNT_ID\/charges\/[a-z0-9]*"
                 }
               ]
             },
