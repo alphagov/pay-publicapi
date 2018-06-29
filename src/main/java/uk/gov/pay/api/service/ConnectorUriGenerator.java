@@ -20,11 +20,15 @@ public class ConnectorUriGenerator {
         this.configuration = configuration;
     }
 
-    public String chargesURI(Account account) {
-        return buildConnectorUri(account, String.format("/v1/api/accounts/%s/charges", account.getAccountId()));
+    public String chargesURI(Account account, String agreementId) {
+        String chargePath = "/v1/api/accounts/%s/charges";
+        if (account.getPaymentType().equals(DIRECT_DEBIT) && agreementId != null) {
+            chargePath += "/collect";
+        }
+        return buildConnectorUri(account, String.format(chargePath, account.getAccountId()));
     }
 
-    public String chargesURI(Account account, List<Pair<String, String>> queryParams) {
+    public String chargesURIWithParams(Account account, List<Pair<String, String>> queryParams) {
         return buildConnectorUri(account, String.format("/v1/api/accounts/%s/charges", account.getAccountId()), queryParams);
     }
     
