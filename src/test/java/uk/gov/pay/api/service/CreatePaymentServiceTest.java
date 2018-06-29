@@ -37,24 +37,21 @@ public class CreatePaymentServiceTest {
     @Rule
     public PactProviderRule connectorRule = new PactProviderRule("connector", this);
 
-    private Client client;
-
     @Mock
     private PublicApiConfig configuration;
-    private PublicApiUriGenerator publicApiUriGenerator;
-    private ConnectorUriGenerator connectorUriGenerator;
-    
+
     @Before
     public void setup() {
         when(configuration.getConnectorUrl()).thenReturn(connectorRule.getUrl()); // We will actually send real requests here, which will be intercepted by pact
 
         when(configuration.getBaseUrl()).thenReturn("http://publicapi.test.localhost/");
 
-        publicApiUriGenerator = new PublicApiUriGenerator(configuration);
-        connectorUriGenerator = new ConnectorUriGenerator(configuration);
-        client = RestClientFactory.buildClient(new RestClientConfig(false));
+        PublicApiUriGenerator publicApiUriGenerator = new PublicApiUriGenerator(configuration);
+        ConnectorUriGenerator connectorUriGenerator = new ConnectorUriGenerator(configuration);
+        Client client = RestClientFactory.buildClient(new RestClientConfig(false));
 
-        createPaymentService = new CreatePaymentService(client, configuration, publicApiUriGenerator, connectorUriGenerator);
+        createPaymentService = new CreatePaymentService(client,
+                publicApiUriGenerator, connectorUriGenerator);
     }
 
     @Test
@@ -80,13 +77,12 @@ public class CreatePaymentServiceTest {
         assertThat(paymentResponse.getLinks().getNextUrlPost(), is(expectedLink));
     }
 
-    @Ignore("We will add this test after we’ve completed the Direct Debit connector part")
     @Test
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-direct-debit-connector-collect-payment"})
     public void testCollectPayment() {
-        Account account = new Account("123456", TokenPaymentType.CARD);
-        CreatePaymentRequest requestPayload = new CreatePaymentRequest(100, "https://somewhere.gov.uk/rainbow/1", "a reference", "a description");
+        Account account = new Account("DIRECT_DEBIT:jhsdfkwehrkuh", TokenPaymentType.CARD);
+        CreatePaymentRequest requestPayload = new CreatePaymentRequest(100, null, "a reference", "a description", "test_mandate_id_xyz");
         PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
 
         assertThat(paymentResponse.getPayment().getPaymentId(), is("ch_ab2341da231434l"));
@@ -95,8 +91,7 @@ public class CreatePaymentServiceTest {
         assertThat(paymentResponse.getPayment().getDescription(), is("a description"));
         assertThat(paymentResponse.getPayment().getEmail(), is(nullValue()));
         assertThat(paymentResponse.getPayment().getState(), is(new PaymentState("created", false)));
-        assertThat(paymentResponse.getPayment().getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(paymentResponse.getPayment().getPaymentProvider(), is("Sandbox"));
+        assertThat(paymentResponse.getPayment().getPaymentProvider(), is("SANDBOX"));
         assertThat(paymentResponse.getPayment().getCreatedDate(), is("2016-01-01T12:00:00Z"));
         assertThat(paymentResponse.getLinks().getSelf(), is(new Link("http://publicapi.test.localhost/v1/payments/ch_ab2341da231434l", "GET")));
         assertThat(paymentResponse.getLinks().getNextUrl(), is(new Link("http://frontend_connector/charge/token_1234567asdf", "GET")));

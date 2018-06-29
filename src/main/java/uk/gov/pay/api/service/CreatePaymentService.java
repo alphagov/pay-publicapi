@@ -1,5 +1,6 @@
 package uk.gov.pay.api.service;
 
+import java.util.Optional;
 import org.apache.http.HttpStatus;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
@@ -19,15 +20,13 @@ import static javax.ws.rs.client.Entity.json;
 
 public class CreatePaymentService {
 
-    private final String baseUrl;
     private final Client client;
     private final PublicApiUriGenerator publicApiUriGenerator;
     private final ConnectorUriGenerator connectorUriGenerator;
 
     @Inject
-    public CreatePaymentService(Client client, PublicApiConfig configuration, PublicApiUriGenerator publicApiUriGenerator, ConnectorUriGenerator connectorUriGenerator) {
+    public CreatePaymentService(Client client, PublicApiUriGenerator publicApiUriGenerator, ConnectorUriGenerator connectorUriGenerator) {
         this.client = client;
-        this.baseUrl = configuration.getBaseUrl();
         this.publicApiUriGenerator = publicApiUriGenerator;
         this.connectorUriGenerator = connectorUriGenerator;
     }
@@ -59,7 +58,7 @@ public class CreatePaymentService {
 
     private Response createCharge(Account account, CreatePaymentRequest requestPayload) {
         return client
-                .target(connectorUriGenerator.chargesURI(account))
+                .target(connectorUriGenerator.chargesURI(account, requestPayload.getAgreementId()))
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .post(buildChargeRequestPayload(requestPayload));
@@ -69,12 +68,14 @@ public class CreatePaymentService {
         int amount = requestPayload.getAmount();
         String reference = requestPayload.getReference();
         String description = requestPayload.getDescription();
-        String returnUrl = requestPayload.getReturnUrl();
-        return json(new JsonStringBuilder()
+        Optional<String> maybeReturnUrl = Optional.ofNullable(requestPayload.getReturnUrl());
+        Optional<String> maybeAgreementId = Optional.ofNullable(requestPayload.getAgreementId());
+        JsonStringBuilder request = new JsonStringBuilder()
                 .add("amount", amount)
                 .add("reference", reference)
-                .add("description", description)
-                .add("return_url", returnUrl)
-                .build());
+                .add("description", description);
+        maybeReturnUrl.ifPresent(returnUrl -> request.add("return_url", returnUrl));
+        maybeAgreementId.ifPresent(agreementId -> request.add("agreement_id", agreementId));
+        return json(request.build());
     }
 }

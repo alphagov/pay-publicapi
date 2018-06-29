@@ -127,7 +127,7 @@ public class PaymentSearchService {
     private Response getSearchResponse(Account account, List<Pair<String, String>> queryParams) {
         String url = isDirectDebitAccount(account) ? 
                 connectorUriGenerator.directDebitTransactionsURI(account, queryParams) : 
-                connectorUriGenerator.chargesURI(account, queryParams);
+                connectorUriGenerator.chargesURIWithParams(account, queryParams);
         return client
                 .target(url)
                 .request()

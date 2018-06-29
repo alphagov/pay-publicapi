@@ -4,6 +4,8 @@ import au.com.dius.pact.consumer.PactVerification;
 import com.jayway.jsonassert.JsonAssert;
 import com.jayway.restassured.response.ValidatableResponse;
 import io.dropwizard.testing.junit.DropwizardAppRule;
+import java.time.ZonedDateTime;
+import javax.ws.rs.core.HttpHeaders;
 import org.apache.http.client.fluent.Executor;
 import org.junit.After;
 import org.junit.Rule;
@@ -17,9 +19,6 @@ import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
-
-import javax.ws.rs.core.HttpHeaders;
-import java.time.ZonedDateTime;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
