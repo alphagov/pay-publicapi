@@ -1,0 +1,84 @@
+{
+  "provider": {
+    "name": "direct-debit-connector"
+  },
+  "consumer": {
+    "name": "publicapi"
+  },
+  "interactions": [
+    {
+      "description": "Get direct debit events",
+      "providerStates": [
+        {
+          "name": "a direct debit event exists",
+          "params": {
+            "event_type": "MANDATE",
+            "event": "CHARGE_CREATED",
+            "mandate_id": 1,
+            "event_date": "2018-03-13T10:00:04.666Z",
+            "external_id": 1
+          }
+        },
+        {
+          "name": "a direct debit event exists",
+          "params": {
+            "event_type": "CHARGE",
+            "event": "PAYMENT_ACKNOWLEDGED_BY_PROVIDER",
+            "transaction_id": 2,
+            "event_date": "2018-03-13T10:00:04.666Z",
+            "external_id": 2
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/v1/events?before=2018-03-13T10:00:05Z&after=2018-03-13T10:00:03Z&page_size=100&page=1&mandate_external_id=1&transaction_external_id=2"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "page": 1,
+          "total": 2,
+          "count": 2,
+          "results": [
+            {
+              "external_id": "9777",
+              "event": "CHARGE_CREATED",
+              "mandate_external_id": "1",
+              "transaction_external_id": "2",
+              "event_type": "MANDATE",
+              "event_date": "2018-03-13T10:00:04.666Z"
+            }
+          ],
+          "_links": {
+            "self": "/v1/events?before=2018-03-13T10:00:04Z&after=2018-03-13T10:00:04Z&mandate_external_id=1&page=1&page_size=100",
+            "first_page": "/v1/events?before=2018-03-13T10:00:04Z&after=2018-03-13T10:00:04Z&mandate_external_id=1&page=1&page_size=100",
+            "last_page": "/v1/events?before=2018-03-13T10:00:04Z&after=2018-03-13T10:00:04Z&mandate_external_id=1&page=1&page_size=100"
+          }
+        },
+        "matchingRules": {
+          "body": {
+            "$[0].external_id": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pact-specification": {
+      "version": "3.0.0"
+    },
+    "pact-jvm": {
+      "version": "3.5.16"
+    }
+  }
+}

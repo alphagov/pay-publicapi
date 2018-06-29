@@ -35,6 +35,7 @@ import uk.gov.pay.api.filter.LoggingFilter;
 import uk.gov.pay.api.filter.RateLimiterFilter;
 import uk.gov.pay.api.healthcheck.Ping;
 import uk.gov.pay.api.resources.AgreementsResource;
+import uk.gov.pay.api.resources.DirectDebitEventsResource;
 import uk.gov.pay.api.resources.HealthCheckResource;
 import uk.gov.pay.api.resources.PaymentRefundsResource;
 import uk.gov.pay.api.resources.PaymentsResource;
@@ -71,6 +72,7 @@ public class PublicApi extends Application<PublicApiConfig> {
 
         environment.jersey().register(injector.getInstance(HealthCheckResource.class));
         environment.jersey().register(injector.getInstance(PaymentsResource.class));
+        environment.jersey().register(injector.getInstance(DirectDebitEventsResource.class));
         environment.jersey().register(injector.getInstance(PaymentRefundsResource.class));
         environment.jersey().register(injector.getInstance(RequestDeniedResource.class));
         environment.jersey().register(injector.getInstance(AgreementsResource.class));

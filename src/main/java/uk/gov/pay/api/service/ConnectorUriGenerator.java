@@ -9,6 +9,7 @@ import javax.ws.rs.core.UriBuilder;
 import java.util.Collections;
 import java.util.List;
 
+import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 
@@ -25,20 +26,20 @@ public class ConnectorUriGenerator {
         if (account.getPaymentType().equals(DIRECT_DEBIT) && agreementId != null) {
             chargePath += "/collect";
         }
-        return buildConnectorUri(account, String.format(chargePath, account.getAccountId()));
+        return buildConnectorUri(account, format(chargePath, account.getAccountId()));
     }
 
     public String chargesURIWithParams(Account account, List<Pair<String, String>> queryParams) {
-        return buildConnectorUri(account, String.format("/v1/api/accounts/%s/charges", account.getAccountId()), queryParams);
+        return buildConnectorUri(account, format("/v1/api/accounts/%s/charges", account.getAccountId()), queryParams);
     }
     
     public String chargeURI(Account account, String chargeId) {
-        String path = String.format("/v1/api/accounts/%s/charges/%s", account.getAccountId(), chargeId);
+        String path = format("/v1/api/accounts/%s/charges/%s", account.getAccountId(), chargeId);
         return buildConnectorUri(account, path);
     }
 
     public String chargeEventsURI(Account account, String paymentId) {
-        String path = String.format("/v1/api/accounts/%s/charges/%s/events", account.getAccountId(), paymentId);
+        String path = format("/v1/api/accounts/%s/charges/%s/events", account.getAccountId(), paymentId);
         return buildConnectorUri(account, path);
     }
     
@@ -72,7 +73,13 @@ public class ConnectorUriGenerator {
     }
 
     public String cancelURI(Account account, String paymentId) {
-        String path = String.format("/v1/api/accounts/%s/charges/%s/cancel", account.getAccountId(), paymentId);
+        String path = format("/v1/api/accounts/%s/charges/%s/cancel", account.getAccountId(), paymentId);
         return buildConnectorUri(account, path, Collections.emptyList()).toString();
+    }
+
+    public String eventsURI(Account account, String beforeDate, String afterDate, Integer page, Integer pageSize, String agreementId, String paymentId) {
+        String path = format("/v1/events?before=%s&after=%s&page_size=%s&page=%s&mandate_external_id=%s&transaction_external_id=%s", 
+                beforeDate, afterDate, pageSize, page, agreementId, paymentId);
+        return buildConnectorUri(account, path);
     }
 }
