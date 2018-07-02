@@ -1,7 +1,6 @@
-package uk.gov.pay.api.model;
+package uk.gov.pay.api.model.search.card;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.pay.api.model.links.PaymentSearchNavigationLinks;
 
 import java.util.List;
 

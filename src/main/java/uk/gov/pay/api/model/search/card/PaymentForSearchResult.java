@@ -1,7 +1,13 @@
-package uk.gov.pay.api.model;
+package uk.gov.pay.api.model.search.card;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
+import uk.gov.pay.api.model.CardDetails;
+import uk.gov.pay.api.model.CardPayment;
+import uk.gov.pay.api.model.ChargeFromResponse;
+import uk.gov.pay.api.model.PaymentState;
+import uk.gov.pay.api.model.RefundSummary;
+import uk.gov.pay.api.model.SettlementSummary;
 import uk.gov.pay.api.model.links.PaymentLinksForSearch;
 
 import java.net.URI;

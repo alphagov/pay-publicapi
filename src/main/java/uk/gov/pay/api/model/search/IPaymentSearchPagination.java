@@ -1,4 +1,4 @@
-package uk.gov.pay.api.model;
+package uk.gov.pay.api.model.search;
 
 import uk.gov.pay.api.model.links.PaymentSearchNavigationLinks;
 

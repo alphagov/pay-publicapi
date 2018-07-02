@@ -1,4 +1,4 @@
-package uk.gov.pay.api.model.directdebit.search.links;
+package uk.gov.pay.api.model.search.links;
 
 import uk.gov.pay.api.model.links.Link;
 

@@ -1,10 +1,10 @@
-package uk.gov.pay.api.model.directdebit.search;
+package uk.gov.pay.api.model.search.directdebit;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.pay.api.model.IPaymentSearchPagination;
 import uk.gov.pay.api.model.links.PaymentSearchNavigationLinks;
+import uk.gov.pay.api.model.search.IPaymentSearchPagination;
 
 import java.util.List;
 
