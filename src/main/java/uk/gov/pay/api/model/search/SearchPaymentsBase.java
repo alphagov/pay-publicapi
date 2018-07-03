@@ -59,13 +59,13 @@ public abstract class SearchPaymentsBase {
         return halRepresentationBuilder;
     }
 
-    protected void addLink(HalRepresentation.HalRepresentationBuilder halRepresentationBuilder, String name, URI uri) {
+    private void addLink(HalRepresentation.HalRepresentationBuilder halRepresentationBuilder, String name, URI uri) {
         if (uri != null) {
             halRepresentationBuilder.addLink(name, uri);
         }
     }
 
-    protected URI transformIntoPublicUri(String baseUrl, Link link) throws URISyntaxException {
+    private URI transformIntoPublicUri(String baseUrl, Link link) throws URISyntaxException {
         if (link == null)
             return null;
 

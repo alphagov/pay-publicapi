@@ -21,6 +21,8 @@ public class DDTransactionFromResponse {
     private String name;
     @JsonProperty(value = "created_date")
     private String createdDate;
+    @JsonProperty("agreement_id")
+    private String agreementId;
     @JsonProperty("_links")
     private List<PaymentConnectorResponseLink> links = new ArrayList<>();
 
@@ -39,6 +41,8 @@ public class DDTransactionFromResponse {
     public String getName() { return name; }
 
     public String getCreatedDate() { return createdDate; }
+
+    public String getAgreementId() { return agreementId; }
 
     public List<PaymentConnectorResponseLink> getLinks() { return links; }
 }

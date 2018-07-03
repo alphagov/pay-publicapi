@@ -21,13 +21,16 @@ public class DDTransactionForSearch {
     private final String name;
     @JsonProperty(value = "created_date")
     private String createdDate;
+    @JsonProperty("agreement_id")
+    private String agreementId;
     @JsonProperty("links")
     private DDTransactionLinksForSearch links = new DDTransactionLinksForSearch();
     
     
     
     private DDTransactionForSearch(Long amount, String transactionId, DDPaymentState state, String description, 
-                                   String reference, String email, String name, String createdDate, URI selfLink) {
+                                   String reference, String email, String name, String createdDate, URI selfLink,
+                                   String agreementId) {
         this.amount = amount;
         this.transactionId = transactionId;
         this.state = state;
@@ -36,6 +39,7 @@ public class DDTransactionForSearch {
         this.createdDate = createdDate;
         this.email = email;
         this.name = name;
+        this.agreementId = agreementId;
         links.addSelf(selfLink.toString());
     }
 
@@ -55,6 +59,8 @@ public class DDTransactionForSearch {
 
     public String getCreatedDate() { return createdDate; }
 
+    public String getAgreementId() { return agreementId; }
+
     public DDTransactionLinksForSearch getLinks() { return links; }
     
     public static DDTransactionForSearch valueOf(DDTransactionFromResponse forSearch, URI selfLink) {
@@ -67,7 +73,8 @@ public class DDTransactionForSearch {
                 forSearch.getEmail(),
                 forSearch.getName(),
                 forSearch.getCreatedDate(),
-                selfLink
+                selfLink,
+                forSearch.getAgreementId()
         );
     }
 }

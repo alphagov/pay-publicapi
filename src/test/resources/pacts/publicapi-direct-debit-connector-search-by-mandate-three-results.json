@@ -48,6 +48,7 @@
               "description": "A payment made for crossing the bridge the first time",
               "reference": "MBK1969Qw",
               "created_date": "2018-06-09T02:48:56Z",
+              "agreement_id": "jkdjsvd8f78ffkwfek2q",
               "links": [
                 {
                   "rel": "self",
@@ -68,6 +69,7 @@
               "description": "A payment made for crossing the bridge the second time",
               "reference": "MBK1969Qw",
               "created_date": "2018-06-11T19:40:56Z",
+              "agreement_id": "jkdjsvd8f78ffkwfek2q",
               "links": [
                 {
                   "rel": "self",
@@ -88,6 +90,7 @@
               "description": "A payment made for crossing the bridge the third time",
               "reference": "MBK1969Qw",
               "created_date": "2018-06-19T10:40:56Z",
+              "agreement_id": "jkdjsvd8f78ffkwfek2q",
               "links": [
                 {
                   "rel": "self",
@@ -208,6 +211,13 @@
                 {
                   "match": "date",
                   "date": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                }
+              ]
+            },
+            "$.results[*].agreement_id": {
+              "matchers": [
+                {
+                  "match": "type"
                 }
               ]
             },

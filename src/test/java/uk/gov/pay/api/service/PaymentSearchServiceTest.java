@@ -93,6 +93,8 @@ public class PaymentSearchServiceTest {
                 .assertThat("results[0].state", hasKey("status"))
                 .assertThat("results[2].state", hasKey("finished"))
                 .assertThat("results[0]", hasKey("links"))
+                .assertThat("results[1]", hasKey("agreement_id"))
+                .assertThat("results[2].agreement_id", is(agreementId))
                 .assertThat("_links", hasKey("self"))
                 .assertThat("_links", hasKey("first_page"))
                 .assertThat("_links", hasKey("last_page"))
