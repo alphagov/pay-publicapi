@@ -41,7 +41,6 @@ public class CreatePaymentServiceTest {
     @Before
     public void setup() {
         when(configuration.getConnectorUrl()).thenReturn(connectorRule.getUrl()); // We will actually send real requests here, which will be intercepted by pact        
-        when(configuration.getConnectorDDUrl()).thenReturn(connectorRule.getUrl()); 
 
         when(configuration.getBaseUrl()).thenReturn("http://publicapi.test.localhost/");
 
@@ -69,28 +68,6 @@ public class CreatePaymentServiceTest {
         assertThat(paymentResponse.getPayment().getState(), is(new PaymentState("created", false)));
         assertThat(paymentResponse.getPayment().getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(paymentResponse.getPayment().getPaymentProvider(), is("Sandbox"));
-        assertThat(paymentResponse.getPayment().getCreatedDate(), is("2016-01-01T12:00:00Z"));
-        assertThat(paymentResponse.getLinks().getSelf(), is(new Link("http://publicapi.test.localhost/v1/payments/ch_ab2341da231434l", "GET")));
-        assertThat(paymentResponse.getLinks().getNextUrl(), is(new Link("http://frontend_connector/charge/token_1234567asdf", "GET")));
-        PostLink expectedLink = new PostLink("http://frontend_connector/charge/", "POST", "application/x-www-form-urlencoded", Collections.singletonMap("chargeTokenId", "token_1234567asdf"));
-        assertThat(paymentResponse.getLinks().getNextUrlPost(), is(expectedLink));
-    }
-
-    @Test
-    @PactVerification({"connector"})
-    @Pacts(pacts = {"publicapi-direct-debit-connector-collect-payment"})
-    public void testCollectPayment() {
-        Account account = new Account("GATEWAY_ACCOUNT_ID", TokenPaymentType.DIRECT_DEBIT);
-        CreatePaymentRequest requestPayload = new CreatePaymentRequest(100, null, "a reference", "a description", "test_mandate_id_xyz");
-        PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
-
-        assertThat(paymentResponse.getPayment().getPaymentId(), is("ch_ab2341da231434l"));
-        assertThat(paymentResponse.getPayment().getAmount(), is(100L));
-        assertThat(paymentResponse.getPayment().getReference(), is("a reference"));
-        assertThat(paymentResponse.getPayment().getDescription(), is("a description"));
-        assertThat(paymentResponse.getPayment().getEmail(), is(nullValue()));
-        assertThat(paymentResponse.getPayment().getState(), is(new PaymentState("created", false)));
-        assertThat(paymentResponse.getPayment().getPaymentProvider(), is("SANDBOX"));
         assertThat(paymentResponse.getPayment().getCreatedDate(), is("2016-01-01T12:00:00Z"));
         assertThat(paymentResponse.getLinks().getSelf(), is(new Link("http://publicapi.test.localhost/v1/payments/ch_ab2341da231434l", "GET")));
         assertThat(paymentResponse.getLinks().getNextUrl(), is(new Link("http://frontend_connector/charge/token_1234567asdf", "GET")));
