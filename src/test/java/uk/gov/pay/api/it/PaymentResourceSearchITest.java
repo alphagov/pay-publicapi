@@ -33,7 +33,13 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockserver.model.HttpResponse.response;
 import static uk.gov.pay.api.it.fixtures.PaginatedPaymentSearchResultFixture.aPaginatedPaymentSearchResult;
-import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.*;
+import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.DEFAULT_AMOUNT;
+import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.DEFAULT_CAPTURED_DATE;
+import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.DEFAULT_CAPTURE_SUBMIT_TIME;
+import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.DEFAULT_CREATED_DATE;
+import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.DEFAULT_PAYMENT_PROVIDER;
+import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.DEFAULT_RETURN_URL;
+import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.aSuccessfulSearchPayment;
 
 public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 

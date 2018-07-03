@@ -1,6 +1,5 @@
 package uk.gov.pay.api.resources;
 
-import black.door.hate.HalRepresentation;
 import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.dropwizard.auth.Auth;
@@ -20,7 +19,7 @@ import uk.gov.pay.api.model.ChargeFromResponse;
 import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.PaymentEvents;
-import uk.gov.pay.api.model.PaymentSearchResults;
+import uk.gov.pay.api.model.search.card.PaymentSearchResults;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.CreatePaymentService;
