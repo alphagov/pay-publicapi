@@ -864,7 +864,7 @@ GET /v1/payments
 | `status`                  | - | The transaction of this payment |
 | `from_date`               | - | The initial date for search payments |
 | `to_date`                 | - | The end date for search payments |
-| `card_brand`              | - | The card brand for search payments. For Card Payments only |
+| `card_brand`              | - | The card brand for search payments. For Card Payments only. If used for Direct Debit payment a BadRequestException is thrown  |
 | `page`                    | - | To get the results from the specified page number, should be a non zero +ve number (optional, defaults to 1)|
 | `display_size`            | - | Number of records to be returned per page, should be a non zero +ve number (optional, defaults to 500)|
 | `email`                   | - | Email ID of the payment user to search for          |
@@ -1063,6 +1063,7 @@ GET /v1/payments
                 "status": "pending",
                 "finished": false
             },
+            "agreement_id": "ncds8sfj22cvgrp90dk2nd",
             "description": "A test payment 2",
             "reference": "MBK71",
             "email": "citizen@example.com",
@@ -1112,7 +1113,8 @@ GET /v1/payments
 | `results[i].name`                     | Yes            | The name of the user of this payment                              |
 | `results[i].transaction_id`           | Yes            | The transaction id associated to this payment                     |
 | `results[i].created_date`             | Yes            | The created date in ISO_8601 format (```yyyy-MM-ddTHH:mm:ssZ```)  |
-| `results[i]._links.self`              | Yes            | Link to the payment                      |
+| `results[i].agreement_id`             | Yes            | The external id of the agreement this payment was made against    |
+| `results[i]._links.self`              | Yes            | Link to the payment                                               |
 | `_links.self.href`                    | Yes            | Href link of the current page                                     |
 | `_links.next_page.href`               | No             | Href link of the next page (based on the display_size requested)  |
 | `_links.prev_page.href`               | No             | Href link of the previous page (based on the display_size requested) |
