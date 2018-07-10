@@ -5,11 +5,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.Builder;
+import lombok.Getter;
 import uk.gov.pay.api.utils.CustomDateDeserializer;
 import uk.gov.pay.api.utils.CustomDateSerializer;
 
 import java.time.ZonedDateTime;
 
+@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public class DirectDebitEvent {
@@ -39,22 +42,23 @@ public class DirectDebitEvent {
     
     public Links getLinks() {
         if (links == null) {
-            links = new Links("/v1/agreements/" + mandateExternalId, "/v1/payments/" + transactionExternalId);
+            links = new Links(mandateExternalId, transactionExternalId);
         } 
         return links;
     }
-
-    private class Links {
+    
+    @Getter
+    class Links {
         
         @JsonProperty("agreement")
-        public final String agreement;
+        private final String agreement;
 
         @JsonProperty("payment")
-        public final String payment;
-
-        private Links(String agreement, String payment) {
-            this.agreement = agreement;
-            this.payment = payment;
+        private final String payment;
+        
+        Links(String agreementId, String paymentId) {
+            agreement = agreementId == null ? null : "/v1/agreements/" + agreementId;
+            payment = paymentId == null ? null : "/v1/payments/" + paymentId;
         }
     }
 }

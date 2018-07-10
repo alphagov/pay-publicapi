@@ -197,15 +197,13 @@
           "in" : "query",
           "description" : "ID of associated agreement",
           "required" : false,
-          "type" : "integer",
-          "format" : "int64"
+          "type" : "string"
         }, {
           "name" : "payment_id",
           "in" : "query",
           "description" : "ID of associated payment",
           "required" : false,
-          "type" : "integer",
-          "format" : "int64"
+          "type" : "string"
         } ],
         "responses" : {
           "200" : {

@@ -22,8 +22,10 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Optional;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
@@ -64,13 +66,14 @@ public class DirectDebitEventsResource {
             @ApiParam(value = "ID of associated payment", hidden = false)
             @QueryParam("payment_id") String paymentId
     ) {
-        
-        if (!isValid(beforeDate, afterDate))
+
+        Optional<BeforeAndAfter> validatedDates = isValid(beforeDate, afterDate);
+        if (!validatedDates.isPresent())
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("The supplied dates were not in the format yyyy-MM-ddThh:mm:ssZ.")
                     .build();
         
-        Response ddConnectorResponse = client.target(connectorUriGenerator.eventsURI(account, beforeDate, afterDate, page, pageSize, agreementId, paymentId))
+        Response ddConnectorResponse = client.target(connectorUriGenerator.eventsURI(account, validatedDates.get().before, validatedDates.get().after, page, pageSize, agreementId, paymentId))
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get();
@@ -83,13 +86,23 @@ public class DirectDebitEventsResource {
         throw new ConnectorResponseErrorException(ddConnectorResponse);
     }
 
-    private boolean isValid(String beforeDate, String afterDate) {
+    private Optional<BeforeAndAfter> isValid(String beforeDate, String afterDate) {
         try {
-            ZonedDateTime.parse(beforeDate);
-            ZonedDateTime.parse(afterDate);
+            ZonedDateTime before = ZonedDateTime.parse(beforeDate);
+            ZonedDateTime after = ZonedDateTime.parse(afterDate);
+            return Optional.of(new BeforeAndAfter(before, after));
         } catch (DateTimeParseException e) {
-            return false;
+            return Optional.empty();
         }
-        return true;
+    }
+
+    private class BeforeAndAfter {
+        public final ZonedDateTime before;
+        public final ZonedDateTime after;
+
+        public BeforeAndAfter(ZonedDateTime before, ZonedDateTime after) {
+            this.before = before;
+            this.after = after;
+        }
     }
 }
