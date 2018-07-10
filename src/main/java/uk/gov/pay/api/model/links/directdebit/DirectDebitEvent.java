@@ -5,14 +5,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import lombok.Builder;
-import lombok.Getter;
 import uk.gov.pay.api.utils.CustomDateDeserializer;
 import uk.gov.pay.api.utils.CustomDateSerializer;
 
 import java.time.ZonedDateTime;
 
-@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public class DirectDebitEvent {
@@ -40,14 +37,67 @@ public class DirectDebitEvent {
     @JsonProperty("_links")
     private Links links;
     
+    
     public Links getLinks() {
         if (links == null) {
-            links = new Links(mandateExternalId, transactionExternalId);
+            setLinks(new Links(getMandateExternalId(), getTransactionExternalId()));
         } 
         return links;
     }
-    
-    @Getter
+
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public String getEvent() {
+        return event;
+    }
+
+    public String getMandateExternalId() {
+        return mandateExternalId;
+    }
+
+    public String getTransactionExternalId() {
+        return transactionExternalId;
+    }
+
+    public String getEventType() {
+        return eventType;
+    }
+
+    public ZonedDateTime getEventDate() {
+        return eventDate;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
+    }
+
+    public void setEvent(String event) {
+        this.event = event;
+    }
+
+    public void setMandateExternalId(String mandateExternalId) {
+        this.mandateExternalId = mandateExternalId;
+    }
+
+    public void setTransactionExternalId(String transactionExternalId) {
+        this.transactionExternalId = transactionExternalId;
+    }
+
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
+    }
+
+    public void setEventDate(ZonedDateTime eventDate) {
+        this.eventDate = eventDate;
+    }
+
+    public void setLinks(Links links) {
+        this.links = links;
+    }
+
+
     class Links {
         
         @JsonProperty("agreement")
@@ -59,6 +109,14 @@ public class DirectDebitEvent {
         Links(String agreementId, String paymentId) {
             agreement = agreementId == null ? null : "/v1/agreements/" + agreementId;
             payment = paymentId == null ? null : "/v1/payments/" + paymentId;
+        }
+
+        public String getAgreement() {
+            return agreement;
+        }
+
+        public String getPayment() {
+            return payment;
         }
     }
 }

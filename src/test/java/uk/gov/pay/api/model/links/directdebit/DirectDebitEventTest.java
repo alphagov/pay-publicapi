@@ -8,16 +8,17 @@ public class DirectDebitEventTest {
     
     @Test
     public void testAgreementLink() {
-        DirectDebitEvent ddEvent = DirectDebitEvent.builder().mandateExternalId("1").build();
+        DirectDebitEvent ddEvent = new DirectDebitEvent();
+        ddEvent.setMandateExternalId("1");
         assertEquals("/v1/agreements/1", ddEvent.getLinks().getAgreement());
         assertNull(ddEvent.getLinks().getPayment());
     }
     
     @Test
     public void testPaymentLink() {
-        DirectDebitEvent ddEvent = DirectDebitEvent.builder().transactionExternalId("2").build();
+        DirectDebitEvent ddEvent = new DirectDebitEvent();
+        ddEvent.setTransactionExternalId("2");        
         assertEquals("/v1/payments/2", ddEvent.getLinks().getPayment());
         assertNull(ddEvent.getLinks().getAgreement());
     }
-
 }

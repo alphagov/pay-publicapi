@@ -72,8 +72,9 @@ public class DirectDebitEventsResource {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("The supplied dates were not in the format yyyy-MM-ddThh:mm:ssZ.")
                     .build();
-        
-        Response ddConnectorResponse = client.target(connectorUriGenerator.eventsURI(account, validatedDates.get().before, validatedDates.get().after, page, pageSize, agreementId, paymentId))
+
+        String uri = connectorUriGenerator.eventsURI(account, validatedDates.get().before, validatedDates.get().after, page, pageSize, agreementId, paymentId);
+        Response ddConnectorResponse = client.target(uri)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get();

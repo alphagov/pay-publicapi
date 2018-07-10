@@ -32,7 +32,15 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/v1/events?before=2018-03-13T10:00:05Z&after=2018-03-13T10:00:03Z&page_size=100&page=1&mandate_external_id=1&transaction_external_id=2"
+        "path": "/v1/events",
+        "query": {
+          "before": ["2018-03-13T10:00:05Z"],
+          "after": ["2018-03-13T10:00:03Z"],
+          "page_size": ["100"],
+          "page": ["1"],
+          "mandate_external_id": ["1"],
+          "transaction_external_id": ["2"]
+        }
       },
       "response": {
         "status": 200,

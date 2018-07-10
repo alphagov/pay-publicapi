@@ -56,7 +56,9 @@ public class ConnectorUriGenerator {
     
     private String buildConnectorUri(Account account, String path, Map<String, String> params) {
         UriBuilder builder = UriBuilder.fromPath(connectorBaseUrlForAccount(account)).path(path);
-        params.forEach((k, v) -> builder.queryParam(k, v));
+        params.entrySet().stream()
+                .filter(k -> k.getValue() != null)
+                .forEach(k -> builder.queryParam(k.getKey(), k.getValue()));
         return builder.toString();
     }
 
