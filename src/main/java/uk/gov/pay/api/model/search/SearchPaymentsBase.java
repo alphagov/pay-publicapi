@@ -2,7 +2,6 @@ package uk.gov.pay.api.model.search;
 
 import black.door.hate.HalRepresentation;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.tuple.Pair;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.SearchChargesException;
@@ -15,7 +14,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
+import java.util.Map;
 
 public abstract class SearchPaymentsBase {
 
@@ -40,7 +39,7 @@ public abstract class SearchPaymentsBase {
         this.baseUrl = configuration.getBaseUrl();
     }
     
-    public abstract Response getSearchResponse(Account account, List<Pair<String, String>> queryParams);
+    public abstract Response getSearchResponse(Account account, Map<String, String> queryParams);
 
     protected HalRepresentation.HalRepresentationBuilder decoratePagination(HalRepresentation.HalRepresentationBuilder halRepresentationBuilder, IPaymentSearchPagination pagination) {
         try {

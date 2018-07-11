@@ -10,7 +10,9 @@ import uk.gov.pay.api.model.search.SearchPaymentsBase;
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -56,18 +58,18 @@ public class PaymentSearchService {
         if (isNotBlank(cardBrand)) {
             cardBrand = cardBrand.toLowerCase();
         }
-        List<Pair<String, String>> queryParams = asList(
-                Pair.of(REFERENCE_KEY, reference),
-                Pair.of(EMAIL_KEY, email),
-                Pair.of(STATE_KEY, state),
-                Pair.of(CARD_BRAND_KEY, cardBrand),
-                Pair.of(AGREEMENT_KEY, agreementId),
-                Pair.of(FROM_DATE_KEY, fromDate),
-                Pair.of(TO_DATE_KEY, toDate),
-                Pair.of(PAGE, pageNumber),
-                Pair.of(DISPLAY_SIZE, displaySize)
-        );
-
+        
+        Map<String, String> queryParams = new LinkedHashMap<>();
+        queryParams.put(REFERENCE_KEY, reference);
+        queryParams.put(EMAIL_KEY, email);
+        queryParams.put(STATE_KEY, state);
+        queryParams.put(CARD_BRAND_KEY, cardBrand);
+        queryParams.put(AGREEMENT_KEY, agreementId);
+        queryParams.put(FROM_DATE_KEY, fromDate);
+        queryParams.put(TO_DATE_KEY, toDate);
+        queryParams.put(PAGE, pageNumber);
+        queryParams.put(DISPLAY_SIZE, displaySize);
+        
         SearchPaymentsBase paymentsService = PaymentSearchFactory.getPaymentService(
                                 account,
                                 client,

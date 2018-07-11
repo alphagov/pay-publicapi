@@ -14,9 +14,10 @@
           "params": {
             "event_type": "MANDATE",
             "event": "CHARGE_CREATED",
-            "mandate_id": 1,
+            "mandate_external_id": "1",
+            "transaction_external_id": "2",
             "event_date": "2018-03-13T10:00:04.666Z",
-            "external_id": 1
+            "external_id": "101"
           }
         },
         {
@@ -24,9 +25,10 @@
           "params": {
             "event_type": "CHARGE",
             "event": "PAYMENT_ACKNOWLEDGED_BY_PROVIDER",
-            "transaction_id": 2,
+            "mandate_external_id": "3",
+            "transaction_external_id": "4",
             "event_date": "2018-03-13T10:00:04.666Z",
-            "external_id": 2
+            "external_id": "200"
           }
         }
       ],
@@ -53,11 +55,19 @@
           "count": 2,
           "results": [
             {
-              "external_id": "9777",
+              "external_id": "101",
               "event": "CHARGE_CREATED",
               "mandate_external_id": "1",
               "transaction_external_id": "2",
               "event_type": "MANDATE",
+              "event_date": "2018-03-13T10:00:04.666Z"
+            },
+            {
+              "external_id": "200",
+              "event": "PAYMENT_ACKNOWLEDGED_BY_PROVIDER",
+              "mandate_external_id": "3",
+              "transaction_external_id": "4",
+              "event_type": "CHARGE",
               "event_date": "2018-03-13T10:00:04.666Z"
             }
           ],
@@ -73,6 +83,13 @@
               "matchers": [
                 {
                   "match": "type"
+                }
+              ]
+            },
+            "$._links.*": {
+              "matchers": [
+                {
+                  "regex":  "http.*/v1/events\\?before=2018-03-13T10:00:04Z&after=2018-03-13T10:00:04Z&mandate_external_id=1&page=1&page_size=100"
                 }
               ]
             }
