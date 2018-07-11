@@ -178,6 +178,7 @@ pipeline {
          branch 'master'
        }
        steps {
+         checkPactCompatibility("publicapi", gitCommit(), "test")
          deployEcs("publicapi")
        }
      }
