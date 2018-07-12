@@ -67,8 +67,8 @@ public class PaymentsResourceCreatePaymentTest {
     public void createNewPayment_withCardPayment_invokesCreatePaymentService() throws Exception {
         final Account account = new Account("foo", TokenPaymentType.CARD);
         final CreatePaymentRequest createPaymentRequest = new CreatePaymentRequest(
-                100, "http://localhost:10400/payment-complete/e5b957fbc7d44deaafc06779b5dfd8bc",
-                "XW9VCE2GKV", "exampleName");
+                100, "https://somewhere.test",
+                "my_ref", "New Passport");
 
         PaymentWithAllLinks injectedResponse = aSuccessfullyCreatedPayment();
 
@@ -88,7 +88,7 @@ public class PaymentsResourceCreatePaymentTest {
                 "abc123",
                 100L,
                 new PaymentState("created", false),
-                "http://localhost:10400/payment-complete/e5b957fbc7d44deaafc06779b5dfd8bc",
+                "https://somewhere.test",
                 "New Passport",
                 "my_ref",
                 "made.up@example.com",

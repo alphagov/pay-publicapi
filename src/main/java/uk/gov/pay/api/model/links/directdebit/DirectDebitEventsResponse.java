@@ -26,45 +26,59 @@ public class DirectDebitEventsResponse {
     @JsonProperty("_links")
     private DirectDebitEventsPagination links;
 
+    @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     public static class DirectDebitEventsPagination {
         @JsonProperty("self") 
-        private String selfLink;
+        private Link selfLink;
         @JsonProperty("first_page") 
-        private String firstLink;
+        private Link firstLink;
         @JsonProperty("last_page") 
-        private String lastLink;
+        private Link lastLink;
         @JsonProperty("prev_page") 
-        private String prevLink;
+        private Link prevLink;
         @JsonProperty("next_page") 
-        private String nextLink;
+        private Link nextLink;
         
         @JsonSetter("self")
-        void setSelfLink(String link) {
-            this.selfLink = convertLink(link);
+        void setSelfLink(Link link) {
+            this.selfLink = link;
         }
 
         @JsonSetter("first_page")
-        void setFirstLink(String link) {
-            this.firstLink = convertLink(link);
+        void setFirstLink(Link link) {
+            this.firstLink = link;
         }
         
         @JsonSetter("last_page")
-        void setLastLink(String link) {
-            this.lastLink = convertLink(link);
+        void setLastLink(Link link) {
+            this.lastLink = link;
         }
 
         @JsonSetter("prev_page")
-        void setPrevLink(String link) {
-            this.prevLink = convertLink(link);
+        void setPrevLink(Link link) {
+            this.prevLink = link;
         }
 
         @JsonSetter("next_page")
-        void setnextLink(String link) {
-            this.nextLink = convertLink(link);
+        void setNextLink(Link link) {
+            this.nextLink = link;
         }
         
-        private String convertLink(String link) {
-            return link.replace("mandate", "agreement");
+
+        @JsonFormat(shape = JsonFormat.Shape.OBJECT)
+        private static class Link {
+            
+            @JsonProperty("href")
+            private String href;
+            
+            @JsonSetter("href")
+            void setHref(String link) {
+                this.href = convertLink(link);
+            }
+
+            private String convertLink(String link) {
+                return link.replace("mandate", "agreement");
+            }
         }
     }
 }

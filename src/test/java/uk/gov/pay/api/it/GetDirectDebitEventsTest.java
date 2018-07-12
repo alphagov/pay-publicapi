@@ -49,7 +49,7 @@ public class GetDirectDebitEventsTest {
     @Pacts(pacts = {"publicapi-direct-debit-connector-get-events"})
     @Pacts(pacts = {"publicapi-publicauth"}, publish = false)
     public void getDirectDebitEvents() {
-        String requestPath = "/v1/events?before=2018-03-13T10:00:05Z&after=2018-03-13T10:00:03Z&page_size=100&page=1&agreement_id=1&payment_id=2";
+        String requestPath = "/v1/events?before=2018-03-13T10:00:05Z&after=2018-03-13T10:00:03Z&page_size=100&page=1&agreement_id=1";
         
         given().port(app.getLocalPort())
                 .accept(JSON)
@@ -61,17 +61,17 @@ public class GetDirectDebitEventsTest {
                 .contentType(JSON)
                 .body("count", is(2))
                 .body("results", hasSize(2))
-                .body("results[0].external_id", is("101"))
+                .body("results[0].external_id", is("201"))
                 .body("results[0].event_date", is("2018-03-13T10:00:04.666Z"))
-                .body("results[0].event", is("CHARGE_CREATED"))
-                .body("results[0].event_type", is("MANDATE"))
+                .body("results[0].event", is("PAYMENT_ACKNOWLEDGED_BY_PROVIDER"))
+                .body("results[0].event_type", is("CHARGE"))
                 .body("results[0]._links.agreement", is("/v1/agreements/1"))
-                .body("results[0]._links.payment", is("/v1/payments/2"))
+                .body("results[0]._links.payment", is("/v1/payments/4"))
                 .body("_links.next_page", isEmptyOrNullString())
                 .body("_links.prev_page", isEmptyOrNullString())
-                .body("_links.self", is("/v1/events?before=2018-03-13T10:00:04Z&after=2018-03-13T10:00:04Z&agreement_external_id=1&page=1&page_size=100"))
-                .body("_links.last_page", is("/v1/events?before=2018-03-13T10:00:04Z&after=2018-03-13T10:00:04Z&agreement_external_id=1&page=1&page_size=100"))
-                .body("_links.first_page", is("/v1/events?before=2018-03-13T10:00:04Z&after=2018-03-13T10:00:04Z&agreement_external_id=1&page=1&page_size=100"));
+                .body("_links.self.href", is("/v1/events?before=2018-03-13T10:00:04Z&after=2018-03-13T10:00:04Z&agreement_external_id=1&page=1&page_size=100"))
+                .body("_links.last_page.href", is("/v1/events?before=2018-03-13T10:00:04Z&after=2018-03-13T10:00:04Z&agreement_external_id=1&page=1&page_size=100"))
+                .body("_links.first_page.href", is("/v1/events?before=2018-03-13T10:00:04Z&after=2018-03-13T10:00:04Z&agreement_external_id=1&page=1&page_size=100"));
     }
     
     @Test

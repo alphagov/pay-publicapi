@@ -15,6 +15,7 @@
             "event_type": "MANDATE",
             "event": "CHARGE_CREATED",
             "mandate_external_id": "1",
+            "event_id": "100",
             "transaction_external_id": "2",
             "event_date": "2018-03-13T10:00:04.666Z",
             "external_id": "101"
@@ -25,10 +26,11 @@
           "params": {
             "event_type": "CHARGE",
             "event": "PAYMENT_ACKNOWLEDGED_BY_PROVIDER",
-            "mandate_external_id": "3",
+            "mandate_external_id": "1",
+            "event_id": "200",
             "transaction_external_id": "4",
             "event_date": "2018-03-13T10:00:04.666Z",
-            "external_id": "200"
+            "external_id": "201"
           }
         }
       ],
@@ -40,8 +42,7 @@
           "after": ["2018-03-13T10:00:03Z"],
           "page_size": ["100"],
           "page": ["1"],
-          "mandate_external_id": ["1"],
-          "transaction_external_id": ["2"]
+          "mandate_external_id": ["1"]
         }
       },
       "response": {
@@ -55,26 +56,26 @@
           "count": 2,
           "results": [
             {
+              "external_id": "201",
+              "event": "PAYMENT_ACKNOWLEDGED_BY_PROVIDER",
+              "mandate_external_id": "1",
+              "transaction_external_id": "4",
+              "event_type": "CHARGE",
+              "event_date": "2018-03-13T10:00:04.666Z"
+            },
+            {
               "external_id": "101",
               "event": "CHARGE_CREATED",
               "mandate_external_id": "1",
               "transaction_external_id": "2",
               "event_type": "MANDATE",
               "event_date": "2018-03-13T10:00:04.666Z"
-            },
-            {
-              "external_id": "200",
-              "event": "PAYMENT_ACKNOWLEDGED_BY_PROVIDER",
-              "mandate_external_id": "3",
-              "transaction_external_id": "4",
-              "event_type": "CHARGE",
-              "event_date": "2018-03-13T10:00:04.666Z"
             }
           ],
           "_links": {
-            "self": "/v1/events?before=2018-03-13T10:00:04Z&after=2018-03-13T10:00:04Z&mandate_external_id=1&page=1&page_size=100",
-            "first_page": "/v1/events?before=2018-03-13T10:00:04Z&after=2018-03-13T10:00:04Z&mandate_external_id=1&page=1&page_size=100",
-            "last_page": "/v1/events?before=2018-03-13T10:00:04Z&after=2018-03-13T10:00:04Z&mandate_external_id=1&page=1&page_size=100"
+            "self": { "href": "/v1/events?before=2018-03-13T10:00:04Z&after=2018-03-13T10:00:04Z&mandate_external_id=1&page=1&page_size=100"},
+            "first_page": { "href": "/v1/events?before=2018-03-13T10:00:04Z&after=2018-03-13T10:00:04Z&mandate_external_id=1&page=1&page_size=100"},
+            "last_page": { "href": "/v1/events?before=2018-03-13T10:00:04Z&after=2018-03-13T10:00:04Z&mandate_external_id=1&page=1&page_size=100"}
           }
         },
         "matchingRules": {
@@ -86,10 +87,10 @@
                 }
               ]
             },
-            "$._links.*": {
+            "$._links.*.href": {
               "matchers": [
                 {
-                  "regex":  "http.*/v1/events\\?before=2018-03-13T10:00:04Z&after=2018-03-13T10:00:04Z&mandate_external_id=1&page=1&page_size=100"
+                  "regex":  "http.*/v1/events\\?before=2018-03-13T10%3A00%3A05Z&after=2018-03-13T10%3A00%3A03Z&mandate_external_id=1&page=1&page_size=100"
                 }
               ]
             }
