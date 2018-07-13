@@ -25,14 +25,14 @@ public class RateLimiterTest {
 
     @Test
     public void rateLimiterSetTo_1CallPerSecond_shouldAllowSingleCall() throws Exception {
-        RateLimiter rateLimiter = new RateLimiter(1, 1000);
+        RateLimiter rateLimiter = new RateLimiter(1, 1, 1000);
         rateLimiter.checkRateOf("1");
     }
 
     @Test
     public void rateLimiterSetTo_2CallsPerSecond_shouldAllow2ConsecutiveCallsWithSameKeys() throws Exception {
 
-        RateLimiter rateLimiter = new RateLimiter(2, 1000);
+        RateLimiter rateLimiter = new RateLimiter(2, 1, 1000);
 
         rateLimiter.checkRateOf("2");
         rateLimiter.checkRateOf("2");
@@ -40,7 +40,7 @@ public class RateLimiterTest {
 
     @Test
     public void rateLimiterSetTo_2CallsPerSecond_shouldAFailWhen3ConsecutiveCallsWithSameKeysAreMade() throws Exception {
-        RateLimiter rateLimiter = new RateLimiter(2, 1000);
+        RateLimiter rateLimiter = new RateLimiter(2, 1, 1000);
 
         rateLimiter.checkRateOf("3");
         rateLimiter.checkRateOf("3");
@@ -52,7 +52,7 @@ public class RateLimiterTest {
     @Test
     public void rateLimiterSetTo_2CallsPer300Millis_shouldAllowMaking3CallsWithinTheAllowedTimeWithSameKey() throws Exception {
 
-        RateLimiter rateLimiter = new RateLimiter(2, 300);
+        RateLimiter rateLimiter = new RateLimiter(2, 1, 300);
 
         rateLimiter.checkRateOf("4");
         rateLimiter.checkRateOf("4");
@@ -63,7 +63,7 @@ public class RateLimiterTest {
 
     @Test
     public void rateLimiterSetTo_2CallsPer500Millis_shouldAllowMakingACallPerSecondWithSameKey() throws Exception {
-        RateLimiter rateLimiter = new RateLimiter(2, 500);
+        RateLimiter rateLimiter = new RateLimiter(2, 1, 500);
 
         rateLimiter.checkRateOf("5");
         Thread.sleep(250);
@@ -81,7 +81,7 @@ public class RateLimiterTest {
     @Test
     public void rateLimiterSetTo_2CallsPer300Millis_shouldAllowMakingOnly2CallsWithSameKey() throws Exception {
 
-        final RateLimiter rateLimiter = new RateLimiter(2, 300);
+        final RateLimiter rateLimiter = new RateLimiter(2, 1, 300);
 
         ExecutorService executor = Executors.newFixedThreadPool(3);
 
@@ -125,7 +125,7 @@ public class RateLimiterTest {
     @Test
     public void rateLimiterSetTo_2CallsPerSecond_shouldNotAllowMakingAThirdCallsWithSameKey() throws Exception {
 
-        RateLimiter rateLimiter = new RateLimiter(2, 1000);
+        RateLimiter rateLimiter = new RateLimiter(2, 1, 1000);
 
         rateLimiter.checkRateOf("6");
         Thread.sleep(910);
@@ -140,5 +140,15 @@ public class RateLimiterTest {
 
         Thread.sleep(900);
         rateLimiter.checkRateOf("6");
+    }
+
+    @Test
+    public void rateLimiter_shouldAuditWithoutThrowingException() throws Exception {
+
+        RateLimiter rateLimiter = new RateLimiter(2, 1, 1000);
+
+        rateLimiter.auditRateOf("6");
+        Thread.sleep(910);
+        rateLimiter.auditRateOf("6");
     }
 }

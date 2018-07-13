@@ -29,6 +29,7 @@ jerseyClientConfig:
 rateLimiter:
   rate: ${RATE_LIMITER_VALUE:-25}
   perMillis: ${RATE_LIMITER_PER_MILLIS:-1000}
+  auditRate: ${RATE_LIMITTER_AUDIT_VALUE:-4}
 
 allowHttpForReturnUrl: ${ALLOW_HTTP_FOR_RETURN_URL:-false}
 

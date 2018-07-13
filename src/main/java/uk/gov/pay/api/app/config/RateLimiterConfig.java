@@ -9,6 +9,9 @@ public class RateLimiterConfig extends Configuration {
     @Min(1)
     private int rate;
 
+    @Min(1)
+    private int auditRate;
+
     @Min(500)
     private int perMillis;
 
@@ -18,5 +21,9 @@ public class RateLimiterConfig extends Configuration {
 
     public int getPerMillis() {
         return perMillis;
+    }
+
+    public int getAuditRate() {
+        return auditRate;
     }
 }
