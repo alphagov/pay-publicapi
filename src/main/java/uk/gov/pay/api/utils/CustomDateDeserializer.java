@@ -14,9 +14,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class CustomDateDeserializer extends StdDeserializer<ZonedDateTime> {
-
-    private static SimpleDateFormat formatter
-            = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
     
     public CustomDateDeserializer() {
         this(null);

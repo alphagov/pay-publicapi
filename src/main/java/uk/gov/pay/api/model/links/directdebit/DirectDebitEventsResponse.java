@@ -77,7 +77,7 @@ public class DirectDebitEventsResponse {
             }
 
             private String convertLink(String link) {
-                return link.replace("mandate", "agreement");
+                return link.replace("&mandate_", "&agreement_");
             }
         }
     }

@@ -3,11 +3,13 @@ package uk.gov.pay.api.service;
 import com.google.common.collect.Maps;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.utils.DateTimeUtils;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -51,7 +53,7 @@ public class ConnectorUriGenerator {
     }
 
     private String buildConnectorUri(Account account, String path) {
-        return buildConnectorUri(account, path, Maps.newHashMap());
+        return buildConnectorUri(account, path, Collections.emptyMap());
     }
     
     private String buildConnectorUri(Account account, String path, Map<String, String> params) {
@@ -80,10 +82,10 @@ public class ConnectorUriGenerator {
         Map<String, String> params = new LinkedHashMap<>();
         
         if (beforeDate != null)
-            params.put("before", beforeDate.format(DateTimeFormatter.ISO_INSTANT));
+            params.put("before", DateTimeUtils.toUTCDateString(beforeDate));
 
         if (afterDate != null)
-            params.put("after", afterDate.format(DateTimeFormatter.ISO_INSTANT));
+            params.put("after", DateTimeUtils.toUTCDateString(afterDate));
 
         if (agreementId != null)
             params.put("mandate_external_id", agreementId);

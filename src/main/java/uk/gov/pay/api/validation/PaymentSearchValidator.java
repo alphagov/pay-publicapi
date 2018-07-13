@@ -104,7 +104,7 @@ public class PaymentSearchValidator {
     }
 
     private static boolean validateDate(String value) {
-        return isBlank(value) || DateTimeUtils.toUTCZonedDateTime(value).isPresent();
+        return DateValidator.validate(value);
     }
 
     private static boolean validateState(String state) {

@@ -86,7 +86,8 @@ public class GetDirectDebitEventsTest {
                 .header(AUTHORIZATION, "Bearer " + API_KEY)
                 .get(requestPath)
                 .then()
-                .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
-                .body(is("The supplied dates were not in the format yyyy-MM-ddThh:mm:ssZ."));
+                .statusCode(422)
+                .body(containsString("before"))
+                .body(containsString("after"));
     }
 }

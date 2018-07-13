@@ -12,6 +12,7 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.ConnectorResponseErrorException;
 import uk.gov.pay.api.model.links.directdebit.DirectDebitEventsResponse;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
+import uk.gov.pay.api.validation.DirectDebitEventSearchValidator;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -67,13 +68,9 @@ public class DirectDebitEventsResource {
             @QueryParam("payment_id") String paymentId
     ) {
 
-        Optional<BeforeAndAfter> validatedDates = isValid(beforeDate, afterDate);
-        if (!validatedDates.isPresent())
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("The supplied dates were not in the format yyyy-MM-ddThh:mm:ssZ.")
-                    .build();
+        DirectDebitEventSearchValidator.validateSearchParameters(beforeDate, afterDate);
 
-        String uri = connectorUriGenerator.eventsURI(account, validatedDates.get().before, validatedDates.get().after, page, pageSize, agreementId, paymentId);
+        String uri = connectorUriGenerator.eventsURI(account, ZonedDateTime.parse(beforeDate), ZonedDateTime.parse(afterDate), page, pageSize, agreementId, paymentId);
         Response ddConnectorResponse = client.target(uri)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
