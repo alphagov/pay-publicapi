@@ -30,7 +30,7 @@ public class CreateRefundExceptionMapper implements ExceptionMapper<CreateRefund
             paymentError = aPaymentError(CREATE_PAYMENT_REFUND_NOT_AVAILABLE, exception.getReason());
             status = BAD_REQUEST;
         } else if (exception.getErrorStatus() == PRECONDITION_FAILED.getStatusCode()) {
-            paymentError = aPaymentError(CREATE_PAYMENT_REFUND_AMOUNT_AVAILABLE_MISTMATCH);
+            paymentError = aPaymentError(CREATE_PAYMENT_REFUND_AMOUNT_AVAILABLE_MISMATCH);
             status = PRECONDITION_FAILED;
         } else {
             paymentError = aPaymentError(CREATE_PAYMENT_REFUND_CONNECTOR_ERROR);

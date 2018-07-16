@@ -16,6 +16,7 @@ public class AgreementError {
 
         CREATE_AGREEMENT_ACCOUNT_ERROR("P0199", "There is an error with this account. Please contact support"),
         CREATE_AGREEMENT_CONNECTOR_ERROR("P0198", "Downstream system error"),
+        CREATE_AGREEMENT_TYPE_ERROR("P0197", "It is not possible to create an agreement of this type"),
         
         GET_AGREEMENT_NOT_FOUND_ERROR("P0200", "Not found"),
         GET_AGREEMENT_CONNECTOR_ERROR("P0298", "Downstream system error"),
