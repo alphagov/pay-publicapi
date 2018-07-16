@@ -49,7 +49,7 @@ public class GetDirectDebitEventsTest {
     @Pacts(pacts = {"publicapi-direct-debit-connector-get-events"})
     @Pacts(pacts = {"publicapi-publicauth"}, publish = false)
     public void getDirectDebitEvents() {
-        String requestPath = "/v1/events?before=2018-03-13T10:00:05Z&after=2018-03-13T10:00:03Z&page_size=100&page=1&agreement_id=1";
+        String requestPath = "/v1/events?to_date=2018-03-13T10:00:05Z&from_date=2018-03-13T10:00:03Z&display_size=100&page=1&agreement_id=1";
         
         given().port(app.getLocalPort())
                 .accept(JSON)
@@ -69,16 +69,16 @@ public class GetDirectDebitEventsTest {
                 .body("results[0]._links.payment", is("/v1/payments/4"))
                 .body("_links.next_page", isEmptyOrNullString())
                 .body("_links.prev_page", isEmptyOrNullString())
-                .body("_links.self.href", is("/v1/events?before=2018-03-13T10:00:04Z&after=2018-03-13T10:00:04Z&agreement_external_id=1&page=1&page_size=100"))
-                .body("_links.last_page.href", is("/v1/events?before=2018-03-13T10:00:04Z&after=2018-03-13T10:00:04Z&agreement_external_id=1&page=1&page_size=100"))
-                .body("_links.first_page.href", is("/v1/events?before=2018-03-13T10:00:04Z&after=2018-03-13T10:00:04Z&agreement_external_id=1&page=1&page_size=100"));
+                .body("_links.self.href", is("/v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&agreement_external_id=1&page=1&display_size=100"))
+                .body("_links.last_page.href", is("/v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&agreement_external_id=1&page=1&display_size=100"))
+                .body("_links.first_page.href", is("/v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&agreement_external_id=1&page=1&display_size=100"));
     }
     
     @Test
     @PactVerification({"publicauth"})
     @Pacts(pacts = {"publicapi-publicauth"}, publish = false)
     public void shouldReturnBadRequestIfDatesAreInvalid() {
-        String requestPath = "/v1/events?before=bad-date&after=bad-date";
+        String requestPath = "/v1/events?to_date=bad-date&from_date=bad-date";
 
         given().port(app.getLocalPort())
                 .accept(JSON)
@@ -87,7 +87,7 @@ public class GetDirectDebitEventsTest {
                 .get(requestPath)
                 .then()
                 .statusCode(422)
-                .body(containsString("before"))
-                .body(containsString("after"));
+                .body(containsString("to_date"))
+                .body(containsString("from_date"));
     }
 }

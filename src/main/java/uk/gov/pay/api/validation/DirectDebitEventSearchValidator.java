@@ -12,11 +12,11 @@ import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 
 public class DirectDebitEventSearchValidator {
 
-    public static void validateSearchParameters(String afterDate, String beforeDate) {
+    public static void validateSearchParameters(String fromDate, String toDate) {
         List<String> validationErrors = new LinkedList<>();
         try {
-            validateAfterDate(afterDate, validationErrors);
-            validateBeforeDate(beforeDate, validationErrors);
+            validateAfterDate(fromDate, validationErrors);
+            validateBeforeDate(toDate, validationErrors);
         } catch (Exception e) {
             throw new ValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", "), e.getMessage()));
         }
@@ -27,13 +27,13 @@ public class DirectDebitEventSearchValidator {
 
     private static void validateBeforeDate(String toDate, List<String> validationErrors) {
         if (!validateDate(toDate)) {
-            validationErrors.add("after");
+            validationErrors.add("from_date");
         }
     }
 
     private static void validateAfterDate(String fromDate, List<String> validationErrors) {
         if (!validateDate(fromDate)) {
-            validationErrors.add("before");
+            validationErrors.add("to_date");
         }
     }
 

@@ -38,9 +38,9 @@
         "method": "GET",
         "path": "/v1/events",
         "query": {
-          "before": ["2018-03-13T10:00:05Z"],
-          "after": ["2018-03-13T10:00:03Z"],
-          "page_size": ["100"],
+          "to_date": ["2018-03-13T10:00:05Z"],
+          "from_date": ["2018-03-13T10:00:03Z"],
+          "display_size": ["100"],
           "page": ["1"],
           "mandate_external_id": ["1"]
         }
@@ -73,9 +73,9 @@
             }
           ],
           "_links": {
-            "self": { "href": "/v1/events?before=2018-03-13T10:00:04Z&after=2018-03-13T10:00:04Z&mandate_external_id=1&page=1&page_size=100"},
-            "first_page": { "href": "/v1/events?before=2018-03-13T10:00:04Z&after=2018-03-13T10:00:04Z&mandate_external_id=1&page=1&page_size=100"},
-            "last_page": { "href": "/v1/events?before=2018-03-13T10:00:04Z&after=2018-03-13T10:00:04Z&mandate_external_id=1&page=1&page_size=100"}
+            "self": { "href": "/v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&mandate_external_id=1&page=1&display_size=100"},
+            "first_page": { "href": "/v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&mandate_external_id=1&page=1&display_size=100"},
+            "last_page": { "href": "/v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&mandate_external_id=1&page=1&display_size=100"}
           }
         },
         "matchingRules": {
@@ -90,7 +90,7 @@
             "$._links.*.href": {
               "matchers": [
                 {
-                  "regex":  "http.*/v1/events\\?before=2018-03-13T10%3A00%3A05Z&after=2018-03-13T10%3A00%3A03Z&mandate_external_id=1&page=1&page_size=100"
+                  "regex":  "http.*/v1/events\\?to_date=2018-03-13T10%3A00%3A05Z&from_date=2018-03-13T10%3A00%3A03Z&mandate_external_id=1&page=1&display_size=100"
                 }
               ]
             }

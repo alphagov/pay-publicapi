@@ -57,10 +57,10 @@ public class DirectDebitEventsResource {
             @ApiResponse(code = 401, message = "Credentials are required to access this resource")})
     public Response getDirectDebitEvents(
             @ApiParam(value = "accountId", hidden = true) @Auth Account account,
-            @QueryParam("before") String beforeDate,
-            @QueryParam("after") String afterDate,
+            @QueryParam("to_date") String toDate,
+            @QueryParam("from_date") String fromDate,
             @ApiParam(value = "Defaults to a maximum of 500", hidden = false)
-            @QueryParam("page_size") Integer pageSize,
+            @QueryParam("display_size") Integer displaySize,
             @QueryParam("page") Integer page,
             @ApiParam(value = "ID of associated agreement", hidden = false)
             @QueryParam("agreement_id") String agreementId,
@@ -68,9 +68,9 @@ public class DirectDebitEventsResource {
             @QueryParam("payment_id") String paymentId
     ) {
 
-        DirectDebitEventSearchValidator.validateSearchParameters(beforeDate, afterDate);
+        DirectDebitEventSearchValidator.validateSearchParameters(toDate, fromDate);
 
-        String uri = connectorUriGenerator.eventsURI(account, ZonedDateTime.parse(beforeDate), ZonedDateTime.parse(afterDate), page, pageSize, agreementId, paymentId);
+        String uri = connectorUriGenerator.eventsURI(account, ZonedDateTime.parse(toDate), ZonedDateTime.parse(fromDate), page, displaySize, agreementId, paymentId);
         Response ddConnectorResponse = client.target(uri)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
@@ -82,16 +82,6 @@ public class DirectDebitEventsResource {
         }
         
         throw new ConnectorResponseErrorException(ddConnectorResponse);
-    }
-
-    private Optional<BeforeAndAfter> isValid(String beforeDate, String afterDate) {
-        try {
-            ZonedDateTime before = ZonedDateTime.parse(beforeDate);
-            ZonedDateTime after = ZonedDateTime.parse(afterDate);
-            return Optional.of(new BeforeAndAfter(before, after));
-        } catch (DateTimeParseException e) {
-            return Optional.empty();
-        }
     }
 
     private class BeforeAndAfter {

@@ -170,17 +170,17 @@
         "operationId" : "getDirectDebitEvents",
         "produces" : [ "application/json" ],
         "parameters" : [ {
-          "name" : "before",
+          "name" : "to_date",
           "in" : "query",
           "required" : false,
           "type" : "string"
         }, {
-          "name" : "after",
+          "name" : "from_date",
           "in" : "query",
           "required" : false,
           "type" : "string"
         }, {
-          "name" : "page_size",
+          "name" : "display_size",
           "in" : "query",
           "description" : "Defaults to a maximum of 500",
           "required" : false,

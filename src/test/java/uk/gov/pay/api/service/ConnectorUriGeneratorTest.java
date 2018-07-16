@@ -100,24 +100,24 @@ public class ConnectorUriGeneratorTest {
     @Test
     public void buildEventsURIFromBeforeParameter() throws Exception {
         String uri = connectorUriGenerator.eventsURI(cardAccount, ZonedDateTime.parse("2018-03-13T10:00:05Z"), null, null, null, null, null);
-        assertThat(URLDecoder.decode(uri, "UTF-8"), is("https://bla.test/v1/events?before=2018-03-13T10:00:05Z&page=1&page_size=500"));
+        assertThat(URLDecoder.decode(uri, "UTF-8"), is("https://bla.test/v1/events?to_date=2018-03-13T10:00:05Z&page=1&display_size=500"));
     }
 
     @Test
     public void buildEventsURIFromAfterParameter() throws UnsupportedEncodingException {
         String uri = connectorUriGenerator.eventsURI(cardAccount, null, ZonedDateTime.parse("2018-03-13T10:00:05Z"), null, null, null, null);
-        assertThat(URLDecoder.decode(uri, "UTF-8"), is("https://bla.test/v1/events?after=2018-03-13T10:00:05Z&page=1&page_size=500"));
+        assertThat(URLDecoder.decode(uri, "UTF-8"), is("https://bla.test/v1/events?from_date=2018-03-13T10:00:05Z&page=1&display_size=500"));
     }
 
     @Test
     public void buildEventsURIFromAgreementIdParameter() {
         String uri = connectorUriGenerator.eventsURI(cardAccount, null, null, null, null, "1", null);
-        assertThat(uri, is("https://bla.test/v1/events?mandate_external_id=1&page=1&page_size=500"));
+        assertThat(uri, is("https://bla.test/v1/events?mandate_external_id=1&page=1&display_size=500"));
     }
 
     @Test
     public void buildEventsURIFromAllParameters() throws UnsupportedEncodingException {
         String uri = connectorUriGenerator.eventsURI(cardAccount, ZonedDateTime.parse("2018-03-13T10:00:05Z"), ZonedDateTime.parse("2018-03-13T10:00:05Z"), 1, 300, "1", "2");
-        assertThat(URLDecoder.decode(uri, "UTF-8"), is("https://bla.test/v1/events?before=2018-03-13T10:00:05Z&after=2018-03-13T10:00:05Z&mandate_external_id=1&transaction_external_id=2&page=1&page_size=300"));
+        assertThat(URLDecoder.decode(uri, "UTF-8"), is("https://bla.test/v1/events?to_date=2018-03-13T10:00:05Z&from_date=2018-03-13T10:00:05Z&mandate_external_id=1&transaction_external_id=2&page=1&display_size=300"));
     }
 }

@@ -77,15 +77,15 @@ public class ConnectorUriGenerator {
         return buildConnectorUri(account, path, Maps.newHashMap());
     }
 
-    public String eventsURI(Account account, ZonedDateTime beforeDate, ZonedDateTime afterDate, Integer page, Integer pageSize, String agreementId, String paymentId) {
+    public String eventsURI(Account account, ZonedDateTime toDate, ZonedDateTime fromDate, Integer page, Integer displaySize, String agreementId, String paymentId) {
 
         Map<String, String> params = new LinkedHashMap<>();
         
-        if (beforeDate != null)
-            params.put("before", DateTimeUtils.toUTCDateString(beforeDate));
+        if (toDate != null)
+            params.put("to_date", DateTimeUtils.toUTCDateString(toDate));
 
-        if (afterDate != null)
-            params.put("after", DateTimeUtils.toUTCDateString(afterDate));
+        if (fromDate != null)
+            params.put("from_date", DateTimeUtils.toUTCDateString(fromDate));
 
         if (agreementId != null)
             params.put("mandate_external_id", agreementId);
@@ -94,7 +94,7 @@ public class ConnectorUriGenerator {
             params.put("transaction_external_id", paymentId);
 
         params.put("page", Optional.ofNullable(page).orElse(1).toString());
-        params.put("page_size", Optional.ofNullable(pageSize).orElse(500).toString());
+        params.put("display_size", Optional.ofNullable(displaySize).orElse(500).toString());
         
         return buildConnectorUri(account, "/v1/events", params);
     }
