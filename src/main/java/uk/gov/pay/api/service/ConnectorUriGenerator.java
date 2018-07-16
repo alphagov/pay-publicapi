@@ -1,15 +1,20 @@
 package uk.gov.pay.api.service;
 
-import org.apache.commons.lang3.tuple.Pair;
+import com.google.common.collect.Maps;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.utils.DateTimeUtils;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static java.lang.String.format;
 import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 
 public class ConnectorUriGenerator {
@@ -25,41 +30,37 @@ public class ConnectorUriGenerator {
         if (account.getPaymentType().equals(DIRECT_DEBIT) && agreementId != null) {
             chargePath += "/collect";
         }
-        return buildConnectorUri(account, String.format(chargePath, account.getAccountId()));
+        return buildConnectorUri(account, format(chargePath, account.getAccountId()));
     }
 
-    public String chargesURIWithParams(Account account, List<Pair<String, String>> queryParams) {
-        return buildConnectorUri(account, String.format("/v1/api/accounts/%s/charges", account.getAccountId()), queryParams);
+    public String chargesURIWithParams(Account account, Map<String, String> queryParams) {
+        return buildConnectorUri(account, format("/v1/api/accounts/%s/charges", account.getAccountId()), queryParams);
     }
     
     public String chargeURI(Account account, String chargeId) {
-        String path = String.format("/v1/api/accounts/%s/charges/%s", account.getAccountId(), chargeId);
+        String path = format("/v1/api/accounts/%s/charges/%s", account.getAccountId(), chargeId);
         return buildConnectorUri(account, path);
     }
 
     public String chargeEventsURI(Account account, String paymentId) {
-        String path = String.format("/v1/api/accounts/%s/charges/%s/events", account.getAccountId(), paymentId);
+        String path = format("/v1/api/accounts/%s/charges/%s/events", account.getAccountId(), paymentId);
         return buildConnectorUri(account, path);
     }
     
-    public String directDebitTransactionsURI(Account account, List<Pair<String, String>> queryParams) {
+    public String directDebitTransactionsURI(Account account, Map<String, String> queryParams) {
         String path = String.format("/v1/api/accounts/%s/transactions/view", account.getAccountId());
         return buildConnectorUri(account, path, queryParams);
     }
 
     private String buildConnectorUri(Account account, String path) {
-        return buildConnectorUri(account, path, Collections.emptyList());
+        return buildConnectorUri(account, path, Collections.emptyMap());
     }
     
-    private String buildConnectorUri(Account account, String path, List<Pair<String, String>> queryParams) {
+    private String buildConnectorUri(Account account, String path, Map<String, String> params) {
         UriBuilder builder = UriBuilder.fromPath(connectorBaseUrlForAccount(account)).path(path);
-
-        queryParams.forEach(pair -> {
-            if (isNotBlank(pair.getRight())) {
-                builder.queryParam(pair.getKey(), pair.getValue());
-            }
-        });
-
+        params.entrySet().stream()
+                .filter(k -> k.getValue() != null)
+                .forEach(k -> builder.queryParam(k.getKey(), k.getValue()));
         return builder.toString();
     }
 
@@ -72,7 +73,29 @@ public class ConnectorUriGenerator {
     }
 
     public String cancelURI(Account account, String paymentId) {
-        String path = String.format("/v1/api/accounts/%s/charges/%s/cancel", account.getAccountId(), paymentId);
-        return buildConnectorUri(account, path, Collections.emptyList()).toString();
+        String path = format("/v1/api/accounts/%s/charges/%s/cancel", account.getAccountId(), paymentId);
+        return buildConnectorUri(account, path, Maps.newHashMap());
+    }
+
+    public String eventsURI(Account account, ZonedDateTime toDate, ZonedDateTime fromDate, Integer page, Integer displaySize, String agreementId, String paymentId) {
+
+        Map<String, String> params = new LinkedHashMap<>();
+        
+        if (toDate != null)
+            params.put("to_date", DateTimeUtils.toUTCDateString(toDate));
+
+        if (fromDate != null)
+            params.put("from_date", DateTimeUtils.toUTCDateString(fromDate));
+
+        if (agreementId != null)
+            params.put("mandate_external_id", agreementId);
+
+        if (paymentId != null)
+            params.put("transaction_external_id", paymentId);
+
+        params.put("page", Optional.ofNullable(page).orElse(1).toString());
+        params.put("display_size", Optional.ofNullable(displaySize).orElse(500).toString());
+        
+        return buildConnectorUri(account, "/v1/events", params);
     }
 }

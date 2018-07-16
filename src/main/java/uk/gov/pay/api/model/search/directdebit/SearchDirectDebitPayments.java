@@ -4,7 +4,6 @@ import black.door.hate.HalRepresentation;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
@@ -22,9 +21,11 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.http.HttpStatus.SC_OK;
 
 public class SearchDirectDebitPayments extends SearchPaymentsBase {
@@ -40,9 +41,8 @@ public class SearchDirectDebitPayments extends SearchPaymentsBase {
     }
 
     @Override
-    public Response getSearchResponse(Account account, List<Pair<String, String>> queryParams) {
-        if (queryParams.stream()
-                .anyMatch(queryParam -> "card_brand".equals(queryParam.getLeft()) && queryParam.getRight() != null)) {
+    public Response getSearchResponse(Account account, Map<String, String> queryParams) {
+        if (isNotEmpty(queryParams.get("card_brand"))) {
             throw new BadRequestException(PaymentError
                     .aPaymentError(PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR, "card_brand"));
         }

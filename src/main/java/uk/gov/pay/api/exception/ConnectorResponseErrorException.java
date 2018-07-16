@@ -6,14 +6,14 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Response;
 
-class ConnectorResponseErrorException extends RuntimeException {
+public class ConnectorResponseErrorException extends RuntimeException {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConnectorResponseErrorException.class);
 
     private ConnectorErrorResponse error;
     private int status;
 
-    ConnectorResponseErrorException(Response response) {
+    public ConnectorResponseErrorException(Response response) {
         super(response.toString());
         this.status = response.getStatus();
         this.error = readError(response);

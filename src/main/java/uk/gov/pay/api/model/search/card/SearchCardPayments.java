@@ -4,7 +4,6 @@ import black.door.hate.HalRepresentation;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
@@ -21,17 +20,18 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.http.HttpStatus.SC_OK;
 
 public class SearchCardPayments extends SearchPaymentsBase {
 
     private static final Logger logger = LoggerFactory.getLogger(SearchCardPayments.class);
-    
+
     public SearchCardPayments(Client client,
                               PublicApiConfig configuration,
                               ConnectorUriGenerator connectorUriGenerator,
@@ -39,15 +39,14 @@ public class SearchCardPayments extends SearchPaymentsBase {
                               ObjectMapper objectMapper) {
         super(client, configuration, connectorUriGenerator, paymentUriGenerator, objectMapper);
     }
-    
+
     @Override
-    public Response getSearchResponse(Account account, List<Pair<String, String>> queryParams) {
-        if (queryParams.stream()
-                .anyMatch(queryParam -> "agreement_id".equals(queryParam.getLeft()) && queryParam.getRight() != null)) {
+    public Response getSearchResponse(Account account, Map<String, String> queryParams) {
+        if (isNotEmpty(queryParams.get("agreement_id"))) {
             throw new BadRequestException(PaymentError
                     .aPaymentError(PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR, "agreement_id"));
         }
-        queryParams = addTransactionTypeToSearchParams(queryParams);
+        queryParams.put("transactionType", "charge");
 
         String url = connectorUriGenerator.chargesURIWithParams(account, queryParams);
         Response connectorResponse = client
@@ -65,7 +64,8 @@ public class SearchCardPayments extends SearchPaymentsBase {
     private Response processResponse(Response connectorResponse) {
         try {
             JsonNode responseJson = connectorResponse.readEntity(JsonNode.class);
-            TypeReference<PaymentSearchResponse> typeRef = new TypeReference<PaymentSearchResponse>() {};
+            TypeReference<PaymentSearchResponse> typeRef = new TypeReference<PaymentSearchResponse>() {
+            };
             PaymentSearchResponse searchResponse = objectMapper.readValue(responseJson.traverse(), typeRef);
             List<PaymentForSearchResult> chargeFromResponses = searchResponse.getPayments()
                     .stream()
@@ -84,12 +84,5 @@ public class SearchCardPayments extends SearchPaymentsBase {
         } catch (IOException | ProcessingException ex) {
             throw new SearchChargesException(ex);
         }
-    }
-    
-    private List<Pair<String, String>> addTransactionTypeToSearchParams(List<Pair<String, String>> queryParams) {
-        List<Pair<String, String>> queryList = new ArrayList<>();
-        queryList.addAll(queryParams);
-        queryList.add(Pair.of("transactionType", "charge"));
-        return queryList;
     }
 }
