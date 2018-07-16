@@ -46,8 +46,7 @@ public class RateLimiter {
             auditCache.get(key, () -> new RateLimit(auditRate, perMillis)).updateAllowance();
         } catch (RateLimitException e) {
             LOGGER.info(String.format(
-                    "Rate limit reached for rate limit key %s using rate of %d requests per %d ms",
-                    key,
+                    "Rate limit reached for a service using rate of %d requests per %d ms",
                     auditRate,
                     perMillis)
             );
