@@ -10,7 +10,9 @@ import javax.ws.rs.ext.ExceptionMapper;
 
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_ACCOUNT_ERROR;
+import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_AGREEMENT_TYPE_ERROR;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_CONNECTOR_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 
@@ -25,6 +27,8 @@ public class CreateChargeExceptionMapper implements ExceptionMapper<CreateCharge
 
         if (exception.getErrorStatus() == NOT_FOUND.getStatusCode()) {
             paymentError = aPaymentError(CREATE_PAYMENT_ACCOUNT_ERROR);
+        } else if (exception.getErrorStatus() == PRECONDITION_FAILED.getStatusCode()) {
+            paymentError = aPaymentError(CREATE_PAYMENT_AGREEMENT_TYPE_ERROR);
         } else {
             paymentError = aPaymentError(CREATE_PAYMENT_CONNECTOR_ERROR);
         }
