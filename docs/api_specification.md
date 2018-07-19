@@ -861,7 +861,7 @@ GET /v1/payments
 | Field           | required | Description                               |
 | --------------- |:--------:| ----------------------------------------- |
 | `reference`     |    -     | There (partial or full) reference issued by the government service for this payment. |
-| `state`         |    -     | The state of this payment (If Direct Debit only: `started, pending, success, failed, cancelled`) |
+| `state`         |    -     | The state of this payment. See notes below |
 | `from_date`     |    -     | The initial date for search payments |
 | `to_date`       |    -     | The end date for search payments |
 | `card_brand`    |    -     | The card brand for search payments. For Card Payments only. If used for Direct Debit payment a BadRequestException is thrown  |
@@ -869,6 +869,11 @@ GET /v1/payments
 | `display_size`  |    -     | Number of records to be returned per page, should be a non zero +ve number (optional, defaults to 500)|
 | `email`         |    -     | Email ID of the payment user to search for          |
 | `agreement_id`  |    -     | Agreement id. Used by Direct Debit exclusively. If used for Card payment a BadRequestException is thrown. |
+
+#### Notes:
+`Valid states for Card Payments: "created", "started", "submitted", "success", "failed", "cancelled", "error"`
+
+`Valid states for Direct Debit Payments: "started", "pending", "success", "failed", "cancelled"`
 
 ### Response example for Card Payment
 
