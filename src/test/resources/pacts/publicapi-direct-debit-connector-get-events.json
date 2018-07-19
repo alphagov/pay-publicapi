@@ -73,9 +73,9 @@
             }
           ],
           "_links": {
-            "self": { "href": "/v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&mandate_external_id=1&page=1&display_size=100"},
-            "first_page": { "href": "/v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&mandate_external_id=1&page=1&display_size=100"},
-            "last_page": { "href": "/v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&mandate_external_id=1&page=1&display_size=100"}
+            "self": { "href": "http://ddconnector.test/v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&mandate_external_id=1&page=1&display_size=100"},
+            "first_page": { "href": "http://ddconnector.test/v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&mandate_external_id=1&page=1&display_size=100"},
+            "last_page": { "href": "http://ddconnector.test/v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&mandate_external_id=1&page=1&display_size=100"}
           }
         },
         "matchingRules": {

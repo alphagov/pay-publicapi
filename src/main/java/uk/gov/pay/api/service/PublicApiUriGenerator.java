@@ -45,4 +45,9 @@ public class PublicApiUriGenerator {
                 .build(agreementId);
     }
 
+    public URI convertHostToPublicAPI(String link) {
+        URI originalUri = UriBuilder.fromUri(link).build();
+        return UriBuilder.fromUri(baseUrl).path(originalUri.getPath()).replaceQuery(originalUri.getQuery()).build();
+    }
+
 }
