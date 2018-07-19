@@ -25,7 +25,7 @@ import static uk.gov.pay.api.validation.PaymentRequestValidator.REFERENCE_MAX_LE
 public class PaymentSearchValidator {
     // we should really find a way to not have this anywhere but in the connector...
     public static final Set<String> VALID_STATES =
-            new HashSet<>(Arrays.asList("created", "started", "submitted", "success", "failed", "cancelled", "error"));
+            new HashSet<>(Arrays.asList("created", "pending", "started", "submitted", "success", "failed", "cancelled", "error"));
 
     public static void validateSearchParameters(String state, String reference, String email, String cardBrand, 
                                                 String fromDate, String toDate, String pageNumber, 
