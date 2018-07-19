@@ -858,17 +858,17 @@ GET /v1/payments
 
 #### Query Parameters description
 
-| Field                     | required | Description                               |
-| ------------------------  |:--------:| ----------------------------------------- |
-| `reference`               | - | There (partial or full) reference issued by the government service for this payment. |
-| `status`                  | - | The transaction of this payment |
-| `from_date`               | - | The initial date for search payments |
-| `to_date`                 | - | The end date for search payments |
-| `card_brand`              | - | The card brand for search payments. For Card Payments only. If used for Direct Debit payment a BadRequestException is thrown  |
-| `page`                    | - | To get the results from the specified page number, should be a non zero +ve number (optional, defaults to 1)|
-| `display_size`            | - | Number of records to be returned per page, should be a non zero +ve number (optional, defaults to 500)|
-| `email`                   | - | Email ID of the payment user to search for          |
-| `agreement_id`            | - | Agreement id. Used by Direct Debit exclusively. If used for Card payment a BadRequestException is thrown. |
+| Field           | required | Description                               |
+| --------------- |:--------:| ----------------------------------------- |
+| `reference`     |    -     | There (partial or full) reference issued by the government service for this payment. |
+| `state`         |    -     | The state of this payment (If Direct Debit only: `started, pending, success, failed, cancelled`) |
+| `from_date`     |    -     | The initial date for search payments |
+| `to_date`       |    -     | The end date for search payments |
+| `card_brand`    |    -     | The card brand for search payments. For Card Payments only. If used for Direct Debit payment a BadRequestException is thrown  |
+| `page`          |    -     | To get the results from the specified page number, should be a non zero +ve number (optional, defaults to 1)|
+| `display_size`  |    -     | Number of records to be returned per page, should be a non zero +ve number (optional, defaults to 500)|
+| `email`         |    -     | Email ID of the payment user to search for          |
+| `agreement_id`  |    -     | Agreement id. Used by Direct Debit exclusively. If used for Card payment a BadRequestException is thrown. |
 
 ### Response example for Card Payment
 
