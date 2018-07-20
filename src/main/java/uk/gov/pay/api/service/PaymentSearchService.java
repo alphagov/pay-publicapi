@@ -1,7 +1,6 @@
 package uk.gov.pay.api.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.tuple.Pair;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.search.PaymentSearchFactory;
@@ -11,10 +10,8 @@ import javax.inject.Inject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
-import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.gov.pay.api.validation.PaymentSearchValidator.validateSearchParameters;
 
@@ -32,7 +29,6 @@ public class PaymentSearchService {
     private final ConnectorUriGenerator connectorUriGenerator;
     private final Client client;
     private final ObjectMapper objectMapper;
-    private final String baseUrl;
     private final PaymentUriGenerator paymentUriGenerator;
     private final PublicApiConfig configuration;
 
@@ -47,13 +43,12 @@ public class PaymentSearchService {
         this.connectorUriGenerator = connectorUriGenerator;
         this.paymentUriGenerator = paymentUriGenerator;
         this.objectMapper = objectMapper;
-        this.baseUrl = configuration.getBaseUrl();
     }
     
     public Response doSearch(Account account, String reference, String email, String state, String cardBrand,
                              String fromDate, String toDate, String pageNumber, String displaySize, String agreementId) {
         
-        validateSearchParameters(state, reference, email, cardBrand, fromDate, toDate, pageNumber, displaySize, agreementId);
+        validateSearchParameters(account, state, reference, email, cardBrand, fromDate, toDate, pageNumber, displaySize, agreementId);
 
         if (isNotBlank(cardBrand)) {
             cardBrand = cardBrand.toLowerCase();
