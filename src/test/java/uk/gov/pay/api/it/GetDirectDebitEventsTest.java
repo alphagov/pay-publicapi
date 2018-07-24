@@ -2,6 +2,7 @@ package uk.gov.pay.api.it;
 
 import au.com.dius.pact.consumer.PactVerification;
 import io.dropwizard.testing.junit.DropwizardAppRule;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.pay.api.app.PublicApi;
@@ -40,6 +41,13 @@ public class GetDirectDebitEventsTest {
             config("connectorDDUrl", "http://localhost:" + directDebitConnector.getConfig().getPort()),
             config("publicAuthUrl", "http://localhost:" + publicAuth.getConfig().getPort() + "/v1/auth"));
 
+    private String baseUrl;
+    
+    @Before
+    public void setUp() {
+        baseUrl = app.getConfiguration().getBaseUrl();
+    }
+    
     @Test
     @PactVerification({"direct-debit-connector", "publicauth"})
     @Pacts(pacts = {"publicapi-direct-debit-connector-get-events"})
@@ -65,9 +73,9 @@ public class GetDirectDebitEventsTest {
                 .body("results[0]._links.payment", is(app.getConfiguration().getBaseUrl() + "v1/payments/4"))
                 .body("_links.next_page", isEmptyOrNullString())
                 .body("_links.prev_page", isEmptyOrNullString())
-                .body("_links.self.href", is( app.getConfiguration().getBaseUrl() + "v1/events?to_date=2018-03-13T10%3A00%3A04Z&from_date=2018-03-13T10%3A00%3A04Z&agreement_external_id=1&page=1&display_size=100"))
-                .body("_links.last_page.href", is(app.getConfiguration().getBaseUrl() + "v1/events?to_date=2018-03-13T10%3A00%3A04Z&from_date=2018-03-13T10%3A00%3A04Z&agreement_external_id=1&page=1&display_size=100"))
-                .body("_links.first_page.href", is(app.getConfiguration().getBaseUrl() + "v1/events?to_date=2018-03-13T10%3A00%3A04Z&from_date=2018-03-13T10%3A00%3A04Z&agreement_external_id=1&page=1&display_size=100"));
+                .body("_links.self.href", is( baseUrl + "v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&agreement_external_id=1&page=1&display_size=100"))
+                .body("_links.last_page.href", is(baseUrl + "v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&agreement_external_id=1&page=1&display_size=100"))
+                .body("_links.first_page.href", is(baseUrl + "v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&agreement_external_id=1&page=1&display_size=100"));
     }
     
     @Test

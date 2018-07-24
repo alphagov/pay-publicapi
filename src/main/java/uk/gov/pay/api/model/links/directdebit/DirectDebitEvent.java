@@ -98,10 +98,10 @@ public class DirectDebitEvent {
     public static class Links {
         
         @JsonProperty("agreement")
-        private String agreement;
+        private final String agreement;
 
         @JsonProperty("payment")
-        private String payment;
+        private final String payment;
         
         public Links(String agreement, String payment) {
             this.agreement = agreement;

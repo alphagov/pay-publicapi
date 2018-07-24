@@ -37,50 +37,50 @@ public class DirectDebitEventService {
     }
 
     private void addAgreementAndPaymentLinks(DirectDebitEventsResponse response) {
-        
-        for (DirectDebitEvent event: response.getResults()) {
+
+        for (DirectDebitEvent event : response.getResults()) {
             String agreementLink = null;
             String paymentLink = null;
-            
+
             if (event.getMandateExternalId() != null) {
                 agreementLink = publicApiUriGenerator.getAgreementURI(event.getMandateExternalId()).toString();
             }
-            
+
             if (event.getTransactionExternalId() != null) {
                 paymentLink = publicApiUriGenerator.getPaymentURI(event.getTransactionExternalId()).toString();
             }
-            
+
             event.setLinks(new DirectDebitEvent.Links(agreementLink, paymentLink));
         }
     }
 
     private void updatePaginationLinks(DirectDebitEventsResponse response) {
-        DirectDebitEventsResponse.DirectDebitEventsPagination links = response.getLinks();
+        DirectDebitEventsResponse.DirectDebitEventsPagination links = response.getPaginationLinks();
 
         if (links.getSelfLink() != null) {
-            response.getLinks().getFirstLink().setHref(updateHost(response.getLinks().getFirstLink().getHref()));
+            response.getPaginationLinks().getFirstLink().setHref(updateHost(response.getPaginationLinks().getFirstLink().getHref()));
         }
 
         if (links.getPrevLink() != null) {
-            response.getLinks().getPrevLink().setHref(updateHost(response.getLinks().getPrevLink().getHref()));
+            response.getPaginationLinks().getPrevLink().setHref(updateHost(response.getPaginationLinks().getPrevLink().getHref()));
         }
 
         if (links.getNextLink() != null) {
-            response.getLinks().getNextLink().setHref(updateHost(response.getLinks().getNextLink().getHref()));
+            response.getPaginationLinks().getNextLink().setHref(updateHost(response.getPaginationLinks().getNextLink().getHref()));
         }
 
         if (links.getLastLink() != null) {
-            response.getLinks().getLastLink().setHref(updateHost(response.getLinks().getLastLink().getHref()));
+            response.getPaginationLinks().getLastLink().setHref(updateHost(response.getPaginationLinks().getLastLink().getHref()));
         }
 
         if (links.getFirstLink() != null) {
-            response.getLinks().getSelfLink().setHref(updateHost(response.getLinks().getSelfLink().getHref()));
+            response.getPaginationLinks().getSelfLink().setHref(updateHost(response.getPaginationLinks().getSelfLink().getHref()));
         }
     }
-    
+
     private String updateHost(String url) {
         if (url != null) {
-            return publicApiUriGenerator.convertHostToPublicAPI(url).toString();
+            return publicApiUriGenerator.convertHostToPublicAPI(url);
         }
         return null;
     }

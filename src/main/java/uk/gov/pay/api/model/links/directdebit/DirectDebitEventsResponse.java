@@ -24,10 +24,10 @@ public class DirectDebitEventsResponse {
     private List<DirectDebitEvent> results;
 
     @JsonProperty("_links")
-    private DirectDebitEventsPagination links;
+    private DirectDebitEventsPagination paginationLinks;
 
-    public DirectDebitEventsPagination getLinks() {
-        return links;
+    public DirectDebitEventsPagination getPaginationLinks() {
+        return paginationLinks;
     }
 
     public List<DirectDebitEvent> getResults() {

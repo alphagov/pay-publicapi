@@ -4,7 +4,9 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLDecoder;
 
 public class PublicApiUriGenerator {
 
@@ -45,9 +47,19 @@ public class PublicApiUriGenerator {
                 .build(agreementId);
     }
 
-    public URI convertHostToPublicAPI(String link) {
+    public String convertHostToPublicAPI(String link) {
         URI originalUri = UriBuilder.fromUri(link).build();
-        return UriBuilder.fromUri(baseUrl).path(originalUri.getPath()).replaceQuery(originalUri.getQuery()).build();
+        URI newUri = UriBuilder.fromUri(baseUrl)
+                .path(originalUri.getPath())
+                .replaceQuery(originalUri.getQuery())
+                .build();
+        try {
+            return URLDecoder.decode(newUri.toString(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // This shouldn't be reached. This is only thrown if 'character encoding needs to be consulted, but
+            // named character encoding is not supported' within the .decode() method above. This is using UTF-8 which does exist.
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
 }
