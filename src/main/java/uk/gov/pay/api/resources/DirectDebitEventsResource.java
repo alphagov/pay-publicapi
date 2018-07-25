@@ -7,11 +7,11 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.apache.http.HttpStatus;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.ConnectorResponseErrorException;
 import uk.gov.pay.api.model.links.directdebit.DirectDebitEventsResponse;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
+import uk.gov.pay.api.service.DirectDebitEventService;
 import uk.gov.pay.api.validation.DirectDebitEventSearchValidator;
 
 import javax.inject.Inject;
@@ -20,13 +20,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Optional;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
@@ -37,11 +33,13 @@ public class DirectDebitEventsResource {
 
     private final Client client;
     private final ConnectorUriGenerator connectorUriGenerator;
+    private final DirectDebitEventService directDebitEventService;
 
     @Inject
-    public DirectDebitEventsResource(Client client, ConnectorUriGenerator connectorUriGenerator) {
+    public DirectDebitEventsResource(Client client, ConnectorUriGenerator connectorUriGenerator, DirectDebitEventService directDebitEventService) {
         this.client = client;
         this.connectorUriGenerator = connectorUriGenerator;
+        this.directDebitEventService = directDebitEventService;
     }
 
     @GET
@@ -71,26 +69,7 @@ public class DirectDebitEventsResource {
         DirectDebitEventSearchValidator.validateSearchParameters(toDate, fromDate);
 
         String uri = connectorUriGenerator.eventsURI(account, ZonedDateTime.parse(toDate), ZonedDateTime.parse(fromDate), page, displaySize, agreementId, paymentId);
-        Response ddConnectorResponse = client.target(uri)
-                .request()
-                .accept(MediaType.APPLICATION_JSON)
-                .get();
-        
-        if (ddConnectorResponse.getStatus() == HttpStatus.SC_OK) {
-            DirectDebitEventsResponse eventsResponse = ddConnectorResponse.readEntity(DirectDebitEventsResponse.class);
-            return Response.ok(eventsResponse).build();
-        }
-        
-        throw new ConnectorResponseErrorException(ddConnectorResponse);
-    }
-
-    private class BeforeAndAfter {
-        public final ZonedDateTime before;
-        public final ZonedDateTime after;
-
-        public BeforeAndAfter(ZonedDateTime before, ZonedDateTime after) {
-            this.before = before;
-            this.after = after;
-        }
+        DirectDebitEventsResponse response = directDebitEventService.getResponse(uri);
+        return Response.ok(response).build();
     }
 }

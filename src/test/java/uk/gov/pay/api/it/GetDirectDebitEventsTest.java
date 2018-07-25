@@ -1,8 +1,8 @@
 package uk.gov.pay.api.it;
 
 import au.com.dius.pact.consumer.PactVerification;
-import com.jayway.restassured.response.ValidatableResponse;
 import io.dropwizard.testing.junit.DropwizardAppRule;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.pay.api.app.PublicApi;
@@ -12,14 +12,11 @@ import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
 import javax.ws.rs.core.Response;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
-import static java.lang.String.format;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
@@ -43,6 +40,13 @@ public class GetDirectDebitEventsTest {
             config("connectorUrl", "http://localhost"),
             config("connectorDDUrl", "http://localhost:" + directDebitConnector.getConfig().getPort()),
             config("publicAuthUrl", "http://localhost:" + publicAuth.getConfig().getPort() + "/v1/auth"));
+
+    private String baseUrl;
+    
+    @Before
+    public void setUp() {
+        baseUrl = app.getConfiguration().getBaseUrl();
+    }
     
     @Test
     @PactVerification({"direct-debit-connector", "publicauth"})
@@ -65,13 +69,13 @@ public class GetDirectDebitEventsTest {
                 .body("results[0].event_date", is("2018-03-13T10:00:04.666Z"))
                 .body("results[0].event", is("PAYMENT_ACKNOWLEDGED_BY_PROVIDER"))
                 .body("results[0].event_type", is("CHARGE"))
-                .body("results[0]._links.agreement", is("/v1/agreements/1"))
-                .body("results[0]._links.payment", is("/v1/payments/4"))
+                .body("results[0]._links.agreement", is(app.getConfiguration().getBaseUrl() + "v1/agreements/1"))
+                .body("results[0]._links.payment", is(app.getConfiguration().getBaseUrl() + "v1/payments/4"))
                 .body("_links.next_page", isEmptyOrNullString())
                 .body("_links.prev_page", isEmptyOrNullString())
-                .body("_links.self.href", is("/v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&agreement_external_id=1&page=1&display_size=100"))
-                .body("_links.last_page.href", is("/v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&agreement_external_id=1&page=1&display_size=100"))
-                .body("_links.first_page.href", is("/v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&agreement_external_id=1&page=1&display_size=100"));
+                .body("_links.self.href", is( baseUrl + "v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&agreement_external_id=1&page=1&display_size=100"))
+                .body("_links.last_page.href", is(baseUrl + "v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&agreement_external_id=1&page=1&display_size=100"))
+                .body("_links.first_page.href", is(baseUrl + "v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&agreement_external_id=1&page=1&display_size=100"));
     }
     
     @Test

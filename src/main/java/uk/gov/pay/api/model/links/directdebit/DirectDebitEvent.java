@@ -39,9 +39,6 @@ public class DirectDebitEvent {
     
     
     public Links getLinks() {
-        if (links == null) {
-            setLinks(new Links(getMandateExternalId(), getTransactionExternalId()));
-        } 
         return links;
     }
 
@@ -98,7 +95,7 @@ public class DirectDebitEvent {
     }
 
 
-    class Links {
+    public static class Links {
         
         @JsonProperty("agreement")
         private final String agreement;
@@ -106,9 +103,9 @@ public class DirectDebitEvent {
         @JsonProperty("payment")
         private final String payment;
         
-        Links(String agreementId, String paymentId) {
-            agreement = agreementId == null ? null : "/v1/agreements/" + agreementId;
-            payment = paymentId == null ? null : "/v1/payments/" + paymentId;
+        public Links(String agreement, String payment) {
+            this.agreement = agreement;
+            this.payment = payment;
         }
 
         public String getAgreement() {
