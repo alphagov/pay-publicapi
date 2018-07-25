@@ -8,7 +8,6 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.exception.ConnectorResponseErrorException;
 import uk.gov.pay.api.model.links.directdebit.DirectDebitEventsResponse;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.DirectDebitEventService;
@@ -23,8 +22,10 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.eclipse.jetty.util.StringUtil.isBlank;
 
 @Path("/")
 @Api(value = "/", description = "Public Api Endpoint to get Direct Debit Events")
@@ -67,9 +68,15 @@ public class DirectDebitEventsResource {
     ) {
 
         DirectDebitEventSearchValidator.validateSearchParameters(toDate, fromDate);
-
-        String uri = connectorUriGenerator.eventsURI(account, ZonedDateTime.parse(toDate), ZonedDateTime.parse(fromDate), page, displaySize, agreementId, paymentId);
+        String uri = connectorUriGenerator.eventsURI(account, parseDate(toDate), parseDate(fromDate), page, displaySize, agreementId, paymentId);
         DirectDebitEventsResponse response = directDebitEventService.getResponse(uri);
         return Response.ok(response).build();
+    }
+    
+    private Optional<ZonedDateTime> parseDate(String date) {
+        if (!isBlank(date)) {
+            return Optional.of(ZonedDateTime.parse(date));
+        }
+        return Optional.empty();
     }
 }
