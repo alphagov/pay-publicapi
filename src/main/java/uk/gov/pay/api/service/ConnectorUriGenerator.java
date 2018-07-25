@@ -8,7 +8,6 @@ import uk.gov.pay.api.utils.DateTimeUtils;
 import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -36,7 +35,7 @@ public class ConnectorUriGenerator {
     public String chargesURIWithParams(Account account, Map<String, String> queryParams) {
         return buildConnectorUri(account, format("/v1/api/accounts/%s/charges", account.getAccountId()), queryParams);
     }
-    
+
     public String chargeURI(Account account, String chargeId) {
         String path = format("/v1/api/accounts/%s/charges/%s", account.getAccountId(), chargeId);
         return buildConnectorUri(account, path);
@@ -46,7 +45,7 @@ public class ConnectorUriGenerator {
         String path = format("/v1/api/accounts/%s/charges/%s/events", account.getAccountId(), paymentId);
         return buildConnectorUri(account, path);
     }
-    
+
     public String directDebitTransactionsURI(Account account, Map<String, String> queryParams) {
         String path = String.format("/v1/api/accounts/%s/transactions/view", account.getAccountId());
         return buildConnectorUri(account, path, queryParams);
@@ -55,7 +54,7 @@ public class ConnectorUriGenerator {
     private String buildConnectorUri(Account account, String path) {
         return buildConnectorUri(account, path, Collections.emptyMap());
     }
-    
+
     private String buildConnectorUri(Account account, String path, Map<String, String> params) {
         UriBuilder builder = UriBuilder.fromPath(connectorBaseUrlForAccount(account)).path(path);
         params.entrySet().stream()
@@ -77,15 +76,15 @@ public class ConnectorUriGenerator {
         return buildConnectorUri(account, path, Maps.newHashMap());
     }
 
-    public String eventsURI(Account account, ZonedDateTime toDate, ZonedDateTime fromDate, Integer page, Integer displaySize, String agreementId, String paymentId) {
+    public String eventsURI(Account account, Optional<ZonedDateTime> toDate, Optional<ZonedDateTime> fromDate, Integer page, Integer displaySize, String agreementId, String paymentId) {
 
         Map<String, String> params = new LinkedHashMap<>();
-        
-        if (toDate != null)
-            params.put("to_date", DateTimeUtils.toUTCDateString(toDate));
 
-        if (fromDate != null)
-            params.put("from_date", DateTimeUtils.toUTCDateString(fromDate));
+        if (toDate.isPresent())
+            params.put("to_date", DateTimeUtils.toUTCDateString(toDate.get()));
+
+        if (fromDate.isPresent())
+            params.put("from_date", DateTimeUtils.toUTCDateString(fromDate.get()));
 
         if (agreementId != null)
             params.put("mandate_external_id", agreementId);
@@ -95,7 +94,7 @@ public class ConnectorUriGenerator {
 
         params.put("page", Optional.ofNullable(page).orElse(1).toString());
         params.put("display_size", Optional.ofNullable(displaySize).orElse(500).toString());
-        
+
         return buildConnectorUri(account, "/v1/events", params);
     }
 }
