@@ -53,14 +53,14 @@ public class RateLimiterFilter implements Filter {
         final String method = ((HttpServletRequest) request).getMethod();
 
         rateLimiter.auditRateOf(method + "-" + authorization);
-        
+
         try {
-            rateLimiter.checkRateOf(authorization);
+            rateLimiter.checkRateOf(method + "-" + authorization);
             chain.doFilter(request, response);
         } catch (RateLimitException e) {
             LOGGER.info("Rate limit reached for current service. Sending response '429 Too Many Requests'");
             setTooManyRequestsError((HttpServletResponse) response);
-        }
+        } 
     }
 
     private void setTooManyRequestsError(HttpServletResponse response) throws IOException {
