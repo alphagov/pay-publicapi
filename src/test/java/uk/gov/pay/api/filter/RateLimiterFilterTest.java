@@ -44,25 +44,28 @@ public class RateLimiterFilterTest {
 
 
     @Test
-    public void shouldProcessFilterChain_whenRateLimiterDoesNotThrowARateLimiterException() throws Exception {
+    public void shouldProcessFilterChain_whenRateLimiterDoesNotThrowARateLimiterException_forPOST() throws Exception {
 
         String authorization = "Bearer whateverAuthorizationToken";
         when(mockRequest.getHeader("Authorization")).thenReturn(authorization);
+        when(mockRequest.getMethod()).thenReturn("POST");
+
 
         rateLimiterFilter.doFilter(mockRequest, mockResponse, mockFilterChain);
 
-        verify(rateLimiter).checkRateOf(authorization);
+        verify(rateLimiter).checkRateOf("POST-" + authorization);
         verify(mockFilterChain, times(1)).doFilter(mockRequest, mockResponse);
     }
-
+    
     @Test
     public void shouldRejectRequest_with429ResponseError__whenRateLimiterThrowsRateLimiterException() throws Exception {
 
         // given
         String authorization = "Bearer whateverAuthorizationToken";
         when(mockRequest.getHeader("Authorization")).thenReturn(authorization);
+        when(mockRequest.getMethod()).thenReturn("POST");
 
-        doThrow(RateLimitException.class).when(rateLimiter).checkRateOf(authorization);
+        doThrow(RateLimitException.class).when(rateLimiter).checkRateOf("POST-" + authorization);
 
         PrintWriter mockPrinter = mock(PrintWriter.class);
         when(mockResponse.getWriter()).thenReturn(mockPrinter);
