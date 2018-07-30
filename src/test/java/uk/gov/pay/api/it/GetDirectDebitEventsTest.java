@@ -73,9 +73,9 @@ public class GetDirectDebitEventsTest {
                 .body("results[0]._links.payment", is(app.getConfiguration().getBaseUrl() + "v1/payments/4"))
                 .body("_links.next_page", isEmptyOrNullString())
                 .body("_links.prev_page", isEmptyOrNullString())
-                .body("_links.self.href", is( baseUrl + "v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&agreement_external_id=1&page=1&display_size=100"))
-                .body("_links.last_page.href", is(baseUrl + "v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&agreement_external_id=1&page=1&display_size=100"))
-                .body("_links.first_page.href", is(baseUrl + "v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&agreement_external_id=1&page=1&display_size=100"));
+                .body("_links.self.href", is( baseUrl + "v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&agreement_id=1&page=1&display_size=100"))
+                .body("_links.last_page.href", is(baseUrl + "v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&agreement_id=1&page=1&display_size=100"))
+                .body("_links.first_page.href", is(baseUrl + "v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&agreement_id=1&page=1&display_size=100"));
     }
     
     @Test
