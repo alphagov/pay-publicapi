@@ -1,6 +1,7 @@
 package uk.gov.pay.api.app.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.cache.CacheBuilderSpec;
 import io.dropwizard.Configuration;
 
 import javax.validation.Valid;
@@ -30,6 +31,9 @@ public class PublicApiConfig extends Configuration {
 
     private String apiKeyHmacSecret;
 
+    @NotNull
+    private CacheBuilderSpec authenticationCachePolicy;
+    
     @Valid
     @NotNull
     @JsonProperty("jerseyClientConfig")
@@ -79,4 +83,5 @@ public class PublicApiConfig extends Configuration {
         return rateLimiterConfig;
     }
 
+    public CacheBuilderSpec getAuthenticationCachePolicy() { return authenticationCachePolicy; }
 }

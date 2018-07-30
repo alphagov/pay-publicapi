@@ -8,6 +8,7 @@ import com.google.inject.Injector;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
+import io.dropwizard.auth.CachingAuthenticator;
 import io.dropwizard.auth.oauth.OAuthCredentialAuthFilter;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
@@ -66,7 +67,7 @@ public class PublicApi extends Application<PublicApiConfig> {
     public void run(PublicApiConfig configuration, Environment environment) {
         initialiseSSLSocketFactory();
 
-        final Injector injector = Guice.createInjector(new PublicApiModule(configuration, environment));
+        final Injector injector = getInjector(configuration, environment);
 
         environment.healthChecks().register("ping", new Ping());
 
@@ -86,9 +87,14 @@ public class PublicApi extends Application<PublicApiConfig> {
         environment.servlets().addFilter("LoggingFilter", injector.getInstance(LoggingFilter.class))
                 .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");
 
+        CachingAuthenticator<String, Account> cachingAuthenticator = new CachingAuthenticator(
+                environment.metrics(),
+                injector.getInstance(AccountAuthenticator.class),
+                configuration.getAuthenticationCachePolicy());
+
         environment.jersey().register(new AuthDynamicFeature(
                 new OAuthCredentialAuthFilter.Builder<Account>()
-                        .setAuthenticator(injector.getInstance(AccountAuthenticator.class))
+                        .setAuthenticator(cachingAuthenticator)
                         .setPrefix("Bearer")
                         .buildAuthFilter()));
         environment.jersey().register(new AuthValueFactoryProvider.Binder<>(Account.class));
@@ -96,6 +102,10 @@ public class PublicApi extends Application<PublicApiConfig> {
         attachExceptionMappersTo(environment.jersey());
 
         initialiseMetrics(configuration, environment);
+    }
+
+    protected Injector getInjector(PublicApiConfig configuration, Environment environment) {
+        return Guice.createInjector(new PublicApiModule(configuration, environment));
     }
 
     /**
