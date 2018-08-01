@@ -67,7 +67,7 @@ public class DirectDebitEventsResource {
             @QueryParam("payment_id") String paymentId
     ) {
 
-        DirectDebitEventSearchValidator.validateSearchParameters(toDate, fromDate);
+        DirectDebitEventSearchValidator.validateSearchParameters(toDate, fromDate, displaySize);
         String uri = connectorUriGenerator.eventsURI(account, parseDate(toDate), parseDate(fromDate), page, displaySize, agreementId, paymentId);
         DirectDebitEventsResponse response = directDebitEventService.getResponse(uri);
         return Response.ok(response).build();

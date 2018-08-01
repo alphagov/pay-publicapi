@@ -69,6 +69,8 @@ public class GetDirectDebitEventsTest {
                 .body("results[0].event_date", is("2018-03-13T10:00:04.666Z"))
                 .body("results[0].event", is("PAYMENT_ACKNOWLEDGED_BY_PROVIDER"))
                 .body("results[0].event_type", is("CHARGE"))
+                .body("results[0].agreement_id", is("1"))
+                .body("results[0].payment_id", is("4"))
                 .body("results[0]._links.agreement", is(app.getConfiguration().getBaseUrl() + "v1/agreements/1"))
                 .body("results[0]._links.payment", is(app.getConfiguration().getBaseUrl() + "v1/payments/4"))
                 .body("_links.next_page", isEmptyOrNullString())
