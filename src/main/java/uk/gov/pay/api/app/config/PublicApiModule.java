@@ -40,6 +40,10 @@ public class PublicApiModule extends AbstractModule {
     @Provides
     @Singleton
     public Client provideClient() {
+        return getClient();
+    }
+
+    protected Client getClient() {
         return RestClientFactory.buildClient(configuration.getRestClientConfig());
     }
 
