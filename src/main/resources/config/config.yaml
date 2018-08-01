@@ -36,5 +36,5 @@ allowHttpForReturnUrl: ${ALLOW_HTTP_FOR_RETURN_URL:-false}
 apiKeyHmacSecret: ${TOKEN_API_HMAC_SECRET}
 
 # Caching authenticator.
-authenticationCachePolicy: expireAfterWrite=1m
+authenticationCachePolicy: expireAfterWrite=${CACHE_AUTHENTICATOR_TIMEOUT:-1m}
 
