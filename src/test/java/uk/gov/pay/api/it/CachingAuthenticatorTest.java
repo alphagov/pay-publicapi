@@ -1,98 +1,114 @@
 package uk.gov.pay.api.it;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.common.collect.ImmutableMap;
 import io.dropwizard.testing.junit.DropwizardAppRule;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockserver.socket.PortFactory;
+import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
-import uk.gov.pay.api.model.ChargeFromResponse;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
 import java.util.Map;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static java.lang.String.format;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class CachingAuthenticatorTest {
     
-    String publicAuthUrl = "http://public-auth";
-    String accountId = "123";
+    private String accountId = "123";
+    private String bearerToken = ApiKeyGenerator.apiKeyValueOf("TEST_BEARER_TOKEN", "qwer9yuhgf");
 
-    Client client = TestPublicApiModule.client;
-    WebTarget webTarget = mock(WebTarget.class);
-    Invocation.Builder builder = mock(Invocation.Builder.class);
-    Response response = mock(Response.class);
+    private int publicAuthRulePort = PortFactory.findFreePort();
+    private int connectorRulePort = PortFactory.findFreePort();
+    
+    @Rule
+    public WireMockRule publicAuthRule = new WireMockRule(publicAuthRulePort);
+
+    @Rule
+    public WireMockRule connectorRule = new WireMockRule(connectorRulePort);
     
     @Rule
     public DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
-            TestPublicApi.class, 
+            PublicApi.class, 
             resourceFilePath("config/test-config.yaml"), 
-            config("publicAuthUrl", publicAuthUrl));
+            config("publicAuthUrl", "http://localhost:" + publicAuthRulePort + "/v1/api/auth"),
+            config("connectorUrl", "http://localhost:" + connectorRulePort));
 
     @Before
-    public void setup() {
-        when(webTarget.request()).thenReturn(builder);
-        when(response.getStatus()).thenReturn(200);
-        when(builder.get()).thenReturn(response);
+    public void setup() throws Exception {
+        setUpMockForPublicAuth();
+        setUpMockForConnector();
+    }
+    
+    @After
+    public void cleanup() {
+        publicAuthRule.resetRequests();
     }
     
     @Test
     public void testAuthenticationRequestsAreCached() throws Exception {
-        setUpMockForPublicAuth();
-        setUpMockForConnector();
-
         makeRequest();
-
         Thread.sleep(1000); //pause for 1 second as there's a rate limit of 1 request per second
-
         makeRequest();
 
-        verify(client, times(1)).target(publicAuthUrl);
+        publicAuthRule.verify(1, getRequestedFor(urlEqualTo("/v1/api/auth")));
+    }
+    
+    @Test
+    public void testAuthenticationCacheExpires() throws Exception {
+        makeRequest();
+        Thread.sleep(3000); //expireAfterWrite is set to 3seconds in test-config.yaml
+        makeRequest();
+
+        publicAuthRule.verify(2, getRequestedFor(urlEqualTo("/v1/api/auth")));
     }
 
     private void makeRequest() {
         given().port(app.getLocalPort())
-                .header(AUTHORIZATION, "Bearer " + ApiKeyGenerator.apiKeyValueOf("TEST_BEARER_TOKEN", "qwer9yuhgf"))
+                .header(AUTHORIZATION, "Bearer " + bearerToken)
                 .get("/v1/payments/paymentId")
                 .then()
                 .statusCode(200)
                 .contentType(JSON);
     }
 
-    private void setUpMockForConnector() throws IOException {
-        when(response.readEntity(ChargeFromResponse.class)).thenReturn(new ObjectMapper().readValue(connectorResponse(), ChargeFromResponse.class));
-        when(client.target(format("http://connector_card.url/v1/api/accounts/%s/charges/paymentId", accountId))).thenReturn(webTarget);
+    private void setUpMockForConnector() {
+        connectorRule.stubFor(get(urlEqualTo(format("/v1/api/accounts/%s/charges/paymentId", accountId)))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", APPLICATION_JSON)
+                        .withBody(aPayment())));
     }
 
-    private void setUpMockForPublicAuth() {
-        when(builder.header(anyString(), anyString())).thenReturn(builder);
-        when(builder.accept(anyString())).thenReturn(builder);
+    private void setUpMockForPublicAuth() throws Exception {
         Map<String, String> entity = ImmutableMap.of("account_id", accountId, "token_type", "CARD");
-        when(response.getStatus()).thenReturn(200);
-        when(response.readEntity(JsonNode.class)).thenReturn(new ObjectMapper().convertValue(entity, JsonNode.class));
-        when(client.target(publicAuthUrl)).thenReturn(webTarget);
+        String json = new ObjectMapper().writeValueAsString(entity);
+        publicAuthRule.stubFor(get(urlEqualTo("/v1/api/auth"))
+                .withHeader(AUTHORIZATION, equalTo("Bearer " + bearerToken))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", APPLICATION_JSON)
+                        .withBody(json)));
     }
     
-    private String connectorResponse() {
+    private String aPayment() {
         JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
                 .add("charge_id", "chargeId")
                 .add("amount", 100)
