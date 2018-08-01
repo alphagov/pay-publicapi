@@ -20,10 +20,7 @@ public class DirectDebitEvent {
     @JsonProperty("event")
     private String event;
 
-    @JsonProperty("mandate_external_id")
     private String mandateExternalId;
-
-    @JsonProperty("transaction_external_id")
     private String transactionExternalId;
 
     @JsonProperty("event_type")
@@ -50,10 +47,12 @@ public class DirectDebitEvent {
         return event;
     }
 
+    @JsonProperty("agreement_id")
     public String getMandateExternalId() {
         return mandateExternalId;
     }
 
+    @JsonProperty("payment_id")
     public String getTransactionExternalId() {
         return transactionExternalId;
     }
@@ -74,10 +73,12 @@ public class DirectDebitEvent {
         this.event = event;
     }
 
+    @JsonProperty("mandate_external_id")
     public void setMandateExternalId(String mandateExternalId) {
         this.mandateExternalId = mandateExternalId;
     }
 
+    @JsonProperty("transaction_external_id")
     public void setTransactionExternalId(String transactionExternalId) {
         this.transactionExternalId = transactionExternalId;
     }

@@ -12,16 +12,23 @@ import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 
 public class DirectDebitEventSearchValidator {
 
-    public static void validateSearchParameters(String fromDate, String toDate) {
+    public static void validateSearchParameters(String fromDate, String toDate, Integer displaySize) {
         List<String> validationErrors = new LinkedList<>();
         try {
             validateAfterDate(fromDate, validationErrors);
             validateBeforeDate(toDate, validationErrors);
+            validateDisplaySizeIfNotNull(displaySize, validationErrors);
         } catch (Exception e) {
             throw new ValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", "), e.getMessage()));
         }
         if (!validationErrors.isEmpty()) {
             throw new ValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", ")));
+        }
+    }
+    
+    private static void validateDisplaySizeIfNotNull(Integer displaySize, List<String> validationErrors) {
+        if (displaySize != null && (displaySize < 1 || displaySize > 500)) {
+            validationErrors.add("display_size");
         }
     }
 
