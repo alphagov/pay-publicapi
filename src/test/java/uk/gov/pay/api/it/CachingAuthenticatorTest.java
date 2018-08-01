@@ -41,7 +41,7 @@ public class CachingAuthenticatorTest {
     WebTarget webTarget = mock(WebTarget.class);
     Invocation.Builder builder = mock(Invocation.Builder.class);
     Response response = mock(Response.class);
-    
+
     @Rule
     public DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
             TestPublicApi.class, 
@@ -69,6 +69,21 @@ public class CachingAuthenticatorTest {
         verify(client, times(1)).target(publicAuthUrl);
     }
 
+    @Test
+    public void shouldMakeRequestToPublicAuth_afterCacheExpireAfterWrite() throws Exception {
+        setUpMockForPublicAuth();
+        setUpMockForConnector();
+
+        makeRequest();
+
+        Thread.sleep(2001); 
+
+        makeRequest();
+
+        verify(client, times(2)).target(publicAuthUrl);
+    }
+    
+    
     private void makeRequest() {
         given().port(app.getLocalPort())
                 .header(AUTHORIZATION, "Bearer " + ApiKeyGenerator.apiKeyValueOf("TEST_BEARER_TOKEN", "qwer9yuhgf"))
