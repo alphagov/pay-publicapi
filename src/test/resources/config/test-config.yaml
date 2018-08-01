@@ -37,4 +37,4 @@ allowHttpForReturnUrl: false
 apiKeyHmacSecret: qwer9yuhgf
 
 # Caching authenticator.
-authenticationCachePolicy: expireAfterWrite=1m
+authenticationCachePolicy: expireAfterWrite=3s

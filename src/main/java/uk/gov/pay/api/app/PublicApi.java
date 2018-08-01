@@ -67,7 +67,7 @@ public class PublicApi extends Application<PublicApiConfig> {
     public void run(PublicApiConfig configuration, Environment environment) {
         initialiseSSLSocketFactory();
 
-        final Injector injector = getInjector(configuration, environment);
+        final Injector injector = Guice.createInjector(new PublicApiModule(configuration, environment));
 
         environment.healthChecks().register("ping", new Ping());
 
@@ -102,10 +102,6 @@ public class PublicApi extends Application<PublicApiConfig> {
         attachExceptionMappersTo(environment.jersey());
 
         initialiseMetrics(configuration, environment);
-    }
-
-    protected Injector getInjector(PublicApiConfig configuration, Environment environment) {
-        return Guice.createInjector(new PublicApiModule(configuration, environment));
     }
 
     /**
