@@ -55,7 +55,7 @@ public class RateLimiterFilter implements Filter {
         rateLimiter.auditRateOf(method + "-" + authorization);
 
         try {
-            rateLimiter.checkRateOf(method + "-" + authorization);
+            rateLimiter.checkRateOf(method + "-" + authorization, method);
             chain.doFilter(request, response);
         } catch (RateLimitException e) {
             LOGGER.info("Rate limit reached for current service. Sending response '429 Too Many Requests'");

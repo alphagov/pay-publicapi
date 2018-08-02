@@ -10,6 +10,9 @@ public class RateLimiterConfig extends Configuration {
     private int rate;
 
     @Min(1)
+    private int rateForPost;
+
+    @Min(1)
     private int auditRate;
 
     @Min(500)
@@ -25,5 +28,9 @@ public class RateLimiterConfig extends Configuration {
 
     public int getAuditRate() {
         return auditRate;
+    }
+
+    public int getRateForPost() {
+        return rateForPost;
     }
 }

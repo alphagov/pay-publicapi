@@ -18,11 +18,12 @@ Then the script creates a keystore (KEYSTORE_FILE) in a separate directory (KEYS
 
 ## Rate limiter and Authorization filters setup
 
-These ara the variables related to Public API filters.
+These are the variables related to Public API filters.
 
 | Variable                    | required         |  Description                               |
 | --------------------------- | -----------------| ------------------------------------------ |
-| RATE_LIMITER_VALUE          | No (Default 3)   | Number of requests allowed per time defined by RATE_LIMITER_PER_MILLIS |
+| RATE_LIMITER_VALUE          | No (Default 3)   | Number of requests (other than POST) allowed per time defined by RATE_LIMITER_PER_MILLIS |
+| RATE_LIMITER_VALUE_POST     | No (Default 3)   | Number of POST requests allowed per time defined by RATE_LIMITER_PER_MILLIS |
 | RATE_LIMITER_PER_MILLIS     | No (Default 1000)| Rate limiter time window |
 | TOKEN_API_HMAC_SECRET       | Yes              | Hmac secret to be used to validate that the given token is genuine (Api Key = Token + Hmac (Token, Secret) |
 

@@ -29,6 +29,7 @@ jerseyClientConfig:
 
 rateLimiter:
   rate: 1
+  rateForPost: 1
   auditRate: 4
   perMillis: 1000
 
