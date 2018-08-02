@@ -65,7 +65,7 @@ public class GetDirectDebitEventsTest {
                 .contentType(JSON)
                 .body("count", is(2))
                 .body("results", hasSize(2))
-                .body("results[0].external_id", is("201"))
+                .body("results[0].event_id", is("201"))
                 .body("results[0].event_date", is("2018-03-13T10:00:04.666Z"))
                 .body("results[0].event", is("PAYMENT_ACKNOWLEDGED_BY_PROVIDER"))
                 .body("results[0].event_type", is("CHARGE"))
