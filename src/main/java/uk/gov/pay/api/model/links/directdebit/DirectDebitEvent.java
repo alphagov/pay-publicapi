@@ -1,7 +1,6 @@
 package uk.gov.pay.api.model.links.directdebit;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -10,11 +9,9 @@ import uk.gov.pay.api.utils.CustomDateSerializer;
 
 import java.time.ZonedDateTime;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public class DirectDebitEvent {
     
-    @JsonProperty("external_id")
     private String externalId;
 
     @JsonProperty("event")
@@ -38,7 +35,8 @@ public class DirectDebitEvent {
     public Links getLinks() {
         return links;
     }
-
+    
+    @JsonProperty("event_id")
     public String getExternalId() {
         return externalId;
     }
@@ -64,7 +62,8 @@ public class DirectDebitEvent {
     public ZonedDateTime getEventDate() {
         return eventDate;
     }
-
+    
+    @JsonProperty("external_id")
     public void setExternalId(String externalId) {
         this.externalId = externalId;
     }
