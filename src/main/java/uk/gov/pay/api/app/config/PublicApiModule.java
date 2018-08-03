@@ -64,6 +64,9 @@ public class PublicApiModule extends AbstractModule {
 
     @Provides
     public RateLimiter provideRateLimiter() {
-        return new RateLimiter(configuration.getRateLimiterConfig().getRate(), configuration.getRateLimiterConfig().getAuditRate(), configuration.getRateLimiterConfig().getPerMillis());
+        return new RateLimiter(configuration.getRateLimiterConfig().getRate(), 
+                configuration.getRateLimiterConfig().getRateForPost(),
+                configuration.getRateLimiterConfig().getAuditRate(), 
+                configuration.getRateLimiterConfig().getPerMillis());
     }
 }

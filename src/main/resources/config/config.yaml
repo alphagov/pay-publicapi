@@ -27,7 +27,8 @@ jerseyClientConfig:
   disabledSecureConnection: ${DISABLE_INTERNAL_HTTPS}
 
 rateLimiter:
-  rate: ${RATE_LIMITER_VALUE:-25}
+  rate: ${RATE_LIMITER_VALUE:-25}  # the rate is for all requests except POST
+  rateForPost: ${RATE_LIMITER_VALUE_POST:-5}
   perMillis: ${RATE_LIMITER_PER_MILLIS:-1000}
   auditRate: ${RATE_LIMITTER_AUDIT_VALUE:-4}
 

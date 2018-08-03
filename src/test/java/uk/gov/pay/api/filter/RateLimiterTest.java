@@ -16,90 +16,92 @@ import java.util.stream.Collectors;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.junit.Assert.fail;
 
 public class RateLimiterTest {
 
+    private static final String METHOD_POST = "POST";
+    private static final String METHOD_GET = "GET";
+    
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
     @Test
     public void rateLimiterSetTo_1CallPerSecond_shouldAllowSingleCall() throws Exception {
-        RateLimiter rateLimiter = new RateLimiter(1, 1, 1000);
-        rateLimiter.checkRateOf("1");
+        RateLimiter rateLimiter = new RateLimiter(1, 1,1, 1000);
+        rateLimiter.checkRateOf("1",METHOD_GET);
     }
 
     @Test
     public void rateLimiterSetTo_2CallsPerSecond_shouldAllow2ConsecutiveCallsWithSameKeys() throws Exception {
 
-        RateLimiter rateLimiter = new RateLimiter(2, 1, 1000);
+        RateLimiter rateLimiter = new RateLimiter(2, 1,1, 1000);
 
-        rateLimiter.checkRateOf("2");
-        rateLimiter.checkRateOf("2");
+        rateLimiter.checkRateOf("2",METHOD_GET);
+        rateLimiter.checkRateOf("2",METHOD_GET);
     }
 
     @Test
     public void rateLimiterSetTo_2CallsPerSecond_shouldAFailWhen3ConsecutiveCallsWithSameKeysAreMade() throws Exception {
-        RateLimiter rateLimiter = new RateLimiter(2, 1, 1000);
+        RateLimiter rateLimiter = new RateLimiter(2, 1,1, 1000);
 
-        rateLimiter.checkRateOf("3");
-        rateLimiter.checkRateOf("3");
+        rateLimiter.checkRateOf("3",METHOD_GET);
+        rateLimiter.checkRateOf("3",METHOD_GET);
 
         expectedException.expect(RateLimitException.class);
-        rateLimiter.checkRateOf("3");
+        rateLimiter.checkRateOf("3",METHOD_GET);
     }
 
     @Test
     public void rateLimiterSetTo_2CallsPer300Millis_shouldAllowMaking3CallsWithinTheAllowedTimeWithSameKey() throws Exception {
 
-        RateLimiter rateLimiter = new RateLimiter(2, 1, 300);
+        RateLimiter rateLimiter = new RateLimiter(2, 1,1, 300);
 
-        rateLimiter.checkRateOf("4");
-        rateLimiter.checkRateOf("4");
+        rateLimiter.checkRateOf("4",METHOD_GET);
+        rateLimiter.checkRateOf("4",METHOD_GET);
 
         Thread.sleep(300);
-        rateLimiter.checkRateOf("4");
+        rateLimiter.checkRateOf("4",METHOD_GET);
     }
 
     @Test
     public void rateLimiterSetTo_2CallsPer500Millis_shouldAllowMakingACallPerSecondWithSameKey() throws Exception {
-        RateLimiter rateLimiter = new RateLimiter(2, 1, 500);
+        RateLimiter rateLimiter = new RateLimiter(2, 1,1, 500);
 
-        rateLimiter.checkRateOf("5");
+        rateLimiter.checkRateOf("5",METHOD_GET);
         Thread.sleep(250);
-        rateLimiter.checkRateOf("5");
+        rateLimiter.checkRateOf("5",METHOD_GET);
         Thread.sleep(250);
-        rateLimiter.checkRateOf("5");
+        rateLimiter.checkRateOf("5",METHOD_GET);
         Thread.sleep(250);
-        rateLimiter.checkRateOf("5");
+        rateLimiter.checkRateOf("5", METHOD_GET);
         Thread.sleep(250);
-        rateLimiter.checkRateOf("5");
+        rateLimiter.checkRateOf("5", METHOD_GET);
         Thread.sleep(250);
-        rateLimiter.checkRateOf("5");
+        rateLimiter.checkRateOf("5", METHOD_GET);
     }
 
     @Test
     public void rateLimiterSetTo_2CallsPer300Millis_shouldAllowMakingOnly2CallsWithSameKey() throws Exception {
 
-        final RateLimiter rateLimiter = new RateLimiter(2, 1, 300);
+        final RateLimiter rateLimiter = new RateLimiter(2, 1,1, 300);
 
         ExecutorService executor = Executors.newFixedThreadPool(3);
 
         List<Callable<String>> tasks = Arrays.asList(
                 () -> {
-                    rateLimiter.checkRateOf("1");
+                    rateLimiter.checkRateOf("1", METHOD_GET);
                     return "task1";
                 },
                 () -> {
-                    rateLimiter.checkRateOf("1");
+                    rateLimiter.checkRateOf("1", METHOD_GET);
                     return "task2";
                 },
                 () -> {
-                    rateLimiter.checkRateOf("1");
+                    rateLimiter.checkRateOf("1", METHOD_GET);
                     return "task3";
                 },
                 () -> {
-                    rateLimiter.checkRateOf("1");
+                    rateLimiter.checkRateOf("1", METHOD_GET);
                     return "task4";
                 }
         );
@@ -125,27 +127,22 @@ public class RateLimiterTest {
     @Test
     public void rateLimiterSetTo_2CallsPerSecond_shouldNotAllowMakingAThirdCallsWithSameKey() throws Exception {
 
-        RateLimiter rateLimiter = new RateLimiter(2, 1, 1000);
+        RateLimiter rateLimiter = new RateLimiter(2, 1,1, 1000);
 
-        rateLimiter.checkRateOf("6");
+        rateLimiter.checkRateOf("6", METHOD_GET);
         Thread.sleep(910);
-        rateLimiter.checkRateOf("6");
-
-        try {
-            rateLimiter.checkRateOf("6");
-            fail("Expected RateLimitException to be thrown");
-        } catch (RateLimitException e) {
-
-        }
-
+        rateLimiter.checkRateOf("6", METHOD_GET);
+        expectedException.expect(RateLimitException.class);
+        rateLimiter.checkRateOf("6", METHOD_GET);
+        
         Thread.sleep(900);
-        rateLimiter.checkRateOf("6");
+        rateLimiter.checkRateOf("6", METHOD_GET);
     }
 
     @Test
     public void rateLimiter_shouldAuditWithoutThrowingException() throws Exception {
 
-        RateLimiter rateLimiter = new RateLimiter(2, 1, 1000);
+        RateLimiter rateLimiter = new RateLimiter(2, 1,1, 1000);
 
         rateLimiter.auditRateOf("6");
         Thread.sleep(910);
