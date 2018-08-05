@@ -8,7 +8,9 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import io.dropwizard.setup.Environment;
 import uk.gov.pay.api.app.RestClientFactory;
-import uk.gov.pay.api.filter.RateLimiter;
+import uk.gov.pay.api.filter.ratelimit.LocalRateLimiter;
+import uk.gov.pay.api.filter.ratelimit.RateLimiter;
+import uk.gov.pay.api.filter.ratelimit.RedisRateLimiter;
 import uk.gov.pay.api.json.CreatePaymentRefundRequestDeserializer;
 import uk.gov.pay.api.json.CreatePaymentRequestDeserializer;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
@@ -36,7 +38,7 @@ public class PublicApiModule extends AbstractModule {
         bind(PublicApiConfig.class).toInstance(configuration);
         bind(Environment.class).toInstance(environment);
     }
-    
+
     @Provides
     @Singleton
     public Client provideClient() {
@@ -47,7 +49,7 @@ public class PublicApiModule extends AbstractModule {
     @Singleton
     public ObjectMapper provideObjectMapper() {
         ObjectMapper objectMapper = environment.getObjectMapper();
-        
+
         URLValidator urlValidator = urlValidatorValueOf(configuration.getAllowHttpForReturnUrl());
         CreatePaymentRequestDeserializer paymentRequestDeserializer = new CreatePaymentRequestDeserializer(new PaymentRequestValidator(urlValidator));
         CreatePaymentRefundRequestDeserializer paymentRefundRequestDeserializer = new CreatePaymentRefundRequestDeserializer(new PaymentRefundRequestValidator());
@@ -58,15 +60,34 @@ public class PublicApiModule extends AbstractModule {
 
         objectMapper.configure(DeserializationFeature.ACCEPT_FLOAT_AS_INT, false);
         objectMapper.registerModule(publicApiDeserializationModule);
-        
+
         return objectMapper;
     }
 
     @Provides
     public RateLimiter provideRateLimiter() {
-        return new RateLimiter(configuration.getRateLimiterConfig().getRate(), 
-                configuration.getRateLimiterConfig().getRateForPost(),
-                configuration.getRateLimiterConfig().getAuditRate(), 
-                configuration.getRateLimiterConfig().getPerMillis());
+
+        LocalRateLimiter localRateLimiter = getLocalRateLimiter();
+        RedisRateLimiter redisRateLimiter = getRedisRateLimiter();
+
+        return new RateLimiter(localRateLimiter, redisRateLimiter);
     }
+
+    private LocalRateLimiter getLocalRateLimiter() {
+        return new LocalRateLimiter(
+                configuration.getRateLimiterConfig().getNoOfReqPerNode(),
+                configuration.getRateLimiterConfig().getNoOfReqForPostPerNode(),
+                configuration.getRateLimiterConfig().getAuditRate(),
+                configuration.getRateLimiterConfig().getPerMillis()
+        );
+    }
+
+    private RedisRateLimiter getRedisRateLimiter() {
+        return new RedisRateLimiter(configuration.getRateLimiterConfig().getNoOfReq(),
+                configuration.getRateLimiterConfig().getNoOfReqForPost(),
+                configuration.getRateLimiterConfig().getPerMillis(),
+                configuration.getJedisFactory().build(environment));
+    }
+
+
 }

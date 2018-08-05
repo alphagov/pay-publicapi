@@ -146,6 +146,7 @@ public class GetPaymentITest extends PaymentResourceITestBase {
                 .contentType(JSON)
                 .body("_links.cancel", is(nullValue()));
     }
+
     @Test
     public void getPayment_ShouldNotIncludeSettlementFieldsIfNull() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);

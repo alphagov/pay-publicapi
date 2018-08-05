@@ -1,4 +1,4 @@
-package uk.gov.pay.api.filter;
+package uk.gov.pay.api.filter.ratelimit;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -7,14 +7,14 @@ import static java.time.temporal.ChronoUnit.MILLIS;
 
 final class RateLimit {
 
-    private final int rate;
+    private final int noOfReq;
     private final int perMillis;
 
     private Instant created;
     private int requestCount;
 
-    RateLimit(int rate, int perMillis) {
-        this.rate = rate;
+    RateLimit(int noOfReq, int perMillis) {
+        this.noOfReq = noOfReq;
         this.perMillis = perMillis;
         this.requestCount = 0;
         this.created = Instant.now().truncatedTo(MILLIS);
@@ -23,7 +23,7 @@ final class RateLimit {
     /**
      * This block needs to be synchronous. Each RateLimit object will be shared between requests
      * from the same source (Service), so is not shared across all the requests.
-     * 
+     *
      * @throws RateLimitException
      */
     synchronized void updateAllowance() throws RateLimitException {
@@ -33,7 +33,7 @@ final class RateLimit {
             requestCount = 1;
             created = now;
         }
-        if (requestCount > rate) {
+        if (requestCount > noOfReq) {
             throw new RateLimitException();
         }
     }

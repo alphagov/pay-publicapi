@@ -1,11 +1,14 @@
 package uk.gov.pay.api.it;
 
+import com.spotify.docker.client.exceptions.DockerException;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.mockserver.junit.MockServerRule;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
+import uk.gov.pay.api.it.rule.RedisDockerRule;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
@@ -16,10 +19,21 @@ import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 
 public abstract class PaymentResourceITestBase {
-    //Must use same secret set int configured test-config.xml
+    //Must use same secret set int confiPaymentsResourceReferenceVgured test-config.xml
     protected static final String API_KEY = ApiKeyGenerator.apiKeyValueOf("TEST_BEARER_TOKEN", "qwer9yuhgf");
     protected static final String GATEWAY_ACCOUNT_ID = "GATEWAY_ACCOUNT_ID";
     protected static final String PAYMENTS_PATH = "/v1/payments/";
+
+    @ClassRule
+    public static RedisDockerRule redisDockerRule;
+
+    static {
+        try {
+            redisDockerRule = new RedisDockerRule();
+        } catch (DockerException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Rule
     public MockServerRule connectorMockRule = new MockServerRule(this);
@@ -36,7 +50,9 @@ public abstract class PaymentResourceITestBase {
             , resourceFilePath("config/test-config.yaml")
             , config("connectorUrl", connectorBaseUrl())
             , config("connectorDDUrl", connectorDDBaseUrl())
-            , config("publicAuthUrl", publicAuthBaseUrl()));
+            , config("publicAuthUrl", publicAuthBaseUrl())
+            , config("redis.endpoint", redisDockerRule.getRedisUrl())
+    );
 
     protected ConnectorMockClient connectorMock;
     protected ConnectorDDMockClient connectorDDMock;
