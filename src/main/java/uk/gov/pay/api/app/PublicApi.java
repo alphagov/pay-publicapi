@@ -117,6 +117,9 @@ public class PublicApi extends Application<PublicApiConfig> {
         attachExceptionMappersTo(environment.jersey());
 
         initialiseMetrics(configuration, environment);
+
+        //health check removed as redis is not a mandatory dependency
+        environment.healthChecks().unregister("redis");
     }
 
     /**
