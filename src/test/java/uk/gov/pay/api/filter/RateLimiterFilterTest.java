@@ -6,12 +6,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.pay.api.filter.ratelimit.RateLimitException;
+import uk.gov.pay.api.filter.ratelimit.RateLimiter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -24,7 +27,7 @@ public class RateLimiterFilterTest {
     private RateLimiterFilter rateLimiterFilter;
 
     private RateLimiter rateLimiter;
-    
+
     @Mock
     private HttpServletRequest mockPostRequest;
     @Mock
@@ -33,12 +36,12 @@ public class RateLimiterFilterTest {
     private HttpServletResponse mockResponse;
     @Mock
     private FilterChain mockFilterChain;
-    
+
     String authorization = "Bearer whateverAuthorizationToken";
 
     @Before
     public void setup() {
-        rateLimiter = new RateLimiter(1, 1, 1, 100);
+        rateLimiter = mock(RateLimiter.class);
         rateLimiterFilter = new RateLimiterFilter(rateLimiter, new ObjectMapper());
 
         when(mockPostRequest.getHeader("Authorization")).thenReturn(authorization);
@@ -58,40 +61,16 @@ public class RateLimiterFilterTest {
     }
 
     @Test
-    public void testCacheExpiry() throws Exception {
-        rateLimiterFilter.doFilter(mockPostRequest, mockResponse, mockFilterChain);
-        Thread.sleep(100);
-        rateLimiterFilter.doFilter(mockPostRequest, mockResponse, mockFilterChain);
-        
-        verify(mockFilterChain, times(2)).doFilter(mockPostRequest, mockResponse);
-    }
-    
-    @Test
-    public void shouldRejectGetRequest_with429ResponseError_whenRequestsExceedRateLimit() throws Exception {
+    public void shouldSendErrorResponse_whenRateLimitExceeded() throws Exception {
         PrintWriter mockPrinter = mock(PrintWriter.class);
         when(mockResponse.getWriter()).thenReturn(mockPrinter);
 
         rateLimiterFilter.doFilter(mockGetRequest, mockResponse, mockFilterChain);
+
+        doThrow(RateLimitException.class).when(rateLimiter).checkRateOf("GET-" + authorization, "GET");
         rateLimiterFilter.doFilter(mockGetRequest, mockResponse, mockFilterChain);
 
         verify(mockFilterChain, times(1)).doFilter(mockGetRequest, mockResponse);
-        verify(mockResponse).setStatus(429);
-        verify(mockResponse).setContentType("application/json");
-        verify(mockResponse).setCharacterEncoding("utf-8");
-        verify(mockResponse).getWriter();
-        verify(mockPrinter).print("{\"code\":\"P0900\",\"description\":\"Too many requests\"}");
-        verifyNoMoreInteractions(mockResponse);
-    }
-    
-    @Test
-    public void shouldRejectPostRequest_with429ResponseError_whenRequestsExceedRateLimit() throws Exception {
-        PrintWriter mockPrinter = mock(PrintWriter.class);
-        when(mockResponse.getWriter()).thenReturn(mockPrinter);
-
-        rateLimiterFilter.doFilter(mockPostRequest, mockResponse, mockFilterChain);
-        rateLimiterFilter.doFilter(mockPostRequest, mockResponse, mockFilterChain);
-
-        verify(mockFilterChain, times(1)).doFilter(mockPostRequest, mockResponse);
         verify(mockResponse).setStatus(429);
         verify(mockResponse).setContentType("application/json");
         verify(mockResponse).setCharacterEncoding("utf-8");
@@ -103,9 +82,6 @@ public class RateLimiterFilterTest {
     @Test
     public void shouldLogRequest_ForAuditRate() throws Exception {
 
-        RateLimiter rateLimiter = mock(RateLimiter.class);
-        rateLimiterFilter = new RateLimiterFilter(rateLimiter, new ObjectMapper());
-        
         rateLimiterFilter.doFilter(mockPostRequest, mockResponse, mockFilterChain);
 
         verify(rateLimiter).auditRateOf("POST-" + authorization);

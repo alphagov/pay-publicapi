@@ -2,24 +2,32 @@ package uk.gov.pay.api.app.config;
 
 import io.dropwizard.Configuration;
 
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 public class RateLimiterConfig extends Configuration {
 
     @Min(1)
-    private int rate;
+    private int noOfReq;
 
     @Min(1)
-    private int rateForPost;
+    private int noOfReqForPost;
+
+    @Min(1)
+    private int noOfReqPerNode;
+
+    @Min(1)
+    private int noOfReqForPostPerNode;
 
     @Min(1)
     private int auditRate;
 
     @Min(500)
+    @Max(60000)
     private int perMillis;
 
-    public int getRate() {
-        return rate;
+    public int getNoOfReq() {
+        return noOfReq;
     }
 
     public int getPerMillis() {
@@ -30,7 +38,11 @@ public class RateLimiterConfig extends Configuration {
         return auditRate;
     }
 
-    public int getRateForPost() {
-        return rateForPost;
+    public int getNoOfReqForPost() {
+        return noOfReqForPost;
     }
+
+    public int getNoOfReqPerNode() { return noOfReqPerNode; }
+
+    public int getNoOfReqForPostPerNode() { return noOfReqForPostPerNode; }
 }

@@ -1,5 +1,7 @@
 package uk.gov.pay.api.app;
 
+import com.bendb.dropwizard.redis.JedisBundle;
+import com.bendb.dropwizard.redis.JedisFactory;
 import com.codahale.metrics.graphite.GraphiteReporter;
 import com.codahale.metrics.graphite.GraphiteSender;
 import com.codahale.metrics.graphite.GraphiteUDP;
@@ -15,6 +17,7 @@ import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.glassfish.jersey.CommonProperties;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.PublicApiModule;
 import uk.gov.pay.api.auth.Account;
@@ -61,6 +64,12 @@ public class PublicApi extends Application<PublicApiConfig> {
                         new EnvironmentVariableSubstitutor(false)
                 )
         );
+        bootstrap.addBundle(new JedisBundle<PublicApiConfig>() {
+            @Override
+            public JedisFactory getJedisFactory(PublicApiConfig configuration) {
+                return configuration.getJedisFactory();
+            };
+        });
     }
 
     @Override
@@ -86,6 +95,12 @@ public class PublicApi extends Application<PublicApiConfig> {
 
         environment.servlets().addFilter("LoggingFilter", injector.getInstance(LoggingFilter.class))
                 .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");
+        /*
+           Turn off 'FilteringJacksonJaxbJsonProvider' which overrides dropwizard JacksonMessageBodyProvider.
+           Fails on Integration tests if not disabled. 
+               - https://github.com/dropwizard/dropwizard/issues/1341
+        */
+        environment.jersey().property(CommonProperties.FEATURE_AUTO_DISCOVERY_DISABLE, Boolean.TRUE);
 
         CachingAuthenticator<String, Account> cachingAuthenticator = new CachingAuthenticator(
                 environment.metrics(),

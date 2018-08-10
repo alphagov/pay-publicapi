@@ -28,10 +28,17 @@ jerseyClientConfig:
   disabledSecureConnection: "true"
 
 rateLimiter:
-  rate: 1
-  rateForPost: 1
-  auditRate: 4
+  noOfReq: 1
   perMillis: 1000
+  noOfReqForPost: 1
+  noOfReqPerNode: 1
+  noOfReqForPostPerNode: 1
+  auditRate: 4
+
+redis:
+  endpoint: localhost:6379
+  ssl: false
+  timeout: 100
 
 allowHttpForReturnUrl: false
 

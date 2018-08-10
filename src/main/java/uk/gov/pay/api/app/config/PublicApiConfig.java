@@ -1,5 +1,6 @@
 package uk.gov.pay.api.app.config;
 
+import com.bendb.dropwizard.redis.JedisFactory;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.cache.CacheBuilderSpec;
 import io.dropwizard.Configuration;
@@ -39,6 +40,10 @@ public class PublicApiConfig extends Configuration {
     @JsonProperty("jerseyClientConfig")
     private RestClientConfig restClientConfig;
 
+    @NotNull
+    @JsonProperty
+    private JedisFactory redis;
+    
     @Valid
     @NotNull
     @JsonProperty("rateLimiter")
@@ -84,4 +89,6 @@ public class PublicApiConfig extends Configuration {
     }
 
     public CacheBuilderSpec getAuthenticationCachePolicy() { return authenticationCachePolicy; }
+
+    public JedisFactory getJedisFactory() { return redis;  }
 }
