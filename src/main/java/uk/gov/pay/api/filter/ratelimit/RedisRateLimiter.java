@@ -49,14 +49,17 @@ public class RedisRateLimiter {
     }
 
     synchronized private Long updateAllowance(String key) {
-
         String derivedKey = getKeyForWindow(key);
-        Long count = getResource().incr(derivedKey);
-
-        if (count == 1) {
-            getResource().expire(derivedKey, perMillis / 1000);
+        
+        try (Jedis jedis = getResource()) {
+            Long count = jedis.incr(derivedKey);
+            
+            if (count == 1) {
+                jedis.expire(derivedKey, perMillis / 1000);
+            }
+            return count;
         }
-        return count;
+
     }
 
     private Jedis getResource() {
