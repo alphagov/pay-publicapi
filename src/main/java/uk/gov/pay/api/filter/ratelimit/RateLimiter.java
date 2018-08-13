@@ -13,7 +13,6 @@ public class RateLimiter {
 
     @Inject
     public RateLimiter(LocalRateLimiter localRateLimiter, RedisRateLimiter redisRateLimiter) {
-
         this.localRateLimiter = localRateLimiter;
         this.redisRateLimiter = redisRateLimiter;
     }
