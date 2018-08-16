@@ -34,24 +34,24 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class PaymentsResourceCreatePaymentTest {
 
-    PaymentsResource paymentsResource;
-    
+    private PaymentsResource paymentsResource;
+
     @Mock
     private Client client;
-    
+
     @Mock
     private CreatePaymentService createPaymentService;
-    
+
     @Mock
     private PaymentSearchService paymentSearchService;
-    
+
     @Mock
     private PublicApiUriGenerator publicApiUriGenerator;
-    
+
     @Mock
     private ConnectorUriGenerator connectorUriGenerator;
-    
-    final String paymentUri = "https://my.link/v1/payments/abc123";
+
+    private final String paymentUri = "https://my.link/v1/payments/abc123";
 
     @Before
     public void setup() {
@@ -66,10 +66,12 @@ public class PaymentsResourceCreatePaymentTest {
     @Test
     public void createNewPayment_withCardPayment_invokesCreatePaymentService() throws Exception {
         final Account account = new Account("foo", TokenPaymentType.CARD);
-        final CreatePaymentRequest createPaymentRequest = new CreatePaymentRequest(
-                100, "https://somewhere.test",
-                "my_ref", "New Passport");
-
+        final CreatePaymentRequest createPaymentRequest = CreatePaymentRequest.builder()
+                .amount(100)
+                .returnUrl("https://somewhere.test")
+                .reference("my_ref")
+                .description("New Passport")
+                .build();
         PaymentWithAllLinks injectedResponse = aSuccessfullyCreatedPayment();
 
         when(createPaymentService.create(account, createPaymentRequest)).thenReturn(injectedResponse);

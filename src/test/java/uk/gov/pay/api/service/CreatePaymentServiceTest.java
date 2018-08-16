@@ -1,8 +1,6 @@
 package uk.gov.pay.api.service;
 
 import au.com.dius.pact.consumer.PactVerification;
-import java.util.Collections;
-import javax.ws.rs.client.Client;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,6 +19,9 @@ import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.model.links.PostLink;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
+
+import javax.ws.rs.client.Client;
+import java.util.Collections;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
@@ -57,7 +58,13 @@ public class CreatePaymentServiceTest {
     @Pacts(pacts = {"publicapi-connector-create-payment"}, publish = false)
     public void testCreatePayment() {
         Account account = new Account("123456", TokenPaymentType.CARD);
-        CreatePaymentRequest requestPayload = new CreatePaymentRequest(100, "https://somewhere.gov.uk/rainbow/1", "a reference", "a description");
+        CreatePaymentRequest requestPayload = CreatePaymentRequest.builder()
+                .amount(100)
+                .returnUrl("https://somewhere.gov.uk/rainbow/1")
+                .reference("a reference")
+                .description("a description")
+                .build();
+
         PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
 
         assertThat(paymentResponse.getPayment().getPaymentId(), is("ch_ab2341da231434l"));
