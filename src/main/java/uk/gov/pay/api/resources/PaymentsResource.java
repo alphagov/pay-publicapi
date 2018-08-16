@@ -16,11 +16,11 @@ import uk.gov.pay.api.exception.CancelChargeException;
 import uk.gov.pay.api.exception.GetChargeException;
 import uk.gov.pay.api.exception.GetEventsException;
 import uk.gov.pay.api.model.ChargeFromResponse;
-import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.PaymentEvents;
-import uk.gov.pay.api.model.search.card.PaymentSearchResults;
+import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
+import uk.gov.pay.api.model.search.card.PaymentSearchResults;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.CreatePaymentService;
 import uk.gov.pay.api.service.PaymentSearchService;
@@ -51,7 +51,7 @@ import static org.apache.http.HttpStatus.SC_OK;
 public class PaymentsResource {
 
     private static final Logger logger = LoggerFactory.getLogger(PaymentsResource.class);
-    
+
     private final Client client;
     private final CreatePaymentService createPaymentService;
     private final PublicApiUriGenerator publicApiUriGenerator;
@@ -59,10 +59,10 @@ public class PaymentsResource {
     private final PaymentSearchService paymentSearchService;
 
     @Inject
-    public PaymentsResource(Client client, 
-                            CreatePaymentService createPaymentService, 
+    public PaymentsResource(Client client,
+                            CreatePaymentService createPaymentService,
                             PaymentSearchService paymentSearchService,
-                            PublicApiUriGenerator publicApiUriGenerator, 
+                            PublicApiUriGenerator publicApiUriGenerator,
                             ConnectorUriGenerator connectorUriGenerator) {
         this.client = client;
         this.createPaymentService = createPaymentService;
@@ -90,7 +90,7 @@ public class PaymentsResource {
                                @PathParam("paymentId") String paymentId) {
 
         logger.info("Payment request - paymentId={}", paymentId);
-        
+
         Response connectorResponse = client
                 .target(connectorUriGenerator.chargeURI(account, paymentId))
                 .request()
@@ -200,11 +200,11 @@ public class PaymentsResource {
         logger.info("Payments search request - [ {} ]",
                 format("reference:%s, email: %s, status: %s, card_brand %s, fromDate: %s, toDate: %s, page: %s, display_size: %s, agreement_id: %s",
                         reference, email, state, cardBrand, fromDate, toDate, pageNumber, displaySize, agreementId));
-        
-        return  paymentSearchService.doSearch(account, reference, email, state, cardBrand, 
+
+        return paymentSearchService.doSearch(account, reference, email, state, cardBrand,
                 fromDate, toDate, pageNumber, displaySize, agreementId);
     }
-    
+
     @POST
     @Timed
     @Path("/v1/payments")
@@ -224,10 +224,10 @@ public class PaymentsResource {
             @ApiResponse(code = 422, message = "Invalid attribute value: description. Must be less than or equal to 255 characters length", response = PaymentError.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response createNewPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                                     @ApiParam(value = "requestPayload", required = true) CreatePaymentRequest requestPayload) {
-        logger.info("Payment create request - [ {} ]", requestPayload);
+                                     @ApiParam(value = "requestPayload", required = true) ValidCreatePaymentRequest validCreatePaymentRequest) {
+        logger.info("Payment create request - [ {} ]", validCreatePaymentRequest);
 
-        PaymentWithAllLinks createdPayment = createPaymentService.create(account, requestPayload);
+        PaymentWithAllLinks createdPayment = createPaymentService.create(account, validCreatePaymentRequest);
 
         Response response = Response
                 .created(publicApiUriGenerator.getPaymentURI(createdPayment.getPayment().getPaymentId()))
@@ -261,7 +261,7 @@ public class PaymentsResource {
                                   @PathParam("paymentId") String paymentId) {
 
         logger.info("Payment cancel request - payment_id=[{}]", paymentId);
-        
+
         Response connectorResponse = client
                 .target(connectorUriGenerator.cancelURI(account, paymentId))
                 .request()

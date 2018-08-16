@@ -119,6 +119,10 @@ public class CreatePaymentRequest {
         return StringUtils.isNotBlank(agreementId);
     }
 
+    public boolean hasLanguage() {
+        return StringUtils.isNotBlank(language);
+    }
+
     @Override
     public String toString() {
         // Some services put PII in the description, so don’t include it in the stringification

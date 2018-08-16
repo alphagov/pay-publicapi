@@ -5,7 +5,12 @@ import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.PaymentError;
 
 import static java.lang.String.format;
-import static uk.gov.pay.api.model.CreatePaymentRequest.*;
+import static uk.gov.pay.api.model.CreatePaymentRequest.AGREEMENT_ID_FIELD_NAME;
+import static uk.gov.pay.api.model.CreatePaymentRequest.AMOUNT_FIELD_NAME;
+import static uk.gov.pay.api.model.CreatePaymentRequest.DESCRIPTION_FIELD_NAME;
+import static uk.gov.pay.api.model.CreatePaymentRequest.LANGUAGE_FIELD_NAME;
+import static uk.gov.pay.api.model.CreatePaymentRequest.REFERENCE_FIELD_NAME;
+import static uk.gov.pay.api.model.CreatePaymentRequest.RETURN_URL_FIELD_NAME;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 
@@ -35,10 +40,16 @@ public class PaymentRequestValidator {
     public void validate(CreatePaymentRequest paymentRequest) {
         if (paymentRequest.hasAgreementId()) {
             validateAgreementId(paymentRequest.getAgreementId());
-        } 
+        }
+
         if (paymentRequest.hasReturnUrl()) {
             validateReturnUrl(paymentRequest.getReturnUrl());
         }
+
+        if (paymentRequest.hasLanguage()) {
+            validateLanguage(paymentRequest.getLanguage());
+        }
+
         validateAmount(paymentRequest.getAmount());
         validateReference(paymentRequest.getReference());
         validateDescription(paymentRequest.getDescription());
@@ -75,9 +86,15 @@ public class PaymentRequestValidator {
                 aPaymentError(DESCRIPTION_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, format(CONSTRAINT_MESSAGE_STRING_TEMPLATE, DESCRIPTION_MAX_LENGTH)));
     }
 
+    private void validateLanguage(String language) {
+        validate(LanguageValidator.isValid(language),
+                aPaymentError(LANGUAGE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, LanguageValidator.ERROR_MESSAGE));
+    }
+
     private static void validate(boolean condition, PaymentError error) {
         if (!condition) {
             throw new ValidationException(error);
         }
     }
+
 }

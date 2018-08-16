@@ -5,6 +5,7 @@ import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.PaymentError;
+import uk.gov.pay.api.validation.LanguageValidator;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.gov.pay.api.model.CreatePaymentRefundRequest.REFUND_AMOUNT_AVAILABLE;
@@ -34,7 +35,7 @@ class RequestJsonParser {
 
         if (paymentRequest.has(LANGUAGE_FIELD_NAME)) {
             String language = parseString(paymentRequest, LANGUAGE_FIELD_NAME, false,
-                    aPaymentError(LANGUAGE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be \"en\" or \"cy\""));
+                    aPaymentError(LANGUAGE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, LanguageValidator.ERROR_MESSAGE));
             createPaymentRequestBuilder.language(language);
         }
 
