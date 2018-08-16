@@ -3,7 +3,6 @@ package uk.gov.pay.api.validation;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import uk.gov.pay.api.exception.ValidationException;
 import uk.gov.pay.api.model.CreatePaymentRequest;
 
@@ -33,7 +32,7 @@ public class PaymentRequestValidatorTest {
         CreatePaymentRequest createPaymentRequest = createPaymentRequestWithAgreementId(VALID_AMOUNT, VALID_REFERENCE, VALID_DESCRIPTION, VALID_AGREEMENT_ID);
         paymentRequestValidator.validate(createPaymentRequest);
     }
-    
+
     @Test
     public void validateMinimumAmount_shouldSuccessValue() {
         CreatePaymentRequest createPaymentRequest = createPaymentRequestWithReturnUrl(PaymentRequestValidator.AMOUNT_MIN_VALUE, VALID_RETURN_URL, VALID_REFERENCE, VALID_DESCRIPTION);
@@ -99,13 +98,13 @@ public class PaymentRequestValidatorTest {
         expectedException.expect(ValidationException.class);
         paymentRequestValidator.validate(paymentRequest);
     }
-    
+
     private static CreatePaymentRequest createPaymentRequestWithReturnUrl(int amount, String returnUrl, String reference, String description) {
-        return new CreatePaymentRequest(amount, returnUrl, reference, description);
+        return CreatePaymentRequest.builder().amount(amount).returnUrl(returnUrl).reference(reference).description(description).build();
     }
 
     private static CreatePaymentRequest createPaymentRequestWithAgreementId(int amount, String reference, String description, String agreementId) {
-        return new CreatePaymentRequest(amount, null, reference, description, agreementId);
+        return CreatePaymentRequest.builder().amount(amount).reference(reference).description(description).agreementId(agreementId).build();
     }
 
 }

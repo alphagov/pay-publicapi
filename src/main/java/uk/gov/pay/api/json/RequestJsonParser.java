@@ -28,10 +28,10 @@ class RequestJsonParser {
 
         if (paymentRequest.has("agreement_id")) {
             String agreementId = parseString(paymentRequest, AGREEMENT_ID_FIELD_NAME, aPaymentError(AGREEMENT_ID_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid agreement ID"));
-            return new CreatePaymentRequest(amount, null, reference, description, agreementId);
+            return CreatePaymentRequest.builder().amount(amount).reference(reference).description(description).agreementId(agreementId).build();
         } else {
             String returnUrl = parseString(paymentRequest, RETURN_URL_FIELD_NAME, aPaymentError(RETURN_URL_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid URL format"));
-            return new CreatePaymentRequest(amount, returnUrl, reference, description);
+            return CreatePaymentRequest.builder().amount(amount).returnUrl(returnUrl).reference(reference).description(description).build();
         }
     }
 
