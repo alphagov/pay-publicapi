@@ -11,6 +11,7 @@ import static uk.gov.pay.api.model.CreatePaymentRefundRequest.REFUND_AMOUNT_AVAI
 import static uk.gov.pay.api.model.CreatePaymentRequest.AGREEMENT_ID_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.AMOUNT_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.DESCRIPTION_FIELD_NAME;
+import static uk.gov.pay.api.model.CreatePaymentRequest.LANGUAGE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.REFERENCE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.RETURN_URL_FIELD_NAME;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_MISSING_FIELD_ERROR;
@@ -23,16 +24,31 @@ class RequestJsonParser {
 
     static CreatePaymentRequest parsePaymentRequest(JsonNode paymentRequest) {
         Integer amount = parseInteger(paymentRequest, AMOUNT_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, CREATE_PAYMENT_MISSING_FIELD_ERROR);
-        String reference = parseString(paymentRequest, REFERENCE_FIELD_NAME);
-        String description = parseString(paymentRequest, DESCRIPTION_FIELD_NAME);
+        String reference = parseString(paymentRequest, REFERENCE_FIELD_NAME, true);
+        String description = parseString(paymentRequest, DESCRIPTION_FIELD_NAME, true);
 
-        if (paymentRequest.has("agreement_id")) {
-            String agreementId = parseString(paymentRequest, AGREEMENT_ID_FIELD_NAME, aPaymentError(AGREEMENT_ID_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid agreement ID"));
-            return CreatePaymentRequest.builder().amount(amount).reference(reference).description(description).agreementId(agreementId).build();
-        } else {
-            String returnUrl = parseString(paymentRequest, RETURN_URL_FIELD_NAME, aPaymentError(RETURN_URL_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid URL format"));
-            return CreatePaymentRequest.builder().amount(amount).returnUrl(returnUrl).reference(reference).description(description).build();
+        CreatePaymentRequest.CreatePaymentRequestBuilder createPaymentRequestBuilder = CreatePaymentRequest.builder()
+                .amount(amount)
+                .reference(reference)
+                .description(description);
+
+        if (paymentRequest.has(LANGUAGE_FIELD_NAME)) {
+            String language = parseString(paymentRequest, LANGUAGE_FIELD_NAME, false,
+                    aPaymentError(LANGUAGE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be \"en\" or \"cy\""));
+            createPaymentRequestBuilder.language(language);
         }
+
+        if (paymentRequest.has(AGREEMENT_ID_FIELD_NAME)) {
+            String agreementId = parseString(paymentRequest, AGREEMENT_ID_FIELD_NAME, true,
+                    aPaymentError(AGREEMENT_ID_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid agreement ID"));
+            createPaymentRequestBuilder.agreementId(agreementId);
+        } else {
+            String returnUrl = parseString(paymentRequest, RETURN_URL_FIELD_NAME, true,
+                    aPaymentError(RETURN_URL_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid URL format"));
+            createPaymentRequestBuilder.returnUrl(returnUrl);
+        }
+
+        return createPaymentRequestBuilder.build();
     }
 
     static CreatePaymentRefundRequest parseRefundRequest(JsonNode rootNode) {
@@ -41,14 +57,19 @@ class RequestJsonParser {
         return new CreatePaymentRefundRequest(amount, refundAmountAvailable);
     }
 
-    private static String parseString(JsonNode node, String fieldName) {
-        return parseString(node, fieldName, aPaymentError(fieldName, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid string format"));
+    private static String parseString(JsonNode node, String fieldName, boolean fieldIsMandatory) {
+        return parseString(node, fieldName, fieldIsMandatory, aPaymentError(fieldName, CREATE_PAYMENT_VALIDATION_ERROR,
+                "Must be a valid string format"));
     }
 
-    private static String parseString(JsonNode node, String fieldName, PaymentError formatError) {
+    private static String parseString(JsonNode node, String fieldName, boolean fieldIsMandatory, PaymentError formatError) {
         JsonNode fieldNode = node.get(fieldName);
         String fieldValue = getStringValue(fieldNode, formatError);
-        check(isNotBlank(fieldValue), aPaymentError(fieldName, CREATE_PAYMENT_MISSING_FIELD_ERROR));
+        if (fieldIsMandatory) {
+            check(isNotBlank(fieldValue), aPaymentError(fieldName, CREATE_PAYMENT_MISSING_FIELD_ERROR));
+        } else {
+            check(isNotBlank(fieldValue), formatError);
+        }
         return fieldValue;
     }
 
