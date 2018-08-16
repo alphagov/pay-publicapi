@@ -13,12 +13,14 @@ public class CreatePaymentRequest {
     public static final String REFERENCE_FIELD_NAME = "reference";
     public static final String DESCRIPTION_FIELD_NAME = "description";
     public static final String AGREEMENT_ID_FIELD_NAME = "agreement_id";
+    public static final String LANGUAGE_FIELD_NAME = "language";
 
-    private int amount;
-    private String returnUrl;
-    private String reference;
-    private String description;
-    private String agreementId;
+    private final int amount;
+    private final String returnUrl;
+    private final String reference;
+    private final String description;
+    private final String agreementId;
+    private final String language;
 
     public static class CreatePaymentRequestBuilder {
         private int amount;
@@ -26,6 +28,7 @@ public class CreatePaymentRequest {
         private String reference;
         private String description;
         private String agreementId;
+        private String language;
 
         public CreatePaymentRequestBuilder amount(int amount) {
             this.amount = amount;
@@ -52,8 +55,13 @@ public class CreatePaymentRequest {
             return this;
         }
 
+        public CreatePaymentRequestBuilder language(String language) {
+            this.language = language;
+            return this;
+        }
+
         public CreatePaymentRequest build() {
-            return new CreatePaymentRequest(amount, returnUrl, reference, description, agreementId);
+            return new CreatePaymentRequest(this);
         }
     }
 
@@ -61,12 +69,13 @@ public class CreatePaymentRequest {
         return new CreatePaymentRequestBuilder();
     }
 
-    private CreatePaymentRequest(int amount, String returnUrl, String reference, String description, String agreementId) {
-        this.amount = amount;
-        this.returnUrl = returnUrl;
-        this.reference = reference;
-        this.description = description;
-        this.agreementId = agreementId;
+    private CreatePaymentRequest(CreatePaymentRequestBuilder createPaymentRequestBuilder) {
+        this.amount = createPaymentRequestBuilder.amount;
+        this.returnUrl = createPaymentRequestBuilder.returnUrl;
+        this.reference = createPaymentRequestBuilder.reference;
+        this.description = createPaymentRequestBuilder.description;
+        this.agreementId = createPaymentRequestBuilder.agreementId;
+        this.language = createPaymentRequestBuilder.language;
     }
 
     @ApiModelProperty(value = "amount in pence", required = true, allowableValues = "range[1, 10000000]", example = "12000")
@@ -96,6 +105,12 @@ public class CreatePaymentRequest {
         return agreementId;
     }
 
+    @ApiModelProperty(value = "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages", required = false, example = "en")
+    @JsonProperty(LANGUAGE_FIELD_NAME)
+    public String getLanguage() {
+        return language;
+    }
+
     public boolean hasReturnUrl() {
         return StringUtils.isNotBlank(returnUrl);
     }
@@ -112,6 +127,7 @@ public class CreatePaymentRequest {
                 ", returnUrl='" + returnUrl + '\'' +
                 ", reference='" + reference + '\'' +
                 ", agreement_id='" + agreementId + '\'' +
+                ", language='" + language + '\'' +
                 '}';
     }
 
