@@ -18,8 +18,9 @@ import uk.gov.pay.api.validation.PaymentRequestValidator;
 import uk.gov.pay.api.validation.URLValidator;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
+import java.util.Optional;
+
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.pay.api.matcher.BadRequestExceptionMatcher.aBadRequestExceptionWithError;
@@ -58,7 +59,7 @@ public class CreatePaymentRequestDeserializerTest {
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentRequest.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
     }
 
     public void deserialize_shouldDeserializeARequestWithEnglishLanguageSuccessfully() throws Exception {
@@ -114,8 +115,8 @@ public class CreatePaymentRequestDeserializerTest {
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl(), is(nullValue()));
-        assertThat(paymentRequest.getAgreementId(), is("abc123"));
+        assertThat(paymentRequest.getReturnUrl(), is(Optional.empty()));
+        assertThat(paymentRequest.getAgreementId().get(), is("abc123"));
     }
 
     @Test

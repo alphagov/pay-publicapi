@@ -46,16 +46,16 @@ public class ValidCreatePaymentRequest {
         return description;
     }
 
-    public String getReturnUrl() {
-        return returnUrl;
+    public Optional<String> getReturnUrl() {
+        return Optional.ofNullable(returnUrl);
     }
 
-    public String getAgreementId() {
-        return agreementId;
+    public Optional<String> getAgreementId() {
+        return Optional.ofNullable(agreementId);
     }
 
-    public SupportedLanguage getLanguage() {
-        return language;
+    public Optional<SupportedLanguage> getLanguage() {
+        return Optional.ofNullable(language);
     }
 
     /**

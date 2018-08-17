@@ -13,7 +13,6 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Optional;
 
 import static javax.ws.rs.client.Entity.json;
 
@@ -57,7 +56,7 @@ public class CreatePaymentService {
 
     private Response createCharge(Account account, ValidCreatePaymentRequest validCreatePaymentRequest) {
         return client
-                .target(connectorUriGenerator.chargesURI(account, validCreatePaymentRequest.getAgreementId()))
+                .target(connectorUriGenerator.chargesURI(account, validCreatePaymentRequest.getAgreementId().orElse(null)))
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .post(buildChargeRequestPayload(validCreatePaymentRequest));
@@ -67,14 +66,12 @@ public class CreatePaymentService {
         int amount = requestPayload.getAmount();
         String reference = requestPayload.getReference();
         String description = requestPayload.getDescription();
-        Optional<String> maybeReturnUrl = Optional.ofNullable(requestPayload.getReturnUrl());
-        Optional<String> maybeAgreementId = Optional.ofNullable(requestPayload.getAgreementId());
         JsonStringBuilder request = new JsonStringBuilder()
                 .add("amount", amount)
                 .add("reference", reference)
                 .add("description", description);
-        maybeReturnUrl.ifPresent(returnUrl -> request.add("return_url", returnUrl));
-        maybeAgreementId.ifPresent(agreementId -> request.add("agreement_id", agreementId));
+        requestPayload.getReturnUrl().ifPresent(returnUrl -> request.add("return_url", returnUrl));
+        requestPayload.getAgreementId().ifPresent(agreementId -> request.add("agreement_id", agreementId));
         return json(request.build());
     }
 }
