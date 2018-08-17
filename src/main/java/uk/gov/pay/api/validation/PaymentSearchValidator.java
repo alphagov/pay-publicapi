@@ -53,6 +53,19 @@ public class PaymentSearchValidator {
         }
     }
 
+    public static void validateRefundSearchParameters(String page, String displaySize) {
+        List<String> validationErrors = new LinkedList<>();
+        try {
+            validatePageIfNotNull(page, validationErrors);
+            validateDisplaySizeIfNotNull(displaySize, validationErrors);
+        } catch (Exception e) {
+            throw new ValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", "), e.getMessage()));
+        }
+        if (!validationErrors.isEmpty()) {
+            throw new ValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", ")));
+        }
+    }
+
     private static void validateAgreement(String agreement, List<String> validationErrors) {
         if (!isValid(agreement, AGREEMENT_ID_MAX_LENGTH)){
                 validationErrors.add("agreement");
