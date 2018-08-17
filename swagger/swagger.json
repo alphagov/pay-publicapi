@@ -852,8 +852,14 @@
         },
         "agreement_id" : {
           "type" : "string",
-          "example" : "33890b55-b9ea-4e2f-90fd-77ae0e9009e2\n",
+          "example" : "33890b55-b9ea-4e2f-90fd-77ae0e9009e2",
           "description" : "ID of the agreement being used to collect the payment",
+          "readOnly" : true
+        },
+        "language" : {
+          "type" : "string",
+          "example" : "en",
+          "description" : "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages",
           "readOnly" : true
         }
       },

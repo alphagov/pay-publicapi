@@ -2,6 +2,7 @@ package uk.gov.pay.api.it;
 
 import com.google.common.collect.ImmutableMap;
 import com.jayway.restassured.response.ValidatableResponse;
+import org.junit.Ignore;
 import org.junit.Test;
 import uk.gov.pay.api.it.fixtures.PaymentNavigationLinksFixture;
 
@@ -14,6 +15,7 @@ import static org.junit.Assert.assertThat;
 import static uk.gov.pay.api.it.fixtures.PaginatedPaymentSearchResultFixture.aPaginatedPaymentSearchResult;
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.aSuccessfulSearchPayment;
 
+@Ignore
 public class ResourcesFilterRateLimiterITest extends ResourcesFilterITestBase {
 
     @Test

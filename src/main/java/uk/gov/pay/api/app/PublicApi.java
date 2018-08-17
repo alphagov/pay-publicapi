@@ -90,9 +90,6 @@ public class PublicApi extends Application<PublicApiConfig> {
         environment.servlets().addFilter("AuthorizationValidationFilter", injector.getInstance(AuthorizationValidationFilter.class))
                 .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");
 
-        environment.servlets().addFilter("RateLimiterFilter", injector.getInstance(RateLimiterFilter.class))
-                .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");
-
         environment.servlets().addFilter("LoggingFilter", injector.getInstance(LoggingFilter.class))
                 .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");
         /*
