@@ -14,6 +14,7 @@ import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.SettlementSummary;
 import uk.gov.pay.api.model.TokenPaymentType;
+import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.CreatePaymentService;
@@ -66,12 +67,12 @@ public class PaymentsResourceCreatePaymentTest {
     @Test
     public void createNewPayment_withCardPayment_invokesCreatePaymentService() throws Exception {
         final Account account = new Account("foo", TokenPaymentType.CARD);
-        final CreatePaymentRequest createPaymentRequest = CreatePaymentRequest.builder()
+        final ValidCreatePaymentRequest createPaymentRequest = new ValidCreatePaymentRequest(CreatePaymentRequest.builder()
                 .amount(100)
                 .returnUrl("https://somewhere.test")
                 .reference("my_ref")
                 .description("New Passport")
-                .build();
+                .build());
         PaymentWithAllLinks injectedResponse = aSuccessfullyCreatedPayment();
 
         when(createPaymentService.create(account, createPaymentRequest)).thenReturn(injectedResponse);
