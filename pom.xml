@@ -16,6 +16,7 @@
         <jackson.version>2.9.6</jackson.version>
         <logback.version>1.2.3</logback.version>
         <docker-client.version>8.11.2</docker-client.version>
+        <pay-java-commons.version>1.0.0-7</pay-java-commons.version>
         <pact.version>3.5.16</pact.version>
         <PACT_BROKER_URL/>
         <PACT_BROKER_USERNAME/>
@@ -36,6 +37,11 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>uk.gov.pay</groupId>
+            <artifactId>model</artifactId>
+            <version>${pay-java-commons.version}</version>
+        </dependency>
         <dependency>
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-core</artifactId>
@@ -112,7 +118,7 @@
         <dependency>
             <groupId>uk.gov.pay</groupId>
             <artifactId>testing</artifactId>
-            <version>1.0.0-4</version>
+            <version>${pay-java-commons.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -1,12 +1,10 @@
 package uk.gov.pay.api.service;
 
-import java.util.Optional;
 import org.apache.http.HttpStatus;
-import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateChargeException;
 import uk.gov.pay.api.model.ChargeFromResponse;
-import uk.gov.pay.api.model.CreatePaymentRequest;
+import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
@@ -15,6 +13,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Optional;
 
 import static javax.ws.rs.client.Entity.json;
 
@@ -31,8 +30,8 @@ public class CreatePaymentService {
         this.connectorUriGenerator = connectorUriGenerator;
     }
 
-    public PaymentWithAllLinks create(Account account, CreatePaymentRequest requestPayload) {
-        Response connectorResponse = createCharge(account, requestPayload);
+    public PaymentWithAllLinks create(Account account, ValidCreatePaymentRequest validCreatePaymentRequest) {
+        Response connectorResponse = createCharge(account, validCreatePaymentRequest);
 
         if (!createdSuccessfully(connectorResponse)) {
             throw new CreateChargeException(connectorResponse);
@@ -56,15 +55,15 @@ public class CreatePaymentService {
         return connectorResponse.getStatus() == HttpStatus.SC_CREATED;
     }
 
-    private Response createCharge(Account account, CreatePaymentRequest requestPayload) {
+    private Response createCharge(Account account, ValidCreatePaymentRequest validCreatePaymentRequest) {
         return client
-                .target(connectorUriGenerator.chargesURI(account, requestPayload.getAgreementId()))
+                .target(connectorUriGenerator.chargesURI(account, validCreatePaymentRequest.getAgreementId()))
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
-                .post(buildChargeRequestPayload(requestPayload));
+                .post(buildChargeRequestPayload(validCreatePaymentRequest));
     }
 
-    private Entity buildChargeRequestPayload(CreatePaymentRequest requestPayload) {
+    private Entity buildChargeRequestPayload(ValidCreatePaymentRequest requestPayload) {
         int amount = requestPayload.getAmount();
         String reference = requestPayload.getReference();
         String description = requestPayload.getDescription();

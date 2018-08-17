@@ -11,13 +11,15 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.api.exception.BadRequestException;
-import uk.gov.pay.api.model.CreatePaymentRequest;
+import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.validation.PaymentRequestValidator;
 import uk.gov.pay.api.validation.URLValidator;
+import uk.gov.pay.commons.model.SupportedLanguage;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.pay.api.matcher.BadRequestExceptionMatcher.aBadRequestExceptionWithError;
@@ -43,15 +45,15 @@ public class CreatePaymentRequestDeserializerTest {
 
     @Test
     public void deserialize_shouldDeserializeARequestWithReturnUrlSuccessfully() throws Exception {
-
-        String validJson = "{" +
-                "  \"amount\" : 27432," +
-                "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
+        // language=JSON
+        String validJson = "{\n" +
+                "  \"amount\": 27432,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
-        CreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+        ValidCreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
 
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
@@ -59,28 +61,65 @@ public class CreatePaymentRequestDeserializerTest {
         assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
     }
 
-    @Test
-    public void deserialize_shouldDeserializeARequestWithAnAgreementId() throws Exception {
-
-        String validJson = "{" +
-                "  \"agreement_id\" : \"abc123\"," +
-                "  \"amount\" : 27432," +
-                "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"" +
+    public void deserialize_shouldDeserializeARequestWithEnglishLanguageSuccessfully() throws Exception {
+        // language=JSON
+        String validJson = "{\n" +
+                "  \"amount\": 27432,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"language\": \"en\"\n" +
                 "}";
 
-        CreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+        ValidCreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
 
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.hasReturnUrl(), is(false));
+        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentRequest.getLanguage(), is(SupportedLanguage.ENGLISH));
+    }
+
+    public void deserialize_shouldDeserializeARequestWithWelshLanguageSuccessfully() throws Exception {
+        // language=JSON
+        String validJson = "{\n" +
+                "  \"amount\": 27432,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"language\": \"cy\"\n" +
+                "}";
+
+        ValidCreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+
+        assertThat(paymentRequest.getAmount(), is(27432));
+        assertThat(paymentRequest.getReference(), is("Some reference"));
+        assertThat(paymentRequest.getDescription(), is("Some description"));
+        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentRequest.getLanguage(), is(SupportedLanguage.WELSH));
+    }
+
+    @Test
+    public void deserialize_shouldDeserializeARequestWithAnAgreementId() throws Exception {
+        // language=JSON
+        String validJson = "{\n" +
+                "  \"agreement_id\": \"abc123\",\n" +
+                "  \"amount\": 27432,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\"\n" +
+                "}";
+
+        ValidCreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+
+        assertThat(paymentRequest.getAmount(), is(27432));
+        assertThat(paymentRequest.getReference(), is("Some reference"));
+        assertThat(paymentRequest.getDescription(), is("Some description"));
+        assertThat(paymentRequest.getReturnUrl(), is(nullValue()));
         assertThat(paymentRequest.getAgreementId(), is("abc123"));
     }
-    
+
     @Test
     public void deserialize_shouldThrowBadRequestException_whenJsonIsNotWellFormed() throws Exception {
-
         String invalidJson = "{" +
                 "  \"amount\" : " +
                 "  \"reference\" : \"Some reference\"," +
@@ -96,11 +135,11 @@ public class CreatePaymentRequestDeserializerTest {
 
     @Test
     public void deserialize_shouldThrowBadRequestException_whenAmountIsMissing() throws Exception {
-
-        String json = "{" +
-                "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
+        // language=JSON
+        String json = "{\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
         expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: amount"));
@@ -110,12 +149,12 @@ public class CreatePaymentRequestDeserializerTest {
 
     @Test
     public void deserialize_shouldThrowValidationException_asAmountIsMissing_whenAmountIsNullValue() throws Exception {
-
-        String json = "{" +
-                "  \"amount\" : null," +
-                "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": null,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
         expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: amount"));
@@ -125,12 +164,12 @@ public class CreatePaymentRequestDeserializerTest {
 
     @Test
     public void deserialize_shouldThrowValidationException_whenAmountIsNotInteger() throws Exception {
-
-        String json = "{" +
-                "  \"amount\" : \"\"," +
-                "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": \"\",\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
         expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: amount. Must be a valid numeric format"));
@@ -140,12 +179,12 @@ public class CreatePaymentRequestDeserializerTest {
 
     @Test
     public void deserialize_shouldThrowValidationException_whenAmountIsLessThanMinimum() throws Exception {
-
-        String json = "{" +
-                "  \"amount\" : 0," +
-                "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 0,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
         expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: amount. Must be greater than or equal to 1"));
@@ -155,12 +194,12 @@ public class CreatePaymentRequestDeserializerTest {
 
     @Test
     public void deserialize_shouldThrowValidationException_whenAmountIsMoreThanMaximum() throws Exception {
-
-        String json = "{" +
-                "  \"amount\" : 10000001," +
-                "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 10000001,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
         expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: amount. Must be less than or equal to 10000000"));
@@ -170,12 +209,12 @@ public class CreatePaymentRequestDeserializerTest {
 
     @Test
     public void deserialize_shouldThrowValidationException_whenReturnUrlIsNotAnStringValue() throws Exception {
-
-        String json = "{" +
-                "  \"amount\" : 1000000," +
-                "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : 1" +
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 1000000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": 1\n" +
                 "}";
 
         expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: return_url. Must be a valid URL format"));
@@ -185,12 +224,12 @@ public class CreatePaymentRequestDeserializerTest {
 
     @Test
     public void deserialize_shouldThrowValidationException_whenReturnUrlLengthIsMoreThan2000CharactersLength() throws Exception {
-
-        String json = "{" +
-                "  \"amount\" : 1000000," +
-                "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"" + RandomStringUtils.randomAlphanumeric(2001) + "\"" +
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 1000000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"" + RandomStringUtils.randomAlphanumeric(2001) + "\"\n" +
                 "}";
 
         expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: return_url. Must be less than or equal to 2000 characters length"));
@@ -200,12 +239,12 @@ public class CreatePaymentRequestDeserializerTest {
 
     @Test
     public void deserialize_shouldThrowValidationException_whenReturnUrlIsAMalformedUrl() throws Exception {
-
-        String json = "{" +
-                "  \"amount\" : 666," +
-                "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"" + RandomStringUtils.randomAlphanumeric(50) + "\"" +
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 666,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"" + RandomStringUtils.randomAlphanumeric(50) + "\"\n" +
                 "}";
 
         expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: return_url. Must be a valid URL format"));
@@ -215,11 +254,11 @@ public class CreatePaymentRequestDeserializerTest {
 
     @Test
     public void deserialize_shouldThrowValidationException_whenReturnUrlIsMissing() throws Exception {
-
-        String json = "{" +
-                "  \"amount\" : 666," +
-                "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"" +
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 666,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\"\n" +
                 "}";
 
         expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: return_url"));
@@ -229,12 +268,12 @@ public class CreatePaymentRequestDeserializerTest {
 
     @Test
     public void deserialize_shouldThrowValidationException_AsReturnUrlIsMissing_whenReturnUrlIsNullValue() throws Exception {
-
-        String json = "{" +
-                "  \"amount\" : 666," +
-                "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : null" +
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 666,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": null\n" +
                 "}";
 
         expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: return_url"));
@@ -244,11 +283,11 @@ public class CreatePaymentRequestDeserializerTest {
 
     @Test
     public void deserialize_shouldThrowValidationException_whenReferenceIsMissing() throws Exception {
-
-        String json = "{" +
-                "  \"amount\" : 666," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 666,\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
         expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: reference"));
@@ -258,12 +297,12 @@ public class CreatePaymentRequestDeserializerTest {
 
     @Test
     public void deserialize_shouldThrowValidationException_AsReferenceIsMissing_whenReferenceIsNullValue() throws Exception {
-
-        String json = "{" +
-                "  \"amount\" : 666," +
-                "  \"reference\" : null," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 666,\n" +
+                "  \"reference\": null,\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
         expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: reference"));
@@ -273,12 +312,12 @@ public class CreatePaymentRequestDeserializerTest {
 
     @Test
     public void deserialize_shouldThrowValidationException_whenReferenceIsNotAnString() throws Exception {
-
-        String json = "{" +
-                "  \"amount\" : 666," +
-                "  \"reference\" : 123," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 666,\n" +
+                "  \"reference\": 123,\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
         expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: reference. Must be a valid string format"));
@@ -288,12 +327,12 @@ public class CreatePaymentRequestDeserializerTest {
 
     @Test
     public void deserialize_shouldThrowValidationException_whenReferenceIsMoreThan255CharactersLength() throws Exception {
-
-        String json = "{" +
-                "  \"amount\" : 666," +
-                "  \"reference\" : \"" + RandomStringUtils.randomAlphanumeric(256) + "\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 666,\n" +
+                "  \"reference\": \"" + RandomStringUtils.randomAlphanumeric(256) + "\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
         expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: reference. Must be less than or equal to 255 characters length"));
@@ -303,11 +342,11 @@ public class CreatePaymentRequestDeserializerTest {
 
     @Test
     public void deserialize_shouldThrowValidationException_whenDescriptionIsMissing() throws Exception {
-
-        String json = "{" +
-                "  \"amount\" : 666," +
-                "  \"reference\" : \"Some reference\"," +
-                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 666,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
         expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: description"));
@@ -317,12 +356,12 @@ public class CreatePaymentRequestDeserializerTest {
 
     @Test
     public void deserialize_shouldThrowValidationException_asDescriptionIsMissing_whenDescriptionIsNullValue() throws Exception {
-
-        String json = "{" +
-                "  \"amount\" : 666," +
-                "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : null," +
-                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 666,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": null,\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
         expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: description"));
@@ -332,12 +371,12 @@ public class CreatePaymentRequestDeserializerTest {
 
     @Test
     public void deserialize_shouldThrowValidationException_whenDescriptionIsNotAnString() throws Exception {
-
-        String json = "{" +
-                "  \"amount\" : 666," +
-                "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : 432," +
-                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 666,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": 432,\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
         expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: description. Must be a valid string format"));
@@ -347,12 +386,12 @@ public class CreatePaymentRequestDeserializerTest {
 
     @Test
     public void deserialize_shouldThrowValidationException_whenDescriptionIsMoreThan255CharactersLength() throws Exception {
-
-        String json = "{" +
-                "  \"amount\" : 666," +
-                "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"" + RandomStringUtils.randomAlphanumeric(256) + "\"," +
-                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 666,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"" + RandomStringUtils.randomAlphanumeric(256) + "\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
         expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: description. Must be less than or equal to 255 characters length"));
@@ -362,12 +401,12 @@ public class CreatePaymentRequestDeserializerTest {
 
     @Test
     public void deserialize_shouldThrowValidationException_AsAgreementIdIsMissing_whenAgreementIdIsNullValue() throws Exception {
-
-        String json = "{" +
-                "  \"amount\" : 666," +
-                "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"agreement_id\" : null" +
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 666,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"agreement_id\": null\n" +
                 "}";
 
         expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: agreement_id"));
@@ -377,12 +416,12 @@ public class CreatePaymentRequestDeserializerTest {
 
     @Test
     public void deserialize_shouldThrowValidationException_whenAgreementIdIsNotAString() throws Exception {
-
-        String json = "{" +
-                "  \"amount\" : 666," +
-                "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"agreement_id\" : 1234" +
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 666,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"agreement_id\": 1234\n" +
                 "}";
 
         expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: agreement_id. Must be a valid agreement ID"));
@@ -392,20 +431,83 @@ public class CreatePaymentRequestDeserializerTest {
 
     @Test
     public void deserialize_shouldThrowValidationException_whenAgreementIdIsMoreThan26CharactersLength() throws Exception {
-
-        String json = "{" +
-                "  \"amount\" : 666," +
-                "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"agreement_id\" : \"" + RandomStringUtils.randomAlphanumeric(27) + "\"" +
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 666,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"agreement_id\": \"" + RandomStringUtils.randomAlphanumeric(27) + "\"\n" +
                 "}";
 
         expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: agreement_id. Must be less than or equal to 26 characters length"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }
-    
-    
+
+    @Test
+    public void deserialize_shouldThrowValidationException_whenLanguageIsNotSupported() throws Exception {
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 1337,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"language\": \"fr\"\n" +
+                "}";
+
+        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: language. Must be \"en\" or \"cy\""));
+
+        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+    }
+
+    @Test
+    public void deserialize_shouldThrowValidationException_whenLanguageIsNotAnString() throws Exception {
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 1337,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"language\": 1234\n" +
+                "}";
+
+        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: language. Must be \"en\" or \"cy\""));
+
+        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+    }
+
+    @Test
+    public void deserialize_shouldThrowValidationException_whenLanguageIsNullValue() throws Exception {
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 1337,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"language\": null\n" +
+                "}";
+
+        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: language. Must be \"en\" or \"cy\""));
+
+        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+    }
+
+    @Test
+    public void deserialize_shouldThrowValidationException_whenLanguageIsEmptyString() throws Exception {
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 1337,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"language\": \"\"\n" +
+                "}";
+
+        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: language. Must be \"en\" or \"cy\""));
+
+        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+    }
+
     @After
     public void tearDown() {
         verifyZeroInteractions(ctx);

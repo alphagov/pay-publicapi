@@ -14,6 +14,7 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.TokenPaymentType;
+import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.model.links.Link;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.model.links.PostLink;
@@ -58,12 +59,12 @@ public class CreatePaymentServiceTest {
     @Pacts(pacts = {"publicapi-connector-create-payment"}, publish = false)
     public void testCreatePayment() {
         Account account = new Account("123456", TokenPaymentType.CARD);
-        CreatePaymentRequest requestPayload = CreatePaymentRequest.builder()
+        ValidCreatePaymentRequest requestPayload = new ValidCreatePaymentRequest(CreatePaymentRequest.builder()
                 .amount(100)
                 .returnUrl("https://somewhere.gov.uk/rainbow/1")
                 .reference("a reference")
                 .description("a description")
-                .build();
+                .build());
 
         PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
 
