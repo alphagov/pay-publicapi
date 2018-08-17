@@ -3,6 +3,8 @@ package uk.gov.pay.api.model;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.util.Objects;
+import java.util.Optional;
+import java.util.StringJoiner;
 
 /**
  * A create payment request that has been validated successfully
@@ -54,6 +56,21 @@ public class ValidCreatePaymentRequest {
 
     public SupportedLanguage getLanguage() {
         return language;
+    }
+
+    /**
+     * This looks JSONesque but is not identical to the received request
+     */
+    @Override
+    public String toString() {
+        // Some services put PII in the description, so don’t include it in the stringification
+        StringJoiner joiner = new StringJoiner(", ", "{", "}");
+        joiner.add("amount: ").add(String.valueOf(amount));
+        joiner.add("reference: ").add(reference);
+        Optional.ofNullable(returnUrl).ifPresent(value -> joiner.add("return_url: ").add(value));
+        Optional.ofNullable(agreementId).ifPresent(value -> joiner.add("agreement_id: ").add(value));
+        Optional.ofNullable(language).ifPresent(value -> joiner.add("language: ").add(value.toString()));
+        return joiner.toString();
     }
 
 }

@@ -225,7 +225,7 @@ public class PaymentsResource {
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response createNewPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                      @ApiParam(value = "requestPayload", required = true) ValidCreatePaymentRequest validCreatePaymentRequest) {
-        logger.info("Payment create request - [ {} ]", validCreatePaymentRequest);
+        logger.info("Payment create request passed validation and parsed to {}", validCreatePaymentRequest);
 
         PaymentWithAllLinks createdPayment = createPaymentService.create(account, validCreatePaymentRequest);
 

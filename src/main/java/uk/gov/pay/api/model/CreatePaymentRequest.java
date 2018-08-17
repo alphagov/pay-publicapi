@@ -5,6 +5,9 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Optional;
+import java.util.StringJoiner;
+
 @ApiModel(value = "CreatePaymentRequest", description = "The Payment Request Payload")
 public class CreatePaymentRequest {
 
@@ -123,16 +126,19 @@ public class CreatePaymentRequest {
         return StringUtils.isNotBlank(language);
     }
 
+    /**
+     * This looks JSONesque but is not identical to the received request
+     */
     @Override
     public String toString() {
         // Some services put PII in the description, so don’t include it in the stringification
-        return "CreatePaymentRequest{" +
-                "amount=" + amount +
-                ", returnUrl='" + returnUrl + '\'' +
-                ", reference='" + reference + '\'' +
-                ", agreement_id='" + agreementId + '\'' +
-                ", language='" + language + '\'' +
-                '}';
+        StringJoiner joiner = new StringJoiner(", ", "{", "}");
+        joiner.add("amount: ").add(String.valueOf(amount));
+        joiner.add("reference: ").add(reference);
+        Optional.ofNullable(returnUrl).ifPresent(value -> joiner.add("return_url: ").add(value));
+        Optional.ofNullable(agreementId).ifPresent(value -> joiner.add("agreement_id: ").add(value));
+        Optional.ofNullable(language).ifPresent(value -> joiner.add("language: ").add(value));
+        return joiner.toString();
     }
 
 }
