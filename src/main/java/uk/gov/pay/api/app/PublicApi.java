@@ -34,6 +34,7 @@ import uk.gov.pay.api.exception.mapper.GetEventsExceptionMapper;
 import uk.gov.pay.api.exception.mapper.GetRefundExceptionMapper;
 import uk.gov.pay.api.exception.mapper.GetRefundsExceptionMapper;
 import uk.gov.pay.api.exception.mapper.SearchChargesExceptionMapper;
+import uk.gov.pay.api.exception.mapper.SearchRefundsExceptionMapper;
 import uk.gov.pay.api.exception.mapper.ValidationExceptionMapper;
 import uk.gov.pay.api.filter.AuthorizationValidationFilter;
 import uk.gov.pay.api.filter.LoggingFilter;
@@ -44,6 +45,7 @@ import uk.gov.pay.api.resources.DirectDebitEventsResource;
 import uk.gov.pay.api.resources.HealthCheckResource;
 import uk.gov.pay.api.resources.PaymentRefundsResource;
 import uk.gov.pay.api.resources.PaymentsResource;
+import uk.gov.pay.api.resources.SearchRefundsResource;
 import uk.gov.pay.api.resources.RequestDeniedResource;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -87,6 +89,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         environment.jersey().register(injector.getInstance(PaymentRefundsResource.class));
         environment.jersey().register(injector.getInstance(RequestDeniedResource.class));
         environment.jersey().register(injector.getInstance(AgreementsResource.class));
+        environment.jersey().register(injector.getInstance(SearchRefundsResource.class));
 
         environment.servlets().addFilter("AuthorizationValidationFilter", injector.getInstance(AuthorizationValidationFilter.class))
                 .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");
@@ -137,6 +140,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         jersey.register(GetChargeExceptionMapper.class);
         jersey.register(GetEventsExceptionMapper.class);
         jersey.register(SearchChargesExceptionMapper.class);
+        jersey.register(SearchRefundsExceptionMapper.class);
         jersey.register(CancelChargeExceptionMapper.class);
         jersey.register(ValidationExceptionMapper.class);
         jersey.register(BadRequestExceptionMapper.class);
