@@ -3,6 +3,9 @@ package uk.gov.pay.api.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import uk.gov.pay.api.utils.CustomSupportedLanguageDeserializer;
+import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,10 +36,17 @@ public class ChargeFromResponse {
     private CardDetails cardDetails;
 
     private Long amount;
+
     private PaymentState state;
+
     private String description;
+
     private String reference;
+
     private String email;
+
+    @JsonDeserialize(using = CustomSupportedLanguageDeserializer.class)
+    private SupportedLanguage language;
 
     @JsonProperty(value = "created_date")
     private String createdDate;
@@ -69,6 +79,10 @@ public class ChargeFromResponse {
         return email;
     }
 
+    public SupportedLanguage getLanguage() {
+        return language;
+    }
+
     public String getPaymentProvider() {
         return paymentProvider;
     }
@@ -76,6 +90,7 @@ public class ChargeFromResponse {
     /**
      * card brand is no longer a top level charge property. It is now at `card_details.card_brand` attribute
      * We still need to support `v1` clients with a top level card brand attribute to keep support their integrations.
+     *
      * @return
      */
     @JsonProperty("card_brand")

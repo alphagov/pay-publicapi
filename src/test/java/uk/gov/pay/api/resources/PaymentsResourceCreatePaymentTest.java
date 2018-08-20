@@ -20,6 +20,7 @@ import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.CreatePaymentService;
 import uk.gov.pay.api.service.PaymentSearchService;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
+import uk.gov.pay.commons.model.SupportedLanguage;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
@@ -97,6 +98,7 @@ public class PaymentsResourceCreatePaymentTest {
                 "made.up@example.com",
                 "sandbox",
                 "2018-01-01T11:12:13Z",
+                SupportedLanguage.ENGLISH,
                 new RefundSummary(),
                 new SettlementSummary(),
                 new CardDetails("9876", "Anne Onymous", "12/20", cardholderAddress, "visa"),

@@ -44,6 +44,7 @@
           "return_url": "https://somewhere.gov.uk/rainbow/1",
           "payment_provider": "Sandbox",
           "created_date": "2016-01-01T12:00:00Z",
+          "language": "en",
           "links": [
             {
               "href": "http://connector.service.backend/v1/api/accounts/123456/charges/ch_ab2341da231434l",

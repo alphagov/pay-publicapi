@@ -23,24 +23,27 @@ public class PaymentTest {
         URI cancelUri = URI.create("http://self.link.com/cancel");
         URI refundsUri = URI.create("http://self.link.com/cancel");
 
-        ChargeFromResponse paymentFromConnector = objectMapper.readValue("{" +
-                "\"email\":\"user@example.com\"," +
-                "\"card_details\":{" +
-                "\"card_brand\": \"Visa\"," +
-                "\"expiry_date\": \"12/19\"," +
-                "\"cardholder_name\": \"Mr. payment\"," +
-                "\"billing_address\": {" +
-                "\"line1\": \"line1\"," +
-                "\"postcode\": \"NR25 6EG\"," +
-                "\"country\": \"UK\"" +
-                "}," +
-                "\"last_digits_card_number\": \"4321\"" +
-                "}," +
-                "\"amount\":500," +
-                "\"state\":{" +
-                "\"status\":\"created\"," +
-                "\"finished\":false" +
-                "}}", ChargeFromResponse.class);
+        // language=JSON
+        ChargeFromResponse paymentFromConnector = objectMapper.readValue("{\n" +
+                "  \"email\": \"user@example.com\",\n" +
+                "  \"card_details\": {\n" +
+                "    \"card_brand\": \"Visa\",\n" +
+                "    \"expiry_date\": \"12/19\",\n" +
+                "    \"cardholder_name\": \"Mr. payment\",\n" +
+                "    \"billing_address\": {\n" +
+                "      \"line1\": \"line1\",\n" +
+                "      \"postcode\": \"NR25 6EG\",\n" +
+                "      \"country\": \"UK\"\n" +
+                "    },\n" +
+                "    \"last_digits_card_number\": \"4321\"\n" +
+                "  },\n" +
+                "  \"amount\": 500,\n" +
+                "  \"language\": \"en\",\n" +
+                "  \"state\": {\n" +
+                "    \"status\": \"created\",\n" +
+                "    \"finished\": false\n" +
+                "  }\n" +
+                "}", ChargeFromResponse.class);
 
         PaymentWithAllLinks payment = PaymentWithAllLinks.valueOf(paymentFromConnector, selfUri, eventsUri, cancelUri, refundsUri);
 

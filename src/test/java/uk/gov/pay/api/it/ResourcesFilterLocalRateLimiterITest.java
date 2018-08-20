@@ -22,6 +22,7 @@ import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
+import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -93,7 +94,7 @@ public class ResourcesFilterLocalRateLimiterITest {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         connectorMock.respondOk_whenCreateCharge(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID, CREATED,
-                RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, REFUND_SUMMARY,
+                RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH, REFUND_SUMMARY,
                 null, CARD_DETAILS);
     }
 

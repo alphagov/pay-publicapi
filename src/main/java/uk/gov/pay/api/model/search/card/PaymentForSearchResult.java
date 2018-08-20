@@ -9,6 +9,7 @@ import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.SettlementSummary;
 import uk.gov.pay.api.model.links.PaymentLinksForSearch;
+import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.net.URI;
 
@@ -18,10 +19,11 @@ public class PaymentForSearchResult extends CardPayment {
     private PaymentLinksForSearch links = new PaymentLinksForSearch();
 
     public PaymentForSearchResult(String chargeId, long amount, PaymentState state, String returnUrl, String description,
-                                  String reference, String email, String paymentProvider, String createdDate,
+                                  String reference, String email, String paymentProvider, String createdDate, SupportedLanguage language,
                                   RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
                                   URI selfLink, URI paymentEventsLink, URI paymentCancelLink, URI paymentRefundsLink) {
-        super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate, refundSummary, settlementSummary, cardDetails);
+        super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider,
+                createdDate, refundSummary, settlementSummary, cardDetails, language);
         this.links.addSelf(selfLink.toString());
         this.links.addEvents(paymentEventsLink.toString());
         this.links.addRefunds(paymentRefundsLink.toString());
@@ -48,6 +50,7 @@ public class PaymentForSearchResult extends CardPayment {
                 paymentResult.getEmail(),
                 paymentResult.getPaymentProvider(),
                 paymentResult.getCreatedDate(),
+                paymentResult.getLanguage(),
                 paymentResult.getRefundSummary(),
                 paymentResult.getSettlementSummary(),
                 paymentResult.getCardDetails(),
