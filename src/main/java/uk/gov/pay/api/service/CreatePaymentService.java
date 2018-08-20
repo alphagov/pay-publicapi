@@ -42,12 +42,12 @@ public class CreatePaymentService {
 
     private PaymentWithAllLinks buildResponseModel(Account account, ChargeFromResponse chargeFromResponse) {
         return PaymentWithAllLinks.getPaymentWithLinks(
-                    account.getPaymentType(),
-                    chargeFromResponse,
-                    publicApiUriGenerator.getPaymentURI(chargeFromResponse.getChargeId()),
-                    publicApiUriGenerator.getPaymentEventsURI(chargeFromResponse.getChargeId()),
-                    publicApiUriGenerator.getPaymentCancelURI(chargeFromResponse.getChargeId()),
-                    publicApiUriGenerator.getPaymentRefundsURI(chargeFromResponse.getChargeId()));
+                account.getPaymentType(),
+                chargeFromResponse,
+                publicApiUriGenerator.getPaymentURI(chargeFromResponse.getChargeId()),
+                publicApiUriGenerator.getPaymentEventsURI(chargeFromResponse.getChargeId()),
+                publicApiUriGenerator.getPaymentCancelURI(chargeFromResponse.getChargeId()),
+                publicApiUriGenerator.getPaymentRefundsURI(chargeFromResponse.getChargeId()));
     }
 
     private boolean createdSuccessfully(Response connectorResponse) {
@@ -70,6 +70,7 @@ public class CreatePaymentService {
                 .add("amount", amount)
                 .add("reference", reference)
                 .add("description", description);
+        requestPayload.getLanguage().ifPresent(language -> request.add("language", language.toString()));
         requestPayload.getReturnUrl().ifPresent(returnUrl -> request.add("return_url", returnUrl));
         requestPayload.getAgreementId().ifPresent(agreementId -> request.add("agreement_id", agreementId));
         return json(request.build());
