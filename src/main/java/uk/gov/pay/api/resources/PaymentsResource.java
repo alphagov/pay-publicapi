@@ -21,6 +21,7 @@ import uk.gov.pay.api.model.PaymentEvents;
 import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.model.search.card.PaymentSearchResults;
+import uk.gov.pay.api.resources.error.ApiErrorResponse;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.CreatePaymentService;
 import uk.gov.pay.api.service.PaymentSearchService;
@@ -85,6 +86,7 @@ public class PaymentsResource {
             @ApiResponse(code = 200, message = "OK", response = PaymentWithAllLinks.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
+            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response getPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                @PathParam("paymentId") String paymentId) {
@@ -128,6 +130,7 @@ public class PaymentsResource {
             @ApiResponse(code = 200, message = "OK", response = PaymentEvents.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
+            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response getPaymentEvents(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                      @PathParam("paymentId") String paymentId) {
@@ -174,6 +177,7 @@ public class PaymentsResource {
             @ApiResponse(code = 200, message = "OK", response = PaymentSearchResults.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 422, message = "Invalid parameters: from_date, to_date, status, display_size. See Public API documentation for the correct data formats", response = PaymentError.class),
+            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response searchPayments(@ApiParam(value = "accountId", hidden = true)
                                    @Auth Account account,
@@ -193,7 +197,7 @@ public class PaymentsResource {
                                    @QueryParam("page") String pageNumber,
                                    @ApiParam(value = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)", hidden = false)
                                    @QueryParam("display_size") String displaySize,
-                                   @ApiParam(value = "Direct Debit Agreement Id", hidden = false)
+                                   @ApiParam(value = "Direct Debit Agreement Id", hidden = true)
                                    @QueryParam("agreement_id") String agreementId,
                                    @Context UriInfo uriInfo) {
 
@@ -222,6 +226,7 @@ public class PaymentsResource {
             @ApiResponse(code = 400, message = "Bad request", response = PaymentError.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 422, message = "Invalid attribute value: description. Must be less than or equal to 255 characters length", response = PaymentError.class),
+            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response createNewPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                      @ApiParam(value = "requestPayload", required = true) ValidCreatePaymentRequest validCreatePaymentRequest) {
@@ -255,6 +260,7 @@ public class PaymentsResource {
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
             @ApiResponse(code = 409, message = "Conflict", response = PaymentError.class),
+            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)
     })
     public Response cancelPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,

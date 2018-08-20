@@ -7,16 +7,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.net.URI;
-import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
@@ -26,7 +16,19 @@ import uk.gov.pay.api.model.directdebit.agreement.AgreementError;
 import uk.gov.pay.api.model.directdebit.agreement.CreateAgreementRequest;
 import uk.gov.pay.api.model.directdebit.agreement.CreateAgreementResponse;
 import uk.gov.pay.api.model.directdebit.agreement.GetAgreementResponse;
+import uk.gov.pay.api.resources.error.ApiErrorResponse;
 import uk.gov.pay.api.service.AgreementService;
+
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import java.net.URI;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
@@ -60,6 +62,7 @@ public class AgreementsResource {
             @ApiResponse(code = 200, message = "OK", response = GetAgreementResponse.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found", response = AgreementError.class),
+            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = AgreementError.class)})
     public Response getPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
             @PathParam("agreementId") String agreementId) {
@@ -83,6 +86,7 @@ public class AgreementsResource {
             @ApiResponse(code = 201, message = "Created", response = CreateAgreementResponse.class),
             @ApiResponse(code = 400, message = "Bad request", response = PaymentError.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
+            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response createNewAgreement(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                        @ApiParam(value = "requestPayload", required = true) CreateAgreementRequest createAgreementRequest) {

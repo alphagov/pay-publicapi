@@ -418,8 +418,13 @@
                         <apiSource>
                             <springmvc>false</springmvc>
                             <locations>
-                                <location>uk.gov.pay.api.resources</location>
+                                <location>uk.gov.pay.api.resources.PaymentRefundsResource</location>
+                                <location>uk.gov.pay.api.resources.PaymentsResource</location>
                             </locations>
+                            <apiModelPropertyAccessExclusions>
+                                <apiModelPropertyAccessExclusion>agreementId</apiModelPropertyAccessExclusion>
+                                <apiModelPropertyAccessExclusion>language</apiModelPropertyAccessExclusion>
+                            </apiModelPropertyAccessExclusions>
                             <schemes>
                                 <scheme>https</scheme>
                             </schemes>

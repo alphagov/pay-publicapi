@@ -12,209 +12,6 @@
   } ],
   "schemes" : [ "https" ],
   "paths" : {
-    "/healthcheck" : {
-      "get" : {
-        "operationId" : "healthCheck",
-        "produces" : [ "application/json" ],
-        "responses" : {
-          "default" : {
-            "description" : "successful operation"
-          }
-        }
-      }
-    },
-    "/request-denied" : {
-      "get" : {
-        "operationId" : "requestDeniedGet",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "x-naxsi_sig",
-          "in" : "header",
-          "required" : false,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "default" : {
-            "description" : "successful operation"
-          }
-        }
-      },
-      "post" : {
-        "operationId" : "requestDeniedPost",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "x-naxsi_sig",
-          "in" : "header",
-          "required" : false,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "default" : {
-            "description" : "successful operation"
-          }
-        }
-      },
-      "put" : {
-        "operationId" : "requestDeniedPut",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "x-naxsi_sig",
-          "in" : "header",
-          "required" : false,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "default" : {
-            "description" : "successful operation"
-          }
-        }
-      },
-      "delete" : {
-        "operationId" : "requestDeniedDelete",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "x-naxsi_sig",
-          "in" : "header",
-          "required" : false,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "default" : {
-            "description" : "successful operation"
-          }
-        }
-      }
-    },
-    "/v1/agreements" : {
-      "post" : {
-        "summary" : "Create a new agreement",
-        "description" : "Create a new agreement",
-        "operationId" : "newAgreement",
-        "consumes" : [ "application/json" ],
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "in" : "body",
-          "name" : "body",
-          "description" : "requestPayload",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/CreateAgreementRequest"
-          }
-        } ],
-        "responses" : {
-          "201" : {
-            "description" : "Created",
-            "schema" : {
-              "$ref" : "#/definitions/CreateAgreementResponse"
-            }
-          },
-          "400" : {
-            "description" : "Bad request",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
-            }
-          },
-          "401" : {
-            "description" : "Credentials are required to access this resource"
-          },
-          "500" : {
-            "description" : "Downstream system error",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
-            }
-          }
-        }
-      }
-    },
-    "/v1/agreements/{agreementId}" : {
-      "get" : {
-        "summary" : "Find agreement by ID",
-        "description" : "Return information about the payment The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
-        "operationId" : "getPayment",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "agreementId",
-          "in" : "path",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "schema" : {
-              "$ref" : "#/definitions/CreateAgreementResponse"
-            }
-          },
-          "401" : {
-            "description" : "Credentials are required to access this resource"
-          },
-          "404" : {
-            "description" : "Not found",
-            "schema" : {
-              "$ref" : "#/definitions/AgreementError"
-            }
-          },
-          "500" : {
-            "description" : "Downstream system error",
-            "schema" : {
-              "$ref" : "#/definitions/AgreementError"
-            }
-          }
-        }
-      }
-    },
-    "/v1/events" : {
-      "get" : {
-        "summary" : "Get direct debit events",
-        "description" : "The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
-        "operationId" : "getDirectDebitEvents",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "to_date",
-          "in" : "query",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "from_date",
-          "in" : "query",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "display_size",
-          "in" : "query",
-          "description" : "Defaults to a maximum of 500",
-          "required" : false,
-          "type" : "integer",
-          "format" : "int32"
-        }, {
-          "name" : "page",
-          "in" : "query",
-          "required" : false,
-          "type" : "integer",
-          "format" : "int32"
-        }, {
-          "name" : "agreement_id",
-          "in" : "query",
-          "description" : "ID of associated agreement",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "payment_id",
-          "in" : "query",
-          "description" : "ID of associated payment",
-          "required" : false,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK"
-          },
-          "401" : {
-            "description" : "Credentials are required to access this resource"
-          }
-        }
-      }
-    },
     "/v1/payments" : {
       "get" : {
         "summary" : "Search payments",
@@ -270,12 +67,6 @@
           "description" : "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)",
           "required" : false,
           "type" : "string"
-        }, {
-          "name" : "agreement_id",
-          "in" : "query",
-          "description" : "Direct Debit Agreement Id",
-          "required" : false,
-          "type" : "string"
         } ],
         "responses" : {
           "200" : {
@@ -291,6 +82,12 @@
             "description" : "Invalid parameters: from_date, to_date, status, display_size. See Public API documentation for the correct data formats",
             "schema" : {
               "$ref" : "#/definitions/PaymentError"
+            }
+          },
+          "429" : {
+            "description" : "Too many requests",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorResponse"
             }
           },
           "500" : {
@@ -313,7 +110,7 @@
           "description" : "requestPayload",
           "required" : true,
           "schema" : {
-            "$ref" : "#/definitions/CreatePaymentRequest"
+            "$ref" : "#/definitions/ValidCreatePaymentRequest"
           }
         } ],
         "responses" : {
@@ -336,6 +133,12 @@
             "description" : "Invalid attribute value: description. Must be less than or equal to 255 characters length",
             "schema" : {
               "$ref" : "#/definitions/PaymentError"
+            }
+          },
+          "429" : {
+            "description" : "Too many requests",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorResponse"
             }
           },
           "500" : {
@@ -373,6 +176,12 @@
             "description" : "Not found",
             "schema" : {
               "$ref" : "#/definitions/PaymentError"
+            }
+          },
+          "429" : {
+            "description" : "Too many requests",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorResponse"
             }
           },
           "500" : {
@@ -421,6 +230,12 @@
               "$ref" : "#/definitions/PaymentError"
             }
           },
+          "429" : {
+            "description" : "Too many requests",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorResponse"
+            }
+          },
           "500" : {
             "description" : "Downstream system error",
             "schema" : {
@@ -458,6 +273,12 @@
               "$ref" : "#/definitions/PaymentError"
             }
           },
+          "429" : {
+            "description" : "Too many requests",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorResponse"
+            }
+          },
           "500" : {
             "description" : "Downstream system error",
             "schema" : {
@@ -491,6 +312,12 @@
             "description" : "Not found",
             "schema" : {
               "$ref" : "#/definitions/PaymentError"
+            }
+          },
+          "429" : {
+            "description" : "Too many requests",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorResponse"
             }
           },
           "500" : {
@@ -539,6 +366,12 @@
           "412" : {
             "description" : "Refund amount available mismatch"
           },
+          "429" : {
+            "description" : "Too many requests",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorResponse"
+            }
+          },
           "500" : {
             "description" : "Downstream system error",
             "schema" : {
@@ -577,6 +410,12 @@
             "description" : "Not found",
             "schema" : {
               "$ref" : "#/definitions/PaymentError"
+            }
+          },
+          "429" : {
+            "description" : "Too many requests",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorResponse"
             }
           },
           "500" : {
@@ -620,45 +459,6 @@
         }
       },
       "description" : "A structure representing the billing address of a card"
-    },
-    "AgreementError" : {
-      "type" : "object",
-      "properties" : {
-        "field" : {
-          "type" : "string",
-          "example" : "return_url"
-        },
-        "code" : {
-          "type" : "string",
-          "example" : "P0102"
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "Invalid attribute value: return_url. Must be a valid url."
-        }
-      },
-      "description" : "An Agreement Error response"
-    },
-    "AgreementLinks" : {
-      "type" : "object",
-      "properties" : {
-        "self" : {
-          "description" : "self",
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        },
-        "next_url" : {
-          "description" : "next_url",
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        },
-        "next_url_post" : {
-          "description" : "next_url_post",
-          "readOnly" : true,
-          "$ref" : "#/definitions/PostLink"
-        }
-      },
-      "description" : "self and next links of an Agreement"
     },
     "CardDetails" : {
       "type" : "object",
@@ -717,87 +517,6 @@
         }
       } ]
     },
-    "CreateAgreementRequest" : {
-      "type" : "object",
-      "required" : [ "agreement_type", "return_url" ],
-      "properties" : {
-        "return_url" : {
-          "type" : "string",
-          "example" : "https://service-name.gov.uk/transactions/12345",
-          "description" : "agreement return url",
-          "readOnly" : true
-        },
-        "agreement_type" : {
-          "type" : "string",
-          "example" : "ON_DEMAND",
-          "description" : "agreement type",
-          "readOnly" : true,
-          "enum" : [ "ON_DEMAND", "ONE_OFF" ]
-        },
-        "reference" : {
-          "type" : "string",
-          "example" : "test_service_reference",
-          "description" : "agreement reference",
-          "readOnly" : true
-        }
-      },
-      "description" : "The Payload to create a new Agreement"
-    },
-    "CreateAgreementResponse" : {
-      "type" : "object",
-      "required" : [ "_links", "agreement_id", "agreement_type", "created_date", "provider_id", "return_url", "state" ],
-      "properties" : {
-        "agreement_id" : {
-          "type" : "string",
-          "example" : "jhjcvaiqlediuhh23d89hd3",
-          "description" : "agreement id",
-          "readOnly" : true
-        },
-        "agreement_type" : {
-          "type" : "string",
-          "example" : "ON_DEMAND",
-          "description" : "agreement type",
-          "readOnly" : true,
-          "enum" : [ "ON_DEMAND", "ONE_OFF" ]
-        },
-        "provider_id" : {
-          "type" : "string",
-          "example" : "jhjcvaiqlediuhh23d89hd3",
-          "description" : "provider id",
-          "readOnly" : true
-        },
-        "reference" : {
-          "type" : "string",
-          "example" : "test_service_reference",
-          "description" : "agreement reference",
-          "readOnly" : true
-        },
-        "return_url" : {
-          "type" : "string",
-          "example" : "https://service-name.gov.uk/transactions/12345",
-          "description" : "service return url",
-          "readOnly" : true
-        },
-        "created_date" : {
-          "type" : "string",
-          "description" : "agreement created date",
-          "readOnly" : true
-        },
-        "state" : {
-          "type" : "string",
-          "example" : "CREATED",
-          "description" : "agreement state",
-          "readOnly" : true,
-          "enum" : [ "CREATED", "STARTED", "PENDING", "SUBMITTED", "ACTIVE", "INACTIVE", "CANCELLED" ]
-        },
-        "_links" : {
-          "description" : "links",
-          "readOnly" : true,
-          "$ref" : "#/definitions/AgreementLinks"
-        }
-      },
-      "description" : "The Agreement Payload to create a new Agreement"
-    },
     "CreatePaymentRefundRequest" : {
       "type" : "object",
       "required" : [ "amount" ],
@@ -822,49 +541,26 @@
       },
       "description" : "The Payment Refund Request Payload"
     },
-    "CreatePaymentRequest" : {
-      "type" : "object",
-      "required" : [ "amount", "description", "reference" ],
-      "properties" : {
-        "amount" : {
-          "type" : "integer",
-          "format" : "int32",
-          "example" : 12000,
-          "description" : "amount in pence",
-          "minimum" : 1,
-          "maximum" : 10000000
-        },
-        "reference" : {
-          "type" : "string",
-          "example" : "12345",
-          "description" : "payment reference"
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "New passport application",
-          "description" : "payment description"
-        },
-        "return_url" : {
-          "type" : "string",
-          "example" : "https://service-name.gov.uk/transactions/12345",
-          "description" : "service return url",
-          "readOnly" : true
-        },
-        "agreement_id" : {
-          "type" : "string",
-          "example" : "33890b55-b9ea-4e2f-90fd-77ae0e9009e2\n",
-          "description" : "ID of the agreement being used to collect the payment",
-          "readOnly" : true
-        }
-      },
-      "description" : "The Payment Request Payload"
-    },
     "DirectDebitPayment" : {
       "allOf" : [ {
         "$ref" : "#/definitions/Payment"
       }, {
         "type" : "object"
       } ]
+    },
+    "ErrorResponse" : {
+      "type" : "object",
+      "properties" : {
+        "code" : {
+          "type" : "string",
+          "example" : "P0900"
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "Too many requests"
+        }
+      },
+      "description" : "An error response"
     },
     "Link" : {
       "type" : "object",
@@ -1079,7 +775,6 @@
     },
     "PaymentState" : {
       "type" : "object",
-      "required" : [ "code", "finished", "message", "status" ],
       "properties" : {
         "status" : {
           "type" : "string",
@@ -1186,6 +881,24 @@
         }
       },
       "description" : "A structure representing information about a settlement"
+    },
+    "ValidCreatePaymentRequest" : {
+      "type" : "object",
+      "properties" : {
+        "amount" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "reference" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "returnUrl" : {
+          "type" : "string"
+        }
+      }
     }
   }
 }

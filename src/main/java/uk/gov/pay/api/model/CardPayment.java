@@ -24,6 +24,7 @@ public class CardPayment extends Payment {
     private final CardDetails cardDetails;
 
     @JsonSerialize(using = ToStringSerializer.class)
+    @ApiModelProperty(name = "language", access = "language") // named to exclude from swagger.json for now
     private final SupportedLanguage language;
 
     public CardPayment(String chargeId, long amount, PaymentState state, String returnUrl, String description,

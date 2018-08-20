@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.filter.ratelimit.RateLimitException;
 import uk.gov.pay.api.filter.ratelimit.RateLimiter;
-
+import uk.gov.pay.api.resources.error.ApiErrorResponse.Code;
 import javax.inject.Inject;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -16,10 +16,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static uk.gov.pay.api.model.PaymentError.Code;
-import static uk.gov.pay.api.model.PaymentError.aPaymentError;
+import static uk.gov.pay.api.resources.error.ApiErrorResponse.anApiErrorResponse;
 
 /**
  * Allow only a certain number of requests from the same source (given by the Authorization Header)
@@ -69,7 +67,7 @@ public class RateLimiterFilter implements Filter {
         response.setStatus(TOO_MANY_REQUESTS_STATUS_CODE);
         response.setContentType(APPLICATION_JSON);
         response.setCharacterEncoding(UTF8_CHARACTER_ENCODING);
-        response.getWriter().print(objectMapper.writeValueAsString(aPaymentError(Code.TOO_MANY_REQUESTS_ERROR)));
+        response.getWriter().print(objectMapper.writeValueAsString(anApiErrorResponse(Code.TOO_MANY_REQUESTS_ERROR)));
     }
 
     @Override

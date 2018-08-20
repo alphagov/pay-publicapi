@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.links.directdebit.DirectDebitEventsResponse;
+import uk.gov.pay.api.resources.error.ApiErrorResponse;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.DirectDebitEventService;
 import uk.gov.pay.api.validation.DirectDebitEventSearchValidator;
@@ -53,7 +54,8 @@ public class DirectDebitEventsResource {
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = List.class),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource")})
+            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
+            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class)})
     public Response getDirectDebitEvents(
             @ApiParam(value = "accountId", hidden = true) @Auth Account account,
             @QueryParam("to_date") String toDate,
