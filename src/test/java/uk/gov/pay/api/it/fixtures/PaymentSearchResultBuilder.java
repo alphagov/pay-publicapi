@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import uk.gov.pay.api.utils.DateTimeUtils;
+import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.time.ZonedDateTime;
 import java.util.LinkedList;
@@ -81,6 +82,7 @@ public class PaymentSearchResultBuilder {
         public String charge_id, description, reference, email, created_date;
         public int amount;
         public String gateway_transaction_id, return_url, payment_provider, card_brand;
+        public String language;
         public RefundSummary refund_summary = new RefundSummary();
         public SettlementSummary settlement_summary = new SettlementSummary();
         public CardDetails card_details = new CardDetails();
@@ -130,6 +132,7 @@ public class PaymentSearchResultBuilder {
 
     private String reference = null;
     private String email = null;
+    private String language = SupportedLanguage.ENGLISH.toString();
     private TestPaymentState state = null;
     private String fromDate = null;
     private String toDate = null;
@@ -167,6 +170,11 @@ public class PaymentSearchResultBuilder {
 
     public PaymentSearchResultBuilder withMatchingCardBrand(String cardBrand) {
         this.cardDetails.card_brand = cardBrand;
+        return this;
+    }
+
+    public PaymentSearchResultBuilder withLanguage(SupportedLanguage language) {
+        this.language = language.toString();
         return this;
     }
 
@@ -244,6 +252,7 @@ public class PaymentSearchResultBuilder {
         payment.created_date = DEFAULT_CREATED_DATE;
         payment.return_url = DEFAULT_RETURN_URL;
         payment.payment_provider = DEFAULT_PAYMENT_PROVIDER;
+        payment.language = SupportedLanguage.ENGLISH.toString();
         payment.card_brand = DEFAULT_CARD_BRAND_LABEL;
         payment.card_details.card_brand=DEFAULT_CARD_BRAND_LABEL;
         payment.refund_summary.status = "available";

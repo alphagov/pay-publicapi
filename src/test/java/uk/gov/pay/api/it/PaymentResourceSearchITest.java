@@ -1,6 +1,5 @@
 package uk.gov.pay.api.it;
 
-
 import com.google.common.collect.ImmutableMap;
 import com.jayway.jsonassert.JsonAssert;
 import com.jayway.restassured.response.ValidatableResponse;
@@ -88,6 +87,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .body("results[0].amount", is(DEFAULT_AMOUNT))
                 .body("results[0].payment_provider", is(DEFAULT_PAYMENT_PROVIDER))
                 .body("results[0].payment_id", is("0"))
+                .body("results[0].language", is("en"))
                 .body("results[0]._links.self.method", is("GET"))
                 .body("results[0]._links.self.href", is(paymentLocationFor("0")))
                 .body("results[0]._links.events.href", is(paymentEventsLocationFor("0")))

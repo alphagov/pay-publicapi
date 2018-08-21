@@ -2,15 +2,17 @@ package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import uk.gov.pay.commons.model.SupportedLanguage;
 
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 
-
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 @ApiModel(value = "CardPayment")
-public class CardPayment extends Payment  {
+public class CardPayment extends Payment {
 
     @JsonProperty("refund_summary")
     private final RefundSummary refundSummary;
@@ -21,21 +23,25 @@ public class CardPayment extends Payment  {
     @JsonProperty("card_details")
     private final CardDetails cardDetails;
 
-
+    @JsonSerialize(using = ToStringSerializer.class)
+    private final SupportedLanguage language;
 
     public CardPayment(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                        String reference, String email, String paymentProvider, String createdDate,
-                       RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails) {
+                       RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
+                       SupportedLanguage language) {
         super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate);
         this.refundSummary = refundSummary;
         this.settlementSummary = settlementSummary;
         this.cardDetails = cardDetails;
         this.paymentType = CARD.getFriendlyName();
+        this.language = language;
     }
 
     /**
      * card brand is no longer a top level charge property. It is now at `card_details.card_brand` attribute
      * We still need to support `v1` clients with a top level card brand attribute to keep support their integrations.
+     *
      * @return
      */
     @ApiModelProperty(value = "Card Brand", example = "Visa", notes = "Deprecated. Please use card_details.card_brand instead")
@@ -60,6 +66,11 @@ public class CardPayment extends Payment  {
         return cardDetails;
     }
 
+    @ApiModelProperty(example = "en")
+    public SupportedLanguage getLanguage() {
+        return language;
+    }
+
     @Override
     public String toString() {
         // Some services put PII in the description, so don’t include it in the stringification
@@ -71,7 +82,9 @@ public class CardPayment extends Payment  {
                 ", state='" + state + '\'' +
                 ", returnUrl='" + returnUrl + '\'' +
                 ", reference='" + reference + '\'' +
+                ", language='" + language.toString() + '\'' +
                 ", createdDate='" + createdDate + '\'' +
                 '}';
     }
+
 }

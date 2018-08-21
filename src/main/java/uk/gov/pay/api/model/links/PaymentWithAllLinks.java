@@ -13,6 +13,7 @@ import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.SettlementSummary;
 import uk.gov.pay.api.model.TokenPaymentType;
+import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.net.URI;
 import java.util.List;
@@ -38,10 +39,12 @@ public class PaymentWithAllLinks {
     }
 
     public PaymentWithAllLinks(String chargeId, long amount, PaymentState state, String returnUrl, String description,
-                                String reference, String email, String paymentProvider, String createdDate,
-                                RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails, List<PaymentConnectorResponseLink> paymentConnectorResponseLinks,
-                                URI selfLink, URI paymentEventsUri, URI paymentCancelUri, URI paymentRefundsUri) {
-        this.payment = new CardPayment(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate, refundSummary, settlementSummary, cardDetails);
+                               String reference, String email, String paymentProvider, String createdDate, SupportedLanguage language,
+                               RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
+                               List<PaymentConnectorResponseLink> paymentConnectorResponseLinks, URI selfLink, URI paymentEventsUri, URI paymentCancelUri,
+                               URI paymentRefundsUri) {
+        this.payment = new CardPayment(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate,
+                refundSummary, settlementSummary, cardDetails, language);
         this.links.addSelf(selfLink.toString());
         this.links.addKnownLinksValueOf(paymentConnectorResponseLinks);
         this.links.addEvents(paymentEventsUri.toString());
@@ -92,6 +95,7 @@ public class PaymentWithAllLinks {
                 paymentConnector.getEmail(),
                 paymentConnector.getPaymentProvider(),
                 paymentConnector.getCreatedDate(),
+                paymentConnector.getLanguage(),
                 paymentConnector.getRefundSummary(),
                 paymentConnector.getSettlementSummary(),
                 paymentConnector.getCardDetails(),
@@ -109,7 +113,7 @@ public class PaymentWithAllLinks {
             URI selfLink,
             URI paymentEventsUri,
             URI paymentCancelUri,
-            URI paymentRefundsUri){
+            URI paymentRefundsUri) {
         switch (paymentType) {
             case DIRECT_DEBIT:
                 return PaymentWithAllLinks.valueOf(paymentConnector, selfLink);

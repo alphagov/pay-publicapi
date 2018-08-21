@@ -10,6 +10,7 @@ import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.utils.DateTimeUtils;
+import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -156,7 +157,8 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
     public void createRefundWithNoRefundAmountAvailable_shouldGetAcceptedResponse() {
         String payload = new GsonBuilder().create().toJson(
                 ImmutableMap.of("amount", AMOUNT));
-        connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, null, null, null, null, null, null, null, null,
+        connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, null, null, null, null, null,
+                null, null, SupportedLanguage.ENGLISH, null,
                 new RefundSummary("available", 9000, 1000), null, CARD_DETAILS);
 
         postRefundRequest(payload);

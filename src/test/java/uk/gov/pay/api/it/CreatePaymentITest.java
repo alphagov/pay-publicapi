@@ -9,6 +9,7 @@ import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
+import uk.gov.pay.commons.model.SupportedLanguage;
 
 import javax.ws.rs.core.HttpHeaders;
 import java.io.InputStream;
@@ -48,7 +49,8 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
         connectorMock.respondOk_whenCreateCharge(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID,
-                CREATED, RETURN_URL, DESCRIPTION, REFERENCE, null, PAYMENT_PROVIDER, CREATED_DATE, REFUND_SUMMARY, null, CARD_DETAILS);
+                CREATED, RETURN_URL, DESCRIPTION, REFERENCE, null, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH, REFUND_SUMMARY,
+                null, CARD_DETAILS);
 
         String responseBody = postPaymentResponse(API_KEY, SUCCESS_PAYLOAD)
                 .statusCode(201)
@@ -101,7 +103,8 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
 
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondOk_whenCreateCharge(minimumAmount, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID,
-                CREATED, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, REFUND_SUMMARY, null, CARD_DETAILS);
+                CREATED, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH,
+                REFUND_SUMMARY, null, CARD_DETAILS);
 
         postPaymentResponse(API_KEY, paymentPayload(minimumAmount, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL))
                 .statusCode(201)
@@ -129,7 +132,8 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
 
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondOk_whenCreateCharge(amount, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID,
-                CREATED, return_url, description, reference, email, PAYMENT_PROVIDER, CREATED_DATE, REFUND_SUMMARY, null, CARD_DETAILS);
+                CREATED, return_url, description, reference, email, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH,
+                REFUND_SUMMARY, null, CARD_DETAILS);
 
         String body = new JsonStringBuilder()
                 .add("amount", amount)

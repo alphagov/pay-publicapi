@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.jayway.restassured.response.ValidatableResponse;
 import org.junit.Test;
 import uk.gov.pay.api.it.fixtures.PaymentNavigationLinksFixture;
+import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,7 +21,8 @@ public class ResourcesFilterRateLimiterITest extends ResourcesFilterITestBase {
     public void createPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
 
         connectorMock.respondOk_whenCreateCharge(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID, CREATED,
-                RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, REFUND_SUMMARY, null, CARD_DETAILS);
+                RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH, REFUND_SUMMARY, null,
+                CARD_DETAILS);
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> postPaymentResponse(API_KEY, PAYLOAD),
@@ -38,7 +40,8 @@ public class ResourcesFilterRateLimiterITest extends ResourcesFilterITestBase {
     public void getPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
 
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CREATED,
-                RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID, REFUND_SUMMARY, null, CARD_DETAILS);
+                RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH, CHARGE_TOKEN_ID, REFUND_SUMMARY,
+                null, CARD_DETAILS);
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> getPaymentResponse(API_KEY, CHARGE_ID),

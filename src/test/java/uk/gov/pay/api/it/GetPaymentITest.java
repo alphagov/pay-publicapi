@@ -10,6 +10,7 @@ import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.SettlementSummary;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
 import uk.gov.pay.api.utils.DateTimeUtils;
+import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,7 +57,8 @@ public class GetPaymentITest extends PaymentResourceITestBase {
     public void getPayment_ReturnsPayment() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CAPTURED, RETURN_URL,
-                DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID, REFUND_SUMMARY, SETTLEMENT_SUMMARY, CARD_DETAILS);
+                DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH, CHARGE_TOKEN_ID, REFUND_SUMMARY, SETTLEMENT_SUMMARY,
+                CARD_DETAILS);
 
         getPaymentResponse(API_KEY, CHARGE_ID)
                 .statusCode(200)
@@ -71,6 +73,7 @@ public class GetPaymentITest extends PaymentResourceITestBase {
                 .body("payment_provider", is(PAYMENT_PROVIDER))
                 .body("card_brand", is(CARD_BRAND_LABEL))
                 .body("created_date", is(CREATED_DATE))
+                .body("language", is("en"))
                 .body("refund_summary.status", is("pending"))
                 .body("refund_summary.amount_submitted", is(50))
                 .body("refund_summary.amount_available", is(100))
@@ -139,7 +142,8 @@ public class GetPaymentITest extends PaymentResourceITestBase {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID,
                 new PaymentState("success", true, null, null),
-                RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID, REFUND_SUMMARY, null, CARD_DETAILS);
+                RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH, CHARGE_TOKEN_ID, REFUND_SUMMARY,
+                null, CARD_DETAILS);
 
         getPaymentResponse(API_KEY, CHARGE_ID)
                 .statusCode(200)
@@ -151,7 +155,8 @@ public class GetPaymentITest extends PaymentResourceITestBase {
     public void getPayment_ShouldNotIncludeSettlementFieldsIfNull() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID,
-                CREATED, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID, REFUND_SUMMARY, new SettlementSummary(null, null), CARD_DETAILS);
+                CREATED, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH, CHARGE_TOKEN_ID, REFUND_SUMMARY,
+                new SettlementSummary(null, null), CARD_DETAILS);
 
         getPaymentResponse(API_KEY, CHARGE_ID)
                 .statusCode(200)

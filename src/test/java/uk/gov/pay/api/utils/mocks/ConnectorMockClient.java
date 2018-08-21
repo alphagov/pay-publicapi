@@ -12,18 +12,32 @@ import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.SettlementSummary;
 import uk.gov.pay.api.model.links.Link;
 import uk.gov.pay.api.utils.JsonStringBuilder;
+import uk.gov.pay.commons.model.SupportedLanguage;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static javax.ws.rs.HttpMethod.GET;
 import static javax.ws.rs.HttpMethod.POST;
-import static javax.ws.rs.core.HttpHeaders.*;
+import static javax.ws.rs.core.HttpHeaders.ACCEPT;
+import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
+import static javax.ws.rs.core.HttpHeaders.LOCATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.eclipse.jetty.http.HttpStatus.*;
+import static org.eclipse.jetty.http.HttpStatus.ACCEPTED_202;
+import static org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
+import static org.eclipse.jetty.http.HttpStatus.CREATED_201;
+import static org.eclipse.jetty.http.HttpStatus.INTERNAL_SERVER_ERROR_500;
+import static org.eclipse.jetty.http.HttpStatus.NOT_FOUND_404;
+import static org.eclipse.jetty.http.HttpStatus.NO_CONTENT_204;
+import static org.eclipse.jetty.http.HttpStatus.OK_200;
+import static org.eclipse.jetty.http.HttpStatus.PRECONDITION_FAILED_412;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 import static org.mockserver.verify.VerificationTimes.once;
@@ -48,8 +62,9 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     }
 
     private String buildChargeResponse(long amount, String chargeId, PaymentState state, String returnUrl, String description,
-                                       String reference, String email, String paymentProvider, String gatewayTransactionId,
-                                       String createdDate, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails, ImmutableMap<?, ?>... links) {
+                                       String reference, String email, String paymentProvider, String gatewayTransactionId, String createdDate,
+                                       SupportedLanguage language, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
+                                       ImmutableMap<?, ?>... links) {
         JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
                 .add("charge_id", chargeId)
                 .add("amount", amount)
@@ -61,6 +76,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .add("payment_provider", paymentProvider)
                 .add("card_brand", CARD_BRAND_LABEL)
                 .add("created_date", createdDate)
+                .add("language", language.toString())
                 .add("links", asList(links))
                 .add("refund_summary", refundSummary)
                 .add("settlement_summary", settlementSummary)
@@ -107,7 +123,9 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     }
 
     public void respondOk_whenCreateCharge(int amount, String gatewayAccountId, String chargeId, String chargeTokenId, PaymentState state, String returnUrl,
-                                           String description, String reference, String email, String paymentProvider, String createdDate, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails) {
+                                           String description, String reference, String email, String paymentProvider, String createdDate,
+                                           SupportedLanguage language, RefundSummary refundSummary, SettlementSummary settlementSummary,
+                                           CardDetails cardDetails) {
 
         whenCreateCharge(amount, gatewayAccountId, returnUrl, description, reference)
                 .respond(response()
@@ -125,6 +143,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                                 paymentProvider,
                                 null,
                                 createdDate,
+                                language,
                                 refundSummary,
                                 settlementSummary,
                                 cardDetails,
@@ -182,9 +201,10 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     public void respondWithChargeFound(long amount, String gatewayAccountId, String chargeId, PaymentState state, String returnUrl,
                                        String description, String reference, String email, String paymentProvider, String createdDate,
-                                       String chargeTokenId, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails) {
+                                       SupportedLanguage language, String chargeTokenId, RefundSummary refundSummary, SettlementSummary settlementSummary,
+                                       CardDetails cardDetails) {
         String chargeResponseBody = buildChargeResponse(amount, chargeId, state, returnUrl,
-                description, reference, email, paymentProvider, gatewayAccountId, createdDate, refundSummary, settlementSummary, cardDetails,
+                description, reference, email, paymentProvider, gatewayAccountId, createdDate, language, refundSummary, settlementSummary, cardDetails,
                 validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
                 validGetLink(chargeLocation(gatewayAccountId, chargeId) + "/refunds", "refunds"),
                 validGetLink(nextUrl(chargeId), "next_url"), validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",

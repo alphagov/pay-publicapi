@@ -8,6 +8,7 @@ import uk.gov.pay.api.it.PaymentResourceITestBase;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.RefundSummary;
+import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -270,7 +271,8 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
         int amount = 1000;
         String externalChargeId = "charge_12345";
 
-        connectorMock.respondWithChargeFound(amount, GATEWAY_ACCOUNT_ID, externalChargeId, null, null, null, null, null, null, null, null,
+        connectorMock.respondWithChargeFound(amount, GATEWAY_ACCOUNT_ID, externalChargeId, null, null, null, null,
+                null, null, null,  SupportedLanguage.ENGLISH, null,
                 new RefundSummary("available", REFUND_AMOUNT_AVAILABLE, 1000), null, CARD_DETAILS);
         connectorMock.respondBadRequest_whenCreateARefund("full", amount, REFUND_AMOUNT_AVAILABLE, GATEWAY_ACCOUNT_ID, externalChargeId);
 
@@ -294,7 +296,8 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
         int amount = 1000;
         String externalChargeId = "charge_12345";
 
-        connectorMock.respondWithChargeFound(amount, GATEWAY_ACCOUNT_ID, externalChargeId, null, null, null, null, null, null, null, null,
+        connectorMock.respondWithChargeFound(amount, GATEWAY_ACCOUNT_ID, externalChargeId, null, null, null, null,
+                null, null, null, SupportedLanguage.ENGLISH, null,
                 new RefundSummary("available", REFUND_AMOUNT_AVAILABLE, 1000), null, CARD_DETAILS);
         connectorMock.respondBadRequest_whenCreateARefund("pending", amount, REFUND_AMOUNT_AVAILABLE, GATEWAY_ACCOUNT_ID, externalChargeId);
 
