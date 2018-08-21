@@ -58,7 +58,7 @@ public class CreatePaymentServiceTest {
 
     @Test
     @PactVerification({"connector"})
-    @Pacts(pacts = {"publicapi-connector-create-payment"}, publish = false)
+    @Pacts(pacts = {"publicapi-connector-create-payment"})
     public void testCreatePayment() {
         Account account = new Account("123456", TokenPaymentType.CARD);
         ValidCreatePaymentRequest requestPayload = new ValidCreatePaymentRequest(CreatePaymentRequest.builder()
@@ -89,7 +89,7 @@ public class CreatePaymentServiceTest {
 
     @Test
     @PactVerification({"connector"})
-    @Pacts(pacts = {"publicapi-connector-create-payment-with-language-welsh"}, publish = false)
+    @Pacts(pacts = {"publicapi-connector-create-payment-with-language-welsh"})
     public void testCreatePaymentWithWelshLanguage() {
         Account account = new Account("123456", TokenPaymentType.CARD);
         ValidCreatePaymentRequest requestPayload = new ValidCreatePaymentRequest(CreatePaymentRequest.builder()
