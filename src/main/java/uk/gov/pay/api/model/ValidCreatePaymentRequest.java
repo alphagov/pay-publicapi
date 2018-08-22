@@ -1,5 +1,6 @@
 package uk.gov.pay.api.model;
 
+import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.util.Objects;
@@ -50,10 +51,12 @@ public class ValidCreatePaymentRequest {
         return Optional.ofNullable(returnUrl);
     }
 
+    @ApiModelProperty(name = "agreementId", access = "agreementId")
     public Optional<String> getAgreementId() {
         return Optional.ofNullable(agreementId);
     }
 
+    @ApiModelProperty(name = "language", access = "language")
     public Optional<SupportedLanguage> getLanguage() {
         return Optional.ofNullable(language);
     }

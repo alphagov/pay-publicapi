@@ -11,7 +11,7 @@ import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@ApiModel(value="PaymentState", description = "A structure representing the current state of the payment in its lifecycle.")
+@ApiModel(value = "PaymentState", description = "A structure representing the current state of the payment in its lifecycle.")
 public class PaymentState {
     @JsonProperty("status")
     private String status;
@@ -27,10 +27,10 @@ public class PaymentState {
 
     public static PaymentState createPaymentState(JsonNode node) {
         return new PaymentState(
-            node.get("status").asText(),
-            node.get("finished").asBoolean(),
-            node.has("message") ? node.get("message").asText() : null,
-            node.has("code") ? node.get("code").asText() : null
+                node.get("status").asText(),
+                node.get("finished").asBoolean(),
+                node.has("message") ? node.get("message").asText() : null,
+                node.has("code") ? node.get("code").asText() : null
         );
     }
 
@@ -48,22 +48,22 @@ public class PaymentState {
         this.code = code;
     }
 
-    @ApiModelProperty(value = "Current progress of the payment in its lifecycle", required=true, example = "created")
+    @ApiModelProperty(value = "Current progress of the payment in its lifecycle", example = "created")
     public String getStatus() {
         return status;
     }
 
-    @ApiModelProperty(value = "Whether the payment has finished", required = true)
+    @ApiModelProperty(value = "Whether the payment has finished")
     public boolean isFinished() {
         return finished;
     }
 
-    @ApiModelProperty(value = "What went wrong with the Payment if it finished with an error - English message", required = true, example = "User cancelled the payment")
+    @ApiModelProperty(value = "What went wrong with the Payment if it finished with an error - English message", example = "User cancelled the payment")
     public String getMessage() {
         return message;
     }
 
-    @ApiModelProperty(value = "What went wrong with the Payment if it finished with an error - error code", required = true, example = "P010")
+    @ApiModelProperty(value = "What went wrong with the Payment if it finished with an error - error code", example = "P010")
     public String getCode() {
         return code;
     }

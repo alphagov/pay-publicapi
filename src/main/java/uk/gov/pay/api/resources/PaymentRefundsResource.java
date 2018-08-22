@@ -24,6 +24,7 @@ import uk.gov.pay.api.model.RefundFromConnector;
 import uk.gov.pay.api.model.RefundResponse;
 import uk.gov.pay.api.model.RefundsFromConnector;
 import uk.gov.pay.api.model.RefundsResponse;
+import uk.gov.pay.api.resources.error.ApiErrorResponse;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -91,6 +92,7 @@ public class PaymentRefundsResource {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
+            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response getRefunds(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                @PathParam(PATH_PAYMENT_KEY) String paymentId) {
@@ -126,6 +128,7 @@ public class PaymentRefundsResource {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
+            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response getRefundById(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                   @PathParam(PATH_PAYMENT_KEY) String paymentId,
@@ -161,6 +164,7 @@ public class PaymentRefundsResource {
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
             @ApiResponse(code = 412, message = "Refund amount available mismatch"),
+            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response submitRefund(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                  @ApiParam(value = "paymentId", required = true) @PathParam(PATH_PAYMENT_KEY) String paymentId,
