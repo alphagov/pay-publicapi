@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "GOV.UK Pay API",
-    "version" : "1.0.0",
+    "version" : "1.0.2",
     "title" : "GOV.UK Pay API"
   },
   "host" : "publicapi.payments.service.gov.uk",

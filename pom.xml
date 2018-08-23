@@ -431,7 +431,7 @@
                             <host>publicapi.payments.service.gov.uk</host>
                             <info>
                                 <title>GOV.UK Pay API</title>
-                                <version>1.0.0</version>
+                                <version>1.0.2</version>
                                 <description>GOV.UK Pay API</description>
                             </info>
                             <swaggerDirectory>${basedir}/swagger</swaggerDirectory>
