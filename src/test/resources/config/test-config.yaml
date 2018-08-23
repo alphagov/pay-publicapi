@@ -33,7 +33,6 @@ rateLimiter:
   noOfReqForPost: 1
   noOfReqPerNode: 1
   noOfReqForPostPerNode: 1
-  auditRate: 4
 
 redis:
   endpoint: localhost:6379

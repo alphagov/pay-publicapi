@@ -52,8 +52,6 @@ public class RateLimiterFilter implements Filter {
         final String authorization = ((HttpServletRequest) request).getHeader("Authorization");
         final String method = ((HttpServletRequest) request).getMethod();
 
-        rateLimiter.auditRateOf(method + "-" + authorization);
-
         try {
             rateLimiter.checkRateOf(method + "-" + authorization, method);
             chain.doFilter(request, response);

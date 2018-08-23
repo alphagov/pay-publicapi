@@ -78,12 +78,4 @@ public class RateLimiterFilterTest {
         verify(mockPrinter).print("{\"code\":\"P0900\",\"description\":\"Too many requests\"}");
         verifyNoMoreInteractions(mockResponse);
     }
-
-    @Test
-    public void shouldLogRequest_ForAuditRate() throws Exception {
-
-        rateLimiterFilter.doFilter(mockPostRequest, mockResponse, mockFilterChain);
-
-        verify(rateLimiter).auditRateOf("POST-" + authorization);
-    }
 }

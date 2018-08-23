@@ -77,7 +77,6 @@ public class PublicApiModule extends AbstractModule {
         return new LocalRateLimiter(
                 configuration.getRateLimiterConfig().getNoOfReqPerNode(),
                 configuration.getRateLimiterConfig().getNoOfReqForPostPerNode(),
-                configuration.getRateLimiterConfig().getAuditRate(),
                 configuration.getRateLimiterConfig().getPerMillis()
         );
     }

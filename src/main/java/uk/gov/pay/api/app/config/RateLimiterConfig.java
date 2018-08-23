@@ -19,9 +19,6 @@ public class RateLimiterConfig extends Configuration {
     @Min(1)
     private int noOfReqForPostPerNode;
 
-    @Min(1)
-    private int auditRate;
-
     @Min(500)
     @Max(60000)
     private int perMillis;
@@ -32,10 +29,6 @@ public class RateLimiterConfig extends Configuration {
 
     public int getPerMillis() {
         return perMillis;
-    }
-
-    public int getAuditRate() {
-        return auditRate;
     }
 
     public int getNoOfReqForPost() {
