@@ -26,10 +26,4 @@ public class RateLimiter {
             localRateLimiter.checkRateOf(key, method);
         }
     }
-
-    public void auditRateOf(String key) {
-        localRateLimiter.auditRateOf(key);
-    }
-
-
 }

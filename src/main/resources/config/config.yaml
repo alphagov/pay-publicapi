@@ -32,7 +32,6 @@ rateLimiter:  # rate = noOfReq per perMillis
   noOfReqPerNode: ${RATE_LIMITER_VALUE_PER_NODE:-25}  # per public api instance, if Redis is unavailable
   noOfReqForPostPerNode: ${RATE_LIMITER_VALUE_PER_NODE_POST:-5}  # per public api instance, if Redis is unavailable
   perMillis: ${RATE_LIMITER_PER_MILLIS:-1000}
-  auditRate: ${RATE_LIMITER_AUDIT_VALUE:-4}
 
 redis:
   # The redis server's address; required.

@@ -16,22 +16,16 @@ public class LocalRateLimiter {
     private final int noOfReqPerNode;
     private final int noOfReqForPostPerNode;
     private final int perMillis;
-    private final int auditRate;
 
     private final Cache<String, RateLimit> cache;
-    private final Cache<String, RateLimit> auditCache;
 
 
-    public LocalRateLimiter(int noOfReqPerNode, int noOfReqForPostPerNode, int auditRate, int perMillis) {
+    public LocalRateLimiter(int noOfReqPerNode, int noOfReqForPostPerNode, int perMillis) {
         this.noOfReqPerNode = noOfReqPerNode;
         this.noOfReqForPostPerNode = noOfReqForPostPerNode;
-        this.auditRate = auditRate;
         this.perMillis = perMillis;
 
         this.cache = CacheBuilder.newBuilder()
-                .expireAfterAccess(perMillis, TimeUnit.MILLISECONDS)
-                .build();
-        this.auditCache = CacheBuilder.newBuilder()
                 .expireAfterAccess(perMillis, TimeUnit.MILLISECONDS)
                 .build();
     }
@@ -45,23 +39,7 @@ public class LocalRateLimiter {
             LOGGER.error("Unexpected error creating a Rate Limiter object in cache", e);
         }
     }
-
-    public void auditRateOf(String key) {
-        try {
-            auditCache.get(key, () -> new RateLimit(auditRate, perMillis)).updateAllowance();
-        } catch (RateLimitException e) {
-            LOGGER.info(String.format(
-                    "Rate limit reached for a service using rate of %d requests per %d ms",
-                    auditRate,
-                    perMillis)
-            );
-        } catch (ExecutionException e) {
-            //ExecutionException is thrown when the valueLoader throws a checked exception.
-            //We just create a new instance so no exceptions will be thrown, this should never happen.
-            LOGGER.error("Unexpected error creating a Rate Limiter object in cache", e);
-        }
-    }
-
+    
     private int getNoOfRequestsForMethod(String method) {
         if (HttpMethod.POST.equals(method)) {
             return noOfReqForPostPerNode;

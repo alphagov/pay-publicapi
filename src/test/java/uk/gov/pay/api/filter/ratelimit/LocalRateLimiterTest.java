@@ -30,7 +30,7 @@ public class LocalRateLimiterTest {
     public void rateLimiterSetTo_2CallsPerSecond_shouldAllow2ConsecutiveCallsWithSameKeys() throws Exception {
 
         String key = "key1";
-        localRateLimiter = new LocalRateLimiter(2, 2, 1, 1000);
+        localRateLimiter = new LocalRateLimiter(2, 2, 1000);
 
         localRateLimiter.checkRateOf(key, POST);
         localRateLimiter.checkRateOf(key, POST);
@@ -40,7 +40,7 @@ public class LocalRateLimiterTest {
     public void rateLimiterSetTo_1CallPer300Millis_shouldAFailWhen2ConsecutiveCallsWithSameKeysAreMade() throws Exception {
 
         String key = "key2";
-        localRateLimiter = new LocalRateLimiter(1, 1, 1, 300);
+        localRateLimiter = new LocalRateLimiter(1, 1, 300);
 
         localRateLimiter.checkRateOf(key, POST);
 
@@ -52,7 +52,7 @@ public class LocalRateLimiterTest {
     public void rateLimiterSetTo_3CallsPerSecond_shouldAllowMakingOnly3CallsWithSameKey() throws Exception {
 
         String key = "key3";
-        localRateLimiter = new LocalRateLimiter(3, 3, 1, 1000);
+        localRateLimiter = new LocalRateLimiter(3, 3, 1000);
 
         ExecutorService executor = Executors.newFixedThreadPool(3);
 
