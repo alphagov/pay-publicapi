@@ -1,6 +1,7 @@
 package uk.gov.pay.api.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.CreatePaymentRequest;
@@ -11,6 +12,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.gov.pay.api.model.CreatePaymentRefundRequest.REFUND_AMOUNT_AVAILABLE;
 import static uk.gov.pay.api.model.CreatePaymentRequest.AGREEMENT_ID_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.AMOUNT_FIELD_NAME;
+import static uk.gov.pay.api.model.CreatePaymentRequest.DELAYED_CAPTURE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.DESCRIPTION_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.LANGUAGE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.REFERENCE_FIELD_NAME;
@@ -37,6 +39,11 @@ class RequestJsonParser {
             String language = parseString(paymentRequest, LANGUAGE_FIELD_NAME, false,
                     aPaymentError(LANGUAGE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, LanguageValidator.ERROR_MESSAGE));
             createPaymentRequestBuilder.language(language);
+        }
+
+        if (paymentRequest.has(DELAYED_CAPTURE_FIELD_NAME)) {
+            Boolean delayedCapture = parseBoolean(paymentRequest, DELAYED_CAPTURE_FIELD_NAME);
+            createPaymentRequestBuilder.delayedCapture(delayedCapture);
         }
 
         if (paymentRequest.has(AGREEMENT_ID_FIELD_NAME)) {
@@ -81,6 +88,17 @@ class RequestJsonParser {
         return fieldValue;
     }
 
+    private static Boolean parseBoolean(JsonNode node, String fieldName) {
+        PaymentError formatError = aPaymentError(fieldName, CREATE_PAYMENT_VALIDATION_ERROR, "Must be true or false");
+
+        JsonNode fieldNode = node.get(fieldName);
+        if (fieldNode instanceof NullNode) {
+            throw new BadRequestException(formatError);
+        }
+
+        return getBooleanValue(fieldNode, formatError);
+    }
+
     private static String getStringValue(JsonNode fieldNode, PaymentError formatError) {
         String fieldValue = null;
         if (notNull(fieldNode)) {
@@ -95,6 +113,15 @@ class RequestJsonParser {
         if (notNull(fieldNode)) {
             check(fieldNode.isInt(), formatError);
             fieldValue = fieldNode.intValue();
+        }
+        return fieldValue;
+    }
+
+    private static Boolean getBooleanValue(JsonNode fieldNode, PaymentError formatError) {
+        Boolean fieldValue = null;
+        if (notNull(fieldNode)) {
+            check(fieldNode.isBoolean(), formatError);
+            fieldValue = fieldNode.booleanValue();
         }
         return fieldValue;
     }

@@ -17,6 +17,7 @@ public class CreatePaymentRequest {
     public static final String DESCRIPTION_FIELD_NAME = "description";
     public static final String AGREEMENT_ID_FIELD_NAME = "agreement_id";
     public static final String LANGUAGE_FIELD_NAME = "language";
+    public static final String DELAYED_CAPTURE_FIELD_NAME = "delayed_capture";
 
     private final int amount;
     private final String returnUrl;
@@ -24,6 +25,7 @@ public class CreatePaymentRequest {
     private final String description;
     private final String agreementId;
     private final String language;
+    private final Boolean delayedCapture;
 
     public static class CreatePaymentRequestBuilder {
         private int amount;
@@ -32,6 +34,7 @@ public class CreatePaymentRequest {
         private String description;
         private String agreementId;
         private String language;
+        private Boolean delayedCapture;
 
         public CreatePaymentRequestBuilder amount(int amount) {
             this.amount = amount;
@@ -63,6 +66,11 @@ public class CreatePaymentRequest {
             return this;
         }
 
+        public CreatePaymentRequestBuilder delayedCapture(Boolean delayedCapture) {
+            this.delayedCapture = delayedCapture;
+            return this;
+        }
+
         public CreatePaymentRequest build() {
             return new CreatePaymentRequest(this);
         }
@@ -79,6 +87,7 @@ public class CreatePaymentRequest {
         this.description = createPaymentRequestBuilder.description;
         this.agreementId = createPaymentRequestBuilder.agreementId;
         this.language = createPaymentRequestBuilder.language;
+        this.delayedCapture = createPaymentRequestBuilder.delayedCapture;
     }
 
     @ApiModelProperty(value = "amount in pence", required = true, allowableValues = "range[1, 10000000]", example = "12000")
@@ -114,6 +123,12 @@ public class CreatePaymentRequest {
         return language;
     }
 
+    @ApiModelProperty(value = "delayed capture flag", required = false, example = "false")
+    @JsonProperty(DELAYED_CAPTURE_FIELD_NAME)
+    public Boolean getDelayedCapture() {
+        return delayedCapture;
+    }
+
     public boolean hasReturnUrl() {
         return StringUtils.isNotBlank(returnUrl);
     }
@@ -124,6 +139,10 @@ public class CreatePaymentRequest {
 
     public boolean hasLanguage() {
         return StringUtils.isNotBlank(language);
+    }
+
+    public boolean hasDelayedCapture() {
+        return delayedCapture != null;
     }
 
     /**
@@ -138,6 +157,7 @@ public class CreatePaymentRequest {
         Optional.ofNullable(returnUrl).ifPresent(value -> joiner.add("return_url: ").add(value));
         Optional.ofNullable(agreementId).ifPresent(value -> joiner.add("agreement_id: ").add(value));
         Optional.ofNullable(language).ifPresent(value -> joiner.add("language: ").add(value));
+        Optional.ofNullable(delayedCapture).ifPresent(value -> joiner.add("delayed_capture: ").add(value.toString()));
         return joiner.toString();
     }
 

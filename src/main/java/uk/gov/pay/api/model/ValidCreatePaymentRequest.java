@@ -20,6 +20,7 @@ public class ValidCreatePaymentRequest {
     private String returnUrl;
     private String agreementId;
     private SupportedLanguage language;
+    private Boolean delayedCapture;
 
     public ValidCreatePaymentRequest(CreatePaymentRequest createPaymentRequest) {
         amount = Objects.requireNonNull(createPaymentRequest.getAmount());
@@ -33,6 +34,8 @@ public class ValidCreatePaymentRequest {
         if (createPaymentRequestLanguage != null) {
             language = SupportedLanguage.fromIso639AlphaTwoCode(createPaymentRequestLanguage);
         }
+
+        delayedCapture = createPaymentRequest.getDelayedCapture();
     }
 
     public int getAmount() {
@@ -61,6 +64,11 @@ public class ValidCreatePaymentRequest {
         return Optional.ofNullable(language);
     }
 
+    @ApiModelProperty(name = "delayedCapture", access = "delayedCapture")
+    public Optional<Boolean> getDelayedCapture() {
+        return Optional.ofNullable(delayedCapture);
+    }
+
     /**
      * This looks JSONesque but is not identical to the received request
      */
@@ -73,6 +81,7 @@ public class ValidCreatePaymentRequest {
         Optional.ofNullable(returnUrl).ifPresent(value -> joiner.add("return_url: ").add(value));
         Optional.ofNullable(agreementId).ifPresent(value -> joiner.add("agreement_id: ").add(value));
         Optional.ofNullable(language).ifPresent(value -> joiner.add("language: ").add(value.toString()));
+        Optional.ofNullable(delayedCapture).ifPresent(value -> joiner.add("delayed_capture: ").add(value.toString()));
         return joiner.toString();
     }
 
