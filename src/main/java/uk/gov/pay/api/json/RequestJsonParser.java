@@ -1,7 +1,6 @@
 package uk.gov.pay.api.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.NullNode;
 import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.CreatePaymentRequest;
@@ -26,7 +25,7 @@ import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 class RequestJsonParser {
 
     static CreatePaymentRequest parsePaymentRequest(JsonNode paymentRequest) {
-        Integer amount = parseInteger(paymentRequest, AMOUNT_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, CREATE_PAYMENT_MISSING_FIELD_ERROR);
+        Integer amount = parseInteger(paymentRequest, AMOUNT_FIELD_NAME, true, CREATE_PAYMENT_VALIDATION_ERROR, CREATE_PAYMENT_MISSING_FIELD_ERROR);
         String reference = parseString(paymentRequest, REFERENCE_FIELD_NAME, true);
         String description = parseString(paymentRequest, DESCRIPTION_FIELD_NAME, true);
 
@@ -42,7 +41,13 @@ class RequestJsonParser {
         }
 
         if (paymentRequest.has(DELAYED_CAPTURE_FIELD_NAME)) {
-            Boolean delayedCapture = parseBoolean(paymentRequest, DELAYED_CAPTURE_FIELD_NAME);
+            Boolean delayedCapture = parseBoolean(
+                    paymentRequest,
+                    DELAYED_CAPTURE_FIELD_NAME,
+                    false,
+                    CREATE_PAYMENT_VALIDATION_ERROR,
+                    CREATE_PAYMENT_MISSING_FIELD_ERROR
+            );
             createPaymentRequestBuilder.delayedCapture(delayedCapture);
         }
 
@@ -60,43 +65,46 @@ class RequestJsonParser {
     }
 
     static CreatePaymentRefundRequest parseRefundRequest(JsonNode rootNode) {
-        Integer amount = parseInteger(rootNode, AMOUNT_FIELD_NAME, CREATE_PAYMENT_REFUND_VALIDATION_ERROR, CREATE_PAYMENT_REFUND_MISSING_FIELD_ERROR);
+        Integer amount = parseInteger(rootNode, AMOUNT_FIELD_NAME, true, CREATE_PAYMENT_REFUND_VALIDATION_ERROR, CREATE_PAYMENT_REFUND_MISSING_FIELD_ERROR);
         Integer refundAmountAvailable = rootNode.get(REFUND_AMOUNT_AVAILABLE) == null ? null : rootNode.get(REFUND_AMOUNT_AVAILABLE).asInt();
         return new CreatePaymentRefundRequest(amount, refundAmountAvailable);
     }
 
-    private static String parseString(JsonNode node, String fieldName, boolean fieldIsMandatory) {
-        return parseString(node, fieldName, fieldIsMandatory, aPaymentError(fieldName, CREATE_PAYMENT_VALIDATION_ERROR,
+    private static String parseString(JsonNode node, String fieldName, boolean isFieldMandatory) {
+        return parseString(node, fieldName, isFieldMandatory, aPaymentError(fieldName, CREATE_PAYMENT_VALIDATION_ERROR,
                 "Must be a valid string format"));
     }
 
-    private static String parseString(JsonNode node, String fieldName, boolean fieldIsMandatory, PaymentError formatError) {
+    private static String parseString(JsonNode node, String fieldName, boolean isFieldMandatory, PaymentError formatError) {
         JsonNode fieldNode = node.get(fieldName);
         String fieldValue = getStringValue(fieldNode, formatError);
-        if (fieldIsMandatory) {
-            check(isNotBlank(fieldValue), aPaymentError(fieldName, CREATE_PAYMENT_MISSING_FIELD_ERROR));
-        } else {
-            check(isNotBlank(fieldValue), formatError);
-        }
+        check(isNotBlank(fieldValue), isFieldMandatory ?
+                aPaymentError(fieldName, CREATE_PAYMENT_MISSING_FIELD_ERROR) :
+                formatError
+        );
         return fieldValue;
     }
 
-    private static Integer parseInteger(JsonNode node, String fieldName, PaymentError.Code validationErrorCode, PaymentError.Code missingErrorCode) {
+    private static Integer parseInteger(JsonNode node, String fieldName, boolean isFieldMandatory, PaymentError.Code validationErrorCode, PaymentError.Code missingErrorCode) {
         JsonNode fieldNode = node.get(fieldName);
-        Integer fieldValue = getIntegerValue(fieldNode, aPaymentError(fieldName, validationErrorCode, "Must be a valid numeric format"));
-        check(fieldValue != null, aPaymentError(fieldName, missingErrorCode));
+        PaymentError validationPaymentError = aPaymentError(fieldName, validationErrorCode, "Must be a valid numeric format");
+        Integer fieldValue = getIntegerValue(fieldNode, validationPaymentError);
+        check(fieldValue != null, isFieldMandatory ?
+                aPaymentError(fieldName, missingErrorCode) :
+                validationPaymentError
+        );
         return fieldValue;
     }
 
-    private static Boolean parseBoolean(JsonNode node, String fieldName) {
-        PaymentError formatError = aPaymentError(fieldName, CREATE_PAYMENT_VALIDATION_ERROR, "Must be true or false");
-
+    private static Boolean parseBoolean(JsonNode node, String fieldName, boolean isFieldMandatory, PaymentError.Code validationErrorCode, PaymentError.Code missingErrorCode) {
         JsonNode fieldNode = node.get(fieldName);
-        if (fieldNode instanceof NullNode) {
-            throw new BadRequestException(formatError);
-        }
-
-        return getBooleanValue(fieldNode, formatError);
+        PaymentError validationPaymentError = aPaymentError(fieldName, validationErrorCode, "Must be true or false");
+        Boolean fieldValue = getBooleanValue(fieldNode, validationPaymentError);
+        check(fieldValue != null, isFieldMandatory ?
+                aPaymentError(fieldName, missingErrorCode) :
+                validationPaymentError
+        );
+        return fieldValue;
     }
 
     private static String getStringValue(JsonNode fieldNode, PaymentError formatError) {
