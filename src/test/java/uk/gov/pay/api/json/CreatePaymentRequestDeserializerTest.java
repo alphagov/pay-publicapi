@@ -554,7 +554,7 @@ public class CreatePaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_whenDelayedCaptureIsAString() throws Exception {
+    public void deserialize_shouldThrowValidationException_whenDelayedCaptureIsNotABoolean() throws Exception {
         // language=JSON
         String json = "{\n" +
                 "  \"amount\": 1337,\n" +
