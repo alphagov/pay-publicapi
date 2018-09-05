@@ -20,10 +20,10 @@ public class PaymentForSearchResult extends CardPayment {
 
     public PaymentForSearchResult(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                                   String reference, String email, String paymentProvider, String createdDate, SupportedLanguage language,
-                                  RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
+                                  boolean delayedCapture, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
                                   URI selfLink, URI paymentEventsLink, URI paymentCancelLink, URI paymentRefundsLink) {
         super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider,
-                createdDate, refundSummary, settlementSummary, cardDetails, language);
+                createdDate, refundSummary, settlementSummary, cardDetails, language, delayedCapture);
         this.links.addSelf(selfLink.toString());
         this.links.addEvents(paymentEventsLink.toString());
         this.links.addRefunds(paymentRefundsLink.toString());
@@ -51,6 +51,7 @@ public class PaymentForSearchResult extends CardPayment {
                 paymentResult.getPaymentProvider(),
                 paymentResult.getCreatedDate(),
                 paymentResult.getLanguage(),
+                paymentResult.getDelayedCapture(),
                 paymentResult.getRefundSummary(),
                 paymentResult.getSettlementSummary(),
                 paymentResult.getCardDetails(),

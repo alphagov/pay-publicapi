@@ -24,19 +24,24 @@ public class CardPayment extends Payment {
     private final CardDetails cardDetails;
 
     @JsonSerialize(using = ToStringSerializer.class)
-    @ApiModelProperty(name = "language", access = "language") // named to exclude from swagger.json for now
+    @ApiModelProperty(name = "language", access = "language")
     private final SupportedLanguage language;
+
+    @JsonProperty("delayed_capture")
+    @ApiModelProperty(name = "delayed_capture", access = "delayed_capture")
+    private final boolean delayedCapture;
 
     public CardPayment(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                        String reference, String email, String paymentProvider, String createdDate,
                        RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
-                       SupportedLanguage language) {
+                       SupportedLanguage language, boolean delayedCapture) {
         super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate);
         this.refundSummary = refundSummary;
         this.settlementSummary = settlementSummary;
         this.cardDetails = cardDetails;
         this.paymentType = CARD.getFriendlyName();
         this.language = language;
+        this.delayedCapture = delayedCapture;
     }
 
     /**
@@ -72,6 +77,11 @@ public class CardPayment extends Payment {
         return language;
     }
 
+    @ApiModelProperty(value = "delayed capture flag", example = "false")
+    public boolean getDelayedCapture() {
+        return delayedCapture;
+    }
+
     @Override
     public String toString() {
         // Some services put PII in the description, so don’t include it in the stringification
@@ -84,6 +94,7 @@ public class CardPayment extends Payment {
                 ", returnUrl='" + returnUrl + '\'' +
                 ", reference='" + reference + '\'' +
                 ", language='" + language.toString() + '\'' +
+                ", delayedCapture=" + delayedCapture +
                 ", createdDate='" + createdDate + '\'' +
                 '}';
     }
