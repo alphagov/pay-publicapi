@@ -60,6 +60,8 @@ public class CreatePaymentRequestDeserializerTest {
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
         assertThat(paymentRequest.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentRequest.getLanguage(), is(Optional.empty()));
+        assertThat(paymentRequest.getDelayedCapture(), is(Optional.empty()));
     }
 
     @Test
