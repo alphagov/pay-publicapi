@@ -141,10 +141,6 @@ public class CreatePaymentRequest {
         return StringUtils.isNotBlank(language);
     }
 
-    public boolean hasDelayedCapture() {
-        return delayedCapture != null;
-    }
-
     /**
      * This looks JSONesque but is not identical to the received request
      */
