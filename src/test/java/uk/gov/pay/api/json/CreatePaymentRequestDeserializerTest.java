@@ -584,38 +584,6 @@ public class CreatePaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_whenDelayedCaptureIsEmptyString() throws Exception {
-        // language=JSON
-        String json = "{\n" +
-                "  \"amount\": 1337,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "  \"delayed_capture\": \"\"\n" +
-                "}";
-
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: delayed_capture. Must be true or false"));
-
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
-    }
-
-    @Test
-    public void deserialize_shouldThrowValidationException_whenDelayedCaptureIsNonBoolean() throws Exception {
-        // language=JSON
-        String json = "{\n" +
-                "  \"amount\": 1337,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "  \"delayed_capture\": \"invalid-value-here\"\n" +
-                "}";
-
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: delayed_capture. Must be true or false"));
-
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
-    }
-
-    @Test
     public void deserialize_shouldThrowValidationException_whenDelayedCaptureIsNumeric() throws Exception {
         // language=JSON
         String json = "{\n" +
