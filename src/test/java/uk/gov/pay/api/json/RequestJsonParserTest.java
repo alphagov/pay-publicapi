@@ -52,7 +52,7 @@ public class RequestJsonParserTest {
                 "  \"description\": \"Some description\",\n" +
                 "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
                 "  \"language\": \"en\",\n" +
-                "  \"delayed_capture\": false\n" +
+                "  \"delayed_capture\": true\n" +
                 "}";
 
         JsonNode jsonNode = objectMapper.readTree(payload);
@@ -65,7 +65,7 @@ public class RequestJsonParserTest {
         assertThat(createPaymentRequest.getDescription(), is("Some description"));
         assertThat(createPaymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(createPaymentRequest.getLanguage(), is("en"));
-        assertThat(createPaymentRequest.getDelayedCapture(), is(false));
+        assertThat(createPaymentRequest.getDelayedCapture(), is(true));
     }
 
     @Test
