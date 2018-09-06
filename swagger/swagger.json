@@ -508,6 +508,12 @@
             "readOnly" : true,
             "$ref" : "#/definitions/CardDetails"
           },
+          "delayed_capture" : {
+            "type" : "boolean",
+            "example" : false,
+            "description" : "delayed capture flag",
+            "readOnly" : true
+          },
           "card_brand" : {
             "type" : "string",
             "example" : "Visa",
@@ -897,6 +903,9 @@
         },
         "returnUrl" : {
           "type" : "string"
+        },
+        "delayedCapture" : {
+          "type" : "boolean"
         }
       }
     }
