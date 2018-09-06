@@ -22,8 +22,8 @@ import static org.hamcrest.core.Is.is;
 public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourceITestBase {
 
     private static final int REFUND_AMOUNT_AVAILABLE = 9000;
-    private static final Address BILLING_ADDRESS = new Address("line1","line2","NR2 5 6EG","city","UK");
-    private static final CardDetails CARD_DETAILS = new CardDetails("1234","Mr. Payment","12/19", BILLING_ADDRESS,"Visa");
+    private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
+    private static final CardDetails CARD_DETAILS = new CardDetails("1234", "Mr. Payment", "12/19", BILLING_ADDRESS, "Visa");
 
     @Before
     public void setUpBearerToken() {
@@ -32,9 +32,9 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
 
     @Test
     public void createPaymentRefund_responseWith422_whenAmountIsNegative() throws IOException {
-
-        String payload = "{" +
-                "  \"amount\" : -123" +
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": -123\n" +
                 "}";
 
         InputStream body = postPaymentRefundAndThen(API_KEY, "chargeId", payload)
@@ -52,9 +52,9 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
 
     @Test
     public void createPaymentRefund_responseWith422_whenAmountIsBiggerThanTheMaximumAllowed() throws IOException {
-
-        String payload = "{" +
-                "  \"amount\" : 10000001" +
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 10000001\n" +
                 "}";
 
         InputStream body = postPaymentRefundAndThen(API_KEY, "chargeId", payload)
@@ -72,9 +72,9 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
 
     @Test
     public void createPaymentRefund_responseWith400_whenAmountFieldHasNullValue() throws IOException {
-
-        String payload = "{" +
-                "  \"amount\" : null" +
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": null\n" +
                 "}";
 
         InputStream body = postPaymentRefundAndThen(API_KEY, "chargeId", payload)
@@ -93,9 +93,9 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
 
     @Test
     public void createPaymentRefund_responseWith400_whenAmountFieldIsNotNumeric() throws IOException {
-
-        String payload = "{" +
-                "  \"amount\" : \"hola world!\"" +
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": \"hola world!\"\n" +
                 "}";
 
         InputStream body = postPaymentRefundAndThen(API_KEY, "chargeId", payload)
@@ -113,9 +113,11 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
 
     @Test
     public void createPaymentRefund_responseWith400_whenAmountFieldIsNotAValidJsonField() throws IOException {
-
-        String payload = "{" +
-                "  \"amount\" : { \"whatever\": 1 }" +
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": {\n" +
+                "    \"whatever\": 1\n" +
+                "  }\n" +
                 "}";
 
         InputStream body = postPaymentRefundAndThen(API_KEY, "chargeId", payload)
@@ -133,9 +135,9 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
 
     @Test
     public void createPaymentRefund_responseWith400_whenAmountFieldIsBlank() throws IOException {
-
-        String payload = "{" +
-                "  \"amount\" : \"    \"" +
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": \"    \"\n" +
                 "}";
 
         InputStream body = postPaymentRefundAndThen(API_KEY, "chargeId", payload)
@@ -153,7 +155,7 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
 
     @Test
     public void createPaymentRefund_responseWith400_whenAmountFieldIsMissing() throws IOException {
-
+        // language=JSON
         String payload = "{}";
 
         InputStream body = postPaymentRefundAndThen(API_KEY, "chargeId", payload)
@@ -171,9 +173,9 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
 
     @Test
     public void createPaymentRefund_responseWith400_whenAmountIsHexadecimal() throws IOException {
-
-        String payload = "{" +
-                "  \"amount\" : 0x1000" +
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 0x1000\n" +
                 "}";
 
         InputStream body = postPaymentRefundAndThen(API_KEY, "chargeId", payload)
@@ -190,9 +192,9 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
 
     @Test
     public void createPaymentRefund_responseWith400_whenAmountIsBinary() throws IOException {
-
-        String payload = "{" +
-                "  \"amount\" : 0B101" +
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 0B101\n" +
                 "}";
 
         InputStream body = postPaymentRefundAndThen(API_KEY, "chargeId", payload)
@@ -209,9 +211,9 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
 
     @Test
     public void createPaymentRefund_responseWith400_whenAmountIsOctal() throws IOException {
-
-        String payload = "{" +
-                "  \"amount\" : 017" +
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 017\n" +
                 "}";
 
         InputStream body = postPaymentRefundAndThen(API_KEY, "chargeId", payload)
@@ -228,9 +230,9 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
 
     @Test
     public void createPaymentRefund_responseWith400_whenAmountIsNullByteEncoded() throws IOException {
-
-        String payload = "{" +
-                "  \"amount\" : %00" +
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": %00\n" +
                 "}";
 
         InputStream body = postPaymentRefundAndThen(API_KEY, "chargeId", payload)
@@ -247,9 +249,9 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
 
     @Test
     public void createPaymentRefund_responseWith400_whenAmountIsFloat() throws IOException {
-
-        String payload = "{" +
-                "  \"amount\" : 27.55" +
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 27.55\n" +
                 "}";
 
         InputStream body = postPaymentRefundAndThen(API_KEY, "chargeId", payload)
@@ -267,12 +269,11 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
 
     @Test
     public void createPaymentRefund_responseWith400_whenConnectorResponseIsErrorDueToAmountRequestedIsNotAvailableForRefund() throws IOException {
-
         int amount = 1000;
         String externalChargeId = "charge_12345";
 
         connectorMock.respondWithChargeFound(amount, GATEWAY_ACCOUNT_ID, externalChargeId, null, null, null, null,
-                null, null, null,  SupportedLanguage.ENGLISH, null,
+                null, null, null, SupportedLanguage.ENGLISH, false, null,
                 new RefundSummary("available", REFUND_AMOUNT_AVAILABLE, 1000), null, CARD_DETAILS);
         connectorMock.respondBadRequest_whenCreateARefund("full", amount, REFUND_AMOUNT_AVAILABLE, GATEWAY_ACCOUNT_ID, externalChargeId);
 
@@ -292,12 +293,11 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
 
     @Test
     public void createPaymentRefund_responseWith400_whenConnectorResponseIsErrorDueToChargeStatusMakesPaymentNonRefundable() throws IOException {
-
         int amount = 1000;
         String externalChargeId = "charge_12345";
 
         connectorMock.respondWithChargeFound(amount, GATEWAY_ACCOUNT_ID, externalChargeId, null, null, null, null,
-                null, null, null, SupportedLanguage.ENGLISH, null,
+                null, null, null, SupportedLanguage.ENGLISH, false, null,
                 new RefundSummary("available", REFUND_AMOUNT_AVAILABLE, 1000), null, CARD_DETAILS);
         connectorMock.respondBadRequest_whenCreateARefund("pending", amount, REFUND_AMOUNT_AVAILABLE, GATEWAY_ACCOUNT_ID, externalChargeId);
 

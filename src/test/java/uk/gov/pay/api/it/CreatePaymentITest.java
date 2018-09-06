@@ -45,11 +45,10 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
 
     @Test
     public void createCardPayment() {
-
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
         connectorMock.respondOk_whenCreateCharge(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID,
-                CREATED, RETURN_URL, DESCRIPTION, REFERENCE, null, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH, REFUND_SUMMARY,
+                CREATED, RETURN_URL, DESCRIPTION, REFERENCE, null, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH, true, REFUND_SUMMARY,
                 null, CARD_DETAILS);
 
         String responseBody = postPaymentResponse(API_KEY, SUCCESS_PAYLOAD)
@@ -66,6 +65,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 .body("payment_provider", is(PAYMENT_PROVIDER))
                 .body("card_brand", is(CARD_BRAND_LABEL))
                 .body("created_date", is(CREATED_DATE))
+                .body("delayed_capture", is(true))
                 .body("refund_summary.status", is("pending"))
                 .body("refund_summary.amount_submitted", is(50))
                 .body("refund_summary.amount_available", is(100))
@@ -98,13 +98,12 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
 
     @Test
     public void createPayment_withMinimumAmount() {
-
         int minimumAmount = 1;
 
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondOk_whenCreateCharge(minimumAmount, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID,
                 CREATED, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH,
-                REFUND_SUMMARY, null, CARD_DETAILS);
+                false, REFUND_SUMMARY, null, CARD_DETAILS);
 
         postPaymentResponse(API_KEY, paymentPayload(minimumAmount, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL))
                 .statusCode(201)
@@ -123,7 +122,6 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
 
     @Test
     public void createPayment_withAllFieldsUpToMaxLengthBoundaries_shouldBeAccepted() {
-
         int amount = 10000000;
         String reference = randomAlphanumeric(255);
         String description = randomAlphanumeric(255);
@@ -133,7 +131,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondOk_whenCreateCharge(amount, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID,
                 CREATED, return_url, description, reference, email, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH,
-                REFUND_SUMMARY, null, CARD_DETAILS);
+                false, REFUND_SUMMARY, null, CARD_DETAILS);
 
         String body = new JsonStringBuilder()
                 .add("amount", amount)
@@ -160,7 +158,6 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
 
     @Test
     public void createPayment_responseWith500_whenConnectorResponseIsAnUnrecognisedError() throws Exception {
-
         String gatewayAccountId = "1234567";
         String errorMessage = "something went wrong";
 
@@ -183,7 +180,6 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
 
     @Test
     public void createPayment_responseWith500_whenTokenForGatewayAccountIsValidButConnectorResponseIsNotFound() {
-
         String notFoundGatewayAccountId = "9876545";
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, notFoundGatewayAccountId);
 

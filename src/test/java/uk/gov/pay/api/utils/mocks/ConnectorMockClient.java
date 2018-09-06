@@ -63,7 +63,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     private String buildChargeResponse(long amount, String chargeId, PaymentState state, String returnUrl, String description,
                                        String reference, String email, String paymentProvider, String gatewayTransactionId, String createdDate,
-                                       SupportedLanguage language, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
+                                       SupportedLanguage language, boolean delayedCapture, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
                                        ImmutableMap<?, ?>... links) {
         JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
                 .add("charge_id", chargeId)
@@ -77,6 +77,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .add("card_brand", CARD_BRAND_LABEL)
                 .add("created_date", createdDate)
                 .add("language", language.toString())
+                .add("delayed_capture", delayedCapture)
                 .add("links", asList(links))
                 .add("refund_summary", refundSummary)
                 .add("settlement_summary", settlementSummary)
@@ -124,7 +125,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     public void respondOk_whenCreateCharge(int amount, String gatewayAccountId, String chargeId, String chargeTokenId, PaymentState state, String returnUrl,
                                            String description, String reference, String email, String paymentProvider, String createdDate,
-                                           SupportedLanguage language, RefundSummary refundSummary, SettlementSummary settlementSummary,
+                                           SupportedLanguage language, boolean delayedCapture, RefundSummary refundSummary, SettlementSummary settlementSummary,
                                            CardDetails cardDetails) {
 
         whenCreateCharge(amount, gatewayAccountId, returnUrl, description, reference)
@@ -144,6 +145,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                                 null,
                                 createdDate,
                                 language,
+                                delayedCapture,
                                 refundSummary,
                                 settlementSummary,
                                 cardDetails,
@@ -201,10 +203,10 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     public void respondWithChargeFound(long amount, String gatewayAccountId, String chargeId, PaymentState state, String returnUrl,
                                        String description, String reference, String email, String paymentProvider, String createdDate,
-                                       SupportedLanguage language, String chargeTokenId, RefundSummary refundSummary, SettlementSummary settlementSummary,
+                                       SupportedLanguage language, boolean delayedCapture, String chargeTokenId, RefundSummary refundSummary, SettlementSummary settlementSummary,
                                        CardDetails cardDetails) {
         String chargeResponseBody = buildChargeResponse(amount, chargeId, state, returnUrl,
-                description, reference, email, paymentProvider, gatewayAccountId, createdDate, language, refundSummary, settlementSummary, cardDetails,
+                description, reference, email, paymentProvider, gatewayAccountId, createdDate, language, delayedCapture, refundSummary, settlementSummary, cardDetails,
                 validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
                 validGetLink(chargeLocation(gatewayAccountId, chargeId) + "/refunds", "refunds"),
                 validGetLink(nextUrl(chargeId), "next_url"), validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",

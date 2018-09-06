@@ -73,6 +73,7 @@ public class CreatePaymentService {
         requestPayload.getLanguage().ifPresent(language -> request.add("language", language.toString()));
         requestPayload.getReturnUrl().ifPresent(returnUrl -> request.add("return_url", returnUrl));
         requestPayload.getAgreementId().ifPresent(agreementId -> request.add("agreement_id", agreementId));
+        requestPayload.getDelayedCapture().ifPresent(delayedCapture -> request.add("delayed_capture", delayedCapture));
         return json(request.build());
     }
 }

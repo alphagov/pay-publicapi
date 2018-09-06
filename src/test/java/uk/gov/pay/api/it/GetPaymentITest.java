@@ -57,7 +57,7 @@ public class GetPaymentITest extends PaymentResourceITestBase {
     public void getPayment_ReturnsPayment() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CAPTURED, RETURN_URL,
-                DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH, CHARGE_TOKEN_ID, REFUND_SUMMARY, SETTLEMENT_SUMMARY,
+                DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH, true, CHARGE_TOKEN_ID, REFUND_SUMMARY, SETTLEMENT_SUMMARY,
                 CARD_DETAILS);
 
         getPaymentResponse(API_KEY, CHARGE_ID)
@@ -74,6 +74,7 @@ public class GetPaymentITest extends PaymentResourceITestBase {
                 .body("card_brand", is(CARD_BRAND_LABEL))
                 .body("created_date", is(CREATED_DATE))
                 .body("language", is("en"))
+                .body("delayed_capture", is(true))
                 .body("refund_summary.status", is("pending"))
                 .body("refund_summary.amount_submitted", is(50))
                 .body("refund_summary.amount_available", is(100))
@@ -142,7 +143,7 @@ public class GetPaymentITest extends PaymentResourceITestBase {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID,
                 new PaymentState("success", true, null, null),
-                RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH, CHARGE_TOKEN_ID, REFUND_SUMMARY,
+                RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH, false, CHARGE_TOKEN_ID, REFUND_SUMMARY,
                 null, CARD_DETAILS);
 
         getPaymentResponse(API_KEY, CHARGE_ID)
@@ -155,7 +156,7 @@ public class GetPaymentITest extends PaymentResourceITestBase {
     public void getPayment_ShouldNotIncludeSettlementFieldsIfNull() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID,
-                CREATED, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH, CHARGE_TOKEN_ID, REFUND_SUMMARY,
+                CREATED, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH, false, CHARGE_TOKEN_ID, REFUND_SUMMARY,
                 new SettlementSummary(null, null), CARD_DETAILS);
 
         getPaymentResponse(API_KEY, CHARGE_ID)
@@ -176,7 +177,6 @@ public class GetPaymentITest extends PaymentResourceITestBase {
 
     @Test
     public void getPayment_returns404_whenConnectorRespondsWith404() throws IOException {
-
         String paymentId = "ds2af2afd3df112";
         String errorMessage = "backend-error-message";
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
@@ -195,7 +195,6 @@ public class GetPaymentITest extends PaymentResourceITestBase {
 
     @Test
     public void getPayment_returns500_whenConnectorRespondsWithResponseOtherThan200Or404() throws IOException {
-
         String paymentId = "ds2af2afd3df112";
         String errorMessage = "backend-error-message";
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
@@ -239,7 +238,6 @@ public class GetPaymentITest extends PaymentResourceITestBase {
 
     @Test
     public void getPaymentEvents_returns404_whenConnectorRespondsWith404() throws IOException {
-
         String paymentId = "ds2af2afd3df112";
         String errorMessage = "backend-error-message";
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
@@ -258,7 +256,6 @@ public class GetPaymentITest extends PaymentResourceITestBase {
 
     @Test
     public void getPaymentEvents_returns500_whenConnectorRespondsWithResponseOtherThan200Or404() throws IOException {
-
         String paymentId = "ds2af2afd3df112";
         String errorMessage = "backend-error-message";
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
