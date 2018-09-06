@@ -60,8 +60,11 @@ public class CreatePaymentRequestDeserializerTest {
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
         assertThat(paymentRequest.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentRequest.getLanguage(), is(Optional.empty()));
+        assertThat(paymentRequest.getDelayedCapture(), is(Optional.empty()));
     }
 
+    @Test
     public void deserialize_shouldDeserializeARequestWithEnglishLanguageSuccessfully() throws Exception {
         // language=JSON
         String validJson = "{\n" +
@@ -77,10 +80,11 @@ public class CreatePaymentRequestDeserializerTest {
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(paymentRequest.getLanguage(), is(SupportedLanguage.ENGLISH));
+        assertThat(paymentRequest.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentRequest.getLanguage().get(), is(SupportedLanguage.ENGLISH));
     }
 
+    @Test
     public void deserialize_shouldDeserializeARequestWithWelshLanguageSuccessfully() throws Exception {
         // language=JSON
         String validJson = "{\n" +
@@ -96,12 +100,52 @@ public class CreatePaymentRequestDeserializerTest {
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(paymentRequest.getLanguage(), is(SupportedLanguage.WELSH));
+        assertThat(paymentRequest.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentRequest.getLanguage().get(), is(SupportedLanguage.WELSH));
     }
 
     @Test
-    public void deserialize_shouldDeserializeARequestWithAnAgreementId() throws Exception {
+    public void deserialize_shouldDeserializeARequestWithDelayedCaptureEqualsTrueSuccessfully() throws Exception {
+        // language=JSON
+        String validJson = "{\n" +
+                "  \"amount\": 27432,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"delayed_capture\": true\n" +
+                "}";
+
+        ValidCreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+
+        assertThat(paymentRequest.getAmount(), is(27432));
+        assertThat(paymentRequest.getReference(), is("Some reference"));
+        assertThat(paymentRequest.getDescription(), is("Some description"));
+        assertThat(paymentRequest.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentRequest.getDelayedCapture().get(), is(Boolean.TRUE));
+    }
+
+    @Test
+    public void deserialize_shouldDeserializeARequestWithDelayedCaptureEqualsFalseSuccessfully() throws Exception {
+        // language=JSON
+        String validJson = "{\n" +
+                "  \"amount\": 27432,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"delayed_capture\": false\n" +
+                "}";
+
+        ValidCreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+
+        assertThat(paymentRequest.getAmount(), is(27432));
+        assertThat(paymentRequest.getReference(), is("Some reference"));
+        assertThat(paymentRequest.getDescription(), is("Some description"));
+        assertThat(paymentRequest.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentRequest.getDelayedCapture().get(), is(Boolean.FALSE));
+    }
+
+    @Test
+    public void deserialize_shouldDeserializeARequestWithAnAgreementIdSuccessfully() throws Exception {
         // language=JSON
         String validJson = "{\n" +
                 "  \"agreement_id\": \"abc123\",\n" +
@@ -209,7 +253,7 @@ public class CreatePaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_whenReturnUrlIsNotAnStringValue() throws Exception {
+    public void deserialize_shouldThrowValidationException_whenReturnUrlIsNotAStringValue() throws Exception {
         // language=JSON
         String json = "{\n" +
                 "  \"amount\": 1000000,\n" +
@@ -312,7 +356,7 @@ public class CreatePaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_whenReferenceIsNotAnString() throws Exception {
+    public void deserialize_shouldThrowValidationException_whenReferenceIsNotAString() throws Exception {
         // language=JSON
         String json = "{\n" +
                 "  \"amount\": 666,\n" +
@@ -371,7 +415,7 @@ public class CreatePaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_whenDescriptionIsNotAnString() throws Exception {
+    public void deserialize_shouldThrowValidationException_whenDescriptionIsNotAString() throws Exception {
         // language=JSON
         String json = "{\n" +
                 "  \"amount\": 666,\n" +
@@ -462,7 +506,7 @@ public class CreatePaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_whenLanguageIsNotAnString() throws Exception {
+    public void deserialize_shouldThrowValidationException_whenLanguageIsNotAString() throws Exception {
         // language=JSON
         String json = "{\n" +
                 "  \"amount\": 1337,\n" +
@@ -505,6 +549,54 @@ public class CreatePaymentRequestDeserializerTest {
                 "}";
 
         expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: language. Must be \"en\" or \"cy\""));
+
+        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+    }
+
+    @Test
+    public void deserialize_shouldThrowValidationException_whenDelayedCaptureIsNotABoolean() throws Exception {
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 1337,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"delayed_capture\": \"true\"\n" +
+                "}";
+
+        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: delayed_capture. Must be true or false"));
+
+        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+    }
+
+    @Test
+    public void deserialize_shouldThrowValidationException_whenDelayedCaptureIsNullValue() throws Exception {
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 1337,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"delayed_capture\": null\n" +
+                "}";
+
+        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: delayed_capture. Must be true or false"));
+
+        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+    }
+
+    @Test
+    public void deserialize_shouldThrowValidationException_whenDelayedCaptureIsNumeric() throws Exception {
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 1337,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"delayed_capture\": 0\n" +
+                "}";
+
+        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: delayed_capture. Must be true or false"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }
