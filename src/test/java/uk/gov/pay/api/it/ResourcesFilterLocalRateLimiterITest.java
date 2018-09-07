@@ -94,8 +94,8 @@ public class ResourcesFilterLocalRateLimiterITest {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         connectorMock.respondOk_whenCreateCharge(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID, CREATED,
-                RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH, REFUND_SUMMARY,
-                null, CARD_DETAILS);
+                RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH,
+                false, REFUND_SUMMARY, null, CARD_DETAILS);
     }
 
     @Test

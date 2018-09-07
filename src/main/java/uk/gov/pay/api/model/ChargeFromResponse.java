@@ -48,6 +48,9 @@ public class ChargeFromResponse {
     @JsonDeserialize(using = CustomSupportedLanguageDeserializer.class)
     private SupportedLanguage language;
 
+    @JsonProperty(value = "delayed_capture")
+    private boolean delayedCapture;
+
     @JsonProperty(value = "created_date")
     private String createdDate;
 
@@ -81,6 +84,10 @@ public class ChargeFromResponse {
 
     public SupportedLanguage getLanguage() {
         return language;
+    }
+
+    public boolean getDelayedCapture() {
+        return delayedCapture;
     }
 
     public String getPaymentProvider() {

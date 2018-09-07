@@ -53,6 +53,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
     private static final String SEARCH_PATH = "/v1/payments";
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
     private static final CardDetails CARD_DETAILS = new CardDetails("1234", "Mr. Payment", "12/19", BILLING_ADDRESS, TEST_CARD_BRAND_LABEL);
+
     @Before
     public void mapBearerTokenToAccountId() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
@@ -69,6 +70,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                         .withMatchingReference(TEST_REFERENCE)
                         .withMatchingCardBrand(TEST_CARD_BRAND_LABEL)
                         .withMatchingCardDetails(CARD_DETAILS)
+                        .withDelayedCapture(true)
                         .withNumberOfResults(1)
                         .getResults())
                 .build();
@@ -88,6 +90,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .body("results[0].payment_provider", is(DEFAULT_PAYMENT_PROVIDER))
                 .body("results[0].payment_id", is("0"))
                 .body("results[0].language", is("en"))
+                .body("results[0].delayed_capture", is(true))
                 .body("results[0]._links.self.method", is("GET"))
                 .body("results[0]._links.self.href", is(paymentLocationFor("0")))
                 .body("results[0]._links.events.href", is(paymentEventsLocationFor("0")))
@@ -149,7 +152,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_filterByFullReference() throws Exception {
+    public void searchPayments_filterByFullReference() {
         String payments = aPaginatedPaymentSearchResult()
                 .withCount(10)
                 .withPage(2)
@@ -174,7 +177,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
 
     @Test
-    public void searchPayments_filterByState() throws Exception {
+    public void searchPayments_filterByState() {
         String payments = aPaginatedPaymentSearchResult()
                 .withCount(10)
                 .withPage(2)
@@ -198,7 +201,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_filterByStateLowercase() throws Exception {
+    public void searchPayments_filterByStateLowercase() {
         String payments = aPaginatedPaymentSearchResult()
                 .withCount(10)
                 .withPage(2)
@@ -222,7 +225,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_filterByEmail() throws Exception {
+    public void searchPayments_filterByEmail() {
         String payments = aPaginatedPaymentSearchResult()
                 .withCount(10)
                 .withPage(2)
@@ -245,7 +248,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_filterByPartialEmail() throws Exception {
+    public void searchPayments_filterByPartialEmail() {
         String payments = aPaginatedPaymentSearchResult()
                 .withCount(10)
                 .withPage(2)
@@ -268,7 +271,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_filterFromAndToDates() throws Exception {
+    public void searchPayments_filterFromAndToDates() {
         String payments = aPaginatedPaymentSearchResult()
                 .withCount(10)
                 .withPage(2)
@@ -277,7 +280,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                         .withCreatedDateBetween(TEST_FROM_DATE, TEST_TO_DATE).getResults())
                 .build();
 
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null,  null, null, null, TEST_FROM_DATE, TEST_TO_DATE,
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, null, null, null, TEST_FROM_DATE, TEST_TO_DATE,
                 payments
         );
 
@@ -293,7 +296,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_filterByReferenceEmailStateAndFromToDates() throws Exception {
+    public void searchPayments_filterByReferenceEmailStateAndFromToDates() {
         String payments = aPaginatedPaymentSearchResult()
                 .withCount(10)
                 .withPage(2)
@@ -310,11 +313,11 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
         );
 
         ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of(
-                    "reference", TEST_REFERENCE,
-                    "email", TEST_EMAIL,
-                    "state", TEST_STATE,
-                    "from_date", TEST_FROM_DATE,
-                    "to_date", TEST_TO_DATE))
+                "reference", TEST_REFERENCE,
+                "email", TEST_EMAIL,
+                "state", TEST_STATE,
+                "from_date", TEST_FROM_DATE,
+                "to_date", TEST_TO_DATE))
                 .statusCode(200)
                 .contentType(JSON)
                 .body("results.size()", equalTo(3));
@@ -328,7 +331,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_getsPaginatedResultsFromConnector() throws Exception {
+    public void searchPayments_getsPaginatedResultsFromConnector() {
 
         PaymentNavigationLinksFixture links = new PaymentNavigationLinksFixture()
                 .withPrevLink("http://server:port/path?query=prev&from_date=2016-01-01T23:59:59Z")
@@ -425,7 +428,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_filterByCardBrand() throws Exception {
+    public void searchPayments_filterByCardBrand() {
         ValidatableResponse response = getResultForSearchByCardBrand(TEST_CARD_BRAND);
         response
                 .statusCode(200)
@@ -437,7 +440,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_filterByCardBrandMixedCase() throws Exception {
+    public void searchPayments_filterByCardBrandMixedCase() {
 
         ValidatableResponse response = getResultForSearchByCardBrand(TEST_CARD_BRAND_MIXED_CASE);
         response
@@ -449,7 +452,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
         assertThat(results, matchesField("card_brand", TEST_CARD_BRAND_LABEL));
     }
 
-    private ValidatableResponse getResultForSearchByCardBrand(String cardBrand){
+    private ValidatableResponse getResultForSearchByCardBrand(String cardBrand) {
         String payments = aPaginatedPaymentSearchResult()
                 .withCount(1)
                 .withPage(1)
@@ -480,9 +483,9 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .assertThat("$.description", is("Page not found"));
 
     }
-    
+
     @Test
-    public void searchPayments_withMandateId_whenCardPayment_shouldReturnABadRequestResponse() throws Exception{
+    public void searchPayments_withMandateId_whenCardPayment_shouldReturnABadRequestResponse() throws Exception {
         InputStream body = searchPayments(API_KEY,
                 ImmutableMap.of("agreement_id", "my_agreement"))
                 .statusCode(400)

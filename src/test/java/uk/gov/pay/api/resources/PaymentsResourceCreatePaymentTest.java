@@ -99,6 +99,7 @@ public class PaymentsResourceCreatePaymentTest {
                 "sandbox",
                 "2018-01-01T11:12:13Z",
                 SupportedLanguage.ENGLISH,
+                false,
                 new RefundSummary(),
                 new SettlementSummary(),
                 new CardDetails("9876", "Anne Onymous", "12/20", cardholderAddress, "visa"),

@@ -57,14 +57,15 @@ public class PaymentSearchResultBuilder {
         public Address billing_address;
         public String card_brand;
 
-        public CardDetails(){}
+        public CardDetails() {
+        }
 
         public CardDetails(uk.gov.pay.api.model.CardDetails cardDetails) {
             this.last_digits_card_number = cardDetails.getLastDigitsCardNumber();
             this.cardholder_name = cardDetails.getCardHolderName();
             this.expiry_date = cardDetails.getExpiryDate();
             this.card_brand = cardDetails.getCardBrand();
-            this.billing_address =  new Address(cardDetails.getBillingAddress());
+            this.billing_address = new Address(cardDetails.getBillingAddress());
         }
     }
 
@@ -73,16 +74,19 @@ public class PaymentSearchResultBuilder {
         public long amount_available;
         public long amount_submitted;
     }
+
     private static class SettlementSummary {
         public String capture_submit_time;
         public String captured_date;
     }
+
     private static class TestPayment {
         public TestPaymentState state;
         public String charge_id, description, reference, email, created_date;
         public int amount;
         public String gateway_transaction_id, return_url, payment_provider, card_brand;
         public String language;
+        public boolean delayed_capture;
         public RefundSummary refund_summary = new RefundSummary();
         public SettlementSummary settlement_summary = new SettlementSummary();
         public CardDetails card_details = new CardDetails();
@@ -133,6 +137,7 @@ public class PaymentSearchResultBuilder {
     private String reference = null;
     private String email = null;
     private String language = SupportedLanguage.ENGLISH.toString();
+    private boolean delayedCapture;
     private TestPaymentState state = null;
     private String fromDate = null;
     private String toDate = null;
@@ -175,6 +180,11 @@ public class PaymentSearchResultBuilder {
 
     public PaymentSearchResultBuilder withLanguage(SupportedLanguage language) {
         this.language = language.toString();
+        return this;
+    }
+
+    public PaymentSearchResultBuilder withDelayedCapture(boolean delayedCapture) {
+        this.delayedCapture = delayedCapture;
         return this;
     }
 
@@ -235,6 +245,8 @@ public class PaymentSearchResultBuilder {
             defaultPaymentResult.card_brand = cardDetails.card_brand;
         }
 
+        defaultPaymentResult.delayed_capture = delayedCapture;
+
         return defaultPaymentResult;
     }
 
@@ -253,8 +265,9 @@ public class PaymentSearchResultBuilder {
         payment.return_url = DEFAULT_RETURN_URL;
         payment.payment_provider = DEFAULT_PAYMENT_PROVIDER;
         payment.language = SupportedLanguage.ENGLISH.toString();
+        payment.delayed_capture = false;
         payment.card_brand = DEFAULT_CARD_BRAND_LABEL;
-        payment.card_details.card_brand=DEFAULT_CARD_BRAND_LABEL;
+        payment.card_details.card_brand = DEFAULT_CARD_BRAND_LABEL;
         payment.refund_summary.status = "available";
         payment.refund_summary.amount_available = 100;
         payment.refund_summary.amount_submitted = 300;

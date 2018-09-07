@@ -33,12 +33,11 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
     private static final String REFUND_ID = "111999";
     private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
     private static final String CREATED_DATE = DateTimeUtils.toUTCDateString(TIMESTAMP);
-    private static final Address BILLING_ADDRESS = new Address("line1","line2","NR2 5 6EG","city","UK");
-    private static final CardDetails CARD_DETAILS = new CardDetails("1234","Mr. Payment","12/19", BILLING_ADDRESS,"Visa");
+    private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
+    private static final CardDetails CARD_DETAILS = new CardDetails("1234", "Mr. Payment", "12/19", BILLING_ADDRESS, "Visa");
 
     @Test
     public void getRefundById_shouldGetValidResponse() {
-
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondWithGetRefundById(GATEWAY_ACCOUNT_ID, CHARGE_ID, REFUND_ID, AMOUNT, REFUND_AMOUNT_AVAILABLE, "available", CREATED_DATE);
 
@@ -55,7 +54,6 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
 
     @Test
     public void getRefundById_shouldGetNonAuthorized_whenPublicAuthRespondsUnauthorised() {
-
         publicAuthMock.respondUnauthorised();
 
         getPaymentRefundByIdResponse(API_KEY, CHARGE_ID, REFUND_ID)
@@ -64,7 +62,6 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
 
     @Test
     public void getRefundById_shouldReturnNotFound_whenRefundDoesNotExist() {
-
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondRefundNotFound(GATEWAY_ACCOUNT_ID, CHARGE_ID, "unknown-refund-id");
 
@@ -77,7 +74,6 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
 
     @Test
     public void getRefundById_returns500_whenConnectorRespondsWithResponseOtherThan200Or404() {
-
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondRefundWithError(GATEWAY_ACCOUNT_ID, CHARGE_ID, REFUND_ID);
 
@@ -90,7 +86,6 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
 
     @Test
     public void getRefunds_shouldGetValidResponse() {
-
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         PaymentRefundJsonFixture refund_1 = new PaymentRefundJsonFixture(100L, CREATED_DATE, "100", "available", new ArrayList<>());
@@ -123,7 +118,6 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
 
     @Test
     public void getRefunds_shouldGetValidResponse_whenListReturnedIsEmpty() {
-
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondWithGetAllRefunds(GATEWAY_ACCOUNT_ID, CHARGE_ID);
 
@@ -138,7 +132,6 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
 
     @Test
     public void getRefunds_shouldGetNonAuthorized_whenPublicAuthRespondsUnauthorised() {
-
         publicAuthMock.respondUnauthorised();
 
         getPaymentRefundsResponse(API_KEY, CHARGE_ID)
@@ -158,7 +151,7 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
         String payload = new GsonBuilder().create().toJson(
                 ImmutableMap.of("amount", AMOUNT));
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, null, null, null, null, null,
-                null, null, SupportedLanguage.ENGLISH, null,
+                null, null, SupportedLanguage.ENGLISH, false, null,
                 new RefundSummary("available", 9000, 1000), null, CARD_DETAILS);
 
         postRefundRequest(payload);
@@ -183,7 +176,6 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
 
     @Test
     public void createRefund_shouldGetNonAuthorized_whenPublicAuthRespondsUnauthorised() {
-
         publicAuthMock.respondUnauthorised();
 
         postRefunds("{\"amount\": 1000}")
