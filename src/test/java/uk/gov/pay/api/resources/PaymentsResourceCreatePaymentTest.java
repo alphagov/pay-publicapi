@@ -18,6 +18,7 @@ import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.CreatePaymentService;
+import uk.gov.pay.api.service.GetPaymentService;
 import uk.gov.pay.api.service.PaymentSearchService;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
 import uk.gov.pay.commons.model.SupportedLanguage;
@@ -53,6 +54,9 @@ public class PaymentsResourceCreatePaymentTest {
     @Mock
     private ConnectorUriGenerator connectorUriGenerator;
 
+    @Mock
+    private GetPaymentService getPaymentService;
+
     private final String paymentUri = "https://my.link/v1/payments/abc123";
 
     @Before
@@ -61,7 +65,8 @@ public class PaymentsResourceCreatePaymentTest {
                 createPaymentService,
                 paymentSearchService,
                 publicApiUriGenerator,
-                connectorUriGenerator);
+                connectorUriGenerator,
+                getPaymentService);
         when(publicApiUriGenerator.getPaymentURI(anyString())).thenReturn(URI.create(paymentUri));
     }
 
