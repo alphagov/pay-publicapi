@@ -13,7 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CancelChargeException;
+import uk.gov.pay.api.exception.GetChargeException;
 import uk.gov.pay.api.exception.GetEventsException;
+import uk.gov.pay.api.model.ChargeFromResponse;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.PaymentEvents;
 import uk.gov.pay.api.model.ValidCreatePaymentRequest;
@@ -22,7 +24,6 @@ import uk.gov.pay.api.model.search.card.PaymentSearchResults;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.CreatePaymentService;
-import uk.gov.pay.api.service.GetPaymentService;
 import uk.gov.pay.api.service.PaymentSearchService;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
 
@@ -57,21 +58,18 @@ public class PaymentsResource {
     private final PublicApiUriGenerator publicApiUriGenerator;
     private final ConnectorUriGenerator connectorUriGenerator;
     private final PaymentSearchService paymentSearchService;
-    private final GetPaymentService getPaymentService;
 
     @Inject
     public PaymentsResource(Client client,
                             CreatePaymentService createPaymentService,
                             PaymentSearchService paymentSearchService,
                             PublicApiUriGenerator publicApiUriGenerator,
-                            ConnectorUriGenerator connectorUriGenerator,
-                            GetPaymentService getPaymentService) {
+                            ConnectorUriGenerator connectorUriGenerator) {
         this.client = client;
         this.createPaymentService = createPaymentService;
         this.publicApiUriGenerator = publicApiUriGenerator;
         this.connectorUriGenerator = connectorUriGenerator;
         this.paymentSearchService = paymentSearchService;
-        this.getPaymentService = getPaymentService;
     }
 
     @GET
@@ -95,11 +93,27 @@ public class PaymentsResource {
 
         logger.info("Payment request - paymentId={}", paymentId);
 
-        PaymentWithAllLinks payment = getPaymentService.getPayment(account, paymentId);
+        Response connectorResponse = client
+                .target(connectorUriGenerator.chargeURI(account, paymentId))
+                .request()
+                .get();
 
-        logger.info("Payment returned - [ {} ]", payment);
-        return Response.ok(payment).build();
+        if (connectorResponse.getStatus() == SC_OK) {
+            ChargeFromResponse chargeFromResponse = connectorResponse.readEntity(ChargeFromResponse.class);
+            URI paymentURI = publicApiUriGenerator.getPaymentURI(chargeFromResponse.getChargeId());
 
+            PaymentWithAllLinks payment = PaymentWithAllLinks.getPaymentWithLinks(
+                    account.getPaymentType(),
+                    chargeFromResponse,
+                    paymentURI,
+                    publicApiUriGenerator.getPaymentEventsURI(chargeFromResponse.getChargeId()),
+                    publicApiUriGenerator.getPaymentCancelURI(chargeFromResponse.getChargeId()),
+                    publicApiUriGenerator.getPaymentRefundsURI(chargeFromResponse.getChargeId()));
+
+            logger.info("Payment returned - [ {} ]", payment);
+            return Response.ok(payment).build();
+        }
+        throw new GetChargeException(connectorResponse);
     }
 
     @GET
