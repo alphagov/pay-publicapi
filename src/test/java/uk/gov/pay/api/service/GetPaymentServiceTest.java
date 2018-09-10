@@ -56,7 +56,7 @@ public class GetPaymentServiceTest {
 
     @Test
     @PactVerification({"connector"})
-    @Pacts(pacts = {"publicapi-connector-get-payment-with-delayed-capture-true"})
+    @Pacts(pacts = {"publicapi-connector-get-payment-with-delayed-capture-true"}, publish = false)
     public void testGetPayment() {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
 
