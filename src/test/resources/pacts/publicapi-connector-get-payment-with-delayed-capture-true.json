@@ -32,8 +32,8 @@
             "finished": false,
             "status": "created"
           },
-          "description": "a description",
-          "reference": "a reference",
+          "description": "Test description",
+          "reference": "aReference",
           "language": "en",
           "links": [
             {
@@ -82,28 +82,28 @@
             "$.links[0].href": {
               "matchers": [
                 {
-                  "regex": "https*:\/\/.*\/v1\/api\/accounts\/123456\/charges\/ch_123abc456def"
+                  "regex": "http*:\/\/.*\/v1\/api\/accounts\/123456\/charges\/ch_123abc456def"
                 }
               ]
             },
             "$.links[1].href": {
               "matchers": [
                 {
-                  "regex": "https*:\/\/.*\/v1\/api\/accounts\/123456\/charges\/ch_123abc456def\/refunds"
+                  "regex": "http*:\/\/.*\/v1\/api\/accounts\/123456\/charges\/ch_123abc456def\/refunds"
                 }
               ]
             },
             "$.links[2].href": {
               "matchers": [
                 {
-                  "regex": "https*:\/\/.*\/secure\/[a-z.0-9]"
+                  "regex": "http*:\/\/.*\/secure\/[a-z.0-9]"
                 }
               ]
             },
             "$.links[3].href": {
               "matchers": [
                 {
-                  "regex": "https*:\/\/.*\/secure"
+                  "regex": "http*:\/\/.*\/secure"
                 }
               ]
             },
