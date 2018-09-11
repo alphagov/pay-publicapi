@@ -7,21 +7,21 @@
   },
   "interactions": [
     {
-      "description": "Get all refunds",
+      "description": "Return all refunds when refunds exist",
       "providerStates": [
         {
-          "name": "a refund exists"
+          "name": "Account exists and has 2 refunds"
         }
       ],
       "request": {
         "method": "GET",
-        "path": "/v1/refunds",
+        "path": "/v1/refunds/account/777",
         "query": {
           "page": [
             "1"
           ],
           "display_size": [
-            "1"
+            "2"
           ]
         }
       },
@@ -31,25 +31,30 @@
           "Content-Type": "application/json"
         },
         "body": {
-          "total": 1,
-          "count": 1,
+          "total": 2,
+          "count": 2,
           "page": 1,
           "results": [
             {
-              "refund_id": "123456",
-              "created_date": "2018-06-09T02:48:56Z",
-              "status": "refund success",
+              "refund_id": "111111",
+              "created_date": "2017-10-01T01:41:01Z",
               "refund_summary": {
                 "status": "available",
-                "amount_available": "123",
-                "amount_submitted": "123"
+                "amount_available": 98,
+                "amount_submitted": 98
+              }
+            },
+            {
+              "refund_id": "222222",
+              "created_date": "2017-09-02T02:42:02Z",
+              "refund_summary": {
+                "status": "available",
+                "amount_available": 100,
+                "amount_submitted": 100
               }
             }
           ],
           "_links": {
-            "payment": {
-              "href": "https://publicapi.example.com/v1/payments/abc123"
-            },
             "self": {
               "href": "https://publicapi.example.com/v1/payments/abc123/refunds"
             }
@@ -121,17 +126,10 @@
                 }
               ]
             },
-            "$._links.payment.href": {
-              "matchers": [
-                {
-                  "regex": "https*:\/\/.*\/v1\/api\/payments\/[a-z0-9]*"
-                }
-              ]
-            },
             "$._links.self.href": {
               "matchers": [
                 {
-                  "regex": "https*:\/\/.*\/v1\/api\/payments\/[a-z0-9]*\/refunds"
+                  "match": "type"
                 }
               ]
             }
