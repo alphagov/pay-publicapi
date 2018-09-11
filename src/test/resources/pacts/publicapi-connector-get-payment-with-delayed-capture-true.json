@@ -79,6 +79,12 @@
         },
         "matchingRules": {
           "body": {
+            "$.reference": {
+              "matchers": [{"match": "type"}]
+            },
+            "$.description": {
+              "matchers": [{"match": "type"}]
+            },
             "$.links[0].href": {
               "matchers": [
                 {
