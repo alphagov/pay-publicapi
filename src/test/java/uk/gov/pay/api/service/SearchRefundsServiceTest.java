@@ -52,13 +52,26 @@ public class SearchRefundsServiceTest {
 
     @Test
     @PactVerification({"connector"})
-    @Pacts(pacts = {"publicapi-connector-search-refunds-with-page-and-display"}, publish = false)
+    @Pacts(pacts = {"publicapi-connector-search-refunds-with-page-and-display"})
     public void getAllRefundsShouldReturnCorrectTotalAndPageAndDisplaySize() {
-        Account account = new Account("123456", TokenPaymentType.CARD);
+        Account account = new Account("777", TokenPaymentType.CARD);
         Response response = searchRefundsService.getAllRefunds(account, "1", "1");
         JsonAssert.with(response.getEntity().toString())
-                .assertThat("count", Matchers.is(1))
-                .assertThat("total", Matchers.is(1))
+                .assertThat("count", Matchers.is(2))
+                .assertThat("total", Matchers.is(2))
+                .assertThat("page", Matchers.is(1));
+    }
+
+    @Test
+    @PactVerification({"connector"})
+    @Pacts(pacts = {"publicapi-connector-search-refunds-with-page-and-display-when-no-refunds-exist"})
+    public void getAllRefundsShouldReturnNoRefundsWhenThereAreNone() {
+        Account account = new Account("888", null);
+        
+        Response response = searchRefundsService.getAllRefunds(account, "1", "1");
+        JsonAssert.with(response.getEntity().toString())
+                .assertThat("count", Matchers.is(0))
+                .assertThat("total", Matchers.is(0))
                 .assertThat("page", Matchers.is(1));
     }
 }
