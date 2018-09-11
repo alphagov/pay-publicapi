@@ -65,8 +65,8 @@ public class GetPaymentServiceTest {
 
         assertThat(payment.getAmount(), is(100L));
         assertThat(payment.getState(), is(new PaymentState("created", false)));
-        assertThat(payment.getDescription(), is("a description"));
-        assertThat(payment.getReference(), is("a reference"));
+        assertThat(payment.getDescription(), is("Test description"));
+        assertThat(payment.getReference(), is("aReference"));
         assertThat(payment.getLanguage(), is(SupportedLanguage.ENGLISH));
         assertThat(payment.getPaymentId(), is(CHARGE_ID));
         assertThat(payment.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
