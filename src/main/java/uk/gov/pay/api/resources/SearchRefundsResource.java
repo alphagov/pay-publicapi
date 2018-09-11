@@ -52,7 +52,7 @@ public class SearchRefundsResource {
 
     @GET
     @Timed
-    @Path("/v1/refunds")
+    @Path("/v1/refunds/account/{accountId}")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Search refunds",

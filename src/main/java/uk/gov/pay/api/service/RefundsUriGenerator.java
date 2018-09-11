@@ -18,7 +18,7 @@ public class RefundsUriGenerator {
     }
 
     public String refundsURIWithParams(Account account, Map<String, String> queryParams) {
-        return buildConnectorUri(format("/v1/refunds", account.getAccountId()), queryParams);
+        return buildConnectorUri(format("/v1/refunds/account/%s", account.getAccountId()), queryParams);
     }
 
     private String buildConnectorUri(String path, Map<String, String> params) {

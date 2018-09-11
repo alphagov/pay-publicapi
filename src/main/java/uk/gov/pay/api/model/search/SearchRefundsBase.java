@@ -6,6 +6,7 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.SearchRefundsException;
 import uk.gov.pay.api.model.links.Link;
+import uk.gov.pay.api.model.search.card.SearchRefundsResponse;
 import uk.gov.pay.api.service.RefundsUriGenerator;
 
 import javax.ws.rs.client.Client;
@@ -39,7 +40,7 @@ public abstract class SearchRefundsBase {
 
     protected HalRepresentation.HalRepresentationBuilder decoratePagination(
             HalRepresentation.HalRepresentationBuilder halRepresentationBuilder, 
-            ISearchRefundsPagination pagination) {
+            SearchRefundsResponse pagination) {
         try {
             halRepresentationBuilder
                     .addProperty("count", pagination.getCount())
