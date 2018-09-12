@@ -10,7 +10,7 @@
       "description": "Return no refunds when no refunds exist",
       "providerStates": [
         {
-          "name": "Account exists and has no refunds",
+          "name": "Account exists",
           "params": { "account_id": "888"}
         }
       ],

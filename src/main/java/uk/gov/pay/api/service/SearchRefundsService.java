@@ -5,7 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.ValidationException;
-import uk.gov.pay.api.model.search.card.SearchCardRefunds;
+import uk.gov.pay.api.model.search.card.SearchRefunds;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
@@ -23,7 +23,7 @@ import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 public class SearchRefundsService {
     private static final String PAGE = "page";
     private static final String DISPLAY_SIZE = "display_size";
-    private final RefundsUriGenerator refundsUriGenerator;
+    private final ConnectorUriGenerator uriGenerator;
     private final Client client;
     private final ObjectMapper objectMapper;
     private final PublicApiConfig configuration;
@@ -31,12 +31,12 @@ public class SearchRefundsService {
     @Inject
     public SearchRefundsService(Client client,
                                 PublicApiConfig configuration,
-                                RefundsUriGenerator refundsUriGenerator,
+                                ConnectorUriGenerator uriGenerator,
                                 ObjectMapper objectMapper) {
 
         this.client = client;
         this.configuration = configuration;
-        this.refundsUriGenerator = refundsUriGenerator;
+        this.uriGenerator = uriGenerator;
         this.objectMapper = objectMapper;
     }
 
@@ -47,12 +47,11 @@ public class SearchRefundsService {
         queryParams.put(PAGE, page);
         queryParams.put(DISPLAY_SIZE, displaySize);
 
-        SearchCardRefunds refundsService = new SearchCardRefunds(
+        SearchRefunds refundsService = new SearchRefunds(
                 client,
                 configuration,
-                refundsUriGenerator,
-                objectMapper
-        );
+                uriGenerator,
+                objectMapper);
 
         return refundsService.getSearchResponse(account, queryParams);
     }
