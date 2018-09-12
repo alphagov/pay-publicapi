@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CancelChargeException;
+import uk.gov.pay.api.exception.CaptureChargeException;
 import uk.gov.pay.api.exception.GetEventsException;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.PaymentEvents;
@@ -20,6 +21,7 @@ import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.model.search.card.PaymentSearchResults;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
+import uk.gov.pay.api.service.CapturePaymentService;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.CreatePaymentService;
 import uk.gov.pay.api.service.GetPaymentService;
@@ -58,6 +60,7 @@ public class PaymentsResource {
     private final ConnectorUriGenerator connectorUriGenerator;
     private final PaymentSearchService paymentSearchService;
     private final GetPaymentService getPaymentService;
+    private final CapturePaymentService capturePaymentService;
 
     @Inject
     public PaymentsResource(Client client,
@@ -65,13 +68,15 @@ public class PaymentsResource {
                             PaymentSearchService paymentSearchService,
                             PublicApiUriGenerator publicApiUriGenerator,
                             ConnectorUriGenerator connectorUriGenerator,
-                            GetPaymentService getPaymentService) {
+                            GetPaymentService getPaymentService,
+                            CapturePaymentService capturePaymentService) {
         this.client = client;
         this.createPaymentService = createPaymentService;
         this.publicApiUriGenerator = publicApiUriGenerator;
         this.connectorUriGenerator = connectorUriGenerator;
         this.paymentSearchService = paymentSearchService;
         this.getPaymentService = getPaymentService;
+        this.capturePaymentService = capturePaymentService;
     }
 
     @GET
@@ -265,5 +270,39 @@ public class PaymentsResource {
         }
 
         throw new CancelChargeException(connectorResponse);
+    }
+
+    @POST
+    @Timed
+    @Path("/v1/payments/{paymentId}/capture")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Capture payment",
+            notes = "Capture a payment based on the provided payment ID and the Authorisation token. " +
+                    "The Authorisation token needs to be specified in the 'authorization' header " +
+                    "as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be captured if it's in " +
+                    "'submitted' state",
+            code = 204)
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "No Content"),
+            @ApiResponse(code = 400, message = "Capture of payment failed", response = PaymentError.class),
+            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
+            @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
+            @ApiResponse(code = 409, message = "Conflict", response = PaymentError.class),
+            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
+            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)
+    })
+    public Response capturePayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
+                                   @PathParam("paymentId") String paymentId) {
+        logger.info("Payment capture request - payment_id=[{}]", paymentId);
+
+        Response connectorResponse = capturePaymentService.capture(account, paymentId);
+
+        if (connectorResponse.getStatus() == HttpStatus.SC_NO_CONTENT) {
+            connectorResponse.close();
+            return Response.noContent().build();
+        }
+
+        throw new CaptureChargeException(connectorResponse);
     }
 }

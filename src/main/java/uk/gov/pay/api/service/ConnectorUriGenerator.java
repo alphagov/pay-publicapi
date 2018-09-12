@@ -97,4 +97,9 @@ public class ConnectorUriGenerator {
 
         return buildConnectorUri(account, "/v1/events", params);
     }
+
+    public String captureURI(Account account, String chargeId) {
+        String path = format("/v1/api/accounts/%s/charges/%s/capture", account.getAccountId(), chargeId);
+        return buildConnectorUri(account, path);
+    }
 }

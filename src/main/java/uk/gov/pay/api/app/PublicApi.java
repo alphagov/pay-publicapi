@@ -24,6 +24,7 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.auth.AccountAuthenticator;
 import uk.gov.pay.api.exception.mapper.BadRequestExceptionMapper;
 import uk.gov.pay.api.exception.mapper.CancelChargeExceptionMapper;
+import uk.gov.pay.api.exception.mapper.CaptureChargeExceptionMapper;
 import uk.gov.pay.api.exception.mapper.CreateAgreementExceptionMapper;
 import uk.gov.pay.api.exception.mapper.CreateChargeExceptionMapper;
 import uk.gov.pay.api.exception.mapper.CreateRefundExceptionMapper;
@@ -68,7 +69,7 @@ public class PublicApi extends Application<PublicApiConfig> {
             @Override
             public JedisFactory getJedisFactory(PublicApiConfig configuration) {
                 return configuration.getJedisFactory();
-            };
+            }
         });
     }
 
@@ -144,6 +145,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         jersey.register(GetRefundsExceptionMapper.class);
         jersey.register(CreateAgreementExceptionMapper.class);
         jersey.register(GetAgreementExceptionMapper.class);
+        jersey.register(CaptureChargeExceptionMapper.class);
     }
 
     private void initialiseMetrics(PublicApiConfig configuration, Environment environment) {
