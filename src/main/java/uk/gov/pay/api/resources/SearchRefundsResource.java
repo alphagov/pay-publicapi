@@ -12,9 +12,9 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.search.card.SearchRefundsResults;
-import uk.gov.pay.api.service.SearchRefundsService;
+import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
-import uk.gov.pay.api.service.RefundsUriGenerator;
+import uk.gov.pay.api.service.SearchRefundsService;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -37,17 +37,17 @@ public class SearchRefundsResource {
     private final Client client;
     private final SearchRefundsService searchRefundsService;
     private final PublicApiUriGenerator publicApiUriGenerator;
-    private final RefundsUriGenerator refundsUriGenerator;
+    private final ConnectorUriGenerator uriGenerator;
 
     @Inject
     public SearchRefundsResource(Client client,
                            SearchRefundsService searchRefundsService,
                            PublicApiUriGenerator publicApiUriGenerator,
-                           RefundsUriGenerator refundsUriGenerator) {
+                           ConnectorUriGenerator uriGenerator) {
         this.client = client;
         this.searchRefundsService = searchRefundsService;
         this.publicApiUriGenerator = publicApiUriGenerator;
-        this.refundsUriGenerator = refundsUriGenerator;
+        this.uriGenerator = uriGenerator;
     }
 
     @GET

@@ -7,13 +7,13 @@ import java.util.List;
 public class SearchRefundsResults {
 
     @JsonProperty(value = "results")
-    private List<RefundsForSearchRefundsResult> refunds;
+    private List<RefundForSearchRefundsResult> refunds;
 
-    public SearchRefundsResults(List<RefundsForSearchRefundsResult> refunds) {
+    public SearchRefundsResults(List<RefundForSearchRefundsResult> refunds) {
         this.refunds = refunds;
     }
 
-    public List<RefundsForSearchRefundsResult> getRefunds() {
+    public List<RefundForSearchRefundsResult> getRefunds() {
         return refunds;
     }
     

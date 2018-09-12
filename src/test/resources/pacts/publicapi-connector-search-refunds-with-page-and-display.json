@@ -10,8 +10,10 @@
       "description": "Return all refunds when refunds exist",
       "providerStates": [
         {
-          "name": "Account exists and has 2 refunds",
-          "params": { "account_id": "777"}
+          "name": "Refunds exist",
+          "params": {
+            "account_id": "777"
+          }
         }
       ],
       "request": {
@@ -39,25 +41,45 @@
             {
               "refund_id": "111111",
               "created_date": "2017-10-01T01:41:01Z",
-              "refund_summary": {
-                "status": "available",
-                "amount_available": 98,
-                "amount_submitted": 98
-              }
+              "status": "available",
+              "charge_id": "99999",
+              "amount_submitted": 98,
+              "links": [
+                {
+                  "rel": "self",
+                  "method": "GET",
+                  "href": "http://app.com/v1/refunds/account/777"
+                },
+                {
+                  "rel": "payment_url",
+                  "method": "GET",
+                  "href": "http://app.com/v1/payments/someExternalId"
+                }
+              ]
             },
             {
               "refund_id": "222222",
               "created_date": "2017-09-02T02:42:02Z",
-              "refund_summary": {
-                "status": "available",
-                "amount_available": 100,
-                "amount_submitted": 100
-              }
+              "status": "available",
+              "charge_id": "88888",
+              "amount_submitted": 100,
+              "links": [
+                {
+                  "rel": "self",
+                  "method": "GET",
+                  "href": "http://app.com/v1/refunds/account/777"
+                },
+                {
+                  "rel": "payment_url",
+                  "method": "GET",
+                  "href": "http://app.com/v1/payments/someExternalId"
+                }
+              ]
             }
           ],
           "_links": {
             "self": {
-              "href": "https://publicapi.example.com/v1/payments/abc123/refunds"
+              "href": "http://app.com/v1/refunds/account/777?page=1&display_size=2"
             }
           }
         },
@@ -106,21 +128,21 @@
                 }
               ]
             },
-            "$.results[*].refund_summary.status": {
+            "$.results[*].charge_id": {
+              "matchers": [
+                {
+                  "regex": "[a-z0-9]*"
+                }
+              ]
+            },
+            "$.results[*].amount_submitted": {
               "matchers": [
                 {
                   "match": "type"
                 }
               ]
             },
-            "$.results[*].refund_summary.amount_available": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ]
-            },
-            "$.results[*].refund_summary.amount_submitted": {
+            "$.results[*].links[*].href": {
               "matchers": [
                 {
                   "match": "type"
