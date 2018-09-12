@@ -10,7 +10,8 @@
       "description": "Return all refunds when refunds exist",
       "providerStates": [
         {
-          "name": "Account exists and has 2 refunds"
+          "name": "Account exists and has 2 refunds",
+          "params": { "account_id": "777"}
         }
       ],
       "request": {
