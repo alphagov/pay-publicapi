@@ -424,6 +424,7 @@
                             <apiModelPropertyAccessExclusions>
                                 <apiModelPropertyAccessExclusion>agreementId</apiModelPropertyAccessExclusion>
                                 <apiModelPropertyAccessExclusion>language</apiModelPropertyAccessExclusion>
+                                <apiModelPropertyAccessExclusion>delayedCapture</apiModelPropertyAccessExclusion>
                             </apiModelPropertyAccessExclusions>
                             <schemes>
                                 <scheme>https</scheme>

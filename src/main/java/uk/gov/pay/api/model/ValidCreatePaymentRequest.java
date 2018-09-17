@@ -1,5 +1,6 @@
 package uk.gov.pay.api.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
@@ -14,12 +15,20 @@ import java.util.StringJoiner;
  **/
 public class ValidCreatePaymentRequest {
 
+    @ApiModelProperty(value = "amount in pence", required = true, allowableValues = "range[1, 10000000]", example = "12000")
     private final int amount;
+    @ApiModelProperty(value = "payment reference", required = true, example = "12345")
     private final String reference;
-    private final String description;
+    @ApiModelProperty(name = "return_url", value = "service return url", required = true, example = "https://service-name.gov.uk/transactions/12345")
     private String returnUrl;
+    @ApiModelProperty(value = "payment description", required = true, example = "New passport application")
+    private final String description;
+    @ApiModelProperty(name = "agreement_id", value = "ID of the agreement being used to collect the payment", required = false, example = "33890b55-b9ea-4e2f-90fd-77ae0e9009e2")
     private String agreementId;
+    @ApiModelProperty(value = "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages", required = false, example = "en")
     private SupportedLanguage language;
+    @ApiModelProperty(value = "delayed capture flag", required = false, example = "false" )
+    @JsonProperty("delayed_capture")
     private Boolean delayedCapture;
 
     public ValidCreatePaymentRequest(CreatePaymentRequest createPaymentRequest) {
