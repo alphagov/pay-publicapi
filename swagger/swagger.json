@@ -245,6 +245,58 @@
         }
       }
     },
+    "/v1/payments/{paymentId}/capture" : {
+      "post" : {
+        "summary" : "Capture payment",
+        "description" : "Capture a payment based on the provided payment ID and the Authorisation token. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be captured if it's in 'submitted' state",
+        "operationId" : "capturePayment",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "paymentId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "400" : {
+            "description" : "Capture of payment failed",
+            "schema" : {
+              "$ref" : "#/definitions/PaymentError"
+            }
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "404" : {
+            "description" : "Not found",
+            "schema" : {
+              "$ref" : "#/definitions/PaymentError"
+            }
+          },
+          "409" : {
+            "description" : "Conflict",
+            "schema" : {
+              "$ref" : "#/definitions/PaymentError"
+            }
+          },
+          "429" : {
+            "description" : "Too many requests",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorResponse"
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "schema" : {
+              "$ref" : "#/definitions/PaymentError"
+            }
+          }
+        }
+      }
+    },
     "/v1/payments/{paymentId}/events" : {
       "get" : {
         "summary" : "Return payment events by ID",
@@ -491,37 +543,77 @@
       "description" : "A structure representing the payment card"
     },
     "CardPayment" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Payment"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "refund_summary" : {
-            "readOnly" : true,
-            "$ref" : "#/definitions/RefundSummary"
-          },
-          "settlement_summary" : {
-            "readOnly" : true,
-            "$ref" : "#/definitions/SettlementSummary"
-          },
-          "card_details" : {
-            "readOnly" : true,
-            "$ref" : "#/definitions/CardDetails"
-          },
-          "delayed_capture" : {
-            "type" : "boolean",
-            "example" : false,
-            "description" : "delayed capture flag",
-            "readOnly" : true
-          },
-          "card_brand" : {
-            "type" : "string",
-            "example" : "Visa",
-            "description" : "Card Brand",
-            "readOnly" : true
-          }
+      "type" : "object",
+      "properties" : {
+        "amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "example" : 1200
+        },
+        "state" : {
+          "$ref" : "#/definitions/PaymentState"
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "Your Service Description"
+        },
+        "reference" : {
+          "type" : "string",
+          "example" : "your-reference"
+        },
+        "email" : {
+          "type" : "string",
+          "example" : "your email"
+        },
+        "payment_id" : {
+          "type" : "string",
+          "example" : "hu20sqlact5260q2nanm0q8u93",
+          "readOnly" : true
+        },
+        "payment_provider" : {
+          "type" : "string",
+          "example" : "worldpay",
+          "readOnly" : true
+        },
+        "return_url" : {
+          "type" : "string",
+          "example" : "http://your.service.domain/your-reference",
+          "readOnly" : true
+        },
+        "created_date" : {
+          "type" : "string",
+          "example" : "2016-01-21T17:15:00Z",
+          "readOnly" : true
+        },
+        "refund_summary" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/RefundSummary"
+        },
+        "settlement_summary" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/SettlementSummary"
+        },
+        "card_details" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/CardDetails"
+        },
+        "delayed_capture" : {
+          "type" : "boolean",
+          "example" : false,
+          "description" : "delayed capture flag",
+          "readOnly" : true
+        },
+        "_links" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/PaymentLinksForSearch"
+        },
+        "card_brand" : {
+          "type" : "string",
+          "example" : "Visa",
+          "description" : "Card Brand",
+          "readOnly" : true
         }
-      } ]
+      }
     },
     "CreatePaymentRefundRequest" : {
       "type" : "object",
@@ -712,34 +804,9 @@
           "description" : "self",
           "readOnly" : true,
           "$ref" : "#/definitions/Link"
-        },
-        "next_url" : {
-          "description" : "next_url",
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        },
-        "next_url_post" : {
-          "description" : "next_url_post",
-          "readOnly" : true,
-          "$ref" : "#/definitions/PostLink"
-        },
-        "events" : {
-          "description" : "events",
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        },
-        "refunds" : {
-          "description" : "refunds",
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        },
-        "cancel" : {
-          "description" : "cancel",
-          "readOnly" : true,
-          "$ref" : "#/definitions/PostLink"
         }
       },
-      "description" : "self,events and next links of a Payment"
+      "description" : "links for events resource"
     },
     "PaymentLinksForSearch" : {
       "type" : "object",

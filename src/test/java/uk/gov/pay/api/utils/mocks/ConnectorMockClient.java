@@ -298,16 +298,35 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                         .withStatusCode(NO_CONTENT_204));
     }
 
+    public void respondOk_whenCaptureCharge(String paymentId, String accountId) {
+        whenCaptureCharge(paymentId, accountId)
+                .respond(response()
+                        .withStatusCode(NO_CONTENT_204));
+    }
+
     public void respondChargeNotFound_WhenCancelCharge(String paymentId, String accountId, String errorMsg) {
         respond_WhenCancelCharge(paymentId, accountId, errorMsg, NOT_FOUND_404);
+    }
+
+    public void respondChargeNotFound_WhenCaptureCharge(String paymentId, String accountId, String errorMsg) {
+        respond_WhenCaptureCharge(paymentId, accountId, errorMsg, NOT_FOUND_404);
     }
 
     public void respondBadRequest_WhenCancelCharge(String paymentId, String accountId, String errorMessage) {
         respond_WhenCancelCharge(paymentId, accountId, errorMessage, BAD_REQUEST_400);
     }
 
+    public void respondBadRequest_WhenCaptureCharge(String paymentId, String accountId, String errorMessage) {
+        respond_WhenCaptureCharge(paymentId, accountId, errorMessage, BAD_REQUEST_400);
+    }
+
     public void respond_WhenCancelCharge(String paymentId, String accountId, String errorMessage, int status) {
         whenCancelCharge(paymentId, accountId)
+                .respond(withStatusAndErrorMessage(status, errorMessage));
+    }
+
+    public void respond_WhenCaptureCharge(String paymentId, String accountId, String errorMessage, int status) {
+        whenCaptureCharge(paymentId, accountId)
                 .respond(withStatusAndErrorMessage(status, errorMessage));
     }
 
@@ -399,8 +418,18 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withPath(connectorCancelChargePathFor(paymentId, accountId)));
     }
 
+    private ForwardChainExpectation whenCaptureCharge(String paymentId, String accountId) {
+        return mockClient.when(request()
+                .withMethod(POST)
+                .withPath(connectorCaptureChargePathFor(paymentId, accountId)));
+    }
+
     private String connectorCancelChargePathFor(String paymentId, String accountId) {
         return format(CONNECTOR_MOCK_CHARGE_PATH + "/cancel", accountId, paymentId);
+    }
+
+    private String connectorCaptureChargePathFor(String paymentId, String accountId) {
+        return format(CONNECTOR_MOCK_CHARGE_PATH + "/capture", accountId, paymentId);
     }
 
     private HttpResponse withStatusAndErrorMessage(int statusCode, String errorMsg) {
@@ -410,11 +439,17 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withBody(jsonString("message", errorMsg));
     }
 
-
     public void verifyCancelCharge(String paymentId, String accountId) {
         mockClient.verify(request()
                         .withMethod(POST)
                         .withPath(connectorCancelChargePathFor(paymentId, accountId)),
+                once());
+    }
+
+    public void verifyCaptureCharge(String paymentId, String accountId) {
+        mockClient.verify(request()
+                        .withMethod(POST)
+                        .withPath(connectorCaptureChargePathFor(paymentId, accountId)),
                 once());
     }
 

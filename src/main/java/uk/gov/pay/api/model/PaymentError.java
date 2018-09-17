@@ -19,7 +19,7 @@ public class PaymentError {
         CREATE_PAYMENT_PARSING_ERROR("P0197", "Unable to parse JSON"),
         CREATE_PAYMENT_MISSING_FIELD_ERROR("P0101", "Missing mandatory attribute: %s"),
         CREATE_PAYMENT_VALIDATION_ERROR("P0102", "Invalid attribute value: %s. %s"),
-        
+
         CREATE_PAYMENT_AGREEMENT_TYPE_ERROR("P0140", "Can't collect payment from this type of agreement"),
 
         GET_PAYMENT_NOT_FOUND_ERROR("P0200", "Not found"),
@@ -36,6 +36,11 @@ public class PaymentError {
         CANCEL_PAYMENT_CONNECTOR_BAD_REQUEST_ERROR("P0501", "Cancellation of payment failed"),
         CANCEL_PAYMENT_CONNECTOR_CONFLICT_ERROR("P0502", "Cancellation of payment failed"),
         CANCEL_PAYMENT_CONNECTOR_ERROR("P0598", "Downstream system error"),
+
+        CAPTURE_PAYMENT_NOT_FOUND_ERROR("P1000", "Not found"),
+        CAPTURE_PAYMENT_CONNECTOR_BAD_REQUEST_ERROR("P1001", "Capture of payment failed"),
+        CAPTURE_PAYMENT_CONNECTOR_CONFLICT_ERROR("P1003", "Payment cannot be captured"),
+        CAPTURE_PAYMENT_CONNECTOR_ERROR("P1098", "Downstream system error"),
 
         CREATE_PAYMENT_REFUND_CONNECTOR_ERROR("P0698", "Downstream system error"),
         CREATE_PAYMENT_REFUND_PARSING_ERROR("P0697", "Unable to parse JSON"),
