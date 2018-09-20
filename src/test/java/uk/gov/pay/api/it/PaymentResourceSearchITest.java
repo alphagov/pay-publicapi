@@ -52,7 +52,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
     private static final String TEST_TO_DATE = "2016-01-28T12:00:00Z";
     private static final String SEARCH_PATH = "/v1/payments";
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
-    private static final CardDetails CARD_DETAILS = new CardDetails("1234", "Mr. Payment", "12/19", BILLING_ADDRESS, TEST_CARD_BRAND_LABEL);
+    private static final CardDetails CARD_DETAILS = new CardDetails("1234", null, "Mr. Payment", "12/19", BILLING_ADDRESS, TEST_CARD_BRAND_LABEL);
 
     @Before
     public void mapBearerTokenToAccountId() {
@@ -108,6 +108,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .body("results[0].card_details.cardholder_name", is(CARD_DETAILS.getCardHolderName()))
                 .body("results[0].card_details.expiry_date", is(CARD_DETAILS.getExpiryDate()))
                 .body("results[0].card_details.last_digits_card_number", is(CARD_DETAILS.getLastDigitsCardNumber()))
+                .body("results[0].card_details.first_digits_card_number", is(CARD_DETAILS.getFirstDigitsCardNumber()))
                 .body("results[0].card_details.billing_address.line1", is(CARD_DETAILS.getBillingAddress().getLine1()))
                 .body("results[0].card_details.billing_address.line2", is(CARD_DETAILS.getBillingAddress().getLine2()))
                 .body("results[0].card_details.billing_address.postcode", is(CARD_DETAILS.getBillingAddress().getPostcode()))

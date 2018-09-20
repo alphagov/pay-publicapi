@@ -63,7 +63,7 @@ public class ResourcesFilterLocalRateLimiterITest {
     private static final Map<String, String> PAYMENT_CREATED = new ChargeEventBuilder(CREATED, CREATED_DATE).build();
     private static final List<Map<String, String>> EVENTS = Collections.singletonList(PAYMENT_CREATED);
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
-    private static final CardDetails CARD_DETAILS = new CardDetails("1234", "Mr. Payment", "12/19", BILLING_ADDRESS, "Visa");
+    private static final CardDetails CARD_DETAILS = new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, "Visa");
 
     private static final String PAYLOAD = paymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE);
     private ExecutorService executor = Executors.newFixedThreadPool(2);

@@ -14,6 +14,9 @@ public class CardDetails {
     @JsonProperty("last_digits_card_number")
     private final String lastDigitsCardNumber;
 
+    @JsonProperty("first_digits_card_number")
+    private final String firstDigitsCardNumber;
+    
     @JsonProperty("cardholder_name")
     private final String cardHolderName;
 
@@ -27,11 +30,13 @@ public class CardDetails {
     private final String cardBrand;
 
     public CardDetails(@JsonProperty("last_digits_card_number") String lastDigitsCardNumber,
+                       @JsonProperty("first_digits_card_number") String firstDigitsCardNumber, 
                        @JsonProperty("cardholder_name") String cardHolderName,
                        @JsonProperty("expiry_date") String expiryDate,
                        @JsonProperty("billing_address") Address billingAddress,
                        @JsonProperty("card_brand") String cardBrand) {
         this.lastDigitsCardNumber = lastDigitsCardNumber;
+        this.firstDigitsCardNumber = firstDigitsCardNumber;
         this.cardHolderName = cardHolderName;
         this.expiryDate = expiryDate;
         this.billingAddress = billingAddress;
@@ -43,6 +48,11 @@ public class CardDetails {
         return lastDigitsCardNumber;
     }
 
+    @ApiModelProperty(example = "123456")
+    public String getFirstDigitsCardNumber() {
+        return firstDigitsCardNumber;
+    }
+    
     @ApiModelProperty(example = "Mr. Card holder")
     public String getCardHolderName() {
         return cardHolderName;

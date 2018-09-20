@@ -297,6 +297,7 @@ Content-Type: application/json
     "created_date": "2016-01-15T16:30:56Z",
     "card_details": {  
     	"last_digits_card_number":"1234",
+    	"first_digits_card_number":"123456",
     	"cardholder_name":"Mr. Payment",
     	"expiry_date":"12/19",
     	"card_brand":"Mastercard"
@@ -899,6 +900,7 @@ GET /v1/payments
       "created_date": "2016-05-23T15:22:50.972Z",
       "card_details": {  
       	"last_digits_card_number":"1234",
+      	"first_digits_card_number":"123456",
       	"cardholder_name":"Mr. Payment",
       	"expiry_date":"12/19",
       	"card_brand":"Mastercard"
@@ -954,6 +956,7 @@ GET /v1/payments
       "created_date": "2016-05-23T15:22:47.038Z",
       "card_details": {  
       	"last_digits_card_number":"1234",
+      	"first_digits_card_number":"123456",
       	"cardholder_name":"Mrs. Payment",
       	"expiry_date":"12/19",
       	"card_brand":"Mastercard"
@@ -1040,6 +1043,7 @@ GET /v1/payments
 | `results[i].card_details.cardholder_name` | No        | The card card holder name of this payment                         |
 | `results[i].card_details.expiry_date` | No            | The expiry date of this card                                      |
 | `results[i].card_details.last_digits_card_number` | No| The last 4 digits of this card                                    |
+| `results[i].card_details.first_digits_card_number` | No| The first 6 digits of this card                                    |
 | `results[i].card_details.billing_address.line1` | No  | The line 1 of the billing address                                 |
 | `results[i].card_details.billing_address.line2` | No  | The line 2 of the billing address                                 |
 | `results[i].card_details.billing_address.postcode` | No| The postcode of the billing address                              |

@@ -51,7 +51,7 @@ public class GetPaymentITest extends PaymentResourceITestBase {
     private static final Map<String, String> PAYMENT_CREATED = new ChargeEventBuilder(CREATED, CREATED_DATE).build();
     private static final List<Map<String, String>> EVENTS = Collections.singletonList(PAYMENT_CREATED);
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
-    private static final CardDetails CARD_DETAILS = new CardDetails("1234", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL);
+    private static final CardDetails CARD_DETAILS = new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL);
 
     @Test
     public void getPayment_ReturnsPayment() {
@@ -82,6 +82,8 @@ public class GetPaymentITest extends PaymentResourceITestBase {
                 .body("settlement_summary.captured_date", is(DateTimeUtils.toLocalDateString(CAPTURED_DATE)))
                 .body("card_details.card_brand", is(CARD_BRAND_LABEL))
                 .body("card_details.cardholder_name", is(CARD_DETAILS.getCardHolderName()))
+                .body("card_details.first_digits_card_number", is(CARD_DETAILS.getFirstDigitsCardNumber()))
+                .body("card_details.last_digits_card_number", is(CARD_DETAILS.getLastDigitsCardNumber()))
                 .body("card_details.expiry_date", is(CARD_DETAILS.getExpiryDate()))
                 .body("card_details.billing_address.line1", is(CARD_DETAILS.getBillingAddress().getLine1()))
                 .body("card_details.billing_address.line2", is(CARD_DETAILS.getBillingAddress().getLine2()))
@@ -135,9 +137,25 @@ public class GetPaymentITest extends PaymentResourceITestBase {
                 .body("_links.cancel", is(nullValue()))
                 .body("_links.events", is(nullValue()))
                 .body("_links.refunds", is(nullValue()));
-        ;
     }
 
+    @Test
+    public void getPayment_DoesNotReturnCardDigits_IfNotPresentInCardDetails() {
+        CardDetails cardDetails = new CardDetails(null, null, "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL);
+
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CAPTURED, RETURN_URL,
+                DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH, true, CHARGE_TOKEN_ID, REFUND_SUMMARY, SETTLEMENT_SUMMARY, cardDetails);
+
+        getPaymentResponse(API_KEY, CHARGE_ID)
+                .statusCode(200)
+                .contentType(JSON)
+                .body("payment_id", is(CHARGE_ID))
+                .body("card_details.first_digits_card_number", is(nullValue()))
+                .body("card_details.last_digits_card_number", is(nullValue()));
+    }
+    
+    
     @Test
     public void getPayment_ShouldNotIncludeCancelLinkIfPaymentCannotBeCancelled() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);

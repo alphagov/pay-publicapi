@@ -112,7 +112,7 @@ public class PaymentsResourceCreatePaymentTest {
                 false,
                 new RefundSummary(),
                 new SettlementSummary(),
-                new CardDetails("9876", "Anne Onymous", "12/20", cardholderAddress, "visa"),
+                new CardDetails("9876", "482393", "Anne Onymous", "12/20", cardholderAddress, "visa"),
                 Collections.emptyList(),
                 URI.create(paymentUri),
                 URI.create(paymentUri + "/events"),
