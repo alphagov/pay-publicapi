@@ -4,7 +4,9 @@ import black.door.hate.HalRepresentation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.exception.SearchChargesException;
+import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.links.Link;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.PaymentUriGenerator;
@@ -14,7 +16,10 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Map;
+
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public abstract class SearchPaymentsBase {
 
@@ -31,7 +36,7 @@ public abstract class SearchPaymentsBase {
                               ConnectorUriGenerator connectorUriGenerator,
                               PaymentUriGenerator paymentUriGenerator,
                               ObjectMapper objectMapper) {
-        this.client =client;
+        this.client = client;
         this.configuration = configuration;
         this.connectorUriGenerator = connectorUriGenerator;
         this.paymentUriGenerator = paymentUriGenerator;
@@ -40,7 +45,18 @@ public abstract class SearchPaymentsBase {
     }
     
     public abstract Response getSearchResponse(Account account, Map<String, String> queryParams);
-
+    protected abstract List<String> getAllowedSearchFields();
+    
+    protected void validateAllowedSearchFields(Map<String, String> queryParams) {
+        queryParams.entrySet().stream()
+                .filter(map -> !getAllowedSearchFields().contains(map.getKey()) && isNotBlank(map.getValue()))
+                .findFirst()
+                .ifPresent(invalidParam -> {
+                    throw new BadRequestException(PaymentError
+                            .aPaymentError(PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR, invalidParam));
+                });
+    }
+    
     protected HalRepresentation.HalRepresentationBuilder decoratePagination(HalRepresentation.HalRepresentationBuilder halRepresentationBuilder, IPaymentSearchPagination pagination) {
         try {
             halRepresentationBuilder

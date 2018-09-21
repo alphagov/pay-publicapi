@@ -53,6 +53,9 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     private static final String STATE_KEY = "state";
     private static final String CARD_BRAND = "master-card";
     private static final String CARD_BRAND_KEY = "card_brand";
+    private static final String CARDHOLDER_NAME_KEY = "cardholder_name";
+    public static final String FIRST_DIGITS_CARD_NUMBER_KEY = "first_digits_card_number";
+    public static final String LAST_DIGITS_CARD_NUMBER_KEY = "last_digits_card_number";
     private static final String CARD_BRAND_LABEL = "Mastercard";
     private static final String FROM_DATE_KEY = "from_date";
     private static final String TO_DATE_KEY = "to_date";
@@ -166,8 +169,8 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 );
     }
 
-    public void respondOk_whenSearchCharges(String accountId, String reference, String email, String state, String cardBrand, String fromDate, String toDate, String expectedResponse) {
-        whenSearchCharges(accountId, reference, email, state, cardBrand, fromDate, toDate)
+    public void respondOk_whenSearchCharges(String accountId, String reference, String email, String state, String cardBrand, String cardHolderName, String firstDigitsCardNumber, String lastDigitsCardNumber, String fromDate, String toDate, String expectedResponse) {
+        whenSearchCharges(accountId, reference, email, state, cardBrand, cardHolderName, firstDigitsCardNumber, lastDigitsCardNumber, fromDate, toDate)
                 .respond(response()
                         .withStatusCode(OK_200)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
@@ -177,7 +180,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     }
 
     public void respondOk_whenSearchChargesWithPageAndSize(String accountId, String reference, String email, String page, String displaySize, String expectedResponse) {
-        whenSearchCharges(accountId, reference, email, null, null, null, null, page, displaySize)
+        whenSearchCharges(accountId, reference, email, null, null, null, null, null, null, null, page, displaySize)
                 .respond(response()
                         .withStatusCode(OK_200)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
@@ -370,20 +373,20 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         );
     }
 
-    public ForwardChainExpectation whenSearchCharges(String gatewayAccountId, String reference, String email, String state, String cardBrand, String fromDate, String toDate) {
-        return whenSearchCharges(gatewayAccountId, reference, email, state, cardBrand, fromDate, toDate, null, null);
+    public ForwardChainExpectation whenSearchCharges(String gatewayAccountId, String reference, String email, String state, String cardBrand, String cardHolderName, String firstDigitsCardNumber, String lastDigitsCardNumber, String fromDate, String toDate) {
+        return whenSearchCharges(gatewayAccountId, reference, email, state, cardBrand, cardHolderName, firstDigitsCardNumber, lastDigitsCardNumber, fromDate, toDate, null, null);
     }
 
-    public ForwardChainExpectation whenSearchCharges(String gatewayAccountId, String reference, String email, String state, String cardBrand, String fromDate, String toDate, String page, String displaySize) {
+    public ForwardChainExpectation whenSearchCharges(String gatewayAccountId, String reference, String email, String state, String cardBrand, String cardHolderName, String firstDigitsCardNumber, String lastDigitsCardNumber, String fromDate, String toDate, String page, String displaySize) {
         return mockClient.when(request()
                 .withMethod(GET)
                 .withPath(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId))
                 .withHeader(ACCEPT, APPLICATION_JSON)
-                .withQueryStringParameters(notNullQueryParamsFrom(reference, email, state, cardBrand, fromDate, toDate, page, displaySize))
+                .withQueryStringParameters(notNullQueryParamsFrom(reference, email, state, cardBrand, cardHolderName, firstDigitsCardNumber, lastDigitsCardNumber, fromDate, toDate, page, displaySize))
         );
     }
 
-    private Parameter[] notNullQueryParamsFrom(String reference, String email, String state, String cardBrand, String fromDate, String toDate, String page, String displaySize) {
+    private Parameter[] notNullQueryParamsFrom(String reference, String email, String state, String cardBrand, String cardHolderName, String firstDigitsCardNumber, String lastDigitsCardNumber, String fromDate, String toDate, String page, String displaySize) {
         List<Parameter> params = newArrayList();
         if (isNotBlank(reference)) {
             params.add(Parameter.param(REFERENCE_KEY, reference));
@@ -396,6 +399,15 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         }
         if (isNotBlank(cardBrand)) {
             params.add(Parameter.param(CARD_BRAND_KEY, CARD_BRAND.toLowerCase()));
+        }
+        if (isNotBlank(cardHolderName)) {
+            params.add(Parameter.param(CARDHOLDER_NAME_KEY, cardHolderName));
+        }
+        if (isNotBlank(firstDigitsCardNumber)) {
+            params.add(Parameter.param(FIRST_DIGITS_CARD_NUMBER_KEY, firstDigitsCardNumber));
+        }
+        if (isNotBlank(lastDigitsCardNumber)) {
+            params.add(Parameter.param(LAST_DIGITS_CARD_NUMBER_KEY, lastDigitsCardNumber));
         }
         if (isNotBlank(fromDate)) {
             params.add(Parameter.param(FROM_DATE_KEY, fromDate));

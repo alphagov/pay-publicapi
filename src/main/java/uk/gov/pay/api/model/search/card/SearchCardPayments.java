@@ -20,6 +20,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -27,6 +28,18 @@ import java.util.stream.Collectors;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.http.HttpStatus.SC_OK;
+import static uk.gov.pay.api.service.PaymentSearchService.AGREEMENT_KEY;
+import static uk.gov.pay.api.service.PaymentSearchService.CARDHOLDER_NAME_KEY;
+import static uk.gov.pay.api.service.PaymentSearchService.CARD_BRAND_KEY;
+import static uk.gov.pay.api.service.PaymentSearchService.DISPLAY_SIZE;
+import static uk.gov.pay.api.service.PaymentSearchService.EMAIL_KEY;
+import static uk.gov.pay.api.service.PaymentSearchService.FIRST_DIGITS_CARD_NUMBER_KEY;
+import static uk.gov.pay.api.service.PaymentSearchService.FROM_DATE_KEY;
+import static uk.gov.pay.api.service.PaymentSearchService.LAST_DIGITS_CARD_NUMBER_KEY;
+import static uk.gov.pay.api.service.PaymentSearchService.PAGE;
+import static uk.gov.pay.api.service.PaymentSearchService.REFERENCE_KEY;
+import static uk.gov.pay.api.service.PaymentSearchService.STATE_KEY;
+import static uk.gov.pay.api.service.PaymentSearchService.TO_DATE_KEY;
 
 public class SearchCardPayments extends SearchPaymentsBase {
 
@@ -42,10 +55,7 @@ public class SearchCardPayments extends SearchPaymentsBase {
 
     @Override
     public Response getSearchResponse(Account account, Map<String, String> queryParams) {
-        if (isNotEmpty(queryParams.get("agreement_id"))) {
-            throw new BadRequestException(PaymentError
-                    .aPaymentError(PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR, "agreement_id"));
-        }
+        validateAllowedSearchFields(queryParams);
         queryParams.put("transactionType", "charge");
 
         String url = connectorUriGenerator.chargesURIWithParams(account, queryParams);
@@ -59,6 +69,12 @@ public class SearchCardPayments extends SearchPaymentsBase {
             return processResponse(connectorResponse);
         }
         throw new SearchChargesException(connectorResponse);
+    }
+
+    @Override
+    protected List<String> getAllowedSearchFields() {
+        return Arrays.asList(REFERENCE_KEY, EMAIL_KEY, STATE_KEY, CARD_BRAND_KEY, CARDHOLDER_NAME_KEY, FIRST_DIGITS_CARD_NUMBER_KEY, LAST_DIGITS_CARD_NUMBER_KEY, FROM_DATE_KEY, TO_DATE_KEY, PAGE, DISPLAY_SIZE);
+
     }
 
     private Response processResponse(Response connectorResponse) {
