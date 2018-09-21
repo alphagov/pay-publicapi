@@ -52,6 +52,7 @@ public class PaymentSearchResultBuilder {
 
     private static class CardDetails {
         public String last_digits_card_number;
+        public String first_digits_card_number;
         public String cardholder_name;
         public String expiry_date;
         public Address billing_address;
@@ -62,6 +63,7 @@ public class PaymentSearchResultBuilder {
 
         public CardDetails(uk.gov.pay.api.model.CardDetails cardDetails) {
             this.last_digits_card_number = cardDetails.getLastDigitsCardNumber();
+            this.first_digits_card_number = cardDetails.getFirstDigitsCardNumber();
             this.cardholder_name = cardDetails.getCardHolderName();
             this.expiry_date = cardDetails.getExpiryDate();
             this.card_brand = cardDetails.getCardBrand();

@@ -35,7 +35,8 @@ public class PaymentTest {
                 "      \"postcode\": \"NR25 6EG\",\n" +
                 "      \"country\": \"UK\"\n" +
                 "    },\n" +
-                "    \"last_digits_card_number\": \"4321\"\n" +
+                "    \"last_digits_card_number\": \"4321\",\n" +
+                "    \"first_digits_card_number\": \"654321\"\n" +
                 "  },\n" +
                 "  \"amount\": 500,\n" +
                 "  \"language\": \"en\",\n" +
@@ -49,6 +50,8 @@ public class PaymentTest {
 
         assertThat(payment.toString(), not(containsString("user@example.com")));
         assertThat(payment.toString(), not(containsString("last_digits_card_number")));
+        assertThat(payment.toString(), not(containsString("first_digits_card_number")));
+        assertThat(payment.toString(), not(containsString("654321")));
         assertThat(payment.toString(), not(containsString("4321")));
         assertThat(payment.toString(), not(containsString("12/19")));
         assertThat(payment.toString(), not(containsString("Mr. payment")));
