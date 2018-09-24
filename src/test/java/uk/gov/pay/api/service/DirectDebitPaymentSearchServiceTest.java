@@ -29,7 +29,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PaymentSearchServiceTest {
+public class DirectDebitPaymentSearchServiceTest {
 
     @Rule
     public PactProviderRule connectorRule = new PactProviderRule("direct-debit-connector", this);
