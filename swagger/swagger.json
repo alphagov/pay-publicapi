@@ -70,19 +70,19 @@
         }, {
           "name" : "cardholder_name",
           "in" : "query",
-          "description" : "Name on card used in the payment to be searched",
+          "description" : "Name on card used to make payment",
           "required" : false,
           "type" : "string"
         }, {
           "name" : "first_digits_card_number",
           "in" : "query",
-          "description" : "First six digits of the card used to make a payment",
+          "description" : "First six digits of the card used to make payment",
           "required" : false,
           "type" : "string"
         }, {
           "name" : "last_digits_card_number",
           "in" : "query",
-          "description" : "Last four digits of the card used to make a payment",
+          "description" : "Last four digits of the card used to make payment",
           "required" : false,
           "type" : "string"
         } ],
