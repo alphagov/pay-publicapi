@@ -156,21 +156,21 @@
             "$._links.self.href": {
               "matchers": [
                 {
-                  "regex": "http.*:\/\/.*\/v1\/api\/accounts\/123456\/charges\?page=1&display_size=500&last_digits_card_number=1234"
+                  "regex": "http.*:\/\/.*\/v1\/api\/accounts\/123456\/charges\\?page=1&display_size=500&last_digits_card_number=1234"
                 }
               ]
             },
             "$._links.last_page.href": {
               "matchers": [
                 {
-                  "regex": "http.*:\/\/.*\/v1\/api\/accounts\/123456\/charges\?page=1&display_size=500&last_digits_card_number=1234"
+                  "regex": "http.*:\/\/.*\/v1\/api\/accounts\/123456\/charges\\?page=1&display_size=500&last_digits_card_number=1234"
                 }
               ]
             },
             "$._links.first_page.href": {
               "matchers": [
                 {
-                  "regex": "http.*:\/\/.*\/v1\/api\/accounts\/123456\/charges\?page=1&display_size=500&last_digits_card_number=1234"
+                  "regex": "http.*:\/\/.*\/v1\/api\/accounts\/123456\/charges\\?page=1&display_size=500&last_digits_card_number=1234"
                 }
               ]
             },
