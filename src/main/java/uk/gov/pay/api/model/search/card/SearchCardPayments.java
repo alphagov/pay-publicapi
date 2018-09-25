@@ -4,13 +4,12 @@ import black.door.hate.HalRepresentation;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.exception.SearchChargesException;
-import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.search.SearchPaymentsBase;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.PaymentUriGenerator;
@@ -20,15 +19,13 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.http.HttpStatus.SC_OK;
-import static uk.gov.pay.api.service.PaymentSearchService.AGREEMENT_KEY;
 import static uk.gov.pay.api.service.PaymentSearchService.CARDHOLDER_NAME_KEY;
 import static uk.gov.pay.api.service.PaymentSearchService.CARD_BRAND_KEY;
 import static uk.gov.pay.api.service.PaymentSearchService.DISPLAY_SIZE;
@@ -72,8 +69,8 @@ public class SearchCardPayments extends SearchPaymentsBase {
     }
 
     @Override
-    protected List<String> getAllowedSearchFields() {
-        return Arrays.asList(REFERENCE_KEY, EMAIL_KEY, STATE_KEY, CARD_BRAND_KEY, CARDHOLDER_NAME_KEY, FIRST_DIGITS_CARD_NUMBER_KEY, LAST_DIGITS_CARD_NUMBER_KEY, FROM_DATE_KEY, TO_DATE_KEY, PAGE, DISPLAY_SIZE);
+    protected Set<String> getSupportedSearchParams() {
+        return ImmutableSet.of(REFERENCE_KEY, EMAIL_KEY, STATE_KEY, CARD_BRAND_KEY, CARDHOLDER_NAME_KEY, FIRST_DIGITS_CARD_NUMBER_KEY, LAST_DIGITS_CARD_NUMBER_KEY, FROM_DATE_KEY, TO_DATE_KEY, PAGE, DISPLAY_SIZE);
 
     }
 

@@ -58,7 +58,6 @@ public class CardPaymentSearchServiceTest {
         paymentSearchService = new PaymentSearchService(client, configuration, connectorUriGenerator, paymentUriGenerator, objectMapper);
     }
     
-    @Ignore
     @Test
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-search-payment-by-last-digits-card-number"})

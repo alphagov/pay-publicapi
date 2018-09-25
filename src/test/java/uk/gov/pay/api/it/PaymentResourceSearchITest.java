@@ -79,7 +79,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                         .getResults())
                 .build();
 
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null, null, null, null, null,null, payments);
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null, null, null, null, null, null, payments);
 
         String responseBody = searchPayments(API_KEY, ImmutableMap.of("reference", TEST_REFERENCE))
                 .statusCode(200)

@@ -68,7 +68,7 @@ public class PaymentSearchValidatorTest {
 
     @Test
     public void validateParams_shouldGiveAnErrorValidation_forAllParams() {
-        expectedException.expect(aValidationExceptionContaining("P0401", "Invalid parameters: state, reference, email, from_date, to_date, page, display_size, agreement. See Public API documentation for the correct data formats"));
+        expectedException.expect(aValidationExceptionContaining("P0401", "Invalid parameters: state, reference, email, from_date, to_date, page, display_size, agreement_id. See Public API documentation for the correct data formats"));
         PaymentSearchValidator.validateSearchParameters(account,"invalid", randomAlphanumeric(500), UNSUCCESSFUL_TEST_EMAIL, 
                 "", "2016-01-25T13-23:55Z", "2016-01-25T13-23:55Z", 
                 "-1", "-1", INVALID_LENGTH_AGREEMENT, "424242", "4242");
@@ -124,7 +124,7 @@ public class PaymentSearchValidatorTest {
     
     @Test
     public void validateParams_shouldGiveAnError_forTooLongMandate() {
-        expectedException.expect(aValidationExceptionContaining("P0401", "Invalid parameters: agreement. See Public API documentation for the correct data formats"));
+        expectedException.expect(aValidationExceptionContaining("P0401", "Invalid parameters: agreement_id. See Public API documentation for the correct data formats"));
         PaymentSearchValidator.validateSearchParameters(account,"", "", "", 
                 "", "", "", 
                 "","", INVALID_LENGTH_AGREEMENT, "424242", "4242");
@@ -166,6 +166,24 @@ public class PaymentSearchValidatorTest {
     }
 
     @Test
+    public void validateParams_shouldGiveAnError_forNegativeFirstDigits() {
+        expectedException.expect(aValidationExceptionContaining("P0401", "Invalid parameters: first_digits_card_number. See Public API documentation for the correct data formats"));
+        PaymentSearchValidator.validateSearchParameters(account,
+                "", "", "",
+                "", "", "",
+                "","", "", "-42422", "");
+    }
+
+    @Test
+    public void validateParams_shouldGiveAnError_forNonArabicFirstDigits() {
+        expectedException.expect(aValidationExceptionContaining("P0401", "Invalid parameters: first_digits_card_number. See Public API documentation for the correct data formats"));
+        PaymentSearchValidator.validateSearchParameters(account,
+                "", "", "",
+                "", "", "",
+                "","", "", "१२३१२३", "");
+    }
+
+    @Test
     public void validateParams_shouldGiveAnError_forWrongLengthLastDigits() {
         expectedException.expect(aValidationExceptionContaining("P0401", "Invalid parameters: last_digits_card_number. See Public API documentation for the correct data formats"));
         PaymentSearchValidator.validateSearchParameters(account,
@@ -181,5 +199,23 @@ public class PaymentSearchValidatorTest {
                 "", "", "",
                 "", "", "",
                 "","", "", "", "422a");
+    }
+
+    @Test
+    public void validateParams_shouldGiveAnError_forNegativeLastDigits() {
+        expectedException.expect(aValidationExceptionContaining("P0401", "Invalid parameters: last_digits_card_number. See Public API documentation for the correct data formats"));
+        PaymentSearchValidator.validateSearchParameters(account,
+                "", "", "",
+                "", "", "",
+                "","", "", "", "-433");
+    }
+
+    @Test
+    public void validateParams_shouldGiveAnError_forNonArabicLastDigits() {
+        expectedException.expect(aValidationExceptionContaining("P0401", "Invalid parameters: last_digits_card_number. See Public API documentation for the correct data formats"));
+        PaymentSearchValidator.validateSearchParameters(account,
+                "", "", "",
+                "", "", "",
+                "","", "", "", "१२३२");
     }
 }

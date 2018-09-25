@@ -57,8 +57,8 @@ public class PaymentSearchValidator {
             validatePageIfNotNull(pageNumber, validationErrors);
             validateDisplaySizeIfNotNull(displaySize, validationErrors);
             validateAgreement(agreementId, validationErrors);
-            validatFirstDigitsCardNumber(firstDigitsCardNumber, validationErrors);
-            validatLastDigitsCardNumber(lastDigitsCardNumber, validationErrors);
+            validateFirstDigitsCardNumber(firstDigitsCardNumber, validationErrors);
+            validateLastDigitsCardNumber(lastDigitsCardNumber, validationErrors);
         } catch (Exception e) {
             throw new ValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", "), e.getMessage()));
         }
@@ -69,18 +69,18 @@ public class PaymentSearchValidator {
 
     private static void validateAgreement(String agreement, List<String> validationErrors) {
         if (!isValid(agreement, AGREEMENT_ID_MAX_LENGTH)){
-            validationErrors.add("agreement");
+            validationErrors.add("agreement_id");
         }
     }
 
-    private static void validatFirstDigitsCardNumber(String firstDigitsCardNumber, List<String> validationErrors) {
-        if (!(ExactLengthValidator.isValid(firstDigitsCardNumber, FIRST_DIGITS_CARD_NUMBER_LENGTH) && NumericValidator.isValid(firstDigitsCardNumber))) {
+    private static void validateFirstDigitsCardNumber(String firstDigitsCardNumber, List<String> validationErrors) {
+        if (!ExactLengthValidator.isValid(firstDigitsCardNumber, FIRST_DIGITS_CARD_NUMBER_LENGTH) || !NumericValidator.isValid(firstDigitsCardNumber)) {
             validationErrors.add("first_digits_card_number");
         }
     }
 
-    private static void validatLastDigitsCardNumber(String lastDigitsCardNumber, List<String> validationErrors) {
-        if (!(ExactLengthValidator.isValid(lastDigitsCardNumber, LAST_DIGITS_CARD_NUMBER_LENGTH) && NumericValidator.isValid(lastDigitsCardNumber))) {
+    private static void validateLastDigitsCardNumber(String lastDigitsCardNumber, List<String> validationErrors) {
+        if (!ExactLengthValidator.isValid(lastDigitsCardNumber, LAST_DIGITS_CARD_NUMBER_LENGTH) || !NumericValidator.isValid(lastDigitsCardNumber)) {
             validationErrors.add("last_digits_card_number");
         }
     }

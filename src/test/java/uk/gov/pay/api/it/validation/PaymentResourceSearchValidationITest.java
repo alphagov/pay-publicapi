@@ -22,7 +22,7 @@ public class PaymentResourceSearchValidationITest extends PaymentResourceITestBa
 
     private static final String VALID_REFERENCE = "test_reference";
     private static final String VALID_LAST_DIGITS_CARD_NUMBER = "4242";
-    private static final String VALID_FIRST_DIGITS_CARD_NUMBER = "424242";
+    private static final String VALID_FIRST_DIGITS_CARD_NUMBER = "123456";
     private static final String VALID_STATE = "success";
     private static final String VALID_EMAIL = "alice.111@mail.fake";
     private static final String VALID_FROM_DATE = "2016-01-28T00:00:00Z";
@@ -180,7 +180,7 @@ public class PaymentResourceSearchValidationITest extends PaymentResourceITestBa
                         .put("reference", VALID_REFERENCE)
                         .put("email", VALID_EMAIL)
                         .put("state", VALID_STATE)
-                        .put("first_digits_card_number", "4242")
+                        .put("first_digits_card_number", "4a4234")
                         .put("last_digits_card_number", "423")
                         .put("from_date", VALID_FROM_DATE)
                         .put("to_date", VALID_TO_DATE)
