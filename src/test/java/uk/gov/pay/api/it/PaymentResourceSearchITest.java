@@ -8,7 +8,6 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import uk.gov.pay.api.it.fixtures.PaymentNavigationLinksFixture;
 import uk.gov.pay.api.model.Address;
@@ -298,7 +297,6 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
         assertThat(results, matchesField("first_digits_card_number", TEST_FIRST_DIGITS_CARD_NUMBER));
     }
 
-    @Ignore
     @Test
     public void searchPayments_filterByCardHolderName() {
         String payments = aPaginatedPaymentSearchResult()
