@@ -19,7 +19,7 @@ import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Set;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public abstract class SearchPaymentsBase {
 
@@ -47,18 +47,18 @@ public abstract class SearchPaymentsBase {
     public abstract Response getSearchResponse(Account account, Map<String, String> queryParams);
     protected abstract Set<String> getSupportedSearchParams();
     
-    protected void validateAllowedSearchFields(Map<String, String> queryParams) {
+    protected void validateSupportedSearchParams(Map<String, String> queryParams) {
         queryParams.entrySet().stream()
                 .filter(this::isUnsupportedParamWithNonBlankValue)
                 .findFirst()
                 .ifPresent(invalidParam -> {
                     throw new BadRequestException(PaymentError
-                            .aPaymentError(PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR, invalidParam));
+                            .aPaymentError(PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR, invalidParam.getKey()));
                 });
     }
     
     private boolean isUnsupportedParamWithNonBlankValue(Map.Entry<String, String> queryParam) {
-        return !(getSupportedSearchParams().contains(queryParam.getKey()) || isBlank(queryParam.getValue()));
+        return !getSupportedSearchParams().contains(queryParam.getKey()) && isNotBlank(queryParam.getValue());
     }
     
     protected HalRepresentation.HalRepresentationBuilder decoratePagination(HalRepresentation.HalRepresentationBuilder halRepresentationBuilder, IPaymentSearchPagination pagination) {

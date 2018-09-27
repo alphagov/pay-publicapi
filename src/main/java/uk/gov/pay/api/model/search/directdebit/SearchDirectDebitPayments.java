@@ -49,7 +49,7 @@ public class SearchDirectDebitPayments extends SearchPaymentsBase {
     
     @Override
     public Response getSearchResponse(Account account, Map<String, String> queryParams) {
-        validateAllowedSearchFields(queryParams);
+        validateSupportedSearchParams(queryParams);
         String url = connectorUriGenerator.directDebitTransactionsURI(account, queryParams);
         Response connectorResponse = client
                 .target(url)

@@ -52,7 +52,7 @@ public class SearchCardPayments extends SearchPaymentsBase {
 
     @Override
     public Response getSearchResponse(Account account, Map<String, String> queryParams) {
-        validateAllowedSearchFields(queryParams);
+        validateSupportedSearchParams(queryParams);
         queryParams.put("transactionType", "charge");
 
         String url = connectorUriGenerator.chargesURIWithParams(account, queryParams);

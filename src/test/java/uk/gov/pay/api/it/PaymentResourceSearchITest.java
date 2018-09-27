@@ -569,7 +569,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", is("P0401"))
-                .assertThat("$.description", is("Invalid parameters: agreement_id=my_agreement. See Public API documentation for the correct data formats"));
+                .assertThat("$.description", is("Invalid parameters: agreement_id. See Public API documentation for the correct data formats"));
     }
 
     private Matcher<? super List<Map<String, Object>>> matchesState(final String state) {
