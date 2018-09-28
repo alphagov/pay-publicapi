@@ -87,7 +87,7 @@ public class ResourcesFilterRateLimiterITest extends ResourcesFilterITestBase {
                         .withNumberOfResults(1).getResults())
                 .build();
 
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, REFERENCE, null, null, null, null, null, payments);
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, REFERENCE, null, null, null, null, null, null, null, null, payments);
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> searchPayments(API_KEY, ImmutableMap.of("reference", REFERENCE)),

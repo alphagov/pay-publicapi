@@ -190,14 +190,22 @@ public class PaymentsResource {
                                    @QueryParam("display_size") String displaySize,
                                    @ApiParam(value = "Direct Debit Agreement Id", hidden = true)
                                    @QueryParam("agreement_id") String agreementId,
+                                   @ApiParam(value = "Name on card used to make payment", hidden = false)
+                                       @QueryParam("cardholder_name") String cardHolderName,
+                                   @ApiParam(value = "First six digits of the card used to make payment", hidden = false)
+
+                                       @QueryParam("first_digits_card_number") String firstDigitsCardNumber,
+                                   @ApiParam(value = "Last four digits of the card used to make payment", hidden = false)
+
+                                       @QueryParam("last_digits_card_number") String lastDigitsCardNumber,
                                    @Context UriInfo uriInfo) {
 
         logger.info("Payments search request - [ {} ]",
-                format("reference:%s, email: %s, status: %s, card_brand %s, fromDate: %s, toDate: %s, page: %s, display_size: %s, agreement_id: %s",
-                        reference, email, state, cardBrand, fromDate, toDate, pageNumber, displaySize, agreementId));
+                format("reference:%s, email: %s, status: %s, card_brand %s, fromDate: %s, toDate: %s, page: %s, display_size: %s, agreement_id: %s, cardholder_name: %s, first_digits_card_number: %s, last_digits_card_number: %s",
+                        reference, email, state, cardBrand, fromDate, toDate, pageNumber, displaySize, agreementId, cardHolderName, firstDigitsCardNumber, lastDigitsCardNumber));
 
         return paymentSearchService.doSearch(account, reference, email, state, cardBrand,
-                fromDate, toDate, pageNumber, displaySize, agreementId);
+                fromDate, toDate, pageNumber, displaySize, agreementId, cardHolderName, firstDigitsCardNumber, lastDigitsCardNumber);
     }
 
     @POST

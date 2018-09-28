@@ -4,13 +4,12 @@ import black.door.hate.HalRepresentation;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.exception.SearchChargesException;
-import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.search.SearchPaymentsBase;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.PaymentUriGenerator;
@@ -22,11 +21,19 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.http.HttpStatus.SC_OK;
+import static uk.gov.pay.api.service.PaymentSearchService.AGREEMENT_KEY;
+import static uk.gov.pay.api.service.PaymentSearchService.DISPLAY_SIZE;
+import static uk.gov.pay.api.service.PaymentSearchService.EMAIL_KEY;
+import static uk.gov.pay.api.service.PaymentSearchService.FROM_DATE_KEY;
+import static uk.gov.pay.api.service.PaymentSearchService.PAGE;
+import static uk.gov.pay.api.service.PaymentSearchService.REFERENCE_KEY;
+import static uk.gov.pay.api.service.PaymentSearchService.STATE_KEY;
+import static uk.gov.pay.api.service.PaymentSearchService.TO_DATE_KEY;
 
 public class SearchDirectDebitPayments extends SearchPaymentsBase {
 
@@ -39,13 +46,10 @@ public class SearchDirectDebitPayments extends SearchPaymentsBase {
                                      ObjectMapper objectMapper) {
         super(client, configuration, connectorUriGenerator, paymentUriGenerator, objectMapper);
     }
-
+    
     @Override
     public Response getSearchResponse(Account account, Map<String, String> queryParams) {
-        if (isNotEmpty(queryParams.get("card_brand"))) {
-            throw new BadRequestException(PaymentError
-                    .aPaymentError(PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR, "card_brand"));
-        }
+        validateSupportedSearchParams(queryParams);
         String url = connectorUriGenerator.directDebitTransactionsURI(account, queryParams);
         Response connectorResponse = client
                 .target(url)
@@ -57,6 +61,11 @@ public class SearchDirectDebitPayments extends SearchPaymentsBase {
             return processResponse(connectorResponse);
         }
         throw new SearchChargesException(connectorResponse);
+    }
+
+    @Override
+    protected Set<String> getSupportedSearchParams() {
+        return ImmutableSet.of(REFERENCE_KEY, EMAIL_KEY, STATE_KEY, AGREEMENT_KEY, FROM_DATE_KEY, TO_DATE_KEY, PAGE, DISPLAY_SIZE);
     }
 
     private Response processResponse(Response directDebitResponse) {

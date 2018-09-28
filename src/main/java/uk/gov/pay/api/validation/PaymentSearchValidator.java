@@ -24,6 +24,9 @@ import static uk.gov.pay.api.validation.PaymentRequestValidator.REFERENCE_MAX_LE
 
 
 public class PaymentSearchValidator {
+    private static final int FIRST_DIGITS_CARD_NUMBER_LENGTH = 6;
+    private static final int LAST_DIGITS_CARD_NUMBER_LENGTH = 4;
+    
     // we should really find a way to not have this anywhere but in the connector...
     public static final Set<String> VALID_CARD_PAYMENT_STATES =
             new HashSet<>(Arrays.asList("created", "started", "submitted", "success", "failed", "cancelled", "error"));
@@ -31,9 +34,18 @@ public class PaymentSearchValidator {
     public static final Set<String> VALID_DIRECT_DEBIT_STATES =
             new HashSet<>(Arrays.asList("started", "pending", "success", "failed", "cancelled"));
 
-    public static void validateSearchParameters(Account account, String state, String reference, String email, String cardBrand,
-                                                String fromDate, String toDate, String pageNumber,
-                                                String displaySize, String agreementId) {
+    public static void validateSearchParameters(Account account, 
+                                                String state, 
+                                                String reference, 
+                                                String email, 
+                                                String cardBrand,
+                                                String fromDate, 
+                                                String toDate, 
+                                                String pageNumber,
+                                                String displaySize, 
+                                                String agreementId, 
+                                                String firstDigitsCardNumber, 
+                                                String lastDigitsCardNumber) {
         List<String> validationErrors = new LinkedList<>();
         try {
             validateState(account, state, validationErrors);
@@ -45,6 +57,8 @@ public class PaymentSearchValidator {
             validatePageIfNotNull(pageNumber, validationErrors);
             validateDisplaySizeIfNotNull(displaySize, validationErrors);
             validateAgreement(agreementId, validationErrors);
+            validateFirstDigitsCardNumber(firstDigitsCardNumber, validationErrors);
+            validateLastDigitsCardNumber(lastDigitsCardNumber, validationErrors);
         } catch (Exception e) {
             throw new ValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", "), e.getMessage()));
         }
@@ -55,7 +69,19 @@ public class PaymentSearchValidator {
 
     private static void validateAgreement(String agreement, List<String> validationErrors) {
         if (!isValid(agreement, AGREEMENT_ID_MAX_LENGTH)){
-                validationErrors.add("agreement");
+            validationErrors.add("agreement_id");
+        }
+    }
+
+    private static void validateFirstDigitsCardNumber(String firstDigitsCardNumber, List<String> validationErrors) {
+        if (!ExactLengthValidator.isValid(firstDigitsCardNumber, FIRST_DIGITS_CARD_NUMBER_LENGTH) || !NumericValidator.isValid(firstDigitsCardNumber)) {
+            validationErrors.add("first_digits_card_number");
+        }
+    }
+
+    private static void validateLastDigitsCardNumber(String lastDigitsCardNumber, List<String> validationErrors) {
+        if (!ExactLengthValidator.isValid(lastDigitsCardNumber, LAST_DIGITS_CARD_NUMBER_LENGTH) || !NumericValidator.isValid(lastDigitsCardNumber)) {
+            validationErrors.add("last_digits_card_number");
         }
     }
 
@@ -112,9 +138,9 @@ public class PaymentSearchValidator {
     }
 
     private static boolean validateState(Account account, String state) {
-        return isBlank(state) || 
+        return isBlank(state) ||
                 (isDirectDebitAccount(account) ? VALID_DIRECT_DEBIT_STATES.contains(state) :
-                VALID_CARD_PAYMENT_STATES.contains(state));
+                        VALID_CARD_PAYMENT_STATES.contains(state));
     }
 
     private static boolean isDirectDebitAccount(Account account) {

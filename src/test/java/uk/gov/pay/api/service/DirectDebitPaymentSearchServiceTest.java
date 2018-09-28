@@ -29,7 +29,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PaymentSearchServiceTest {
+public class DirectDebitPaymentSearchServiceTest {
 
     @Rule
     public PactProviderRule connectorRule = new PactProviderRule("direct-debit-connector", this);
@@ -42,7 +42,7 @@ public class PaymentSearchServiceTest {
     private PaymentSearchService paymentSearchService;
     private PaymentUriGenerator paymentUriGenerator;
     private ObjectMapper objectMapper;
-    
+
     @Before
     public void setUp() {
         when(configuration.getConnectorDDUrl()).thenReturn(connectorRule.getUrl());
@@ -55,31 +55,55 @@ public class PaymentSearchServiceTest {
         objectMapper = new ObjectMapper();
         paymentSearchService = new PaymentSearchService(client, configuration, connectorUriGenerator, paymentUriGenerator, objectMapper);
     }
-    
+
     @Test
     public void doSearchShouldThrowBadRequestException_whenAccountIsNotDD_andAgreementIsASearchParam() {
         Account account = new Account("an account", TokenPaymentType.CARD);
         String agreementId = "an-agreement-id";
         try {
             paymentSearchService.doSearch(account, null, null, null, null, null,
-                    null, null, null, agreementId);
+                    null, null, null, agreementId, null, null, null);
         } catch (uk.gov.pay.api.exception.BadRequestException ex) {
             assertThat(ex.getPaymentError().getCode(), is("P0401"));
-            assertThat(ex.getPaymentError().getDescription().contains("Invalid parameters: agreement_id."), is(true));
+            assertThat(ex.getPaymentError().getDescription().contains("Invalid parameters: agreement_id"), is(true));
         }
     }
-    
+
+    @Test
+    public void doSearchShouldThrowBadRequestException_whenAccountIsDD_andFirstDigitsCardNumberIsASearchParam() {
+        Account account = new Account("an account", TokenPaymentType.DIRECT_DEBIT);
+        try {
+            paymentSearchService.doSearch(account, null, null, null, null, null,
+                    null, null, null, null,   null, "424242", null);
+        } catch (uk.gov.pay.api.exception.BadRequestException ex) {
+            assertThat(ex.getPaymentError().getCode(), is("P0401"));
+            assertThat(ex.getPaymentError().getDescription().contains("Invalid parameters: first_digits_card_number"), is(true));
+        }
+    }
+
+    @Test
+    public void doSearchShouldThrowBadRequestException_whenAccountIsDD_andLastDigitsCardNumberIsASearchParam() {
+        Account account = new Account("an account", TokenPaymentType.DIRECT_DEBIT);
+        try {
+            paymentSearchService.doSearch(account, null, null, null, null, null,
+                    null, null, null, null, null, null, "4242");
+        } catch (uk.gov.pay.api.exception.BadRequestException ex) {
+            assertThat(ex.getPaymentError().getCode(), is("P0401"));
+            assertThat(ex.getPaymentError().getDescription().contains("Invalid parameters: last_digits_card_number"), is(true));
+        }
+    }
+
     @Test
     @PactVerification({"direct-debit-connector"})
     @Pacts(pacts = {"publicapi-direct-debit-connector-search-by-mandate-three-results"})
     public void doSearchShouldReturnADirectDebitSearchResponseWithThreeTransactions() {
         Account account = new Account("2po9ycynwq8yxdgg2qwq9e9qpyrtre", TokenPaymentType.DIRECT_DEBIT);
         String agreementId = "jkdjsvd8f78ffkwfek2q";
-        Response response = 
-                paymentSearchService.doSearch(account, null, null, 
-                        null, null, null, 
+        Response response =
+                paymentSearchService.doSearch(account, null, null,
                         null, null, null,
-                        agreementId);
+                        null, null, null,
+                        agreementId, null, null, null);
         JsonAssert.with(response.getEntity().toString())
                 .assertThat("count", is(3))
                 .assertThat("total", is(3))

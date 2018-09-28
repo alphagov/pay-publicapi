@@ -21,6 +21,8 @@ import static org.hamcrest.core.Is.is;
 public class PaymentResourceSearchValidationITest extends PaymentResourceITestBase {
 
     private static final String VALID_REFERENCE = "test_reference";
+    private static final String VALID_LAST_DIGITS_CARD_NUMBER = "4242";
+    private static final String VALID_FIRST_DIGITS_CARD_NUMBER = "123456";
     private static final String VALID_STATE = "success";
     private static final String VALID_EMAIL = "alice.111@mail.fake";
     private static final String VALID_FROM_DATE = "2016-01-28T00:00:00Z";
@@ -37,12 +39,16 @@ public class PaymentResourceSearchValidationITest extends PaymentResourceITestBa
     @Test
     public void searchPayments_errorWhenToDateIsNotInZoneDateTimeFormat() throws Exception {
         InputStream body = searchPayments(API_KEY,
-                ImmutableMap.of(
-                        "reference", VALID_REFERENCE,
-                        "email", VALID_EMAIL,
-                        "state", VALID_STATE,
-                        "from_date", VALID_FROM_DATE,
-                        "to_date", "2016-01-01 00:00"))
+                ImmutableMap.<String, String>builder()
+                        .put("reference", VALID_REFERENCE)
+                        .put("email", VALID_EMAIL)
+                        .put("state", VALID_STATE)
+                        .put("first_digits_card_number", VALID_FIRST_DIGITS_CARD_NUMBER)
+                        .put("last_digits_card_number", VALID_LAST_DIGITS_CARD_NUMBER)
+                        .put("from_date", VALID_FROM_DATE)
+                        .put("to_date", "2016-01-01 00:00")
+                        .build()
+        )
                 .statusCode(422)
                 .contentType(JSON).extract()
                 .body().asInputStream();
@@ -165,6 +171,31 @@ public class PaymentResourceSearchValidationITest extends PaymentResourceITestBa
                 .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", is("P0401"))
                 .assertThat("$.description", is("Invalid parameters: from_date, to_date. See Public API documentation for the correct data formats"));
+    }
+    
+    @Test
+    public void searchPayments_errorWhenCardDigitsAreInvalid() throws Exception {
+        InputStream body = searchPayments(API_KEY,
+                ImmutableMap.<String, String>builder()
+                        .put("reference", VALID_REFERENCE)
+                        .put("email", VALID_EMAIL)
+                        .put("state", VALID_STATE)
+                        .put("first_digits_card_number", "4a4234")
+                        .put("last_digits_card_number", "423")
+                        .put("from_date", VALID_FROM_DATE)
+                        .put("to_date", VALID_TO_DATE)
+                        .build()
+        )
+                .statusCode(422)
+                .contentType(JSON).extract()
+                .body().asInputStream();
+
+        String json = IOUtils.toString(body, "UTF-8");
+
+        JsonAssert.with(json)
+                .assertThat("$.*", hasSize(2))
+                .assertThat("$.code", is("P0401"))
+                .assertThat("$.description", is("Invalid parameters: first_digits_card_number, last_digits_card_number. See Public API documentation for the correct data formats"));
     }
 
     @Test
