@@ -12,7 +12,6 @@ import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.exception.CancelChargeException;
 import uk.gov.pay.api.exception.CaptureChargeException;
 import uk.gov.pay.api.exception.GetEventsException;
 import uk.gov.pay.api.model.PaymentError;
@@ -21,6 +20,7 @@ import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.model.search.card.PaymentSearchResults;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
+import uk.gov.pay.api.service.CancelPaymentService;
 import uk.gov.pay.api.service.CapturePaymentService;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.CreatePaymentService;
@@ -37,7 +37,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -61,6 +60,7 @@ public class PaymentsResource {
     private final PaymentSearchService paymentSearchService;
     private final GetPaymentService getPaymentService;
     private final CapturePaymentService capturePaymentService;
+    private final CancelPaymentService cancelPaymentService;
 
     @Inject
     public PaymentsResource(Client client,
@@ -69,7 +69,8 @@ public class PaymentsResource {
                             PublicApiUriGenerator publicApiUriGenerator,
                             ConnectorUriGenerator connectorUriGenerator,
                             GetPaymentService getPaymentService,
-                            CapturePaymentService capturePaymentService) {
+                            CapturePaymentService capturePaymentService,
+                            CancelPaymentService cancelPaymentService) {
         this.client = client;
         this.createPaymentService = createPaymentService;
         this.publicApiUriGenerator = publicApiUriGenerator;
@@ -77,6 +78,7 @@ public class PaymentsResource {
         this.paymentSearchService = paymentSearchService;
         this.getPaymentService = getPaymentService;
         this.capturePaymentService = capturePaymentService;
+        this.cancelPaymentService = cancelPaymentService;
     }
 
     @GET
@@ -267,17 +269,7 @@ public class PaymentsResource {
 
         logger.info("Payment cancel request - payment_id=[{}]", paymentId);
 
-        Response connectorResponse = client
-                .target(connectorUriGenerator.cancelURI(account, paymentId))
-                .request()
-                .post(Entity.json("{}"));
-
-        if (connectorResponse.getStatus() == HttpStatus.SC_NO_CONTENT) {
-            connectorResponse.close();
-            return Response.noContent().build();
-        }
-
-        throw new CancelChargeException(connectorResponse);
+        return cancelPaymentService.cancel(account, paymentId);
     }
 
     @POST
