@@ -870,6 +870,10 @@ GET /v1/payments
 | `display_size`  |    -     | Number of records to be returned per page, should be a non zero +ve number (optional, defaults to 500)|
 | `email`         |    -     | Email ID of the payment user to search for          |
 | `agreement_id`  |    -     | Agreement id. Used by Direct Debit exclusively. If used for Card payment a BadRequestException is thrown. |
+| `first_digits_card_number`  |    -     | First six (6) digits of the card used to make payment. If used for Direct Debit payment a BadRequestException is thrown. |
+| `last_digits_card_number`  |    -     | Last four (4) digits of the card used to make payment. If used for Direct Debit payment a BadRequestException is thrown. |
+| `cardholder_name`  |    -     | Name on card used to make payment. If used for Direct Debit payment a BadRequestException is thrown. |
+| `agreement_id`  |    -     | Agreement id. Used by Direct Debit exclusively. If used for Card payment a BadRequestException is thrown. |
 
 #### Notes:
 `Valid states for Card Payments: "created", "started", "submitted", "success", "failed", "cancelled", "error"`
