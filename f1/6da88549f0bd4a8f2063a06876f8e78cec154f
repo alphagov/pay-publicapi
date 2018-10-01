@@ -49,3 +49,5 @@ staging-2.tag=alpha_staging-2-149
 staging-2.alpha_staging-2-149.date=2018-10-01:11:27:35
 
 staging-2.alpha_staging-2-149.status=success
+
+production-2.tag=alpha_production-2-149
