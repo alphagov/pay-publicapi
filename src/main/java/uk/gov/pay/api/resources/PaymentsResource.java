@@ -1,26 +1,29 @@
 package uk.gov.pay.api.resources;
 
-import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.databind.JsonNode;
-import io.dropwizard.auth.Auth;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.GsonBuilder;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CancelChargeException;
 import uk.gov.pay.api.exception.CaptureChargeException;
+import uk.gov.pay.api.exception.CreateRefundException;
 import uk.gov.pay.api.exception.GetEventsException;
-import uk.gov.pay.api.model.PaymentError;
+import uk.gov.pay.api.exception.GetRefundException;
+import uk.gov.pay.api.exception.GetRefundsException;
+import uk.gov.pay.api.model.ChargeFromResponse;
+import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.PaymentEvents;
+import uk.gov.pay.api.model.PaymentWithAllLinks;
+import uk.gov.pay.api.model.RefundFromConnector;
+import uk.gov.pay.api.model.RefundResponse;
+import uk.gov.pay.api.model.RefundsFromConnector;
+import uk.gov.pay.api.model.RefundsResponse;
 import uk.gov.pay.api.model.ValidCreatePaymentRequest;
-import uk.gov.pay.api.model.links.PaymentWithAllLinks;
-import uk.gov.pay.api.model.search.card.PaymentSearchResults;
-import uk.gov.pay.api.resources.error.ApiErrorResponse;
 import uk.gov.pay.api.service.CapturePaymentService;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.CreatePaymentService;
@@ -29,31 +32,32 @@ import uk.gov.pay.api.service.PaymentSearchService;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
 
 import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.util.Collections;
+import java.util.List;
 
 import static java.lang.String.format;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.client.Entity.json;
+import static javax.ws.rs.core.Response.Status.ACCEPTED;
+import static javax.ws.rs.core.UriBuilder.fromPath;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.http.HttpStatus.SC_OK;
 
-@Path("/")
-@Api(value = "/", description = "Public Api Endpoints")
-@Produces({"application/json"})
 public class PaymentsResource {
 
     private static final Logger logger = LoggerFactory.getLogger(PaymentsResource.class);
 
+    private static final String API_VERSION_PATH = "/v1";
+    private static final String CONNECTOR_ACCOUNT_RESOURCE = API_VERSION_PATH + "/api/accounts/%s";
+    private static final String CONNECTOR_CHARGES_RESOURCE = CONNECTOR_ACCOUNT_RESOURCE + "/charges";
+    private static final String CONNECTOR_CHARGE_RESOURCE = CONNECTOR_CHARGES_RESOURCE + "/%s";
+    private static final String CONNECTOR_CHARGE_REFUNDS_RESOURCE = CONNECTOR_CHARGE_RESOURCE + "/refunds";
+    private static final String CONNECTOR_CHARGE_REFUND_BY_ID_RESOURCE = CONNECTOR_CHARGE_REFUNDS_RESOURCE + "/%s";
+    
     private final Client client;
     private final CreatePaymentService createPaymentService;
     private final PublicApiUriGenerator publicApiUriGenerator;
@@ -61,6 +65,8 @@ public class PaymentsResource {
     private final PaymentSearchService paymentSearchService;
     private final GetPaymentService getPaymentService;
     private final CapturePaymentService capturePaymentService;
+    private final String connectorUrl;
+    private final String baseUrl;
 
     @Inject
     public PaymentsResource(Client client,
@@ -69,7 +75,8 @@ public class PaymentsResource {
                             PublicApiUriGenerator publicApiUriGenerator,
                             ConnectorUriGenerator connectorUriGenerator,
                             GetPaymentService getPaymentService,
-                            CapturePaymentService capturePaymentService) {
+                            CapturePaymentService capturePaymentService,
+                            PublicApiConfig configuration) {
         this.client = client;
         this.createPaymentService = createPaymentService;
         this.publicApiUriGenerator = publicApiUriGenerator;
@@ -77,26 +84,14 @@ public class PaymentsResource {
         this.paymentSearchService = paymentSearchService;
         this.getPaymentService = getPaymentService;
         this.capturePaymentService = capturePaymentService;
+        this.connectorUrl = configuration.getConnectorUrl();
+        this.baseUrl = configuration.getBaseUrl();
     }
 
-    @GET
-    @Timed
-    @Path("/v1/payments/{paymentId}")
-    @Produces(APPLICATION_JSON)
-    @ApiOperation(
-            value = "Find payment by ID",
-            notes = "Return information about the payment " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
-            code = 200)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = PaymentWithAllLinks.class),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
-    public Response getPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                               @PathParam("paymentId") String paymentId) {
+    public Response getPayment(
+            String paymentId,
+            Account account
+    ) {
 
         logger.info("Payment request - paymentId={}", paymentId);
 
@@ -107,24 +102,10 @@ public class PaymentsResource {
 
     }
 
-    @GET
-    @Timed
-    @Path("/v1/payments/{paymentId}/events")
-    @Produces(APPLICATION_JSON)
-    @ApiOperation(
-            value = "Return payment events by ID",
-            notes = "Return payment events information about a certain payment " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
-            code = 200)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = PaymentEvents.class),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
-    public Response getPaymentEvents(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                                     @PathParam("paymentId") String paymentId) {
+    public Response getPaymentEvents(
+            String paymentId,
+            Account account
+    ) {
 
         logger.info("Payment events request - payment_id={}", paymentId);
 
@@ -152,83 +133,31 @@ public class PaymentsResource {
         throw new GetEventsException(connectorResponse);
     }
 
-    @GET
-    @Timed
-    @Path("/v1/payments")
-    @Produces(APPLICATION_JSON)
-    @ApiOperation(
-            value = "Search payments",
-            notes = "Search payments by reference, state, 'from' and 'to' date. " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
-            responseContainer = "List",
-            code = 200)
-
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = PaymentSearchResults.class),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 422, message = "Invalid parameters: from_date, to_date, status, display_size. See Public API documentation for the correct data formats", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
-    public Response searchPayments(@ApiParam(value = "accountId", hidden = true)
-                                   @Auth Account account,
-                                   @ApiParam(value = "Your payment reference to search", hidden = false)
-                                   @QueryParam("reference") String reference,
-                                   @ApiParam(value = "The user email used in the payment to be searched", hidden = false)
-                                   @QueryParam("email") String email,
-                                   @ApiParam(value = "State of payments to be searched. Example=success", hidden = false, allowableValues = "range[created,started,submitted,success,failed,cancelled,error")
-                                   @QueryParam("state") String state,
-                                   @ApiParam(value = "Card brand used for payment. Example=master-card", hidden = false)
-                                   @QueryParam("card_brand") String cardBrand,
-                                   @ApiParam(value = "From date of payments to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z", hidden = false)
-                                   @QueryParam("from_date") String fromDate,
-                                   @ApiParam(value = "To date of payments to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z", hidden = false)
-                                   @QueryParam("to_date") String toDate,
-                                   @ApiParam(value = "Page number requested for the search, should be a positive integer (optional, defaults to 1)", hidden = false)
-                                   @QueryParam("page") String pageNumber,
-                                   @ApiParam(value = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)", hidden = false)
-                                   @QueryParam("display_size") String displaySize,
-                                   @ApiParam(value = "Direct Debit Agreement Id", hidden = true)
-                                   @QueryParam("agreement_id") String agreementId,
-                                   @ApiParam(value = "Name on card used to make payment", hidden = false)
-                                       @QueryParam("cardholder_name") String cardHolderName,
-                                   @ApiParam(value = "First six digits of the card used to make payment", hidden = false)
-
-                                       @QueryParam("first_digits_card_number") String firstDigitsCardNumber,
-                                   @ApiParam(value = "Last four digits of the card used to make payment", hidden = false)
-
-                                       @QueryParam("last_digits_card_number") String lastDigitsCardNumber,
-                                   @Context UriInfo uriInfo) {
+    public Response searchPayments(String reference,
+                                   String email,
+                                   String state,
+                                   String cardBrand,
+                                   String fromDate,
+                                   String toDate,
+                                   String pageNumber,
+                                   String displaySize,
+                                   String cardHolderName,
+                                   String firstDigitsCardNumber,
+                                   String lastDigitsCardNumber,
+                                   Account account) {
 
         logger.info("Payments search request - [ {} ]",
-                format("reference:%s, email: %s, status: %s, card_brand %s, fromDate: %s, toDate: %s, page: %s, display_size: %s, agreement_id: %s, cardholder_name: %s, first_digits_card_number: %s, last_digits_card_number: %s",
-                        reference, email, state, cardBrand, fromDate, toDate, pageNumber, displaySize, agreementId, cardHolderName, firstDigitsCardNumber, lastDigitsCardNumber));
+                format("reference:%s, email: %s, status: %s, card_brand %s, fromDate: %s, toDate: %s, page: %s, display_size: %s, cardholder_name: %s, first_digits_card_number: %s, last_digits_card_number: %s",
+                        reference, email, state, cardBrand, fromDate, toDate, pageNumber, displaySize, cardHolderName, firstDigitsCardNumber, lastDigitsCardNumber));
 
         return paymentSearchService.doSearch(account, reference, email, state, cardBrand,
-                fromDate, toDate, pageNumber, displaySize, agreementId, cardHolderName, firstDigitsCardNumber, lastDigitsCardNumber);
+                fromDate, toDate, pageNumber, displaySize, null, cardHolderName, firstDigitsCardNumber, lastDigitsCardNumber);
     }
 
-    @POST
-    @Timed
-    @Path("/v1/payments")
-    @Consumes(APPLICATION_JSON)
-    @Produces(APPLICATION_JSON)
-    @ApiOperation(
-            value = "Create new payment",
-            notes = "Create a new payment for the account associated to the Authorisation token. " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
-            code = 201,
-            nickname = "newPayment")
-    @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Created", response = PaymentWithAllLinks.class),
-            @ApiResponse(code = 400, message = "Bad request", response = PaymentError.class),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 422, message = "Invalid attribute value: description. Must be less than or equal to 255 characters length", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
-    public Response createNewPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                                     @ApiParam(value = "requestPayload", required = true) ValidCreatePaymentRequest validCreatePaymentRequest) {
+    public Response createNewPayment(
+            ValidCreatePaymentRequest validCreatePaymentRequest,
+            Account account
+    ) {
         logger.info("Payment create request passed validation and parsed to {}", validCreatePaymentRequest);
 
         PaymentWithAllLinks createdPayment = createPaymentService.create(account, validCreatePaymentRequest);
@@ -242,28 +171,10 @@ public class PaymentsResource {
         return response;
     }
 
-    @POST
-    @Timed
-    @Path("/v1/payments/{paymentId}/cancel")
-    @Produces(APPLICATION_JSON)
-    @ApiOperation(
-            value = "Cancel payment",
-            notes = "Cancel a payment based on the provided payment ID and the Authorisation token. " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be cancelled if it's in " +
-                    "a state that isn't finished.",
-            code = 204)
-    @ApiResponses(value = {
-            @ApiResponse(code = 204, message = "No Content"),
-            @ApiResponse(code = 400, message = "Cancellation of payment failed", response = PaymentError.class),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
-            @ApiResponse(code = 409, message = "Conflict", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)
-    })
-    public Response cancelPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                                  @PathParam("paymentId") String paymentId) {
+    public Response cancelPayment(
+            String paymentId,
+            Account account
+    ) {
 
         logger.info("Payment cancel request - payment_id=[{}]", paymentId);
 
@@ -280,28 +191,10 @@ public class PaymentsResource {
         throw new CancelChargeException(connectorResponse);
     }
 
-    @POST
-    @Timed
-    @Path("/v1/payments/{paymentId}/capture")
-    @Produces(APPLICATION_JSON)
-    @ApiOperation(
-            value = "Capture payment",
-            notes = "Capture a payment based on the provided payment ID and the Authorisation token. " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be captured if it's in " +
-                    "'submitted' state",
-            code = 204)
-    @ApiResponses(value = {
-            @ApiResponse(code = 204, message = "No Content"),
-            @ApiResponse(code = 400, message = "Capture of payment failed", response = PaymentError.class),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
-            @ApiResponse(code = 409, message = "Conflict", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)
-    })
-    public Response capturePayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                                   @PathParam("paymentId") String paymentId) {
+    public Response capturePayment(
+            String paymentId,
+            Account account
+    ) {
         logger.info("Payment capture request - payment_id=[{}]", paymentId);
 
         Response connectorResponse = capturePaymentService.capture(account, paymentId);
@@ -312,5 +205,105 @@ public class PaymentsResource {
         }
 
         throw new CaptureChargeException(connectorResponse);
+    }
+
+    public Response getRefunds(
+            String paymentId,
+            Account account
+    ) {
+
+        logger.info("Get refunds for payment request - paymentId={}", paymentId);
+        Response connectorResponse = client
+                .target(getConnectorUrl(format(CONNECTOR_CHARGE_REFUNDS_RESOURCE, account.getAccountId(), paymentId)))
+                .request()
+                .get();
+
+        if (connectorResponse.getStatus() == SC_OK) {
+            RefundsFromConnector refundsFromConnector = connectorResponse.readEntity(RefundsFromConnector.class);
+            logger.debug("refund returned - [ {} ]", refundsFromConnector);
+            RefundsResponse refundsResponse = RefundsResponse.valueOf(refundsFromConnector, baseUrl);
+
+            return Response.ok(refundsResponse.serialize()).build();
+        }
+
+        throw new GetRefundsException(connectorResponse);
+    }
+
+    public Response getRefundById(
+            String paymentId,
+            String refundId,
+            Account account
+    ) {
+
+        logger.info("Payment refund request - paymentId={}, refundId={}", paymentId, refundId);
+        Response connectorResponse = client
+                .target(getConnectorUrl(format(CONNECTOR_CHARGE_REFUND_BY_ID_RESOURCE, account.getAccountId(), paymentId, refundId)))
+                .request()
+                .get();
+
+        if (connectorResponse.getStatus() == SC_OK) {
+            RefundFromConnector refundFromConnector = connectorResponse.readEntity(RefundFromConnector.class);
+            logger.info("refund returned - [ {} ]", refundFromConnector);
+
+            RefundResponse refundResponse = RefundResponse.valueOf(refundFromConnector, paymentId, baseUrl);
+            return Response.ok(refundResponse.serialize()).build();
+        }
+        throw new GetRefundException(connectorResponse);
+    }
+
+    public Response submitRefund(
+            String paymentId,
+            CreatePaymentRefundRequest requestPayload,
+            Account account
+    ) {
+
+        logger.info("Create a refund for payment request - paymentId={}", paymentId);
+
+        Integer refundAmountAvailable = requestPayload.getRefundAmountAvailable()
+                .orElseGet(() -> {
+                    Response getChargeResponse = client
+                            .target(getConnectorUrl(format(CONNECTOR_CHARGE_RESOURCE, account.getAccountId(), paymentId)))
+                            .request()
+                            .get();
+
+                    ChargeFromResponse chargeFromResponse = getChargeResponse.readEntity(ChargeFromResponse.class);
+                    return Long.valueOf(chargeFromResponse.getRefundSummary().getAmountAvailable()).intValue();
+                });
+
+        ImmutableMap<String, Object> payloadMap = ImmutableMap.of("amount", requestPayload.getAmount(), "refund_amount_available", refundAmountAvailable);
+        String connectorPayload = new GsonBuilder().create().toJson(
+                payloadMap);
+
+        Response connectorResponse = client
+                .target(getConnectorUrl(format(CONNECTOR_CHARGE_REFUNDS_RESOURCE, account.getAccountId(), paymentId)))
+                .request()
+                .post(json(connectorPayload));
+
+        if (connectorResponse.getStatus() == ACCEPTED.getStatusCode()) {
+            RefundFromConnector refundFromConnector = connectorResponse.readEntity(RefundFromConnector.class);
+            logger.debug("created refund returned - [ {} ]", refundFromConnector);
+            RefundResponse refundResponse = RefundResponse.valueOf(refundFromConnector, paymentId, baseUrl);
+
+            return Response.accepted(refundResponse.serialize()).build();
+        }
+
+        throw new CreateRefundException(connectorResponse);
+    }
+
+    private String getConnectorUrl(String urlPath) {
+        return getConnectorUrl(urlPath, Collections.emptyList());
+    }
+
+    private String getConnectorUrl(String urlPath, List<Pair<String, String>> queryParams) {
+        UriBuilder builder =
+                fromPath(connectorUrl)
+                        .path(urlPath);
+
+        queryParams.stream().forEach(pair -> {
+            if (isNotBlank(pair.getRight())) {
+                builder.queryParam(pair.getKey(), pair.getValue());
+            }
+        });
+        return builder.toString();
     }
 }

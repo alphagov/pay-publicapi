@@ -9,10 +9,14 @@ import java.util.stream.Collectors;
 
 import static black.door.hate.HalRepresentation.HalRepresentationBuilder;
 import static black.door.hate.HalRepresentation.builder;
-import static uk.gov.pay.api.resources.PaymentRefundsResource.PAYMENT_BY_ID_PATH;
-import static uk.gov.pay.api.resources.PaymentRefundsResource.PAYMENT_REFUNDS_PATH;
 
 public class RefundsResponse extends HalResourceResponse {
+
+    private static final String API_VERSION_PATH = "/v1";
+    private static final String PATH_PAYMENT_KEY = "paymentId";
+    private static final String PAYMENTS_ID_PLACEHOLDER = "{" + PATH_PAYMENT_KEY + "}";
+    public static final String PAYMENT_BY_ID_PATH = API_VERSION_PATH + "/payments/" + PAYMENTS_ID_PLACEHOLDER;
+    public static final String PAYMENT_REFUNDS_PATH = PAYMENT_BY_ID_PATH + "/refunds";
 
     private RefundsResponse(HalRepresentationBuilder refundHalRepresentation, URI location) {
         super(refundHalRepresentation, location);

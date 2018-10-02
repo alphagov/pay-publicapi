@@ -410,41 +410,17 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>com.github.kongchen</groupId>
-                <artifactId>swagger-maven-plugin</artifactId>
-                <version>3.1.7</version>
-                <configuration>
-                    <apiSources>
-                        <apiSource>
-                            <springmvc>false</springmvc>
-                            <locations>
-                                <location>uk.gov.pay.api.resources.PaymentRefundsResource</location>
-                                <location>uk.gov.pay.api.resources.PaymentsResource</location>
-                            </locations>
-                            <apiModelPropertyAccessExclusions>
-                                <apiModelPropertyAccessExclusion>agreementId</apiModelPropertyAccessExclusion>
-                                <apiModelPropertyAccessExclusion>language</apiModelPropertyAccessExclusion>
-                                <apiModelPropertyAccessExclusion>delayedCapture</apiModelPropertyAccessExclusion>
-                            </apiModelPropertyAccessExclusions>
-                            <schemes>
-                                <scheme>https</scheme>
-                            </schemes>
-                            <host>publicapi.payments.service.gov.uk</host>
-                            <info>
-                                <title>GOV.UK Pay API</title>
-                                <version>1.0.2</version>
-                                <description>GOV.UK Pay API</description>
-                            </info>
-                            <swaggerDirectory>${basedir}/swagger</swaggerDirectory>
-                        </apiSource>
-                    </apiSources>
-                </configuration>
+                <artifactId>exec-maven-plugin</artifactId>
+                <groupId>org.codehaus.mojo</groupId>
                 <executions>
                     <execution>
-                        <phase>compile</phase>
+                        <phase>generate-resources</phase>
                         <goals>
-                            <goal>generate</goal>
+                            <goal>exec</goal>
                         </goals>
+                        <configuration>
+                            <executable>swagger-cli/generate-api.sh</executable>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

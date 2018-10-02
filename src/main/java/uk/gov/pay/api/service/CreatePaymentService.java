@@ -5,7 +5,7 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateChargeException;
 import uk.gov.pay.api.model.ChargeFromResponse;
 import uk.gov.pay.api.model.ValidCreatePaymentRequest;
-import uk.gov.pay.api.model.links.PaymentWithAllLinks;
+import uk.gov.pay.api.model.PaymentWithAllLinks;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import javax.inject.Inject;

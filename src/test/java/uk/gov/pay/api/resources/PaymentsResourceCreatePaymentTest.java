@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetails;
@@ -15,7 +16,7 @@ import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.SettlementSummary;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.ValidCreatePaymentRequest;
-import uk.gov.pay.api.model.links.PaymentWithAllLinks;
+import uk.gov.pay.api.model.PaymentWithAllLinks;
 import uk.gov.pay.api.service.CapturePaymentService;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.CreatePaymentService;
@@ -60,6 +61,9 @@ public class PaymentsResourceCreatePaymentTest {
 
     @Mock
     private CapturePaymentService capturePaymentService;
+    
+    @Mock
+    private PublicApiConfig publicApiConfig;
 
     private final String paymentUri = "https://my.link/v1/payments/abc123";
 
@@ -71,7 +75,8 @@ public class PaymentsResourceCreatePaymentTest {
                 publicApiUriGenerator,
                 connectorUriGenerator,
                 getPaymentService,
-                capturePaymentService);
+                capturePaymentService,
+                publicApiConfig);
         when(publicApiUriGenerator.getPaymentURI(anyString())).thenReturn(URI.create(paymentUri));
     }
 
@@ -88,7 +93,7 @@ public class PaymentsResourceCreatePaymentTest {
 
         when(createPaymentService.create(account, createPaymentRequest)).thenReturn(injectedResponse);
 
-        final Response newPayment = paymentsResource.createNewPayment(account, createPaymentRequest);
+        final Response newPayment = paymentsResource.createNewPayment(createPaymentRequest, account);
 
         assertThat(newPayment.getStatus(), is(201));
         assertThat(newPayment.getLocation(), is(URI.create(paymentUri)));

@@ -2,8 +2,6 @@ package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.links.PaymentLinksForEvents;
 
 import java.util.List;
@@ -11,7 +9,6 @@ import java.util.List;
 import static com.google.common.collect.Lists.newArrayList;
 import static uk.gov.pay.api.model.PaymentEvent.createPaymentEvent;
 
-@ApiModel(value="PaymentEvents", description = "A List of Payment Events information")
 public class PaymentEvents {
     public static final String EVENTS = "events";
     @JsonProperty("payment_id")
@@ -42,7 +39,6 @@ public class PaymentEvents {
         this.events = events;
     }
 
-    @ApiModelProperty(example = "hu20sqlact5260q2nanm0q8u93")
     public String getPaymentId() {
         return paymentId;
     }

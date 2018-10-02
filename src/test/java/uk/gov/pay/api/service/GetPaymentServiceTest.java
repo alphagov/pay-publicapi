@@ -14,7 +14,7 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.TokenPaymentType;
-import uk.gov.pay.api.model.links.PaymentWithAllLinks;
+import uk.gov.pay.api.model.PaymentWithAllLinks;
 import uk.gov.pay.api.model.links.PostLink;
 import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;

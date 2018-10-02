@@ -5,11 +5,13 @@ import java.net.URI;
 
 import static black.door.hate.HalRepresentation.HalRepresentationBuilder;
 import static black.door.hate.HalRepresentation.builder;
-import static uk.gov.pay.api.resources.PaymentRefundsResource.PAYMENT_BY_ID_PATH;
-import static uk.gov.pay.api.resources.PaymentRefundsResource.PAYMENT_REFUND_BY_ID_PATH;
+import static uk.gov.pay.api.model.RefundsResponse.PAYMENT_BY_ID_PATH;
+import static uk.gov.pay.api.model.RefundsResponse.PAYMENT_REFUNDS_PATH;
 
 public class RefundResponse extends HalResourceResponse {
 
+    public static final String PAYMENT_REFUND_BY_ID_PATH = PAYMENT_REFUNDS_PATH + "/{refundId}";
+    
     private RefundResponse(HalRepresentationBuilder refundHalRepresentation, URI location) {
         super(refundHalRepresentation, location);
     }

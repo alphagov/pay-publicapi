@@ -42,9 +42,8 @@ import uk.gov.pay.api.healthcheck.Ping;
 import uk.gov.pay.api.resources.AgreementsResource;
 import uk.gov.pay.api.resources.DirectDebitEventsResource;
 import uk.gov.pay.api.resources.HealthCheckResource;
-import uk.gov.pay.api.resources.PaymentRefundsResource;
-import uk.gov.pay.api.resources.PaymentsResource;
 import uk.gov.pay.api.resources.RequestDeniedResource;
+import uk.gov.pay.api.resources.V1Api;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.util.concurrent.TimeUnit;
@@ -82,9 +81,8 @@ public class PublicApi extends Application<PublicApiConfig> {
         environment.healthChecks().register("ping", new Ping());
 
         environment.jersey().register(injector.getInstance(HealthCheckResource.class));
-        environment.jersey().register(injector.getInstance(PaymentsResource.class));
+        environment.jersey().register(injector.getInstance(V1Api.class));
         environment.jersey().register(injector.getInstance(DirectDebitEventsResource.class));
-        environment.jersey().register(injector.getInstance(PaymentRefundsResource.class));
         environment.jersey().register(injector.getInstance(RequestDeniedResource.class));
         environment.jersey().register(injector.getInstance(AgreementsResource.class));
 
