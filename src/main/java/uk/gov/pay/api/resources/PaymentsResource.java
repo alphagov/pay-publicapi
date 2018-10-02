@@ -91,6 +91,7 @@ public class PaymentsResource {
         this.cancelPaymentService = cancelPaymentService;
     }
 
+    @Timed
     public Response getPayment(
             String paymentId,
             Account account
@@ -105,6 +106,7 @@ public class PaymentsResource {
 
     }
 
+    @Timed
     public Response getPaymentEvents(
             String paymentId,
             Account account
@@ -136,6 +138,7 @@ public class PaymentsResource {
         throw new GetEventsException(connectorResponse);
     }
 
+    @Timed
     public Response searchPayments(String reference,
                                    String email,
                                    String state,
@@ -157,6 +160,7 @@ public class PaymentsResource {
                 fromDate, toDate, pageNumber, displaySize, null, cardHolderName, firstDigitsCardNumber, lastDigitsCardNumber);
     }
 
+    @Timed
     public Response createNewPayment(
             ValidCreatePaymentRequest validCreatePaymentRequest,
             Account account
@@ -174,6 +178,7 @@ public class PaymentsResource {
         return response;
     }
 
+    @Timed
     public Response cancelPayment(
             String paymentId,
             Account account
@@ -184,6 +189,7 @@ public class PaymentsResource {
         return cancelPaymentService.cancel(account, paymentId);
     }
 
+    @Timed
     public Response capturePayment(
             String paymentId,
             Account account
@@ -200,6 +206,7 @@ public class PaymentsResource {
         throw new CaptureChargeException(connectorResponse);
     }
 
+    @Timed
     public Response getRefunds(
             String paymentId,
             Account account
@@ -222,6 +229,7 @@ public class PaymentsResource {
         throw new GetRefundsException(connectorResponse);
     }
 
+    @Timed
     public Response getRefundById(
             String paymentId,
             String refundId,
@@ -244,6 +252,7 @@ public class PaymentsResource {
         throw new GetRefundException(connectorResponse);
     }
 
+    @Timed
     public Response submitRefund(
             String paymentId,
             CreatePaymentRefundRequest requestPayload,
