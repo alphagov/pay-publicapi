@@ -1,5 +1,6 @@
 package uk.gov.pay.api.resources;
 
+import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
@@ -9,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.exception.CancelChargeException;
 import uk.gov.pay.api.exception.CaptureChargeException;
 import uk.gov.pay.api.exception.CreateRefundException;
 import uk.gov.pay.api.exception.GetEventsException;
@@ -24,6 +24,7 @@ import uk.gov.pay.api.model.RefundResponse;
 import uk.gov.pay.api.model.RefundsFromConnector;
 import uk.gov.pay.api.model.RefundsResponse;
 import uk.gov.pay.api.model.ValidCreatePaymentRequest;
+import uk.gov.pay.api.service.CancelPaymentService;
 import uk.gov.pay.api.service.CapturePaymentService;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.CreatePaymentService;
@@ -33,7 +34,6 @@ import uk.gov.pay.api.service.PublicApiUriGenerator;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
@@ -67,6 +67,7 @@ public class PaymentsResource {
     private final CapturePaymentService capturePaymentService;
     private final String connectorUrl;
     private final String baseUrl;
+    private final CancelPaymentService cancelPaymentService;
 
     @Inject
     public PaymentsResource(Client client,
@@ -76,6 +77,7 @@ public class PaymentsResource {
                             ConnectorUriGenerator connectorUriGenerator,
                             GetPaymentService getPaymentService,
                             CapturePaymentService capturePaymentService,
+                            CancelPaymentService cancelPaymentService,
                             PublicApiConfig configuration) {
         this.client = client;
         this.createPaymentService = createPaymentService;
@@ -86,6 +88,7 @@ public class PaymentsResource {
         this.capturePaymentService = capturePaymentService;
         this.connectorUrl = configuration.getConnectorUrl();
         this.baseUrl = configuration.getBaseUrl();
+        this.cancelPaymentService = cancelPaymentService;
     }
 
     public Response getPayment(
@@ -178,17 +181,7 @@ public class PaymentsResource {
 
         logger.info("Payment cancel request - payment_id=[{}]", paymentId);
 
-        Response connectorResponse = client
-                .target(connectorUriGenerator.cancelURI(account, paymentId))
-                .request()
-                .post(Entity.json("{}"));
-
-        if (connectorResponse.getStatus() == HttpStatus.SC_NO_CONTENT) {
-            connectorResponse.close();
-            return Response.noContent().build();
-        }
-
-        throw new CancelChargeException(connectorResponse);
+        return cancelPaymentService.cancel(account, paymentId);
     }
 
     public Response capturePayment(
