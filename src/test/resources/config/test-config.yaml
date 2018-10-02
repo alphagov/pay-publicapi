@@ -45,3 +45,5 @@ apiKeyHmacSecret: qwer9yuhgf
 
 # Caching authenticator.
 authenticationCachePolicy: expireAfterWrite=3s
+
+config: inflector.yaml

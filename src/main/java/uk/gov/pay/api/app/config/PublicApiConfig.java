@@ -49,6 +49,13 @@ public class PublicApiConfig extends Configuration {
     @JsonProperty("rateLimiter")
     private RateLimiterConfig rateLimiterConfig;
 
+    @NotNull
+    private String config;
+
+    public String getConfig() {
+        return config;
+    }
+
     public String getBaseUrl() {
         return baseUrl;
     }

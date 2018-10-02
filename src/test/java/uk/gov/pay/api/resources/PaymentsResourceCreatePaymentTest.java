@@ -1,5 +1,6 @@
 package uk.gov.pay.api.resources;
 
+import io.swagger.inflector.models.ResponseContext;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +30,7 @@ import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.Collections;
 
+import static org.apache.http.HttpHeaders.LOCATION;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -88,10 +90,10 @@ public class PaymentsResourceCreatePaymentTest {
 
         when(createPaymentService.create(account, createPaymentRequest)).thenReturn(injectedResponse);
 
-        final Response newPayment = paymentsResource.createNewPayment(account, createPaymentRequest);
+        final ResponseContext newPayment = paymentsResource.createNewPayment(account, createPaymentRequest);
 
         assertThat(newPayment.getStatus(), is(201));
-        assertThat(newPayment.getLocation(), is(URI.create(paymentUri)));
+        assertThat(newPayment.getHeaders().getFirst(LOCATION), is(paymentUri));
         assertThat(newPayment.getEntity(), sameInstance(injectedResponse));
     }
 

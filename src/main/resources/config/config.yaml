@@ -48,3 +48,4 @@ apiKeyHmacSecret: ${TOKEN_API_HMAC_SECRET}
 # Caching authenticator.
 authenticationCachePolicy: expireAfterWrite=1m
 
+config: inflector.yaml

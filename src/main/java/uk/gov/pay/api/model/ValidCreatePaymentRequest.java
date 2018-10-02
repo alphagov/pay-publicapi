@@ -15,19 +15,13 @@ import java.util.StringJoiner;
  **/
 public class ValidCreatePaymentRequest {
 
-    @ApiModelProperty(value = "amount in pence", required = true, allowableValues = "range[1, 10000000]", example = "12000")
-    private final int amount;
-    @ApiModelProperty(value = "payment reference", required = true, example = "12345")
-    private final String reference;
-    @ApiModelProperty(name = "return_url", value = "service return url", required = true, example = "https://service-name.gov.uk/transactions/12345")
+    private int amount;
+    private String reference;
+    @JsonProperty("return_url")
     private String returnUrl;
-    @ApiModelProperty(value = "payment description", required = true, example = "New passport application")
-    private final String description;
-    @ApiModelProperty(name = "agreement_id", value = "ID of the agreement being used to collect the payment", required = false, example = "33890b55-b9ea-4e2f-90fd-77ae0e9009e2")
+    private String description;
     private String agreementId;
-    @ApiModelProperty(value = "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages", required = false, example = "en")
     private SupportedLanguage language;
-    @ApiModelProperty(value = "delayed capture flag", required = false, example = "false" )
     @JsonProperty("delayed_capture")
     private Boolean delayedCapture;
 
@@ -47,6 +41,25 @@ public class ValidCreatePaymentRequest {
         delayedCapture = createPaymentRequest.getDelayedCapture();
     }
 
+    public ValidCreatePaymentRequest() {
+    }
+
+    public void setReturnUrl(String returnUrl) {
+        this.returnUrl = returnUrl;
+    }
+
+    public void setAgreementId(String agreementId) {
+        this.agreementId = agreementId;
+    }
+
+    public void setLanguage(SupportedLanguage language) {
+        this.language = language;
+    }
+
+    public void setDelayedCapture(Boolean delayedCapture) {
+        this.delayedCapture = delayedCapture;
+    }
+
     public int getAmount() {
         return amount;
     }
@@ -63,17 +76,14 @@ public class ValidCreatePaymentRequest {
         return Optional.ofNullable(returnUrl);
     }
 
-    @ApiModelProperty(name = "agreementId", access = "agreementId")
     public Optional<String> getAgreementId() {
         return Optional.ofNullable(agreementId);
     }
 
-    @ApiModelProperty(name = "language", access = "language")
     public Optional<SupportedLanguage> getLanguage() {
         return Optional.ofNullable(language);
     }
 
-    @ApiModelProperty(name = "delayedCapture", access = "delayedCapture")
     public Optional<Boolean> getDelayedCapture() {
         return Optional.ofNullable(delayedCapture);
     }

@@ -1,0 +1,5 @@
+swaggerUrl: ./swagger/swagger.json
+controllerPackage: uk.gov.pay.api.middleware
+modelPackage: uk.gov.pay.api.model
+entityProcessors:
+  - json

@@ -8,6 +8,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import io.swagger.inflector.models.RequestContext;
+import io.swagger.inflector.models.ResponseContext;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,12 +17,12 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CancelChargeException;
 import uk.gov.pay.api.exception.CaptureChargeException;
 import uk.gov.pay.api.exception.GetEventsException;
+import uk.gov.pay.api.model.ErrorResponse;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.PaymentEvents;
 import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.model.search.card.PaymentSearchResults;
-import uk.gov.pay.api.resources.error.ApiErrorResponse;
 import uk.gov.pay.api.service.CapturePaymentService;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.CreatePaymentService;
@@ -45,6 +47,7 @@ import java.net.URI;
 
 import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.apache.http.HttpHeaders.LOCATION;
 import static org.apache.http.HttpStatus.SC_OK;
 
 @Path("/")
@@ -93,7 +96,7 @@ public class PaymentsResource {
             @ApiResponse(code = 200, message = "OK", response = PaymentWithAllLinks.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
+            @ApiResponse(code = 429, message = "Too many requests", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response getPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                @PathParam("paymentId") String paymentId) {
@@ -121,7 +124,7 @@ public class PaymentsResource {
             @ApiResponse(code = 200, message = "OK", response = PaymentEvents.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
+            @ApiResponse(code = 429, message = "Too many requests", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response getPaymentEvents(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                      @PathParam("paymentId") String paymentId) {
@@ -168,7 +171,7 @@ public class PaymentsResource {
             @ApiResponse(code = 200, message = "OK", response = PaymentSearchResults.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 422, message = "Invalid parameters: from_date, to_date, status, display_size. See Public API documentation for the correct data formats", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
+            @ApiResponse(code = 429, message = "Too many requests", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response searchPayments(@ApiParam(value = "accountId", hidden = true)
                                    @Auth Account account,
@@ -208,38 +211,14 @@ public class PaymentsResource {
                 fromDate, toDate, pageNumber, displaySize, agreementId, cardHolderName, firstDigitsCardNumber, lastDigitsCardNumber);
     }
 
-    @POST
-    @Timed
-    @Path("/v1/payments")
-    @Consumes(APPLICATION_JSON)
-    @Produces(APPLICATION_JSON)
-    @ApiOperation(
-            value = "Create new payment",
-            notes = "Create a new payment for the account associated to the Authorisation token. " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
-            code = 201,
-            nickname = "newPayment")
-    @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Created", response = PaymentWithAllLinks.class),
-            @ApiResponse(code = 400, message = "Bad request", response = PaymentError.class),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 422, message = "Invalid attribute value: description. Must be less than or equal to 255 characters length", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
-    public Response createNewPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                                     @ApiParam(value = "requestPayload", required = true) ValidCreatePaymentRequest validCreatePaymentRequest) {
+    public ResponseContext createNewPayment(Account account, ValidCreatePaymentRequest validCreatePaymentRequest) {
         logger.info("Payment create request passed validation and parsed to {}", validCreatePaymentRequest);
-
         PaymentWithAllLinks createdPayment = createPaymentService.create(account, validCreatePaymentRequest);
-
-        Response response = Response
-                .created(publicApiUriGenerator.getPaymentURI(createdPayment.getPayment().getPaymentId()))
-                .entity(createdPayment)
-                .build();
-
         logger.info("Payment returned (created): [ {} ]", createdPayment);
-        return response;
+        return new ResponseContext()
+                .status(Response.Status.CREATED)
+                .entity(createdPayment)
+                .header(LOCATION, publicApiUriGenerator.getPaymentURI(createdPayment.getPayment().getPaymentId()).toString());
     }
 
     @POST
@@ -259,7 +238,7 @@ public class PaymentsResource {
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
             @ApiResponse(code = 409, message = "Conflict", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
+            @ApiResponse(code = 429, message = "Too many requests", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)
     })
     public Response cancelPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
@@ -297,7 +276,7 @@ public class PaymentsResource {
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
             @ApiResponse(code = 409, message = "Conflict", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
+            @ApiResponse(code = 429, message = "Too many requests", response = ErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)
     })
     public Response capturePayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,

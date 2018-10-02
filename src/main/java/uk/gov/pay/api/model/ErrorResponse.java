@@ -1,4 +1,4 @@
-package uk.gov.pay.api.resources.error;
+package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
@@ -9,7 +9,7 @@ import static java.lang.String.format;
 
 @ApiModel(value = "ErrorResponse", description = "An error response")
 @JsonInclude(NON_NULL)
-public class ApiErrorResponse {
+public class ErrorResponse {
 
     public enum Code {
 
@@ -35,11 +35,11 @@ public class ApiErrorResponse {
     private final Code code;
     private final String description;
 
-    public static ApiErrorResponse anApiErrorResponse(Code code, Object... parameters) {
-        return new ApiErrorResponse(code, parameters);
+    public static ErrorResponse anApiErrorResponse(Code code, Object... parameters) {
+        return new ErrorResponse(code, parameters);
     }
 
-    private ApiErrorResponse(Code code, Object... parameters) {
+    private ErrorResponse(Code code, Object... parameters) {
         this.code = code;
         this.description = format(code.getFormat(), parameters);
     }

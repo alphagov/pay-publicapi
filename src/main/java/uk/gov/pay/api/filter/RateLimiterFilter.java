@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.filter.ratelimit.RateLimitException;
 import uk.gov.pay.api.filter.ratelimit.RateLimiter;
-import uk.gov.pay.api.resources.error.ApiErrorResponse.Code;
+import uk.gov.pay.api.model.ErrorResponse.Code;
 import javax.inject.Inject;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static uk.gov.pay.api.resources.error.ApiErrorResponse.anApiErrorResponse;
+import static uk.gov.pay.api.model.ErrorResponse.anApiErrorResponse;
 
 /**
  * Allow only a certain number of requests from the same source (given by the Authorization Header)

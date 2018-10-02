@@ -5,6 +5,7 @@ import com.bendb.dropwizard.redis.JedisFactory;
 import com.codahale.metrics.graphite.GraphiteReporter;
 import com.codahale.metrics.graphite.GraphiteSender;
 import com.codahale.metrics.graphite.GraphiteUDP;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import io.dropwizard.Application;
@@ -17,6 +18,13 @@ import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.swagger.inflector.SwaggerInflector;
+import io.swagger.inflector.config.Configuration;
+import io.swagger.inflector.config.ControllerFactory;
+import io.swagger.inflector.processors.JsonNodeExampleSerializer;
+import io.swagger.jaxrs.listing.SwaggerSerializers;
+import io.swagger.models.Operation;
+import io.swagger.util.Json;
 import org.glassfish.jersey.CommonProperties;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.PublicApiModule;
@@ -74,7 +82,7 @@ public class PublicApi extends Application<PublicApiConfig> {
     }
 
     @Override
-    public void run(PublicApiConfig configuration, Environment environment) {
+    public void run(PublicApiConfig configuration, Environment environment) throws Exception {
         initialiseSSLSocketFactory();
 
         final Injector injector = Guice.createInjector(new PublicApiModule(configuration, environment));
@@ -82,11 +90,22 @@ public class PublicApi extends Application<PublicApiConfig> {
         environment.healthChecks().register("ping", new Ping());
 
         environment.jersey().register(injector.getInstance(HealthCheckResource.class));
-        environment.jersey().register(injector.getInstance(PaymentsResource.class));
+//        environment.jersey().register(injector.getInstance(PaymentsResource.class));
         environment.jersey().register(injector.getInstance(DirectDebitEventsResource.class));
-        environment.jersey().register(injector.getInstance(PaymentRefundsResource.class));
+//        environment.jersey().register(injector.getInstance(PaymentRefundsResource.class));
         environment.jersey().register(injector.getInstance(RequestDeniedResource.class));
         environment.jersey().register(injector.getInstance(AgreementsResource.class));
+        
+        Configuration config = Configuration.read(configuration.getConfig());
+        config.setControllerFactory(new GuiceControllerFactory(injector));
+        SwaggerInflector inflector = new SwaggerInflector(config);
+        environment.jersey().getResourceConfig().registerResources(inflector.getResources());
+
+        // add serializers for swagger
+        environment.jersey().register(SwaggerSerializers.class);
+        SimpleModule simpleModule = new SimpleModule();
+        simpleModule.addSerializer(new JsonNodeExampleSerializer());
+        Json.mapper().registerModule(simpleModule);
 
         environment.servlets().addFilter("AuthorizationValidationFilter", injector.getInstance(AuthorizationValidationFilter.class))
                 .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");
@@ -158,5 +177,18 @@ public class PublicApi extends Application<PublicApiConfig> {
 
     public static void main(String[] args) throws Exception {
         new PublicApi().run(args);
+    }
+
+    private static class GuiceControllerFactory implements ControllerFactory {
+        private final Injector injector;
+
+        public GuiceControllerFactory(Injector injector) {
+            this.injector = injector;
+        }
+
+        @Override
+        public Object instantiateController(Class<?> cls, Operation operation) throws IllegalAccessException, InstantiationException {
+            return this.injector.getInstance(cls);
+        }
     }
 }
