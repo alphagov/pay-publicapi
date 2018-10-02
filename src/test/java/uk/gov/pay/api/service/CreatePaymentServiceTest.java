@@ -13,6 +13,7 @@ import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.CreatePaymentRequest;
+import uk.gov.pay.api.model.DirectDebitPayment;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.ValidCreatePaymentRequest;
@@ -39,13 +40,16 @@ public class CreatePaymentServiceTest {
     @Rule
     public PactProviderRule connectorRule = new PactProviderRule("connector", this);
 
+    @Rule
+    public PactProviderRule ddConnectorRule = new PactProviderRule("direct-debit-connector", this);
+
     @Mock
     private PublicApiConfig configuration;
 
     @Before
     public void setup() {
         when(configuration.getConnectorUrl()).thenReturn(connectorRule.getUrl()); // We will actually send real requests here, which will be intercepted by pact        
-
+        when(configuration.getConnectorDDUrl()).thenReturn(ddConnectorRule.getUrl());
         when(configuration.getBaseUrl()).thenReturn("http://publicapi.test.localhost/");
 
         PublicApiUriGenerator publicApiUriGenerator = new PublicApiUriGenerator(configuration);
@@ -152,5 +156,35 @@ public class CreatePaymentServiceTest {
         PostLink expectedLink = new PostLink("http://frontend_connector/charge/", "POST", "application/x-www-form-urlencoded", Collections.singletonMap("chargeTokenId", "token_1234567asdf"));
         assertThat(paymentResponse.getLinks().getNextUrlPost(), is(expectedLink));
     }
+
+    @Test
+    @PactVerification({"direct-debit-connector"})
+    @Pacts(pacts = {"publicapi-direct-debit-connector-collect-payment"})
+    public void test() {
+        Account account = new Account("123456", TokenPaymentType.DIRECT_DEBIT);
+        ValidCreatePaymentRequest requestPayload = new ValidCreatePaymentRequest(CreatePaymentRequest.builder()
+                .amount(100)
+                .reference("a reference")
+                .description("a description")
+                .agreementId("test_mandate_id_xyz")
+                .build());
+        PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
+        DirectDebitPayment payment = (DirectDebitPayment) paymentResponse.getPayment();
+
+        assertThat(payment.getPaymentId(), is("ch_ab2341da231434l"));
+        assertThat(payment.getAmount(), is(100L));
+        assertThat(payment.getReference(), is("a reference"));
+        assertThat(payment.getDescription(), is("a description"));
+        assertThat(payment.getEmail(), is(nullValue()));
+        assertThat(payment.getState(), is(new PaymentState("created", false)));
+        assertThat(payment.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(payment.getPaymentProvider(), is("Sandbox"));
+        assertThat(payment.getCreatedDate(), is("2016-01-01T12:00:00Z"));
+        assertThat(paymentResponse.getLinks().getSelf(), is(new Link("http://publicapi.test.localhost/v1/payments/ch_ab2341da231434l", "GET")));
+        assertThat(paymentResponse.getLinks().getNextUrl(), is(new Link("http://frontend_connector/charge/token_1234567asdf", "GET")));
+        PostLink expectedLink = new PostLink("http://frontend_connector/charge/", "POST", "application/x-www-form-urlencoded", Collections.singletonMap("chargeTokenId", "token_1234567asdf"));
+        assertThat(paymentResponse.getLinks().getNextUrlPost(), is(expectedLink));
+    }
+
 
 }

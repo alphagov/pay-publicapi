@@ -3,7 +3,7 @@
     "name": "publicapi"
   },
   "provider": {
-    "name": "connector"
+    "name": "direct-debit-connector"
   },
   "interactions": [
     {
