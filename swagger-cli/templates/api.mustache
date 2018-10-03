@@ -29,7 +29,7 @@ import javax.ws.rs.*;
     import javax.validation.constraints.*;
 {{/useBeanValidation}}
 
-@Path("/{{{baseName}}}")
+@Path("/")
 {{#hasConsumes}}@Consumes({ {{#consumes}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/consumes}} }){{/hasConsumes}}
 {{#hasProduces}}@Produces({ {{#produces}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/produces}} }){{/hasProduces}}
 @io.swagger.annotations.Api(description = "the {{{baseName}}} API")
@@ -45,7 +45,7 @@ import javax.ws.rs.*;
 
     {{#operation}}
         @{{httpMethod}}
-        {{#subresourceOperation}}@Path("{{{path}}}"){{/subresourceOperation}}
+        {{#subresourceOperation}}@Path("/{{{baseName}}}{{{path}}}"){{/subresourceOperation}}
         {{#hasConsumes}}@Consumes({ {{#consumes}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/consumes}} }){{/hasConsumes}}
         {{#hasProduces}}@Produces({ {{#produces}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/produces}} }){{/hasProduces}}
         @io.swagger.annotations.ApiOperation(value = "{{{summary}}}", notes = "{{{notes}}}"{{#returnBaseType}}, response = {{{returnBaseType}}}.class{{/returnBaseType}}{{#returnContainer}}, responseContainer = "{{{returnContainer}}}"{{/returnContainer}}{{#hasAuthMethods}}, authorizations = {
