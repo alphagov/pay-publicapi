@@ -4,6 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import uk.gov.pay.api.model.generated.CardDetails;
+import uk.gov.pay.api.model.generated.PaymentState;
+import uk.gov.pay.api.model.generated.RefundSummary;
+import uk.gov.pay.api.model.generated.SettlementSummary;
 import uk.gov.pay.api.utils.CustomSupportedLanguageDeserializer;
 import uk.gov.pay.commons.model.SupportedLanguage;
 

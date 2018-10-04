@@ -13,7 +13,7 @@ import org.junit.Test;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
-import uk.gov.pay.api.model.PaymentState;
+import uk.gov.pay.api.model.generated.PaymentState;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
@@ -34,7 +34,7 @@ public class DirectDebitPaymentTest extends PaymentResourceITestBase {
     private static final int AMOUNT = 100;
     private static final String CHARGE_ID = "ch_ab2341da231434l";
     private static final String CHARGE_TOKEN_ID = "ebf23f8c-6a9d-4f7d-afd5-bcc7b1b6a0e2";
-    private static final PaymentState STARTED = new PaymentState("started", false, null, null);
+    private static final PaymentState STARTED = new PaymentState().status("started").finished(false);
     private static final String RETURN_URL = "https://somewhere.gov.uk/rainbow/1";
     private static final String REFERENCE = "a reference";
     private static final String EMAIL = "alice.111@mail.fake";
@@ -70,13 +70,13 @@ public class DirectDebitPaymentTest extends PaymentResourceITestBase {
                 .statusCode(201)
                 .contentType(JSON)
                 .header(HttpHeaders.LOCATION, is(paymentLocationFor(CHARGE_ID)))
-                .body("payment_id", is(CHARGE_ID))
-                .body("amount", is(AMOUNT))
-                .body("reference", is(REFERENCE))
-                .body("description", is(DESCRIPTION))
-                .body("state.status", is(STARTED.getStatus()))
-                .body("return_url", is(RETURN_URL))
-                .body("created_date", is(CREATED_DATE))
+                .body("payment.payment_id", is(CHARGE_ID))
+                .body("payment.amount", is(AMOUNT))
+                .body("payment.reference", is(REFERENCE))
+                .body("payment.description", is(DESCRIPTION))
+                .body("payment.state.status", is(STARTED.getStatus()))
+                .body("payment.return_url", is(RETURN_URL))
+                .body("payment.created_date", is(CREATED_DATE))
                 .body("_links.self.href", is(paymentLocationFor(CHARGE_ID)))
                 .body("_links.self.method", is("GET"))
                 .body("_links.next_url.href", is(directDebitFrontendSecureUrl() + CHARGE_TOKEN_ID))
@@ -85,8 +85,8 @@ public class DirectDebitPaymentTest extends PaymentResourceITestBase {
                 .body("_links.next_url_post.method", is("POST"))
                 .body("_links.next_url_post.type", is("application/x-www-form-urlencoded"))
                 .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
-                .body("card_brand", is(nullValue()))
-                .body("refund_summary", is(nullValue()))
+                .body("payment.card_brand", is(nullValue()))
+                .body("payment.refund_summary", is(nullValue()))
                 .body("_links.cancel", is(nullValue()))
                 .body("_links.events", is(nullValue()))
                 .body("_links.refunds", is(nullValue()))

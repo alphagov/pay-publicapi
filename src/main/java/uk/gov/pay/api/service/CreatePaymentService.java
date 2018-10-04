@@ -1,11 +1,13 @@
 package uk.gov.pay.api.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateChargeException;
 import uk.gov.pay.api.model.ChargeFromResponse;
+import uk.gov.pay.api.model.PaymentWithAllLinksCreator;
+import uk.gov.pay.api.model.generated.PaymentWithAllLinks;
 import uk.gov.pay.api.model.ValidCreatePaymentRequest;
-import uk.gov.pay.api.model.PaymentWithAllLinks;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import javax.inject.Inject;
@@ -41,7 +43,7 @@ public class CreatePaymentService {
     }
 
     private PaymentWithAllLinks buildResponseModel(Account account, ChargeFromResponse chargeFromResponse) {
-        return PaymentWithAllLinks.getPaymentWithLinks(
+        return PaymentWithAllLinksCreator.getPaymentWithLinks(
                 account.getPaymentType(),
                 chargeFromResponse,
                 publicApiUriGenerator.getPaymentURI(chargeFromResponse.getChargeId()),
@@ -56,7 +58,7 @@ public class CreatePaymentService {
 
     private Response createCharge(Account account, ValidCreatePaymentRequest validCreatePaymentRequest) {
         return client
-                .target(connectorUriGenerator.chargesURI(account, validCreatePaymentRequest.getAgreementId().orElse(null)))
+                .target(connectorUriGenerator.chargesURI(account, null))
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .post(buildChargeRequestPayload(validCreatePaymentRequest));

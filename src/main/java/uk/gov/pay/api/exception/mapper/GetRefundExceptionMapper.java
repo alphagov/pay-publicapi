@@ -3,16 +3,16 @@ package uk.gov.pay.api.exception.mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.exception.GetRefundException;
-import uk.gov.pay.api.model.PaymentError;
+import uk.gov.pay.api.model.generated.PaymentError;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static uk.gov.pay.api.model.PaymentError.Code.GET_PAYMENT_REFUND_CONNECTOR_ERROR;
-import static uk.gov.pay.api.model.PaymentError.Code.GET_PAYMENT_REFUND_NOT_FOUND_ERROR;
-import static uk.gov.pay.api.model.PaymentError.aPaymentError;
+import static uk.gov.pay.api.model.PaymentErrorBuilder.aPaymentError;
+import static uk.gov.pay.api.model.PaymentErrorCodes.GET_PAYMENT_REFUND_CONNECTOR_ERROR;
+import static uk.gov.pay.api.model.PaymentErrorCodes.GET_PAYMENT_REFUND_NOT_FOUND_ERROR;
 
 public class GetRefundExceptionMapper implements ExceptionMapper<GetRefundException> {
 

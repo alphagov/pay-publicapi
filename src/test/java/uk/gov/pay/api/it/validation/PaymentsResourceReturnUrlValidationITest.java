@@ -229,7 +229,7 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
+//                .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", is("P0197"))
                 .assertThat("$.description", is("Unable to parse JSON"));
     }

@@ -11,14 +11,14 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.CreatePaymentRequest;
-import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.TokenPaymentType;
+import uk.gov.pay.api.model.CardPayment;
+import uk.gov.pay.api.model.generated.Link;
+import uk.gov.pay.api.model.generated.PaymentState;
+import uk.gov.pay.api.model.generated.PaymentWithAllLinks;
+import uk.gov.pay.api.model.generated.PostLink;
 import uk.gov.pay.api.model.ValidCreatePaymentRequest;
-import uk.gov.pay.api.model.links.Link;
-import uk.gov.pay.api.model.PaymentWithAllLinks;
-import uk.gov.pay.api.model.links.PostLink;
 import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
@@ -76,15 +76,15 @@ public class CreatePaymentServiceTest {
         assertThat(payment.getReference(), is("a reference"));
         assertThat(payment.getDescription(), is("a description"));
         assertThat(payment.getEmail(), is(nullValue()));
-        assertThat(payment.getState(), is(new PaymentState("created", false)));
+        assertThat(payment.getState(), is(new PaymentState().status("created").finished(false)));
         assertThat(payment.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(payment.getPaymentProvider(), is("Sandbox"));
         assertThat(payment.getCreatedDate(), is("2016-01-01T12:00:00Z"));
         assertThat(payment.getLanguage(), is(SupportedLanguage.ENGLISH));
         assertThat(payment.getDelayedCapture(), is(false));
-        assertThat(paymentResponse.getLinks().getSelf(), is(new Link("http://publicapi.test.localhost/v1/payments/ch_ab2341da231434l", "GET")));
-        assertThat(paymentResponse.getLinks().getNextUrl(), is(new Link("http://frontend_connector/charge/token_1234567asdf", "GET")));
-        PostLink expectedLink = new PostLink("http://frontend_connector/charge/", "POST", "application/x-www-form-urlencoded", Collections.singletonMap("chargeTokenId", "token_1234567asdf"));
+        assertThat(paymentResponse.getLinks().getSelf(), is(new Link().href("http://publicapi.test.localhost/v1/payments/ch_ab2341da231434l").method("GET")));
+        assertThat(paymentResponse.getLinks().getNextUrl(), is(new Link().href("http://frontend_connector/charge/token_1234567asdf").method("GET")));
+        PostLink expectedLink = new PostLink().href("http://frontend_connector/charge/").method("POST").type("application/x-www-form-urlencoded").params(Collections.singletonMap("chargeTokenId", "token_1234567asdf"));
         assertThat(paymentResponse.getLinks().getNextUrlPost(), is(expectedLink));
     }
 
@@ -109,15 +109,15 @@ public class CreatePaymentServiceTest {
         assertThat(payment.getReference(), is("a reference"));
         assertThat(payment.getDescription(), is("a description"));
         assertThat(payment.getEmail(), is(nullValue()));
-        assertThat(payment.getState(), is(new PaymentState("created", false)));
+        assertThat(payment.getState(), is(new PaymentState().status("created").finished(false)));
         assertThat(payment.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(payment.getPaymentProvider(), is("Sandbox"));
         assertThat(payment.getCreatedDate(), is("2016-01-01T12:00:00Z"));
         assertThat(payment.getLanguage(), is(SupportedLanguage.ENGLISH));
         assertThat(payment.getDelayedCapture(), is(true));
-        assertThat(paymentResponse.getLinks().getSelf(), is(new Link("http://publicapi.test.localhost/v1/payments/ch_ab2341da231434l", "GET")));
-        assertThat(paymentResponse.getLinks().getNextUrl(), is(new Link("http://frontend_connector/charge/token_1234567asdf", "GET")));
-        PostLink expectedLink = new PostLink("http://frontend_connector/charge/", "POST", "application/x-www-form-urlencoded", Collections.singletonMap("chargeTokenId", "token_1234567asdf"));
+        assertThat(paymentResponse.getLinks().getSelf(), is(new Link().href("http://publicapi.test.localhost/v1/payments/ch_ab2341da231434l").method("GET")));
+        assertThat(paymentResponse.getLinks().getNextUrl(), is(new Link().href("http://frontend_connector/charge/token_1234567asdf").method("GET")));
+        PostLink expectedLink = new PostLink().href("http://frontend_connector/charge/").method("POST").type("application/x-www-form-urlencoded").params(Collections.singletonMap("chargeTokenId", "token_1234567asdf"));
         assertThat(paymentResponse.getLinks().getNextUrlPost(), is(expectedLink));
     }
 
@@ -142,14 +142,14 @@ public class CreatePaymentServiceTest {
         assertThat(payment.getReference(), is("a reference"));
         assertThat(payment.getDescription(), is("a description"));
         assertThat(payment.getEmail(), is(nullValue()));
-        assertThat(payment.getState(), is(new PaymentState("created", false)));
+        assertThat(payment.getState(), is(new PaymentState().status("created").finished(false)));
         assertThat(payment.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(payment.getPaymentProvider(), is("Sandbox"));
         assertThat(payment.getCreatedDate(), is("2016-01-01T12:00:00Z"));
         assertThat(payment.getLanguage(), is(SupportedLanguage.WELSH));
-        assertThat(paymentResponse.getLinks().getSelf(), is(new Link("http://publicapi.test.localhost/v1/payments/ch_ab2341da231434l", "GET")));
-        assertThat(paymentResponse.getLinks().getNextUrl(), is(new Link("http://frontend_connector/charge/token_1234567asdf", "GET")));
-        PostLink expectedLink = new PostLink("http://frontend_connector/charge/", "POST", "application/x-www-form-urlencoded", Collections.singletonMap("chargeTokenId", "token_1234567asdf"));
+        assertThat(paymentResponse.getLinks().getSelf(), is(new Link().href("http://publicapi.test.localhost/v1/payments/ch_ab2341da231434l").method("GET")));
+        assertThat(paymentResponse.getLinks().getNextUrl(), is(new Link().href("http://frontend_connector/charge/token_1234567asdf").method("GET")));
+        PostLink expectedLink = new PostLink().href("http://frontend_connector/charge/").method("POST").type("application/x-www-form-urlencoded").params(Collections.singletonMap("chargeTokenId", "token_1234567asdf"));
         assertThat(paymentResponse.getLinks().getNextUrlPost(), is(expectedLink));
     }
 

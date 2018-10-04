@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
-import uk.gov.pay.api.model.links.Link;
-import uk.gov.pay.api.model.links.PostLink;
+import uk.gov.pay.api.model.generated.Link;
+import uk.gov.pay.api.model.generated.PostLink;
 
 import java.util.List;
 
@@ -51,17 +51,19 @@ public class AgreementLinks {
         chargeLinks.stream()
                 .filter(link -> NEXT_URL_POST.equals(link.getRel()))
                 .findFirst()
-                .ifPresent(chargeLink -> this.nextUrlPost = new PostLink(chargeLink.getHref(), chargeLink.getMethod(), chargeLink.getType(), chargeLink.getParams()));
+                .ifPresent(chargeLink -> 
+                        this.nextUrlPost = 
+                                new PostLink().href(chargeLink.getHref()).method(chargeLink.getMethod()).type(chargeLink.getType()).params(chargeLink.getParams()));
     }
 
     private void addNextUrlIfPresent(List<PaymentConnectorResponseLink> chargeLinks) {
         chargeLinks.stream()
                 .filter(link -> NEXT_URL.equals(link.getRel()))
                 .findFirst()
-                .ifPresent(chargeLink -> this.nextUrl = new Link(chargeLink.getHref(), chargeLink.getMethod()));
+                .ifPresent(chargeLink -> this.nextUrl = new Link().href(chargeLink.getHref()).method(chargeLink.getMethod()));
     }
 
     public void addSelf(String href) {
-        this.self = new Link(href, GET);
+        this.self = new Link().href(href).method(GET);
     }
 }

@@ -3,14 +3,15 @@ package {{package}};
 import io.dropwizard.auth.Auth;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.resources.PaymentsResource;
+import uk.gov.pay.api.model.ValidCreatePaymentRequest;
+import uk.gov.pay.api.model.PaymentSearchResults;
 
 import javax.inject.Inject;
 
 import io.swagger.annotations.ApiParam;
 import io.swagger.jaxrs.*;
 
-{{#imports}}import {{import}};
-{{/imports}}
+import uk.gov.pay.api.model.generated.*;
 
 import java.util.Map;
 import java.util.List;

@@ -3,7 +3,8 @@ package uk.gov.pay.api.service;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.GetChargeException;
 import uk.gov.pay.api.model.ChargeFromResponse;
-import uk.gov.pay.api.model.PaymentWithAllLinks;
+import uk.gov.pay.api.model.PaymentWithAllLinksCreator;
+import uk.gov.pay.api.model.generated.PaymentWithAllLinks;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
@@ -35,7 +36,7 @@ public class GetPaymentService {
             ChargeFromResponse chargeFromResponse = connectorResponse.readEntity(ChargeFromResponse.class);
             URI paymentURI = publicApiUriGenerator.getPaymentURI(chargeFromResponse.getChargeId());
 
-            PaymentWithAllLinks payment = PaymentWithAllLinks.getPaymentWithLinks(
+            PaymentWithAllLinks payment = PaymentWithAllLinksCreator.getPaymentWithLinks(
                     account.getPaymentType(),
                     chargeFromResponse,
                     paymentURI,

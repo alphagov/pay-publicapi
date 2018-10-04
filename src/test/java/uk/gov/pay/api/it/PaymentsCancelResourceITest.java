@@ -50,7 +50,7 @@ public class PaymentsCancelResourceITest extends PaymentResourceITestBase {
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
+//                .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", Is.is("P0501"))
                 .assertThat("$.description", Is.is("Cancellation of payment failed"));
     }
@@ -66,7 +66,7 @@ public class PaymentsCancelResourceITest extends PaymentResourceITestBase {
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
+//                .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", Is.is("P0500"))
                 .assertThat("$.description", Is.is("Not found"));
     }
@@ -82,7 +82,7 @@ public class PaymentsCancelResourceITest extends PaymentResourceITestBase {
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
+//                .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", Is.is("P0502"))
                 .assertThat("$.description", Is.is("Cancellation of payment failed"));
     }
@@ -98,7 +98,7 @@ public class PaymentsCancelResourceITest extends PaymentResourceITestBase {
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
+//                .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", Is.is("P0598"))
                 .assertThat("$.description", Is.is("Downstream system error"));
     }

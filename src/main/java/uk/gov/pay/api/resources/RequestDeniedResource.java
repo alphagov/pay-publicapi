@@ -9,8 +9,8 @@ import javax.ws.rs.core.Response;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static uk.gov.pay.api.model.PaymentError.Code.REQUEST_DENIED_ERROR;
-import static uk.gov.pay.api.model.PaymentError.aPaymentError;
+import static uk.gov.pay.api.model.PaymentErrorBuilder.aPaymentError;
+import static uk.gov.pay.api.model.PaymentErrorCodes.REQUEST_DENIED_ERROR;
 
 @Path("/")
 public class RequestDeniedResource {

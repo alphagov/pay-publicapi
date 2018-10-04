@@ -1,6 +1,6 @@
 package uk.gov.pay.api.exception;
 
-import uk.gov.pay.api.model.PaymentError;
+import uk.gov.pay.api.model.generated.PaymentError;
 
 public class ValidationException extends RuntimeException {
 

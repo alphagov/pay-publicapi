@@ -11,12 +11,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.model.ErrorResponse;
-import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.directdebit.agreement.AgreementError;
 import uk.gov.pay.api.model.directdebit.agreement.CreateAgreementRequest;
 import uk.gov.pay.api.model.directdebit.agreement.CreateAgreementResponse;
 import uk.gov.pay.api.model.directdebit.agreement.GetAgreementResponse;
+import uk.gov.pay.api.model.generated.ErrorResponse;
+import uk.gov.pay.api.model.generated.PaymentError;
 import uk.gov.pay.api.service.AgreementService;
 
 import javax.inject.Inject;

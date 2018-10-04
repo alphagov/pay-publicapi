@@ -41,7 +41,7 @@ public class PaymentSearchResultBuilder {
         public Address() {
         }
 
-        public Address(uk.gov.pay.api.model.Address billingAddress) {
+        public Address(uk.gov.pay.api.model.generated.Address billingAddress) {
             this.line1 = billingAddress.getLine1();
             this.line2 = billingAddress.getLine2();
             this.postcode = billingAddress.getPostcode();
@@ -61,10 +61,10 @@ public class PaymentSearchResultBuilder {
         public CardDetails() {
         }
 
-        public CardDetails(uk.gov.pay.api.model.CardDetails cardDetails) {
+        public CardDetails(uk.gov.pay.api.model.generated.CardDetails cardDetails) {
             this.last_digits_card_number = cardDetails.getLastDigitsCardNumber();
             this.first_digits_card_number = cardDetails.getFirstDigitsCardNumber();
-            this.cardholder_name = cardDetails.getCardHolderName();
+            this.cardholder_name = cardDetails.getCardholderName();
             this.expiry_date = cardDetails.getExpiryDate();
             this.card_brand = cardDetails.getCardBrand();
             this.billing_address = new Address(cardDetails.getBillingAddress());
@@ -150,7 +150,7 @@ public class PaymentSearchResultBuilder {
     }
 
 
-    public PaymentSearchResultBuilder withMatchingCardDetails(uk.gov.pay.api.model.CardDetails cardDetails) {
+    public PaymentSearchResultBuilder withMatchingCardDetails(uk.gov.pay.api.model.generated.CardDetails cardDetails) {
         this.cardDetails = new CardDetails(cardDetails);
         return this;
     }

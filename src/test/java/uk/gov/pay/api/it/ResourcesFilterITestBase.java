@@ -7,10 +7,10 @@ import com.jayway.restassured.response.ValidatableResponse;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
-import uk.gov.pay.api.model.Address;
-import uk.gov.pay.api.model.CardDetails;
-import uk.gov.pay.api.model.PaymentState;
-import uk.gov.pay.api.model.RefundSummary;
+import uk.gov.pay.api.model.generated.Address;
+import uk.gov.pay.api.model.generated.CardDetails;
+import uk.gov.pay.api.model.generated.PaymentState;
+import uk.gov.pay.api.model.generated.RefundSummary;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
@@ -34,8 +34,8 @@ abstract public class ResourcesFilterITestBase extends PaymentResourceITestBase 
     protected static final int AMOUNT = 9999999;
     protected static final String CHARGE_ID = "ch_ab2341da231434l";
     protected static final String CHARGE_TOKEN_ID = "token_1234567asdf";
-    protected static final PaymentState CREATED = new PaymentState("created", false, null, null);
-    protected static final RefundSummary REFUND_SUMMARY = new RefundSummary("pending", 100L, 50L);
+    protected static final PaymentState CREATED = new PaymentState().code("created").finished(false);
+    protected static final RefundSummary REFUND_SUMMARY = new RefundSummary().status("pending").amountAvailable(100L).amountSubmitted(50L);
     protected static final String PAYMENT_PROVIDER = "Sandbox";
     protected static final String CARD_BRAND = "master-card";
     protected static final String CARD_BRAND_LABEL = "Mastercard";
@@ -47,8 +47,14 @@ abstract public class ResourcesFilterITestBase extends PaymentResourceITestBase 
     protected static final String CREATED_DATE = DateTimeUtils.toUTCDateString(TIMESTAMP);
     protected static final Map<String, String> PAYMENT_CREATED = new ChargeEventBuilder(CREATED, CREATED_DATE).build();
     protected static final List<Map<String, String>> EVENTS = Collections.singletonList(PAYMENT_CREATED);
-    protected static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
-    protected static final CardDetails CARD_DETAILS = new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, "Visa");
+    protected static final Address BILLING_ADDRESS = new Address().line1("line1").line2("line2").postcode("NR2 5 6EG").city("city").country("UK");
+    protected static final CardDetails CARD_DETAILS = new CardDetails()
+            .lastDigitsCardNumber("1234")
+            .firstDigitsCardNumber("123456")
+            .cardholderName("Mr. Payment")
+            .expiryDate("12/19")
+            .billingAddress(BILLING_ADDRESS)
+            .cardBrand("Visa");
 
     protected static final String PAYLOAD = paymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE);
     protected ExecutorService executor = Executors.newFixedThreadPool(2);

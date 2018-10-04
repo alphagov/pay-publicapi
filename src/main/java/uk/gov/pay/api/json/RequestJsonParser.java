@@ -2,13 +2,13 @@ package uk.gov.pay.api.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import uk.gov.pay.api.exception.BadRequestException;
-import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.CreatePaymentRequest;
-import uk.gov.pay.api.model.PaymentError;
+import uk.gov.pay.api.model.PaymentErrorCodes;
+import uk.gov.pay.api.model.generated.CreatePaymentRefundRequest;
+import uk.gov.pay.api.model.generated.PaymentError;
 import uk.gov.pay.api.validation.LanguageValidator;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static uk.gov.pay.api.model.CreatePaymentRefundRequest.REFUND_AMOUNT_AVAILABLE;
 import static uk.gov.pay.api.model.CreatePaymentRequest.AGREEMENT_ID_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.AMOUNT_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.DELAYED_CAPTURE_FIELD_NAME;
@@ -16,13 +16,15 @@ import static uk.gov.pay.api.model.CreatePaymentRequest.DESCRIPTION_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.LANGUAGE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.REFERENCE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.RETURN_URL_FIELD_NAME;
-import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_MISSING_FIELD_ERROR;
-import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_REFUND_MISSING_FIELD_ERROR;
-import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_REFUND_VALIDATION_ERROR;
-import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
-import static uk.gov.pay.api.model.PaymentError.aPaymentError;
+import static uk.gov.pay.api.model.PaymentErrorBuilder.aPaymentError;
+import static uk.gov.pay.api.model.PaymentErrorCodes.CREATE_PAYMENT_MISSING_FIELD_ERROR;
+import static uk.gov.pay.api.model.PaymentErrorCodes.CREATE_PAYMENT_REFUND_MISSING_FIELD_ERROR;
+import static uk.gov.pay.api.model.PaymentErrorCodes.CREATE_PAYMENT_REFUND_VALIDATION_ERROR;
+import static uk.gov.pay.api.model.PaymentErrorCodes.CREATE_PAYMENT_VALIDATION_ERROR;
 
 class RequestJsonParser {
+
+    public static final String REFUND_AMOUNT_AVAILABLE="refund_amount_available";
 
     static CreatePaymentRequest parsePaymentRequest(JsonNode paymentRequest) {
         Integer amount = parseInteger(paymentRequest, AMOUNT_FIELD_NAME, true, CREATE_PAYMENT_VALIDATION_ERROR, CREATE_PAYMENT_MISSING_FIELD_ERROR);
@@ -67,7 +69,7 @@ class RequestJsonParser {
     static CreatePaymentRefundRequest parseRefundRequest(JsonNode rootNode) {
         Integer amount = parseInteger(rootNode, AMOUNT_FIELD_NAME, true, CREATE_PAYMENT_REFUND_VALIDATION_ERROR, CREATE_PAYMENT_REFUND_MISSING_FIELD_ERROR);
         Integer refundAmountAvailable = rootNode.get(REFUND_AMOUNT_AVAILABLE) == null ? null : rootNode.get(REFUND_AMOUNT_AVAILABLE).asInt();
-        return new CreatePaymentRefundRequest(amount, refundAmountAvailable);
+        return new CreatePaymentRefundRequest().amount(amount).refundAmountAvailable(refundAmountAvailable);
     }
 
     private static String parseString(JsonNode node, String fieldName, boolean isFieldMandatory) {
@@ -85,7 +87,7 @@ class RequestJsonParser {
         return fieldValue;
     }
 
-    private static Integer parseInteger(JsonNode node, String fieldName, boolean isFieldMandatory, PaymentError.Code validationErrorCode, PaymentError.Code missingErrorCode) {
+    private static Integer parseInteger(JsonNode node, String fieldName, boolean isFieldMandatory, PaymentErrorCodes validationErrorCode, PaymentErrorCodes missingErrorCode) {
         JsonNode fieldNode = node.get(fieldName);
         PaymentError validationPaymentError = aPaymentError(fieldName, validationErrorCode, "Must be a valid numeric format");
         Integer fieldValue = getIntegerValue(fieldNode, validationPaymentError);
@@ -96,7 +98,7 @@ class RequestJsonParser {
         return fieldValue;
     }
 
-    private static Boolean parseBoolean(JsonNode node, String fieldName, boolean isFieldMandatory, PaymentError.Code validationErrorCode, PaymentError.Code missingErrorCode) {
+    private static Boolean parseBoolean(JsonNode node, String fieldName, boolean isFieldMandatory, PaymentErrorCodes validationErrorCode, PaymentErrorCodes missingErrorCode) {
         JsonNode fieldNode = node.get(fieldName);
         PaymentError validationPaymentError = aPaymentError(fieldName, validationErrorCode, "Must be true or false");
         Boolean fieldValue = getBooleanValue(fieldNode, validationPaymentError);

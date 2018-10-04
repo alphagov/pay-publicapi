@@ -16,13 +16,15 @@ import uk.gov.pay.api.exception.GetEventsException;
 import uk.gov.pay.api.exception.GetRefundException;
 import uk.gov.pay.api.exception.GetRefundsException;
 import uk.gov.pay.api.model.ChargeFromResponse;
-import uk.gov.pay.api.model.CreatePaymentRefundRequest;
-import uk.gov.pay.api.model.PaymentEvents;
-import uk.gov.pay.api.model.PaymentWithAllLinks;
 import uk.gov.pay.api.model.RefundFromConnector;
 import uk.gov.pay.api.model.RefundResponse;
 import uk.gov.pay.api.model.RefundsFromConnector;
 import uk.gov.pay.api.model.RefundsResponse;
+import uk.gov.pay.api.model.generated.CreatePaymentRefundRequest;
+import uk.gov.pay.api.model.generated.Link;
+import uk.gov.pay.api.model.generated.PaymentEvents;
+import uk.gov.pay.api.model.generated.PaymentLinks;
+import uk.gov.pay.api.model.generated.PaymentWithAllLinks;
 import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.service.CancelPaymentService;
 import uk.gov.pay.api.service.CapturePaymentService;
@@ -33,6 +35,7 @@ import uk.gov.pay.api.service.PaymentSearchService;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
 
 import javax.inject.Inject;
+import javax.ws.rs.HttpMethod;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
@@ -41,11 +44,14 @@ import java.util.Collections;
 import java.util.List;
 
 import static java.lang.String.format;
+import static java.util.Optional.ofNullable;
+import static javax.ws.rs.HttpMethod.GET;
 import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.Response.Status.ACCEPTED;
 import static javax.ws.rs.core.UriBuilder.fromPath;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.http.HttpStatus.SC_OK;
+import static uk.gov.pay.api.model.PaymentEventsCreator.createPaymentEventsResponse;
 
 public class PaymentsResource {
 
@@ -99,6 +105,7 @@ public class PaymentsResource {
 
         logger.info("Payment request - paymentId={}", paymentId);
 
+        
         PaymentWithAllLinks payment = getPaymentService.getPayment(account, paymentId);
 
         logger.info("Payment returned - [ {} ]", payment);
@@ -126,9 +133,8 @@ public class PaymentsResource {
 
             URI paymentLink = publicApiUriGenerator.getPaymentURI(payload.get("charge_id").asText());
 
-            PaymentEvents response =
-                    PaymentEvents.createPaymentEventsResponse(payload, paymentLink.toString())
-                            .withSelfLink(paymentEventsLink.toString());
+            PaymentEvents response = createPaymentEventsResponse(payload, paymentLink.toString());
+            response.setLinks(new PaymentLinks().self(new Link().href(paymentEventsLink.toString()).method(GET)));
 
             logger.info("Payment events returned - [ {} ]", response);
 
@@ -261,7 +267,7 @@ public class PaymentsResource {
 
         logger.info("Create a refund for payment request - paymentId={}", paymentId);
 
-        Integer refundAmountAvailable = requestPayload.getRefundAmountAvailable()
+        Integer refundAmountAvailable = ofNullable(requestPayload.getRefundAmountAvailable())
                 .orElseGet(() -> {
                     Response getChargeResponse = client
                             .target(getConnectorUrl(format(CONNECTOR_CHARGE_RESOURCE, account.getAccountId(), paymentId)))

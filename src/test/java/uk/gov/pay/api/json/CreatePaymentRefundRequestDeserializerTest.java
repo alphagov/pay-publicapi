@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.pay.api.exception.BadRequestException;
-import uk.gov.pay.api.model.CreatePaymentRefundRequest;
+import uk.gov.pay.api.model.generated.CreatePaymentRefundRequest;
 import uk.gov.pay.api.validation.PaymentRefundRequestValidator;
 
 import static org.hamcrest.core.Is.is;

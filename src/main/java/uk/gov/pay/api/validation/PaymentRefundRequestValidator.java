@@ -1,14 +1,17 @@
 package uk.gov.pay.api.validation;
 
 import uk.gov.pay.api.exception.ValidationException;
-import uk.gov.pay.api.model.CreatePaymentRefundRequest;
-import uk.gov.pay.api.model.PaymentError;
+import uk.gov.pay.api.model.generated.CreatePaymentRefundRequest;
+import uk.gov.pay.api.model.generated.PaymentError;
 
 import static java.lang.String.format;
 import static uk.gov.pay.api.model.CreatePaymentRequest.AMOUNT_FIELD_NAME;
-import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_REFUND_VALIDATION_ERROR;
-import static uk.gov.pay.api.model.PaymentError.aPaymentError;
-import static uk.gov.pay.api.validation.PaymentRequestValidator.*;
+import static uk.gov.pay.api.model.PaymentErrorBuilder.aPaymentError;
+import static uk.gov.pay.api.model.PaymentErrorCodes.CREATE_PAYMENT_REFUND_VALIDATION_ERROR;
+import static uk.gov.pay.api.validation.PaymentRequestValidator.AMOUNT_MAX_VALUE;
+import static uk.gov.pay.api.validation.PaymentRequestValidator.AMOUNT_MIN_VALUE;
+import static uk.gov.pay.api.validation.PaymentRequestValidator.CONSTRAINT_GREATER_THAN_MESSAGE_INT_TEMPLATE;
+import static uk.gov.pay.api.validation.PaymentRequestValidator.CONSTRAINT_LESS_THAN_MESSAGE_INT_TEMPLATE;
 
 public class PaymentRefundRequestValidator {
 

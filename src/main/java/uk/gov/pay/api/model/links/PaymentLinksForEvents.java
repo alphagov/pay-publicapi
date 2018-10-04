@@ -3,6 +3,7 @@ package uk.gov.pay.api.model.links;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import uk.gov.pay.api.model.generated.Link;
 
 import static javax.ws.rs.HttpMethod.GET;
 
@@ -20,7 +21,7 @@ public class PaymentLinksForEvents {
     }
 
     public void addSelf(String href) {
-        this.self = new Link(href, GET);
+        this.self = new Link().href(href).method(GET);
     }
 
 }

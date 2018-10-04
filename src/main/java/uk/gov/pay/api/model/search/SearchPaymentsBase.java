@@ -6,8 +6,8 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.exception.SearchChargesException;
-import uk.gov.pay.api.model.PaymentError;
-import uk.gov.pay.api.model.links.Link;
+import uk.gov.pay.api.model.PaymentErrorCodes;
+import uk.gov.pay.api.model.generated.Link;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.PaymentUriGenerator;
 
@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static uk.gov.pay.api.model.PaymentErrorBuilder.aPaymentError;
 
 public abstract class SearchPaymentsBase {
 
@@ -52,8 +53,7 @@ public abstract class SearchPaymentsBase {
                 .filter(this::isUnsupportedParamWithNonBlankValue)
                 .findFirst()
                 .ifPresent(invalidParam -> {
-                    throw new BadRequestException(PaymentError
-                            .aPaymentError(PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR, invalidParam.getKey()));
+                    throw new BadRequestException(aPaymentError(PaymentErrorCodes.SEARCH_PAYMENTS_VALIDATION_ERROR, invalidParam.getKey()));
                 });
     }
     

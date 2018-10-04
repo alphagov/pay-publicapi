@@ -2,6 +2,7 @@ package uk.gov.pay.api.it.validation;
 
 import com.jayway.jsonassert.JsonAssert;
 import com.jayway.restassured.response.ValidatableResponse;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,6 +10,7 @@ import uk.gov.pay.api.it.PaymentResourceITestBase;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
@@ -178,9 +180,9 @@ public class PaymentsResourceDescriptionValidationITest extends PaymentResourceI
                 .contentType(JSON)
                 .extract()
                 .body().asInputStream();
-
+//System.out.println("The string:" + IOUtils.toString(body, Charset.defaultCharset()));
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
+//                .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", is("P0197"))
                 .assertThat("$.description", is("Unable to parse JSON"));
     }

@@ -1,7 +1,7 @@
 package uk.gov.pay.api.it.fixtures;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.pay.api.model.links.Link;
+import uk.gov.pay.api.model.generated.Link;
 
 import java.util.List;
 

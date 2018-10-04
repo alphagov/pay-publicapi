@@ -10,10 +10,11 @@ import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.validation.PaymentRequestValidator;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import static uk.gov.pay.api.json.RequestJsonParser.parsePaymentRequest;
-import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_PARSING_ERROR;
-import static uk.gov.pay.api.model.PaymentError.aPaymentError;
+import static uk.gov.pay.api.model.PaymentErrorBuilder.aPaymentError;
+import static uk.gov.pay.api.model.PaymentErrorCodes.CREATE_PAYMENT_PARSING_ERROR;
 
 public class CreatePaymentRequestDeserializer extends StdDeserializer<ValidCreatePaymentRequest> {
 

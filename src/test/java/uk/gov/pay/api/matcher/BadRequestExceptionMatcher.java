@@ -3,7 +3,7 @@ package uk.gov.pay.api.matcher;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import uk.gov.pay.api.exception.BadRequestException;
-import uk.gov.pay.api.model.PaymentError;
+import uk.gov.pay.api.model.generated.PaymentError;
 
 public class BadRequestExceptionMatcher extends TypeSafeMatcher<BadRequestException> {
 

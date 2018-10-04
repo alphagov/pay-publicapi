@@ -32,3 +32,4 @@ bin
 .DS_Store
 
 src/main/java/uk/gov/pay/api/resources/V1Api.java
+src/main/java/uk/gov/pay/api/model/generated/*

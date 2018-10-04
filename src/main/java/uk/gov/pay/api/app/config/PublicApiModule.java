@@ -13,7 +13,7 @@ import uk.gov.pay.api.filter.ratelimit.RateLimiter;
 import uk.gov.pay.api.filter.ratelimit.RedisRateLimiter;
 import uk.gov.pay.api.json.CreatePaymentRefundRequestDeserializer;
 import uk.gov.pay.api.json.CreatePaymentRequestDeserializer;
-import uk.gov.pay.api.model.CreatePaymentRefundRequest;
+import uk.gov.pay.api.model.generated.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.validation.PaymentRefundRequestValidator;
 import uk.gov.pay.api.validation.PaymentRequestValidator;

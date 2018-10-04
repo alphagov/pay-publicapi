@@ -6,6 +6,11 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import uk.gov.pay.api.model.generated.CardDetails;
+import uk.gov.pay.api.model.generated.Payment;
+import uk.gov.pay.api.model.generated.PaymentState;
+import uk.gov.pay.api.model.generated.RefundSummary;
+import uk.gov.pay.api.model.generated.SettlementSummary;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
@@ -35,11 +40,19 @@ public class CardPayment extends Payment {
                        String reference, String email, String paymentProvider, String createdDate,
                        RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
                        SupportedLanguage language, boolean delayedCapture) {
-        super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate);
+        setPaymentId(chargeId);
+        setAmount(amount);
+        setState(state);
+        setReturnUrl(returnUrl);
+        setDescription(description);
+        setReference(reference);
+        setEmail(email);
+        setPaymentProvider(paymentProvider);
+        setCreatedDate(createdDate);
         this.refundSummary = refundSummary;
         this.settlementSummary = settlementSummary;
         this.cardDetails = cardDetails;
-        this.paymentType = CARD.getFriendlyName();
+//        this.paymentType = CARD.getFriendlyName();
         this.language = language;
         this.delayedCapture = delayedCapture;
     }
@@ -86,16 +99,16 @@ public class CardPayment extends Payment {
     public String toString() {
         // Some services put PII in the description, so don’t include it in the stringification
         return "Card Payment{" +
-                "paymentId='" + super.paymentId + '\'' +
-                ", paymentProvider='" + paymentProvider + '\'' +
+                "paymentId='" + getPaymentId() + '\'' +
+                ", paymentProvider='" + getPaymentProvider() + '\'' +
                 ", cardBrandLabel='" + getCardBrand() + '\'' +
-                ", amount=" + amount +
-                ", state='" + state + '\'' +
-                ", returnUrl='" + returnUrl + '\'' +
-                ", reference='" + reference + '\'' +
+                ", amount=" + getAmount() +
+                ", state='" + getState() + '\'' +
+                ", returnUrl='" + getReturnUrl() + '\'' +
+                ", reference='" + getReference() + '\'' +
                 ", language='" + language.toString() + '\'' +
                 ", delayedCapture=" + delayedCapture +
-                ", createdDate='" + createdDate + '\'' +
+                ", createdDate='" + getCreatedDate() + '\'' +
                 '}';
     }
 

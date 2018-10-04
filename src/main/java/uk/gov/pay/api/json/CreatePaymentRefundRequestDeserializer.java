@@ -4,14 +4,14 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import uk.gov.pay.api.exception.BadRequestException;
-import uk.gov.pay.api.model.CreatePaymentRefundRequest;
+import uk.gov.pay.api.model.generated.CreatePaymentRefundRequest;
 import uk.gov.pay.api.validation.PaymentRefundRequestValidator;
 
 import java.io.IOException;
 
 import static uk.gov.pay.api.json.RequestJsonParser.parseRefundRequest;
-import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_REFUND_PARSING_ERROR;
-import static uk.gov.pay.api.model.PaymentError.aPaymentError;
+import static uk.gov.pay.api.model.PaymentErrorBuilder.aPaymentError;
+import static uk.gov.pay.api.model.PaymentErrorCodes.CREATE_PAYMENT_REFUND_PARSING_ERROR;
 
 public class CreatePaymentRefundRequestDeserializer extends StdDeserializer<CreatePaymentRefundRequest> {
 

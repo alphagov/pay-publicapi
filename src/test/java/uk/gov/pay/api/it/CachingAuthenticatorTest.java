@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.mockserver.socket.PortFactory;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
-import uk.gov.pay.api.model.PaymentState;
+import uk.gov.pay.api.model.generated.PaymentState;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
@@ -113,7 +113,7 @@ public class CachingAuthenticatorTest {
                 .add("charge_id", "chargeId")
                 .add("amount", 100)
                 .add("reference", "ref 12")
-                .add("state", new PaymentState("created", false, null, null))
+                .add("state", new PaymentState().status("created").finished(false))
                 .add("email", "test@example.com")
                 .add("description", "description")
                 .add("return_url", "http://example.com")

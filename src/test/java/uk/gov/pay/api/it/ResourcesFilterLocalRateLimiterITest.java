@@ -12,10 +12,10 @@ import org.junit.Test;
 import org.mockserver.junit.MockServerRule;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
-import uk.gov.pay.api.model.Address;
-import uk.gov.pay.api.model.CardDetails;
-import uk.gov.pay.api.model.PaymentState;
-import uk.gov.pay.api.model.RefundSummary;
+import uk.gov.pay.api.model.generated.Address;
+import uk.gov.pay.api.model.generated.CardDetails;
+import uk.gov.pay.api.model.generated.PaymentState;
+import uk.gov.pay.api.model.generated.RefundSummary;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
 import uk.gov.pay.api.utils.DateTimeUtils;
@@ -51,8 +51,8 @@ public class ResourcesFilterLocalRateLimiterITest {
     private static final int AMOUNT = 9999999;
     private static final String CHARGE_ID = "ch_ab2341da231434l";
     private static final String CHARGE_TOKEN_ID = "token_1234567asdf";
-    private static final PaymentState CREATED = new PaymentState("created", false, null, null);
-    private static final RefundSummary REFUND_SUMMARY = new RefundSummary("pending", 100L, 50L);
+    private static final PaymentState CREATED = new PaymentState().status("created").finished(false);
+    private static final RefundSummary REFUND_SUMMARY = new RefundSummary().status("pending").amountAvailable(100L).amountSubmitted(50L);
     private static final String PAYMENT_PROVIDER = "Sandbox";
     private static final String RETURN_URL = "https://somewhere.gov.uk/rainbow/1";
     private static final String REFERENCE = "Some reference";
@@ -62,8 +62,14 @@ public class ResourcesFilterLocalRateLimiterITest {
     private static final String CREATED_DATE = DateTimeUtils.toUTCDateString(TIMESTAMP);
     private static final Map<String, String> PAYMENT_CREATED = new ChargeEventBuilder(CREATED, CREATED_DATE).build();
     private static final List<Map<String, String>> EVENTS = Collections.singletonList(PAYMENT_CREATED);
-    private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
-    private static final CardDetails CARD_DETAILS = new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, "Visa");
+    private static final Address BILLING_ADDRESS = new Address().line1("line1").line2("line2").postcode("NR2 5 6EG").city("city").country("UK");
+    private static final CardDetails CARD_DETAILS = new CardDetails()
+            .lastDigitsCardNumber("1234")
+            .firstDigitsCardNumber("123456")
+            .cardholderName("Mr. Payment")
+            .expiryDate("12/19")
+            .billingAddress(BILLING_ADDRESS)
+            .cardBrand("Visa");
 
     private static final String PAYLOAD = paymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE);
     private ExecutorService executor = Executors.newFixedThreadPool(2);

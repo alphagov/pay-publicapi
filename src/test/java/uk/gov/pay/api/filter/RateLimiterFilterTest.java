@@ -75,7 +75,7 @@ public class RateLimiterFilterTest {
         verify(mockResponse).setContentType("application/json");
         verify(mockResponse).setCharacterEncoding("utf-8");
         verify(mockResponse).getWriter();
-        verify(mockPrinter).print("{\"code\":\"P0900\",\"description\":\"Too many requests\"}");
+        verify(mockPrinter).print("{\"field\":null,\"code\":\"P0900\",\"description\":\"Too many requests\"}");
         verifyNoMoreInteractions(mockResponse);
     }
 }

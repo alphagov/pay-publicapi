@@ -3,7 +3,7 @@ package uk.gov.pay.api.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import uk.gov.pay.api.model.PaymentState;
+import uk.gov.pay.api.model.generated.PaymentState;
 
 import java.util.Map;
 

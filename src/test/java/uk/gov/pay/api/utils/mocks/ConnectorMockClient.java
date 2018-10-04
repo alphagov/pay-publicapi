@@ -6,11 +6,11 @@ import org.mockserver.client.server.ForwardChainExpectation;
 import org.mockserver.model.HttpResponse;
 import org.mockserver.model.Parameter;
 import uk.gov.pay.api.it.fixtures.PaymentRefundJsonFixture;
-import uk.gov.pay.api.model.CardDetails;
-import uk.gov.pay.api.model.PaymentState;
-import uk.gov.pay.api.model.RefundSummary;
-import uk.gov.pay.api.model.SettlementSummary;
-import uk.gov.pay.api.model.links.Link;
+import uk.gov.pay.api.model.generated.CardDetails;
+import uk.gov.pay.api.model.generated.Link;
+import uk.gov.pay.api.model.generated.PaymentState;
+import uk.gov.pay.api.model.generated.RefundSummary;
+import uk.gov.pay.api.model.generated.SettlementSummary;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
@@ -95,8 +95,8 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     private String buildGetRefundResponse(String refundId, int amount, int refundAmountAvailable, String status, String createdDate) {
         List<Map<String, Link>> links = new ArrayList<>();
-        links.add(ImmutableMap.of("self", new Link("http://server:port/self-link")));
-        links.add(ImmutableMap.of("payment", new Link("http://server:port/payment-link")));
+        links.add(ImmutableMap.of("self", new Link().href("http://server:port/self-link")));
+        links.add(ImmutableMap.of("payment", new Link().href("http://server:port/payment-link")));
 
         JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
                 .add("refund_id", refundId)
@@ -238,8 +238,8 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         refundList.put("refunds", Arrays.asList(refunds));
 
         List<Map<String, Link>> links = new ArrayList<>();
-        links.add(ImmutableMap.of("self", new Link("http://server:port/self-link")));
-        links.add(ImmutableMap.of("payment", new Link("http://server:port/payment-link")));
+        links.add(ImmutableMap.of("self", new Link().href("http://server:port/self-link")));
+        links.add(ImmutableMap.of("payment", new Link().href("http://server:port/payment-link")));
 
         JsonStringBuilder embedded = new JsonStringBuilder().noPrettyPrint();
         embedded.add("refunds", refundList);

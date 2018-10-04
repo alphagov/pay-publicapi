@@ -2,7 +2,7 @@ package uk.gov.pay.api.validation;
 
 import uk.gov.pay.api.exception.ValidationException;
 import uk.gov.pay.api.model.CreatePaymentRequest;
-import uk.gov.pay.api.model.PaymentError;
+import uk.gov.pay.api.model.generated.PaymentError;
 
 import static java.lang.String.format;
 import static uk.gov.pay.api.model.CreatePaymentRequest.AGREEMENT_ID_FIELD_NAME;
@@ -11,8 +11,8 @@ import static uk.gov.pay.api.model.CreatePaymentRequest.DESCRIPTION_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.LANGUAGE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.REFERENCE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.RETURN_URL_FIELD_NAME;
-import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
-import static uk.gov.pay.api.model.PaymentError.aPaymentError;
+import static uk.gov.pay.api.model.PaymentErrorBuilder.aPaymentError;
+import static uk.gov.pay.api.model.PaymentErrorCodes.CREATE_PAYMENT_VALIDATION_ERROR;
 
 public class PaymentRequestValidator {
 

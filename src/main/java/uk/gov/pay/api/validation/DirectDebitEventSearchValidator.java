@@ -6,9 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.join;
-import static uk.gov.pay.api.model.PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR;
-import static uk.gov.pay.api.model.PaymentError.aPaymentError;
-
+import static uk.gov.pay.api.model.PaymentErrorBuilder.aPaymentError;
+import static uk.gov.pay.api.model.PaymentErrorCodes.SEARCH_PAYMENTS_VALIDATION_ERROR;
 
 public class DirectDebitEventSearchValidator {
 

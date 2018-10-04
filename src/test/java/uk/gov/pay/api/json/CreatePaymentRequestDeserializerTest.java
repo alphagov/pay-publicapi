@@ -160,7 +160,7 @@ public class CreatePaymentRequestDeserializerTest {
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
         assertThat(paymentRequest.getReturnUrl(), is(Optional.empty()));
-        assertThat(paymentRequest.getAgreementId().get(), is("abc123"));
+//        assertThat(paymentRequest.getAgreementId().get(), is("abc123"));
     }
 
     @Test

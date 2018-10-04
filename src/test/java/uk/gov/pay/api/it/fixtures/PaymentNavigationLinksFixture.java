@@ -1,6 +1,6 @@
 package uk.gov.pay.api.it.fixtures;
 
-import uk.gov.pay.api.model.links.Link;
+import uk.gov.pay.api.model.generated.Link;
 
 public class PaymentNavigationLinksFixture {
 
@@ -11,23 +11,23 @@ public class PaymentNavigationLinksFixture {
     private Link next_page;
 
     public PaymentNavigationLinksFixture withSelfLink(String href) {
-        this.self = new Link(href);
+        this.self = new Link().href(href);
         return this;
     }
     public PaymentNavigationLinksFixture withPrevLink(String href) {
-        this.prev_page = new Link(href);
+        this.prev_page = new Link().href(href);
         return this;
     }
     public PaymentNavigationLinksFixture withNextLink(String href) {
-        this.next_page = new Link(href);
+        this.next_page = new Link().href(href);
         return this;
     }
     public PaymentNavigationLinksFixture withFirstLink(String href) {
-        this.first_page = new Link(href);
+        this.first_page = new Link().href(href);
         return this;
     }
     public PaymentNavigationLinksFixture withLastLink(String href) {
-        this.last_page = new Link(href);
+        this.last_page = new Link().href(href);
         return this;
     }
 }

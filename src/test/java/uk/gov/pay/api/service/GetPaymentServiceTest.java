@@ -11,11 +11,11 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.model.CardPayment;
-import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.TokenPaymentType;
-import uk.gov.pay.api.model.PaymentWithAllLinks;
-import uk.gov.pay.api.model.links.PostLink;
+import uk.gov.pay.api.model.CardPayment;
+import uk.gov.pay.api.model.generated.PaymentState;
+import uk.gov.pay.api.model.generated.PaymentWithAllLinks;
+import uk.gov.pay.api.model.generated.PostLink;
 import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
@@ -64,7 +64,7 @@ public class GetPaymentServiceTest {
         CardPayment payment = (CardPayment) paymentResponse.getPayment();
 
         assertThat(payment.getAmount(), is(100L));
-        assertThat(payment.getState(), is(new PaymentState("created", false)));
+        assertThat(payment.getState(), is(new PaymentState().status("created").finished(false)));
         assertThat(payment.getDescription(), is("Test description"));
         assertThat(payment.getReference(), is("aReference"));
         assertThat(payment.getLanguage(), is(SupportedLanguage.ENGLISH));
@@ -79,11 +79,11 @@ public class GetPaymentServiceTest {
         assertThat(paymentResponse.getLinks().getRefunds().getMethod(), is("GET"));
         assertThat(paymentResponse.getLinks().getNextUrl().getHref(), containsString("secure/ae749781-6562-4e0e-8f56-32d9639079dc"));
         assertThat(paymentResponse.getLinks().getNextUrl().getMethod(), is("GET"));
-        assertThat(paymentResponse.getLinks().getNextUrlPost(), is(new PostLink(
-                "https://card_frontend/secure",
-                "POST",
-                "application/x-www-form-urlencoded",
-                Collections.singletonMap("chargeTokenId", "ae749781-6562-4e0e-8f56-32d9639079dc")
+        assertThat(paymentResponse.getLinks().getNextUrlPost(), is(new PostLink()
+                .href("https://card_frontend/secure")
+                .method("POST")
+                .type("application/x-www-form-urlencoded")
+                .params(Collections.singletonMap("chargeTokenId", "ae749781-6562-4e0e-8f56-32d9639079dc")
         )));
     }
 

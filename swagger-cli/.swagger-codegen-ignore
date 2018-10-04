@@ -1,0 +1,3 @@
+src/gen/java/uk/gov/pay/api/model/generated/ValidCreatePaymentRequest.java
+src/gen/java/uk/gov/pay/api/model/generated/CardPayment.java
+src/gen/java/uk/gov/pay/api/model/generated/PaymentSearchResults.java

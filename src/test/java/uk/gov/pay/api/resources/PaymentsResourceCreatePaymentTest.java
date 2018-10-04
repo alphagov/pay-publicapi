@@ -8,15 +8,16 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.model.Address;
-import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.CreatePaymentRequest;
-import uk.gov.pay.api.model.PaymentState;
-import uk.gov.pay.api.model.RefundSummary;
-import uk.gov.pay.api.model.SettlementSummary;
+import uk.gov.pay.api.model.PaymentWithAllLinksCreator;
 import uk.gov.pay.api.model.TokenPaymentType;
+import uk.gov.pay.api.model.generated.Address;
+import uk.gov.pay.api.model.generated.CardDetails;
+import uk.gov.pay.api.model.generated.PaymentState;
+import uk.gov.pay.api.model.generated.PaymentWithAllLinks;
+import uk.gov.pay.api.model.generated.RefundSummary;
+import uk.gov.pay.api.model.generated.SettlementSummary;
 import uk.gov.pay.api.model.ValidCreatePaymentRequest;
-import uk.gov.pay.api.model.PaymentWithAllLinks;
 import uk.gov.pay.api.service.CancelPaymentService;
 import uk.gov.pay.api.service.CapturePaymentService;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
@@ -107,11 +108,11 @@ public class PaymentsResourceCreatePaymentTest {
 
     @NotNull
     private PaymentWithAllLinks aSuccessfullyCreatedPayment() {
-        final Address cardholderAddress = new Address("123 Acacia Ave", "", "", "London", "GB");
-        return new PaymentWithAllLinks(
+        final Address cardholderAddress = new Address().line1("123 Acacia Ave").city("London").country("GB");
+        return PaymentWithAllLinksCreator.valueOf(
                 "abc123",
                 100L,
-                new PaymentState("created", false),
+                new PaymentState().status("created").finished(false),
                 "https://somewhere.test",
                 "New Passport",
                 "my_ref",
@@ -122,7 +123,7 @@ public class PaymentsResourceCreatePaymentTest {
                 false,
                 new RefundSummary(),
                 new SettlementSummary(),
-                new CardDetails("9876", "482393", "Anne Onymous", "12/20", cardholderAddress, "visa"),
+                new CardDetails().lastDigitsCardNumber("9876").firstDigitsCardNumber("482393").cardholderName("Anne Onymous").expiryDate("12/20").billingAddress(cardholderAddress).cardBrand("visa"),
                 Collections.emptyList(),
                 URI.create(paymentUri),
                 URI.create(paymentUri + "/events"),

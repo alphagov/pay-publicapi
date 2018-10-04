@@ -3,14 +3,17 @@ package uk.gov.pay.api.exception.mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.exception.CancelChargeException;
-import uk.gov.pay.api.model.PaymentError;
+import uk.gov.pay.api.model.generated.PaymentError;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
 import static javax.ws.rs.core.Response.Status.*;
-import static uk.gov.pay.api.model.PaymentError.Code.*;
-import static uk.gov.pay.api.model.PaymentError.aPaymentError;
+import static uk.gov.pay.api.model.PaymentErrorBuilder.aPaymentError;
+import static uk.gov.pay.api.model.PaymentErrorCodes.CANCEL_PAYMENT_CONNECTOR_BAD_REQUEST_ERROR;
+import static uk.gov.pay.api.model.PaymentErrorCodes.CANCEL_PAYMENT_CONNECTOR_CONFLICT_ERROR;
+import static uk.gov.pay.api.model.PaymentErrorCodes.CANCEL_PAYMENT_CONNECTOR_ERROR;
+import static uk.gov.pay.api.model.PaymentErrorCodes.CANCEL_PAYMENT_NOT_FOUND_ERROR;
 
 public class CancelChargeExceptionMapper implements ExceptionMapper<CancelChargeException> {
 

@@ -6,9 +6,9 @@ import com.jayway.restassured.response.Response;
 import com.jayway.restassured.response.ValidatableResponse;
 import org.junit.Test;
 import uk.gov.pay.api.it.fixtures.PaymentRefundJsonFixture;
-import uk.gov.pay.api.model.Address;
-import uk.gov.pay.api.model.CardDetails;
-import uk.gov.pay.api.model.RefundSummary;
+import uk.gov.pay.api.model.generated.Address;
+import uk.gov.pay.api.model.generated.CardDetails;
+import uk.gov.pay.api.model.generated.RefundSummary;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
@@ -33,8 +33,14 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
     private static final String REFUND_ID = "111999";
     private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
     private static final String CREATED_DATE = DateTimeUtils.toUTCDateString(TIMESTAMP);
-    private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
-    private static final CardDetails CARD_DETAILS = new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, "Visa");
+    private static final Address BILLING_ADDRESS = new Address().line1("line1").line2("line2").postcode("NR2 5 6EG").city("city").country("UK");
+    private static final CardDetails CARD_DETAILS = new CardDetails()
+            .lastDigitsCardNumber("1234")
+            .firstDigitsCardNumber("123456")
+            .cardholderName("Mr. Payment")
+            .expiryDate("12/19")
+            .billingAddress(BILLING_ADDRESS)
+            .cardBrand("Visa");
 
     @Test
     public void getRefundById_shouldGetValidResponse() {
@@ -152,7 +158,7 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
                 ImmutableMap.of("amount", AMOUNT));
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, null, null, null, null, null,
                 null, null, SupportedLanguage.ENGLISH, false, null,
-                new RefundSummary("available", 9000, 1000), null, CARD_DETAILS);
+                new RefundSummary().status("available").amountAvailable(9000L).amountSubmitted(1000L), null, CARD_DETAILS);
 
         postRefundRequest(payload);
     }
