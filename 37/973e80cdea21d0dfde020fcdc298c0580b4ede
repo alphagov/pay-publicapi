@@ -21,3 +21,5 @@ release.alpha_release-151.date=2018-10-03:13:47:01
 staging-2.tag=alpha_staging-2-151
 
 staging-2.alpha_staging-2-151.date=2018-10-10:11:20:07
+
+staging-2.alpha_staging-2-151.status=success
