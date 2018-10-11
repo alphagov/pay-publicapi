@@ -1,18 +1,17 @@
 package uk.gov.pay.api.model.search.card;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.pay.api.model.SearchRefundsFromResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class RefundForSearchRefundsResult {
-    
-    @JsonProperty(value = "refund_id")
+
+    @JsonProperty("refund_id")
     private String refundId;
 
-    @JsonProperty(value = "created_date")
+    @JsonProperty("created_date")
     private String createdDate;
 
     @JsonProperty("charge_id")
@@ -26,7 +25,11 @@ public class RefundForSearchRefundsResult {
 
     @JsonProperty("status")
     private String status;
-    
+
+
+    public RefundForSearchRefundsResult() {
+    }
+
     public RefundForSearchRefundsResult(String refundId,
                                         String createdDate,
                                         String status,
@@ -41,11 +44,35 @@ public class RefundForSearchRefundsResult {
         this.dataLinks = links;
     }
 
-    public static RefundForSearchRefundsResult valueOf(SearchRefundsFromResponse refundResult) {
+    public String getRefundId() {
+        return refundId;
+    }
+
+    public String getCreatedDate() {
+        return createdDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getChargeId() {
+        return chargeId;
+    }
+
+    public Long getAmountSubmitted() {
+        return amountSubmitted;
+    }
+
+    public List<Map<String, Object>> getLinks() {
+        return dataLinks;
+    }
+
+    public static RefundForSearchRefundsResult valueOf(RefundForSearchRefundsResult refundResult) {
         return new RefundForSearchRefundsResult(
-                refundResult.getRefundId(), 
-                refundResult.getCreatedDate(), 
-                refundResult.getStatus(), 
+                refundResult.getRefundId(),
+                refundResult.getCreatedDate(),
+                refundResult.getStatus(),
                 refundResult.getChargeId(),
                 refundResult.getAmountSubmitted(),
                 refundResult.getLinks());

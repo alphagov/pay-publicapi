@@ -37,7 +37,7 @@ public class ConnectorUriGenerator {
     }
     
     public String refundsURIWithParams(Account account, Map<String, String> queryParams) {
-        String path = format("/v1/refunds/account/%s", account.getAccountId());
+        String path = format("/v1/accounts/%s/refunds", account.getAccountId());
         return buildConnectorUri(account, path, queryParams);
     }
 

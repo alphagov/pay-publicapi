@@ -3,7 +3,7 @@ package uk.gov.pay.api.validation;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import uk.gov.pay.api.exception.ValidationException;
+import uk.gov.pay.api.exception.PaymentValidationException;
 import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
@@ -49,7 +49,7 @@ public class PaymentRequestValidatorTest {
     @Test
     public void validateUnsupportedLanguage_shouldFailValue() {
         CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().language("unsupported language").build();
-        expectedException.expect(ValidationException.class);
+        expectedException.expect(PaymentValidationException.class);
         paymentRequestValidator.validate(createPaymentRequest);
     }
 
@@ -62,7 +62,7 @@ public class PaymentRequestValidatorTest {
     @Test
     public void validateMinimumAmount_shouldFailValue() {
         CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().amount(PaymentRequestValidator.AMOUNT_MIN_VALUE - 1).build();
-        expectedException.expect(ValidationException.class);
+        expectedException.expect(PaymentValidationException.class);
         paymentRequestValidator.validate(createPaymentRequest);
     }
 
@@ -75,7 +75,7 @@ public class PaymentRequestValidatorTest {
     @Test
     public void validateMaximumAmount_shouldFailValue() {
         CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().amount(PaymentRequestValidator.AMOUNT_MAX_VALUE + 1).build();
-        expectedException.expect(ValidationException.class);
+        expectedException.expect(PaymentValidationException.class);
         paymentRequestValidator.validate(createPaymentRequest);
     }
 
@@ -83,7 +83,7 @@ public class PaymentRequestValidatorTest {
     public void validateReturnUrlMaxLength_shouldFailValue() {
         String invalidMaxLengthReturnUrl = "https://" + randomAlphanumeric(PaymentRequestValidator.URL_MAX_LENGTH) + ".com/";
         CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().returnUrl(invalidMaxLengthReturnUrl).build();
-        expectedException.expect(ValidationException.class);
+        expectedException.expect(PaymentValidationException.class);
         paymentRequestValidator.validate(createPaymentRequest);
     }
 
@@ -91,7 +91,7 @@ public class PaymentRequestValidatorTest {
     public void validateReturnUrlNotHttps_shouldFailValue() {
         String validHttpOnlyUrl = "http://www.example.com/";
         CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().returnUrl(validHttpOnlyUrl).build();
-        expectedException.expect(ValidationException.class);
+        expectedException.expect(PaymentValidationException.class);
         paymentRequestValidator.validate(createPaymentRequest);
     }
 
@@ -99,7 +99,7 @@ public class PaymentRequestValidatorTest {
     public void validateReferenceMaxLength_shouldFailValue() {
         String invalidMaxLengthReference = randomAlphanumeric(PaymentRequestValidator.REFERENCE_MAX_LENGTH + 1);
         CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().reference(invalidMaxLengthReference).build();
-        expectedException.expect(ValidationException.class);
+        expectedException.expect(PaymentValidationException.class);
         paymentRequestValidator.validate(createPaymentRequest);
     }
 
@@ -107,7 +107,7 @@ public class PaymentRequestValidatorTest {
     public void validateDescriptionMaxLength_shouldFailValue() {
         String invalidMaxLengthDescription = randomAlphanumeric(PaymentRequestValidator.DESCRIPTION_MAX_LENGTH + 1);
         CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().description(invalidMaxLengthDescription).build();
-        expectedException.expect(ValidationException.class);
+        expectedException.expect(PaymentValidationException.class);
         paymentRequestValidator.validate(createPaymentRequest);
     }
 
@@ -115,7 +115,7 @@ public class PaymentRequestValidatorTest {
     public void validateAgreementIdMaxLength_shouldFailValue() {
         String invalidMaxLengthAgreementId = randomAlphanumeric(PaymentRequestValidator.AGREEMENT_ID_MAX_LENGTH + 1);
         CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithAgreementId().agreementId(invalidMaxLengthAgreementId).build();
-        expectedException.expect(ValidationException.class);
+        expectedException.expect(PaymentValidationException.class);
         paymentRequestValidator.validate(createPaymentRequest);
     }
 

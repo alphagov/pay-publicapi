@@ -3,11 +3,11 @@ package uk.gov.pay.api.model.search.card;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.pay.api.model.ChargeFromResponse;
 import uk.gov.pay.api.model.links.PaymentSearchNavigationLinks;
-import uk.gov.pay.api.model.search.IPaymentSearchPagination;
+import uk.gov.pay.api.model.search.ISearchPagination;
 
 import java.util.List;
 
-public class PaymentSearchResponse implements IPaymentSearchPagination {
+public class PaymentSearchResponse implements ISearchPagination<PaymentSearchNavigationLinks> {
 
     @JsonProperty("total")
     private int total;
@@ -39,7 +39,7 @@ public class PaymentSearchResponse implements IPaymentSearchPagination {
     public int getPage() {
         return page;
     }
-    @Override
+
     public PaymentSearchNavigationLinks getLinks() {
         return links;
     }

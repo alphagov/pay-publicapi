@@ -6,7 +6,7 @@ import java.util.List;
 
 public class SearchRefundsResults {
 
-    @JsonProperty(value = "results")
+    @JsonProperty("results")
     private List<RefundForSearchRefundsResult> refunds;
 
     public SearchRefundsResults(List<RefundForSearchRefundsResult> refunds) {

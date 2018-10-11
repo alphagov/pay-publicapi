@@ -14,6 +14,7 @@ import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.search.card.SearchRefundsResults;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
+import uk.gov.pay.api.service.RefundsParams;
 import uk.gov.pay.api.service.SearchRefundsService;
 
 import javax.inject.Inject;
@@ -52,7 +53,7 @@ public class SearchRefundsResource {
 
     @GET
     @Timed
-    @Path("/v1/refunds/account/{accountId}")
+    @Path("/v1/refunds")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Search refunds",
@@ -78,6 +79,7 @@ public class SearchRefundsResource {
                 format("page: %s, display_size: %s",
                         pageNumber, displaySize));
         
-        return searchRefundsService.getAllRefunds(account, pageNumber, displaySize);
+        RefundsParams refundsParams = new RefundsParams(pageNumber, displaySize);
+        return searchRefundsService.getAllRefunds(account, refundsParams);
     }
 }

@@ -1,12 +1,16 @@
 package uk.gov.pay.api.model.search.card;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.pay.api.model.SearchRefundsFromResponse;
 import uk.gov.pay.api.model.links.SearchRefundsNavigationLinks;
+import uk.gov.pay.api.model.search.ISearchPagination;
 
 import java.util.List;
 
-public class SearchRefundsResponse {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class SearchRefundsResponse implements ISearchPagination<SearchRefundsNavigationLinks> {
 
     @JsonProperty("total")
     private int total;
@@ -21,12 +25,12 @@ public class SearchRefundsResponse {
     private int page;
 
     @JsonProperty("results")
-    private List<SearchRefundsFromResponse> refunds;
+    private List<RefundForSearchRefundsResult> refunds;
 
     @JsonProperty("_links")
     private SearchRefundsNavigationLinks links = new SearchRefundsNavigationLinks();
 
-    public List<SearchRefundsFromResponse> getRefunds() {
+    public List<RefundForSearchRefundsResult> getRefunds() {
         return refunds;
     }
 

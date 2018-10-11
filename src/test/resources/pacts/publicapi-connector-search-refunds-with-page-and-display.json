@@ -18,7 +18,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/v1/refunds/account/777",
+        "path": "/v1/accounts/777/refunds",
         "query": {
           "page": [
             "1"
@@ -48,7 +48,7 @@
                 {
                   "rel": "self",
                   "method": "GET",
-                  "href": "http://app.com/v1/refunds/account/777"
+                  "href": "http://app.com/v1/payments/someExternalId/refunds/111111"
                 },
                 {
                   "rel": "payment_url",
@@ -67,7 +67,7 @@
                 {
                   "rel": "self",
                   "method": "GET",
-                  "href": "http://app.com/v1/refunds/account/777"
+                  "href": "http://app.com/v1/payments/someExternalId/refunds/222222"
                 },
                 {
                   "rel": "payment_url",
@@ -79,7 +79,7 @@
           ],
           "_links": {
             "self": {
-              "href": "http://app.com/v1/refunds/account/777?page=1&display_size=2"
+              "href": "http://app.com/v1/accounts/777/refunds?page=1&display_size=2"
             }
           }
         },

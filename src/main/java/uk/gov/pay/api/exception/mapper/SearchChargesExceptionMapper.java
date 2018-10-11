@@ -26,8 +26,7 @@ public class SearchChargesExceptionMapper implements ExceptionMapper<SearchCharg
     }
 
     private Response buildResponse(SearchChargesException exception, PaymentError.Code searchPaymentsConnectorError, Response.Status status) {
-        PaymentError paymentError;
-        paymentError = aPaymentError(searchPaymentsConnectorError);
+        PaymentError paymentError = aPaymentError(searchPaymentsConnectorError);
         LOGGER.error("Connector response was {}.\n Returning http status {} with error body {}", exception.getMessage(), status, paymentError);
         return Response
                 .status(status)

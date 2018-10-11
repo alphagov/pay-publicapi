@@ -1,6 +1,6 @@
 package uk.gov.pay.api.validation;
 
-import uk.gov.pay.api.exception.ValidationException;
+import uk.gov.pay.api.exception.PaymentValidationException;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -19,10 +19,10 @@ public class DirectDebitEventSearchValidator {
             validateBeforeDate(toDate, validationErrors);
             validateDisplaySizeIfNotNull(displaySize, validationErrors);
         } catch (Exception e) {
-            throw new ValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", "), e.getMessage()));
+            throw new PaymentValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", "), e.getMessage()));
         }
         if (!validationErrors.isEmpty()) {
-            throw new ValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", ")));
+            throw new PaymentValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", ")));
         }
     }
     
