@@ -2,12 +2,12 @@ package uk.gov.pay.api.model.search.card;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.pay.api.model.ChargeFromResponse;
-import uk.gov.pay.api.model.links.PaymentSearchNavigationLinks;
+import uk.gov.pay.api.model.links.SearchNavigationLinks;
 import uk.gov.pay.api.model.search.ISearchPagination;
 
 import java.util.List;
 
-public class PaymentSearchResponse implements ISearchPagination<PaymentSearchNavigationLinks> {
+public class PaymentSearchResponse implements ISearchPagination<SearchNavigationLinks> {
 
     @JsonProperty("total")
     private int total;
@@ -22,7 +22,7 @@ public class PaymentSearchResponse implements ISearchPagination<PaymentSearchNav
     private List<ChargeFromResponse> payments;
 
     @JsonProperty("_links")
-    private PaymentSearchNavigationLinks links = new PaymentSearchNavigationLinks();
+    private SearchNavigationLinks links = new SearchNavigationLinks();
 
     public List<ChargeFromResponse> getPayments() {
         return payments;
@@ -40,7 +40,7 @@ public class PaymentSearchResponse implements ISearchPagination<PaymentSearchNav
         return page;
     }
 
-    public PaymentSearchNavigationLinks getLinks() {
+    public SearchNavigationLinks getLinks() {
         return links;
     }
 }

@@ -40,7 +40,7 @@ public class SearchRefundsServiceTest {
     public final ExpectedException expectedException = ExpectedException.none();
 
     @Mock
-    private PublicApiConfig publicApiConfig;
+    private PublicApiConfig mockConfiguration;
 
     private SearchRefundsService searchRefundsService;
     private final static String PAGE = "1";
@@ -50,14 +50,14 @@ public class SearchRefundsServiceTest {
 
     @Before
     public void setUp() {
-        when(publicApiConfig.getConnectorUrl()).thenReturn(connectorRule.getUrl());
-        when(publicApiConfig.getBaseUrl()).thenReturn("http://publicapi.test.localhost/");
+        when(mockConfiguration.getConnectorUrl()).thenReturn(connectorRule.getUrl());
+        when(mockConfiguration.getBaseUrl()).thenReturn("http://publicapi.test.localhost/");
 
-        ConnectorUriGenerator uriGenerator = new ConnectorUriGenerator(publicApiConfig);
-
+        ConnectorUriGenerator uriGenerator = new ConnectorUriGenerator(mockConfiguration);
+        PublicApiUriGenerator publicApiUriGenerator = new PublicApiUriGenerator(mockConfiguration);
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
         ObjectMapper objectMapper = new ObjectMapper();
-        searchRefundsService = new SearchRefundsService(client, publicApiConfig, uriGenerator, objectMapper);
+        searchRefundsService = new SearchRefundsService(client, mockConfiguration, uriGenerator, objectMapper, publicApiUriGenerator);
     }
 
     @Test
@@ -67,7 +67,6 @@ public class SearchRefundsServiceTest {
         String accountId = "777";
         String refundId1 = "111111";
         String refundId2 = "222222";
-
         String extChargeId = "someExternalId";
         Account account = new Account(accountId, TokenPaymentType.CARD);
         Response response = searchRefundsService.getAllRefunds(account, params);
@@ -77,29 +76,23 @@ public class SearchRefundsServiceTest {
                 .assertThat("count", is(2))
                 .assertThat("total", is(2))
                 .assertThat("page", is(1))
-
                 .assertThat("$.results[0].status", is("available"))
                 .assertThat("$.results[0].created_date", is("2017-10-01T01:41:01Z"))
                 .assertThat("$.results[0].refund_id", is(refundId1))
-                .assertThat("$.results[0].charge_id", is("99999"))
+                .assertThat("$.results[0].charge_id", is(extChargeId))
                 .assertThat("$.results[0].amount_submitted", is(98))
                 .assertThat("$.results[0].status", is("available"))
-                .assertThat("$.results[0].links[0].rel", is("self"))
-                .assertThat("$.results[0].links[1].rel", is("payment_url"))
-                .assertThat("$.results[0].links[0].href", is(String.format("http://app.com/v1/payments/%s/refunds/%s", extChargeId, refundId1)))
-                .assertThat("$.results[0].links[1].href", is(String.format("http://app.com/v1/payments/%s", extChargeId)))
+                .assertThat("$.results[0].links.self.href", is(format("http://publicapi.test.localhost/v1/payments/%s/refunds/%s", extChargeId, refundId1)))
+                .assertThat("$.results[0].links.payment_url.href", is(format("http://publicapi.test.localhost/v1/payments/%s", extChargeId)))
                 .assertThat("$.results[1].status", is("available"))
                 .assertThat("$.results[1].created_date", is("2017-09-02T02:42:02Z"))
                 .assertThat("$.results[1].refund_id", is(refundId2))
-                .assertThat("$.results[1].charge_id", is("88888"))
+                .assertThat("$.results[1].charge_id", is(extChargeId))
                 .assertThat("$.results[1].amount_submitted", is(100))
                 .assertThat("$.results[1].status", is("available"))
-                .assertThat("$.results[1].links[0].rel", is("self"))
-                .assertThat("$.results[1].links[1].rel", is("payment_url"))
-                .assertThat("$.results[1].links[0].href", is(String.format("http://app.com/v1/payments/%s/refunds/%s", extChargeId, refundId2)))
-                .assertThat("$.results[1].links[1].href", is(String.format("http://app.com/v1/payments/%s", extChargeId)))
-                .assertThat("$._links.self.href", is("http://publicapi.test.localhost/v1/accounts/"
-                        + accountId + "/refunds?page=" + PAGE + "&display_size=" + DISPLAY_SIZE));
+                .assertThat("$.results[1].links.self.href", is(format("http://publicapi.test.localhost/v1/payments/%s/refunds/%s", extChargeId, refundId2)))
+                .assertThat("$.results[1].links.payment_url.href", is(format("http://publicapi.test.localhost/v1/payments/%s", extChargeId)))
+                .assertThat("$._links.self.href", is("http://publicapi.test.localhost/v1/refunds?page=" + PAGE + "&display_size=" + DISPLAY_SIZE));
     }
 
     @Test
@@ -124,7 +117,6 @@ public class SearchRefundsServiceTest {
                 aBadRefundsRequestExceptionWithError(
                         "P1102",
                         "Searching all refunds are not currently supported for direct debit accounts."));
-
         searchRefundsService.getAllRefunds(account, params);
     }
 

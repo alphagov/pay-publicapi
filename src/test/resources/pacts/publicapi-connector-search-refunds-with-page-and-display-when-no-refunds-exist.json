@@ -11,12 +11,14 @@
       "providerStates": [
         {
           "name": "Account exists",
-          "params": { "account_id": "888"}
+          "params": {
+            "account_id": "888"
+          }
         }
       ],
       "request": {
         "method": "GET",
-        "path": "/v1/accounts/888/refunds",
+        "path": "/v1/api/accounts/888/refunds",
         "query": {
           "page": [
             "1"
@@ -37,7 +39,31 @@
           "page": 1,
           "results": []
         },
-        "matchingRules": {}
+        "matchingRules": {
+          "body": {
+            "$.total": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.count": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.page": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        }
       }
     }
   ],

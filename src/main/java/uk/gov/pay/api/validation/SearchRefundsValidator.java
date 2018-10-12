@@ -13,20 +13,6 @@ import static uk.gov.pay.api.model.RefundError.aRefundError;
 
 public class SearchRefundsValidator extends SearchValidator {
 
-    public static void validateSearchParameters(String pageNumber,
-                                                String displaySize) {
-        List<String> validationErrors = new LinkedList<>();
-        try {
-            validatePageIfNotNull(pageNumber, validationErrors);
-            validateDisplaySizeIfNotNull(displaySize, validationErrors);
-        } catch (Exception e) {
-            throw new RefundsValidationException(aRefundError(SEARCH_REFUNDS_VALIDATION_ERROR, join(validationErrors, ", "), e.getMessage()));
-        }
-        if (!validationErrors.isEmpty()) {
-            throw new RefundsValidationException(aRefundError(SEARCH_REFUNDS_VALIDATION_ERROR, join(validationErrors, ", ")));
-        }
-    }
-
     public static void validateSearchParameters(RefundsParams params) {
         String pageNumber = params.getPage();
         String displaySize = params.getDisplaySize();

@@ -27,19 +27,22 @@ public class SearchRefundsService {
     private final Client client;
     private final ObjectMapper objectMapper;
     private final PublicApiConfig configuration;
+    private final PublicApiUriGenerator publicApiUriGenerator;
 
     @Inject
     public SearchRefundsService(Client client,
                                 PublicApiConfig configuration,
                                 ConnectorUriGenerator uriGenerator,
-                                ObjectMapper objectMapper) {
+                                ObjectMapper objectMapper,
+                                PublicApiUriGenerator publicApiUriGenerator) {
 
         this.client = client;
         this.configuration = configuration;
         this.uriGenerator = uriGenerator;
         this.objectMapper = objectMapper;
+        this.publicApiUriGenerator = publicApiUriGenerator;
     }
-    
+
     public Response getAllRefunds(Account account, RefundsParams params) {
         SearchRefundsValidator.validateSearchParameters(params);
         Map<String, String> queryParams = buildDefaultParams(params);
@@ -47,18 +50,18 @@ public class SearchRefundsService {
                 client,
                 configuration,
                 uriGenerator,
-                objectMapper);
+                objectMapper,
+                publicApiUriGenerator);
 
         if (account.getPaymentType().equals(TokenPaymentType.DIRECT_DEBIT)) {
             throw new BadRefundsRequestException(RefundError.aRefundError(SEARCH_REFUNDS_DIRECT_DEBIT_ERROR));
         }
-
         return refundsService.getSearchResponse(account, queryParams);
     }
 
     private Map<String, String> buildDefaultParams(RefundsParams params) {
         Map<String, String> queryParams = new LinkedHashMap<>();
-        
+
         queryParams.put(PAGE, Optional.ofNullable(params.getPage()).orElse(DEFAULT_PAGE));
         queryParams.put(DISPLAY_SIZE, Optional.ofNullable(params.getDisplaySize()).orElse(DEFAULT_DISPLAY_SIZE));
         return queryParams;

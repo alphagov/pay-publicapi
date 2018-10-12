@@ -18,7 +18,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/v1/accounts/777/refunds",
+        "path": "/v1/api/accounts/777/refunds",
         "query": {
           "page": [
             "1"
@@ -42,18 +42,18 @@
               "refund_id": "111111",
               "created_date": "2017-10-01T01:41:01Z",
               "status": "available",
-              "charge_id": "99999",
+              "charge_id": "someExternalId",
               "amount_submitted": 98,
               "links": [
                 {
                   "rel": "self",
                   "method": "GET",
-                  "href": "http://app.com/v1/payments/someExternalId/refunds/111111"
+                  "href": "/v1/payments/someExternalId/refunds/111111"
                 },
                 {
                   "rel": "payment_url",
                   "method": "GET",
-                  "href": "http://app.com/v1/payments/someExternalId"
+                  "href": "/v1/payments/someExternalId"
                 }
               ]
             },
@@ -61,25 +61,25 @@
               "refund_id": "222222",
               "created_date": "2017-09-02T02:42:02Z",
               "status": "available",
-              "charge_id": "88888",
+              "charge_id": "someExternalId",
               "amount_submitted": 100,
               "links": [
                 {
                   "rel": "self",
                   "method": "GET",
-                  "href": "http://app.com/v1/payments/someExternalId/refunds/222222"
+                  "href": "/v1/payments/someExternalId/refunds/222222"
                 },
                 {
                   "rel": "payment_url",
                   "method": "GET",
-                  "href": "http://app.com/v1/payments/someExternalId"
+                  "href": "/v1/payments/someExternalId"
                 }
               ]
             }
           ],
           "_links": {
             "self": {
-              "href": "http://app.com/v1/accounts/777/refunds?page=1&display_size=2"
+              "href": "http://app.com/v1/api/accounts/777/refunds?page=1&display_size=2"
             }
           }
         },
@@ -142,10 +142,31 @@
                 }
               ]
             },
-            "$.results[*].links[*].href": {
+            "$.results[0].links[0].href": {
               "matchers": [
                 {
-                  "match": "type"
+                  "regex": "https.*:\/\/.*\/v1\/api\/accounts\/777\/charges\/[a-z0-9]*\/refunds\/[a-z0-9]*"
+                }
+              ]
+            },
+            "$.results[0].links[1].href": {
+              "matchers": [
+                {
+                  "regex": "https.*:\/\/.*\/v1\/api\/accounts\/777\/charges\/[a-z0-9]*"
+                }
+              ]
+            },
+            "$.results[1].links[0].href": {
+              "matchers": [
+                {
+                  "regex": "https.*:\/\/.*\/v1\/api\/accounts\/777\/charges\/[a-z0-9]*\/refunds\/[a-z0-9]*"
+                }
+              ]
+            },
+            "$.results[1].links[1].href": {
+              "matchers": [
+                {
+                  "regex": "https.*:\/\/.*\/v1\/api\/accounts\/777\/charges\/[a-z0-9]*"
                 }
               ]
             },

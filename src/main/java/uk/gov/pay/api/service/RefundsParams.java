@@ -10,14 +10,6 @@ public class RefundsParams {
         this.displaySize = displaySize;
     }
 
-    public void setPage(String page) {
-        this.page = page;
-    }
-
-    public void setDisplaySize(String displaySize) {
-        this.displaySize = displaySize;
-    }
-
     public String getPage() {
         return page;
     }

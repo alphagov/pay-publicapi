@@ -1,12 +1,17 @@
 package uk.gov.pay.api.model.search.card;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModelProperty;
+import uk.gov.pay.api.model.links.RefundLinksForSearch;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class RefundForSearchRefundsResult {
+
+    private RefundLinksForSearch links = new RefundLinksForSearch();
 
     @JsonProperty("refund_id")
     private String refundId;
@@ -26,22 +31,17 @@ public class RefundForSearchRefundsResult {
     @JsonProperty("status")
     private String status;
 
-
     public RefundForSearchRefundsResult() {
     }
 
-    public RefundForSearchRefundsResult(String refundId,
-                                        String createdDate,
-                                        String status,
-                                        String chargeId,
-                                        Long amountSubmitted,
-                                        List<Map<String, Object>> links) {
+    public RefundForSearchRefundsResult(String refundId, String createdDate, String status, String chargeId, Long amountSubmitted, URI paymentURI, URI refundsURI) {
         this.refundId = refundId;
         this.createdDate = createdDate;
         this.status = status;
         this.chargeId = chargeId;
         this.amountSubmitted = amountSubmitted;
-        this.dataLinks = links;
+        this.links.addSelf(refundsURI.toString()); 
+        this.links.addPayment(paymentURI.toString()); 
     }
 
     public String getRefundId() {
@@ -63,19 +63,20 @@ public class RefundForSearchRefundsResult {
     public Long getAmountSubmitted() {
         return amountSubmitted;
     }
-
-    public List<Map<String, Object>> getLinks() {
-        return dataLinks;
+    @ApiModelProperty(dataType = "uk.gov.pay.api.model.links.PaymentLinksForSearch")
+    public RefundLinksForSearch getLinks() {
+        return links;
     }
 
-    public static RefundForSearchRefundsResult valueOf(RefundForSearchRefundsResult refundResult) {
+    public static RefundForSearchRefundsResult valueOf(RefundForSearchRefundsResult refundResult, URI paymentURI, URI refundsURI) {
         return new RefundForSearchRefundsResult(
                 refundResult.getRefundId(),
                 refundResult.getCreatedDate(),
                 refundResult.getStatus(),
                 refundResult.getChargeId(),
                 refundResult.getAmountSubmitted(),
-                refundResult.getLinks());
+                paymentURI,
+                refundsURI);
     }
 
     @Override

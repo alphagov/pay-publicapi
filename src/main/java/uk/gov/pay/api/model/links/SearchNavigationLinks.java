@@ -3,8 +3,8 @@ package uk.gov.pay.api.model.links;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 
-@ApiModel(value = "PaymentSearchNavigationLinks", description = "Links to navigate through pages")
-public class PaymentSearchNavigationLinks {
+@ApiModel(value = "SearchNavigationLinks", description = "Links to navigate through pages")
+public class SearchNavigationLinks {
 
     @JsonProperty(value = "self")
     private Link self;
@@ -41,23 +41,23 @@ public class PaymentSearchNavigationLinks {
         return nextPage;
     }
 
-    public PaymentSearchNavigationLinks withSelfLink(String href) {
+    public SearchNavigationLinks withSelfLink(String href) {
         this.self = new Link(href);
         return this;
     }
-    public PaymentSearchNavigationLinks withPrevLink(String href) {
+    public SearchNavigationLinks withPrevLink(String href) {
         this.prevPage = new Link(href);
         return this;
     }
-    public PaymentSearchNavigationLinks withNextLink(String href) {
+    public SearchNavigationLinks withNextLink(String href) {
         this.nextPage = new Link(href);
         return this;
     }
-    public PaymentSearchNavigationLinks withFirstLink(String href) {
+    public SearchNavigationLinks withFirstLink(String href) {
         this.firstPage = new Link(href);
         return this;
     }
-    public PaymentSearchNavigationLinks withLastLink(String href) {
+    public SearchNavigationLinks withLastLink(String href) {
         this.lastPage = new Link(href);
         return this;
     }

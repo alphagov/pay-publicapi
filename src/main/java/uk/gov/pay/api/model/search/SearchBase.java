@@ -3,7 +3,9 @@ package uk.gov.pay.api.model.search;
 import black.door.hate.HalRepresentation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.gov.pay.api.app.config.PublicApiConfig;
+import uk.gov.pay.api.exception.SearchException;
 import uk.gov.pay.api.model.links.Link;
+import uk.gov.pay.api.model.links.SearchNavigationLinks;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 
 import javax.ws.rs.client.Client;
@@ -38,7 +40,7 @@ public abstract class SearchBase {
         return !getSupportedSearchParams().contains(queryParam.getKey()) && isNotBlank(queryParam.getValue());
     }
 
-    protected HalRepresentation.HalRepresentationBuilder addPaginationProperties(HalRepresentation.HalRepresentationBuilder halRepresentationBuilder,
+    private HalRepresentation.HalRepresentationBuilder addPaginationProperties(HalRepresentation.HalRepresentationBuilder halRepresentationBuilder,
                                                                                  ISearchPagination pagination) {
         halRepresentationBuilder
                 .addProperty("count", pagination.getCount())
@@ -61,5 +63,21 @@ public abstract class SearchBase {
                 .path(PATH)
                 .replaceQuery(new URI(link.getHref()).getQuery())
                 .build();
+    }
+    protected HalRepresentation.HalRepresentationBuilder decoratePagination(HalRepresentation.HalRepresentationBuilder halRepresentationBuilder,
+                                                                            ISearchPagination pagination, String path) {
+        
+        HalRepresentation.HalRepresentationBuilder builder = addPaginationProperties(halRepresentationBuilder, pagination);
+        SearchNavigationLinks links = (SearchNavigationLinks) pagination.getLinks();
+        try {
+            addLink(builder, "self", transformIntoPublicUri(baseUrl, links.getSelf(), path));
+            addLink(builder, "first_page", transformIntoPublicUri(baseUrl, links.getFirstPage(), path));
+            addLink(builder, "last_page", transformIntoPublicUri(baseUrl, links.getLastPage(), path));
+            addLink(builder, "prev_page", transformIntoPublicUri(baseUrl, links.getPrevPage(), path));
+            addLink(builder, "next_page", transformIntoPublicUri(baseUrl, links.getNextPage(), path));
+        } catch (URISyntaxException ex) {
+            throw new SearchException(ex);
+        }
+        return builder;
     }
 }
