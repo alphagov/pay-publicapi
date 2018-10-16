@@ -22,6 +22,7 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.PublicApiModule;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.auth.AccountAuthenticator;
+import uk.gov.pay.api.exception.mapper.BadRefundsRequestExceptionMapper;
 import uk.gov.pay.api.exception.mapper.BadRequestExceptionMapper;
 import uk.gov.pay.api.exception.mapper.CancelChargeExceptionMapper;
 import uk.gov.pay.api.exception.mapper.CaptureChargeExceptionMapper;
@@ -33,8 +34,10 @@ import uk.gov.pay.api.exception.mapper.GetChargeExceptionMapper;
 import uk.gov.pay.api.exception.mapper.GetEventsExceptionMapper;
 import uk.gov.pay.api.exception.mapper.GetRefundExceptionMapper;
 import uk.gov.pay.api.exception.mapper.GetRefundsExceptionMapper;
+import uk.gov.pay.api.exception.mapper.PaymentValidationExceptionMapper;
+import uk.gov.pay.api.exception.mapper.RefundsValidationExceptionMapper;
 import uk.gov.pay.api.exception.mapper.SearchChargesExceptionMapper;
-import uk.gov.pay.api.exception.mapper.ValidationExceptionMapper;
+import uk.gov.pay.api.exception.mapper.SearchRefundsExceptionMapper;
 import uk.gov.pay.api.filter.AuthorizationValidationFilter;
 import uk.gov.pay.api.filter.LoggingFilter;
 import uk.gov.pay.api.filter.RateLimiterFilter;
@@ -45,6 +48,7 @@ import uk.gov.pay.api.resources.HealthCheckResource;
 import uk.gov.pay.api.resources.PaymentRefundsResource;
 import uk.gov.pay.api.resources.PaymentsResource;
 import uk.gov.pay.api.resources.RequestDeniedResource;
+import uk.gov.pay.api.resources.SearchRefundsResource;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.util.concurrent.TimeUnit;
@@ -87,6 +91,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         environment.jersey().register(injector.getInstance(PaymentRefundsResource.class));
         environment.jersey().register(injector.getInstance(RequestDeniedResource.class));
         environment.jersey().register(injector.getInstance(AgreementsResource.class));
+        environment.jersey().register(injector.getInstance(SearchRefundsResource.class));
 
         environment.servlets().addFilter("AuthorizationValidationFilter", injector.getInstance(AuthorizationValidationFilter.class))
                 .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");
@@ -137,8 +142,11 @@ public class PublicApi extends Application<PublicApiConfig> {
         jersey.register(GetChargeExceptionMapper.class);
         jersey.register(GetEventsExceptionMapper.class);
         jersey.register(SearchChargesExceptionMapper.class);
+        jersey.register(SearchRefundsExceptionMapper.class);
         jersey.register(CancelChargeExceptionMapper.class);
-        jersey.register(ValidationExceptionMapper.class);
+        jersey.register(PaymentValidationExceptionMapper.class);
+        jersey.register(RefundsValidationExceptionMapper.class);
+        jersey.register(BadRefundsRequestExceptionMapper.class);
         jersey.register(BadRequestExceptionMapper.class);
         jersey.register(CreateRefundExceptionMapper.class);
         jersey.register(GetRefundExceptionMapper.class);

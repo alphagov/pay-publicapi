@@ -2,11 +2,11 @@ package uk.gov.pay.api.exception;
 
 import uk.gov.pay.api.model.PaymentError;
 
-public class ValidationException extends RuntimeException {
+public class PaymentValidationException extends RuntimeException {
 
     private PaymentError paymentError;
 
-    public ValidationException(PaymentError paymentError) {
+    public PaymentValidationException(PaymentError paymentError) {
         this.paymentError = paymentError;
     }
 
@@ -16,7 +16,7 @@ public class ValidationException extends RuntimeException {
 
     @Override
     public String toString() {
-        return "ValidationException{" +
+        return "PaymentValidationException{" +
                 "paymentError=" + paymentError +
                 '}';
     }

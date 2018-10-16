@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.exception.SearchChargesException;
+import uk.gov.pay.api.exception.SearchException;
 import uk.gov.pay.api.model.search.SearchPaymentsBase;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.PaymentUriGenerator;
@@ -40,6 +40,7 @@ import static uk.gov.pay.api.service.PaymentSearchService.TO_DATE_KEY;
 
 public class SearchCardPayments extends SearchPaymentsBase {
 
+    private static final String PAYMENTS_PATH = "/v1/payments";
     private static final Logger logger = LoggerFactory.getLogger(SearchCardPayments.class);
 
     public SearchCardPayments(Client client,
@@ -65,7 +66,7 @@ public class SearchCardPayments extends SearchPaymentsBase {
         if (connectorResponse.getStatus() == SC_OK) {
             return processResponse(connectorResponse);
         }
-        throw new SearchChargesException(connectorResponse);
+        throw new SearchException(connectorResponse);
     }
 
     @Override
@@ -93,9 +94,9 @@ public class SearchCardPayments extends SearchPaymentsBase {
                     .builder()
                     .addProperty("results", chargeFromResponses);
 
-            return Response.ok().entity(decoratePagination(halRepresentation, searchResponse).build().toString()).build();
+            return Response.ok().entity(decoratePagination(halRepresentation, searchResponse, PAYMENTS_PATH).build().toString()).build();
         } catch (IOException | ProcessingException ex) {
-            throw new SearchChargesException(ex);
+            throw new SearchException(ex);
         }
     }
 }

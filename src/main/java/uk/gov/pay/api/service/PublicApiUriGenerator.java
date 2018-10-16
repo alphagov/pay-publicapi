@@ -22,6 +22,11 @@ public class PublicApiUriGenerator {
                 .path("/v1/payments/{paymentId}")
                 .build(chargeId);
     }
+    public URI getRefundsURI(String chargeId, String refundId) {
+        return UriBuilder.fromUri(baseUrl)
+                .path("/v1/payments/{paymentId}/refunds/{refunds}")
+                .build(chargeId, refundId);
+    }
 
     public URI getPaymentEventsURI(String chargeId) {
         return UriBuilder.fromUri(baseUrl)

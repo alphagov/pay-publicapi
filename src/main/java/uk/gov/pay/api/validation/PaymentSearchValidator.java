@@ -1,8 +1,7 @@
 package uk.gov.pay.api.validation;
 
-import org.apache.commons.lang3.StringUtils;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.exception.ValidationException;
+import uk.gov.pay.api.exception.PaymentValidationException;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -12,7 +11,6 @@ import java.util.Set;
 
 import static org.apache.commons.lang3.StringUtils.join;
 import static org.eclipse.jetty.util.StringUtil.isBlank;
-import static org.eclipse.jetty.util.StringUtil.isNotBlank;
 import static uk.gov.pay.api.model.PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
@@ -23,7 +21,7 @@ import static uk.gov.pay.api.validation.PaymentRequestValidator.EMAIL_MAX_LENGTH
 import static uk.gov.pay.api.validation.PaymentRequestValidator.REFERENCE_MAX_LENGTH;
 
 
-public class PaymentSearchValidator {
+public class PaymentSearchValidator extends SearchValidator {
     private static final int FIRST_DIGITS_CARD_NUMBER_LENGTH = 6;
     private static final int LAST_DIGITS_CARD_NUMBER_LENGTH = 4;
     
@@ -34,17 +32,17 @@ public class PaymentSearchValidator {
     public static final Set<String> VALID_DIRECT_DEBIT_STATES =
             new HashSet<>(Arrays.asList("started", "pending", "success", "failed", "cancelled"));
 
-    public static void validateSearchParameters(Account account, 
-                                                String state, 
-                                                String reference, 
-                                                String email, 
+    public static void validateSearchParameters(Account account,
+                                                String state,
+                                                String reference,
+                                                String email,
                                                 String cardBrand,
-                                                String fromDate, 
-                                                String toDate, 
+                                                String fromDate,
+                                                String toDate,
                                                 String pageNumber,
-                                                String displaySize, 
-                                                String agreementId, 
-                                                String firstDigitsCardNumber, 
+                                                String displaySize,
+                                                String agreementId,
+                                                String firstDigitsCardNumber,
                                                 String lastDigitsCardNumber) {
         List<String> validationErrors = new LinkedList<>();
         try {
@@ -60,10 +58,10 @@ public class PaymentSearchValidator {
             validateFirstDigitsCardNumber(firstDigitsCardNumber, validationErrors);
             validateLastDigitsCardNumber(lastDigitsCardNumber, validationErrors);
         } catch (Exception e) {
-            throw new ValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", "), e.getMessage()));
+            throw new PaymentValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", "), e.getMessage()));
         }
         if (!validationErrors.isEmpty()) {
-            throw new ValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", ")));
+            throw new PaymentValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", ")));
         }
     }
 
@@ -74,26 +72,14 @@ public class PaymentSearchValidator {
     }
 
     private static void validateFirstDigitsCardNumber(String firstDigitsCardNumber, List<String> validationErrors) {
-        if (!ExactLengthValidator.isValid(firstDigitsCardNumber, FIRST_DIGITS_CARD_NUMBER_LENGTH) || !NumericValidator.isValid(firstDigitsCardNumber)) {
+        if (!ExactLengthValidator.isValid(firstDigitsCardNumber, FIRST_DIGITS_CARD_NUMBER_LENGTH) || !NumericValidator.isValidOrNull(firstDigitsCardNumber)) {
             validationErrors.add("first_digits_card_number");
         }
     }
 
     private static void validateLastDigitsCardNumber(String lastDigitsCardNumber, List<String> validationErrors) {
-        if (!ExactLengthValidator.isValid(lastDigitsCardNumber, LAST_DIGITS_CARD_NUMBER_LENGTH) || !NumericValidator.isValid(lastDigitsCardNumber)) {
+        if (!ExactLengthValidator.isValid(lastDigitsCardNumber, LAST_DIGITS_CARD_NUMBER_LENGTH) || !NumericValidator.isValidOrNull(lastDigitsCardNumber)) {
             validationErrors.add("last_digits_card_number");
-        }
-    }
-
-    private static void validatePageIfNotNull(String pageNumber, List<String> validationErrors) {
-        if (isNotBlank(pageNumber) && (!StringUtils.isNumeric(pageNumber) || Integer.valueOf(pageNumber) < 1)) {
-            validationErrors.add("page");
-        }
-    }
-
-    private static void validateDisplaySizeIfNotNull(String displaySize, List<String> validationErrors) {
-        if (isNotBlank(displaySize) && (!StringUtils.isNumeric(displaySize) || Integer.valueOf(displaySize) < 1 || Integer.valueOf(displaySize) > 500)) {
-            validationErrors.add("display_size");
         }
     }
 

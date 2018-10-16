@@ -1,6 +1,6 @@
 package uk.gov.pay.api.validation;
 
-import uk.gov.pay.api.exception.ValidationException;
+import uk.gov.pay.api.exception.PaymentValidationException;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.PaymentError;
 
@@ -26,7 +26,7 @@ public class PaymentRefundRequestValidator {
 
     private static void validate(boolean condition, PaymentError error) {
         if (!condition) {
-            throw new ValidationException(error);
+            throw new PaymentValidationException(error);
         }
     }
 }

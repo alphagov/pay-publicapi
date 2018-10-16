@@ -7,7 +7,7 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.TokenPaymentType;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
-import static uk.gov.pay.api.matcher.ValidationExceptionMatcher.aValidationExceptionContaining;
+import static uk.gov.pay.api.matcher.PaymentValidationExceptionMatcher.aValidationExceptionContaining;
 
 public class PaymentSearchValidatorTest {
 

@@ -19,7 +19,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.pay.api.matcher.BadRequestExceptionMatcher.aBadRequestExceptionWithError;
-import static uk.gov.pay.api.matcher.ValidationExceptionMatcher.aValidationExceptionContaining;
+import static uk.gov.pay.api.matcher.PaymentValidationExceptionMatcher.aValidationExceptionContaining;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreatePaymentRefundRequestDeserializerTest {

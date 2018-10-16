@@ -2,25 +2,25 @@ package uk.gov.pay.api.matcher;
 
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
-import uk.gov.pay.api.exception.ValidationException;
+import uk.gov.pay.api.exception.PaymentValidationException;
 import uk.gov.pay.api.model.PaymentError;
 
-public class ValidationExceptionMatcher extends TypeSafeMatcher<ValidationException> {
+public class PaymentValidationExceptionMatcher extends TypeSafeMatcher<PaymentValidationException> {
 
     private final String code;
     private final String description;
 
-    private ValidationExceptionMatcher(String code, String description) {
+    private PaymentValidationExceptionMatcher(String code, String description) {
         this.code = code;
         this.description = description;
     }
 
-    public static ValidationExceptionMatcher aValidationExceptionContaining(String code, String description) {
-        return new ValidationExceptionMatcher(code, description);
+    public static PaymentValidationExceptionMatcher aValidationExceptionContaining(String code, String description) {
+        return new PaymentValidationExceptionMatcher(code, description);
     }
 
     @Override
-    protected boolean matchesSafely(ValidationException e) {
+    protected boolean matchesSafely(PaymentValidationException e) {
         PaymentError paymentError = e.getPaymentError();
         return code.equals(paymentError.getCode()) &&
                 description.equals(paymentError.getDescription());
@@ -28,7 +28,7 @@ public class ValidationExceptionMatcher extends TypeSafeMatcher<ValidationExcept
 
     @Override
     public void describeTo(Description description) {
-        description.appendText(ValidationException.class.getCanonicalName())
+        description.appendText(PaymentValidationException.class.getCanonicalName())
                 .appendText(" with ")
                 .appendText(" PaymentError. { code = ")
                 .appendValue(code)
