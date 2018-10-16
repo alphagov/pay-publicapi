@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.exception.SearchException;
+import uk.gov.pay.api.exception.SearchPaymentsException;
 import uk.gov.pay.api.model.search.SearchPaymentsBase;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.PaymentUriGenerator;
@@ -61,7 +61,7 @@ public class SearchDirectDebitPayments extends SearchPaymentsBase {
         if (connectorResponse.getStatus() == SC_OK) {
             return processResponse(connectorResponse);
         }
-        throw new SearchException(connectorResponse);
+        throw new SearchPaymentsException(connectorResponse);
     }
 
     @Override
@@ -86,7 +86,7 @@ public class SearchDirectDebitPayments extends SearchPaymentsBase {
                     .addProperty("results", transactionFromResponse);
             return Response.ok().entity(decoratePagination(halRepresentation, searchResponse, PAYMENT_PATH).build().toString()).build();
         } catch (IOException | ProcessingException ex) {
-            throw new SearchException(ex);
+            throw new SearchPaymentsException(ex);
         }
     }
 }

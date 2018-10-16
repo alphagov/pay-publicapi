@@ -44,7 +44,16 @@ public class ConnectorUriGeneratorTest {
         String uri = connectorUriGenerator.chargesURI(cardAccount, null);
         assertThat(uri, is("https://bla.test/v1/api/accounts/accountId/charges"));
     }
-
+    
+    @Test
+    public void shouldGenerateTheRightRefundURIForCardConnector_withQueryParams() {
+        String uri = connectorUriGenerator.refundsURIWithParams(cardAccount, ImmutableMap.of(
+                "param1", "value1",
+                "param2", "value2"
+        ));
+        assertThat(uri, is("https://bla.test/v1/api/accounts/accountId/refunds?param1=value1&param2=value2"));
+    }
+    
     @Test
     public void shouldGenerateTheRightChargeURIForCardConnectorIfAgreementIdIsPassed() {
         String uri = connectorUriGenerator.chargesURI(cardAccount, "shouldntbehere");

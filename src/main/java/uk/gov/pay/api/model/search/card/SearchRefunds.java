@@ -29,7 +29,9 @@ import java.util.stream.Collectors;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.http.HttpStatus.SC_OK;
 import static uk.gov.pay.api.service.PaymentSearchService.DISPLAY_SIZE;
+import static uk.gov.pay.api.service.PaymentSearchService.FROM_DATE_KEY;
 import static uk.gov.pay.api.service.PaymentSearchService.PAGE;
+import static uk.gov.pay.api.service.PaymentSearchService.TO_DATE_KEY;
 
 public class SearchRefunds extends SearchBase {
 
@@ -87,7 +89,7 @@ public class SearchRefunds extends SearchBase {
 
     @Override
     protected Set<String> getSupportedSearchParams() {
-        return ImmutableSet.of(PAGE, DISPLAY_SIZE);
+        return ImmutableSet.of(FROM_DATE_KEY, TO_DATE_KEY, PAGE, DISPLAY_SIZE);
     }
 
     protected void validateSupportedSearchParams(Map<String, String> queryParams) {
