@@ -8,9 +8,11 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
+import java.util.Optional;
+
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 
-@JsonInclude(value = JsonInclude.Include.NON_NULL)
+@JsonInclude(value = JsonInclude.Include.NON_EMPTY)
 @ApiModel(value = "CardPayment")
 public class CardPayment extends Payment {
 
@@ -31,10 +33,16 @@ public class CardPayment extends Payment {
     @ApiModelProperty(name = "delayed_capture", access = "delayed_capture")
     private final boolean delayedCapture;
 
+    @JsonProperty("corporate_card_surcharge")
+    private final Long corporateCardSurcharge;
+
+    @JsonProperty("total_amount")
+    private final Long totalAmount;
+
     public CardPayment(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                        String reference, String email, String paymentProvider, String createdDate,
                        RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
-                       SupportedLanguage language, boolean delayedCapture) {
+                       SupportedLanguage language, boolean delayedCapture, Long corporateCardSurcharge, Long totalAmount) {
         super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate);
         this.refundSummary = refundSummary;
         this.settlementSummary = settlementSummary;
@@ -42,6 +50,8 @@ public class CardPayment extends Payment {
         this.paymentType = CARD.getFriendlyName();
         this.language = language;
         this.delayedCapture = delayedCapture;
+        this.corporateCardSurcharge = corporateCardSurcharge;
+        this.totalAmount = totalAmount;
     }
 
     /**
@@ -82,6 +92,16 @@ public class CardPayment extends Payment {
         return delayedCapture;
     }
 
+    @ApiModelProperty(example = "250")
+    public Optional<Long> getCorporateCardSurcharge() {
+        return Optional.ofNullable(corporateCardSurcharge);
+    }
+
+    @ApiModelProperty(example = "1450")
+    public Optional<Long> getTotalAmount() {
+        return Optional.ofNullable(totalAmount);
+    }
+
     @Override
     public String toString() {
         // Some services put PII in the description, so don’t include it in the stringification
@@ -90,6 +110,7 @@ public class CardPayment extends Payment {
                 ", paymentProvider='" + paymentProvider + '\'' +
                 ", cardBrandLabel='" + getCardBrand() + '\'' +
                 ", amount=" + amount +
+                ", corporateCardSurcharge='" + corporateCardSurcharge + '\'' +
                 ", state='" + state + '\'' +
                 ", returnUrl='" + returnUrl + '\'' +
                 ", reference='" + reference + '\'' +

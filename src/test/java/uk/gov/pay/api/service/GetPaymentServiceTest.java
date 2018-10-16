@@ -22,8 +22,10 @@ import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
 import javax.ws.rs.client.Client;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
@@ -73,6 +75,8 @@ public class GetPaymentServiceTest {
         assertThat(payment.getPaymentProvider(), is("sandbox"));
         assertThat(payment.getCreatedDate(), is("2018-09-07T13:12:02.121Z"));
         assertThat(payment.getDelayedCapture(), is(true));
+        assertThat(payment.getCorporateCardSurcharge(), is(Optional.empty()));
+        assertThat(payment.getTotalAmount(), is(Optional.empty()));
         assertThat(paymentResponse.getLinks().getSelf().getHref(), containsString("v1/payments/" + CHARGE_ID));
         assertThat(paymentResponse.getLinks().getSelf().getMethod(), is("GET"));
         assertThat(paymentResponse.getLinks().getRefunds().getHref(), containsString("v1/payments/" + CHARGE_ID + "/refunds"));
@@ -87,4 +91,15 @@ public class GetPaymentServiceTest {
         )));
     }
 
+    @Test
+    @PactVerification({"connector"})
+    @Pacts(pacts = {"publicapi-connector-get-payment-with-corporate-surcharge"}) 
+    public void testGetPaymentWithCorporateCardSurcharge() {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+
+        PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID);
+        CardPayment payment = (CardPayment) paymentResponse.getPayment();
+        assertThat(payment.getCorporateCardSurcharge().get(), is(250L));
+        assertThat(payment.getTotalAmount().get(), is(2250L));
+    }
 }

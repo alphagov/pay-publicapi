@@ -122,7 +122,9 @@ public class PaymentsResourceCreatePaymentTest {
                 URI.create(paymentUri),
                 URI.create(paymentUri + "/events"),
                 URI.create(paymentUri + "/cancel"),
-                URI.create(paymentUri + "/refunds")
+                URI.create(paymentUri + "/refunds"),
+                null,
+                null
         );
     }
 }

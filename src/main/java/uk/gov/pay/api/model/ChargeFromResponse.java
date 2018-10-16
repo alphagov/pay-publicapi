@@ -51,6 +51,12 @@ public class ChargeFromResponse {
     @JsonProperty(value = "delayed_capture")
     private boolean delayedCapture;
 
+    @JsonProperty("corporate_card_surcharge")
+    private Long corporateCardSurcharge;
+
+    @JsonProperty("total_amount")
+    private Long totalAmount;
+
     @JsonProperty(value = "created_date")
     private String createdDate;
 
@@ -90,6 +96,14 @@ public class ChargeFromResponse {
         return delayedCapture;
     }
 
+    public Long getCorporateCardSurcharge() {
+        return corporateCardSurcharge;
+    }
+
+    public Long getTotalAmount() {
+        return totalAmount;
+    }
+    
     public String getPaymentProvider() {
         return paymentProvider;
     }

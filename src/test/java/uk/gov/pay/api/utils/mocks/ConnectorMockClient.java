@@ -66,7 +66,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     private String buildChargeResponse(long amount, String chargeId, PaymentState state, String returnUrl, String description,
                                        String reference, String email, String paymentProvider, String gatewayTransactionId, String createdDate,
-                                       SupportedLanguage language, boolean delayedCapture, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
+                                       SupportedLanguage language, boolean delayedCapture, Long corporateCardSurcharge, Long totalAmount, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
                                        ImmutableMap<?, ?>... links) {
         JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
                 .add("charge_id", chargeId)
@@ -88,6 +88,14 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
         if (gatewayTransactionId != null) {
             jsonStringBuilder.add("gateway_transaction_id", gatewayTransactionId);
+        }
+        
+        if (corporateCardSurcharge != null) {
+            jsonStringBuilder.add("corporate_card_surcharge", corporateCardSurcharge);
+        }
+        
+        if (totalAmount != null) {
+            jsonStringBuilder.add("total_amount", totalAmount);
         }
 
         return jsonStringBuilder.build();
@@ -149,6 +157,8 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                                 createdDate,
                                 language,
                                 delayedCapture,
+                                null,
+                                null,
                                 refundSummary,
                                 settlementSummary,
                                 cardDetails,
@@ -208,8 +218,19 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                                        String description, String reference, String email, String paymentProvider, String createdDate,
                                        SupportedLanguage language, boolean delayedCapture, String chargeTokenId, RefundSummary refundSummary, SettlementSummary settlementSummary,
                                        CardDetails cardDetails) {
+        respondWithChargeFound(amount, gatewayAccountId, chargeId, state, returnUrl,
+                description, reference, email, paymentProvider, createdDate,
+                language, delayedCapture, chargeTokenId, refundSummary, settlementSummary,
+                cardDetails, null, null);
+    }
+
+    public void respondWithChargeFound(long amount, String gatewayAccountId, String chargeId, PaymentState state, String returnUrl,
+                                       String description, String reference, String email, String paymentProvider, String createdDate,
+                                       SupportedLanguage language, boolean delayedCapture, String chargeTokenId, RefundSummary refundSummary, SettlementSummary settlementSummary,
+                                       CardDetails cardDetails, Long corporateCardurcharge, Long totalAmount) {
         String chargeResponseBody = buildChargeResponse(amount, chargeId, state, returnUrl,
-                description, reference, email, paymentProvider, gatewayAccountId, createdDate, language, delayedCapture, refundSummary, settlementSummary, cardDetails,
+                description, reference, email, paymentProvider, gatewayAccountId, createdDate, language, delayedCapture,
+                corporateCardurcharge, totalAmount, refundSummary, settlementSummary, cardDetails,
                 validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
                 validGetLink(chargeLocation(gatewayAccountId, chargeId) + "/refunds", "refunds"),
                 validGetLink(nextUrl(chargeId), "next_url"), validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",
