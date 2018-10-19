@@ -6,8 +6,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.Optional;
 
-@JsonInclude(value = JsonInclude.Include.NON_NULL)
+
+@JsonInclude(value = JsonInclude.Include.NON_EMPTY)
 @ApiModel(value = "Payment", discriminator = "paymentType", subTypes = {
         CardPayment.class, DirectDebitPayment.class })
 public abstract class Payment {
@@ -69,8 +71,8 @@ public abstract class Payment {
     }
 
     @ApiModelProperty(example = "http://your.service.domain/your-reference")
-    public String getReturnUrl() {
-        return returnUrl;
+    public Optional<String> getReturnUrl() {
+        return Optional.ofNullable(returnUrl);
     }
 
     @ApiModelProperty(example = "Your Service Description")
@@ -84,8 +86,8 @@ public abstract class Payment {
     }
 
     @ApiModelProperty(example = "your email")
-    public String getEmail() {
-        return email;
+    public Optional<String> getEmail() {
+        return Optional.ofNullable(email);
     }
 
     @ApiModelProperty(example = "worldpay")
