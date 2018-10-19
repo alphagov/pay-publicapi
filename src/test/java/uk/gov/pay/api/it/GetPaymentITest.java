@@ -104,7 +104,9 @@ public class GetPaymentITest extends PaymentResourceITestBase {
                 .body("_links.cancel.href", is(paymentCancelLocationFor(CHARGE_ID)))
                 .body("_links.cancel.method", is("POST"))
                 .body("_links.refunds.href", is(paymentRefundsLocationFor(CHARGE_ID)))
-                .body("_links.refunds.method", is("GET"));
+                .body("_links.refunds.method", is("GET"))
+                .body("containsKey('corporate_card_surcharge')", is(false))
+                .body("containsKey('total_amount')", is(false));
     }
 
     @Test
@@ -288,6 +290,20 @@ public class GetPaymentITest extends PaymentResourceITestBase {
                 .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", is("P0398"))
                 .assertThat("$.description", is("Downstream system error"));
+    }
+
+    @Test
+    public void getPayment_ReturnsPaymentWithCorporateCardSurcharge() {
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CAPTURED, RETURN_URL,
+                DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH, 
+                true, CHARGE_TOKEN_ID, REFUND_SUMMARY, SETTLEMENT_SUMMARY, CARD_DETAILS, 250L, AMOUNT + 250L);
+
+        getPaymentResponse(API_KEY, CHARGE_ID)
+                .statusCode(200)
+                .contentType(JSON)
+                .body("corporate_card_surcharge", is(250))
+                .body("total_amount", is(AMOUNT + 250));
     }
 
     private ValidatableResponse getPaymentResponse(String bearerToken, String paymentId) {

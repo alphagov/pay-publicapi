@@ -92,6 +92,7 @@ public class PaymentSearchResultBuilder {
         public RefundSummary refund_summary = new RefundSummary();
         public SettlementSummary settlement_summary = new SettlementSummary();
         public CardDetails card_details = new CardDetails();
+        public Long corporate_card_surcharge, total_amount;
     }
 
     private static class TestPaymentState {
@@ -144,6 +145,8 @@ public class PaymentSearchResultBuilder {
     private String fromDate = null;
     private String toDate = null;
     private CardDetails cardDetails = new CardDetails();
+    private Long corporateCardSurcharge = null;
+    private Long totalAmount = null;
 
     public static PaymentSearchResultBuilder aSuccessfulSearchPayment() {
         return new PaymentSearchResultBuilder();
@@ -203,6 +206,16 @@ public class PaymentSearchResultBuilder {
 
     public PaymentSearchResultBuilder withNumberOfResults(int numberOfResults) {
         this.noOfResults = numberOfResults;
+        return this;
+    }
+    
+    public PaymentSearchResultBuilder withCorporateCardSurcharge(Long surcharge) {
+        this.corporateCardSurcharge = surcharge;
+        return this;
+    }
+    
+    public PaymentSearchResultBuilder withTotalAmount(Long totalAmount) {
+        this.totalAmount = totalAmount;
         return this;
     }
 
@@ -275,6 +288,8 @@ public class PaymentSearchResultBuilder {
         payment.refund_summary.amount_submitted = 300;
         payment.settlement_summary.capture_submit_time = DEFAULT_CAPTURE_SUBMIT_TIME;
         payment.settlement_summary.captured_date = DEFAULT_CAPTURED_DATE;
+        payment.corporate_card_surcharge = corporateCardSurcharge;
+        payment.total_amount = totalAmount;
 
         return payment;
     }
