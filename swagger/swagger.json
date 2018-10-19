@@ -626,6 +626,18 @@
           "description" : "delayed capture flag",
           "readOnly" : true
         },
+        "corporate_card_surcharge" : {
+          "type" : "integer",
+          "format" : "int64",
+          "example" : 250,
+          "readOnly" : true
+        },
+        "total_amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "example" : 1450,
+          "readOnly" : true
+        },
         "_links" : {
           "readOnly" : true,
           "$ref" : "#/definitions/PaymentLinksForSearch"
@@ -827,9 +839,34 @@
           "description" : "self",
           "readOnly" : true,
           "$ref" : "#/definitions/Link"
+        },
+        "next_url" : {
+          "description" : "next_url",
+          "readOnly" : true,
+          "$ref" : "#/definitions/Link"
+        },
+        "next_url_post" : {
+          "description" : "next_url_post",
+          "readOnly" : true,
+          "$ref" : "#/definitions/PostLink"
+        },
+        "events" : {
+          "description" : "events",
+          "readOnly" : true,
+          "$ref" : "#/definitions/Link"
+        },
+        "refunds" : {
+          "description" : "refunds",
+          "readOnly" : true,
+          "$ref" : "#/definitions/Link"
+        },
+        "cancel" : {
+          "description" : "cancel",
+          "readOnly" : true,
+          "$ref" : "#/definitions/PostLink"
         }
       },
-      "description" : "links for events resource"
+      "description" : "self,events and next links of a Payment"
     },
     "PaymentLinksForSearch" : {
       "type" : "object",

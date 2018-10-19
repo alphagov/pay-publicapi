@@ -25,9 +25,9 @@ import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
 import javax.ws.rs.client.Client;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -75,9 +75,9 @@ public class CreatePaymentServiceTest {
         assertThat(payment.getAmount(), is(100L));
         assertThat(payment.getReference(), is("a reference"));
         assertThat(payment.getDescription(), is("a description"));
-        assertThat(payment.getEmail(), is(nullValue()));
+        assertThat(payment.getEmail(), is(Optional.empty()));
         assertThat(payment.getState(), is(new PaymentState("created", false)));
-        assertThat(payment.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(payment.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(payment.getPaymentProvider(), is("Sandbox"));
         assertThat(payment.getCreatedDate(), is("2016-01-01T12:00:00Z"));
         assertThat(payment.getLanguage(), is(SupportedLanguage.ENGLISH));
@@ -108,9 +108,9 @@ public class CreatePaymentServiceTest {
         assertThat(payment.getAmount(), is(100L));
         assertThat(payment.getReference(), is("a reference"));
         assertThat(payment.getDescription(), is("a description"));
-        assertThat(payment.getEmail(), is(nullValue()));
+        assertThat(payment.getEmail(), is(Optional.empty()));
         assertThat(payment.getState(), is(new PaymentState("created", false)));
-        assertThat(payment.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(payment.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(payment.getPaymentProvider(), is("Sandbox"));
         assertThat(payment.getCreatedDate(), is("2016-01-01T12:00:00Z"));
         assertThat(payment.getLanguage(), is(SupportedLanguage.ENGLISH));
@@ -141,9 +141,9 @@ public class CreatePaymentServiceTest {
         assertThat(payment.getAmount(), is(100L));
         assertThat(payment.getReference(), is("a reference"));
         assertThat(payment.getDescription(), is("a description"));
-        assertThat(payment.getEmail(), is(nullValue()));
+        assertThat(payment.getEmail(), is(Optional.empty()));
         assertThat(payment.getState(), is(new PaymentState("created", false)));
-        assertThat(payment.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(payment.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(payment.getPaymentProvider(), is("Sandbox"));
         assertThat(payment.getCreatedDate(), is("2016-01-01T12:00:00Z"));
         assertThat(payment.getLanguage(), is(SupportedLanguage.WELSH));

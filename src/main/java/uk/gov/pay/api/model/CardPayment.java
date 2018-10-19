@@ -68,18 +68,18 @@ public class CardPayment extends Payment {
     }
 
     @ApiModelProperty(dataType = "uk.gov.pay.api.model.RefundSummary")
-    public RefundSummary getRefundSummary() {
-        return refundSummary;
+    public Optional<RefundSummary> getRefundSummary() {
+        return Optional.ofNullable(refundSummary);
     }
 
     @ApiModelProperty(dataType = "uk.gov.pay.api.model.SettlementSummary")
-    public SettlementSummary getSettlementSummary() {
-        return settlementSummary;
+    public Optional<SettlementSummary> getSettlementSummary() {
+        return Optional.ofNullable(settlementSummary);
     }
 
     @ApiModelProperty(dataType = "uk.gov.pay.api.model.CardDetails")
-    public CardDetails getCardDetails() {
-        return cardDetails;
+    public Optional<CardDetails> getCardDetails() {
+        return Optional.ofNullable(cardDetails);
     }
 
     @ApiModelProperty(example = "en")

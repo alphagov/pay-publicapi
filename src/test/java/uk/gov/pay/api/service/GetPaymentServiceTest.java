@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
@@ -71,7 +70,7 @@ public class GetPaymentServiceTest {
         assertThat(payment.getReference(), is("aReference"));
         assertThat(payment.getLanguage(), is(SupportedLanguage.ENGLISH));
         assertThat(payment.getPaymentId(), is(CHARGE_ID));
-        assertThat(payment.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(payment.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(payment.getPaymentProvider(), is("sandbox"));
         assertThat(payment.getCreatedDate(), is("2018-09-07T13:12:02.121Z"));
         assertThat(payment.getDelayedCapture(), is(true));
