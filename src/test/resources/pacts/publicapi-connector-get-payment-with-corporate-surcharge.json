@@ -56,7 +56,7 @@
           "refund_summary": {
             "status": "available",
             "user_external_id": null,
-            "amount_available": 2000,
+            "amount_available": 2250,
             "amount_submitted": 0
           },
           "settlement_summary": {
@@ -111,6 +111,9 @@
             },
             "$.created_date": {
               "matchers": [{ "date": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" }]
+            },
+            "$.refund_summary.amount_available": {
+              "matchers": [{"match": "type"}]
             }
           }
         }
