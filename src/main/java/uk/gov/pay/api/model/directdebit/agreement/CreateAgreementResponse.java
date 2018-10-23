@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.links.directdebit.AgreementLinks;
+import uk.gov.pay.commons.model.directdebit.agreement.AgreementType;
 
 @ApiModel(value = "CreateAgreementResponse", description = "The Agreement Payload to create a new Agreement")
 public class CreateAgreementResponse {

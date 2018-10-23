@@ -3,11 +3,11 @@ package uk.gov.pay.api.it.directdebit;
 import org.junit.Test;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
 import uk.gov.pay.api.model.directdebit.agreement.AgreementStatus;
-import uk.gov.pay.api.model.directdebit.agreement.AgreementType;
 import uk.gov.pay.api.model.directdebit.agreement.MandateState;
 import uk.gov.pay.api.model.directdebit.agreement.MandateType;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
+import uk.gov.pay.commons.model.directdebit.agreement.AgreementType;
 
 import javax.ws.rs.core.HttpHeaders;
 import java.time.ZonedDateTime;
@@ -17,6 +17,7 @@ import static com.jayway.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.commons.model.TokenPaymentType.DIRECT_DEBIT;
+import static uk.gov.pay.commons.model.directdebit.agreement.AgreementType.ON_DEMAND;
 
 public class AgreementsResourceITest extends PaymentResourceITestBase {
 
@@ -44,7 +45,7 @@ public class AgreementsResourceITest extends PaymentResourceITestBase {
                 CHARGE_TOKEN_ID
         );
 
-        String payload = agreementPayload(RETURN_URL, AgreementType.ON_DEMAND);
+        String payload = agreementPayload(RETURN_URL, ON_DEMAND);
         given().port(app.getLocalPort())
                 .body(payload)
                 .accept(JSON)
@@ -56,7 +57,7 @@ public class AgreementsResourceITest extends PaymentResourceITestBase {
                 .contentType(JSON)
                 .header(HttpHeaders.LOCATION, is("http://publicapi.url/v1/agreements/mandateId"))
                 .body("agreement_id", is(MANDATE_ID))
-                .body("agreement_type", is(AgreementType.ON_DEMAND.toString()))
+                .body("agreement_type", is(ON_DEMAND.toString()))
                 .body("provider_id", is(MANDATE_REFERENCE))
                 .body("reference", is(SERVICE_REFERENCE))
                 .body("return_url", is(RETURN_URL))
@@ -87,7 +88,7 @@ public class AgreementsResourceITest extends PaymentResourceITestBase {
                 errorMessage
         );
 
-        String payload = agreementPayload("https://service-name.gov.uk/transactions/12345", AgreementType.ON_DEMAND);
+        String payload = agreementPayload("https://service-name.gov.uk/transactions/12345", ON_DEMAND);
         given().port(app.getLocalPort())
                 .body(payload)
                 .accept(JSON)
@@ -127,7 +128,7 @@ public class AgreementsResourceITest extends PaymentResourceITestBase {
                 .statusCode(200)
                 .contentType(JSON)
                 .body("agreement_id", is(MANDATE_ID))
-                .body("agreement_type", is(AgreementType.ON_DEMAND.toString()))
+                .body("agreement_type", is(ON_DEMAND.toString()))
                 .body("provider_id", is(MANDATE_REFERENCE))
                 .body("reference", is(SERVICE_REFERENCE))
                 .body("return_url", is(RETURN_URL))
