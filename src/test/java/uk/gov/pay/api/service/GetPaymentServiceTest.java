@@ -13,7 +13,6 @@ import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.PaymentState;
-import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.model.links.PostLink;
 import uk.gov.pay.commons.model.SupportedLanguage;
@@ -28,6 +27,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
+import static uk.gov.pay.commons.model.TokenPaymentType.CARD;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GetPaymentServiceTest {
@@ -59,7 +59,7 @@ public class GetPaymentServiceTest {
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-get-payment-with-delayed-capture-true"})
     public void testGetPayment() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        Account account = new Account(ACCOUNT_ID, CARD);
 
         PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID);
         CardPayment payment = (CardPayment) paymentResponse.getPayment();
@@ -94,7 +94,7 @@ public class GetPaymentServiceTest {
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-get-payment-with-corporate-surcharge"}) 
     public void testGetPaymentWithCorporateCardSurcharge() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        Account account = new Account(ACCOUNT_ID, CARD);
 
         PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID);
         CardPayment payment = (CardPayment) paymentResponse.getPayment();

@@ -1,6 +1,6 @@
 package uk.gov.pay.api.auth;
 
-import uk.gov.pay.api.model.TokenPaymentType;
+import uk.gov.pay.commons.model.TokenPaymentType;
 
 import java.security.Principal;
 

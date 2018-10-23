@@ -1,13 +1,16 @@
 package uk.gov.pay.api.utils;
 
 import org.mockserver.client.server.MockServerClient;
-import uk.gov.pay.api.model.TokenPaymentType;
+import uk.gov.pay.commons.model.TokenPaymentType;
 
 import static javax.ws.rs.HttpMethod.GET;
-import static javax.ws.rs.core.HttpHeaders.*;
+import static javax.ws.rs.core.HttpHeaders.ACCEPT;
+import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
+import static uk.gov.pay.commons.model.TokenPaymentType.CARD;
 
 public class PublicAuthMockClient {
 
@@ -26,7 +29,7 @@ public class PublicAuthMockClient {
     }
 
     public void mapBearerTokenToAccountId(String bearerToken, String gatewayAccountId) {
-        mapBearerTokenToAccountId(bearerToken, gatewayAccountId, TokenPaymentType.CARD);
+        mapBearerTokenToAccountId(bearerToken, gatewayAccountId, CARD);
     }
 
     public void mapBearerTokenToAccountId(String bearerToken, String gatewayAccountId, TokenPaymentType tokenType) {

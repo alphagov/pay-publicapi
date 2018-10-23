@@ -5,7 +5,6 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.BadRefundsRequestException;
 import uk.gov.pay.api.model.RefundError;
-import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.search.card.SearchRefunds;
 import uk.gov.pay.api.validation.SearchRefundsValidator;
 
@@ -17,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.pay.api.model.RefundError.Code.SEARCH_REFUNDS_DIRECT_DEBIT_ERROR;
+import static uk.gov.pay.commons.model.TokenPaymentType.DIRECT_DEBIT;
 
 public class SearchRefundsService {
     private static final String PAGE = "page";
@@ -53,7 +53,7 @@ public class SearchRefundsService {
                 objectMapper,
                 publicApiUriGenerator);
 
-        if (account.getPaymentType().equals(TokenPaymentType.DIRECT_DEBIT)) {
+        if (account.getPaymentType().equals(DIRECT_DEBIT)) {
             throw new BadRefundsRequestException(RefundError.aRefundError(SEARCH_REFUNDS_DIRECT_DEBIT_ERROR));
         }
         return refundsService.getSearchResponse(account, queryParams);

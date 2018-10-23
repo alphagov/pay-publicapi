@@ -13,7 +13,6 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
@@ -27,6 +26,8 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
+import static uk.gov.pay.commons.model.TokenPaymentType.CARD;
+import static uk.gov.pay.commons.model.TokenPaymentType.DIRECT_DEBIT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DirectDebitPaymentSearchServiceTest {
@@ -58,7 +59,7 @@ public class DirectDebitPaymentSearchServiceTest {
 
     @Test
     public void doSearchShouldThrowBadRequestException_whenAccountIsNotDD_andAgreementIsASearchParam() {
-        Account account = new Account("an account", TokenPaymentType.CARD);
+        Account account = new Account("an account", CARD);
         String agreementId = "an-agreement-id";
         try {
             paymentSearchService.doSearch(account, null, null, null, null, null,
@@ -71,7 +72,7 @@ public class DirectDebitPaymentSearchServiceTest {
 
     @Test
     public void doSearchShouldThrowBadRequestException_whenAccountIsDD_andFirstDigitsCardNumberIsASearchParam() {
-        Account account = new Account("an account", TokenPaymentType.DIRECT_DEBIT);
+        Account account = new Account("an account", DIRECT_DEBIT);
         try {
             paymentSearchService.doSearch(account, null, null, null, null, null,
                     null, null, null, null,   null, "424242", null);
@@ -83,7 +84,7 @@ public class DirectDebitPaymentSearchServiceTest {
 
     @Test
     public void doSearchShouldThrowBadRequestException_whenAccountIsDD_andLastDigitsCardNumberIsASearchParam() {
-        Account account = new Account("an account", TokenPaymentType.DIRECT_DEBIT);
+        Account account = new Account("an account", DIRECT_DEBIT);
         try {
             paymentSearchService.doSearch(account, null, null, null, null, null,
                     null, null, null, null, null, null, "4242");
@@ -97,7 +98,7 @@ public class DirectDebitPaymentSearchServiceTest {
     @PactVerification({"direct-debit-connector"})
     @Pacts(pacts = {"publicapi-direct-debit-connector-search-by-mandate-three-results"})
     public void doSearchShouldReturnADirectDebitSearchResponseWithThreeTransactions() {
-        Account account = new Account("2po9ycynwq8yxdgg2qwq9e9qpyrtre", TokenPaymentType.DIRECT_DEBIT);
+        Account account = new Account("2po9ycynwq8yxdgg2qwq9e9qpyrtre", DIRECT_DEBIT);
         String agreementId = "jkdjsvd8f78ffkwfek2q";
         Response response =
                 paymentSearchService.doSearch(account, null, null,

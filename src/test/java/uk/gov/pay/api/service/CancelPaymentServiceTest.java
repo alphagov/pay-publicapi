@@ -11,7 +11,6 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
@@ -21,12 +20,13 @@ import javax.ws.rs.core.Response;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
+import static uk.gov.pay.commons.model.TokenPaymentType.CARD;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CancelPaymentServiceTest {
     
     private final String CHARGE_ID = "charge8133029783750964639";
-    private final Account ACCOUNT = new Account("123456", TokenPaymentType.CARD);
+    private final Account ACCOUNT = new Account("123456", CARD);
     
     private CancelPaymentService cancelPaymentService;
     

@@ -10,7 +10,8 @@ import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.util.Optional;
 
-import static uk.gov.pay.api.model.TokenPaymentType.CARD;
+import static uk.gov.pay.commons.model.TokenPaymentType.CARD;
+
 
 @JsonInclude(value = JsonInclude.Include.NON_EMPTY)
 @ApiModel(value = "CardPayment")

@@ -3,7 +3,7 @@ package uk.gov.pay.api.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 
-import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
+import static uk.gov.pay.commons.model.TokenPaymentType.DIRECT_DEBIT;
 
 
 @JsonInclude(value = JsonInclude.Include.NON_NULL)

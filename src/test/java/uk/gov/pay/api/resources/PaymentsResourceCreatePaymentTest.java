@@ -13,7 +13,6 @@ import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.SettlementSummary;
-import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.service.CancelPaymentService;
@@ -35,6 +34,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static uk.gov.pay.commons.model.TokenPaymentType.CARD;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PaymentsResourceCreatePaymentTest {
@@ -82,7 +82,7 @@ public class PaymentsResourceCreatePaymentTest {
 
     @Test
     public void createNewPayment_withCardPayment_invokesCreatePaymentService() throws Exception {
-        final Account account = new Account("foo", TokenPaymentType.CARD);
+        final Account account = new Account("foo", CARD);
         final ValidCreatePaymentRequest createPaymentRequest = new ValidCreatePaymentRequest(CreatePaymentRequest.builder()
                 .amount(100)
                 .returnUrl("https://somewhere.test")

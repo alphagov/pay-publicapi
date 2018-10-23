@@ -16,7 +16,7 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.core.Is.is;
-import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
+import static uk.gov.pay.commons.model.TokenPaymentType.DIRECT_DEBIT;
 
 public class AgreementsResourceITest extends PaymentResourceITestBase {
 

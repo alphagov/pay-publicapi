@@ -16,7 +16,6 @@ import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.BadRefundsRequestException;
 import uk.gov.pay.api.exception.RefundsValidationException;
-import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
@@ -29,6 +28,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
 import static uk.gov.pay.api.matcher.BadRefundsRequestExceptionMatcher.aBadRefundsRequestExceptionWithError;
 import static uk.gov.pay.api.matcher.RefundValidationExceptionMatcher.aValidationExceptionContaining;
+import static uk.gov.pay.commons.model.TokenPaymentType.CARD;
+import static uk.gov.pay.commons.model.TokenPaymentType.DIRECT_DEBIT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SearchRefundsServiceTest {
@@ -68,7 +69,7 @@ public class SearchRefundsServiceTest {
         String refundId1 = "111111";
         String refundId2 = "222222";
         String extChargeId = "someExternalId";
-        Account account = new Account(accountId, TokenPaymentType.CARD);
+        Account account = new Account(accountId, CARD);
         Response response = searchRefundsService.getAllRefunds(account, params);
 
         JsonAssert.with(response.getEntity().toString())
@@ -99,7 +100,7 @@ public class SearchRefundsServiceTest {
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-search-refunds-with-page-and-display-when-no-refunds-exist"})
     public void getAllRefundsShouldReturnNoRefundsWhenThereAreNone() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        Account account = new Account(ACCOUNT_ID, CARD);
         RefundsParams params = new RefundsParams(PAGE, "1");
         Response response = searchRefundsService.getAllRefunds(account, params);
         JsonAssert.with(response.getEntity().toString())
@@ -110,7 +111,7 @@ public class SearchRefundsServiceTest {
 
     @Test
     public void getSearchResponse_shouldThrowBadRefundsRequestExceptionWhenAccountIsDD() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.DIRECT_DEBIT);
+        Account account = new Account(ACCOUNT_ID, DIRECT_DEBIT);
 
         expectedException.expect(BadRefundsRequestException.class);
         expectedException.expect(
@@ -122,7 +123,7 @@ public class SearchRefundsServiceTest {
 
     @Test
     public void getSearchResponse_shouldThrowRefundsValidationExceptionWhenParamsAreInvalid() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        Account account = new Account(ACCOUNT_ID, CARD);
         String invalid = "invalid_param";
         RefundsParams params = new RefundsParams(invalid, invalid);
 

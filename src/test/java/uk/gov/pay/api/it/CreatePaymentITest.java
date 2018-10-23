@@ -22,7 +22,7 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
-import static uk.gov.pay.api.model.TokenPaymentType.CARD;
+import static uk.gov.pay.commons.model.TokenPaymentType.CARD;
 
 public class CreatePaymentITest extends PaymentResourceITestBase {
 

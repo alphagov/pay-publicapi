@@ -5,7 +5,7 @@ import io.dropwizard.auth.Authenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
-import uk.gov.pay.api.model.TokenPaymentType;
+import uk.gov.pay.commons.model.TokenPaymentType;
 
 import javax.inject.Inject;
 import javax.ws.rs.ServiceUnavailableException;
@@ -17,8 +17,8 @@ import java.util.Optional;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.Response.Status.OK;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
-import static uk.gov.pay.api.model.TokenPaymentType.CARD;
-import static uk.gov.pay.api.model.TokenPaymentType.fromString;
+import static uk.gov.pay.commons.model.TokenPaymentType.CARD;
+import static uk.gov.pay.commons.model.TokenPaymentType.fromString;
 
 public class AccountAuthenticator implements Authenticator<String, Account> {
     private static Logger logger = LoggerFactory.getLogger(AccountAuthenticator.class);

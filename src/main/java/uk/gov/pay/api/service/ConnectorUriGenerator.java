@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.lang.String.format;
-import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
+import static uk.gov.pay.commons.model.TokenPaymentType.DIRECT_DEBIT;
 
 public class ConnectorUriGenerator {
     private final PublicApiConfig configuration;

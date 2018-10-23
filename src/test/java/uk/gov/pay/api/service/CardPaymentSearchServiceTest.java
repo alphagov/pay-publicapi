@@ -13,7 +13,6 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
@@ -25,6 +24,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
+import static uk.gov.pay.commons.model.TokenPaymentType.CARD;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CardPaymentSearchServiceTest {
@@ -58,7 +58,7 @@ public class CardPaymentSearchServiceTest {
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-search-payment-by-last-digits-card-number"})
     public void searchShouldReturnAResponseWithOneTransaction_whenFilteringByLastDigitsCardNumber() {
-        Account account = new Account("123456", TokenPaymentType.CARD);
+        Account account = new Account("123456", CARD);
         Response response =
                 paymentSearchService.doSearch(account, null, null,
                         null, null, null,
@@ -90,7 +90,7 @@ public class CardPaymentSearchServiceTest {
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-search-payment-by-first-digits-card-number"})
     public void searchShouldReturnAResponseWithOneTransaction_whenFilteringByFirstDigitsCardNumber() {
-        Account account = new Account("123456", TokenPaymentType.CARD);
+        Account account = new Account("123456", CARD);
         Response response =
                 paymentSearchService.doSearch(account, null, null,
                         null, null, null,
@@ -122,7 +122,7 @@ public class CardPaymentSearchServiceTest {
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-search-payment-by-cardholder-name"})
     public void searchShouldReturnAResponseWithOneTransaction_whenFilteringByCardHolderName() {
-        Account account = new Account("123456", TokenPaymentType.CARD);
+        Account account = new Account("123456", CARD);
         Response response =
                 paymentSearchService.doSearch(account, null, null,
                         null, null, null,

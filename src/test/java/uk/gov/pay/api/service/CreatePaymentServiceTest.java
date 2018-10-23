@@ -14,7 +14,6 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.PaymentState;
-import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.model.links.Link;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
@@ -30,6 +29,7 @@ import java.util.Optional;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
+import static uk.gov.pay.commons.model.TokenPaymentType.CARD;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreatePaymentServiceTest {
@@ -60,7 +60,7 @@ public class CreatePaymentServiceTest {
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-create-payment"})
     public void testCreatePayment() {
-        Account account = new Account("123456", TokenPaymentType.CARD);
+        Account account = new Account("123456", CARD);
         ValidCreatePaymentRequest requestPayload = new ValidCreatePaymentRequest(CreatePaymentRequest.builder()
                 .amount(100)
                 .returnUrl("https://somewhere.gov.uk/rainbow/1")
@@ -92,7 +92,7 @@ public class CreatePaymentServiceTest {
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-create-payment-with-delayed-capture-true"})
     public void testCreatePaymentWithDelayedCaptureEqualsTrue() {
-        Account account = new Account("123456", TokenPaymentType.CARD);
+        Account account = new Account("123456", CARD);
         ValidCreatePaymentRequest requestPayload = new ValidCreatePaymentRequest(CreatePaymentRequest.builder()
                 .amount(100)
                 .returnUrl("https://somewhere.gov.uk/rainbow/1")
@@ -125,7 +125,7 @@ public class CreatePaymentServiceTest {
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-create-payment-with-language-welsh"})
     public void testCreatePaymentWithWelshLanguage() {
-        Account account = new Account("123456", TokenPaymentType.CARD);
+        Account account = new Account("123456", CARD);
         ValidCreatePaymentRequest requestPayload = new ValidCreatePaymentRequest(CreatePaymentRequest.builder()
                 .amount(100)
                 .returnUrl("https://somewhere.gov.uk/rainbow/1")

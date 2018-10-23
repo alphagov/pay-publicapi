@@ -26,8 +26,8 @@ import static org.apache.http.HttpStatus.SC_NOT_ACCEPTABLE;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
-import static uk.gov.pay.api.model.TokenPaymentType.CARD;
-import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
+import static uk.gov.pay.commons.model.TokenPaymentType.CARD;
+import static uk.gov.pay.commons.model.TokenPaymentType.DIRECT_DEBIT;
 
 public class GetPaymentITest extends PaymentResourceITestBase {
 

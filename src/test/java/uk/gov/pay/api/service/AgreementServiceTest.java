@@ -12,7 +12,6 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
-import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.directdebit.agreement.AgreementType;
 import uk.gov.pay.api.model.directdebit.agreement.MandateConnectorRequest;
 import uk.gov.pay.api.model.directdebit.agreement.MandateConnectorResponse;
@@ -29,6 +28,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
+import static uk.gov.pay.commons.model.TokenPaymentType.DIRECT_DEBIT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AgreementServiceTest {
@@ -59,7 +59,7 @@ public class AgreementServiceTest {
     @PactVerification({"direct-debit-connector"})
     @Pacts(pacts = {"publicapi-direct-debit-connector-create-agreement-without-reference"})
     public void shouldCreateAMandateSuccessfullyWithoutReference() {
-        Account account = new Account("9ddfcc27-acf5-43f9-92d5-52247540714b", TokenPaymentType.DIRECT_DEBIT);
+        Account account = new Account("9ddfcc27-acf5-43f9-92d5-52247540714b", DIRECT_DEBIT);
         MandateConnectorRequest mandateConnectorRequest = new MandateConnectorRequest(
                 "https://example.com/return",
                 AgreementType.ON_DEMAND,
@@ -102,7 +102,7 @@ public class AgreementServiceTest {
     @PactVerification({"direct-debit-connector"})
     @Pacts(pacts = {"publicapi-direct-debit-connector-create-agreement-with-reference"})
     public void shouldCreateAMandateSuccessfullyWithReference() {
-        Account account = new Account("7959d395-e720-4081-9e8a-a534cf76460a", TokenPaymentType.DIRECT_DEBIT);
+        Account account = new Account("7959d395-e720-4081-9e8a-a534cf76460a", DIRECT_DEBIT);
         MandateConnectorRequest mandateConnectorRequest = new MandateConnectorRequest(
                 "https://example.com/return",
                 AgreementType.ON_DEMAND,
@@ -145,7 +145,7 @@ public class AgreementServiceTest {
     @PactVerification({"direct-debit-connector"})
     @Pacts(pacts = {"publicapi-direct-debit-connector-get-agreement"})
     public void shouldGetAMandateSuccessfully_withReference() {
-        Account account = new Account("9ddfcc27-acf5-43f9-92d5-52247540714c", TokenPaymentType.DIRECT_DEBIT);
+        Account account = new Account("9ddfcc27-acf5-43f9-92d5-52247540714c", DIRECT_DEBIT);
         Response connectorResponse = agreementService.getMandate(account, MANDATE_ID);
         MandateConnectorResponse mandateConnectorResponse = connectorResponse.readEntity(MandateConnectorResponse.class);
 

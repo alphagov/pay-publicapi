@@ -4,10 +4,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.model.TokenPaymentType;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static uk.gov.pay.api.matcher.PaymentValidationExceptionMatcher.aValidationExceptionContaining;
+import static uk.gov.pay.commons.model.TokenPaymentType.CARD;
+import static uk.gov.pay.commons.model.TokenPaymentType.DIRECT_DEBIT;
 
 public class PaymentSearchValidatorTest {
 
@@ -17,7 +18,7 @@ public class PaymentSearchValidatorTest {
     private static final String UNSUCCESSFUL_TEST_EMAIL = randomAlphanumeric(255) + "@mail.fake";
     private static final String UNSUCCESSFUL_TEST_CARD_BRAND = "123456789012345678901";
     private static final String INVALID_LENGTH_AGREEMENT = randomAlphanumeric(27);
-    private Account account = new Account("an account", TokenPaymentType.CARD);
+    private Account account = new Account("an account", CARD);
 
     @Test
     public void validateParams_shouldSuccessValidation() {
@@ -141,7 +142,7 @@ public class PaymentSearchValidatorTest {
     @Test
     public void validateParams_shouldGiveAnError_forInvalidDirectDebitState() {
         expectedException.expect(aValidationExceptionContaining("P0401", "Invalid parameters: state. See Public API documentation for the correct data formats"));
-        PaymentSearchValidator.validateSearchParameters(new Account("an account", TokenPaymentType.DIRECT_DEBIT),
+        PaymentSearchValidator.validateSearchParameters(new Account("an account", DIRECT_DEBIT),
                 "created", "", "",
                 "", "", "",
                 "","", "", "", "");
