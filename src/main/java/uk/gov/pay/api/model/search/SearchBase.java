@@ -41,7 +41,7 @@ public abstract class SearchBase {
     }
 
     private HalRepresentation.HalRepresentationBuilder addPaginationProperties(HalRepresentation.HalRepresentationBuilder halRepresentationBuilder,
-                                                                                 SearchPagination pagination) {
+                                                                               SearchPagination pagination) {
         halRepresentationBuilder
                 .addProperty("count", pagination.getCount())
                 .addProperty("total", pagination.getTotal())
@@ -66,9 +66,9 @@ public abstract class SearchBase {
     }
     protected HalRepresentation.HalRepresentationBuilder decoratePagination(HalRepresentation.HalRepresentationBuilder halRepresentationBuilder,
                                                                             SearchPagination pagination, String path) {
-        
+
         HalRepresentation.HalRepresentationBuilder builder = addPaginationProperties(halRepresentationBuilder, pagination);
-        SearchNavigationLinks links = (SearchNavigationLinks) pagination.getLinks();
+        SearchNavigationLinks links = pagination.getLinks();
         try {
             addLink(builder, "self", transformIntoPublicUri(baseUrl, links.getSelf(), path));
             addLink(builder, "first_page", transformIntoPublicUri(baseUrl, links.getFirstPage(), path));

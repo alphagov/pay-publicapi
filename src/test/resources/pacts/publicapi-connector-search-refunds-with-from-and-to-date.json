@@ -7,12 +7,13 @@
   },
   "interactions": [
     {
-      "description": "Return all refunds when refunds exist",
+      "description": "Return all refunds when refunds exist, filtering by from and to date",
       "providerStates": [
         {
           "name": "Refunds exist",
           "params": {
-            "account_id": "777"
+            "account_id": "777",
+            "created_date": "2016-01-25T13:23:55Z"
           }
         }
       ],
@@ -21,10 +22,10 @@
         "path": "/v1/api/accounts/777/refunds",
         "query": {
           "from_date": [
-            "2016-01-25T13:23:55Z"
+            "2016-01-25T13:22:55Z"
           ],
           "to_date": [
-            "2016-01-25T13:23:55Z"
+            "2016-01-25T13:24:55Z"
           ],
           "page": [
             "1"
@@ -46,7 +47,7 @@
           "results": [
             {
               "refund_id": "111111",
-              "created_date": "2017-10-01T01:41:01Z",
+              "created_date": "2016-01-25T13:23:55Z",
               "status": "available",
               "charge_id": "someExternalId",
               "amount_submitted": 98,
@@ -65,7 +66,7 @@
             },
             {
               "refund_id": "222222",
-              "created_date": "2017-09-02T02:42:02Z",
+              "created_date": "2016-01-25T13:23:55Z",
               "status": "available",
               "charge_id": "someExternalId",
               "amount_submitted": 100,
@@ -85,7 +86,7 @@
           ],
           "_links": {
             "self": {
-              "href": "http://app.com/v1/api/accounts/777/refunds?from_date=2016-01-25T13:23:55Z&to_date=2016-01-25T13:23:55Z&page=1&display_size=500"
+              "href": "http://app.com/v1/api/accounts/777/refunds?from_date=2016-01-25T13:22:55Z&to_date=2016-01-25T13:24:55Z&page=1&display_size=500"
             }
           }
         },
@@ -122,8 +123,7 @@
             "$.results[*].created_date": {
               "matchers": [
                 {
-                  "match": "date",
-                  "date": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                  "match": "type"
                 }
               ]
             },
@@ -179,7 +179,7 @@
             "$._links.self.href": {
               "matchers": [
                 {
-                  "regex":  "http.*/v1/refunds?from_date=2016-01-25T13%3A23%3A55Z&to_date=2016-01-25T13%3A23%3A55Z&page=1&display_size=500"
+                  "regex":  "https:\/\/.*\/v1\/api\/accounts\/777\/refunds\\?from_date=2016-01-25T13%3A22%3A55Z&to_date=2016-01-25T13%3A24%3A55Z&page=1&display_size=500"
                 }
               ]
             }

@@ -79,8 +79,8 @@ public class SearchRefunds extends SearchBase {
             HalRepresentation.HalRepresentationBuilder halRepresentation = HalRepresentation
                     .builder()
                     .addProperty("results", results);
-            return Response.ok().entity(decoratePagination(halRepresentation, searchResponse, REFUNDS_PATH)
-                    .build().toString())
+            return Response.ok().entity(
+                    decoratePagination(halRepresentation, searchResponse, REFUNDS_PATH).build().toString())
                     .build();
         } catch (IOException | ProcessingException ex) {
             throw new SearchRefundsException(ex);
