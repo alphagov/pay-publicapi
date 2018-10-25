@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.pay.api.model.RefundError.Code.SEARCH_REFUNDS_DIRECT_DEBIT_ERROR;
-import static uk.gov.pay.api.validation.RefundSearchValidator.*;
+import static uk.gov.pay.api.validation.RefundSearchValidator.validateSearchParameters;
 
 public class SearchRefundsService {
     private static final String PAGE = "page";

@@ -10,7 +10,7 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DDSearchResponse implements SearchPagination {
+public class DirectDebitSearchResponse implements SearchPagination {
 
     @JsonProperty("total")
     private int total;
@@ -19,11 +19,11 @@ public class DDSearchResponse implements SearchPagination {
     @JsonProperty("page")
     private int page;
     @JsonProperty("results")
-    private List<DDTransactionFromResponse> payments;
+    private List<DirectDebitTransactionFromResponse> payments;
     @JsonProperty("_links")
     private SearchNavigationLinks links = new SearchNavigationLinks();
 
-    public List<DDTransactionFromResponse> getPayments() {
+    public List<DirectDebitTransactionFromResponse> getPayments() {
         return payments;
     }
 

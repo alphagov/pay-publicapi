@@ -11,25 +11,25 @@ import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@ApiModel(value="DDPaymentState", description = "A structure representing the current state of the direct debit transaction in its lifecycle.")
-public class DDPaymentState {
+@ApiModel(value="DirectDebitPaymentState", description = "A structure representing the current state of the direct debit transaction in its lifecycle.")
+public class DirectDebitPaymentState {
     @JsonProperty("status")
     private String status;
 
     @JsonProperty("finished")
     private boolean finished;
 
-    public static DDPaymentState createPaymentState(JsonNode node) {
-        return new DDPaymentState(
+    public static DirectDebitPaymentState createPaymentState(JsonNode node) {
+        return new DirectDebitPaymentState(
             node.get("status").asText(),
             node.get("finished").asBoolean()
         );
     }
 
-    public DDPaymentState() {
+    public DirectDebitPaymentState() {
     }
     
-    public DDPaymentState(String status, boolean finished) {
+    public DirectDebitPaymentState(String status, boolean finished) {
         this.status = status;
         this.finished = finished;
     }
@@ -56,7 +56,7 @@ public class DDPaymentState {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DDPaymentState that = (DDPaymentState) o;
+        DirectDebitPaymentState that = (DirectDebitPaymentState) o;
         return finished == that.finished &&
                 Objects.equals(status, that.status);
     }

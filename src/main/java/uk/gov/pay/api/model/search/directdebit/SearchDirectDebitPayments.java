@@ -72,13 +72,13 @@ public class SearchDirectDebitPayments extends SearchPaymentsBase {
     private Response processResponse(Response directDebitResponse) {
         try {
             JsonNode responseJson = directDebitResponse.readEntity(JsonNode.class);
-            TypeReference<DDSearchResponse> typeRef = new TypeReference<DDSearchResponse>() {};
-            DDSearchResponse searchResponse = objectMapper.readValue(responseJson.traverse(), typeRef);
-            List<DDTransactionForSearch> transactionFromResponse =
+            TypeReference<DirectDebitSearchResponse> typeRef = new TypeReference<DirectDebitSearchResponse>() {};
+            DirectDebitSearchResponse searchResponse = objectMapper.readValue(responseJson.traverse(), typeRef);
+            List<DirectDebitTransactionForSearch> transactionFromResponse =
                     searchResponse
                             .getPayments()
                             .stream()
-                            .map(transaction -> DDTransactionForSearch.valueOf(
+                            .map(transaction -> DirectDebitTransactionForSearch.valueOf(
                                     transaction,
                                     paymentUriGenerator.getPaymentURI(baseUrl, transaction.getTransactionId())
                             )).collect(Collectors.toList());
