@@ -9,16 +9,24 @@ import java.util.List;
 import static org.apache.commons.lang3.StringUtils.join;
 import static uk.gov.pay.api.model.RefundError.Code.SEARCH_REFUNDS_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.RefundError.aRefundError;
+import static uk.gov.pay.api.validation.SearchValidator.validateFromDate;
+import static uk.gov.pay.api.validation.SearchValidator.validatePageIfNotNull;
+import static uk.gov.pay.api.validation.SearchValidator.validateDisplaySizeIfNotNull;
+import static uk.gov.pay.api.validation.SearchValidator.validateToDate;
 
 
-public class SearchRefundsValidator extends SearchValidator {
+public class RefundSearchValidator {
 
     public static void validateSearchParameters(RefundsParams params) {
         String pageNumber = params.getPage();
         String displaySize = params.getDisplaySize();
-
+        String fromDate = params.getFromDate();
+        String toDate = params.getToDate();
+        
         List<String> validationErrors = new LinkedList<>();
         try {
+            validateFromDate(fromDate, validationErrors);
+            validateToDate(toDate, validationErrors);
             validatePageIfNotNull(pageNumber, validationErrors);
             validateDisplaySizeIfNotNull(displaySize, validationErrors);
         } catch (Exception e) {
@@ -28,4 +36,6 @@ public class SearchRefundsValidator extends SearchValidator {
             throw new RefundsValidationException(aRefundError(SEARCH_REFUNDS_VALIDATION_ERROR, join(validationErrors, ", ")));
         }
     }
+
+
 }

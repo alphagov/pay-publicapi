@@ -1,0 +1,199 @@
+{
+  "consumer": {
+    "name": "publicapi"
+  },
+  "provider": {
+    "name": "connector"
+  },
+  "interactions": [
+    {
+      "description": "Return all refunds when refunds exist, filtering by from and to date",
+      "providerStates": [
+        {
+          "name": "Refunds exist",
+          "params": {
+            "account_id": "777",
+            "created_date": "2016-01-25T13:23:55Z"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/v1/api/accounts/777/refunds",
+        "query": {
+          "from_date": [
+            "2016-01-25T13:22:55Z"
+          ],
+          "to_date": [
+            "2016-01-25T13:24:55Z"
+          ],
+          "page": [
+            "1"
+          ],
+          "display_size": [
+            "500"
+          ]
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "total": 2,
+          "count": 2,
+          "page": 1,
+          "results": [
+            {
+              "refund_id": "111111",
+              "created_date": "2016-01-25T13:23:55Z",
+              "status": "available",
+              "charge_id": "someExternalId",
+              "amount_submitted": 98,
+              "links": [
+                {
+                  "rel": "self",
+                  "method": "GET",
+                  "href": "/v1/payments/someExternalId/refunds/111111"
+                },
+                {
+                  "rel": "payment_url",
+                  "method": "GET",
+                  "href": "/v1/payments/someExternalId"
+                }
+              ]
+            },
+            {
+              "refund_id": "222222",
+              "created_date": "2016-01-25T13:23:55Z",
+              "status": "available",
+              "charge_id": "someExternalId",
+              "amount_submitted": 100,
+              "links": [
+                {
+                  "rel": "self",
+                  "method": "GET",
+                  "href": "/v1/payments/someExternalId/refunds/222222"
+                },
+                {
+                  "rel": "payment_url",
+                  "method": "GET",
+                  "href": "/v1/payments/someExternalId"
+                }
+              ]
+            }
+          ],
+          "_links": {
+            "self": {
+              "href": "http://app.com/v1/api/accounts/777/refunds?from_date=2016-01-25T13:22:55Z&to_date=2016-01-25T13:24:55Z&page=1&display_size=500"
+            }
+          }
+        },
+        "matchingRules": {
+          "body": {
+            "$.total": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.count": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.page": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.results[*].refund_id": {
+              "matchers": [
+                {
+                  "regex": "[a-z0-9]*"
+                }
+              ]
+            },
+            "$.results[*].created_date": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.results[*].status": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.results[*].charge_id": {
+              "matchers": [
+                {
+                  "regex": "[a-z0-9]*"
+                }
+              ]
+            },
+            "$.results[*].amount_submitted": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.results[0].links[0].href": {
+              "matchers": [
+                {
+                  "regex": "https.*:\/\/.*\/v1\/api\/accounts\/777\/charges\/[a-z0-9]*\/refunds\/[a-z0-9]*"
+                }
+              ]
+            },
+            "$.results[0].links[1].href": {
+              "matchers": [
+                {
+                  "regex": "https.*:\/\/.*\/v1\/api\/accounts\/777\/charges\/[a-z0-9]*"
+                }
+              ]
+            },
+            "$.results[1].links[0].href": {
+              "matchers": [
+                {
+                  "regex": "https.*:\/\/.*\/v1\/api\/accounts\/777\/charges\/[a-z0-9]*\/refunds\/[a-z0-9]*"
+                }
+              ]
+            },
+            "$.results[1].links[1].href": {
+              "matchers": [
+                {
+                  "regex": "https.*:\/\/.*\/v1\/api\/accounts\/777\/charges\/[a-z0-9]*"
+                }
+              ]
+            },
+            "$._links.self.href": {
+              "matchers": [
+                {
+                  "regex":  "https:\/\/.*\/v1\/api\/accounts\/777\/refunds\\?from_date=2016-01-25T13%3A22%3A55Z&to_date=2016-01-25T13%3A24%3A55Z&page=1&display_size=500"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pact-specification": {
+      "version": "3.0.0"
+    },
+    "pact-jvm": {
+      "version": "3.5.16"
+    }
+  }
+}

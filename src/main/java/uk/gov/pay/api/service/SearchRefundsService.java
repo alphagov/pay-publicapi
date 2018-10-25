@@ -7,7 +7,6 @@ import uk.gov.pay.api.exception.BadRefundsRequestException;
 import uk.gov.pay.api.model.RefundError;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.search.card.SearchRefunds;
-import uk.gov.pay.api.validation.SearchRefundsValidator;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
@@ -17,12 +16,15 @@ import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.pay.api.model.RefundError.Code.SEARCH_REFUNDS_DIRECT_DEBIT_ERROR;
+import static uk.gov.pay.api.validation.RefundSearchValidator.validateSearchParameters;
 
 public class SearchRefundsService {
     private static final String PAGE = "page";
     private static final String DISPLAY_SIZE = "display_size";
     private static final String DEFAULT_PAGE = "1";
     private static final String DEFAULT_DISPLAY_SIZE = "500";
+    private static final String FROM_DATE = "from_date";
+    private static final String TO_DATE = "to_date";
     private final ConnectorUriGenerator uriGenerator;
     private final Client client;
     private final ObjectMapper objectMapper;
@@ -44,8 +46,8 @@ public class SearchRefundsService {
     }
 
     public Response getAllRefunds(Account account, RefundsParams params) {
-        SearchRefundsValidator.validateSearchParameters(params);
-        Map<String, String> queryParams = buildDefaultParams(params);
+        validateSearchParameters(params);
+        Map<String, String> queryParams = buildQueryString(params);
         SearchRefunds refundsService = new SearchRefunds(
                 client,
                 configuration,
@@ -59,9 +61,10 @@ public class SearchRefundsService {
         return refundsService.getSearchResponse(account, queryParams);
     }
 
-    private Map<String, String> buildDefaultParams(RefundsParams params) {
+    private Map<String, String> buildQueryString(RefundsParams params) {
         Map<String, String> queryParams = new LinkedHashMap<>();
-
+        queryParams.put(FROM_DATE, params.getFromDate());
+        queryParams.put(TO_DATE, params.getToDate());
         queryParams.put(PAGE, Optional.ofNullable(params.getPage()).orElse(DEFAULT_PAGE));
         queryParams.put(DISPLAY_SIZE, Optional.ofNullable(params.getDisplaySize()).orElse(DEFAULT_DISPLAY_SIZE));
         return queryParams;

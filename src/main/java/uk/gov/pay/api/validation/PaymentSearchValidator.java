@@ -19,17 +19,21 @@ import static uk.gov.pay.api.validation.PaymentRequestValidator.AGREEMENT_ID_MAX
 import static uk.gov.pay.api.validation.PaymentRequestValidator.CARD_BRAND_MAX_LENGTH;
 import static uk.gov.pay.api.validation.PaymentRequestValidator.EMAIL_MAX_LENGTH;
 import static uk.gov.pay.api.validation.PaymentRequestValidator.REFERENCE_MAX_LENGTH;
+import static uk.gov.pay.api.validation.SearchValidator.validateDisplaySizeIfNotNull;
+import static uk.gov.pay.api.validation.SearchValidator.validateFromDate;
+import static uk.gov.pay.api.validation.SearchValidator.validatePageIfNotNull;
+import static uk.gov.pay.api.validation.SearchValidator.validateToDate;
 
 
-public class PaymentSearchValidator extends SearchValidator {
+public class PaymentSearchValidator {
     private static final int FIRST_DIGITS_CARD_NUMBER_LENGTH = 6;
     private static final int LAST_DIGITS_CARD_NUMBER_LENGTH = 4;
     
     // we should really find a way to not have this anywhere but in the connector...
-    public static final Set<String> VALID_CARD_PAYMENT_STATES =
+    private static final Set<String> VALID_CARD_PAYMENT_STATES =
             new HashSet<>(Arrays.asList("created", "started", "submitted", "success", "failed", "cancelled", "error"));
 
-    public static final Set<String> VALID_DIRECT_DEBIT_STATES =
+    private static final Set<String> VALID_DIRECT_DEBIT_STATES =
             new HashSet<>(Arrays.asList("started", "pending", "success", "failed", "cancelled"));
 
     public static void validateSearchParameters(Account account,
@@ -83,18 +87,6 @@ public class PaymentSearchValidator extends SearchValidator {
         }
     }
 
-    private static void validateToDate(String toDate, List<String> validationErrors) {
-        if (!validateDate(toDate)) {
-            validationErrors.add("to_date");
-        }
-    }
-
-    private static void validateFromDate(String fromDate, List<String> validationErrors) {
-        if (!validateDate(fromDate)) {
-            validationErrors.add("from_date");
-        }
-    }
-
     private static void validateReference(String reference, List<String> validationErrors) {
         if (!isValid(reference, REFERENCE_MAX_LENGTH)) {
             validationErrors.add("reference");
@@ -117,10 +109,6 @@ public class PaymentSearchValidator extends SearchValidator {
         if (!validateState(account, state)) {
             validationErrors.add("state");
         }
-    }
-
-    private static boolean validateDate(String value) {
-        return DateValidator.validate(value);
     }
 
     private static boolean validateState(Account account, String state) {

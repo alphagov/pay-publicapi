@@ -9,12 +9,12 @@ import java.net.URI;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DDTransactionForSearch {
+public class DirectDebitTransactionForSearch {
 
     private Long amount;
     @JsonProperty("transaction_id")
     private String transactionId;
-    private DDPaymentState state;
+    private DirectDebitPaymentState state;
     private String description;
     private String reference;
     private final String email;
@@ -28,9 +28,9 @@ public class DDTransactionForSearch {
     
     
     
-    private DDTransactionForSearch(Long amount, String transactionId, DDPaymentState state, String description, 
-                                   String reference, String email, String name, String createdDate, URI selfLink,
-                                   String agreementId) {
+    private DirectDebitTransactionForSearch(Long amount, String transactionId, DirectDebitPaymentState state, String description,
+                                            String reference, String email, String name, String createdDate, URI selfLink,
+                                            String agreementId) {
         this.amount = amount;
         this.transactionId = transactionId;
         this.state = state;
@@ -47,7 +47,7 @@ public class DDTransactionForSearch {
 
     public String getTransactionId() { return transactionId; }
 
-    public DDPaymentState getState() { return state; }
+    public DirectDebitPaymentState getState() { return state; }
 
     public String getDescription() { return description; }
 
@@ -63,8 +63,8 @@ public class DDTransactionForSearch {
 
     public DDTransactionLinksForSearch getLinks() { return links; }
     
-    public static DDTransactionForSearch valueOf(DDTransactionFromResponse forSearch, URI selfLink) {
-        return new DDTransactionForSearch(
+    public static DirectDebitTransactionForSearch valueOf(DirectDebitTransactionFromResponse forSearch, URI selfLink) {
+        return new DirectDebitTransactionForSearch(
                 forSearch.getAmount(),
                 forSearch.getTransactionId(),
                 forSearch.getState(),
