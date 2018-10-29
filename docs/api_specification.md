@@ -1325,7 +1325,7 @@ GET /v1/refunds
             "status": "REFUNDED",
             "links": {
                 "self": {
-                    "href": "https://publicapi.example.com/v1/payments/5hd66phb4r3tud6q2i96g7h4mb/refunds/4bgf433166125hbb67a3dpqcid",
+                    "href": "https://publicapi.example.com/v1/refunds/4bgf433166125hbb67a3dpqcid",
                     "method": "GET"
                 },
                 "payment_url": {
@@ -1337,19 +1337,19 @@ GET /v1/refunds
   ],
   "_links": {
     "next_page": {
-      "href": "https://publicapi.example.com/v1/payments?page=3&display_size=2"
+      "href": "https://publicapi.example.com/v1/refunds?page=3&display_size=2"
     },
     "self": {
-      "href": "https://publicapi.example.com/v1/payments?page=2&display_size=2"
+      "href": "https://publicapi.example.com/v1/refunds?page=2&display_size=2"
     },
     "prev_page": {
-      "href": "https://publicapi.example.com/v1/payments?page=1&display_size=2"
+      "href": "https://publicapi.example.com/v1/refunds?page=1&display_size=2"
     },
     "last_page": {
-      "href": "https://publicapi.example.com/v1/payments?page=3&display_size=2"
+      "href": "https://publicapi.example.com/v1/refunds?page=3&display_size=2"
     },
     "first_page": {
-      "href": "https://publicapi.example.com/v1/payments?page=1&display_size=2"
+      "href": "https://publicapi.example.com/v1/refunds?page=1&display_size=2"
     }
   }
 }
