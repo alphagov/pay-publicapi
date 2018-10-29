@@ -1271,3 +1271,165 @@ Content-Type: application/json
 | `_links.self`          | Link to the agreement
 | `_links.next_url`      | Where to navigate the user next as a GET
 | `_links.next_url_post` | Where to navigate the user next as a POST
+
+## GET /v1/refunds
+
+This endpoint searches for refunds for the given account id, with filters and pagination
+
+### Request example
+
+```
+GET /v1/refunds
+
+```
+
+#### Query Parameters description
+
+| Field           | required | Description                               |
+| --------------- |:--------:| ----------------------------------------- |
+| `from_date`     |    -     | The initial date for search refunds |
+| `to_date`       |    -     | The end date for search refunds |
+| `page`          |    -     | To get the results from the specified page number, should be a non zero +ve number (optional, defaults to 1)|
+| `display_size`  |    -     | Number of records to be returned per page, should be a non zero +ve number (optional, defaults to 500)|
+
+### Response example for Card Payment
+
+```
+{
+  "total": 5,
+  "count": 2,
+  "page": 2,
+  "results": [
+        {
+            "refund_id": "quj60d2va9g106s3c6375flnt3",
+            "created_date": "2018-10-25T15:56:26.297Z",
+            "charge_id": "upd77pildong98a3cqqa6d8cso",
+            "amount_submitted": 10000,
+            "status": "REFUNDED",
+            "links": {
+                "self": {
+                    "href": "https://publicapi.example.com/v1/payments/upd77pildong98a3cqqa6d8cso/refunds/quj60d2va9g106s3c6375flnt3",
+                    "method": "GET"
+                },
+                "payment_url": {
+                    "href": "https://publicapi.example.com/v1/payments/upd77pildong98a3cqqa6d8cso",
+                    "method": "GET"
+                }
+            }
+        },
+        {
+            "refund_id": "4bgf433166125hbb67a3dpqcid",
+            "created_date": "2018-10-02T09:49:06.640Z",
+            "charge_id": "5hd66phb4r3tud6q2i96g7h4mb",
+            "amount_submitted": 1100,
+            "status": "REFUNDED",
+            "links": {
+                "self": {
+                    "href": "https://publicapi.example.com/v1/payments/5hd66phb4r3tud6q2i96g7h4mb/refunds/4bgf433166125hbb67a3dpqcid",
+                    "method": "GET"
+                },
+                "payment_url": {
+                    "href": "https://publicapi.example.com/v1/payments/5hd66phb4r3tud6q2i96g7h4mb",
+                    "method": "GET"
+                }
+            }
+        }
+  ],
+  "_links": {
+    "next_page": {
+      "href": "https://publicapi.example.com/v1/payments?page=3&display_size=2"
+    },
+    "self": {
+      "href": "https://publicapi.example.com/v1/payments?page=2&display_size=2"
+    },
+    "prev_page": {
+      "href": "https://publicapi.example.com/v1/payments?page=1&display_size=2"
+    },
+    "last_page": {
+      "href": "https://publicapi.example.com/v1/payments?page=3&display_size=2"
+    },
+    "first_page": {
+      "href": "https://publicapi.example.com/v1/payments?page=1&display_size=2"
+    }
+  }
+}
+```
+
+#### Response field description for Card Payment
+
+| Field                             | Always present | Description                                                       |
+| ------------------------          |:--------------:| ----------------------------------------------------------------- |
+| `total`                           | Yes            | Total number of refunds found                                    |
+| `count`                           | Yes            | Number of refunds displayed on this page                         |
+| `page`                            | Yes            | Page number of the current recordset                              |
+| `results`                         | Yes            | List of refunds                                                  |
+| `results[i].charge_id`              | Yes            | The unique identifier for the original payment                            |
+| `results[i].refund_id`                  | Yes            | The unique identifier for the refund                              |
+| `results[i].created_date`            | Yes            | The created date in ISO_8601 format (```yyyy-MM-ddTHH:mm:ssZ```)  |
+| `results[i].status`   | Yes            | The status of this refund                             |
+| `results[i].amount_submitted`| Yes     | The total amount submitted for this refund                |
+| `results[i]._links.self`             | Yes            | Link to the refund                                               |
+| `results[i]._links.payment_url`           | Yes            | Link to the original payment                                          |
+| `_links.self.href`                | Yes            | Href link of the current page                                     |
+| `_links.next_page.href`           | No             | Href link of the next page (based on the display_size requested)  |
+| `_links.prev_page.href`           | No             | Href link of the previous page (based on the display_size requested) |
+| `_links.first_page.href`          | Yes            | Href link of the first page (based on the display_size requested) |
+| `_links.last_page.href`           | Yes            | Href link of the last page (based on the display_size re
+
+### Search refunds response errors
+
+#### Validation errors
+The search parameters are invalid
+
+```
+HTTP/1.1 422 Unprocessable Entity
+Content-Type: application/json
+Content-Length: 44
+
+{
+    "code" : "P1101"
+    "description" : "Invalid parameters: from_date, to_date, page, display_size. See Public API documentation for the correct data formats"
+}
+```
+
+#### Page not found
+Requested Page not found
+
+```
+HTTP/1.1 404 Not Found
+Content-Type: application/json
+Content-Length: 44
+
+{
+    "code": "P1100"
+    "description": "Page not found"
+}
+```
+
+#### Unrecognised response from Connector
+```
+HTTP/1.1 500 Internal Server Error
+Content-Type: application/json
+Content-Length: 44
+
+{
+    "code" : "P1898"
+    "description" : "Downstream system error"
+}
+```
+
+#### Response error fields description
+
+| Field              | Description                                                               |
+| ------------------ | --------------------------------------------------------------------------|
+| `code`             | The error reference. Format: P1XXX                                        |
+| `description`      | The error description                                                     |
+
+#### Response error codes
+
+| Code               | Description                                      |
+| ------------------ | -------------------------------------------------|
+| `P1101`            | Request parameters have Validation errors        |
+| `P1100`            | Requested page not found                         |
+| `P1102`            | Refunds not supported for direct debit accounts  |
+| `P1898`            | Connector response was unrecognised to PublicAPI |
