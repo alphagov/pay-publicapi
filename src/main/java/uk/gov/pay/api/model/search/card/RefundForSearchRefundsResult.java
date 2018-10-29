@@ -63,7 +63,7 @@ public class RefundForSearchRefundsResult {
     public Long getAmountSubmitted() {
         return amountSubmitted;
     }
-    @ApiModelProperty(dataType = "uk.gov.pay.api.model.links.PaymentLinksForSearch")
+    @ApiModelProperty(dataType = "uk.gov.pay.api.model.links.RefundLinksForSearch")
     public RefundLinksForSearch getLinks() {
         return links;
     }
