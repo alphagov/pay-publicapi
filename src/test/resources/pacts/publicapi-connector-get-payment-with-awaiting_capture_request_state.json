@@ -1,0 +1,89 @@
+{
+  "consumer": {
+    "name": "publicapi"
+  },
+  "provider": {
+    "name": "connector"
+  },
+  "interactions": [
+    {
+      "description": "get a charge request with awaiting charge request state",
+      "providerStates": [
+        {
+          "name": "a charge in awaiting charge request state exists",
+          "params": {
+            "gateway_account_id": "123456",
+            "charge_id": "ch_123abc456def"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/v1/api/accounts/123456/charges/ch_123abc456def"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "state": {
+            "finished": false,
+            "status": "submitted"
+          },
+          "links": [
+            {
+              "rel": "self",
+              "method": "GET",
+              "href": "https://connector/v1/api/accounts/123456/charges/ch_123abc456def"
+            },
+            {
+              "rel": "refunds",
+              "method": "GET",
+              "href": "https://connector/v1/api/accounts/123456/charges/ch_123abc456def/refunds"
+            },
+            {
+              "rel": "capture",
+              "method": "POST",
+              "href": "https://card_frontend/secure/ae749781-6562-4e0e-8f56-32d9639079dc/capture"
+            }
+          ],
+          "charge_id": "ch_123abc456def"
+        },
+        "matchingRules": {
+          "body": {
+            "$.links[0].href": {
+              "matchers": [
+                {
+                  "regex": "http.*:\/\/.*\/v1\/api\/accounts\/123456\/charges\/ch_123abc456def"
+                }
+              ]
+            },
+            "$.links[1].href": {
+              "matchers": [
+                {
+                  "regex": "http.*:\/\/.*\/v1\/api\/accounts\/123456\/charges\/ch_123abc456def\/refunds"
+                }
+              ]
+            },
+            "$.links[2].href": {
+              "matchers": [
+                {
+                  "regex": "http.*:\/\/.*\/v1\/api\/accounts\/123456\/charges\/ch_123abc456def\/capture"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pact-specification": {
+      "version": "3.0.0"
+    },
+    "pact-jvm": {
+      "version": "3.5.16"
+    }
+  }
+}
