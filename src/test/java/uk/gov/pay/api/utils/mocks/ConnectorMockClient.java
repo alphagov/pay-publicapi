@@ -41,6 +41,7 @@ import static org.eclipse.jetty.http.HttpStatus.PRECONDITION_FAILED_412;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 import static org.mockserver.verify.VerificationTimes.once;
+import static uk.gov.pay.api.it.GetPaymentITest.AWAITING_CAPTURE_REQUEST;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonString;
 
 public class ConnectorMockClient extends BaseConnectorMockClient {
@@ -128,6 +129,10 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     @Override
     String nextUrlPost() {
         return "http://frontend_card/charge/";
+    }
+    
+    String captureUrlPost() {
+        return "http:///";
     }
 
     private String chargeEventsLocation(String accountId, String chargeId) {
@@ -227,16 +232,28 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     public void respondWithChargeFound(long amount, String gatewayAccountId, String chargeId, PaymentState state, String returnUrl,
                                        String description, String reference, String email, String paymentProvider, String createdDate,
                                        SupportedLanguage language, boolean delayedCapture, String chargeTokenId, RefundSummary refundSummary, SettlementSummary settlementSummary,
-                                       CardDetails cardDetails, Long corporateCardurcharge, Long totalAmount) {
-        String chargeResponseBody = buildChargeResponse(amount, chargeId, state, returnUrl,
-                description, reference, email, paymentProvider, gatewayAccountId, createdDate, language, delayedCapture,
-                corporateCardurcharge, totalAmount, refundSummary, settlementSummary, cardDetails,
-                validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
-                validGetLink(chargeLocation(gatewayAccountId, chargeId) + "/refunds", "refunds"),
-                validGetLink(nextUrl(chargeId), "next_url"), validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",
-                        new HashMap<String, String>() {{
-                            put("chargeTokenId", chargeTokenId);
-                        }}));
+                                       CardDetails cardDetails, Long corporateCardSurcharge, Long totalAmount) {
+        String chargeResponseBody;
+        
+        if (AWAITING_CAPTURE_REQUEST == state) {
+            chargeResponseBody = buildChargeResponse(amount, chargeId, state, returnUrl,
+                    description, reference, email, paymentProvider, gatewayAccountId, createdDate, language, delayedCapture,
+                    corporateCardSurcharge, totalAmount, refundSummary, settlementSummary, cardDetails,
+                    validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
+                    validGetLink(chargeLocation(gatewayAccountId, chargeId) + "/refunds", "refunds"),
+                    validPostLink(chargeLocation(gatewayAccountId, chargeId) + "/capture", "capture", "application/x-www-form-urlencoded",
+                            new HashMap<>()));
+        } else {
+            chargeResponseBody = buildChargeResponse(amount, chargeId, state, returnUrl,
+                    description, reference, email, paymentProvider, gatewayAccountId, createdDate, language, delayedCapture,
+                    corporateCardSurcharge, totalAmount, refundSummary, settlementSummary, cardDetails,
+                    validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
+                    validGetLink(chargeLocation(gatewayAccountId, chargeId) + "/refunds", "refunds"),
+                    validGetLink(nextUrl(chargeId), "next_url"), validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",
+                            new HashMap<String, String>() {{
+                                put("chargeTokenId", chargeTokenId);
+                            }}));
+        }
         whenGetCharge(gatewayAccountId, chargeId)
                 .respond(response()
                         .withStatusCode(OK_200)
@@ -362,7 +379,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withBody(createChargePayload(amount, returnUrl, description, reference))
         );
     }
-
+    
     private ForwardChainExpectation whenCreateRefund(int amount, int refundAmountAvailable, String gatewayAccountId, String chargeId) {
         String payload = new GsonBuilder().create().toJson(
                 ImmutableMap.of("amount", amount, "refund_amount_available", refundAmountAvailable));

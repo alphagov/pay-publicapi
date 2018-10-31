@@ -123,6 +123,7 @@ public class PaymentsResourceCreatePaymentTest {
                 URI.create(paymentUri + "/events"),
                 URI.create(paymentUri + "/cancel"),
                 URI.create(paymentUri + "/refunds"),
+                URI.create(paymentUri + "/capture"),
                 null,
                 null
         );

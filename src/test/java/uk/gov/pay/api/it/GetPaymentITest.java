@@ -40,6 +40,7 @@ public class GetPaymentITest extends PaymentResourceITestBase {
     private static final String CHARGE_TOKEN_ID = "token_1234567asdf";
     private static final PaymentState CREATED = new PaymentState("created", false, null, null);
     private static final PaymentState CAPTURED = new PaymentState("captured", false, null, null);
+    public static final PaymentState AWAITING_CAPTURE_REQUEST = new PaymentState("submitted", false, null, null);
     private static final RefundSummary REFUND_SUMMARY = new RefundSummary("pending", 100L, 50L);
     private static final String PAYMENT_PROVIDER = "Sandbox";
     private static final String CARD_BRAND_LABEL = "Mastercard";
@@ -304,6 +305,21 @@ public class GetPaymentITest extends PaymentResourceITestBase {
                 .contentType(JSON)
                 .body("corporate_card_surcharge", is(250))
                 .body("total_amount", is(AMOUNT + 250));
+    }
+
+    @Test
+    public void getPayment_ReturnsPaymentWithCaptureUrl() {
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, AWAITING_CAPTURE_REQUEST, RETURN_URL,
+                DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH,
+                true, CHARGE_TOKEN_ID, REFUND_SUMMARY, SETTLEMENT_SUMMARY, CARD_DETAILS, 
+                0L, 0L);
+
+        getPaymentResponse(API_KEY, CHARGE_ID)
+                .statusCode(200)
+                .contentType(JSON)
+                .body("_links.capture.href", is(paymentLocationFor(CHARGE_ID) + "/capture"))
+                .body("_links.capture.method", is("POST"));
     }
 
     private ValidatableResponse getPaymentResponse(String bearerToken, String paymentId) {
