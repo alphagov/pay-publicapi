@@ -1305,7 +1305,7 @@ GET /v1/refunds
             "created_date": "2018-10-25T15:56:26.297Z",
             "charge_id": "upd77pildong98a3cqqa6d8cso",
             "amount_submitted": 10000,
-            "status": "REFUNDED",
+            "status": "submitted",
             "links": {
                 "self": {
                     "href": "https://publicapi.example.com/v1/payments/upd77pildong98a3cqqa6d8cso/refunds/quj60d2va9g106s3c6375flnt3",
@@ -1322,7 +1322,7 @@ GET /v1/refunds
             "created_date": "2018-10-02T09:49:06.640Z",
             "charge_id": "5hd66phb4r3tud6q2i96g7h4mb",
             "amount_submitted": 1100,
-            "status": "REFUNDED",
+            "status": "success",
             "links": {
                 "self": {
                     "href": "https://publicapi.example.com/v1/refunds/4bgf433166125hbb67a3dpqcid",
