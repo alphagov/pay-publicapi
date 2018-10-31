@@ -129,6 +129,10 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     String nextUrlPost() {
         return "http://frontend_card/charge/";
     }
+    
+    String captureUrlPost() {
+        return "http:///";
+    }
 
     private String chargeEventsLocation(String accountId, String chargeId) {
         return baseUrl + format(CONNECTOR_MOCK_CHARGE_EVENTS_PATH, accountId, chargeId);
@@ -227,16 +231,35 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     public void respondWithChargeFound(long amount, String gatewayAccountId, String chargeId, PaymentState state, String returnUrl,
                                        String description, String reference, String email, String paymentProvider, String createdDate,
                                        SupportedLanguage language, boolean delayedCapture, String chargeTokenId, RefundSummary refundSummary, SettlementSummary settlementSummary,
-                                       CardDetails cardDetails, Long corporateCardurcharge, Long totalAmount) {
+                                       CardDetails cardDetails, Long corporateCardSurcharge, Long totalAmount) {
         String chargeResponseBody = buildChargeResponse(amount, chargeId, state, returnUrl,
                 description, reference, email, paymentProvider, gatewayAccountId, createdDate, language, delayedCapture,
-                corporateCardurcharge, totalAmount, refundSummary, settlementSummary, cardDetails,
+                corporateCardSurcharge, totalAmount, refundSummary, settlementSummary, cardDetails,
                 validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
                 validGetLink(chargeLocation(gatewayAccountId, chargeId) + "/refunds", "refunds"),
                 validGetLink(nextUrl(chargeId), "next_url"), validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",
                         new HashMap<String, String>() {{
                             put("chargeTokenId", chargeTokenId);
                         }}));
+        whenGetCharge(gatewayAccountId, chargeId)
+                .respond(response()
+                        .withStatusCode(OK_200)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withBody(chargeResponseBody));
+    }
+
+    public void respondWithChargeFoundAndCaptureUrl(long amount, String gatewayAccountId, String chargeId, PaymentState state, String returnUrl,
+                                       String description, String reference, String email, String paymentProvider, String createdDate,
+                                       SupportedLanguage language, boolean delayedCapture, RefundSummary refundSummary, SettlementSummary settlementSummary,
+                                       CardDetails cardDetails, Long corporateCardSurcharge, Long totalAmount) {
+        String chargeResponseBody = buildChargeResponse(amount, chargeId, state, returnUrl,
+                    description, reference, email, paymentProvider, gatewayAccountId, createdDate, language, delayedCapture,
+                    corporateCardSurcharge, totalAmount, refundSummary, settlementSummary, cardDetails,
+                    validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
+                    validGetLink(chargeLocation(gatewayAccountId, chargeId) + "/refunds", "refunds"),
+                    validPostLink(chargeLocation(gatewayAccountId, chargeId) + "/capture", "capture", "application/x-www-form-urlencoded",
+                           new HashMap<>()));
+        
         whenGetCharge(gatewayAccountId, chargeId)
                 .respond(response()
                         .withStatusCode(OK_200)

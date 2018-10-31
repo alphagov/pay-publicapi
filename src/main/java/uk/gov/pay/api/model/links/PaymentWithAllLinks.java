@@ -42,7 +42,7 @@ public class PaymentWithAllLinks {
                                String reference, String email, String paymentProvider, String createdDate, SupportedLanguage language,
                                boolean delayedCapture, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
                                List<PaymentConnectorResponseLink> paymentConnectorResponseLinks, URI selfLink, URI paymentEventsUri, URI paymentCancelUri,
-                               URI paymentRefundsUri, Long corporateCardSurcharge, Long totalAmount) {
+                               URI paymentRefundsUri, URI captureUri, Long corporateCardSurcharge, Long totalAmount) {
         this.payment = new CardPayment(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate,
                 refundSummary, settlementSummary, cardDetails, language, delayedCapture, corporateCardSurcharge, totalAmount);
         this.links.addSelf(selfLink.toString());
@@ -52,6 +52,10 @@ public class PaymentWithAllLinks {
 
         if (!state.isFinished()) {
             this.links.addCancel(paymentCancelUri.toString());
+        }
+        
+        if (paymentConnectorResponseLinks.stream().anyMatch(link -> "capture".equals(link.getRel()))) {
+            this.links.addCapture(captureUri.toString());
         }
     }
 
@@ -84,7 +88,8 @@ public class PaymentWithAllLinks {
                                               URI selfLink,
                                               URI paymentEventsUri,
                                               URI paymentCancelUri,
-                                              URI paymentRefundsUri) {
+                                              URI paymentRefundsUri,
+                                              URI captureUri) {
         return new PaymentWithAllLinks(
                 paymentConnector.getChargeId(),
                 paymentConnector.getAmount(),
@@ -105,6 +110,7 @@ public class PaymentWithAllLinks {
                 paymentEventsUri,
                 paymentCancelUri,
                 paymentRefundsUri,
+                captureUri,
                 paymentConnector.getCorporateCardSurcharge(), 
                 paymentConnector.getTotalAmount()
         );
@@ -116,12 +122,13 @@ public class PaymentWithAllLinks {
             URI selfLink,
             URI paymentEventsUri,
             URI paymentCancelUri,
-            URI paymentRefundsUri) {
+            URI paymentRefundsUri,
+            URI captureUri) {
         switch (paymentType) {
             case DIRECT_DEBIT:
                 return PaymentWithAllLinks.valueOf(paymentConnector, selfLink);
             default:
-                return PaymentWithAllLinks.valueOf(paymentConnector, selfLink, paymentEventsUri, paymentCancelUri, paymentRefundsUri);
+                return PaymentWithAllLinks.valueOf(paymentConnector, selfLink, paymentEventsUri, paymentCancelUri, paymentRefundsUri, captureUri);
         }
     }
 

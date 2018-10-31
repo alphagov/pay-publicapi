@@ -319,4 +319,19 @@ public class GetPaymentITest extends PaymentResourceITestBase {
                 .get(String.format("/v1/payments/%s/events", paymentId))
                 .then();
     }
+
+    @Test
+    public void getPayment_ReturnsPaymentWithCaptureUrl() {
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMock.respondWithChargeFoundAndCaptureUrl(250, GATEWAY_ACCOUNT_ID, CHARGE_ID, CAPTURED, RETURN_URL,
+                DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH,
+                true, REFUND_SUMMARY, SETTLEMENT_SUMMARY, CARD_DETAILS, 
+                0L, 250L);
+
+        getPaymentResponse(API_KEY, CHARGE_ID)
+                .statusCode(200)
+                .contentType(JSON)
+                .body("_links.capture.href", is(paymentLocationFor(CHARGE_ID) + "/capture"))
+                .body("_links.capture.method", is("POST"));
+    }
 }

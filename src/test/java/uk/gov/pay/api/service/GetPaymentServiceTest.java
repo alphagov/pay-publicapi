@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
@@ -88,6 +89,7 @@ public class GetPaymentServiceTest {
                 "application/x-www-form-urlencoded",
                 Collections.singletonMap("chargeTokenId", "ae749781-6562-4e0e-8f56-32d9639079dc")
         )));
+        assertThat(paymentResponse.getLinks().getCapture(), is(nullValue()));
     }
 
     @Test
@@ -100,5 +102,19 @@ public class GetPaymentServiceTest {
         CardPayment payment = (CardPayment) paymentResponse.getPayment();
         assertThat(payment.getCorporateCardSurcharge().get(), is(250L));
         assertThat(payment.getTotalAmount().get(), is(2250L));
+        assertThat(paymentResponse.getLinks().getCapture(), is(nullValue()));
+    }
+
+    @Test
+    @PactVerification({"connector"})
+    @Pacts(pacts = {"publicapi-connector-get-payment-with-awaiting-capture-request-state"})
+    public void testGetPaymentWithChargeInAwaitingCaptureRequest() {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID);
+        assertThat(paymentResponse.getLinks().getCapture().getHref(), 
+                containsString("v1/payments/" + CHARGE_ID + "/capture"));
+        assertThat(paymentResponse.getLinks().getCapture().getMethod(), is("POST"));
+        assertThat(paymentResponse.getLinks().getNextUrl(), is(nullValue()));
+        assertThat(paymentResponse.getLinks().getNextUrlPost(), is(nullValue()));
     }
 }

@@ -47,7 +47,8 @@ public class CreatePaymentService {
                 publicApiUriGenerator.getPaymentURI(chargeFromResponse.getChargeId()),
                 publicApiUriGenerator.getPaymentEventsURI(chargeFromResponse.getChargeId()),
                 publicApiUriGenerator.getPaymentCancelURI(chargeFromResponse.getChargeId()),
-                publicApiUriGenerator.getPaymentRefundsURI(chargeFromResponse.getChargeId()));
+                publicApiUriGenerator.getPaymentRefundsURI(chargeFromResponse.getChargeId()),
+                publicApiUriGenerator.getPaymentCaptureURI(chargeFromResponse.getChargeId()));
     }
 
     private boolean createdSuccessfully(Response connectorResponse) {

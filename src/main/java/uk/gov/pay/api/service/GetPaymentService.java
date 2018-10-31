@@ -41,7 +41,8 @@ public class GetPaymentService {
                     paymentURI,
                     publicApiUriGenerator.getPaymentEventsURI(chargeFromResponse.getChargeId()),
                     publicApiUriGenerator.getPaymentCancelURI(chargeFromResponse.getChargeId()),
-                    publicApiUriGenerator.getPaymentRefundsURI(chargeFromResponse.getChargeId()));
+                    publicApiUriGenerator.getPaymentRefundsURI(chargeFromResponse.getChargeId()),
+                    publicApiUriGenerator.getPaymentCaptureURI(chargeFromResponse.getChargeId()));
             return payment;
         }
         throw new GetChargeException(connectorResponse);
