@@ -108,7 +108,7 @@ public class GetPaymentServiceTest {
     @Test
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-get-payment-with-awaiting-capture-request-state"})
-    public void testGetPaymentWithChargeInAwaitingCaptureRequest() {
+    public void testGetPaymentWithSingleChargeInAwaitingCaptureRequest() {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
         PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID);
         assertThat(paymentResponse.getLinks().getCapture().getHref(), 
