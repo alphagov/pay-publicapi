@@ -42,7 +42,7 @@ public class PaymentWithAllLinks {
                                String reference, String email, String paymentProvider, String createdDate, SupportedLanguage language,
                                boolean delayedCapture, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
                                List<PaymentConnectorResponseLink> paymentConnectorResponseLinks, URI selfLink, URI paymentEventsUri, URI paymentCancelUri,
-                               URI paymentRefundsUri, URI captureUri, Long corporateCardSurcharge, Long totalAmount) {
+                               URI paymentRefundsUri, URI paymentCaptureUri, Long corporateCardSurcharge, Long totalAmount) {
         this.payment = new CardPayment(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate,
                 refundSummary, settlementSummary, cardDetails, language, delayedCapture, corporateCardSurcharge, totalAmount);
         this.links.addSelf(selfLink.toString());
@@ -55,7 +55,7 @@ public class PaymentWithAllLinks {
         }
         
         if (paymentConnectorResponseLinks.stream().anyMatch(link -> "capture".equals(link.getRel()))) {
-            this.links.addCapture(captureUri.toString());
+            this.links.addCapture(paymentCaptureUri.toString());
         }
     }
 

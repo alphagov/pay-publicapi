@@ -14,6 +14,7 @@ public class PaymentLinksForSearch {
     private static final String EVENTS = "events";
     private static final String CANCEL = "cancel";
     private static final String REFUNDS = "refunds";
+    private static final String CAPTURE = "capture";
 
     @JsonProperty(value = SELF)
     private Link self;
@@ -26,6 +27,9 @@ public class PaymentLinksForSearch {
 
     @JsonProperty(value = REFUNDS)
     private Link refunds;
+    
+    @JsonProperty(value = CAPTURE)
+    private PostLink capture;
 
     @ApiModelProperty(value = SELF, dataType = "uk.gov.pay.api.model.links.Link")
     public Link getSelf() {
@@ -47,6 +51,11 @@ public class PaymentLinksForSearch {
         return refunds;
     }
 
+    @ApiModelProperty(value = CAPTURE, dataType = "uk.gov.pay.api.model.links.PostLink")
+    public Link getCapture() {
+        return capture;
+    }
+
     public void addSelf(String href) {
         this.self = new Link(href, GET);
     }
@@ -61,5 +70,9 @@ public class PaymentLinksForSearch {
 
     public void addRefunds(String href) {
         this.refunds = new Link(href, GET);
+    }
+
+    public void addCapture(String href) {
+        this.capture = new PostLink(href, POST);
     }
 }

@@ -88,7 +88,8 @@ public class SearchCardPayments extends SearchPaymentsBase {
                             paymentUriGenerator.getPaymentURI(baseUrl, charge.getChargeId()),
                             paymentUriGenerator.getPaymentEventsURI(baseUrl, charge.getChargeId()),
                             paymentUriGenerator.getPaymentCancelURI(baseUrl, charge.getChargeId()),
-                            paymentUriGenerator.getPaymentRefundsURI(baseUrl, charge.getChargeId())))
+                            paymentUriGenerator.getPaymentRefundsURI(baseUrl, charge.getChargeId()),
+                            paymentUriGenerator.getPaymentCaptureURI(baseUrl, charge.getChargeId())))
                     .collect(Collectors.toList());
             HalRepresentation.HalRepresentationBuilder halRepresentation = HalRepresentation
                     .builder()

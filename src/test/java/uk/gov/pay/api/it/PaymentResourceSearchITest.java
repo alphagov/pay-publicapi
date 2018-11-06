@@ -27,6 +27,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -568,6 +569,38 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", is("P0401"))
                 .assertThat("$.description", is("Invalid parameters: agreement_id. See Public API documentation for the correct data formats"));
+    }
+
+    @Test
+    public void searchPayments_ShouldIncludeCaptureLink_whenReturnedFromConnector() {
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        String submittedState = "submitted";
+        String chargeId = "charge-id";
+
+        String payments = aPaginatedPaymentSearchResult()
+                .withCount(1)
+                .withPage(1)
+                .withTotal(1)
+                .withPayments(aSuccessfulSearchPayment()
+                        .withChargeId(chargeId)
+                        .withMatchingInProgressState(submittedState)
+                        .withMatchingReference(TEST_REFERENCE)
+                        .withNumberOfResults(1)
+                        .withCaptureLink()
+                        .getResults())
+                .build();
+
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null, null, null, null, null, null,
+                payments
+        );
+
+        searchPayments(API_KEY, ImmutableMap.of("reference", TEST_REFERENCE))
+                .statusCode(200)
+                .contentType(JSON)
+                .body("results[0]._links", hasKey("capture"))
+                .body("results[0]._links.capture.method", is("POST"))
+                .body("results[0]._links.capture.href", is("http://publicapi.url/v1/payments/" + chargeId + "/capture"));
+
     }
 
     private Matcher<? super List<Map<String, Object>>> matchesState(final String state) {
