@@ -142,28 +142,28 @@
                 }
               ]
             },
-            "$.results[0]._links[0].href": {
+            "$.results[0].links[0].href": {
               "matchers": [
                 {
                   "regex": "https.*:\/\/.*\/v1\/api\/accounts\/777\/charges\/[a-z0-9]*\/refunds\/[a-z0-9]*"
                 }
               ]
             },
-            "$.results[0]._links[1].href": {
+            "$.results[0].links[1].href": {
               "matchers": [
                 {
                   "regex": "https.*:\/\/.*\/v1\/api\/accounts\/777\/charges\/[a-z0-9]*"
                 }
               ]
             },
-            "$.results[1]._links[0].href": {
+            "$.results[1].links[0].href": {
               "matchers": [
                 {
                   "regex": "https.*:\/\/.*\/v1\/api\/accounts\/777\/charges\/[a-z0-9]*\/refunds\/[a-z0-9]*"
                 }
               ]
             },
-            "$.results[1]._links[1].href": {
+            "$.results[1].links[1].href": {
               "matchers": [
                 {
                   "regex": "https.*:\/\/.*\/v1\/api\/accounts\/777\/charges\/[a-z0-9]*"
