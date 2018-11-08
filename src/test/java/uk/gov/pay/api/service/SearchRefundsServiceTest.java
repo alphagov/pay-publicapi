@@ -3,6 +3,8 @@ package uk.gov.pay.api.service;
 import au.com.dius.pact.consumer.PactVerification;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonassert.JsonAssert;
+import com.jayway.jsonassert.JsonAsserter;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,6 +27,9 @@ import javax.ws.rs.core.Response;
 
 import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
 import static uk.gov.pay.api.matcher.BadRefundsRequestExceptionMatcher.aBadRefundsRequestExceptionWithError;
@@ -61,37 +66,39 @@ public class SearchRefundsServiceTest {
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-search-refunds-with-page-and-display"})
     public void getAllRefundsShouldReturnCorrectTotalAndPageAndDisplaySize() {
-    RefundsParams params = new RefundsParams(null, null, "1", "2");
-    String accountId = "777";
-    String refundId1 = "111111";
-    String refundId2 = "222222";
-    String extChargeId = "someExternalId";
-    Account account = new Account(accountId, TokenPaymentType.CARD);
-    Response response = searchRefundsService.getAllRefunds(account, params);
+        RefundsParams params = new RefundsParams(null, null, "1", "2");
+        String accountId = "777";
+        String refundId1 = "111111";
+        String refundId2 = "222222";
+        String extChargeId = "someExternalId";
+        Account account = new Account(accountId, TokenPaymentType.CARD);
+        Response response = searchRefundsService.getAllRefunds(account, params);
 
         JsonAssert.with(response.getEntity().toString())
-            .assertThat("$.results.*", hasSize(2))
-            .assertThat("count", is(2))
-            .assertThat("total", is(2))
-            .assertThat("page", is(1))
-            .assertThat("$.results[0].status", is("available"))
-            .assertThat("$.results[0].created_date", is("2017-10-01T01:41:01Z"))
-            .assertThat("$.results[0].refund_id", is(refundId1))
-            .assertThat("$.results[0].charge_id", is(extChargeId))
-            .assertThat("$.results[0].amount_submitted", is(98))
-            .assertThat("$.results[0].status", is("available"))
-            .assertThat("$.results[0].links.self.href", is(format("http://publicapi.test.localhost/v1/payments/%s/refunds/%s", extChargeId, refundId1)))
-            .assertThat("$.results[0].links.payment_url.href", is(format("http://publicapi.test.localhost/v1/payments/%s", extChargeId)))
-            .assertThat("$.results[1].status", is("available"))
-            .assertThat("$.results[1].created_date", is("2017-09-02T02:42:02Z"))
-            .assertThat("$.results[1].refund_id", is(refundId2))
-            .assertThat("$.results[1].charge_id", is(extChargeId))
-            .assertThat("$.results[1].amount_submitted", is(100))
-            .assertThat("$.results[1].status", is("available"))
-            .assertThat("$.results[1].links.self.href", is(format("http://publicapi.test.localhost/v1/payments/%s/refunds/%s", extChargeId, refundId2)))
-            .assertThat("$.results[1].links.payment_url.href", is(format("http://publicapi.test.localhost/v1/payments/%s", extChargeId)))
-            .assertThat("$._links.self.href", is("http://publicapi.test.localhost/v1/refunds?page=1&display_size=2"));
-}
+                .assertThat("$.results.*", hasSize(2))
+                .assertThat("count", is(2))
+                .assertThat("total", is(2))
+                .assertThat("page", is(1))
+                .assertThat("$.results[0].status", is("available"))
+                .assertThat("$.results[0].created_date", is("2017-10-01T01:41:01Z"))
+                .assertThat("$.results[0].refund_id", is(refundId1))
+                .assertThat("$.results[0].charge_id", is(extChargeId))
+                .assertThat("$.results[0].amount_submitted", is(98))
+                .assertThat("$.results[0].status", is("available"))
+                .assertThat("$.results[0].links", not(hasKey("refunds")))
+                .assertThat("$.results[0].links.self.href", is(format("http://publicapi.test.localhost/v1/payments/%s/refunds/%s", extChargeId, refundId1)))
+                .assertThat("$.results[0].links.payment_url.href", is(format("http://publicapi.test.localhost/v1/payments/%s", extChargeId)))
+                .assertThat("$.results[1].status", is("available"))
+                .assertThat("$.results[1].created_date", is("2017-09-02T02:42:02Z"))
+                .assertThat("$.results[1].refund_id", is(refundId2))
+                .assertThat("$.results[1].charge_id", is(extChargeId))
+                .assertThat("$.results[1].amount_submitted", is(100))
+                .assertThat("$.results[1].status", is("available"))
+                .assertThat("$.results[1].links", not(hasKey("refunds")))
+                .assertThat("$.results[1].links.self.href", is(format("http://publicapi.test.localhost/v1/payments/%s/refunds/%s", extChargeId, refundId2)))
+                .assertThat("$.results[1].links.payment_url.href", is(format("http://publicapi.test.localhost/v1/payments/%s", extChargeId)))
+                .assertThat("$._links.self.href", is("http://publicapi.test.localhost/v1/refunds?page=1&display_size=2"));
+    }
 
     @Test
     @PactVerification({"connector"})
@@ -129,6 +136,7 @@ public class SearchRefundsServiceTest {
                 .assertThat("$.results[0].charge_id", is(extChargeId))
                 .assertThat("$.results[0].amount_submitted", is(98))
                 .assertThat("$.results[0].status", is("available"))
+                .assertThat("$.results[0].links", not(hasKey("refunds")))
                 .assertThat("$.results[0].links.self.href", is(format("http://publicapi.test.localhost/v1/payments/%s/refunds/%s", extChargeId, refundId1)))
                 .assertThat("$.results[0].links.payment_url.href", is(format("http://publicapi.test.localhost/v1/payments/%s", extChargeId)))
                 .assertThat("$.results[1].status", is("available"))
@@ -137,6 +145,7 @@ public class SearchRefundsServiceTest {
                 .assertThat("$.results[1].charge_id", is(extChargeId))
                 .assertThat("$.results[1].amount_submitted", is(100))
                 .assertThat("$.results[1].status", is("available"))
+                .assertThat("$.results[1].links", not(hasKey("refunds")))
                 .assertThat("$.results[1].links.self.href", is(format("http://publicapi.test.localhost/v1/payments/%s/refunds/%s", extChargeId, refundId2)))
                 .assertThat("$.results[1].links.payment_url.href", is(format("http://publicapi.test.localhost/v1/payments/%s", extChargeId)))
                 .assertThat("$._links.self.href", is("http://publicapi.test.localhost/v1/refunds?from_date=2016-01-25T13%3A22%3A55Z&to_date=2016-01-25T13%3A24%3A55Z&page=1&display_size=500"));
