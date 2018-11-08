@@ -65,10 +65,8 @@ public class SearchRefunds extends SearchBase {
 
     private Response processResponse(Response connectorResponse) {
         try {
-            JsonNode responseJson = connectorResponse.readEntity(JsonNode.class);
-            TypeReference<SearchRefundsResponse> typeRef = new TypeReference<SearchRefundsResponse>() {
-            };
-            SearchRefundsResponse searchResponse = objectMapper.readValue(responseJson.traverse(), typeRef);
+            String response = connectorResponse.readEntity(String.class);
+            SearchRefundsResponse searchResponse = objectMapper.readValue(response, SearchRefundsResponse.class);
             List<RefundForSearchRefundsResult> results = searchResponse.getRefunds()
                     .stream()
                     .map(refund -> RefundForSearchRefundsResult.valueOf(refund,

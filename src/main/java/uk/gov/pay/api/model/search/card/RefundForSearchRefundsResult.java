@@ -1,5 +1,6 @@
 package uk.gov.pay.api.model.search.card;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.links.RefundLinksForSearch;
@@ -9,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RefundForSearchRefundsResult {
 
-    private RefundLinksForSearch links = new RefundLinksForSearch();
 
     @JsonProperty("refund_id")
     private String refundId;
@@ -25,9 +26,8 @@ public class RefundForSearchRefundsResult {
     @JsonProperty("amount_submitted")
     private Long amountSubmitted;
 
-    @JsonProperty("links")
-    private List<Map<String, Object>> dataLinks = new ArrayList<>();
-
+    private RefundLinksForSearch links = new RefundLinksForSearch();
+    
     @JsonProperty("status")
     private String status;
 
@@ -63,7 +63,9 @@ public class RefundForSearchRefundsResult {
     public Long getAmountSubmitted() {
         return amountSubmitted;
     }
+    
     @ApiModelProperty(dataType = "uk.gov.pay.api.model.links.RefundLinksForSearch")
+    @JsonProperty("_links")
     public RefundLinksForSearch getLinks() {
         return links;
     }
@@ -86,7 +88,7 @@ public class RefundForSearchRefundsResult {
                 ", createdDate='" + createdDate + '\'' +
                 ", status='" + status + '\'' +
                 ", amountSubmitted=" + amountSubmitted + '\'' +
-                ", dataLinks=" + dataLinks + '\'' +
+                ", links=" + links + '\'' +
                 '}';
     }
 }
