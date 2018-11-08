@@ -87,7 +87,7 @@ public class SearchRefundsServiceTest {
                 .assertThat("$.results[0].status", is("available"))
                 .assertThat("$.results[0].links", not(hasKey("refunds")))
                 .assertThat("$.results[0].links.self.href", is(format("http://publicapi.test.localhost/v1/payments/%s/refunds/%s", extChargeId, refundId1)))
-                .assertThat("$.results[0].links.payment_url.href", is(format("http://publicapi.test.localhost/v1/payments/%s", extChargeId)))
+                .assertThat("$.results[0].links.payment.href", is(format("http://publicapi.test.localhost/v1/payments/%s", extChargeId)))
                 .assertThat("$.results[1].status", is("available"))
                 .assertThat("$.results[1].created_date", is("2017-09-02T02:42:02Z"))
                 .assertThat("$.results[1].refund_id", is(refundId2))
@@ -96,7 +96,7 @@ public class SearchRefundsServiceTest {
                 .assertThat("$.results[1].status", is("available"))
                 .assertThat("$.results[1].links", not(hasKey("refunds")))
                 .assertThat("$.results[1].links.self.href", is(format("http://publicapi.test.localhost/v1/payments/%s/refunds/%s", extChargeId, refundId2)))
-                .assertThat("$.results[1].links.payment_url.href", is(format("http://publicapi.test.localhost/v1/payments/%s", extChargeId)))
+                .assertThat("$.results[1].links.payment.href", is(format("http://publicapi.test.localhost/v1/payments/%s", extChargeId)))
                 .assertThat("$._links.self.href", is("http://publicapi.test.localhost/v1/refunds?page=1&display_size=2"));
     }
 
@@ -138,7 +138,7 @@ public class SearchRefundsServiceTest {
                 .assertThat("$.results[0].status", is("available"))
                 .assertThat("$.results[0].links", not(hasKey("refunds")))
                 .assertThat("$.results[0].links.self.href", is(format("http://publicapi.test.localhost/v1/payments/%s/refunds/%s", extChargeId, refundId1)))
-                .assertThat("$.results[0].links.payment_url.href", is(format("http://publicapi.test.localhost/v1/payments/%s", extChargeId)))
+                .assertThat("$.results[0].links.payment.href", is(format("http://publicapi.test.localhost/v1/payments/%s", extChargeId)))
                 .assertThat("$.results[1].status", is("available"))
                 .assertThat("$.results[1].created_date", is("2016-01-25T13:23:55Z"))
                 .assertThat("$.results[1].refund_id", is(refundId2))
@@ -147,7 +147,7 @@ public class SearchRefundsServiceTest {
                 .assertThat("$.results[1].status", is("available"))
                 .assertThat("$.results[1].links", not(hasKey("refunds")))
                 .assertThat("$.results[1].links.self.href", is(format("http://publicapi.test.localhost/v1/payments/%s/refunds/%s", extChargeId, refundId2)))
-                .assertThat("$.results[1].links.payment_url.href", is(format("http://publicapi.test.localhost/v1/payments/%s", extChargeId)))
+                .assertThat("$.results[1].links.payment.href", is(format("http://publicapi.test.localhost/v1/payments/%s", extChargeId)))
                 .assertThat("$._links.self.href", is("http://publicapi.test.localhost/v1/refunds?from_date=2016-01-25T13%3A22%3A55Z&to_date=2016-01-25T13%3A24%3A55Z&page=1&display_size=500"));
     }
 

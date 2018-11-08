@@ -58,7 +58,7 @@
                   "href": "/v1/payments/someExternalId/refunds/111111"
                 },
                 {
-                  "rel": "payment_url",
+                  "rel": "payment",
                   "method": "GET",
                   "href": "/v1/payments/someExternalId"
                 }
@@ -77,7 +77,7 @@
                   "href": "/v1/payments/someExternalId/refunds/222222"
                 },
                 {
-                  "rel": "payment_url",
+                  "rel": "payment",
                   "method": "GET",
                   "href": "/v1/payments/someExternalId"
                 }

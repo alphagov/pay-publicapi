@@ -10,7 +10,7 @@ import static javax.ws.rs.HttpMethod.GET;
 public class RefundLinksForSearch {
 
     private static final String SELF = "self";
-    private static final String PAYMENT = "payment_url";
+    private static final String PAYMENT = "payment";
 
     private Link self;
     private Link payment;
