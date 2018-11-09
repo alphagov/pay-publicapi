@@ -24,7 +24,9 @@ import static com.jayway.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.apache.http.HttpStatus.SC_NOT_ACCEPTABLE;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
@@ -57,6 +59,7 @@ public class GetPaymentITest extends PaymentResourceITestBase {
     @Test
     public void getPayment_ReturnsPayment() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CAPTURED, RETURN_URL,
                 DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH, true, CHARGE_TOKEN_ID, REFUND_SUMMARY, SETTLEMENT_SUMMARY,
                 CARD_DETAILS);
@@ -86,10 +89,10 @@ public class GetPaymentITest extends PaymentResourceITestBase {
                 .body("card_details.first_digits_card_number", is(CARD_DETAILS.getFirstDigitsCardNumber()))
                 .body("card_details.last_digits_card_number", is(CARD_DETAILS.getLastDigitsCardNumber()))
                 .body("card_details.expiry_date", is(CARD_DETAILS.getExpiryDate()))
-                .body("card_details.billing_address.line1", is(CARD_DETAILS.getBillingAddress().getLine1()))
-                .body("card_details.billing_address.line2", is(CARD_DETAILS.getBillingAddress().getLine2()))
-                .body("card_details.billing_address.postcode", is(CARD_DETAILS.getBillingAddress().getPostcode()))
-                .body("card_details.billing_address.country", is(CARD_DETAILS.getBillingAddress().getCountry()))
+                .body("card_details.billing_address.line1", is(CARD_DETAILS.getBillingAddress().get().getLine1()))
+                .body("card_details.billing_address.line2", is(CARD_DETAILS.getBillingAddress().get().getLine2()))
+                .body("card_details.billing_address.postcode", is(CARD_DETAILS.getBillingAddress().get().getPostcode()))
+                .body("card_details.billing_address.country", is(CARD_DETAILS.getBillingAddress().get().getCountry()))
                 .body("_links.self.href", is(paymentLocationFor(CHARGE_ID)))
                 .body("_links.self.method", is("GET"))
                 .body("_links.events.href", is(paymentEventsLocationFor(CHARGE_ID)))
@@ -158,7 +161,6 @@ public class GetPaymentITest extends PaymentResourceITestBase {
                 .body("card_details.last_digits_card_number", is(nullValue()));
     }
     
-    
     @Test
     public void getPayment_ShouldNotIncludeCancelLinkIfPaymentCannotBeCancelled() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
@@ -186,6 +188,27 @@ public class GetPaymentITest extends PaymentResourceITestBase {
                 .root("settlement_summary")
                 .body("containsKey('capture_submit_time')", is(false))
                 .body("containsKey('captured_date')", is(false));
+    }
+
+    @Test
+    public void getPayment_BillingAddressShouldBeNullWhenNotPresentInConnectorResponse() {
+        CardDetails cardDetails = new CardDetails("1234",
+                "123456",
+                "Mr. Payment",
+                "12/19",
+                null,
+                CARD_BRAND_LABEL);
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CAPTURED, RETURN_URL,
+                DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH,
+                true, CHARGE_TOKEN_ID, REFUND_SUMMARY, SETTLEMENT_SUMMARY, cardDetails);
+
+        getPaymentResponse(API_KEY, CHARGE_ID)
+                .statusCode(200)
+                .contentType(JSON)
+                .body("card_details", hasKey("billing_address"))
+                .body("card_details.billing_address", is(nullValue()))
+                .body("payment_id", is(CHARGE_ID));
     }
 
     @Test
@@ -297,7 +320,7 @@ public class GetPaymentITest extends PaymentResourceITestBase {
     public void getPayment_ReturnsPaymentWithCorporateCardSurcharge() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CAPTURED, RETURN_URL,
-                DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH, 
+                DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH,
                 true, CHARGE_TOKEN_ID, REFUND_SUMMARY, SETTLEMENT_SUMMARY, CARD_DETAILS, 250L, AMOUNT + 250L);
 
         getPaymentResponse(API_KEY, CHARGE_ID)
@@ -312,7 +335,7 @@ public class GetPaymentITest extends PaymentResourceITestBase {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, AWAITING_CAPTURE_REQUEST, RETURN_URL,
                 DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH,
-                true, CHARGE_TOKEN_ID, REFUND_SUMMARY, SETTLEMENT_SUMMARY, CARD_DETAILS, 
+                true, CHARGE_TOKEN_ID, REFUND_SUMMARY, SETTLEMENT_SUMMARY, CARD_DETAILS,
                 0L, 0L);
 
         getPaymentResponse(API_KEY, CHARGE_ID)

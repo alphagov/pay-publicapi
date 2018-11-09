@@ -61,7 +61,7 @@ public abstract class PaymentResultBuilder {
             this.cardholder_name = cardDetails.getCardHolderName();
             this.expiry_date = cardDetails.getExpiryDate();
             this.card_brand = cardDetails.getCardBrand();
-            this.billing_address = cardDetails.getBillingAddress() == null ? null : new Address( cardDetails.getBillingAddress());
+            this.billing_address = cardDetails.getBillingAddress().map(Address::new).orElse(null);
         }
     }
 

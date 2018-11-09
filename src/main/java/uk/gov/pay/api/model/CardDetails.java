@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.Optional;
+
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.ALWAYS;
 
 @JsonInclude(ALWAYS)
@@ -16,7 +18,7 @@ public class CardDetails {
 
     @JsonProperty("first_digits_card_number")
     private final String firstDigitsCardNumber;
-    
+
     @JsonProperty("cardholder_name")
     private final String cardHolderName;
 
@@ -30,7 +32,7 @@ public class CardDetails {
     private final String cardBrand;
 
     public CardDetails(@JsonProperty("last_digits_card_number") String lastDigitsCardNumber,
-                       @JsonProperty("first_digits_card_number") String firstDigitsCardNumber, 
+                       @JsonProperty("first_digits_card_number") String firstDigitsCardNumber,
                        @JsonProperty("cardholder_name") String cardHolderName,
                        @JsonProperty("expiry_date") String expiryDate,
                        @JsonProperty("billing_address") Address billingAddress,
@@ -52,7 +54,7 @@ public class CardDetails {
     public String getFirstDigitsCardNumber() {
         return firstDigitsCardNumber;
     }
-    
+
     @ApiModelProperty(example = "Mr. Card holder")
     public String getCardHolderName() {
         return cardHolderName;
@@ -63,8 +65,8 @@ public class CardDetails {
         return expiryDate;
     }
 
-    public Address getBillingAddress() {
-        return billingAddress;
+    public Optional<Address> getBillingAddress() {
+        return Optional.ofNullable(billingAddress);
     }
 
     @ApiModelProperty(example = "Visa")
