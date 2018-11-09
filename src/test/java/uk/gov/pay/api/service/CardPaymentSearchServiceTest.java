@@ -24,6 +24,7 @@ import static com.jayway.jsonassert.JsonAssert.collectionWithSize;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -146,7 +147,23 @@ public class CardPaymentSearchServiceTest {
                 .assertThat("_links", hasKey("self"))
                 .assertThat("_links", hasKey("first_page"))
                 .assertThat("_links", hasKey("last_page"))
+                .assertThat("results[0]._links.capture", is(nullValue()))
                 .assertNotDefined("_links.next_page")
                 .assertNotDefined("_links.prev_page");
+    }
+
+    @Test
+    @PactVerification({"connector"})
+    @Pacts(pacts = {"publicapi-connector-search-payment-with-charge-in-awaiting-capture-state"})
+    public void searchShouldReturnAResponseWithCaptureLinkPresent() {
+        Account account = new Account("123456", TokenPaymentType.CARD);
+        Response response =
+                paymentSearchService.doSearch(account, null, null,
+                        null, null, null,
+                        null, null, null,
+                        null, null, null, null);
+        JsonAssert.with(response.getEntity().toString())
+                .assertThat("results[0]._links", hasKey("capture"))
+                .assertThat("results[0]._links.capture.method", is("POST"));
     }
 }

@@ -28,4 +28,10 @@ public class PaymentUriGenerator {
                 .build(chargeId);
     }
 
+    public URI getPaymentCaptureURI(String baseUrl, String chargeId) {
+        return UriBuilder.fromUri(baseUrl)
+                .path("/v1/payments/{paymentId}/capture")
+                .build(chargeId);
+    }
+
 }

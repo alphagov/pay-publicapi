@@ -3,10 +3,13 @@ package uk.gov.pay.api.it.fixtures;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import uk.gov.pay.api.model.PaymentConnectorResponseLink;
+import uk.gov.pay.api.model.links.PaymentLinksForSearch;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -93,6 +96,7 @@ public class PaymentSearchResultBuilder {
         public SettlementSummary settlement_summary = new SettlementSummary();
         public CardDetails card_details = new CardDetails();
         public Long corporate_card_surcharge, total_amount;
+        public List<PaymentConnectorResponseLink> links = new ArrayList<>();
     }
 
     private static class TestPaymentState {
@@ -147,6 +151,8 @@ public class PaymentSearchResultBuilder {
     private CardDetails cardDetails = new CardDetails();
     private Long corporateCardSurcharge = null;
     private Long totalAmount = null;
+    private List<PaymentConnectorResponseLink> links = new ArrayList<>();
+    private String chargeId;
 
     public static PaymentSearchResultBuilder aSuccessfulSearchPayment() {
         return new PaymentSearchResultBuilder();
@@ -219,6 +225,16 @@ public class PaymentSearchResultBuilder {
         return this;
     }
 
+    public PaymentSearchResultBuilder withCaptureLink() {
+        this.links.add(new PaymentConnectorResponseLink("capture", "https://connector.pymnt.localdomain/v1/api/accounts/1/charges/chargeid/capture", "POST", null, null));
+        return this;
+    }
+    
+    public PaymentSearchResultBuilder withChargeId(String chargeId) {
+        this.chargeId = chargeId;
+        return this;
+    }
+
     public List<TestPayment> getResults() {
         List<TestPayment> results = newArrayList();
         for (int i = 0; i < noOfResults; i++) {
@@ -261,7 +277,8 @@ public class PaymentSearchResultBuilder {
         }
 
         defaultPaymentResult.delayed_capture = delayedCapture;
-
+        defaultPaymentResult.links.addAll(this.links);
+        
         return defaultPaymentResult;
     }
 
@@ -269,7 +286,7 @@ public class PaymentSearchResultBuilder {
         TestPayment payment = new TestPayment();
         TestPaymentState state = states.get(new Random().nextInt(states.size()));
 
-        payment.charge_id = "" + i;
+        payment.charge_id = chargeId == null ? "" + i : chargeId;
         payment.description = "description-" + i;
         payment.reference = randomUUID().toString();
         payment.email = DEFAULT_EMAIL;

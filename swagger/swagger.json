@@ -855,6 +855,11 @@
           "description" : "refunds",
           "readOnly" : true,
           "$ref" : "#/definitions/Link"
+        },
+        "capture" : {
+          "description" : "capture",
+          "readOnly" : true,
+          "$ref" : "#/definitions/PostLink"
         }
       },
       "description" : "links for search payment resource"

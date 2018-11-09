@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.ChargeFromResponse;
+import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.SettlementSummary;
@@ -12,6 +13,7 @@ import uk.gov.pay.api.model.links.PaymentLinksForSearch;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.net.URI;
+import java.util.List;
 
 public class PaymentForSearchResult extends CardPayment {
 
@@ -21,7 +23,7 @@ public class PaymentForSearchResult extends CardPayment {
     public PaymentForSearchResult(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                                   String reference, String email, String paymentProvider, String createdDate, SupportedLanguage language,
                                   boolean delayedCapture, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
-                                  URI selfLink, URI paymentEventsLink, URI paymentCancelLink, URI paymentRefundsLink,
+                                  List<PaymentConnectorResponseLink> links, URI selfLink, URI paymentEventsLink, URI paymentCancelLink, URI paymentRefundsLink, URI paymentCaptureUri,
                                   Long corporateCardSurcharge, Long totalAmount) {
         super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider,
                 createdDate, refundSummary, settlementSummary, cardDetails, language, delayedCapture, corporateCardSurcharge, totalAmount);
@@ -32,6 +34,9 @@ public class PaymentForSearchResult extends CardPayment {
         if (!state.isFinished()) {
             this.links.addCancel(paymentCancelLink.toString());
         }
+        if (links.stream().anyMatch(link -> "capture".equals(link.getRel()))) {
+            this.links.addCapture(paymentCaptureUri.toString());
+        }
     }
 
     public static PaymentForSearchResult valueOf(
@@ -39,7 +44,8 @@ public class PaymentForSearchResult extends CardPayment {
             URI selfLink,
             URI paymentEventsLink,
             URI paymentCancelLink,
-            URI paymentRefundsLink) {
+            URI paymentRefundsLink,
+            URI paymentCaptureUri) {
 
         return new PaymentForSearchResult(
                 paymentResult.getChargeId(),
@@ -56,10 +62,12 @@ public class PaymentForSearchResult extends CardPayment {
                 paymentResult.getRefundSummary(),
                 paymentResult.getSettlementSummary(),
                 paymentResult.getCardDetails(),
+                paymentResult.getLinks(),
                 selfLink,
                 paymentEventsLink,
                 paymentCancelLink,
-                paymentRefundsLink, 
+                paymentRefundsLink,
+                paymentCaptureUri,
                 paymentResult.getCorporateCardSurcharge(), 
                 paymentResult.getTotalAmount());
     }
