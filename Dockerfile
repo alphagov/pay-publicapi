@@ -1,9 +1,8 @@
 FROM govukpay/openjdk:alpine-3.8.1-jre-8.181.13
 
-RUN apk update
-RUN apk upgrade
+RUN apk --no-cache upgrade
 
-RUN apk add bash
+RUN apk --no-cache add bash
 
 ENV PORT 8080
 ENV ADMIN_PORT 8081
