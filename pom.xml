@@ -8,7 +8,7 @@
 
     <properties>
         <dropwizard.version>1.3.5</dropwizard.version>
-        <guice.version>4.2.0</guice.version>
+        <guice.version>4.2.2</guice.version>
         <guava.version>25.1-jre</guava.version>
         <mockserver.version>3.10.4</mockserver.version>
         <swagger.jersey2.version>1.5.20</swagger.jersey2.version>
