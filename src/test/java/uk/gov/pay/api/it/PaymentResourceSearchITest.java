@@ -70,12 +70,12 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .withPage(2)
                 .withTotal(20)
                 .withPayments(aSuccessfulSearchPayment()
-                        .withMatchingInProgressState(TEST_STATE)
-                        .withMatchingReference(TEST_REFERENCE)
-                        .withMatchingCardBrand(TEST_CARD_BRAND_LABEL)
-                        .withMatchingCardDetails(CARD_DETAILS)
+                        .withInProgressState(TEST_STATE)
+                        .withReference(TEST_REFERENCE)
+                        .withCardDetails(CARD_DETAILS)
                         .withDelayedCapture(true)
                         .withNumberOfResults(1)
+                        .withEmail(TEST_EMAIL)
                         .getResults())
                 .build();
 
@@ -139,8 +139,8 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .withPage(2)
                 .withTotal(20)
                 .withPayments(aSuccessfulSearchPayment()
-                        .withMatchingSuccessState(SUCCEEDED_STATE)
-                        .withMatchingReference(TEST_REFERENCE)
+                        .withSuccessState(SUCCEEDED_STATE)
+                        .withReference(TEST_REFERENCE)
                         .withNumberOfResults(1)
                         .getResults())
                 .build();
@@ -163,7 +163,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .withPage(2)
                 .withTotal(20)
                 .withPayments(aSuccessfulSearchPayment()
-                        .withMatchingReference(TEST_REFERENCE)
+                        .withReference(TEST_REFERENCE)
                         .getResults())
                 .build();
 
@@ -188,7 +188,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .withPage(2)
                 .withTotal(20)
                 .withPayments(aSuccessfulSearchPayment()
-                        .withMatchingInProgressState(TEST_STATE)
+                        .withInProgressState(TEST_STATE)
                         .getResults())
                 .build();
 
@@ -212,7 +212,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .withPage(2)
                 .withTotal(20)
                 .withPayments(aSuccessfulSearchPayment()
-                        .withMatchingInProgressState(TEST_STATE)
+                        .withInProgressState(TEST_STATE)
                         .getResults())
                 .build();
 
@@ -236,7 +236,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .withPage(2)
                 .withTotal(20)
                 .withPayments(aSuccessfulSearchPayment()
-                        .withMatchingEmail(TEST_EMAIL)
+                        .withEmail(TEST_EMAIL)
                         .getResults())
                 .build();
 
@@ -259,7 +259,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .withPage(2)
                 .withTotal(20)
                 .withPayments(aSuccessfulSearchPayment()
-                        .withMatchingCardDetails(CARD_DETAILS)
+                        .withCardDetails(CARD_DETAILS)
                         .getResults())
                 .build();
 
@@ -274,7 +274,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
         List<Map<String, Object>> results = response.extract().body().jsonPath().getList("results.card_details");
         assertThat(results, matchesField("last_digits_card_number", TEST_LAST_DIGITS_CARD_NUMBER));
     }
-    
+
     @Test
     public void searchPayments_filterByFirstDigitsCardNumber() {
         String payments = aPaginatedPaymentSearchResult()
@@ -282,7 +282,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .withPage(2)
                 .withTotal(20)
                 .withPayments(aSuccessfulSearchPayment()
-                        .withMatchingCardDetails(CARD_DETAILS)
+                        .withCardDetails(CARD_DETAILS)
                         .getResults())
                 .build();
 
@@ -305,7 +305,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .withPage(2)
                 .withTotal(20)
                 .withPayments(aSuccessfulSearchPayment()
-                        .withMatchingCardDetails(CARD_DETAILS)
+                        .withCardDetails(CARD_DETAILS)
                         .getResults())
                 .build();
 
@@ -320,7 +320,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
         List<Map<String, Object>> results = response.extract().body().jsonPath().getList("results.card_details");
         assertThat(results, matchesField("cardholder_name", TEST_CARDHOLDER_NAME));
     }
-    
+
     @Test
     public void searchPayments_filterByPartialEmail() {
         String payments = aPaginatedPaymentSearchResult()
@@ -328,11 +328,11 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .withPage(2)
                 .withTotal(20)
                 .withPayments(aSuccessfulSearchPayment()
-                        .withMatchingEmail(TEST_EMAIL)
+                        .withEmail(TEST_EMAIL)
                         .getResults())
                 .build();
 
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, "alice", null, null, null, null, null, null,null, payments);
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, "alice", null, null, null, null, null, null, null, payments);
 
         ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of(
                 "email", "alice"))
@@ -354,7 +354,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                         .withCreatedDateBetween(TEST_FROM_DATE, TEST_TO_DATE).getResults())
                 .build();
 
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, null, null, null, null, null,null, TEST_FROM_DATE, TEST_TO_DATE,
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, null, null, null, null, null, null, TEST_FROM_DATE, TEST_TO_DATE,
                 payments
         );
 
@@ -376,13 +376,13 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .withPage(2)
                 .withTotal(20)
                 .withPayments(aSuccessfulSearchPayment()
-                        .withMatchingReference(TEST_REFERENCE)
-                        .withMatchingInProgressState(TEST_STATE)
-                        .withMatchingEmail(TEST_EMAIL)
+                        .withReference(TEST_REFERENCE)
+                        .withInProgressState(TEST_STATE)
+                        .withEmail(TEST_EMAIL)
                         .withCreatedDateBetween(TEST_FROM_DATE, TEST_TO_DATE).getResults())
                 .build();
 
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, TEST_EMAIL, TEST_STATE, null, null, null, null,TEST_FROM_DATE, TEST_TO_DATE,
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, TEST_EMAIL, TEST_STATE, null, null, null, null, TEST_FROM_DATE, TEST_TO_DATE,
                 payments
         );
 
@@ -419,10 +419,11 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .withPage(2)
                 .withTotal(40)
                 .withPayments(aSuccessfulSearchPayment()
-                        .withMatchingReference(TEST_REFERENCE)
-                        .withMatchingInProgressState(TEST_STATE)
+                        .withReference(TEST_REFERENCE)
+                        .withInProgressState(TEST_STATE)
                         .withCreatedDateBetween(TEST_FROM_DATE, TEST_TO_DATE)
                         .withNumberOfResults(10)
+                        .withEmail(TEST_EMAIL)
                         .getResults())
                 .withLinks(links)
                 .build();
@@ -478,7 +479,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
     @Test
     public void searchPayments_errorIfConnectorResponseIsInvalid() throws Exception {
-        connectorMock.whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, TEST_EMAIL, TEST_STATE, null, null, null, null,TEST_FROM_DATE, TEST_TO_DATE)
+        connectorMock.whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, TEST_EMAIL, TEST_STATE, null, null, null, null, TEST_FROM_DATE, TEST_TO_DATE)
                 .respond(response()
                         .withStatusCode(OK_200)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
@@ -532,11 +533,11 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .withPage(1)
                 .withTotal(2)
                 .withPayments(aSuccessfulSearchPayment()
-                        .withMatchingCardBrand(TEST_CARD_BRAND_LABEL)
+                        .withCardDetails(CARD_DETAILS)
                         .getResults())
                 .build();
 
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, null, null, TEST_CARD_BRAND, null, null, null, null,null, payments);
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, null, null, TEST_CARD_BRAND, null, null, null, null, null, payments);
 
         ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of(
                 "card_brand", cardBrand));
@@ -583,16 +584,14 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .withTotal(1)
                 .withPayments(aSuccessfulSearchPayment()
                         .withChargeId(chargeId)
-                        .withMatchingInProgressState(submittedState)
-                        .withMatchingReference(TEST_REFERENCE)
+                        .withInProgressState(submittedState)
+                        .withReference(TEST_REFERENCE)
                         .withNumberOfResults(1)
-                        .withCaptureLink()
+                        .withCaptureLink("https://connector.pymnt.localdomain/v1/api/accounts/1/charges/chargeid/capture")
                         .getResults())
                 .build();
 
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null, null, null, null, null, null,
-                payments
-        );
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null, null, null, null, null, null, payments);
 
         searchPayments(API_KEY, ImmutableMap.of("reference", TEST_REFERENCE))
                 .statusCode(200)

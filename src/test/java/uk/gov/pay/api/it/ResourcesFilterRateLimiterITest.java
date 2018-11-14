@@ -82,8 +82,8 @@ public class ResourcesFilterRateLimiterITest extends ResourcesFilterITestBase {
                 .withTotal(20)
                 .withLinks(new PaymentNavigationLinksFixture().withSelfLink("/self"))
                 .withPayments(aSuccessfulSearchPayment()
-                        .withMatchingInProgressState("created")
-                        .withMatchingReference(REFERENCE)
+                        .withInProgressState("created")
+                        .withReference(REFERENCE)
                         .withNumberOfResults(1).getResults())
                 .build();
 
