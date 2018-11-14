@@ -6,6 +6,7 @@ import org.mockserver.client.server.ForwardChainExpectation;
 import org.mockserver.model.HttpResponse;
 import org.mockserver.model.Parameter;
 import uk.gov.pay.api.it.fixtures.PaymentRefundJsonFixture;
+import uk.gov.pay.api.it.fixtures.PaymentSingleResultBuilder;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
@@ -42,6 +43,7 @@ import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 import static org.mockserver.verify.VerificationTimes.once;
 import static uk.gov.pay.api.it.GetPaymentITest.AWAITING_CAPTURE_REQUEST;
+import static uk.gov.pay.api.it.fixtures.PaymentSingleResultBuilder.aSuccessfulSinglePayment;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonString;
 
 public class ConnectorMockClient extends BaseConnectorMockClient {
@@ -57,7 +59,6 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     private static final String CARDHOLDER_NAME_KEY = "cardholder_name";
     public static final String FIRST_DIGITS_CARD_NUMBER_KEY = "first_digits_card_number";
     public static final String LAST_DIGITS_CARD_NUMBER_KEY = "last_digits_card_number";
-    private static final String CARD_BRAND_LABEL = "Mastercard";
     private static final String FROM_DATE_KEY = "from_date";
     private static final String TO_DATE_KEY = "to_date";
 
@@ -69,37 +70,36 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                                        String reference, String email, String paymentProvider, String gatewayTransactionId, String createdDate,
                                        SupportedLanguage language, boolean delayedCapture, Long corporateCardSurcharge, Long totalAmount, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
                                        ImmutableMap<?, ?>... links) {
-        JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
-                .add("charge_id", chargeId)
-                .add("amount", amount)
-                .add("reference", reference)
-                .add("email", email)
-                .add("description", description)
-                .add("state", state)
-                .add("return_url", returnUrl)
-                .add("payment_provider", paymentProvider)
-                .add("card_brand", CARD_BRAND_LABEL)
-                .add("created_date", createdDate)
-                .add("language", language.toString())
-                .add("delayed_capture", delayedCapture)
-                .add("links", asList(links))
-                .add("refund_summary", refundSummary)
-                .add("settlement_summary", settlementSummary)
-                .add("card_details", cardDetails);
+        PaymentSingleResultBuilder resultBuilder = aSuccessfulSinglePayment()
+                .withChargeId(chargeId)
+                .withAmount(amount)
+                .withMatchingReference(reference)
+                .withEmail(email)
+                .withDescription(description)
+                .withState(state)
+                .withReturnUrl(returnUrl)
+                .withCreatedDate(createdDate)
+                .withLanguage(language)
+                .withPaymentProvider(paymentProvider)
+                .withDelayedCapture(delayedCapture)
+                .withLinks(asList(links))
+                .withRefundSummary(refundSummary)
+                .withSettlementSummary(settlementSummary)
+                .withCardDetails(cardDetails);
 
         if (gatewayTransactionId != null) {
-            jsonStringBuilder.add("gateway_transaction_id", gatewayTransactionId);
-        }
-        
-        if (corporateCardSurcharge != null) {
-            jsonStringBuilder.add("corporate_card_surcharge", corporateCardSurcharge);
-        }
-        
-        if (totalAmount != null) {
-            jsonStringBuilder.add("total_amount", totalAmount);
+            resultBuilder.withGatewayTransactionId(gatewayTransactionId);
         }
 
-        return jsonStringBuilder.build();
+        if (corporateCardSurcharge != null) {
+            resultBuilder.withCorporateCardSurcharge(corporateCardSurcharge);
+        }
+
+        if (totalAmount != null) {
+            resultBuilder.withTotalAmount(totalAmount);
+        }
+
+        return resultBuilder.build();
     }
 
     private String buildGetRefundResponse(String refundId, int amount, int refundAmountAvailable, String status, String createdDate) {
@@ -168,12 +168,9 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                                 settlementSummary,
                                 cardDetails,
                                 validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
-                                validGetLink(nextUrl(chargeTokenId), "next_url"), validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",
-                                        new HashMap<String, String>() {{
-                                            put("chargeTokenId", chargeTokenId);
-                                        }}))));
+                                validGetLink(nextUrl(chargeTokenId), "next_url"),
+                                validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap(chargeTokenId)))));
     }
-
 
     public void respondAccepted_whenCreateARefund(int amount, int refundAmountAvailable, String gatewayAccountId, String chargeId, String refundId, String status, String createdDate) {
         whenCreateRefund(amount, refundAmountAvailable, gatewayAccountId, chargeId)
@@ -191,7 +188,6 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                         .withBody(expectedResponse)
                 );
-
     }
 
     public void respondOk_whenSearchChargesWithPageAndSize(String accountId, String reference, String email, String page, String displaySize, String expectedResponse) {
@@ -249,10 +245,8 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                     corporateCardSurcharge, totalAmount, refundSummary, settlementSummary, cardDetails,
                     validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
                     validGetLink(chargeLocation(gatewayAccountId, chargeId) + "/refunds", "refunds"),
-                    validGetLink(nextUrl(chargeId), "next_url"), validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",
-                            new HashMap<String, String>() {{
-                                put("chargeTokenId", chargeTokenId);
-                            }}));
+                    validGetLink(nextUrl(chargeId), "next_url"),
+                    validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap(chargeTokenId)));
         }
         whenGetCharge(gatewayAccountId, chargeId)
                 .respond(response()
@@ -487,6 +481,13 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withStatusCode(statusCode)
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                 .withBody(jsonString("message", errorMsg));
+    }
+
+    //"Gson can not automatically deserialize the pure inner classes since their no-args constructor"
+    private Map<String, String> getChargeIdTokenMap(String chargeTokenId) {
+        final Map<String, String> chargeTokenIdMap = new HashMap<>();
+        chargeTokenIdMap.put("chargeTokenId", chargeTokenId);
+        return chargeTokenIdMap;
     }
 
     public void verifyCancelCharge(String paymentId, String accountId) {
