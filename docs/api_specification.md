@@ -413,7 +413,7 @@ GET /v1/payments/ab2341da231434/events
 Authorization: Bearer BEARER_TOKEN
 ```
 
-### Payment response
+### Payment events response
 
 ```
 HTTP/1.1 200 OK
@@ -704,7 +704,7 @@ Content-Type: application/json
 
         },
 
-        "payment_url" :{
+        "payment" :{
             "href": "https://publicapi.example.com/v1/payments/abc123",
 
         },
@@ -1303,15 +1303,15 @@ GET /v1/refunds
         {
             "refund_id": "quj60d2va9g106s3c6375flnt3",
             "created_date": "2018-10-25T15:56:26.297Z",
-            "charge_id": "upd77pildong98a3cqqa6d8cso",
-            "amount_submitted": 10000,
+            "payment_id": "upd77pildong98a3cqqa6d8cso",
+            "amount": 10000,
             "status": "submitted",
-            "links": {
+            "_links": {
                 "self": {
                     "href": "https://publicapi.example.com/v1/payments/upd77pildong98a3cqqa6d8cso/refunds/quj60d2va9g106s3c6375flnt3",
                     "method": "GET"
                 },
-                "payment_url": {
+                "payment": {
                     "href": "https://publicapi.example.com/v1/payments/upd77pildong98a3cqqa6d8cso",
                     "method": "GET"
                 }
@@ -1320,15 +1320,15 @@ GET /v1/refunds
         {
             "refund_id": "4bgf433166125hbb67a3dpqcid",
             "created_date": "2018-10-02T09:49:06.640Z",
-            "charge_id": "5hd66phb4r3tud6q2i96g7h4mb",
-            "amount_submitted": 1100,
+            "payment_id": "5hd66phb4r3tud6q2i96g7h4mb",
+            "amount": 1100,
             "status": "success",
-            "links": {
+            "_links": {
                 "self": {
                     "href": "https://publicapi.example.com/v1/refunds/4bgf433166125hbb67a3dpqcid",
                     "method": "GET"
                 },
-                "payment_url": {
+                "payment": {
                     "href": "https://publicapi.example.com/v1/payments/5hd66phb4r3tud6q2i96g7h4mb",
                     "method": "GET"
                 }
@@ -1363,13 +1363,13 @@ GET /v1/refunds
 | `count`                           | Yes            | Number of refunds displayed on this page                         |
 | `page`                            | Yes            | Page number of the current recordset                              |
 | `results`                         | Yes            | List of refunds                                                  |
-| `results[i].charge_id`              | Yes            | The unique identifier for the original payment                            |
+| `results[i].payment_id`              | Yes            | The unique identifier for the original payment                            |
 | `results[i].refund_id`                  | Yes            | The unique identifier for the refund                              |
 | `results[i].created_date`            | Yes            | The created date in ISO_8601 format (```yyyy-MM-ddTHH:mm:ssZ```)  |
 | `results[i].status`   | Yes            | The status of this refund                             |
-| `results[i].amount_submitted`| Yes     | The total amount submitted for this refund                |
+| `results[i].amount`| Yes     | The total amount for this refund                |
 | `results[i]._links.self`             | Yes            | Link to the refund                                               |
-| `results[i]._links.payment_url`           | Yes            | Link to the original payment                                          |
+| `results[i]._links.payment`           | Yes            | Link to the original payment                                          |
 | `_links.self.href`                | Yes            | Href link of the current page                                     |
 | `_links.next_page.href`           | No             | Href link of the next page (based on the display_size requested)  |
 | `_links.prev_page.href`           | No             | Href link of the previous page (based on the display_size requested) |

@@ -1,17 +1,15 @@
 package uk.gov.pay.api.model.search.card;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.links.RefundLinksForSearch;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RefundForSearchRefundsResult {
 
-    private RefundLinksForSearch links = new RefundLinksForSearch();
 
     @JsonProperty("refund_id")
     private String refundId;
@@ -19,27 +17,24 @@ public class RefundForSearchRefundsResult {
     @JsonProperty("created_date")
     private String createdDate;
 
-    @JsonProperty("charge_id")
     private String chargeId;
 
-    @JsonProperty("amount_submitted")
-    private Long amountSubmitted;
+    private Long amount;
 
-    @JsonProperty("links")
-    private List<Map<String, Object>> dataLinks = new ArrayList<>();
-
+    private RefundLinksForSearch links = new RefundLinksForSearch();
+    
     @JsonProperty("status")
     private String status;
 
     public RefundForSearchRefundsResult() {
     }
 
-    public RefundForSearchRefundsResult(String refundId, String createdDate, String status, String chargeId, Long amountSubmitted, URI paymentURI, URI refundsURI) {
+    public RefundForSearchRefundsResult(String refundId, String createdDate, String status, String chargeId, Long amount, URI paymentURI, URI refundsURI) {
         this.refundId = refundId;
         this.createdDate = createdDate;
         this.status = status;
         this.chargeId = chargeId;
-        this.amountSubmitted = amountSubmitted;
+        this.amount = amount;
         this.links.addSelf(refundsURI.toString()); 
         this.links.addPayment(paymentURI.toString()); 
     }
@@ -56,14 +51,28 @@ public class RefundForSearchRefundsResult {
         return status;
     }
 
+    @JsonProperty("payment_id")
     public String getChargeId() {
         return chargeId;
     }
 
-    public Long getAmountSubmitted() {
-        return amountSubmitted;
+    @JsonProperty("charge_id")
+    public void setChargeId(String chargeId) {
+        this.chargeId = chargeId;
     }
+
+    @JsonProperty("amount_submitted")
+    public void setAmount(Long amount) {
+        this.amount = amount;
+    }
+    
+    @JsonProperty("amount")
+    public Long getAmount() {
+        return amount;
+    }
+    
     @ApiModelProperty(dataType = "uk.gov.pay.api.model.links.RefundLinksForSearch")
+    @JsonProperty("_links")
     public RefundLinksForSearch getLinks() {
         return links;
     }
@@ -74,7 +83,7 @@ public class RefundForSearchRefundsResult {
                 refundResult.getCreatedDate(),
                 refundResult.getStatus(),
                 refundResult.getChargeId(),
-                refundResult.getAmountSubmitted(),
+                refundResult.getAmount(),
                 paymentURI,
                 refundsURI);
     }
@@ -85,8 +94,8 @@ public class RefundForSearchRefundsResult {
                 "refundId='" + refundId + '\'' +
                 ", createdDate='" + createdDate + '\'' +
                 ", status='" + status + '\'' +
-                ", amountSubmitted=" + amountSubmitted + '\'' +
-                ", dataLinks=" + dataLinks + '\'' +
+                ", amount=" + amount + '\'' +
+                ", links=" + links + '\'' +
                 '}';
     }
 }

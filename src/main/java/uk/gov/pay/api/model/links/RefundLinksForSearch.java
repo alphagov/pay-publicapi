@@ -10,21 +10,20 @@ import static javax.ws.rs.HttpMethod.GET;
 public class RefundLinksForSearch {
 
     private static final String SELF = "self";
-    private static final String PAYMENT = "payment_url";
+    private static final String PAYMENT = "payment";
 
-    @JsonProperty(value = SELF)
     private Link self;
-
-    @JsonProperty(value = PAYMENT)
     private Link payment;
 
     @ApiModelProperty(value = SELF, dataType = "uk.gov.pay.api.model.links.Link")
+    @JsonProperty(value = SELF)
     public Link getSelf() {
         return self;
     }
     
     @ApiModelProperty(value = PAYMENT, dataType = "uk.gov.pay.api.model.links.Link")
-    public Link getRefunds() {
+    @JsonProperty(value = PAYMENT)
+    public Link getPayment() {
         return payment;
     }
 
