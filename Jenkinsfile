@@ -112,7 +112,7 @@ pipeline {
     }
     stage('Tests') {
       failFast true
-      parallel {
+      stages {
         stage('Card Payment End-to-End Tests') {
             when {
                 anyOf {
