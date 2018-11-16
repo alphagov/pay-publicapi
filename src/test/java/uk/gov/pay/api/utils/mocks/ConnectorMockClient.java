@@ -190,6 +190,15 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 );
     }
 
+    public void respondOk_whenSearchCharges(String accountId, String expectedResponse) {
+        whenSearchCharges(accountId, null, null, null, null, null, null, null, null, null)
+                .respond(response()
+                        .withStatusCode(OK_200)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withBody(expectedResponse)
+                );
+    }
+
     public void respondOk_whenSearchChargesWithPageAndSize(String accountId, String reference, String email, String page, String displaySize, String expectedResponse) {
         whenSearchCharges(accountId, reference, email, null, null, null, null, null, null, null, page, displaySize)
                 .respond(response()

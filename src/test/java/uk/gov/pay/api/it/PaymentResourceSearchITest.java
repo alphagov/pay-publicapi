@@ -29,6 +29,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockserver.model.HttpResponse.response;
@@ -113,10 +114,11 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .body("results[0].card_details.expiry_date", is(CARD_DETAILS.getExpiryDate()))
                 .body("results[0].card_details.last_digits_card_number", is(CARD_DETAILS.getLastDigitsCardNumber()))
                 .body("results[0].card_details.first_digits_card_number", is(CARD_DETAILS.getFirstDigitsCardNumber()))
-                .body("results[0].card_details.billing_address.line1", is(CARD_DETAILS.getBillingAddress().getLine1()))
-                .body("results[0].card_details.billing_address.line2", is(CARD_DETAILS.getBillingAddress().getLine2()))
-                .body("results[0].card_details.billing_address.postcode", is(CARD_DETAILS.getBillingAddress().getPostcode()))
-                .body("results[0].card_details.billing_address.country", is(CARD_DETAILS.getBillingAddress().getCountry()))
+                .body("results[0].card_details.billing_address.line1", is(CARD_DETAILS.getBillingAddress().get().getLine1()))
+                .body("results[0].card_details.billing_address.line2", is(CARD_DETAILS.getBillingAddress().get().getLine2()))
+                .body("results[0].card_details.billing_address.postcode", is(CARD_DETAILS.getBillingAddress().get().getPostcode()))
+                .body("results[0].card_details.billing_address.country", is(CARD_DETAILS.getBillingAddress().get().getCountry()))
+                .body("results[0].card_details.card_brand", is(CARD_DETAILS.getCardBrand()))
                 .extract().asString();
 
         JsonAssert.with(responseBody)
@@ -599,7 +601,31 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .body("results[0]._links", hasKey("capture"))
                 .body("results[0]._links.capture.method", is("POST"))
                 .body("results[0]._links.capture.href", is("http://publicapi.url/v1/payments/" + chargeId + "/capture"));
+    }
+    
+    @Test
+    public void searchPayments_getsResultsFromConnector_withNoBillingAddress() {
 
+        String payments = aPaginatedPaymentSearchResult()
+                .withPayments(aSuccessfulSearchPayment()
+                        .withCardDetails(new CardDetails("1234",
+                                "1234",
+                                "Card Holder",
+                                "11/21",
+                                null,
+                                "Visa"))
+                        .withNumberOfResults(1)
+                        .getResults())
+                .build();
+
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, payments);
+        ImmutableMap<String, String> queryParams = ImmutableMap.of();
+        searchPayments(API_KEY, queryParams)
+                .statusCode(200)
+                .contentType(JSON)
+                .body("results[0].card_details", hasKey("billing_address"))
+                .body("results[0].card_details.billing_address", is(nullValue()))
+                .body("results[0].card_details.first_digits_card_number", is("1234"));
     }
 
     private Matcher<? super List<Map<String, Object>>> matchesState(final String state) {
