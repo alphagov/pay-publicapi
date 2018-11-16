@@ -146,17 +146,17 @@ pipeline {
                 runDirectDebitE2E("publicapi")
             }
         }
-         stage('ZAP Tests') {
-            when {
-                anyOf {
-                  branch 'master'
-                  environment name: 'RUN_ZAP_ON_PR', value: 'true'
-                }
-            }
-            steps {
-                runZap("publicapi")
-            }
-         }
+        stage('ZAP Tests') {
+           when {
+               anyOf {
+                 branch 'master'
+                 environment name: 'RUN_ZAP_ON_PR', value: 'true'
+               }
+           }
+           steps {
+               runZap("publicapi")
+           }
+        }
       }
     }
     stage('Docker Tag') {
