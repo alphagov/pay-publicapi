@@ -1,7 +1,7 @@
 package uk.gov.pay.api.utils.mocks;
 
 import com.google.common.collect.ImmutableMap;
-import org.mockserver.client.server.ForwardChainExpectation;
+import org.mockserver.client.ForwardChainExpectation;
 import org.mockserver.model.HttpResponse;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.directdebit.agreement.MandateState;
