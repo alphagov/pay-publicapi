@@ -23,6 +23,7 @@
         <PACT_BROKER_PASSWORD/>
         <PACT_CONSUMER_VERSION/>
         <PACT_CONSUMER_TAG/>
+        <dependency-check.skip>true</dependency-check.skip>
     </properties>
 
     <repositories>
@@ -448,10 +449,23 @@
                     </execution>
                 </executions>
             </plugin>
+            <!--
+                https://jeremylong.github.io/DependencyCheck/dependency-check-maven/
+                By default, the dependency-check plugin is tied to the verify phase
+                (when used as a build plugin). We don’t want this; we just want to
+                run it manually when required. So we define a property called
+                dependency-check.skip, set it to true, and use this property’s value
+                to set the dependency-check plugin’s own skip property. To execute
+                the plugin manually, override the dependency-check.skip property:
+                $ mvn dependency-check:check -Ddependency-check.skip=false
+            -->
             <plugin>
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
                 <version>4.0.0</version>
+                <configuration>
+                    <skip>${dependency-check.skip}</skip>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
