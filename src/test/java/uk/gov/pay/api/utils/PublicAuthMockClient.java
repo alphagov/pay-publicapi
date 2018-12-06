@@ -1,6 +1,6 @@
 package uk.gov.pay.api.utils;
 
-import org.mockserver.client.MockServerClient;
+import org.mockserver.client.server.MockServerClient;
 import uk.gov.pay.api.model.TokenPaymentType;
 
 import static javax.ws.rs.HttpMethod.GET;
