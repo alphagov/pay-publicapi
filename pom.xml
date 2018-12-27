@@ -14,7 +14,7 @@
         <mockserver.version>5.1.0</mockserver.version>
         <swagger.jersey2.version>1.5.21</swagger.jersey2.version>
         <hamcrest.version>2.1</hamcrest.version>
-        <jackson.version>2.9.7</jackson.version>
+        <jackson.version>2.9.8</jackson.version>
         <logback.version>1.2.3</logback.version>
         <docker-client.version>8.14.5</docker-client.version>
         <pay-java-commons.version>1.0.0-95d787ff5931ee0d5e54afd7fbc3834cf772dad4</pay-java-commons.version>
