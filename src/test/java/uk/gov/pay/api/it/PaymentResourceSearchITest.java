@@ -41,6 +41,7 @@ import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.DEFAULT_CREA
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.DEFAULT_PAYMENT_PROVIDER;
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.DEFAULT_RETURN_URL;
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.aSuccessfulSearchPayment;
+import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 
 public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
@@ -97,7 +98,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .body("results[0].language", is("en"))
                 .body("results[0].delayed_capture", is(true))
                 .body("results[0]._links.self.method", is("GET"))
-                .body("results[0]._links.self.href", is(paymentLocationFor("0")))
+                .body("results[0]._links.self.href", is(paymentLocationFor(configuration.getBaseUrl(), "0")))
                 .body("results[0]._links.events.href", is(paymentEventsLocationFor("0")))
                 .body("results[0]._links.events.method", is("GET"))
                 .body("results[0]._links.cancel.href", is(paymentCancelLocationFor("0")))

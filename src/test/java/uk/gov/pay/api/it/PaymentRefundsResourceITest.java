@@ -24,6 +24,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.ACCEPTED;
 import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
 import static org.hamcrest.core.Is.is;
+import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 
 public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
 
@@ -49,7 +50,7 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
                 .body("status", is("available"))
                 .body("created_date", is(CREATED_DATE))
                 .body("_links.self.href", is(paymentRefundLocationFor(CHARGE_ID, REFUND_ID)))
-                .body("_links.payment.href", is(paymentLocationFor(CHARGE_ID)));
+                .body("_links.payment.href", is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)));
     }
 
     @Test
@@ -98,7 +99,7 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
                 .contentType(JSON)
                 .body("payment_id", is(CHARGE_ID))
                 .body("_links.self.href", is(paymentRefundsLocationFor(CHARGE_ID)))
-                .body("_links.payment.href", is(paymentLocationFor(CHARGE_ID)))
+                .body("_links.payment.href", is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)))
                 .body("_embedded.refunds.size()", is(2))
                 .body("_embedded.refunds[0].refund_id", is("100"))
                 .body("_embedded.refunds[0].created_date", is(CREATED_DATE))
@@ -106,14 +107,14 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
                 .body("_embedded.refunds[0].status", is("available"))
                 .body("_embedded.refunds[0]._links.size()", is(2))
                 .body("_embedded.refunds[0]._links.self.href", is(paymentRefundLocationFor(CHARGE_ID, "100")))
-                .body("_embedded.refunds[0]._links.payment.href", is(paymentLocationFor(CHARGE_ID)))
+                .body("_embedded.refunds[0]._links.payment.href", is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)))
                 .body("_embedded.refunds[1].refund_id", is("300"))
                 .body("_embedded.refunds[1].created_date", is(CREATED_DATE))
                 .body("_embedded.refunds[1].amount", is(300))
                 .body("_embedded.refunds[1].status", is("pending"))
                 .body("_embedded.refunds[1]._links.size()", is(2))
                 .body("_embedded.refunds[1]._links.self.href", is(paymentRefundLocationFor(CHARGE_ID, "300")))
-                .body("_embedded.refunds[1]._links.payment.href", is(paymentLocationFor(CHARGE_ID)));
+                .body("_embedded.refunds[1]._links.payment.href", is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)));
     }
 
     @Test
@@ -126,7 +127,7 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
                 .contentType(JSON)
                 .body("payment_id", is(CHARGE_ID))
                 .body("_links.self.href", is(paymentRefundsLocationFor(CHARGE_ID)))
-                .body("_links.payment.href", is(paymentLocationFor(CHARGE_ID)))
+                .body("_links.payment.href", is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)))
                 .body("_embedded.refunds.size()", is(0));
     }
 
@@ -197,7 +198,7 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
                 .body("status", is(refundStatus))
                 .body("created_date", is(CREATED_DATE))
                 .body("_links.self.href", is(paymentRefundLocationFor(CHARGE_ID, REFUND_ID)))
-                .body("_links.payment.href", is(paymentLocationFor(CHARGE_ID)));
+                .body("_links.payment.href", is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)));
     }
 
     private Response postRefunds(String payload) {

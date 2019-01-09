@@ -26,10 +26,11 @@ import static org.apache.http.HttpStatus.SC_NOT_ACCEPTABLE;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
+import static uk.gov.pay.api.utils.Urls.directDebitFrontendSecureUrl;
+import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 
 public class GetPaymentITest extends PaymentResourceITestBase {
 
@@ -93,7 +94,7 @@ public class GetPaymentITest extends PaymentResourceITestBase {
                 .body("card_details.billing_address.line2", is(CARD_DETAILS.getBillingAddress().get().getLine2()))
                 .body("card_details.billing_address.postcode", is(CARD_DETAILS.getBillingAddress().get().getPostcode()))
                 .body("card_details.billing_address.country", is(CARD_DETAILS.getBillingAddress().get().getCountry()))
-                .body("_links.self.href", is(paymentLocationFor(CHARGE_ID)))
+                .body("_links.self.href", is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)))
                 .body("_links.self.method", is("GET"))
                 .body("_links.events.href", is(paymentEventsLocationFor(CHARGE_ID)))
                 .body("_links.events.method", is("GET"))
@@ -132,7 +133,7 @@ public class GetPaymentITest extends PaymentResourceITestBase {
                 .body("return_url", is(RETURN_URL))
                 .body("payment_provider", is(PAYMENT_PROVIDER))
                 .body("created_date", is(CREATED_DATE))
-                .body("_links.self.href", is(paymentLocationFor(CHARGE_ID)))
+                .body("_links.self.href", is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)))
                 .body("_links.self.method", is("GET"))
                 .body("_links.next_url.href", is(directDebitFrontendSecureUrl() + CHARGE_ID))
                 .body("_links.next_url.method", is("GET"))
@@ -269,7 +270,7 @@ public class GetPaymentITest extends PaymentResourceITestBase {
                 .body("events[0].payment_id", is(CHARGE_ID))
                 .body("events[0].state.status", is(CREATED.getStatus()))
                 .body("events[0].updated", is("2016-01-01T12:00:00Z"))
-                .body("events[0]._links.payment_url.href", is(paymentLocationFor(CHARGE_ID)));
+                .body("events[0]._links.payment_url.href", is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)));
     }
 
     @Test
@@ -341,7 +342,7 @@ public class GetPaymentITest extends PaymentResourceITestBase {
         getPaymentResponse(API_KEY, CHARGE_ID)
                 .statusCode(200)
                 .contentType(JSON)
-                .body("_links.capture.href", is(paymentLocationFor(CHARGE_ID) + "/capture"))
+                .body("_links.capture.href", is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID) + "/capture"))
                 .body("_links.capture.method", is("POST"));
     }
 
