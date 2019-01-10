@@ -4,21 +4,20 @@ import au.com.dius.pact.consumer.PactVerification;
 import com.jayway.jsonassert.JsonAssert;
 import com.jayway.restassured.response.ValidatableResponse;
 import io.dropwizard.testing.junit.DropwizardAppRule;
-import java.time.ZonedDateTime;
-import javax.ws.rs.core.HttpHeaders;
 import org.apache.http.client.fluent.Executor;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
-import uk.gov.pay.api.it.PaymentResourceITestBase;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
 import uk.gov.pay.api.utils.DateTimeUtils;
-import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
+
+import javax.ws.rs.core.HttpHeaders;
+import java.time.ZonedDateTime;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
@@ -27,8 +26,11 @@ import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
+import static uk.gov.pay.api.utils.Payloads.aSuccessfulPaymentPayload;
+import static uk.gov.pay.api.utils.Urls.directDebitFrontendSecureUrl;
+import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 
-public class DirectDebitPaymentTest extends PaymentResourceITestBase {
+public class DirectDebitPaymentTest {
 
     private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
     private static final int AMOUNT = 100;
@@ -40,7 +42,7 @@ public class DirectDebitPaymentTest extends PaymentResourceITestBase {
     private static final String EMAIL = "alice.111@mail.fake";
     private static final String DESCRIPTION = "a description";
     private static final String CREATED_DATE = DateTimeUtils.toUTCDateString(TIMESTAMP);
-    private static final String SUCCESS_PAYLOAD = paymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL);
+    private static final String SUCCESS_PAYLOAD = aSuccessfulPaymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL);
 
     //Must use same secret set int configured test-config.xml
     protected static final String API_KEY = ApiKeyGenerator.apiKeyValueOf("TEST_BEARER_TOKEN", "qwer9yuhgf");
@@ -66,10 +68,13 @@ public class DirectDebitPaymentTest extends PaymentResourceITestBase {
     @Pacts(pacts = {"publicapi-direct-debit-connector-create-payment"})
     @Pacts(pacts = {"publicapi-publicauth"}, publish = false)
     public void createPayment() {
+        
+        String publicApiBaseUrl = app.getConfiguration().getBaseUrl();
+        
         String responseBody = postPaymentResponse(API_KEY, SUCCESS_PAYLOAD)
                 .statusCode(201)
                 .contentType(JSON)
-                .header(HttpHeaders.LOCATION, is(paymentLocationFor(CHARGE_ID)))
+                .header(HttpHeaders.LOCATION, is(paymentLocationFor(publicApiBaseUrl, CHARGE_ID)))
                 .body("payment_id", is(CHARGE_ID))
                 .body("amount", is(AMOUNT))
                 .body("reference", is(REFERENCE))
@@ -77,7 +82,7 @@ public class DirectDebitPaymentTest extends PaymentResourceITestBase {
                 .body("state.status", is(STARTED.getStatus()))
                 .body("return_url", is(RETURN_URL))
                 .body("created_date", is(CREATED_DATE))
-                .body("_links.self.href", is(paymentLocationFor(CHARGE_ID)))
+                .body("_links.self.href", is(paymentLocationFor(publicApiBaseUrl, CHARGE_ID)))
                 .body("_links.self.method", is("GET"))
                 .body("_links.next_url.href", is(directDebitFrontendSecureUrl() + CHARGE_TOKEN_ID))
                 .body("_links.next_url.method", is("GET"))
@@ -108,17 +113,7 @@ public class DirectDebitPaymentTest extends PaymentResourceITestBase {
                 .post(PAYMENTS_PATH)
                 .then();
     }
-
-    private static String paymentPayload(long amount, String returnUrl, String description, String reference, String email) {
-        return new JsonStringBuilder()
-                .add("amount", amount)
-                .add("reference", reference)
-                .add("email", email)
-                .add("description", description)
-                .add("return_url", returnUrl)
-                .build();
-    }
-
+    
     // Close idle connections - see https://github.com/DiUS/pact-jvm/issues/342
     @After 
     public void teardown() {
