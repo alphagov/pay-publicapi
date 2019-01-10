@@ -1,4 +1,4 @@
-FROM govukpay/openjdk:alpine-3.8.1-jre-base-8.181.13
+FROM govukpay/openjdk:alpine-3.8.1-jre-base-8.191.12
 
 RUN apk --no-cache upgrade
 
