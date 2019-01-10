@@ -17,6 +17,7 @@ import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
+import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 
 public abstract class PaymentResourceITestBase {
     //Must use same secret set int confiPaymentsResourceReferenceVgured test-config.xml
@@ -57,12 +58,14 @@ public abstract class PaymentResourceITestBase {
     protected ConnectorMockClient connectorMock;
     protected ConnectorDDMockClient connectorDDMock;
     protected PublicAuthMockClient publicAuthMock;
+    protected PublicApiConfig configuration;
 
     @Before
     public void setup() {
         connectorMock = new ConnectorMockClient(connectorMockRule.getPort(), connectorBaseUrl());
         connectorDDMock = new ConnectorDDMockClient(connectorDDMockRule.getPort(), connectorDDBaseUrl());
         publicAuthMock = new PublicAuthMockClient(publicAuthMockRule.getPort());
+        configuration = app.getConfiguration();
     }
 
     private String connectorBaseUrl() {
@@ -77,24 +80,16 @@ public abstract class PaymentResourceITestBase {
         return "http://localhost:" + publicAuthMockRule.getPort() + "/v1/auth";
     }
 
-    protected String paymentLocationFor(String chargeId) {
-        return "http://publicapi.url" + PAYMENTS_PATH + chargeId;
-    }
-
     String frontendUrlFor(TokenPaymentType paymentType) {
         return "http://frontend_" + paymentType.toString().toLowerCase() + "/charge/";
     }
-
-    protected String directDebitFrontendSecureUrl() {
-        return "http://frontend_direct_debit/secure/";
-    }
-
+    
     String paymentEventsLocationFor(String chargeId) {
-        return paymentLocationFor(chargeId) + "/events";
+        return paymentLocationFor(configuration.getBaseUrl(), chargeId) + "/events";
     }
 
     String paymentRefundsLocationFor(String chargeId) {
-        return paymentLocationFor(chargeId) + "/refunds";
+        return paymentLocationFor(configuration.getBaseUrl(), chargeId) + "/refunds";
     }
 
     String paymentRefundLocationFor(String chargeId, String refundId) {
@@ -102,7 +97,7 @@ public abstract class PaymentResourceITestBase {
     }
 
     String paymentCancelLocationFor(String chargeId) {
-        return paymentLocationFor(chargeId) + "/cancel";
+        return paymentLocationFor(configuration.getBaseUrl(), chargeId) + "/cancel";
     }
 
 }

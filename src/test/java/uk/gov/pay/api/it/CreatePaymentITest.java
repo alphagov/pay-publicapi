@@ -23,6 +23,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
+import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 
 public class CreatePaymentITest extends PaymentResourceITestBase {
 
@@ -54,7 +55,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
         String responseBody = postPaymentResponse(API_KEY, SUCCESS_PAYLOAD)
                 .statusCode(201)
                 .contentType(JSON)
-                .header(HttpHeaders.LOCATION, is(paymentLocationFor(CHARGE_ID)))
+                .header(HttpHeaders.LOCATION, is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)))
                 .body("payment_id", is(CHARGE_ID))
                 .body("amount", is(9999999))
                 .body("reference", is(REFERENCE))
@@ -69,7 +70,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 .body("refund_summary.status", is("pending"))
                 .body("refund_summary.amount_submitted", is(50))
                 .body("refund_summary.amount_available", is(100))
-                .body("_links.self.href", is(paymentLocationFor(CHARGE_ID)))
+                .body("_links.self.href", is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)))
                 .body("_links.self.method", is("GET"))
                 .body("_links.next_url.href", is(frontendUrlFor(CARD) + CHARGE_TOKEN_ID))
                 .body("_links.next_url.method", is("GET"))
