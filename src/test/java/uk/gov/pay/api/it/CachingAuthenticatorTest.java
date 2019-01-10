@@ -1,8 +1,6 @@
 package uk.gov.pay.api.it;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.google.common.collect.ImmutableMap;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 import org.junit.After;
 import org.junit.Before;
@@ -11,14 +9,12 @@ import org.junit.Test;
 import org.mockserver.socket.PortFactory;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
+import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
-import java.util.Map;
-
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
@@ -29,6 +25,8 @@ import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static java.lang.String.format;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static uk.gov.pay.api.model.TokenPaymentType.CARD;
+import static uk.gov.pay.api.utils.WiremockStubbing.stubPublicAuthV1ApiAuth;
 
 public class CachingAuthenticatorTest {
     
@@ -53,7 +51,7 @@ public class CachingAuthenticatorTest {
 
     @Before
     public void setup() throws Exception {
-        setUpMockForPublicAuth();
+        stubPublicAuthV1ApiAuth(publicAuthRule, new Account(accountId, CARD), bearerToken);
         setUpMockForConnector();
     }
     
@@ -95,17 +93,6 @@ public class CachingAuthenticatorTest {
                         .withStatus(200)
                         .withHeader("Content-Type", APPLICATION_JSON)
                         .withBody(aPayment())));
-    }
-
-    private void setUpMockForPublicAuth() throws Exception {
-        Map<String, String> entity = ImmutableMap.of("account_id", accountId, "token_type", "CARD");
-        String json = new ObjectMapper().writeValueAsString(entity);
-        publicAuthRule.stubFor(get(urlEqualTo("/v1/api/auth"))
-                .withHeader(AUTHORIZATION, equalTo("Bearer " + bearerToken))
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withHeader("Content-Type", APPLICATION_JSON)
-                        .withBody(json)));
     }
     
     private String aPayment() {

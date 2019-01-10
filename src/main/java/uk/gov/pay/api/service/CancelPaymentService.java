@@ -24,7 +24,7 @@ public class CancelPaymentService {
         Response connectorResponse = client
                 .target(connectorUriGenerator.cancelURI(account, chargeId))
                 .request()
-                .post(Entity.json("{}"));
+                .post(null);
 
         if (connectorResponse.getStatus() == HttpStatus.SC_NO_CONTENT) {
             connectorResponse.close();
