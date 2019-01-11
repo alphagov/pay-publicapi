@@ -82,7 +82,7 @@ public class CardPayment extends Payment {
         return Optional.ofNullable(cardDetails);
     }
 
-    @ApiModelProperty(example = "en")
+    @ApiModelProperty(example = "en", allowableValues = "en,cy")
     public SupportedLanguage getLanguage() {
         return language;
     }

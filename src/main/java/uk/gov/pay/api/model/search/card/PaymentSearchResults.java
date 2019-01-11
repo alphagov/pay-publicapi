@@ -1,20 +1,49 @@
 package uk.gov.pay.api.model.search.card;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModelProperty;
+import uk.gov.pay.api.model.links.SearchNavigationLinks;
+import uk.gov.pay.api.model.search.SearchPagination;
 
 import java.util.List;
 
-public class PaymentSearchResults {
+/**
+ * Used to define swagger specs for search results.
+ */
+public class PaymentSearchResults implements SearchPagination {
 
-    @JsonProperty(value = "results")
-    private List<PaymentForSearchResult> payments;
+    @ApiModelProperty(name = "total", example = "100")
+    private int total;
+    @ApiModelProperty(name = "count", example = "20")
+    private int count;
+    @ApiModelProperty(name = "page", example = "1")
+    private int page;
+    @ApiModelProperty(name = "results")
+    private List<PaymentForSearchResult> results;
+    @ApiModelProperty(name = "_links")
+    SearchNavigationLinks links;
 
-    public PaymentSearchResults(List<PaymentForSearchResult> payments) {
-        this.payments = payments;
+    @Override
+    public int getTotal() {
+        return total;
+    }
+
+    @Override
+    public int getCount() {
+        return count;
+    }
+
+    @Override
+
+    public int getPage() {
+        return page;
     }
 
     public List<PaymentForSearchResult> getPayments() {
-        return payments;
+        return results;
     }
 
+    @Override
+    public SearchNavigationLinks getLinks() {
+        return links;
+    }
 }

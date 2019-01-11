@@ -422,11 +422,10 @@
                             <locations>
                                 <location>uk.gov.pay.api.resources.PaymentRefundsResource</location>
                                 <location>uk.gov.pay.api.resources.PaymentsResource</location>
+                                <location>uk.gov.pay.api.resources.SearchRefundsResource</location>
                             </locations>
                             <apiModelPropertyAccessExclusions>
                                 <apiModelPropertyAccessExclusion>agreementId</apiModelPropertyAccessExclusion>
-                                <apiModelPropertyAccessExclusion>language</apiModelPropertyAccessExclusion>
-                                <apiModelPropertyAccessExclusion>delayedCapture</apiModelPropertyAccessExclusion>
                             </apiModelPropertyAccessExclusions>
                             <schemes>
                                 <scheme>https</scheme>
@@ -438,6 +437,7 @@
                                 <description>GOV.UK Pay API</description>
                             </info>
                             <swaggerDirectory>${basedir}/swagger</swaggerDirectory>
+                            <outputFormats>json</outputFormats>
                         </apiSource>
                     </apiSources>
                 </configuration>

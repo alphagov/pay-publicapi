@@ -25,9 +25,9 @@ public class ValidCreatePaymentRequest {
     private final String description;
     @ApiModelProperty(name = "agreement_id", value = "ID of the agreement being used to collect the payment", required = false, example = "33890b55-b9ea-4e2f-90fd-77ae0e9009e2")
     private String agreementId;
-    @ApiModelProperty(value = "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages", required = false, example = "en")
+    @ApiModelProperty(name = "language", value = "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages", required = false, example = "en", allowableValues = "en,wy")
     private SupportedLanguage language;
-    @ApiModelProperty(value = "delayed capture flag", required = false, example = "false" )
+    @ApiModelProperty(name = "delayed_capture", value = "delayed capture flag", required = false, example = "false" )
     @JsonProperty("delayed_capture")
     private Boolean delayedCapture;
 
@@ -68,12 +68,10 @@ public class ValidCreatePaymentRequest {
         return Optional.ofNullable(agreementId);
     }
 
-    @ApiModelProperty(name = "language", access = "language")
     public Optional<SupportedLanguage> getLanguage() {
         return Optional.ofNullable(language);
     }
 
-    @ApiModelProperty(name = "delayedCapture", access = "delayedCapture")
     public Optional<Boolean> getDelayedCapture() {
         return Optional.ofNullable(delayedCapture);
     }

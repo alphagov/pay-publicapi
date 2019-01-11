@@ -1,6 +1,7 @@
 package uk.gov.pay.api.model.search.card;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.CardPayment;
@@ -15,6 +16,7 @@ import uk.gov.pay.commons.model.SupportedLanguage;
 import java.net.URI;
 import java.util.List;
 
+@ApiModel
 public class PaymentForSearchResult extends CardPayment {
 
     @JsonProperty(LINKS_JSON_ATTRIBUTE)
@@ -68,11 +70,11 @@ public class PaymentForSearchResult extends CardPayment {
                 paymentCancelLink,
                 paymentRefundsLink,
                 paymentCaptureUri,
-                paymentResult.getCorporateCardSurcharge(), 
+                paymentResult.getCorporateCardSurcharge(),
                 paymentResult.getTotalAmount());
     }
 
-    @ApiModelProperty(dataType = "uk.gov.pay.api.model.links.PaymentLinksForSearch")
+    @ApiModelProperty(name = LINKS_JSON_ATTRIBUTE, dataType = "uk.gov.pay.api.model.links.PaymentLinksForSearch")
     public PaymentLinksForSearch getLinks() {
         return links;
     }

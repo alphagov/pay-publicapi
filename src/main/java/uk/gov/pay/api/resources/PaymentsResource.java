@@ -18,6 +18,7 @@ import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.PaymentEvents;
 import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
+import uk.gov.pay.api.model.search.card.PaymentForSearchResult;
 import uk.gov.pay.api.model.search.card.PaymentSearchResults;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
 import uk.gov.pay.api.service.CancelPaymentService;
@@ -92,7 +93,7 @@ public class PaymentsResource {
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             code = 200)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = PaymentWithAllLinks.class),
+            @ApiResponse(code = 200, message = "OK", response = PaymentForSearchResult.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
@@ -178,7 +179,7 @@ public class PaymentsResource {
                                    @QueryParam("reference") String reference,
                                    @ApiParam(value = "The user email used in the payment to be searched", hidden = false)
                                    @QueryParam("email") String email,
-                                   @ApiParam(value = "State of payments to be searched. Example=success", hidden = false, allowableValues = "range[created,started,submitted,success,failed,cancelled,error")
+                                   @ApiParam(value = "State of payments to be searched. Example=success", hidden = false, allowableValues = "created,started,submitted,success,failed,cancelled,error")
                                    @QueryParam("state") String state,
                                    @ApiParam(value = "Card brand used for payment. Example=master-card", hidden = false)
                                    @QueryParam("card_brand") String cardBrand,

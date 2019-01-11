@@ -2,6 +2,7 @@ package uk.gov.pay.api.model.links;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.CardPayment;
@@ -20,6 +21,7 @@ import java.util.List;
 
 import static uk.gov.pay.api.model.Payment.LINKS_JSON_ATTRIBUTE;
 
+@ApiModel
 public class PaymentWithAllLinks {
 
     @JsonUnwrapped
@@ -28,12 +30,12 @@ public class PaymentWithAllLinks {
     @JsonProperty(LINKS_JSON_ATTRIBUTE)
     private PaymentLinks links = new PaymentLinks();
 
-    @ApiModelProperty(dataType = "uk.gov.pay.api.model.links.PaymentLinks")
+    @ApiModelProperty(name = LINKS_JSON_ATTRIBUTE, dataType = "uk.gov.pay.api.model.links.PaymentLinks")
     public PaymentLinks getLinks() {
         return links;
     }
 
-    @ApiModelProperty(dataType = "uk.gov.pay.api.model.Payment")
+    @ApiModelProperty // don't name this property (so it is generated in docs unwrapped)
     public Payment getPayment() {
         return payment;
     }
@@ -53,7 +55,7 @@ public class PaymentWithAllLinks {
         if (!state.isFinished()) {
             this.links.addCancel(paymentCancelUri.toString());
         }
-        
+
         if (paymentConnectorResponseLinks.stream().anyMatch(link -> "capture".equals(link.getRel()))) {
             this.links.addCapture(paymentCaptureUri.toString());
         }
@@ -111,7 +113,7 @@ public class PaymentWithAllLinks {
                 paymentCancelUri,
                 paymentRefundsUri,
                 paymentsCaptureUri,
-                paymentConnector.getCorporateCardSurcharge(), 
+                paymentConnector.getCorporateCardSurcharge(),
                 paymentConnector.getTotalAmount()
         );
     }
