@@ -1323,7 +1323,7 @@
           "type" : "string",
           "example" : "en",
           "description" : "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages",
-          "enum" : [ "en", "wy" ]
+          "enum" : [ "en", "cy" ]
         },
         "delayed_capture" : {
           "type" : "boolean",

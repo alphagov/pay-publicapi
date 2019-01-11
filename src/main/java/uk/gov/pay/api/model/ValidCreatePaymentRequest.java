@@ -25,7 +25,7 @@ public class ValidCreatePaymentRequest {
     private final String description;
     @ApiModelProperty(name = "agreement_id", value = "ID of the agreement being used to collect the payment", required = false, example = "33890b55-b9ea-4e2f-90fd-77ae0e9009e2")
     private String agreementId;
-    @ApiModelProperty(name = "language", value = "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages", required = false, example = "en", allowableValues = "en,wy")
+    @ApiModelProperty(name = "language", value = "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages", required = false, example = "en", allowableValues = "en,cy")
     private SupportedLanguage language;
     @ApiModelProperty(name = "delayed_capture", value = "delayed capture flag", required = false, example = "false" )
     @JsonProperty("delayed_capture")
