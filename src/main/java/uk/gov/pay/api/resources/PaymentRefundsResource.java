@@ -24,6 +24,8 @@ import uk.gov.pay.api.model.RefundFromConnector;
 import uk.gov.pay.api.model.RefundResponse;
 import uk.gov.pay.api.model.RefundsFromConnector;
 import uk.gov.pay.api.model.RefundsResponse;
+import uk.gov.pay.api.model.search.card.RefundResult;
+import uk.gov.pay.api.model.search.card.RefundForSearchResult;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
 
 import javax.inject.Inject;
@@ -84,7 +86,8 @@ public class PaymentRefundsResource {
     @Timed
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Get all refunds for a payment.",
+            response = RefundForSearchResult.class,
+            value = "Get all refunds for a payment",
             notes = "Return refunds for a payment. " +
                     "The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
             code = 200)
@@ -119,6 +122,7 @@ public class PaymentRefundsResource {
     @Path("/{refundId}")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
+            response = RefundResult.class,
             value = "Find payment refund by ID",
             notes = "Return payment refund information by Refund ID " +
                     "The Authorisation token needs to be specified in the 'authorization' header " +
@@ -155,6 +159,7 @@ public class PaymentRefundsResource {
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     @ApiOperation(
+            response = RefundResult.class,
             value = "Submit a refund for a payment",
             notes = "Return issued refund information. " +
                     "The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
