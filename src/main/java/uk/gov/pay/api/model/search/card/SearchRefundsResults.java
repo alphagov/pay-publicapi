@@ -1,22 +1,45 @@
 package uk.gov.pay.api.model.search.card;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModelProperty;
+import uk.gov.pay.api.model.links.SearchNavigationLinks;
+import uk.gov.pay.api.model.search.SearchPagination;
 
 import java.util.List;
 
-public class SearchRefundsResults {
+public class SearchRefundsResults implements SearchPagination {
 
-    @JsonProperty("results")
-    private List<RefundForSearchRefundsResult> refunds;
+    @ApiModelProperty(name = "total", example = "100")
+    private int total;
+    @ApiModelProperty(name = "count", example = "20")
+    private int count;
+    @ApiModelProperty(name = "page", example = "1")
+    private int page;
+    @ApiModelProperty(name = "results")
+    private List<RefundForSearchRefundsResult> results;
+    @ApiModelProperty(name = "_links")
+    private SearchNavigationLinks links;
 
-    public SearchRefundsResults(List<RefundForSearchRefundsResult> refunds) {
-        this.refunds = refunds;
+    @Override
+    public int getTotal() {
+        return total;
     }
 
-    public List<RefundForSearchRefundsResult> getRefunds() {
-        return refunds;
+    @Override
+    public int getCount() {
+        return count;
     }
-    
-    
 
+    @Override
+    public int getPage() {
+        return page;
+    }
+
+    public List<RefundForSearchRefundsResult> getResults() {
+        return results;
+    }
+
+    @Override
+    public SearchNavigationLinks getLinks() {
+        return links;
+    }
 }

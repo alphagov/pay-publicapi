@@ -361,7 +361,7 @@
     "/v1/payments/{paymentId}/refunds" : {
       "get" : {
         "tags" : [ "refunds" ],
-        "summary" : "Get all refunds for a payment.",
+        "summary" : "Get all refunds for a payment",
         "description" : "Return refunds for a payment. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "getRefunds",
         "produces" : [ "application/json" ],
@@ -373,7 +373,10 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "OK"
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/RefundForSearchResult"
+            }
           },
           "401" : {
             "description" : "Credentials are required to access this resource"
@@ -421,6 +424,12 @@
           }
         } ],
         "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Refund"
+            }
+          },
           "202" : {
             "description" : "ACCEPTED"
           },
@@ -471,7 +480,10 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "OK"
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/Refund"
+            }
           },
           "401" : {
             "description" : "Credentials are required to access this resource"
@@ -701,6 +713,17 @@
       }, {
         "type" : "object"
       } ]
+    },
+    "Embedded" : {
+      "type" : "object",
+      "properties" : {
+        "refunds" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Refund"
+          }
+        }
+      }
     },
     "ErrorResponse" : {
       "type" : "object",
@@ -1149,6 +1172,35 @@
       },
       "description" : "A POST link related to a payment"
     },
+    "Refund" : {
+      "type" : "object",
+      "properties" : {
+        "refund_id" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "created_date" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "payment_id" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "readOnly" : true
+        },
+        "_links" : {
+          "$ref" : "#/definitions/RefundLinksForSearch"
+        },
+        "status" : {
+          "type" : "string",
+          "readOnly" : true
+        }
+      }
+    },
     "RefundError" : {
       "type" : "object",
       "properties" : {
@@ -1194,6 +1246,21 @@
         "status" : {
           "type" : "string",
           "readOnly" : true
+        }
+      }
+    },
+    "RefundForSearchResult" : {
+      "type" : "object",
+      "properties" : {
+        "payment_id" : {
+          "type" : "string"
+        },
+        "_links" : {
+          "$ref" : "#/definitions/RefundLinksForSearch"
+        },
+        "_embedded" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/Embedded"
         }
       }
     },
@@ -1265,12 +1332,29 @@
     "SearchRefundsResults" : {
       "type" : "object",
       "properties" : {
+        "total" : {
+          "type" : "integer",
+          "format" : "int32",
+          "example" : 100
+        },
+        "count" : {
+          "type" : "integer",
+          "format" : "int32",
+          "example" : 20
+        },
+        "page" : {
+          "type" : "integer",
+          "format" : "int32",
+          "example" : 1
+        },
         "results" : {
           "type" : "array",
-          "readOnly" : true,
           "items" : {
             "$ref" : "#/definitions/RefundForSearchRefundsResult"
           }
+        },
+        "_links" : {
+          "$ref" : "#/definitions/SearchNavigationLinks"
         }
       }
     },

@@ -2,14 +2,15 @@ package uk.gov.pay.api.model.search.card;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.links.RefundLinksForSearch;
 
 import java.net.URI;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@ApiModel
 public class RefundForSearchRefundsResult {
-
 
     @JsonProperty("refund_id")
     private String refundId;
