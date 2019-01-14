@@ -36,7 +36,7 @@
           "description" : "State of payments to be searched. Example=success",
           "required" : false,
           "type" : "string",
-          "enum" : [ "range[created", "started", "submitted", "success", "failed", "cancelled", "error" ]
+          "enum" : [ "created", "started", "submitted", "success", "failed", "cancelled", "error" ]
         }, {
           "name" : "card_brand",
           "in" : "query",
@@ -184,7 +184,7 @@
           "200" : {
             "description" : "OK",
             "schema" : {
-              "$ref" : "#/definitions/PaymentWithAllLinks"
+              "$ref" : "#/definitions/PaymentForSearchResult"
             }
           },
           "401" : {
@@ -496,6 +496,62 @@
           }
         }
       }
+    },
+    "/v1/refunds" : {
+      "get" : {
+        "summary" : "Search refunds",
+        "description" : "Search refunds by 'from' and 'to' date. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "operationId" : "searchRefunds",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "from_date",
+          "in" : "query",
+          "description" : "From date of refunds to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "to_date",
+          "in" : "query",
+          "description" : "To date of refunds to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page number requested for the search, should be a positive integer (optional, defaults to 1)",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "display_size",
+          "in" : "query",
+          "description" : "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/SearchRefundsResults"
+            }
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "422" : {
+            "description" : "Invalid parameters. See Public API documentation for the correct data formats",
+            "schema" : {
+              "$ref" : "#/definitions/RefundError"
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "schema" : {
+              "$ref" : "#/definitions/RefundError"
+            }
+          }
+        }
+      }
     }
   },
   "definitions" : {
@@ -571,6 +627,11 @@
       }, {
         "type" : "object",
         "properties" : {
+          "language" : {
+            "type" : "string",
+            "example" : "en",
+            "enum" : [ "en", "cy" ]
+          },
           "refund_summary" : {
             "readOnly" : true,
             "$ref" : "#/definitions/RefundSummary"
@@ -792,6 +853,96 @@
       },
       "description" : "A List of Payment Events information"
     },
+    "PaymentForSearchResult" : {
+      "type" : "object",
+      "properties" : {
+        "amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "example" : 1200
+        },
+        "state" : {
+          "$ref" : "#/definitions/PaymentState"
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "Your Service Description"
+        },
+        "reference" : {
+          "type" : "string",
+          "example" : "your-reference"
+        },
+        "email" : {
+          "type" : "string",
+          "example" : "your email"
+        },
+        "language" : {
+          "type" : "string",
+          "example" : "en",
+          "enum" : [ "en", "cy" ]
+        },
+        "payment_id" : {
+          "type" : "string",
+          "example" : "hu20sqlact5260q2nanm0q8u93",
+          "readOnly" : true
+        },
+        "payment_provider" : {
+          "type" : "string",
+          "example" : "worldpay",
+          "readOnly" : true
+        },
+        "return_url" : {
+          "type" : "string",
+          "example" : "http://your.service.domain/your-reference",
+          "readOnly" : true
+        },
+        "created_date" : {
+          "type" : "string",
+          "example" : "2016-01-21T17:15:00Z",
+          "readOnly" : true
+        },
+        "refund_summary" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/RefundSummary"
+        },
+        "settlement_summary" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/SettlementSummary"
+        },
+        "card_details" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/CardDetails"
+        },
+        "delayed_capture" : {
+          "type" : "boolean",
+          "example" : false,
+          "description" : "delayed capture flag",
+          "readOnly" : true
+        },
+        "corporate_card_surcharge" : {
+          "type" : "integer",
+          "format" : "int64",
+          "example" : 250,
+          "readOnly" : true
+        },
+        "total_amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "example" : 1450,
+          "readOnly" : true
+        },
+        "_links" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/PaymentLinksForSearch"
+        },
+        "card_brand" : {
+          "type" : "string",
+          "example" : "Visa",
+          "description" : "Card Brand",
+          "readOnly" : true
+        }
+      }
+    },
     "PaymentLinks" : {
       "type" : "object",
       "properties" : {
@@ -867,11 +1018,28 @@
     "PaymentSearchResults" : {
       "type" : "object",
       "properties" : {
-        "results" : {
+        "total" : {
+          "type" : "integer",
+          "format" : "int32",
+          "example" : 100
+        },
+        "count" : {
+          "type" : "integer",
+          "format" : "int32",
+          "example" : 20
+        },
+        "page" : {
+          "type" : "integer",
+          "format" : "int32",
+          "example" : 1
+        },
+        "_links" : {
+          "$ref" : "#/definitions/SearchNavigationLinks"
+        },
+        "payments" : {
           "type" : "array",
-          "readOnly" : true,
           "items" : {
-            "$ref" : "#/definitions/CardPayment"
+            "$ref" : "#/definitions/PaymentForSearchResult"
           }
         }
       }
@@ -908,8 +1076,45 @@
     "PaymentWithAllLinks" : {
       "type" : "object",
       "properties" : {
-        "payment" : {
-          "$ref" : "#/definitions/Payment"
+        "amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "example" : 1200
+        },
+        "state" : {
+          "$ref" : "#/definitions/PaymentState"
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "Your Service Description"
+        },
+        "reference" : {
+          "type" : "string",
+          "example" : "your-reference"
+        },
+        "email" : {
+          "type" : "string",
+          "example" : "your email"
+        },
+        "payment_id" : {
+          "type" : "string",
+          "example" : "hu20sqlact5260q2nanm0q8u93",
+          "readOnly" : true
+        },
+        "payment_provider" : {
+          "type" : "string",
+          "example" : "worldpay",
+          "readOnly" : true
+        },
+        "return_url" : {
+          "type" : "string",
+          "example" : "http://your.service.domain/your-reference",
+          "readOnly" : true
+        },
+        "created_date" : {
+          "type" : "string",
+          "example" : "2016-01-21T17:15:00Z",
+          "readOnly" : true
         },
         "_links" : {
           "readOnly" : true,
@@ -944,6 +1149,70 @@
       },
       "description" : "A POST link related to a payment"
     },
+    "RefundError" : {
+      "type" : "object",
+      "properties" : {
+        "field" : {
+          "type" : "string",
+          "example" : "amount_submitted"
+        },
+        "code" : {
+          "type" : "string",
+          "example" : "P0102"
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "Invalid attribute value: amountSubmitted. Must be less than or equal to 10000000"
+        }
+      },
+      "description" : "A Refund Error response"
+    },
+    "RefundForSearchRefundsResult" : {
+      "type" : "object",
+      "properties" : {
+        "refund_id" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "created_date" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "payment_id" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "readOnly" : true
+        },
+        "_links" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/RefundLinksForSearch"
+        },
+        "status" : {
+          "type" : "string",
+          "readOnly" : true
+        }
+      }
+    },
+    "RefundLinksForSearch" : {
+      "type" : "object",
+      "properties" : {
+        "self" : {
+          "description" : "self",
+          "readOnly" : true,
+          "$ref" : "#/definitions/Link"
+        },
+        "payment" : {
+          "description" : "payment",
+          "readOnly" : true,
+          "$ref" : "#/definitions/Link"
+        }
+      },
+      "description" : "links for search refunds resource"
+    },
     "RefundSummary" : {
       "type" : "object",
       "properties" : {
@@ -966,6 +1235,44 @@
         }
       },
       "description" : "A structure representing the refunds availability"
+    },
+    "SearchNavigationLinks" : {
+      "type" : "object",
+      "properties" : {
+        "self" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/Link"
+        },
+        "first_page" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/Link"
+        },
+        "last_page" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/Link"
+        },
+        "prev_page" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/Link"
+        },
+        "next_page" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/Link"
+        }
+      },
+      "description" : "Links to navigate through pages"
+    },
+    "SearchRefundsResults" : {
+      "type" : "object",
+      "properties" : {
+        "results" : {
+          "type" : "array",
+          "readOnly" : true,
+          "items" : {
+            "$ref" : "#/definitions/RefundForSearchRefundsResult"
+          }
+        }
+      }
     },
     "SettlementSummary" : {
       "type" : "object",
@@ -1011,6 +1318,18 @@
           "type" : "string",
           "example" : "New passport application",
           "description" : "payment description"
+        },
+        "language" : {
+          "type" : "string",
+          "example" : "en",
+          "description" : "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages",
+          "enum" : [ "en", "cy" ]
+        },
+        "delayed_capture" : {
+          "type" : "boolean",
+          "example" : false,
+          "description" : "delayed capture flag",
+          "readOnly" : true
         }
       }
     }
