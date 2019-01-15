@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +25,8 @@ import uk.gov.pay.api.model.RefundFromConnector;
 import uk.gov.pay.api.model.RefundResponse;
 import uk.gov.pay.api.model.RefundsFromConnector;
 import uk.gov.pay.api.model.RefundsResponse;
-import uk.gov.pay.api.model.search.card.RefundResult;
 import uk.gov.pay.api.model.search.card.RefundForSearchResult;
+import uk.gov.pay.api.model.search.card.RefundResult;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
 
 import javax.inject.Inject;
@@ -90,7 +91,8 @@ public class PaymentRefundsResource {
             value = "Get all refunds for a payment",
             notes = "Return refunds for a payment. " +
                     "The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
-            code = 200)
+            code = 200,
+            authorizations = {@Authorization("Authorisation")})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
@@ -127,7 +129,8 @@ public class PaymentRefundsResource {
             notes = "Return payment refund information by Refund ID " +
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
-            code = 200)
+            code = 200,
+            authorizations = {@Authorization("Authorisation")})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
@@ -163,7 +166,9 @@ public class PaymentRefundsResource {
             value = "Submit a refund for a payment",
             notes = "Return issued refund information. " +
                     "The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
-            code = 202)
+            code = 202,
+            authorizations = {@Authorization("Authorisation")}
+    )
     @ApiResponses(value = {
             @ApiResponse(code = 202, message = "ACCEPTED"),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),

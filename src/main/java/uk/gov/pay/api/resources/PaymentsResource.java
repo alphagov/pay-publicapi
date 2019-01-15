@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +92,8 @@ public class PaymentsResource {
             notes = "Return information about the payment " +
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
-            code = 200)
+            code = 200,
+            authorizations = {@Authorization("Authorisation")})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = PaymentForSearchResult.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
@@ -119,7 +121,8 @@ public class PaymentsResource {
             notes = "Return payment events information about a certain payment " +
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
-            code = 200)
+            code = 200,
+            authorizations = {@Authorization("Authorisation")})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = PaymentEvents.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
@@ -165,7 +168,8 @@ public class PaymentsResource {
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             responseContainer = "List",
-            code = 200)
+            code = 200,
+            authorizations = {@Authorization("Authorisation")})
 
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = PaymentSearchResults.class),
@@ -222,7 +226,8 @@ public class PaymentsResource {
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             code = 201,
-            nickname = "newPayment")
+            nickname = "newPayment",
+            authorizations = {@Authorization("Authorisation")})
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Created", response = PaymentWithAllLinks.class),
             @ApiResponse(code = 400, message = "Bad request", response = PaymentError.class),
@@ -255,7 +260,8 @@ public class PaymentsResource {
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be cancelled if it's in " +
                     "a state that isn't finished.",
-            code = 204)
+            code = 204,
+            authorizations = {@Authorization("Authorisation")})
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "No Content"),
             @ApiResponse(code = 400, message = "Cancellation of payment failed", response = PaymentError.class),
@@ -283,7 +289,8 @@ public class PaymentsResource {
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be captured if it's in " +
                     "'submitted' state",
-            code = 204)
+            code = 204,
+            authorizations = {@Authorization("Authorisation")})
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "No Content"),
             @ApiResponse(code = 400, message = "Capture of payment failed", response = PaymentError.class),

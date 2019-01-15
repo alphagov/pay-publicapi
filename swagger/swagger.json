@@ -114,7 +114,10 @@
               "$ref" : "#/definitions/PaymentError"
             }
           }
-        }
+        },
+        "security" : [ {
+          "Authorisation" : [ ]
+        } ]
       },
       "post" : {
         "summary" : "Create new payment",
@@ -165,7 +168,10 @@
               "$ref" : "#/definitions/PaymentError"
             }
           }
-        }
+        },
+        "security" : [ {
+          "Authorisation" : [ ]
+        } ]
       }
     },
     "/v1/payments/{paymentId}" : {
@@ -208,7 +214,10 @@
               "$ref" : "#/definitions/PaymentError"
             }
           }
-        }
+        },
+        "security" : [ {
+          "Authorisation" : [ ]
+        } ]
       }
     },
     "/v1/payments/{paymentId}/cancel" : {
@@ -260,7 +269,10 @@
               "$ref" : "#/definitions/PaymentError"
             }
           }
-        }
+        },
+        "security" : [ {
+          "Authorisation" : [ ]
+        } ]
       }
     },
     "/v1/payments/{paymentId}/capture" : {
@@ -312,7 +324,10 @@
               "$ref" : "#/definitions/PaymentError"
             }
           }
-        }
+        },
+        "security" : [ {
+          "Authorisation" : [ ]
+        } ]
       }
     },
     "/v1/payments/{paymentId}/events" : {
@@ -355,7 +370,10 @@
               "$ref" : "#/definitions/PaymentError"
             }
           }
-        }
+        },
+        "security" : [ {
+          "Authorisation" : [ ]
+        } ]
       }
     },
     "/v1/payments/{paymentId}/refunds" : {
@@ -399,7 +417,10 @@
               "$ref" : "#/definitions/PaymentError"
             }
           }
-        }
+        },
+        "security" : [ {
+          "Authorisation" : [ ]
+        } ]
       },
       "post" : {
         "tags" : [ "refunds" ],
@@ -457,7 +478,10 @@
               "$ref" : "#/definitions/PaymentError"
             }
           }
-        }
+        },
+        "security" : [ {
+          "Authorisation" : [ ]
+        } ]
       }
     },
     "/v1/payments/{paymentId}/refunds/{refundId}" : {
@@ -506,7 +530,10 @@
               "$ref" : "#/definitions/PaymentError"
             }
           }
-        }
+        },
+        "security" : [ {
+          "Authorisation" : [ ]
+        } ]
       }
     },
     "/v1/refunds" : {
@@ -562,8 +589,18 @@
               "$ref" : "#/definitions/RefundError"
             }
           }
-        }
+        },
+        "security" : [ {
+          "Authorisation" : [ ]
+        } ]
       }
+    }
+  },
+  "securityDefinitions" : {
+    "Authorisation" : {
+      "type" : "apiKey",
+      "name" : "Authorisation",
+      "in" : "header"
     }
   },
   "definitions" : {
