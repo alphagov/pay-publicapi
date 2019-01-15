@@ -24,8 +24,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CancelPaymentServiceTest {
-    
-    private final String CHARGE_ID = "charge8133029783750964639";
+
     private final Account ACCOUNT = new Account("123456", TokenPaymentType.CARD);
     
     private CancelPaymentService cancelPaymentService;
@@ -39,7 +38,6 @@ public class CancelPaymentServiceTest {
     @Before
     public void setUp() {
         when(mockConfiguration.getConnectorUrl()).thenReturn(connectorRule.getUrl());
-
         ConnectorUriGenerator connectorUriGenerator = new ConnectorUriGenerator(mockConfiguration);
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
         cancelPaymentService = new CancelPaymentService(client, connectorUriGenerator);
@@ -49,9 +47,7 @@ public class CancelPaymentServiceTest {
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-cancel-payment-with-created-state"})
     public void cancelAPaymentWithCreatedState() {
-        
-        Response cancelPaymentResponse = cancelPaymentService.cancel(ACCOUNT, CHARGE_ID);
-
+        Response cancelPaymentResponse = cancelPaymentService.cancel(ACCOUNT, "charge8133029783750964639");
         assertThat(cancelPaymentResponse.getStatus(), is(204));
     }
 }

@@ -30,7 +30,7 @@ pipeline {
       }
       steps {
         script {
-          def long stepBuildTime = System.currentTimeMillis()
+          def stepBuildTime = System.currentTimeMillis()
           def commit = gitCommit()
           def branchName = 'master'
 
@@ -58,7 +58,7 @@ pipeline {
       }
       steps {
         script {
-          def long stepBuildTime = System.currentTimeMillis()
+          def stepBuildTime = System.currentTimeMillis()
           def commit = gitCommit()
           def branchName = gitBranchName()
 

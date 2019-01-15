@@ -40,22 +40,6 @@ public class PaymentsCancelResourceITest extends PaymentResourceITestBase {
     }
 
     @Test
-    public void cancelPayment_returns400_whenConnectorRespondsWithA400() throws IOException {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondBadRequest_WhenCancelCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID, "Invalid account Id");
-
-        InputStream body = postCancelPaymentResponse(TEST_CHARGE_ID)
-                .statusCode(400)
-                .contentType(JSON).extract()
-                .body().asInputStream();
-
-        JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", Is.is("P0501"))
-                .assertThat("$.description", Is.is("Cancellation of payment failed"));
-    }
-
-    @Test
     public void cancelPayment_returns404_whenPaymentNotFound() throws IOException {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondChargeNotFound_WhenCancelCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID, "some backend error message");
