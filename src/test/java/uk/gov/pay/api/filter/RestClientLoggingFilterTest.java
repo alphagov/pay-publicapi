@@ -4,7 +4,6 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
-import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.Before;
@@ -32,7 +31,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.verify;
-import static uk.gov.pay.api.filter.LoggingFilter.HEADER_REQUEST_ID;
+import static uk.gov.pay.api.filter.RestClientLoggingFilter.HEADER_REQUEST_ID;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RestClientLoggingFilterTest {
