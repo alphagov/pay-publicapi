@@ -39,7 +39,6 @@ import uk.gov.pay.api.exception.mapper.RefundsValidationExceptionMapper;
 import uk.gov.pay.api.exception.mapper.SearchChargesExceptionMapper;
 import uk.gov.pay.api.exception.mapper.SearchRefundsExceptionMapper;
 import uk.gov.pay.api.filter.AuthorizationValidationFilter;
-import uk.gov.pay.api.filter.LoggingFilter;
 import uk.gov.pay.api.filter.RateLimiterFilter;
 import uk.gov.pay.api.healthcheck.Ping;
 import uk.gov.pay.api.resources.AgreementsResource;
@@ -49,6 +48,7 @@ import uk.gov.pay.api.resources.PaymentRefundsResource;
 import uk.gov.pay.api.resources.PaymentsResource;
 import uk.gov.pay.api.resources.RequestDeniedResource;
 import uk.gov.pay.api.resources.SearchRefundsResource;
+import uk.gov.pay.commons.utils.logging.LoggingFilter;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.util.concurrent.TimeUnit;

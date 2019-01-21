@@ -7,13 +7,13 @@ server:
       port: 0
 
 logging:
-    level: INFO
-    appenders:
-      - type: console
-        threshold: ALL
-        timeZone: UTC
-        target: stdout
-        logFormat: "[%d{yyyy-MM-dd HH:mm:ss.SSS}] [thread=%thread] [level=%-5level] [logger=%logger{15}] [requestID=somerequestid] - %msg%n"
+  level: INFO
+  appenders:
+    - type: console
+      threshold: ALL
+      timeZone: UTC
+      target: stdout
+      logFormat: "[%d{yyyy-MM-dd HH:mm:ss.SSS}] [thread=%thread] [level=%-5level] [logger=%logger{15}] [requestID=%X{X-Request-Id:-(none)}] - %msg%n"
 
 baseUrl: http://publicapi.url/
 connectorUrl: http://connector_card.url/
