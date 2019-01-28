@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 import static javax.ws.rs.HttpMethod.GET;
 
-@ApiModel(value = "PaymentLinks", description = "links for events resource")
+@ApiModel(value = "PaymentLinksForEvents", description = "links for events resource")
 public class PaymentLinksForEvents {
 
     public static final String SELF = "self";

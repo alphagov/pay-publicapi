@@ -13,9 +13,11 @@ import java.net.URI;
 public class RefundForSearchRefundsResult {
 
     @JsonProperty("refund_id")
+    @ApiModelProperty(example = "act4c33g40j3edfmi8jknab84x")
     private String refundId;
 
     @JsonProperty("created_date")
+    @ApiModelProperty(example = "2017-01-10T16:52:07.855Z")
     private String createdDate;
 
     private String chargeId;
@@ -25,6 +27,7 @@ public class RefundForSearchRefundsResult {
     private RefundLinksForSearch links = new RefundLinksForSearch();
     
     @JsonProperty("status")
+    @ApiModelProperty(example = "success", allowableValues = "submitted,success,error")
     private String status;
 
     public RefundForSearchRefundsResult() {
@@ -53,6 +56,7 @@ public class RefundForSearchRefundsResult {
     }
 
     @JsonProperty("payment_id")
+    @ApiModelProperty(example = "2q1r18djndhsrm3closjqr81fx")
     public String getChargeId() {
         return chargeId;
     }
@@ -68,6 +72,7 @@ public class RefundForSearchRefundsResult {
     }
     
     @JsonProperty("amount")
+    @ApiModelProperty(example = "120")
     public Long getAmount() {
         return amount;
     }

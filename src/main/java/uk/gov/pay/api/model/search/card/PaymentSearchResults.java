@@ -17,7 +17,6 @@ public class PaymentSearchResults implements SearchPagination {
     private int count;
     @ApiModelProperty(name = "page", example = "1")
     private int page;
-    @ApiModelProperty(name = "results")
     private List<PaymentForSearchResult> results;
     @ApiModelProperty(name = "_links")
     SearchNavigationLinks links;
@@ -38,6 +37,7 @@ public class PaymentSearchResults implements SearchPagination {
         return page;
     }
 
+    @ApiModelProperty(name = "results")
     public List<PaymentForSearchResult> getPayments() {
         return results;
     }

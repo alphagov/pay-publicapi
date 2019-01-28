@@ -45,6 +45,7 @@ public class SearchRefundsResource {
     @Path("/v1/refunds")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
+            tags = "refunds",
             value = "Search refunds",
             notes = "Search refunds by 'from' and 'to' date. " +
                     "The Authorisation token needs to be specified in the 'authorization' header " +

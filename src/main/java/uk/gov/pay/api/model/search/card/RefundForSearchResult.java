@@ -10,7 +10,7 @@ import java.util.List;
 @ApiModel
 public class RefundForSearchResult {
 
-    @ApiModelProperty(name = "payment_id")
+    @ApiModelProperty(name = "payment_id", example = "hu20sqlact5260q2nanm0q8u93")
     private String paymentId;
     @ApiModelProperty(name = "_links")
     private RefundLinksForSearch links;
@@ -18,6 +18,7 @@ public class RefundForSearchResult {
     private Embedded embedded;
 
     public class Embedded {
+        @ApiModelProperty
         private List<RefundResult> refunds;
 
         public List<RefundResult> getRefunds() {

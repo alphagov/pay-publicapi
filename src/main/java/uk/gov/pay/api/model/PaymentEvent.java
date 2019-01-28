@@ -42,7 +42,7 @@ public class PaymentEvent {
         return state;
     }
 
-    @ApiModelProperty(value = "updated",example = "updated_date")
+    @ApiModelProperty(value = "updated",example = "2017-01-10T16:44:48.646Z")
     public String getUpdated() {
         return updated;
     }
