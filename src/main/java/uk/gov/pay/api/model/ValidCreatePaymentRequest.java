@@ -1,6 +1,7 @@
 package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
@@ -13,6 +14,7 @@ import java.util.StringJoiner;
  * Note that this class does not actually do any validation itself:
  * do that yourself before constructing an instance of this object
  **/
+@ApiModel(value = "CreatePaymentRequest")
 public class ValidCreatePaymentRequest {
 
     @ApiModelProperty(value = "amount in pence", required = true, allowableValues = "range[1, 10000000]", example = "12000")

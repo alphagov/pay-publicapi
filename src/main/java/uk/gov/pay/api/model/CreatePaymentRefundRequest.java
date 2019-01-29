@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Optional;
 
-@ApiModel(value = "CreatePaymentRefundRequest", description = "The Payment Refund Request Payload")
+@ApiModel(value = "PaymentRefundRequest", description = "The Payment Refund Request Payload")
 public class CreatePaymentRefundRequest {
 
     public static final String REFUND_AMOUNT_AVAILABLE="refund_amount_available";

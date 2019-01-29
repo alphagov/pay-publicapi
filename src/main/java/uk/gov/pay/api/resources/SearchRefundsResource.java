@@ -51,7 +51,7 @@ public class SearchRefundsResource {
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             responseContainer = "List",
-            authorizations = {@Authorization("Authorisation")},
+            authorizations = {@Authorization("Authorization")},
             code = 200)
 
     @ApiResponses(value = {

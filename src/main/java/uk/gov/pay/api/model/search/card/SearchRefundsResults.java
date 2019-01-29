@@ -1,11 +1,13 @@
 package uk.gov.pay.api.model.search.card;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.links.SearchNavigationLinks;
 import uk.gov.pay.api.model.search.SearchPagination;
 
 import java.util.List;
 
+@ApiModel(value = "RefundSearchResults")
 public class SearchRefundsResults implements SearchPagination {
 
     @ApiModelProperty(name = "total", example = "100")
