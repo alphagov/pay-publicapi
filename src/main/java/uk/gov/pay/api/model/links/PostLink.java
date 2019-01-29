@@ -31,7 +31,7 @@ public class PostLink extends Link {
         return super.getMethod();
     }
 
-    @ApiModelProperty(example = "multipart/form-data")
+    @ApiModelProperty(example = "application/x-www-form-urlencoded")
     public String getType() {
         return type;
     }

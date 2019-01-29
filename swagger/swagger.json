@@ -7,8 +7,7 @@
   },
   "host" : "publicapi.payments.service.gov.uk",
   "tags" : [ {
-    "name" : "refunds",
-    "description" : "Public Api Endpoints for Refunds"
+    "name" : "refunds"
   } ],
   "schemes" : [ "https" ],
   "paths" : {
@@ -538,6 +537,7 @@
     },
     "/v1/refunds" : {
       "get" : {
+        "tags" : [ "refunds" ],
         "summary" : "Search refunds",
         "description" : "Search refunds by 'from' and 'to' date. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "searchRefunds",
@@ -871,7 +871,7 @@
         },
         "updated" : {
           "type" : "string",
-          "example" : "updated_date",
+          "example" : "2017-01-10T16:44:48.646Z",
           "description" : "updated",
           "readOnly" : true
         },
@@ -908,7 +908,7 @@
           "readOnly" : true
         },
         "_links" : {
-          "$ref" : "#/definitions/PaymentLinks"
+          "$ref" : "#/definitions/PaymentLinksForEvents"
         }
       },
       "description" : "A List of Payment Events information"
@@ -1044,6 +1044,17 @@
       },
       "description" : "links for payment"
     },
+    "PaymentLinksForEvents" : {
+      "type" : "object",
+      "properties" : {
+        "self" : {
+          "description" : "self",
+          "readOnly" : true,
+          "$ref" : "#/definitions/Link"
+        }
+      },
+      "description" : "links for events resource"
+    },
     "PaymentLinksForSearch" : {
       "type" : "object",
       "properties" : {
@@ -1096,7 +1107,7 @@
         "_links" : {
           "$ref" : "#/definitions/SearchNavigationLinks"
         },
-        "payments" : {
+        "results" : {
           "type" : "array",
           "items" : {
             "$ref" : "#/definitions/PaymentForSearchResult"
@@ -1187,7 +1198,7 @@
       "properties" : {
         "type" : {
           "type" : "string",
-          "example" : "multipart/form-data"
+          "example" : "application/x-www-form-urlencoded"
         },
         "params" : {
           "type" : "object",
@@ -1214,19 +1225,23 @@
       "properties" : {
         "refund_id" : {
           "type" : "string",
+          "example" : "act4c33g40j3edfmi8jknab84x",
           "readOnly" : true
         },
         "created_date" : {
           "type" : "string",
+          "example" : "2017-01-10T16:52:07.855Z",
           "readOnly" : true
         },
         "payment_id" : {
           "type" : "string",
+          "example" : "2q1r18djndhsrm3closjqr81fx",
           "readOnly" : true
         },
         "amount" : {
           "type" : "integer",
           "format" : "int64",
+          "example" : 120,
           "readOnly" : true
         },
         "_links" : {
@@ -1234,7 +1249,9 @@
         },
         "status" : {
           "type" : "string",
-          "readOnly" : true
+          "example" : "success",
+          "readOnly" : true,
+          "enum" : [ "submitted", "success", "error" ]
         }
       }
     },
@@ -1261,19 +1278,23 @@
       "properties" : {
         "refund_id" : {
           "type" : "string",
+          "example" : "act4c33g40j3edfmi8jknab84x",
           "readOnly" : true
         },
         "created_date" : {
           "type" : "string",
+          "example" : "2017-01-10T16:52:07.855Z",
           "readOnly" : true
         },
         "payment_id" : {
           "type" : "string",
+          "example" : "2q1r18djndhsrm3closjqr81fx",
           "readOnly" : true
         },
         "amount" : {
           "type" : "integer",
           "format" : "int64",
+          "example" : 120,
           "readOnly" : true
         },
         "_links" : {
@@ -1282,7 +1303,9 @@
         },
         "status" : {
           "type" : "string",
-          "readOnly" : true
+          "example" : "success",
+          "readOnly" : true,
+          "enum" : [ "submitted", "success", "error" ]
         }
       }
     },
@@ -1290,7 +1313,8 @@
       "type" : "object",
       "properties" : {
         "payment_id" : {
-          "type" : "string"
+          "type" : "string",
+          "example" : "hu20sqlact5260q2nanm0q8u93"
         },
         "_links" : {
           "$ref" : "#/definitions/RefundLinksForSearch"
