@@ -9,7 +9,7 @@ import uk.gov.pay.api.model.links.RefundLinksForSearch;
 import java.net.URI;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@ApiModel
+@ApiModel(value = "RefundDetailForSearch")
 public class RefundForSearchRefundsResult {
 
     @JsonProperty("refund_id")

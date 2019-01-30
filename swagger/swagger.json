@@ -115,7 +115,7 @@
           }
         },
         "security" : [ {
-          "Authorisation" : [ ]
+          "Authorization" : [ ]
         } ]
       },
       "post" : {
@@ -130,7 +130,7 @@
           "description" : "requestPayload",
           "required" : true,
           "schema" : {
-            "$ref" : "#/definitions/ValidCreatePaymentRequest"
+            "$ref" : "#/definitions/CreatePaymentRequest"
           }
         } ],
         "responses" : {
@@ -169,7 +169,7 @@
           }
         },
         "security" : [ {
-          "Authorisation" : [ ]
+          "Authorization" : [ ]
         } ]
       }
     },
@@ -189,7 +189,7 @@
           "200" : {
             "description" : "OK",
             "schema" : {
-              "$ref" : "#/definitions/PaymentForSearchResult"
+              "$ref" : "#/definitions/PaymentDetailForSearch"
             }
           },
           "401" : {
@@ -215,7 +215,7 @@
           }
         },
         "security" : [ {
-          "Authorisation" : [ ]
+          "Authorization" : [ ]
         } ]
       }
     },
@@ -270,7 +270,7 @@
           }
         },
         "security" : [ {
-          "Authorisation" : [ ]
+          "Authorization" : [ ]
         } ]
       }
     },
@@ -325,7 +325,7 @@
           }
         },
         "security" : [ {
-          "Authorisation" : [ ]
+          "Authorization" : [ ]
         } ]
       }
     },
@@ -371,7 +371,7 @@
           }
         },
         "security" : [ {
-          "Authorisation" : [ ]
+          "Authorization" : [ ]
         } ]
       }
     },
@@ -418,7 +418,7 @@
           }
         },
         "security" : [ {
-          "Authorisation" : [ ]
+          "Authorization" : [ ]
         } ]
       },
       "post" : {
@@ -440,7 +440,7 @@
           "description" : "requestPayload",
           "required" : true,
           "schema" : {
-            "$ref" : "#/definitions/CreatePaymentRefundRequest"
+            "$ref" : "#/definitions/PaymentRefundRequest"
           }
         } ],
         "responses" : {
@@ -479,7 +479,7 @@
           }
         },
         "security" : [ {
-          "Authorisation" : [ ]
+          "Authorization" : [ ]
         } ]
       }
     },
@@ -531,7 +531,7 @@
           }
         },
         "security" : [ {
-          "Authorisation" : [ ]
+          "Authorization" : [ ]
         } ]
       }
     },
@@ -571,7 +571,7 @@
           "200" : {
             "description" : "OK",
             "schema" : {
-              "$ref" : "#/definitions/SearchRefundsResults"
+              "$ref" : "#/definitions/RefundSearchResults"
             }
           },
           "401" : {
@@ -591,15 +591,15 @@
           }
         },
         "security" : [ {
-          "Authorisation" : [ ]
+          "Authorization" : [ ]
         } ]
       }
     }
   },
   "securityDefinitions" : {
-    "Authorisation" : {
+    "Authorization" : {
       "type" : "apiKey",
-      "name" : "Authorisation",
+      "name" : "Authorization",
       "in" : "header"
     }
   },
@@ -720,29 +720,46 @@
         }
       } ]
     },
-    "CreatePaymentRefundRequest" : {
+    "CreatePaymentRequest" : {
       "type" : "object",
-      "required" : [ "amount" ],
+      "required" : [ "amount", "description", "reference", "return_url" ],
       "properties" : {
         "amount" : {
           "type" : "integer",
           "format" : "int32",
-          "example" : 150000,
-          "description" : "Amount in pence. Can't be more than the available amount for refunds",
+          "example" : 12000,
+          "description" : "amount in pence",
           "minimum" : 1,
           "maximum" : 10000000
         },
-        "refund_amount_available" : {
-          "type" : "integer",
-          "format" : "int32",
-          "example" : 200000,
-          "description" : "Amount in pence. Total amount still available before issuing the refund",
-          "readOnly" : true,
-          "minimum" : 1,
-          "maximum" : 10000000
+        "reference" : {
+          "type" : "string",
+          "example" : "12345",
+          "description" : "payment reference"
+        },
+        "return_url" : {
+          "type" : "string",
+          "example" : "https://service-name.gov.uk/transactions/12345",
+          "description" : "service return url"
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "New passport application",
+          "description" : "payment description"
+        },
+        "language" : {
+          "type" : "string",
+          "example" : "en",
+          "description" : "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages",
+          "enum" : [ "en", "cy" ]
+        },
+        "delayed_capture" : {
+          "type" : "boolean",
+          "example" : false,
+          "description" : "delayed capture flag",
+          "readOnly" : true
         }
-      },
-      "description" : "The Payment Refund Request Payload"
+      }
     },
     "DirectDebitPayment" : {
       "allOf" : [ {
@@ -751,7 +768,7 @@
         "type" : "object"
       } ]
     },
-    "Embedded" : {
+    "EmbeddedRefunds" : {
       "type" : "object",
       "properties" : {
         "refunds" : {
@@ -838,82 +855,7 @@
         }
       }
     },
-    "PaymentError" : {
-      "type" : "object",
-      "properties" : {
-        "field" : {
-          "type" : "string",
-          "example" : "amount"
-        },
-        "code" : {
-          "type" : "string",
-          "example" : "P0102"
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "Invalid attribute value: amount. Must be less than or equal to 10000000"
-        }
-      },
-      "description" : "A Payment Error response"
-    },
-    "PaymentEvent" : {
-      "type" : "object",
-      "properties" : {
-        "payment_id" : {
-          "type" : "string",
-          "example" : "hu20sqlact5260q2nanm0q8u93",
-          "readOnly" : true
-        },
-        "state" : {
-          "description" : "state",
-          "readOnly" : true,
-          "$ref" : "#/definitions/PaymentState"
-        },
-        "updated" : {
-          "type" : "string",
-          "example" : "2017-01-10T16:44:48.646Z",
-          "description" : "updated",
-          "readOnly" : true
-        },
-        "_links" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/PaymentEventLink"
-        }
-      },
-      "description" : "A List of Payment Events information"
-    },
-    "PaymentEventLink" : {
-      "type" : "object",
-      "properties" : {
-        "payment_url" : {
-          "description" : "payment_url",
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        }
-      },
-      "description" : "Resource link for a payment of a payment event"
-    },
-    "PaymentEvents" : {
-      "type" : "object",
-      "properties" : {
-        "events" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/PaymentEvent"
-          }
-        },
-        "payment_id" : {
-          "type" : "string",
-          "example" : "hu20sqlact5260q2nanm0q8u93",
-          "readOnly" : true
-        },
-        "_links" : {
-          "$ref" : "#/definitions/PaymentLinksForEvents"
-        }
-      },
-      "description" : "A List of Payment Events information"
-    },
-    "PaymentForSearchResult" : {
+    "PaymentDetailForSearch" : {
       "type" : "object",
       "properties" : {
         "amount" : {
@@ -1003,6 +945,81 @@
         }
       }
     },
+    "PaymentError" : {
+      "type" : "object",
+      "properties" : {
+        "field" : {
+          "type" : "string",
+          "example" : "amount"
+        },
+        "code" : {
+          "type" : "string",
+          "example" : "P0102"
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "Invalid attribute value: amount. Must be less than or equal to 10000000"
+        }
+      },
+      "description" : "A Payment Error response"
+    },
+    "PaymentEvent" : {
+      "type" : "object",
+      "properties" : {
+        "payment_id" : {
+          "type" : "string",
+          "example" : "hu20sqlact5260q2nanm0q8u93",
+          "readOnly" : true
+        },
+        "state" : {
+          "description" : "state",
+          "readOnly" : true,
+          "$ref" : "#/definitions/PaymentState"
+        },
+        "updated" : {
+          "type" : "string",
+          "example" : "2017-01-10T16:44:48.646Z",
+          "description" : "updated",
+          "readOnly" : true
+        },
+        "_links" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/PaymentEventLink"
+        }
+      },
+      "description" : "A List of Payment Events information"
+    },
+    "PaymentEventLink" : {
+      "type" : "object",
+      "properties" : {
+        "payment_url" : {
+          "description" : "payment_url",
+          "readOnly" : true,
+          "$ref" : "#/definitions/Link"
+        }
+      },
+      "description" : "Resource link for a payment of a payment event"
+    },
+    "PaymentEvents" : {
+      "type" : "object",
+      "properties" : {
+        "events" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/PaymentEvent"
+          }
+        },
+        "payment_id" : {
+          "type" : "string",
+          "example" : "hu20sqlact5260q2nanm0q8u93",
+          "readOnly" : true
+        },
+        "_links" : {
+          "$ref" : "#/definitions/PaymentLinksForEvents"
+        }
+      },
+      "description" : "A List of Payment Events information"
+    },
     "PaymentLinks" : {
       "type" : "object",
       "properties" : {
@@ -1086,6 +1103,30 @@
       },
       "description" : "links for search payment resource"
     },
+    "PaymentRefundRequest" : {
+      "type" : "object",
+      "required" : [ "amount" ],
+      "properties" : {
+        "amount" : {
+          "type" : "integer",
+          "format" : "int32",
+          "example" : 150000,
+          "description" : "Amount in pence. Can't be more than the available amount for refunds",
+          "minimum" : 1,
+          "maximum" : 10000000
+        },
+        "refund_amount_available" : {
+          "type" : "integer",
+          "format" : "int32",
+          "example" : 200000,
+          "description" : "Amount in pence. Total amount still available before issuing the refund",
+          "readOnly" : true,
+          "minimum" : 1,
+          "maximum" : 10000000
+        }
+      },
+      "description" : "The Payment Refund Request Payload"
+    },
     "PaymentSearchResults" : {
       "type" : "object",
       "properties" : {
@@ -1110,7 +1151,7 @@
         "results" : {
           "type" : "array",
           "items" : {
-            "$ref" : "#/definitions/PaymentForSearchResult"
+            "$ref" : "#/definitions/PaymentDetailForSearch"
           }
         }
       }
@@ -1255,25 +1296,7 @@
         }
       }
     },
-    "RefundError" : {
-      "type" : "object",
-      "properties" : {
-        "field" : {
-          "type" : "string",
-          "example" : "amount_submitted"
-        },
-        "code" : {
-          "type" : "string",
-          "example" : "P0102"
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "Invalid attribute value: amountSubmitted. Must be less than or equal to 10000000"
-        }
-      },
-      "description" : "A Refund Error response"
-    },
-    "RefundForSearchRefundsResult" : {
+    "RefundDetailForSearch" : {
       "type" : "object",
       "properties" : {
         "refund_id" : {
@@ -1309,6 +1332,24 @@
         }
       }
     },
+    "RefundError" : {
+      "type" : "object",
+      "properties" : {
+        "field" : {
+          "type" : "string",
+          "example" : "amount_submitted"
+        },
+        "code" : {
+          "type" : "string",
+          "example" : "P0102"
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "Invalid attribute value: amountSubmitted. Must be less than or equal to 10000000"
+        }
+      },
+      "description" : "A Refund Error response"
+    },
     "RefundForSearchResult" : {
       "type" : "object",
       "properties" : {
@@ -1321,7 +1362,7 @@
         },
         "_embedded" : {
           "readOnly" : true,
-          "$ref" : "#/definitions/Embedded"
+          "$ref" : "#/definitions/EmbeddedRefunds"
         }
       }
     },
@@ -1340,6 +1381,35 @@
         }
       },
       "description" : "links for search refunds resource"
+    },
+    "RefundSearchResults" : {
+      "type" : "object",
+      "properties" : {
+        "total" : {
+          "type" : "integer",
+          "format" : "int32",
+          "example" : 100
+        },
+        "count" : {
+          "type" : "integer",
+          "format" : "int32",
+          "example" : 20
+        },
+        "page" : {
+          "type" : "integer",
+          "format" : "int32",
+          "example" : 1
+        },
+        "results" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/RefundDetailForSearch"
+          }
+        },
+        "_links" : {
+          "$ref" : "#/definitions/SearchNavigationLinks"
+        }
+      }
     },
     "RefundSummary" : {
       "type" : "object",
@@ -1390,35 +1460,6 @@
       },
       "description" : "Links to navigate through pages"
     },
-    "SearchRefundsResults" : {
-      "type" : "object",
-      "properties" : {
-        "total" : {
-          "type" : "integer",
-          "format" : "int32",
-          "example" : 100
-        },
-        "count" : {
-          "type" : "integer",
-          "format" : "int32",
-          "example" : 20
-        },
-        "page" : {
-          "type" : "integer",
-          "format" : "int32",
-          "example" : 1
-        },
-        "results" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/RefundForSearchRefundsResult"
-          }
-        },
-        "_links" : {
-          "$ref" : "#/definitions/SearchNavigationLinks"
-        }
-      }
-    },
     "SettlementSummary" : {
       "type" : "object",
       "properties" : {
@@ -1436,47 +1477,6 @@
         }
       },
       "description" : "A structure representing information about a settlement"
-    },
-    "ValidCreatePaymentRequest" : {
-      "type" : "object",
-      "required" : [ "amount", "description", "reference", "return_url" ],
-      "properties" : {
-        "amount" : {
-          "type" : "integer",
-          "format" : "int32",
-          "example" : 12000,
-          "description" : "amount in pence",
-          "minimum" : 1,
-          "maximum" : 10000000
-        },
-        "reference" : {
-          "type" : "string",
-          "example" : "12345",
-          "description" : "payment reference"
-        },
-        "return_url" : {
-          "type" : "string",
-          "example" : "https://service-name.gov.uk/transactions/12345",
-          "description" : "service return url"
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "New passport application",
-          "description" : "payment description"
-        },
-        "language" : {
-          "type" : "string",
-          "example" : "en",
-          "description" : "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages",
-          "enum" : [ "en", "cy" ]
-        },
-        "delayed_capture" : {
-          "type" : "boolean",
-          "example" : false,
-          "description" : "delayed capture flag",
-          "readOnly" : true
-        }
-      }
     }
   }
 }

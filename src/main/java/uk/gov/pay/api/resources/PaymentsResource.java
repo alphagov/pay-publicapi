@@ -93,7 +93,7 @@ public class PaymentsResource {
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             code = 200,
-            authorizations = {@Authorization("Authorisation")})
+            authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = PaymentForSearchResult.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
@@ -122,7 +122,7 @@ public class PaymentsResource {
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             code = 200,
-            authorizations = {@Authorization("Authorisation")})
+            authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = PaymentEvents.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
@@ -169,7 +169,7 @@ public class PaymentsResource {
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             responseContainer = "List",
             code = 200,
-            authorizations = {@Authorization("Authorisation")})
+            authorizations = {@Authorization("Authorization")})
 
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = PaymentSearchResults.class),
@@ -227,7 +227,7 @@ public class PaymentsResource {
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             code = 201,
             nickname = "newPayment",
-            authorizations = {@Authorization("Authorisation")})
+            authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Created", response = PaymentWithAllLinks.class),
             @ApiResponse(code = 400, message = "Bad request", response = PaymentError.class),
@@ -261,7 +261,7 @@ public class PaymentsResource {
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be cancelled if it's in " +
                     "a state that isn't finished.",
             code = 204,
-            authorizations = {@Authorization("Authorisation")})
+            authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "No Content"),
             @ApiResponse(code = 400, message = "Cancellation of payment failed", response = PaymentError.class),
@@ -290,7 +290,7 @@ public class PaymentsResource {
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be captured if it's in " +
                     "'submitted' state",
             code = 204,
-            authorizations = {@Authorization("Authorisation")})
+            authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "No Content"),
             @ApiResponse(code = 400, message = "Capture of payment failed", response = PaymentError.class),

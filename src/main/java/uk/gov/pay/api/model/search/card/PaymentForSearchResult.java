@@ -16,7 +16,7 @@ import uk.gov.pay.commons.model.SupportedLanguage;
 import java.net.URI;
 import java.util.List;
 
-@ApiModel
+@ApiModel(value = "PaymentDetailForSearch")
 public class PaymentForSearchResult extends CardPayment {
 
     @JsonProperty(LINKS_JSON_ATTRIBUTE)

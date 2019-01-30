@@ -17,6 +17,7 @@ public class RefundForSearchResult {
     @JsonProperty(value = "_embedded")
     private Embedded embedded;
 
+    @ApiModel(value = "EmbeddedRefunds")
     public class Embedded {
         @ApiModelProperty
         private List<RefundResult> refunds;

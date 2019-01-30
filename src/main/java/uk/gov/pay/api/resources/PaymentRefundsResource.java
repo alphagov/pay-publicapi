@@ -93,7 +93,7 @@ public class PaymentRefundsResource {
             notes = "Return refunds for a payment. " +
                     "The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
             code = 200,
-            authorizations = {@Authorization("Authorisation")})
+            authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
@@ -132,7 +132,7 @@ public class PaymentRefundsResource {
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             code = 200,
-            authorizations = {@Authorization("Authorisation")})
+            authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
@@ -170,7 +170,7 @@ public class PaymentRefundsResource {
             notes = "Return issued refund information. " +
                     "The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
             code = 202,
-            authorizations = {@Authorization("Authorisation")}
+            authorizations = {@Authorization("Authorization")}
     )
     @ApiResponses(value = {
             @ApiResponse(code = 202, message = "ACCEPTED"),
