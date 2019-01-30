@@ -49,21 +49,22 @@ public abstract class SearchBase {
         return halRepresentationBuilder;
     }
 
-    protected void addLink(HalRepresentation.HalRepresentationBuilder halRepresentationBuilder, String name, URI uri) {
+    private void addLink(HalRepresentation.HalRepresentationBuilder halRepresentationBuilder, String name, URI uri) {
         if (uri != null) {
             halRepresentationBuilder.addLink(name, uri);
         }
     }
 
-    protected URI transformIntoPublicUri(String baseUrl, Link link, String PATH) throws URISyntaxException {
+    private URI transformIntoPublicUri(String baseUrl, Link link, String path) throws URISyntaxException {
         if (link == null)
             return null;
 
         return UriBuilder.fromUri(baseUrl)
-                .path(PATH)
+                .path(path)
                 .replaceQuery(new URI(link.getHref()).getQuery())
                 .build();
     }
+
     protected HalRepresentation.HalRepresentationBuilder decoratePagination(HalRepresentation.HalRepresentationBuilder halRepresentationBuilder,
                                                                             SearchPagination pagination, String path) {
 

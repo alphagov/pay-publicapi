@@ -62,7 +62,7 @@ public class SearchCardPayments extends SearchPaymentsBase {
                 .request()
                 .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
                 .get();
-        logger.info("response from connector for transaction search: " + connectorResponse);
+        logger.info("response from connector for transaction search: {}", connectorResponse);
         if (connectorResponse.getStatus() == SC_OK) {
             return processResponse(connectorResponse);
         }

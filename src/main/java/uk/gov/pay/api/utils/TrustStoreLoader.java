@@ -41,7 +41,7 @@ public class TrustStoreLoader {
                             CertificateFactory cf = CertificateFactory.getInstance("X.509");
                             Certificate cert = cf.generateCertificate(new ByteArrayInputStream(Files.readAllBytes(certPath)));
                             TRUST_STORE.setCertificateEntry(certPath.getFileName().toString(), cert);
-                            logger.info("Loaded cert " + certPath);
+                            logger.info("Loaded cert {}", certPath);
                         } catch (SecurityException | KeyStoreException | CertificateException | IOException e) {
                             logger.error("Could not load " + certPath, e);
                         }
@@ -60,6 +60,6 @@ public class TrustStoreLoader {
     }
 
     public static String getTrustStorePassword() {
-        return new String(TRUST_STORE_PASSWORD);
+        return TRUST_STORE_PASSWORD;
     }
 }

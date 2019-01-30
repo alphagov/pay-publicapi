@@ -8,6 +8,7 @@ import uk.gov.pay.api.model.search.directdebit.SearchDirectDebitPayments;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.PaymentUriGenerator;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 
 import static java.lang.String.format;
@@ -25,7 +26,7 @@ public class PaymentSearchFactory {
                 return new SearchCardPayments(client, configuration, connectorUriGenerator, paymentUriGenerator, objectMapper);
             case DIRECT_DEBIT:
                 return new SearchDirectDebitPayments(client, configuration, connectorUriGenerator, paymentUriGenerator, objectMapper);
-            default: throw new RuntimeException(format("Unrecognised payment type: %s", account.getPaymentType()));
+            default: throw new WebApplicationException(format("Unrecognised payment type: %s", account.getPaymentType()));
         }
     }
 }
