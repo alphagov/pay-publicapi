@@ -56,7 +56,7 @@ public class RefundForSearchRefundsResult {
     }
 
     @JsonProperty("payment_id")
-    @ApiModelProperty(example = "2q1r18djndhsrm3closjqr81fx")
+    @ApiModelProperty(example = "2q1r18djndhsrm3closjqr81fx", hidden = true)
     public String getChargeId() {
         return chargeId;
     }

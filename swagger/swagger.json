@@ -1274,11 +1274,6 @@
           "example" : "2017-01-10T16:52:07.855Z",
           "readOnly" : true
         },
-        "payment_id" : {
-          "type" : "string",
-          "example" : "2q1r18djndhsrm3closjqr81fx",
-          "readOnly" : true
-        },
         "amount" : {
           "type" : "integer",
           "format" : "int64",
@@ -1307,11 +1302,6 @@
         "created_date" : {
           "type" : "string",
           "example" : "2017-01-10T16:52:07.855Z",
-          "readOnly" : true
-        },
-        "payment_id" : {
-          "type" : "string",
-          "example" : "2q1r18djndhsrm3closjqr81fx",
           "readOnly" : true
         },
         "amount" : {
