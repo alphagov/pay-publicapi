@@ -117,14 +117,14 @@ public class ConnectorUriGeneratorTest {
 
     @Test
     public void buildEventsURIFromBeforeParameter() throws Exception {
-        String uri = connectorUriGenerator.eventsURI(cardAccount, Optional.of(ZonedDateTime.parse("2018-03-13T10:00:05Z")), Optional.empty(), null, null, null, null);
-        assertThat(URLDecoder.decode(uri, "UTF-8"), is("https://bla.test/v1/events?to_date=2018-03-13T10:00:05Z&page=1&display_size=500"));
+        String uri = connectorUriGenerator.eventsURI(cardAccount, Optional.of(ZonedDateTime.parse("2018-03-13T10:00:05.000Z")), Optional.empty(), null, null, null, null);
+        assertThat(URLDecoder.decode(uri, "UTF-8"), is("https://bla.test/v1/events?to_date=2018-03-13T10:00:05.000Z&page=1&display_size=500"));
     }
 
     @Test
     public void buildEventsURIFromAfterParameter() throws UnsupportedEncodingException {
-        String uri = connectorUriGenerator.eventsURI(cardAccount, Optional.empty(), Optional.of(ZonedDateTime.parse("2018-03-13T10:00:05Z")), null, null, null, null);
-        assertThat(URLDecoder.decode(uri, "UTF-8"), is("https://bla.test/v1/events?from_date=2018-03-13T10:00:05Z&page=1&display_size=500"));
+        String uri = connectorUriGenerator.eventsURI(cardAccount, Optional.empty(), Optional.of(ZonedDateTime.parse("2018-03-13T10:00:05.000Z")), null, null, null, null);
+        assertThat(URLDecoder.decode(uri, "UTF-8"), is("https://bla.test/v1/events?from_date=2018-03-13T10:00:05.000Z&page=1&display_size=500"));
     }
 
     @Test
@@ -135,7 +135,7 @@ public class ConnectorUriGeneratorTest {
 
     @Test
     public void buildEventsURIFromAllParameters() throws UnsupportedEncodingException {
-        String uri = connectorUriGenerator.eventsURI(cardAccount, Optional.of(ZonedDateTime.parse("2018-03-13T10:00:05Z")), Optional.of(ZonedDateTime.parse("2018-03-13T10:00:05Z")), 1, 300, "1", "2");
-        assertThat(URLDecoder.decode(uri, "UTF-8"), is("https://bla.test/v1/events?to_date=2018-03-13T10:00:05Z&from_date=2018-03-13T10:00:05Z&mandate_external_id=1&transaction_external_id=2&page=1&display_size=300"));
+        String uri = connectorUriGenerator.eventsURI(cardAccount, Optional.of(ZonedDateTime.parse("2018-03-13T10:00:05.000Z")), Optional.of(ZonedDateTime.parse("2018-03-13T10:00:05Z")), 1, 300, "1", "2");
+        assertThat(URLDecoder.decode(uri, "UTF-8"), is("https://bla.test/v1/events?to_date=2018-03-13T10:00:05.000Z&from_date=2018-03-13T10:00:05.000Z&mandate_external_id=1&transaction_external_id=2&page=1&display_size=300"));
     }
 }

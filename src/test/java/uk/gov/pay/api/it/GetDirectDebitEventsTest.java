@@ -18,21 +18,21 @@ import static com.jayway.restassured.http.ContentType.JSON;
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static org.hamcrest.Matchers.blankOrNullString;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyOrNullString;
 
 public class GetDirectDebitEventsTest {
 
     static final String API_KEY = ApiKeyGenerator.apiKeyValueOf("TEST_BEARER_TOKEN", "qwer9yuhgf");
-    
+
     @Rule
     public PactProviderRule directDebitConnector = new PactProviderRule("direct-debit-connector", this);
 
     @Rule
     public PactProviderRule publicAuth = new PactProviderRule("publicauth", this);
-    
+
     @Rule
     public DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
             PublicApi.class,
@@ -42,19 +42,19 @@ public class GetDirectDebitEventsTest {
             config("publicAuthUrl", "http://localhost:" + publicAuth.getConfig().getPort() + "/v1/auth"));
 
     private String baseUrl;
-    
+
     @Before
     public void setUp() {
         baseUrl = app.getConfiguration().getBaseUrl();
     }
-    
+
     @Test
     @PactVerification({"direct-debit-connector", "publicauth"})
     @Pacts(pacts = {"publicapi-direct-debit-connector-get-events"})
     @Pacts(pacts = {"publicapi-publicauth"}, publish = false)
     public void getDirectDebitEvents() {
-        String requestPath = "/v1/events?to_date=2018-03-13T10:00:05Z&from_date=2018-03-13T10:00:03Z&display_size=100&page=1&agreement_id=1";
-        
+        String requestPath = "/v1/events?to_date=2018-03-13T10:00:05.000Z&from_date=2018-03-13T10:00:03.000Z&display_size=100&page=1&agreement_id=1";
+
         given().port(app.getLocalPort())
                 .accept(JSON)
                 .contentType(JSON)
@@ -73,13 +73,13 @@ public class GetDirectDebitEventsTest {
                 .body("results[0].payment_id", is("4"))
                 .body("results[0]._links.agreement", is(app.getConfiguration().getBaseUrl() + "v1/agreements/1"))
                 .body("results[0]._links.payment", is(app.getConfiguration().getBaseUrl() + "v1/payments/4"))
-                .body("_links.next_page", isEmptyOrNullString())
-                .body("_links.prev_page", isEmptyOrNullString())
-                .body("_links.self.href", is( baseUrl + "v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&agreement_id=1&page=1&display_size=100"))
+                .body("_links.next_page", is(blankOrNullString()))
+                .body("_links.prev_page", is(blankOrNullString()))
+                .body("_links.self.href", is(baseUrl + "v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&agreement_id=1&page=1&display_size=100"))
                 .body("_links.last_page.href", is(baseUrl + "v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&agreement_id=1&page=1&display_size=100"))
                 .body("_links.first_page.href", is(baseUrl + "v1/events?to_date=2018-03-13T10:00:04Z&from_date=2018-03-13T10:00:04Z&agreement_id=1&page=1&display_size=100"));
     }
-    
+
     @Test
     @PactVerification({"publicauth"})
     @Pacts(pacts = {"publicapi-publicauth"}, publish = false)
