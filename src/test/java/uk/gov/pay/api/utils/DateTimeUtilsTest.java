@@ -14,15 +14,15 @@ import static org.junit.Assert.assertTrue;
 public class DateTimeUtilsTest {
 
     @Test
-    public void shouldConvertUTCZonedDateTimeToAISO_8601_UTCString() throws Exception {
-        ZonedDateTime localDateTime = ZonedDateTime.of(2010, 11, 13, 12, 0, 0, 0, ZoneId.of("Z"));
+    public void shouldConvertUTCZonedDateTimeToAISO_8601_UTCString() {
+        ZonedDateTime localDateTime = ZonedDateTime.of(2010, 11, 13, 12, 0, 0, 999, ZoneId.of("Z"));
 
         String dateString = DateTimeUtils.toUTCDateString(localDateTime);
-        assertThat(dateString, is("2010-11-13T12:00:00Z"));
+        assertThat(dateString, is("2010-11-13T12:00:00.000Z"));
     }
 
     @Test
-    public void shouldConvertUTCZonedDateTimeToLocalDateString() throws Exception {
+    public void shouldConvertUTCZonedDateTimeToLocalDateString() {
         ZonedDateTime localDateTime = ZonedDateTime.of(2010, 11, 13, 12, 0, 0, 0, ZoneId.of("Z"));
 
         String dateString = DateTimeUtils.toLocalDateString(localDateTime);
@@ -30,15 +30,15 @@ public class DateTimeUtilsTest {
     }
 
     @Test
-    public void shouldConvertNonUTCZonedDateTimeToAISO_8601_UTCString() throws Exception {
-        ZonedDateTime localDateTime = ZonedDateTime.of(2010, 11, 13, 12, 0, 0, 0, ZoneId.of("Europe/Paris"));
+    public void shouldConvertNonUTCZonedDateTimeToAISO_8601_UTCString() {
+        ZonedDateTime localDateTime = ZonedDateTime.of(2010, 11, 13, 12, 0, 0, 999, ZoneId.of("Europe/Paris"));
 
         String dateString = DateTimeUtils.toUTCDateString(localDateTime);
-        assertThat(dateString, is("2010-11-13T11:00:00Z"));
+        assertThat(dateString, is("2010-11-13T11:00:00.000Z"));
     }
 
     @Test
-    public void shouldConvertUTCZonedISO_8601StringToADateTime() throws Exception {
+    public void shouldConvertUTCZonedISO_8601StringToADateTime() {
         String aDate = "2010-01-01T12:00:00Z";
         Optional<ZonedDateTime> result = DateTimeUtils.toUTCZonedDateTime(aDate);
         assertTrue(result.isPresent());
@@ -51,7 +51,7 @@ public class DateTimeUtilsTest {
     }
 
     @Test
-    public void shouldConvertNonUTCZonedISO_8601StringToADateTime() throws Exception {
+    public void shouldConvertNonUTCZonedISO_8601StringToADateTime() {
         String aDate = "2010-01-01T12:00:00+01:00[Europe/Paris]";
         Optional<ZonedDateTime> result = DateTimeUtils.toUTCZonedDateTime(aDate);
         assertTrue(result.isPresent());

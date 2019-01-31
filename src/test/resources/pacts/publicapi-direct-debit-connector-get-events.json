@@ -38,8 +38,8 @@
         "method": "GET",
         "path": "/v1/events",
         "query": {
-          "to_date": ["2018-03-13T10:00:05Z"],
-          "from_date": ["2018-03-13T10:00:03Z"],
+          "to_date": ["2018-03-13T10:00:05.000Z"],
+          "from_date": ["2018-03-13T10:00:03.000Z"],
           "display_size": ["100"],
           "page": ["1"],
           "mandate_external_id": ["1"]

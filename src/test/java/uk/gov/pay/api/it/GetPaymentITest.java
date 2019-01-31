@@ -34,7 +34,6 @@ import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 
 public class GetPaymentITest extends PaymentResourceITestBase {
 
-    private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
     private static final ZonedDateTime CAPTURED_DATE = ZonedDateTime.parse("2016-01-02T14:03:00Z");
     private static final ZonedDateTime CAPTURE_SUBMIT_TIME = ZonedDateTime.parse("2016-01-02T15:02:00Z");
     private static final SettlementSummary SETTLEMENT_SUMMARY = new SettlementSummary(DateTimeUtils.toUTCDateString(CAPTURE_SUBMIT_TIME), DateTimeUtils.toLocalDateString(CAPTURED_DATE));
@@ -51,7 +50,7 @@ public class GetPaymentITest extends PaymentResourceITestBase {
     private static final String REFERENCE = "Some reference <script> alert('This is a ?{simple} XSS attack.')</script>";
     private static final String EMAIL = "alice.111@mail.fake";
     private static final String DESCRIPTION = "Some description <script> alert('This is a ?{simple} XSS attack.')</script>";
-    private static final String CREATED_DATE = DateTimeUtils.toUTCDateString(TIMESTAMP);
+    private static final String CREATED_DATE = DateTimeUtils.toUTCDateString(ZonedDateTime.parse("2010-12-31T22:59:59.132012345Z"));
     private static final Map<String, String> PAYMENT_CREATED = new ChargeEventBuilder(CREATED, CREATED_DATE).build();
     private static final List<Map<String, String>> EVENTS = Collections.singletonList(PAYMENT_CREATED);
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
@@ -269,7 +268,7 @@ public class GetPaymentITest extends PaymentResourceITestBase {
                 .body("events", hasSize(1))
                 .body("events[0].payment_id", is(CHARGE_ID))
                 .body("events[0].state.status", is(CREATED.getStatus()))
-                .body("events[0].updated", is("2016-01-01T12:00:00Z"))
+                .body("events[0].updated", is("2010-12-31T22:59:59.132Z"))
                 .body("events[0]._links.payment_url.href", is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)));
     }
 

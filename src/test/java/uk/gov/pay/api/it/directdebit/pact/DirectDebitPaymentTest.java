@@ -32,7 +32,6 @@ import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 
 public class DirectDebitPaymentTest {
 
-    private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
     private static final int AMOUNT = 100;
     private static final String CHARGE_ID = "ch_ab2341da231434l";
     private static final String CHARGE_TOKEN_ID = "ebf23f8c-6a9d-4f7d-afd5-bcc7b1b6a0e2";
@@ -41,7 +40,7 @@ public class DirectDebitPaymentTest {
     private static final String REFERENCE = "a reference";
     private static final String EMAIL = "alice.111@mail.fake";
     private static final String DESCRIPTION = "a description";
-    private static final String CREATED_DATE = DateTimeUtils.toUTCDateString(TIMESTAMP);
+    private static final String CREATED_DATE = DateTimeUtils.toUTCDateString(ZonedDateTime.parse("2010-12-31T22:59:59.132012345Z"));
     private static final String SUCCESS_PAYLOAD = aSuccessfulPaymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL);
 
     //Must use same secret set int configured test-config.xml

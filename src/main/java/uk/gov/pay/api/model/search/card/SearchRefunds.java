@@ -1,8 +1,6 @@
 package uk.gov.pay.api.model.search.card;
 
 import black.door.hate.HalRepresentation;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import org.slf4j.Logger;
@@ -56,7 +54,7 @@ public class SearchRefunds extends SearchBase {
                 .request()
                 .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
                 .get();
-        logger.info("response from connector for refunds search: " + connectorResponse);
+        logger.info("response from connector for refunds search: {}", connectorResponse);
         if (connectorResponse.getStatus() == SC_OK) {
             return processResponse(connectorResponse);
         }
@@ -90,7 +88,7 @@ public class SearchRefunds extends SearchBase {
         return ImmutableSet.of(FROM_DATE_KEY, TO_DATE_KEY, PAGE, DISPLAY_SIZE);
     }
 
-    protected void validateSupportedSearchParams(Map<String, String> queryParams) {
+    private void validateSupportedSearchParams(Map<String, String> queryParams) {
         queryParams.entrySet().stream()
                 .filter(this::isUnsupportedParamWithNonBlankValue)
                 .findFirst()

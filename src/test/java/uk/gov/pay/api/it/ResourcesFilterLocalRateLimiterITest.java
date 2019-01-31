@@ -17,7 +17,6 @@ import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
-import uk.gov.pay.api.utils.ChargeEventBuilder;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
@@ -26,9 +25,7 @@ import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -39,7 +36,7 @@ import static com.jayway.restassured.http.ContentType.JSON;
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
-import static org.hamcrest.core.IsCollectionContaining.hasItem;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertThat;
 
 public class ResourcesFilterLocalRateLimiterITest {
@@ -60,16 +57,11 @@ public class ResourcesFilterLocalRateLimiterITest {
     private static final String DESCRIPTION = "Some description";
     private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
     private static final String CREATED_DATE = DateTimeUtils.toUTCDateString(TIMESTAMP);
-    private static final Map<String, String> PAYMENT_CREATED = new ChargeEventBuilder(CREATED, CREATED_DATE).build();
-    private static final List<Map<String, String>> EVENTS = Collections.singletonList(PAYMENT_CREATED);
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
     private static final CardDetails CARD_DETAILS = new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, "Visa");
 
     private static final String PAYLOAD = paymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE);
     private ExecutorService executor = Executors.newFixedThreadPool(2);
-
-    private ConnectorMockClient connectorMock;
-    private PublicAuthMockClient publicAuthMock;
 
     @Rule
     public MockServerRule connectorMockRule = new MockServerRule(this);
@@ -88,8 +80,8 @@ public class ResourcesFilterLocalRateLimiterITest {
 
     @Before
     public void setup() {
-        connectorMock = new ConnectorMockClient(connectorMockRule.getPort(), connectorBaseUrl());
-        publicAuthMock = new PublicAuthMockClient(publicAuthMockRule.getPort());
+        ConnectorMockClient connectorMock = new ConnectorMockClient(connectorMockRule.getPort(), connectorBaseUrl());
+        PublicAuthMockClient publicAuthMock = new PublicAuthMockClient(publicAuthMockRule.getPort());
 
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
@@ -113,7 +105,7 @@ public class ResourcesFilterLocalRateLimiterITest {
     }
 
     @Test
-    public void shouldFallbackToLocalRateLimiter_whenRedisIsUnavailableAndContinueRequest() throws Exception {
+    public void shouldFallbackToLocalRateLimiter_whenRedisIsUnavailableAndContinueRequest() {
 
         ValidatableResponse response = postPaymentResponse(API_KEY, PAYLOAD);
 
@@ -131,21 +123,6 @@ public class ResourcesFilterLocalRateLimiterITest {
                     }
                 })
                 .collect(Collectors.toList());
-    }
-
-    private TypeSafeMatcher<ValidatableResponse> aResponse(final int statusCode) {
-        return new TypeSafeMatcher<ValidatableResponse>() {
-            @Override
-            protected boolean matchesSafely(ValidatableResponse validatableResponse) {
-                return validatableResponse.extract().statusCode() == statusCode;
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText(" Status code: ")
-                        .appendValue(statusCode);
-            }
-        };
     }
 
     private TypeSafeMatcher<ValidatableResponse> anErrorResponse(int statusCode, String publicApiErrorCode, String expectedDescription) {

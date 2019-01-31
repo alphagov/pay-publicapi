@@ -5,13 +5,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import uk.gov.pay.api.utils.CustomDateDeserializer;
-import uk.gov.pay.api.utils.CustomDateSerializer;
+import uk.gov.pay.commons.api.json.ApiResponseDateTimeSerializer;
 
 import java.time.ZonedDateTime;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public class DirectDebitEvent {
-    
+
     private String externalId;
 
     @JsonProperty("event")
@@ -25,17 +25,17 @@ public class DirectDebitEvent {
 
     @JsonProperty("event_date")
     @JsonDeserialize(using = CustomDateDeserializer.class)
-    @JsonSerialize(using = CustomDateSerializer.class)
+    @JsonSerialize(using = ApiResponseDateTimeSerializer.class)
     private ZonedDateTime eventDate;
 
     @JsonProperty("_links")
     private Links links;
-    
-    
+
+
     public Links getLinks() {
         return links;
     }
-    
+
     @JsonProperty("event_id")
     public String getExternalId() {
         return externalId;
@@ -62,7 +62,7 @@ public class DirectDebitEvent {
     public ZonedDateTime getEventDate() {
         return eventDate;
     }
-    
+
     @JsonProperty("external_id")
     public void setExternalId(String externalId) {
         this.externalId = externalId;
@@ -96,13 +96,13 @@ public class DirectDebitEvent {
 
 
     public static class Links {
-        
+
         @JsonProperty("agreement")
         private final String agreement;
 
         @JsonProperty("payment")
         private final String payment;
-        
+
         public Links(String agreement, String payment) {
             this.agreement = agreement;
             this.payment = payment;
