@@ -53,7 +53,7 @@ public class GetDirectDebitEventsTest {
     @Pacts(pacts = {"publicapi-direct-debit-connector-get-events"})
     @Pacts(pacts = {"publicapi-publicauth"}, publish = false)
     public void getDirectDebitEvents() {
-        String requestPath = "/v1/events?to_date=2018-03-13T10:00:05.000Z&from_date=2018-03-13T10:00:03.000Z&display_size=100&page=1&agreement_id=1";
+        String requestPath = "/v1/events?to_date=2018-03-13T10:00:05Z&from_date=2018-03-13T10:00:03Z&display_size=100&page=1&agreement_id=1";
 
         given().port(app.getLocalPort())
                 .accept(JSON)
