@@ -10,6 +10,7 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public class DateTimeUtilsTest {
 
@@ -17,7 +18,7 @@ public class DateTimeUtilsTest {
     public void shouldConvertUTCZonedDateTimeToAISO_8601_UTCString() {
         ZonedDateTime localDateTime = ZonedDateTime.of(2010, 11, 13, 12, 0, 0, 999, ZoneId.of("Z"));
 
-        String dateString = DateTimeUtils.toUTCDateString(localDateTime);
+        String dateString = ISO_INSTANT_MILLISECOND_PRECISION.format(localDateTime);
         assertThat(dateString, is("2010-11-13T12:00:00.000Z"));
     }
 
@@ -33,7 +34,7 @@ public class DateTimeUtilsTest {
     public void shouldConvertNonUTCZonedDateTimeToAISO_8601_UTCString() {
         ZonedDateTime localDateTime = ZonedDateTime.of(2010, 11, 13, 12, 0, 0, 999, ZoneId.of("Europe/Paris"));
 
-        String dateString = DateTimeUtils.toUTCDateString(localDateTime);
+        String dateString = ISO_INSTANT_MILLISECOND_PRECISION.format(localDateTime);
         assertThat(dateString, is("2010-11-13T11:00:00.000Z"));
     }
 

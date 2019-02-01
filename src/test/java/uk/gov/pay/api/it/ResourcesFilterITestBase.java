@@ -28,6 +28,7 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.junit.Assert.fail;
+import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
 abstract public class ResourcesFilterITestBase extends PaymentResourceITestBase {
 
@@ -44,7 +45,7 @@ abstract public class ResourcesFilterITestBase extends PaymentResourceITestBase 
     protected static final String EMAIL = "alice.111@mail.fake";
     protected static final String DESCRIPTION = "Some description";
     protected static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
-    protected static final String CREATED_DATE = DateTimeUtils.toUTCDateString(TIMESTAMP);
+    protected static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(TIMESTAMP);
     protected static final Map<String, String> PAYMENT_CREATED = new ChargeEventBuilder(CREATED, CREATED_DATE).build();
     protected static final List<Map<String, String>> EVENTS = Collections.singletonList(PAYMENT_CREATED);
     protected static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");

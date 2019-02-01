@@ -8,7 +8,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.DirectDebitEventService;
 
-import javax.ws.rs.client.Client;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
@@ -20,22 +19,19 @@ import static org.mockito.Mockito.verify;
 public class DirectDebitEventsResourceTest {
 
     @Mock
-    private Client client;
-    
-    @Mock
     private ConnectorUriGenerator connectorUriGenerator;
-    
+
     @Mock
     private DirectDebitEventService directDebitEventService;
-    
+
     private DirectDebitEventsResource directDebitEventsResource;
-    
-    
+
+
     @Before
     public void setUp() {
-        directDebitEventsResource = new DirectDebitEventsResource(client, connectorUriGenerator, directDebitEventService);
+        directDebitEventsResource = new DirectDebitEventsResource(connectorUriGenerator, directDebitEventService);
     }
-    
+
     @Test
     public void testAllNullValues() {
         directDebitEventsResource.getDirectDebitEvents(null, null, null, null, null, null, null);

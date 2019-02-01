@@ -3,7 +3,6 @@ package uk.gov.pay.api.service;
 import com.google.common.collect.Maps;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.utils.DateTimeUtils;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
@@ -15,6 +14,7 @@ import java.util.Optional;
 
 import static java.lang.String.format;
 import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
+import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public class ConnectorUriGenerator {
     private final PublicApiConfig configuration;
@@ -24,7 +24,7 @@ public class ConnectorUriGenerator {
         this.configuration = configuration;
     }
 
-    public String chargesURI(Account account, String agreementId) {
+    String chargesURI(Account account, String agreementId) {
         String chargePath = "/v1/api/accounts/%s/charges";
         if (account.getPaymentType().equals(DIRECT_DEBIT) && agreementId != null) {
             chargePath += "/collect";
@@ -35,13 +35,13 @@ public class ConnectorUriGenerator {
     public String chargesURIWithParams(Account account, Map<String, String> queryParams) {
         return buildConnectorUri(account, format("/v1/api/accounts/%s/charges", account.getAccountId()), queryParams);
     }
-    
+
     public String refundsURIWithParams(Account account, Map<String, String> queryParams) {
         String path = format("/v1/api/accounts/%s/refunds", account.getAccountId());
         return buildConnectorUri(account, path, queryParams);
     }
 
-    public String chargeURI(Account account, String chargeId) {
+    String chargeURI(Account account, String chargeId) {
         String path = format("/v1/api/accounts/%s/charges/%s", account.getAccountId(), chargeId);
         return buildConnectorUri(account, path);
     }
@@ -76,7 +76,7 @@ public class ConnectorUriGenerator {
         return account.getPaymentType().equals(DIRECT_DEBIT);
     }
 
-    public String cancelURI(Account account, String paymentId) {
+    String cancelURI(Account account, String paymentId) {
         String path = format("/v1/api/accounts/%s/charges/%s/cancel", account.getAccountId(), paymentId);
         return buildConnectorUri(account, path, Maps.newHashMap());
     }
@@ -85,11 +85,9 @@ public class ConnectorUriGenerator {
 
         Map<String, String> params = new LinkedHashMap<>();
 
-        if (toDate.isPresent())
-            params.put("to_date", DateTimeUtils.toUTCDateString(toDate.get()));
+        toDate.map(ISO_INSTANT_MILLISECOND_PRECISION::format).ifPresent(formattedDate -> params.put("to_date", formattedDate));
 
-        if (fromDate.isPresent())
-            params.put("from_date", DateTimeUtils.toUTCDateString(fromDate.get()));
+        fromDate.map(ISO_INSTANT_MILLISECOND_PRECISION::format).ifPresent(formattedDate -> params.put("from_date", formattedDate));
 
         if (agreementId != null)
             params.put("mandate_external_id", agreementId);
@@ -103,7 +101,7 @@ public class ConnectorUriGenerator {
         return buildConnectorUri(account, "/v1/events", params);
     }
 
-    public String captureURI(Account account, String chargeId) {
+    String captureURI(Account account, String chargeId) {
         String path = format("/v1/api/accounts/%s/charges/%s/capture", account.getAccountId(), chargeId);
         return buildConnectorUri(account, path);
     }
