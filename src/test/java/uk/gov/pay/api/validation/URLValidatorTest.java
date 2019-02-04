@@ -7,7 +7,9 @@ import java.util.List;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static uk.gov.pay.api.validation.URLValidator.*;
+import static uk.gov.pay.api.validation.URLValidator.SECURITY_DISABLED;
+import static uk.gov.pay.api.validation.URLValidator.SECURITY_ENABLED;
+import static uk.gov.pay.api.validation.URLValidator.urlValidatorValueOf;
 
 public class URLValidatorTest {
 
@@ -47,6 +49,11 @@ public class URLValidatorTest {
     }
 
     @Test
+    public void whenIsDisabledSecureConnection_doubleSlashUrlsAreValid() throws Exception {
+        assertThat(SECURITY_DISABLED.isValid("https://www.example.com/path-here//path-there"), is(true));
+    }
+
+    @Test
     public void whenIsEnabledSecureConnection_httpUrlsAreNotValid() throws Exception {
         assertThat(SECURITY_ENABLED.isValid("http://my-valid-url.com"), is(false));
     }
@@ -74,6 +81,11 @@ public class URLValidatorTest {
     @Test
     public void whenIsEnabledSecureConnection_disallowingEvilDomains() {
         assertThat(SECURITY_ENABLED.isValid("https://an.evil/claim/pay/id/receiver"), is(false));
+    }
+
+    @Test
+    public void whenIsEnabledSecureConnection_doubleSlashUrlsAreValid() throws Exception {
+        assertThat(SECURITY_ENABLED.isValid("https://www.example.com/path-here//path-there"), is(true));
     }
 
     @Test
