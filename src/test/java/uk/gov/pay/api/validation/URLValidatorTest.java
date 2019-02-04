@@ -7,7 +7,9 @@ import java.util.List;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static uk.gov.pay.api.validation.URLValidator.*;
+import static uk.gov.pay.api.validation.URLValidator.SECURITY_DISABLED;
+import static uk.gov.pay.api.validation.URLValidator.SECURITY_ENABLED;
+import static uk.gov.pay.api.validation.URLValidator.urlValidatorValueOf;
 
 public class URLValidatorTest {
 
@@ -32,37 +34,42 @@ public class URLValidatorTest {
     }
 
     @Test
-    public void whenIsDisabledSecureConnection_httpUrlAreValid() throws Exception {
+    public void whenIsDisabledSecureConnection_httpUrlAreValid() {
         assertThat(SECURITY_DISABLED.isValid("http://my-valid-url.com"), is(true));
     }
 
     @Test
-    public void whenIsDisabledSecureConnection_allowingLocalUrl() throws Exception {
+    public void whenIsDisabledSecureConnection_allowingLocalUrl() {
         assertThat(SECURITY_DISABLED.isValid("http://localhost:8080/pay"), is(true));
     }
 
     @Test
-    public void whenIsDisabledSecureConnection_httpsUrlsAreValid() throws Exception {
+    public void whenIsDisabledSecureConnection_httpsUrlsAreValid() {
         assertThat(SECURITY_DISABLED.isValid("https://my-valid-url.com"), is(true));
     }
 
     @Test
-    public void whenIsEnabledSecureConnection_httpUrlsAreNotValid() throws Exception {
+    public void whenIsDisabledSecureConnection_doubleSlashUrlsAreValid() {
+        assertThat(SECURITY_DISABLED.isValid("https://www.example.com/path-here//path-there"), is(true));
+    }
+
+    @Test
+    public void whenIsEnabledSecureConnection_httpUrlsAreNotValid() {
         assertThat(SECURITY_ENABLED.isValid("http://my-valid-url.com"), is(false));
     }
 
     @Test
-    public void whenIsEnabledSecureConnection_httpsUrlsAreValid() throws Exception {
+    public void whenIsEnabledSecureConnection_httpsUrlsAreValid() {
         assertThat(SECURITY_ENABLED.isValid("https://my-valid-url.com"), is(true));
     }
 
     @Test
-    public void whenIsEnabledSecureConnection_allowingLocalUrl() throws Exception {
+    public void whenIsEnabledSecureConnection_allowingLocalUrl() {
         assertThat(SECURITY_ENABLED.isValid("https://localhost:8080/pay"), is(true));
     }
 
     @Test
-    public void whenIsEnabledSecureConnection_allowingLocalUrl_shouldFailForHttp() throws Exception {
+    public void whenIsEnabledSecureConnection_allowingLocalUrl_shouldFailForHttp() {
         assertThat(SECURITY_ENABLED.isValid("http://localhost:8080/pay"), is(false));
     }
 
@@ -74,6 +81,11 @@ public class URLValidatorTest {
     @Test
     public void whenIsEnabledSecureConnection_disallowingEvilDomains() {
         assertThat(SECURITY_ENABLED.isValid("https://an.evil/claim/pay/id/receiver"), is(false));
+    }
+
+    @Test
+    public void whenIsEnabledSecureConnection_doubleSlashUrlsAreValid() {
+        assertThat(SECURITY_ENABLED.isValid("https://www.example.com/path-here//path-there"), is(true));
     }
 
     @Test
