@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import uk.gov.pay.api.utils.CustomDateDeserializer;
+import uk.gov.pay.commons.api.json.ApiResponseDateTimeDeserializer;
 import uk.gov.pay.commons.api.json.ApiResponseDateTimeSerializer;
 
 import java.time.ZonedDateTime;
@@ -24,7 +24,7 @@ public class DirectDebitEvent {
     private String eventType;
 
     @JsonProperty("event_date")
-    @JsonDeserialize(using = CustomDateDeserializer.class)
+    @JsonDeserialize(using = ApiResponseDateTimeDeserializer.class)
     @JsonSerialize(using = ApiResponseDateTimeSerializer.class)
     private ZonedDateTime eventDate;
 

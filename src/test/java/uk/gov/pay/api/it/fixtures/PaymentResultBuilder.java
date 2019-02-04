@@ -11,13 +11,14 @@ import java.util.List;
 import java.util.Random;
 
 import static java.util.UUID.randomUUID;
+import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public abstract class PaymentResultBuilder {
 
     protected static final int DEFAULT_NUMBER_OF_RESULTS = 3;
 
-    public static final String DEFAULT_CREATED_DATE = DateTimeUtils.toUTCDateString(ZonedDateTime.now());
-    public static final String DEFAULT_CAPTURE_SUBMIT_TIME = DateTimeUtils.toUTCDateString(ZonedDateTime.now());
+    public static final String DEFAULT_CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(ZonedDateTime.now());
+    public static final String DEFAULT_CAPTURE_SUBMIT_TIME = ISO_INSTANT_MILLISECOND_PRECISION.format(ZonedDateTime.now());
     public static final String DEFAULT_CAPTURED_DATE = DateTimeUtils.toLocalDateString(ZonedDateTime.now());
     public static final String DEFAULT_RETURN_URL = "http://example.com/service";
     public static final int DEFAULT_AMOUNT = 10000;
@@ -221,7 +222,7 @@ public abstract class PaymentResultBuilder {
     private String getCreatedDate() {
         if (fromDate != null) {
             ZonedDateTime updatedFromDate = DateTimeUtils.toUTCZonedDateTime(fromDate).get().plusMinutes(new Random().nextInt(15) + 1);
-            return DateTimeUtils.toUTCDateString(updatedFromDate);
+            return ISO_INSTANT_MILLISECOND_PRECISION.format(updatedFromDate);
         }
         return createdDate == null ? DEFAULT_CREATED_DATE : createdDate;
     }

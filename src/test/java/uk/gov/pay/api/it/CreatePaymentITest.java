@@ -24,6 +24,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
+import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public class CreatePaymentITest extends PaymentResourceITestBase {
 
@@ -39,7 +40,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
     private static final String REFERENCE = "Some reference <script> alert('This is a ?{simple} XSS attack.')</script>";
     private static final String EMAIL = "alice.111@mail.fake";
     private static final String DESCRIPTION = "Some description <script> alert('This is a ?{simple} XSS attack.')</script>";
-    private static final String CREATED_DATE = DateTimeUtils.toUTCDateString(TIMESTAMP);
+    private static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(TIMESTAMP);
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
     private static final CardDetails CARD_DETAILS = new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL);
     private static final String SUCCESS_PAYLOAD = paymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL);

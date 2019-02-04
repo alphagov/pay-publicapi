@@ -7,8 +7,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
-import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
-
 public class DateTimeUtils {
     private static final ZoneId UTC = ZoneId.of("Z");
     private static DateTimeFormatter dateTimeFormatterAny = DateTimeFormatter.ISO_ZONED_DATE_TIME;
@@ -36,21 +34,6 @@ public class DateTimeUtils {
         } catch (DateTimeParseException ex) {
             return Optional.empty();
         }
-    }
-
-    /**
-     * Converts a ZonedDateTime to a UTC ISO_8601 string representation
-     * <p>
-     * e.g. <br/>
-     * 1. ZonedDateTime("2010-01-01T12:00:00+01:00[Europe/Paris]") ==> "2010-12-31T22:59:59.132Z" <br/>
-     * 2. ZonedDateTime("2010-12-31T22:59:59.132Z") ==> "2010-12-31T22:59:59.132Z" <br/>
-     * </p>
-     *
-     * @param dateTime
-     * @return UTC ISO_8601 date string
-     */
-    public static String toUTCDateString(ZonedDateTime dateTime) {
-        return ISO_INSTANT_MILLISECOND_PRECISION.format(dateTime);
     }
 
     /**

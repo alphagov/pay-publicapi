@@ -19,7 +19,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -33,13 +32,11 @@ import static org.eclipse.jetty.util.StringUtil.isBlank;
 @Produces({"application/json"})
 public class DirectDebitEventsResource {
 
-    private final Client client;
     private final ConnectorUriGenerator connectorUriGenerator;
     private final DirectDebitEventService directDebitEventService;
 
     @Inject
-    public DirectDebitEventsResource(Client client, ConnectorUriGenerator connectorUriGenerator, DirectDebitEventService directDebitEventService) {
-        this.client = client;
+    public DirectDebitEventsResource(ConnectorUriGenerator connectorUriGenerator, DirectDebitEventService directDebitEventService) {
         this.connectorUriGenerator = connectorUriGenerator;
         this.directDebitEventService = directDebitEventService;
     }

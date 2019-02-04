@@ -38,6 +38,7 @@ import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertThat;
+import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public class ResourcesFilterLocalRateLimiterITest {
 
@@ -56,7 +57,7 @@ public class ResourcesFilterLocalRateLimiterITest {
     private static final String EMAIL = "alice.111@mail.fake";
     private static final String DESCRIPTION = "Some description";
     private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
-    private static final String CREATED_DATE = DateTimeUtils.toUTCDateString(TIMESTAMP);
+    private static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(TIMESTAMP);
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
     private static final CardDetails CARD_DETAILS = new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, "Visa");
 

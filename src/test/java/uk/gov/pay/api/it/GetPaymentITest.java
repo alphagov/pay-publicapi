@@ -31,12 +31,13 @@ import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 import static uk.gov.pay.api.utils.Urls.directDebitFrontendSecureUrl;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
+import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public class GetPaymentITest extends PaymentResourceITestBase {
 
     private static final ZonedDateTime CAPTURED_DATE = ZonedDateTime.parse("2016-01-02T14:03:00Z");
     private static final ZonedDateTime CAPTURE_SUBMIT_TIME = ZonedDateTime.parse("2016-01-02T15:02:00Z");
-    private static final SettlementSummary SETTLEMENT_SUMMARY = new SettlementSummary(DateTimeUtils.toUTCDateString(CAPTURE_SUBMIT_TIME), DateTimeUtils.toLocalDateString(CAPTURED_DATE));
+    private static final SettlementSummary SETTLEMENT_SUMMARY = new SettlementSummary(ISO_INSTANT_MILLISECOND_PRECISION.format(CAPTURE_SUBMIT_TIME), DateTimeUtils.toLocalDateString(CAPTURED_DATE));
     private static final int AMOUNT = 9999999;
     private static final String CHARGE_ID = "ch_ab2341da231434l";
     private static final String CHARGE_TOKEN_ID = "token_1234567asdf";
@@ -50,7 +51,7 @@ public class GetPaymentITest extends PaymentResourceITestBase {
     private static final String REFERENCE = "Some reference <script> alert('This is a ?{simple} XSS attack.')</script>";
     private static final String EMAIL = "alice.111@mail.fake";
     private static final String DESCRIPTION = "Some description <script> alert('This is a ?{simple} XSS attack.')</script>";
-    private static final String CREATED_DATE = DateTimeUtils.toUTCDateString(ZonedDateTime.parse("2010-12-31T22:59:59.132012345Z"));
+    private static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(ZonedDateTime.parse("2010-12-31T22:59:59.132012345Z"));
     private static final Map<String, String> PAYMENT_CREATED = new ChargeEventBuilder(CREATED, CREATED_DATE).build();
     private static final List<Map<String, String>> EVENTS = Collections.singletonList(PAYMENT_CREATED);
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
@@ -82,7 +83,7 @@ public class GetPaymentITest extends PaymentResourceITestBase {
                 .body("refund_summary.status", is("pending"))
                 .body("refund_summary.amount_submitted", is(50))
                 .body("refund_summary.amount_available", is(100))
-                .body("settlement_summary.capture_submit_time", is(DateTimeUtils.toUTCDateString(CAPTURE_SUBMIT_TIME)))
+                .body("settlement_summary.capture_submit_time", is(ISO_INSTANT_MILLISECOND_PRECISION.format(CAPTURE_SUBMIT_TIME)))
                 .body("settlement_summary.captured_date", is(DateTimeUtils.toLocalDateString(CAPTURED_DATE)))
                 .body("card_details.card_brand", is(CARD_BRAND_LABEL))
                 .body("card_details.cardholder_name", is(CARD_DETAILS.getCardHolderName()))

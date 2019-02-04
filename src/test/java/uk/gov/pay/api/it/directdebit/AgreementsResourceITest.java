@@ -18,11 +18,12 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 import static uk.gov.pay.api.utils.Urls.directDebitFrontendSecureUrl;
+import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public class AgreementsResourceITest extends PaymentResourceITestBase {
 
     private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
-    private static final String CREATED_DATE = DateTimeUtils.toUTCDateString(TIMESTAMP);
+    private static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(TIMESTAMP);
     private static final String CHARGE_TOKEN_ID = "token_1234567asdf";
     private static final String MANDATE_ID = "mandateId";
     private static final String MANDATE_REFERENCE = "test_mandate_reference";
