@@ -48,7 +48,7 @@ public class RedisDockerRule implements TestRule {
                 DockerClient docker = DefaultDockerClient.fromEnv().build();
                 container = new RedisContainer(docker, host);
             }
-        } catch (DockerCertificateException | InterruptedException | IOException | ClassNotFoundException e) {
+        } catch (DockerCertificateException | InterruptedException | IOException e) {
             throw new RuntimeException(e);
         }
     }

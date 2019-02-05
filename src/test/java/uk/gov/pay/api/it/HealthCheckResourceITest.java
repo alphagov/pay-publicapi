@@ -9,7 +9,7 @@ import static uk.gov.pay.api.resources.HealthCheckResource.HEALTHCHECK;
 public class HealthCheckResourceITest extends PaymentResourceITestBase {
 
     @Test
-    public void getAccountShouldReturn404IfAccountIdIsUnknown() throws Exception {
+    public void getAccountShouldReturn404IfAccountIdIsUnknown() {
         RestAssured.given().port(app.getLocalPort())
                 .get(HEALTHCHECK)
                 .then()

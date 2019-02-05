@@ -6,7 +6,7 @@ import static org.junit.Assert.assertEquals;
 
 public class JsonStringBuilderTest {
     @Test
-    public void testObjectToJsonString() throws Exception {
+    public void testObjectToJsonString() {
         String message = "There was an error";
         String code = "#the code of error!";
 
@@ -23,7 +23,7 @@ public class JsonStringBuilderTest {
     }
 
     @Test
-    public void nullValues() throws Exception {
+    public void nullValues() {
         String message = "There was an error";
 
         String result = new JsonStringBuilder()
@@ -39,7 +39,7 @@ public class JsonStringBuilderTest {
     }
 
     @Test
-    public void nestedMaps() throws Exception {
+    public void nestedMaps() {
         String message = "There was an error";
 
         String result = new JsonStringBuilder()

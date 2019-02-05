@@ -81,7 +81,7 @@ public class PaymentsResourceCreatePaymentTest {
     }
 
     @Test
-    public void createNewPayment_withCardPayment_invokesCreatePaymentService() throws Exception {
+    public void createNewPayment_withCardPayment_invokesCreatePaymentService() {
         final Account account = new Account("foo", TokenPaymentType.CARD);
         final ValidCreatePaymentRequest createPaymentRequest = new ValidCreatePaymentRequest(CreatePaymentRequest.builder()
                 .amount(100)

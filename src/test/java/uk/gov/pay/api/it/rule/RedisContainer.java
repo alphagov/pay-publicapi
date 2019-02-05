@@ -34,7 +34,7 @@ public class RedisContainer {
     private static final String REDIS_IMAGE = "redis:latest";
     private static final String INTERNAL_PORT = "6379";
 
-    public RedisContainer(DockerClient docker, String host) throws DockerException, InterruptedException, IOException, ClassNotFoundException {
+    public RedisContainer(DockerClient docker, String host) throws DockerException, InterruptedException, IOException {
 
         this.docker = docker;
         this.host = host;
@@ -77,7 +77,7 @@ public class RedisContainer {
         Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
     }
 
-    private void waitForRedisToStart() throws DockerException, InterruptedException, IOException {
+    private void waitForRedisToStart() throws InterruptedException {
         Stopwatch timer = Stopwatch.createStarted();
         boolean succeeded = false;
         while (!succeeded && timer.elapsed(TimeUnit.SECONDS) < DB_TIMEOUT_SEC) {
@@ -90,7 +90,7 @@ public class RedisContainer {
         logger.info("Redis docker container started in {}.", timer.elapsed(TimeUnit.MILLISECONDS));
     }
 
-    private boolean checkRedisConnection() throws IOException {
+    private boolean checkRedisConnection() {
         try (Jedis jedis = new Jedis(host, port)) {
             return true;
         } catch (Exception except) {
