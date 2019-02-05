@@ -7,6 +7,7 @@ import org.junit.rules.ExpectedException;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -87,7 +88,7 @@ public class LocalRateLimiterTest {
                         return null;
                     }
                 })
-                .filter(task -> task != null)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
         assertThat(successfulTasks.size(), is(3));
