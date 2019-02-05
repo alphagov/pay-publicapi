@@ -17,7 +17,6 @@ import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
-import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
 
 import static com.jayway.jsonassert.JsonAssert.collectionWithSize;
@@ -34,14 +33,9 @@ public class DirectDebitPaymentSearchServiceTest {
     @Rule
     public PactProviderRule connectorRule = new PactProviderRule("direct-debit-connector", this);
 
-    private Client client;
-
     @Mock
     private PublicApiConfig configuration;
-    private ConnectorUriGenerator connectorUriGenerator;
     private PaymentSearchService paymentSearchService;
-    private PaymentUriGenerator paymentUriGenerator;
-    private ObjectMapper objectMapper;
 
     @Before
     public void setUp() {
@@ -49,11 +43,12 @@ public class DirectDebitPaymentSearchServiceTest {
 
         when(configuration.getBaseUrl()).thenReturn("http://publicapi.test.localhost/");
 
-        connectorUriGenerator = new ConnectorUriGenerator(configuration);
-        paymentUriGenerator = new PaymentUriGenerator();
-        client = RestClientFactory.buildClient(new RestClientConfig(false));
-        objectMapper = new ObjectMapper();
-        paymentSearchService = new PaymentSearchService(client, configuration, connectorUriGenerator, paymentUriGenerator, objectMapper);
+        paymentSearchService = new PaymentSearchService(
+                RestClientFactory.buildClient(new RestClientConfig(false)),
+                configuration,
+                new ConnectorUriGenerator(configuration),
+                new PaymentUriGenerator(),
+                new ObjectMapper());
     }
 
     @Test
