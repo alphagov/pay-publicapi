@@ -43,8 +43,8 @@ public class PaginatedPaymentSearchResultFixture {
     }
 
     public String build() {
-        String json = new Gson().toJson(this, new TypeReference<PaginatedPaymentSearchResultFixture>() {
+        return new Gson()
+                .toJson(this, new TypeReference<PaginatedPaymentSearchResultFixture>() {
         }.getType());
-        return json;
     }
 }
