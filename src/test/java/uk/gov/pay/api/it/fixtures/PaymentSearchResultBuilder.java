@@ -83,12 +83,10 @@ public class PaymentSearchResultBuilder extends PaymentResultBuilder {
     public String build() {
         List<TestPayment> results = getResults();
 
-        String json = new GsonBuilder().create().toJson(
+        return new GsonBuilder().create().toJson(
                 ImmutableMap.of("results", results),
                 new TypeToken<Map<String, List<TestPayment>>>() {
                 }.getType()
         );
-
-        return json;
     }
 }

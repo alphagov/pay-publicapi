@@ -541,10 +541,8 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
         connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, null, null, TEST_CARD_BRAND, null, null, null, null, null, payments);
 
-        ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of(
+        return searchPayments(API_KEY, ImmutableMap.of(
                 "card_brand", cardBrand));
-
-        return response;
     }
 
     @Test
@@ -664,7 +662,6 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                             ZonedDateTime createdDate = zonedDateTimeOf(result.get("created_date").toString());
                             return createdDate.isAfter(zonedDateTimeOf(fromDate)) && createdDate.isBefore(zonedDateTimeOf(toDate));
                         }
-
                 );
             }
 
