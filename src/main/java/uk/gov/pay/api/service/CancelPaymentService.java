@@ -6,7 +6,6 @@ import uk.gov.pay.api.exception.CancelChargeException;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
 public class CancelPaymentService {

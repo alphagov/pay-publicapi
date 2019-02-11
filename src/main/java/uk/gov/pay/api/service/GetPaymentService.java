@@ -35,7 +35,7 @@ public class GetPaymentService {
             ChargeFromResponse chargeFromResponse = connectorResponse.readEntity(ChargeFromResponse.class);
             URI paymentURI = publicApiUriGenerator.getPaymentURI(chargeFromResponse.getChargeId());
 
-            PaymentWithAllLinks payment = PaymentWithAllLinks.getPaymentWithLinks(
+            return PaymentWithAllLinks.getPaymentWithLinks(
                     account.getPaymentType(),
                     chargeFromResponse,
                     paymentURI,
@@ -43,7 +43,6 @@ public class GetPaymentService {
                     publicApiUriGenerator.getPaymentCancelURI(chargeFromResponse.getChargeId()),
                     publicApiUriGenerator.getPaymentRefundsURI(chargeFromResponse.getChargeId()),
                     publicApiUriGenerator.getPaymentCaptureURI(chargeFromResponse.getChargeId()));
-            return payment;
         }
         throw new GetChargeException(connectorResponse);
     }

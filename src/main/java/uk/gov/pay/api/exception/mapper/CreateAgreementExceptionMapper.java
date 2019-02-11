@@ -1,9 +1,6 @@
 package uk.gov.pay.api.exception.mapper;
 
-import com.google.common.collect.ImmutableMap;
-import java.util.Map;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

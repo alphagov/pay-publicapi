@@ -30,7 +30,6 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.verify;
 import static uk.gov.pay.api.filter.RestClientLoggingFilter.HEADER_REQUEST_ID;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -58,7 +57,7 @@ public class RestClientLoggingFilterTest {
     }
 
     @Test
-    public void shouldLogRestClientStartEventWithRequestId() throws Exception {
+    public void shouldLogRestClientStartEventWithRequestId() {
 
         String requestId = UUID.randomUUID().toString();
         URI requestUrl = URI.create("/publicapi-request");
@@ -80,7 +79,7 @@ public class RestClientLoggingFilterTest {
     }
 
     @Test
-    public void shouldLogRestClientEndEventWithRequestIdAndElapsedTime() throws Exception {
+    public void shouldLogRestClientEndEventWithRequestIdAndElapsedTime() {
 
         String requestId = UUID.randomUUID().toString();
         URI requestUrl = URI.create("/publicapi-request");

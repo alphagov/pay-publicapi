@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import java.time.ZonedDateTime;
-
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 @ApiModel(value="SettlementSummary", description = "A structure representing information about a settlement")
 public class SettlementSummary {

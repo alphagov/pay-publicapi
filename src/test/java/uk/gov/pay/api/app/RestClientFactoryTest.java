@@ -24,13 +24,11 @@ import static org.mockito.Mockito.when;
 public class RestClientFactoryTest {
 
     private File keyStoreDir;
-    private final String keyStoreFile = "tempKeystore.jks";
-    private String keyStorePassword = "password";
 
     @Before
     public void before() throws Exception {
         keyStoreDir = Files.createTempDir();
-        KeyStoreUtil.createKeyStoreWithCerts(keyStoreDir, keyStoreFile, keyStorePassword.toCharArray());
+        KeyStoreUtil.createKeyStoreWithCerts(keyStoreDir, "tempKeystore.jks", "password".toCharArray());
     }
 
     @After
@@ -39,7 +37,7 @@ public class RestClientFactoryTest {
     }
 
     @Test
-    public void jerseyClient_shouldUseSSLWhenSecureInternalCommunicationIsOn() throws Exception {
+    public void jerseyClient_shouldUseSSLWhenSecureInternalCommunicationIsOn() {
         //given
         RestClientConfig clientConfiguration = mock(RestClientConfig.class);
         when(clientConfiguration.isDisabledSecureConnection()).thenReturn(false);
@@ -54,7 +52,7 @@ public class RestClientFactoryTest {
     }
 
     @Test
-    public void jerseyClient_shouldNotUseSSLWhenSecureInternalCommunicationIsOff() throws Exception {
+    public void jerseyClient_shouldNotUseSSLWhenSecureInternalCommunicationIsOff() {
         //given
         RestClientConfig clientConfiguration = mock(RestClientConfig.class);
         when(clientConfiguration.isDisabledSecureConnection()).thenReturn(true);
@@ -69,9 +67,9 @@ public class RestClientFactoryTest {
 
     static class KeyStoreUtil {
 
-        public static final String CERT_FILE = "gds-test.pem";
+        static final String CERT_FILE = "gds-test.pem";
 
-        public static void createKeyStoreWithCerts(File keyStoreDir, String keyStoreName, char[] keyStorePassword) throws Exception {
+        static void createKeyStoreWithCerts(File keyStoreDir, String keyStoreName, char[] keyStorePassword) throws Exception {
 
             File keyStore = new File(keyStoreDir, keyStoreName);
             FileOutputStream os = new FileOutputStream(keyStore);
@@ -103,6 +101,5 @@ public class RestClientFactoryTest {
             dis.readFully(bytes);
             return new ByteArrayInputStream(bytes);
         }
-
     }
 }

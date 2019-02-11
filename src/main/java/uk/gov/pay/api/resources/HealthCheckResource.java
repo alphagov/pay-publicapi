@@ -2,7 +2,6 @@ package uk.gov.pay.api.resources;
 
 import com.codahale.metrics.annotation.Timed;
 import com.codahale.metrics.health.HealthCheck;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableMap;
 import io.dropwizard.setup.Environment;
 
@@ -34,7 +33,7 @@ public class HealthCheckResource {
     @Timed
     @Path(HEALTHCHECK)
     @Produces(APPLICATION_JSON)
-    public Response healthCheck() throws JsonProcessingException {
+    public Response healthCheck() {
         SortedMap<String, HealthCheck.Result> results = environment.healthChecks().runHealthChecks();
 
         Map<String, Map<String, Boolean>> response = getResponse(results);
