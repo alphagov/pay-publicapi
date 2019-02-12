@@ -15,11 +15,12 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CaptureChargeException;
 import uk.gov.pay.api.exception.GetEventsException;
+import uk.gov.pay.api.model.CreatePaymentResult;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.PaymentEvents;
 import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
-import uk.gov.pay.api.model.search.card.PaymentForSearchResult;
+import uk.gov.pay.api.model.search.card.GetPaymentResult;
 import uk.gov.pay.api.model.search.card.PaymentSearchResults;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
 import uk.gov.pay.api.service.CancelPaymentService;
@@ -95,13 +96,15 @@ public class PaymentsResource {
             code = 200,
             authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = PaymentForSearchResult.class),
+            @ApiResponse(code = 200, message = "OK", response = GetPaymentResult.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response getPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                               @PathParam("paymentId") String paymentId) {
+                               @PathParam("paymentId")
+                               @ApiParam(name = "paymentId", value = "Payment identifier", example = "hu20sqlact5260q2nanm0q8u93")
+                                       String paymentId) {
 
         logger.info("Payment request - paymentId={}", paymentId);
 
@@ -130,7 +133,9 @@ public class PaymentsResource {
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response getPaymentEvents(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                                     @PathParam("paymentId") String paymentId) {
+                                     @PathParam("paymentId")
+                                     @ApiParam(name = "paymentId", value = "Payment identifier", example = "hu20sqlact5260q2nanm0q8u93")
+                                             String paymentId) {
 
         logger.info("Payment events request - payment_id={}", paymentId);
 
@@ -229,7 +234,7 @@ public class PaymentsResource {
             nickname = "newPayment",
             authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Created", response = PaymentWithAllLinks.class),
+            @ApiResponse(code = 201, message = "Created", response = CreatePaymentResult.class),
             @ApiResponse(code = 400, message = "Bad request", response = PaymentError.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 422, message = "Invalid attribute value: description. Must be less than or equal to 255 characters length", response = PaymentError.class),
@@ -272,7 +277,9 @@ public class PaymentsResource {
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)
     })
     public Response cancelPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                                  @PathParam("paymentId") String paymentId) {
+                                  @PathParam("paymentId")
+                                  @ApiParam(name = "paymentId", value = "Payment identifier", example = "hu20sqlact5260q2nanm0q8u93")
+                                          String paymentId) {
 
         logger.info("Payment cancel request - payment_id=[{}]", paymentId);
 
@@ -301,7 +308,9 @@ public class PaymentsResource {
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)
     })
     public Response capturePayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                                   @PathParam("paymentId") String paymentId) {
+                                   @PathParam("paymentId")
+                                   @ApiParam(name = "paymentId", value = "Payment identifier", example = "hu20sqlact5260q2nanm0q8u93")
+                                           String paymentId) {
         logger.info("Payment capture request - payment_id=[{}]", paymentId);
 
         Response connectorResponse = capturePaymentService.capture(account, paymentId);

@@ -51,7 +51,7 @@ public class Address {
         return city;
     }
 
-    @ApiModelProperty(example = "UK")
+    @ApiModelProperty(example = "GB")
     public String getCountry() {
         return country;
     }
