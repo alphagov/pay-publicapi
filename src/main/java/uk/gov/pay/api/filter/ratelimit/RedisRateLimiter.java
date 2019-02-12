@@ -33,7 +33,7 @@ public class RedisRateLimiter {
     synchronized void checkRateOf(String key, String method)
             throws RedisException, RateLimitException {
 
-        Long count = null;
+        Long count;
 
         try {
             count = updateAllowance(key);
