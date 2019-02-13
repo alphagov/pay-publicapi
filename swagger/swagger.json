@@ -14,25 +14,25 @@
     "/v1/payments" : {
       "get" : {
         "summary" : "Search payments",
-        "description" : "Search payments by reference, state, 'from' and 'to' date. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "description" : "Search payments by reference, state, 'from' and 'to' date. The authorization token must be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "searchPayments",
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "reference",
           "in" : "query",
-          "description" : "Your payment reference to search",
+          "description" : "Unique payment reference to search for",
           "required" : false,
           "type" : "string"
         }, {
           "name" : "email",
           "in" : "query",
-          "description" : "The user email used in the payment to be searched",
+          "description" : "The user email used in the payment to search for",
           "required" : false,
           "type" : "string"
         }, {
           "name" : "state",
           "in" : "query",
-          "description" : "State of payments to be searched. Example=success",
+          "description" : "Payment state to search for. Example=success",
           "required" : false,
           "type" : "string",
           "enum" : [ "created", "started", "submitted", "success", "failed", "cancelled", "error" ]
@@ -45,13 +45,13 @@
         }, {
           "name" : "from_date",
           "in" : "query",
-          "description" : "From date of payments to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z",
+          "description" : "Search includes payments from this date but not before. From date of payments to search for (this date is inclusive). Example=2015-08-13T12:35:00Z",
           "required" : false,
           "type" : "string"
         }, {
           "name" : "to_date",
           "in" : "query",
-          "description" : "To date of payments to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z",
+          "description" : "Search includes payment up until this date but not after. To date of payments to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z",
           "required" : false,
           "type" : "string"
         }, {
@@ -120,7 +120,7 @@
       },
       "post" : {
         "summary" : "Create new payment",
-        "description" : "Create a new payment for the account associated to the Authorisation token. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "description" : "Create a new payment for the account associated with the authorization token. The authorization token must be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "newPayment",
         "consumes" : [ "application/json" ],
         "produces" : [ "application/json" ],
@@ -176,7 +176,7 @@
     "/v1/payments/{paymentId}" : {
       "get" : {
         "summary" : "Find payment by ID",
-        "description" : "Return information about the payment The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "description" : "Return information about the payment. The authorization token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "getPayment",
         "produces" : [ "application/json" ],
         "parameters" : [ {
@@ -222,7 +222,7 @@
     "/v1/payments/{paymentId}/cancel" : {
       "post" : {
         "summary" : "Cancel payment",
-        "description" : "Cancel a payment based on the provided payment ID and the Authorisation token. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be cancelled if it's in a state that isn't finished.",
+        "description" : "Cancel a payment based on the provided payment ID and the authorization token. The authorization token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be cancelled if it's in a state that isn't finished.",
         "operationId" : "cancelPayment",
         "produces" : [ "application/json" ],
         "parameters" : [ {
@@ -277,7 +277,7 @@
     "/v1/payments/{paymentId}/capture" : {
       "post" : {
         "summary" : "Capture payment",
-        "description" : "Capture a payment based on the provided payment ID and the Authorisation token. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be captured if it's in 'submitted' state",
+        "description" : "Capture a payment based on the provided payment ID and the authorization token. The authorization token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be captured if it's in 'submitted' state",
         "operationId" : "capturePayment",
         "produces" : [ "application/json" ],
         "parameters" : [ {
@@ -332,7 +332,7 @@
     "/v1/payments/{paymentId}/events" : {
       "get" : {
         "summary" : "Return payment events by ID",
-        "description" : "Return payment events information about a certain payment The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "description" : "Return payment events information about a specific payment. The authorization token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "getPaymentEvents",
         "produces" : [ "application/json" ],
         "parameters" : [ {
@@ -379,7 +379,7 @@
       "get" : {
         "tags" : [ "refunds" ],
         "summary" : "Get all refunds for a payment",
-        "description" : "Return refunds for a payment. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "description" : "Return refunds for a payment. The authorization token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "getRefunds",
         "produces" : [ "application/json" ],
         "parameters" : [ {
@@ -424,7 +424,7 @@
       "post" : {
         "tags" : [ "refunds" ],
         "summary" : "Submit a refund for a payment",
-        "description" : "Return issued refund information. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "description" : "Return issued refund information. The authorization token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "submitRefund",
         "consumes" : [ "application/json" ],
         "produces" : [ "application/json" ],
@@ -487,7 +487,7 @@
       "get" : {
         "tags" : [ "refunds" ],
         "summary" : "Find payment refund by ID",
-        "description" : "Return payment refund information by Refund ID The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "description" : "Return payment refund information by Refund ID. The authorization token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "getRefundById",
         "produces" : [ "application/json" ],
         "parameters" : [ {
@@ -539,19 +539,19 @@
       "get" : {
         "tags" : [ "refunds" ],
         "summary" : "Search refunds",
-        "description" : "Search refunds by 'from' and 'to' date. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "description" : "Search refunds by 'from' and 'to' date. The authorization token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "searchRefunds",
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "from_date",
           "in" : "query",
-          "description" : "From date of refunds to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z",
+          "description" : "Search includes refunds from this date but not before. From date of refunds to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z",
           "required" : false,
           "type" : "string"
         }, {
           "name" : "to_date",
           "in" : "query",
-          "description" : "To date of refunds to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z",
+          "description" : "Search includes refunds up until this date but not after. To date of refunds to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z",
           "required" : false,
           "type" : "string"
         }, {
@@ -1111,7 +1111,7 @@
           "type" : "integer",
           "format" : "int32",
           "example" : 150000,
-          "description" : "Amount in pence. Can't be more than the available amount for refunds",
+          "description" : "Amount in pence. Must be less than or equal to the available amount for refunds",
           "minimum" : 1,
           "maximum" : 10000000
         },
@@ -1167,19 +1167,19 @@
         },
         "finished" : {
           "type" : "boolean",
-          "description" : "Whether the payment has finished",
+          "description" : "States whether the payment has finished",
           "readOnly" : true
         },
         "message" : {
           "type" : "string",
           "example" : "User cancelled the payment",
-          "description" : "What went wrong with the Payment if it finished with an error - English message",
+          "description" : "English message saying what went wrong with the Payment if it finished with an error",
           "readOnly" : true
         },
         "code" : {
           "type" : "string",
           "example" : "P010",
-          "description" : "What went wrong with the Payment if it finished with an error - error code",
+          "description" : "Error code saying what went wrong with the Payment if it finished with an error",
           "readOnly" : true
         }
       },
@@ -1418,11 +1418,11 @@
         "amount_submitted" : {
           "type" : "integer",
           "format" : "int64",
-          "description" : "Amount submitted for refunds on this Payment in pence",
+          "description" : "Amount submitted for refunds on this payment in pence",
           "readOnly" : true
         }
       },
-      "description" : "A structure representing the refunds availability"
+      "description" : "A structure representing how available the refund is"
     },
     "SearchNavigationLinks" : {
       "type" : "object",
