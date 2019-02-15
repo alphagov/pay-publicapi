@@ -137,7 +137,7 @@
           "201" : {
             "description" : "Created",
             "schema" : {
-              "$ref" : "#/definitions/PaymentWithAllLinks"
+              "$ref" : "#/definitions/CreatePaymentResult"
             }
           },
           "400" : {
@@ -182,14 +182,16 @@
         "parameters" : [ {
           "name" : "paymentId",
           "in" : "path",
+          "description" : "Payment identifier",
           "required" : true,
-          "type" : "string"
+          "type" : "string",
+          "x-example" : "hu20sqlact5260q2nanm0q8u93"
         } ],
         "responses" : {
           "200" : {
             "description" : "OK",
             "schema" : {
-              "$ref" : "#/definitions/PaymentDetailForSearch"
+              "$ref" : "#/definitions/GetPaymentResult"
             }
           },
           "401" : {
@@ -228,8 +230,10 @@
         "parameters" : [ {
           "name" : "paymentId",
           "in" : "path",
+          "description" : "Payment identifier",
           "required" : true,
-          "type" : "string"
+          "type" : "string",
+          "x-example" : "hu20sqlact5260q2nanm0q8u93"
         } ],
         "responses" : {
           "204" : {
@@ -283,8 +287,10 @@
         "parameters" : [ {
           "name" : "paymentId",
           "in" : "path",
+          "description" : "Payment identifier",
           "required" : true,
-          "type" : "string"
+          "type" : "string",
+          "x-example" : "hu20sqlact5260q2nanm0q8u93"
         } ],
         "responses" : {
           "204" : {
@@ -338,8 +344,10 @@
         "parameters" : [ {
           "name" : "paymentId",
           "in" : "path",
+          "description" : "Payment identifier",
           "required" : true,
-          "type" : "string"
+          "type" : "string",
+          "x-example" : "hu20sqlact5260q2nanm0q8u93"
         } ],
         "responses" : {
           "200" : {
@@ -629,7 +637,7 @@
         },
         "country" : {
           "type" : "string",
-          "example" : "UK",
+          "example" : "GB",
           "readOnly" : true
         }
       },
@@ -669,56 +677,6 @@
         }
       },
       "description" : "A structure representing the payment card"
-    },
-    "CardPayment" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Payment"
-      }, {
-        "type" : "object",
-        "properties" : {
-          "language" : {
-            "type" : "string",
-            "example" : "en",
-            "enum" : [ "en", "cy" ]
-          },
-          "refund_summary" : {
-            "readOnly" : true,
-            "$ref" : "#/definitions/RefundSummary"
-          },
-          "settlement_summary" : {
-            "readOnly" : true,
-            "$ref" : "#/definitions/SettlementSummary"
-          },
-          "card_details" : {
-            "readOnly" : true,
-            "$ref" : "#/definitions/CardDetails"
-          },
-          "delayed_capture" : {
-            "type" : "boolean",
-            "example" : false,
-            "description" : "delayed capture flag",
-            "readOnly" : true
-          },
-          "corporate_card_surcharge" : {
-            "type" : "integer",
-            "format" : "int64",
-            "example" : 250,
-            "readOnly" : true
-          },
-          "total_amount" : {
-            "type" : "integer",
-            "format" : "int64",
-            "example" : 1450,
-            "readOnly" : true
-          },
-          "card_brand" : {
-            "type" : "string",
-            "example" : "Visa",
-            "description" : "Card Brand",
-            "readOnly" : true
-          }
-        }
-      } ]
     },
     "CreatePaymentRequest" : {
       "type" : "object",
@@ -761,12 +719,59 @@
         }
       }
     },
-    "DirectDebitPayment" : {
-      "allOf" : [ {
-        "$ref" : "#/definitions/Payment"
-      }, {
-        "type" : "object"
-      } ]
+    "CreatePaymentResult" : {
+      "type" : "object",
+      "properties" : {
+        "amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "example" : 1200
+        },
+        "state" : {
+          "$ref" : "#/definitions/PaymentState"
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "Your Service Description"
+        },
+        "reference" : {
+          "type" : "string",
+          "example" : "your-reference"
+        },
+        "language" : {
+          "type" : "string",
+          "example" : "en",
+          "enum" : [ "ENGLISH", "WELSH" ]
+        },
+        "paymentId" : {
+          "type" : "string",
+          "example" : "hu20sqlact5260q2nanm0q8u93"
+        },
+        "payment_provider" : {
+          "type" : "string",
+          "example" : "worldpay"
+        },
+        "return_url" : {
+          "type" : "string",
+          "example" : "http://your.service.domain/your-reference"
+        },
+        "created_date" : {
+          "type" : "string",
+          "example" : "2016-01-21T17:15:00Z"
+        },
+        "delayed_capture" : {
+          "type" : "boolean"
+        },
+        "_links" : {
+          "$ref" : "#/definitions/PaymentLinks"
+        },
+        "refund_summary" : {
+          "$ref" : "#/definitions/RefundSummary"
+        },
+        "settlement_summary" : {
+          "$ref" : "#/definitions/SettlementSummary"
+        }
+      }
     },
     "EmbeddedRefunds" : {
       "type" : "object",
@@ -793,25 +798,8 @@
       },
       "description" : "An error response"
     },
-    "Link" : {
+    "GetPaymentResult" : {
       "type" : "object",
-      "properties" : {
-        "href" : {
-          "type" : "string",
-          "example" : "https://an.example.link/from/payment/platform",
-          "readOnly" : true
-        },
-        "method" : {
-          "type" : "string",
-          "example" : "GET",
-          "readOnly" : true
-        }
-      },
-      "description" : "A link related to a payment"
-    },
-    "Payment" : {
-      "type" : "object",
-      "discriminator" : "paymentType",
       "properties" : {
         "amount" : {
           "type" : "integer",
@@ -833,6 +821,11 @@
           "type" : "string",
           "example" : "your email"
         },
+        "language" : {
+          "type" : "string",
+          "example" : "en",
+          "enum" : [ "en", "cy" ]
+        },
         "payment_id" : {
           "type" : "string",
           "example" : "hu20sqlact5260q2nanm0q8u93",
@@ -850,10 +843,65 @@
         },
         "created_date" : {
           "type" : "string",
-          "example" : "2016-01-21T17:15:00Z",
+          "example" : "2016-01-21T17:15:000Z",
+          "readOnly" : true
+        },
+        "refund_summary" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/RefundSummary"
+        },
+        "settlement_summary" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/SettlementSummary"
+        },
+        "card_details" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/CardDetails"
+        },
+        "delayed_capture" : {
+          "type" : "boolean",
+          "example" : false,
+          "description" : "delayed capture flag",
+          "readOnly" : true
+        },
+        "corporate_card_surcharge" : {
+          "type" : "integer",
+          "format" : "int64",
+          "example" : 250,
+          "readOnly" : true
+        },
+        "total_amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "example" : 1450,
+          "readOnly" : true
+        },
+        "_links" : {
+          "$ref" : "#/definitions/PaymentLinks"
+        },
+        "card_brand" : {
+          "type" : "string",
+          "example" : "Visa",
+          "description" : "Card Brand",
           "readOnly" : true
         }
       }
+    },
+    "Link" : {
+      "type" : "object",
+      "properties" : {
+        "href" : {
+          "type" : "string",
+          "example" : "https://an.example.link/from/payment/platform",
+          "readOnly" : true
+        },
+        "method" : {
+          "type" : "string",
+          "example" : "GET",
+          "readOnly" : true
+        }
+      },
+      "description" : "A link related to a payment"
     },
     "PaymentDetailForSearch" : {
       "type" : "object",
@@ -900,7 +948,7 @@
         },
         "created_date" : {
           "type" : "string",
-          "example" : "2016-01-21T17:15:00Z",
+          "example" : "2016-01-21T17:15:000Z",
           "readOnly" : true
         },
         "refund_summary" : {
@@ -1185,55 +1233,6 @@
       },
       "description" : "A structure representing the current state of the payment in its lifecycle."
     },
-    "PaymentWithAllLinks" : {
-      "type" : "object",
-      "properties" : {
-        "amount" : {
-          "type" : "integer",
-          "format" : "int64",
-          "example" : 1200
-        },
-        "state" : {
-          "$ref" : "#/definitions/PaymentState"
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "Your Service Description"
-        },
-        "reference" : {
-          "type" : "string",
-          "example" : "your-reference"
-        },
-        "email" : {
-          "type" : "string",
-          "example" : "your email"
-        },
-        "payment_id" : {
-          "type" : "string",
-          "example" : "hu20sqlact5260q2nanm0q8u93",
-          "readOnly" : true
-        },
-        "payment_provider" : {
-          "type" : "string",
-          "example" : "worldpay",
-          "readOnly" : true
-        },
-        "return_url" : {
-          "type" : "string",
-          "example" : "http://your.service.domain/your-reference",
-          "readOnly" : true
-        },
-        "created_date" : {
-          "type" : "string",
-          "example" : "2016-01-21T17:15:00Z",
-          "readOnly" : true
-        },
-        "_links" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/PaymentLinks"
-        }
-      }
-    },
     "PostLink" : {
       "type" : "object",
       "properties" : {
@@ -1412,6 +1411,7 @@
         "amount_available" : {
           "type" : "integer",
           "format" : "int64",
+          "example" : 100,
           "description" : "Amount available for refund in pence",
           "readOnly" : true
         },
@@ -1455,7 +1455,7 @@
       "properties" : {
         "capture_submit_time" : {
           "type" : "string",
-          "example" : "2016-01-21T17:15:00Z",
+          "example" : "2016-01-21T17:15:000Z",
           "description" : "Date and time capture request has been submitted (may be null if capture request was not immediately acknowledged by payment gateway)",
           "readOnly" : true
         },

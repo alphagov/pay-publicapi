@@ -30,7 +30,7 @@ public class RefundSummary {
         return status;
     }
 
-    @ApiModelProperty(value = "Amount available for refund in pence")
+    @ApiModelProperty(value = "Amount available for refund in pence", example = "100")
     public long getAmountAvailable() {
         return amountAvailable;
     }

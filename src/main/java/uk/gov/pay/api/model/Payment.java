@@ -50,7 +50,7 @@ public abstract class Payment {
         this.createdDate = createdDate;
     }
 
-    @ApiModelProperty(example = "2016-01-21T17:15:00Z")
+    @ApiModelProperty(example = "2016-01-21T17:15:000Z")
     public String getCreatedDate() {
         return createdDate;
     }

@@ -22,7 +22,7 @@ public class SettlementSummary {
         this.capturedDate = capturedDate;
     }
 
-    @ApiModelProperty(value = "Date and time capture request has been submitted (may be null if capture request was not immediately acknowledged by payment gateway)", example = "2016-01-21T17:15:00Z")
+    @ApiModelProperty(value = "Date and time capture request has been submitted (may be null if capture request was not immediately acknowledged by payment gateway)", example = "2016-01-21T17:15:000Z")
     public String getCaptureSubmitTime() {
         return captureSubmitTime;
     }
