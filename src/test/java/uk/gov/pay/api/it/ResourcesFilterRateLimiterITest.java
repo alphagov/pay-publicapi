@@ -41,7 +41,7 @@ public class ResourcesFilterRateLimiterITest extends ResourcesFilterITestBase {
 
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CREATED,
                 RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH,
-                false, CHARGE_TOKEN_ID, REFUND_SUMMARY, null, CARD_DETAILS);
+                false, CHARGE_TOKEN_ID, REFUND_SUMMARY, null, CARD_DETAILS, "gatewayTransactionId");
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> getPaymentResponse(API_KEY, CHARGE_ID),

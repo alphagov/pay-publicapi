@@ -154,7 +154,7 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
                 ImmutableMap.of("amount", AMOUNT));
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, null, null, null, null, null,
                 null, null, SupportedLanguage.ENGLISH, false, null,
-                new RefundSummary("available", 9000, 1000), null, CARD_DETAILS);
+                new RefundSummary("available", 9000, 1000), null, CARD_DETAILS, "gatewayTransactionId");
 
         postRefundRequest(payload);
     }
