@@ -26,9 +26,9 @@ public class PaymentForSearchResult extends CardPayment {
                                   String reference, String email, String paymentProvider, String createdDate, SupportedLanguage language,
                                   boolean delayedCapture, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
                                   List<PaymentConnectorResponseLink> links, URI selfLink, URI paymentEventsLink, URI paymentCancelLink, URI paymentRefundsLink, URI paymentCaptureUri,
-                                  Long corporateCardSurcharge, Long totalAmount) {
+                                  Long corporateCardSurcharge, Long totalAmount, String providerId) {
         super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider,
-                createdDate, refundSummary, settlementSummary, cardDetails, language, delayedCapture, corporateCardSurcharge, totalAmount);
+                createdDate, refundSummary, settlementSummary, cardDetails, language, delayedCapture, corporateCardSurcharge, totalAmount, providerId);
         this.links.addSelf(selfLink.toString());
         this.links.addEvents(paymentEventsLink.toString());
         this.links.addRefunds(paymentRefundsLink.toString());
@@ -71,7 +71,8 @@ public class PaymentForSearchResult extends CardPayment {
                 paymentRefundsLink,
                 paymentCaptureUri,
                 paymentResult.getCorporateCardSurcharge(),
-                paymentResult.getTotalAmount());
+                paymentResult.getTotalAmount(),
+                paymentResult.getGatewayTransactionId());
     }
 
     @ApiModelProperty(name = LINKS_JSON_ATTRIBUTE, dataType = "uk.gov.pay.api.model.links.PaymentLinksForSearch")

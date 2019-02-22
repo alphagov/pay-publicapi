@@ -39,14 +39,19 @@ public class CardPayment extends Payment {
     @JsonProperty("total_amount")
     private final Long totalAmount;
 
+    @JsonProperty("provider_id")
+    private final String providerId;
+
     public CardPayment(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                        String reference, String email, String paymentProvider, String createdDate,
                        RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
-                       SupportedLanguage language, boolean delayedCapture, Long corporateCardSurcharge, Long totalAmount) {
+                       SupportedLanguage language, boolean delayedCapture, Long corporateCardSurcharge, Long totalAmount, 
+                       String providerId) {
         super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate);
         this.refundSummary = refundSummary;
         this.settlementSummary = settlementSummary;
         this.cardDetails = cardDetails;
+        this.providerId = providerId;
         this.paymentType = CARD.getFriendlyName();
         this.language = language;
         this.delayedCapture = delayedCapture;
@@ -101,6 +106,10 @@ public class CardPayment extends Payment {
     public Optional<Long> getTotalAmount() {
         return Optional.ofNullable(totalAmount);
     }
+    
+    public String getProviderId() {
+        return providerId;
+    }
 
     @Override
     public String toString() {
@@ -119,5 +128,4 @@ public class CardPayment extends Payment {
                 ", createdDate='" + createdDate + '\'' +
                 '}';
     }
-
 }

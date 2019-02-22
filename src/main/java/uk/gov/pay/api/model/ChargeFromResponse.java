@@ -60,6 +60,9 @@ public class ChargeFromResponse {
     @JsonProperty(value = "created_date")
     private String createdDate;
 
+    @JsonProperty(value = "gateway_transaction_id")
+    private String gatewayTransactionId;
+
     public String getChargeId() {
         return chargeId;
     }
@@ -137,5 +140,9 @@ public class ChargeFromResponse {
 
     public CardDetails getCardDetails() {
         return cardDetails;
+    }
+
+    public String getGatewayTransactionId() {
+        return gatewayTransactionId;
     }
 }
