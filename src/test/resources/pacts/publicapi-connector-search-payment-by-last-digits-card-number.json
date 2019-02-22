@@ -16,7 +16,8 @@
             "gateway_account_id": "123456",
             "cardholder_name": "Mr Payment",
             "first_digits_card_number": "123456",
-            "last_digits_card_number": "1234"
+            "last_digits_card_number": "1234",
+            "gateway_transaction_id": "txId-1234"
           }
         }
       ],
@@ -74,6 +75,7 @@
                 }
               ],
               "charge_id": "charge8133029783750964639",
+              "gateway_transaction_id": "txId-1234",
               "return_url": "aReturnUrl",
               "email": "test@test.com",
               "payment_provider": "sandbox",
