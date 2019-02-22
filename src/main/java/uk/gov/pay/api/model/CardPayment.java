@@ -40,6 +40,7 @@ public class CardPayment extends Payment {
     private final Long totalAmount;
 
     @JsonProperty("provider_id")
+    @ApiModelProperty(example = "reference-from-payment-gateway")
     private final String providerId;
 
     public CardPayment(String chargeId, long amount, PaymentState state, String returnUrl, String description,

@@ -88,7 +88,7 @@ public class ResourcesFilterLocalRateLimiterITest {
 
         connectorMock.respondOk_whenCreateCharge(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID, CREATED,
                 RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH,
-                false, REFUND_SUMMARY, null, CARD_DETAILS);
+                false, REFUND_SUMMARY, null, CARD_DETAILS, null);
     }
 
     @Test

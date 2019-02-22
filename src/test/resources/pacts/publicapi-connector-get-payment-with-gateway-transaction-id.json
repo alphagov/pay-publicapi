@@ -30,8 +30,8 @@
         "body": {
           "amount": 100,
           "state": {
-            "finished": false,
-            "status": "submitted"
+            "finished": true,
+            "status": "success"
           },
           "description": "Test description",
           "reference": "aReference",
@@ -46,11 +46,6 @@
               "rel": "refunds",
               "method": "GET",
               "href": "https://connector/v1/api/accounts/123456/charges/ch_999abc456def/refunds"
-            },
-            {
-              "rel": "capture",
-              "method": "POST",
-              "href": "https://connector/v1/api/accounts/123456/charges/ch_999abc456def/capture"
             }
           ],
           "charge_id": "ch_999abc456def",
@@ -59,7 +54,7 @@
           "payment_provider": "sandbox",
           "created_date": "2018-10-16T10:46:02.121Z",
           "refund_summary": {
-            "status": "unavailable",
+            "status": "available",
             "user_external_id": null,
             "amount_available": 100,
             "amount_submitted": 0
@@ -68,7 +63,7 @@
             "capture_submit_time": null,
             "captured_date": null
           },
-          "delayed_capture": true
+          "delayed_capture": false
         },
         "matchingRules": {
           "body": {

@@ -64,4 +64,7 @@ public class CreatePaymentResult {
     @ApiModelProperty(name = LINKS_JSON_ATTRIBUTE)
     private PaymentLinks links;
 
+    @JsonProperty
+    @ApiModelProperty(example = "null")
+    private String providerId;
 }

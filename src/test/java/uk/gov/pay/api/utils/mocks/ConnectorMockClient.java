@@ -142,7 +142,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     public void respondOk_whenCreateCharge(int amount, String gatewayAccountId, String chargeId, String chargeTokenId, PaymentState state, String returnUrl,
                                            String description, String reference, String email, String paymentProvider, String createdDate,
                                            SupportedLanguage language, boolean delayedCapture, RefundSummary refundSummary, SettlementSummary settlementSummary,
-                                           CardDetails cardDetails) {
+                                           CardDetails cardDetails, String gatewayTransactionId) {
 
         whenCreateCharge(amount, gatewayAccountId, returnUrl, description, reference)
                 .respond(response()
@@ -158,7 +158,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                                 reference,
                                 email,
                                 paymentProvider,
-                                null,
+                                gatewayTransactionId,
                                 createdDate,
                                 language,
                                 delayedCapture,

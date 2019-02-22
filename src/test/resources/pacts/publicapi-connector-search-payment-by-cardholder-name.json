@@ -7,7 +7,7 @@
   },
   "interactions": [
     {
-      "description": "a search payment request",
+      "description": "search payment by cardholder name",
       "providerStates": [
         {
           "name": "a charge with card details exists",

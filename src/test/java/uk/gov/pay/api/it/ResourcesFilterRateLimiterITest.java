@@ -22,7 +22,7 @@ public class ResourcesFilterRateLimiterITest extends ResourcesFilterITestBase {
 
         connectorMock.respondOk_whenCreateCharge(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID, CREATED,
                 RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH,
-                false, REFUND_SUMMARY, null, CARD_DETAILS);
+                false, REFUND_SUMMARY, null, CARD_DETAILS, "gatewayTxId");
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> postPaymentResponse(API_KEY, PAYLOAD),
@@ -41,7 +41,7 @@ public class ResourcesFilterRateLimiterITest extends ResourcesFilterITestBase {
 
         connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CREATED,
                 RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH,
-                false, CHARGE_TOKEN_ID, REFUND_SUMMARY, null, CARD_DETAILS, "gatewayTransactionId");
+                false, CHARGE_TOKEN_ID, REFUND_SUMMARY, null, CARD_DETAILS, null);
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> getPaymentResponse(API_KEY, CHARGE_ID),
