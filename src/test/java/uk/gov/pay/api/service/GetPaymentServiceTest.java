@@ -58,6 +58,16 @@ public class GetPaymentServiceTest {
 
     @Test
     @PactVerification({"connector"})
+    @Pacts(pacts = {"publicapi-connector-get-payment-with-gateway-transaction-id"})
+    public void providerIdIsAvailableWhenPaymentIsSubmitted() {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, "ch_999abc456def");
+        CardPayment payment = (CardPayment) paymentResponse.getPayment();
+        assertThat(payment.getProviderId(), is("gateway-tx-123456"));
+    }
+
+    @Test
+    @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-get-payment-with-delayed-capture-true"})
     public void testGetPayment() {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);

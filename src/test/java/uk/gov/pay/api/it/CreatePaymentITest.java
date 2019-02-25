@@ -44,6 +44,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
     private static final CardDetails CARD_DETAILS = new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL);
     private static final String SUCCESS_PAYLOAD = paymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL);
+    private static final String GATEWAY_TRANSACTION_ID = "gateway-tx-123456";
 
     @Test
     public void createCardPayment() {
@@ -51,7 +52,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
 
         connectorMock.respondOk_whenCreateCharge(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID,
                 CREATED, RETURN_URL, DESCRIPTION, REFERENCE, null, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH, true, REFUND_SUMMARY,
-                null, CARD_DETAILS);
+                null, CARD_DETAILS, GATEWAY_TRANSACTION_ID);
 
         String responseBody = postPaymentResponse(API_KEY, SUCCESS_PAYLOAD)
                 .statusCode(201)
@@ -68,6 +69,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 .body("card_brand", is(CARD_BRAND_LABEL))
                 .body("created_date", is(CREATED_DATE))
                 .body("delayed_capture", is(true))
+                .body("provider_id", is(GATEWAY_TRANSACTION_ID))
                 .body("refund_summary.status", is("pending"))
                 .body("refund_summary.amount_submitted", is(50))
                 .body("refund_summary.amount_available", is(100))
@@ -105,7 +107,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondOk_whenCreateCharge(minimumAmount, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID,
                 CREATED, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH,
-                false, REFUND_SUMMARY, null, CARD_DETAILS);
+                false, REFUND_SUMMARY, null, CARD_DETAILS, GATEWAY_TRANSACTION_ID);
 
         postPaymentResponse(API_KEY, paymentPayload(minimumAmount, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL))
                 .statusCode(201)
@@ -133,7 +135,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMock.respondOk_whenCreateCharge(amount, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID,
                 CREATED, return_url, description, reference, email, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH,
-                false, REFUND_SUMMARY, null, CARD_DETAILS);
+                false, REFUND_SUMMARY, null, CARD_DETAILS, GATEWAY_TRANSACTION_ID);
 
         String body = new JsonStringBuilder()
                 .add("amount", amount)

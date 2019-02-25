@@ -142,7 +142,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     public void respondOk_whenCreateCharge(int amount, String gatewayAccountId, String chargeId, String chargeTokenId, PaymentState state, String returnUrl,
                                            String description, String reference, String email, String paymentProvider, String createdDate,
                                            SupportedLanguage language, boolean delayedCapture, RefundSummary refundSummary, SettlementSummary settlementSummary,
-                                           CardDetails cardDetails) {
+                                           CardDetails cardDetails, String gatewayTransactionId) {
 
         whenCreateCharge(amount, gatewayAccountId, returnUrl, description, reference)
                 .respond(response()
@@ -158,7 +158,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                                 reference,
                                 email,
                                 paymentProvider,
-                                null,
+                                gatewayTransactionId,
                                 createdDate,
                                 language,
                                 delayedCapture,
@@ -227,22 +227,22 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     public void respondWithChargeFound(long amount, String gatewayAccountId, String chargeId, PaymentState state, String returnUrl,
                                        String description, String reference, String email, String paymentProvider, String createdDate,
                                        SupportedLanguage language, boolean delayedCapture, String chargeTokenId, RefundSummary refundSummary, SettlementSummary settlementSummary,
-                                       CardDetails cardDetails) {
+                                       CardDetails cardDetails, String gatewayTransactionId) {
         respondWithChargeFound(amount, gatewayAccountId, chargeId, state, returnUrl,
                 description, reference, email, paymentProvider, createdDate,
                 language, delayedCapture, chargeTokenId, refundSummary, settlementSummary,
-                cardDetails, null, null);
+                cardDetails, null, null, gatewayTransactionId);
     }
 
     public void respondWithChargeFound(long amount, String gatewayAccountId, String chargeId, PaymentState state, String returnUrl,
                                        String description, String reference, String email, String paymentProvider, String createdDate,
                                        SupportedLanguage language, boolean delayedCapture, String chargeTokenId, RefundSummary refundSummary, SettlementSummary settlementSummary,
-                                       CardDetails cardDetails, Long corporateCardSurcharge, Long totalAmount) {
+                                       CardDetails cardDetails, Long corporateCardSurcharge, Long totalAmount, String gatewayTransactionId) {
         String chargeResponseBody;
         
         if (AWAITING_CAPTURE_REQUEST == state) {
             chargeResponseBody = buildChargeResponse(amount, chargeId, state, returnUrl,
-                    description, reference, email, paymentProvider, gatewayAccountId, createdDate, language, delayedCapture,
+                    description, reference, email, paymentProvider, gatewayTransactionId, createdDate, language, delayedCapture,
                     corporateCardSurcharge, totalAmount, refundSummary, settlementSummary, cardDetails,
                     validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
                     validGetLink(chargeLocation(gatewayAccountId, chargeId) + "/refunds", "refunds"),
@@ -250,7 +250,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                             new HashMap<>()));
         } else {
             chargeResponseBody = buildChargeResponse(amount, chargeId, state, returnUrl,
-                    description, reference, email, paymentProvider, gatewayAccountId, createdDate, language, delayedCapture,
+                    description, reference, email, paymentProvider, gatewayTransactionId, createdDate, language, delayedCapture,
                     corporateCardSurcharge, totalAmount, refundSummary, settlementSummary, cardDetails,
                     validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
                     validGetLink(chargeLocation(gatewayAccountId, chargeId) + "/refunds", "refunds"),

@@ -46,6 +46,11 @@ public class PaymentSearchResultBuilder extends PaymentResultBuilder {
         return this;
     }
 
+    public PaymentSearchResultBuilder withGatewayTransactionId(String gatewayTransactionId) {
+        this.gatewayTransactionId = gatewayTransactionId;
+        return this;
+    }
+
     public PaymentSearchResultBuilder withInProgressState(String status) {
         this.state = new TestPaymentState(status, false);
         return this;

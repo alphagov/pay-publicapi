@@ -876,6 +876,10 @@
           "example" : 1450,
           "readOnly" : true
         },
+        "provider_id" : {
+          "type" : "string",
+          "readOnly" : true
+        },
         "_links" : {
           "$ref" : "#/definitions/PaymentLinks"
         },
@@ -979,6 +983,10 @@
           "type" : "integer",
           "format" : "int64",
           "example" : 1450,
+          "readOnly" : true
+        },
+        "provider_id" : {
+          "type" : "string",
           "readOnly" : true
         },
         "_links" : {
