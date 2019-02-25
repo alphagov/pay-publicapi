@@ -35,7 +35,7 @@ public class CreatePaymentResult {
     private SupportedLanguage language;
 
     @JsonProperty
-    @ApiModelProperty(example = "hu20sqlact5260q2nanm0q8u93")
+    @ApiModelProperty(name = "payment_id", example = "hu20sqlact5260q2nanm0q8u93")
     private String paymentId;
 
     @JsonProperty
@@ -65,6 +65,6 @@ public class CreatePaymentResult {
     private PaymentLinks links;
 
     @JsonProperty
-    @ApiModelProperty(example = "null")
+    @ApiModelProperty(name = "provider_id", example = "null")
     private String providerId;
 }
