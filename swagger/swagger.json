@@ -743,7 +743,7 @@
           "example" : "en",
           "enum" : [ "ENGLISH", "WELSH" ]
         },
-        "paymentId" : {
+        "payment_id" : {
           "type" : "string",
           "example" : "hu20sqlact5260q2nanm0q8u93"
         },
@@ -764,6 +764,10 @@
         },
         "_links" : {
           "$ref" : "#/definitions/PaymentLinks"
+        },
+        "provider_id" : {
+          "type" : "string",
+          "example" : "null"
         },
         "refund_summary" : {
           "$ref" : "#/definitions/RefundSummary"
@@ -878,6 +882,7 @@
         },
         "provider_id" : {
           "type" : "string",
+          "example" : "reference-from-payment-gateway",
           "readOnly" : true
         },
         "_links" : {
@@ -987,6 +992,7 @@
         },
         "provider_id" : {
           "type" : "string",
+          "example" : "reference-from-payment-gateway",
           "readOnly" : true
         },
         "_links" : {
