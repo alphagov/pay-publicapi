@@ -12,3 +12,10 @@ _A brief description of the pull request:_
 ### Logging
 
 - [ ] only emit log lines at ERROR level which require immediate attention from a support engineer. These will trigger a zendesk alert.
+
+### Documentation
+
+- [ ] Updated README.md for any of the following ?
+
+* Introduced any new environment variables / removed existing environment variable
+* Added new API / updated existing API definition
