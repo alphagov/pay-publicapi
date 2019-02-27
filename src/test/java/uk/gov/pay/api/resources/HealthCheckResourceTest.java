@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.jayway.jsonassert.JsonAssert;
 import io.dropwizard.setup.Environment;
-import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,16 +43,19 @@ public class HealthCheckResourceTest {
         SortedMap<String,HealthCheck.Result> map = new TreeMap<>();
         map.put("ping", HealthCheck.Result.unhealthy("application is unavailable"));
         map.put("deadlocks", HealthCheck.Result.unhealthy("no new threads available"));
+
         when(healthCheckRegistry.runHealthChecks()).thenReturn(map);
+
         Response response = resource.healthCheck();
+
         assertThat(response.getStatus(), is(503));
+
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String body = ow.writeValueAsString(response.getEntity());
-
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(2))
-                .assertThat("$.ping.healthy", Is.is(false))
-                .assertThat("$.deadlocks.healthy", Is.is(false));
+                .assertThat("$.ping.healthy", is(false))
+                .assertThat("$.deadlocks.healthy", is(false));
     }
 
     @Test
@@ -61,33 +63,41 @@ public class HealthCheckResourceTest {
         SortedMap<String,HealthCheck.Result> map = new TreeMap<>();
         map.put("ping", HealthCheck.Result.healthy());
         map.put("deadlocks", HealthCheck.Result.healthy());
+
         when(healthCheckRegistry.runHealthChecks()).thenReturn(map);
+
         Response response = resource.healthCheck();
+
         assertThat(response.getStatus(), is(200));
+
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String body = ow.writeValueAsString(response.getEntity());
 
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(2))
-                .assertThat("$.ping.healthy", Is.is(true))
-                .assertThat("$.deadlocks.healthy", Is.is(true));
+                .assertThat("$.ping.healthy", is(true))
+                .assertThat("$.deadlocks.healthy", is(true));
     }
 
     @Test
-    public void checkHealthCheck_pingIsHealthy_deadlocksIsUnhealthy() throws JsonProcessingException {
+    public void checkHealthCheck_isUnhealthyIfPartiallyHealthy() throws JsonProcessingException {
         SortedMap<String,HealthCheck.Result> map = new TreeMap<>();
         map.put("ping", HealthCheck.Result.healthy());
         map.put("deadlocks", HealthCheck.Result.unhealthy("no new threads available"));
+
         when(healthCheckRegistry.runHealthChecks()).thenReturn(map);
+
         Response response = resource.healthCheck();
+
         assertThat(response.getStatus(), is(503));
+
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         String body = ow.writeValueAsString(response.getEntity());
 
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(2))
-                .assertThat("$.ping.healthy", Is.is(true))
-                .assertThat("$.deadlocks.healthy", Is.is(false));
+                .assertThat("$.ping.healthy", is(true))
+                .assertThat("$.deadlocks.healthy", is(false));
     }
 
 }
