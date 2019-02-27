@@ -2,7 +2,6 @@ package uk.gov.pay.api.it;
 
 import com.jayway.jsonassert.JsonAssert;
 import com.jayway.restassured.response.ValidatableResponse;
-import org.hamcrest.core.Is;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -13,6 +12,7 @@ import static com.jayway.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.eclipse.jetty.http.HttpStatus.CONFLICT_409;
 import static org.eclipse.jetty.http.HttpStatus.LENGTH_REQUIRED_411;
+import static org.hamcrest.core.Is.is;
 import static org.hamcrest.Matchers.hasSize;
 
 public class PaymentsCancelResourceITest extends PaymentResourceITestBase {
@@ -51,8 +51,8 @@ public class PaymentsCancelResourceITest extends PaymentResourceITestBase {
 
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", Is.is("P0500"))
-                .assertThat("$.description", Is.is("Not found"));
+                .assertThat("$.code", is("P0500"))
+                .assertThat("$.description", is("Not found"));
     }
 
     @Test
@@ -67,8 +67,8 @@ public class PaymentsCancelResourceITest extends PaymentResourceITestBase {
 
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", Is.is("P0502"))
-                .assertThat("$.description", Is.is("Cancellation of payment failed"));
+                .assertThat("$.code", is("P0502"))
+                .assertThat("$.description", is("Cancellation of payment failed"));
     }
 
     @Test
@@ -83,8 +83,8 @@ public class PaymentsCancelResourceITest extends PaymentResourceITestBase {
 
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", Is.is("P0598"))
-                .assertThat("$.description", Is.is("Downstream system error"));
+                .assertThat("$.code", is("P0598"))
+                .assertThat("$.description", is("Downstream system error"));
     }
 
     private ValidatableResponse postCancelPaymentResponse(String paymentId) {
