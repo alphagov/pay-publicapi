@@ -57,7 +57,7 @@
         }, {
           "name" : "page",
           "in" : "query",
-          "description" : "Page number requested for the search, should be a positive integer (optional, defaults to 1)",
+          "description" : "Page number requested for the search, must be a positive integer (optional, defaults to 1)",
           "required" : false,
           "type" : "string"
         }, {
@@ -251,7 +251,7 @@
             }
           },
           "409" : {
-            "description" : "Conflict",
+            "description" : "Cannot cancel payment due to conflict, for example [INSERT EXAMPLES]",
             "schema" : {
               "$ref" : "#/definitions/PaymentError"
             }
@@ -424,7 +424,7 @@
       "post" : {
         "tags" : [ "refunds" ],
         "summary" : "Submit a refund for a payment",
-        "description" : "Return issued refund information. The authorization token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "description" : "Returns information on refund status. The authorization token must be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "submitRefund",
         "consumes" : [ "application/json" ],
         "produces" : [ "application/json" ],
@@ -437,7 +437,7 @@
         }, {
           "in" : "body",
           "name" : "body",
-          "description" : "requestPayload",
+          "description" : "The body of the refund request. This contains the requested amount and the amount available for refund",
           "required" : true,
           "schema" : {
             "$ref" : "#/definitions/PaymentRefundRequest"
@@ -557,7 +557,7 @@
         }, {
           "name" : "page",
           "in" : "query",
-          "description" : "Page number requested for the search, should be a positive integer (optional, defaults to 1)",
+          "description" : "Page number requested for the search, must be a positive integer (optional, defaults to 1)",
           "required" : false,
           "type" : "string"
         }, {
@@ -1125,7 +1125,7 @@
           "maximum" : 10000000
         }
       },
-      "description" : "The Payment Refund Request Payload"
+      "description" : "The Payment Refund Request Payload. This contains the refund amount requested, and the amount available for refund."
     },
     "PaymentSearchResults" : {
       "type" : "object",
