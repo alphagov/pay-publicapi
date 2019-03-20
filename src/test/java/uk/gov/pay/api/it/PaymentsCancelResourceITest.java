@@ -1,19 +1,19 @@
 package uk.gov.pay.api.it;
 
 import com.jayway.jsonassert.JsonAssert;
-import com.jayway.restassured.response.ValidatableResponse;
+import io.restassured.response.ValidatableResponse;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.http.ContentType.JSON;
+import static io.restassured.RestAssured.given;
+import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.eclipse.jetty.http.HttpStatus.CONFLICT_409;
 import static org.eclipse.jetty.http.HttpStatus.LENGTH_REQUIRED_411;
-import static org.hamcrest.core.Is.is;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.core.Is.is;
 
 public class PaymentsCancelResourceITest extends PaymentResourceITestBase {
 

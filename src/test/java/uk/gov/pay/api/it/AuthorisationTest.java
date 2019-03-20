@@ -7,10 +7,10 @@ import org.junit.Test;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.http.ContentType.JSON;
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
+import static io.restassured.RestAssured.given;
+import static io.restassured.http.ContentType.JSON;
 import static uk.gov.pay.api.utils.Payloads.aSuccessfulPaymentPayload;
 
 public class AuthorisationTest {

@@ -2,8 +2,8 @@ package uk.gov.pay.api.it;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
-import com.jayway.restassured.response.Response;
-import com.jayway.restassured.response.ValidatableResponse;
+import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
 import org.junit.Test;
 import uk.gov.pay.api.it.fixtures.PaymentRefundJsonFixture;
 import uk.gov.pay.api.model.Address;
@@ -15,8 +15,8 @@ import uk.gov.pay.commons.model.SupportedLanguage;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.http.ContentType.JSON;
+import static io.restassured.RestAssured.given;
+import static io.restassured.http.ContentType.JSON;
 import static java.lang.String.format;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;

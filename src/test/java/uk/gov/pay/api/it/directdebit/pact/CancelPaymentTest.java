@@ -14,9 +14,9 @@ import uk.gov.pay.api.utils.ApiKeyGenerator;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
-import static com.jayway.restassured.RestAssured.given;
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
+import static io.restassured.RestAssured.given;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.Matchers.is;
 import static org.mockserver.socket.PortFactory.findFreePort;

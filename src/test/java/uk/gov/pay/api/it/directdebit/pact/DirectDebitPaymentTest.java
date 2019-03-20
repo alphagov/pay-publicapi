@@ -2,8 +2,8 @@ package uk.gov.pay.api.it.directdebit.pact;
 
 import au.com.dius.pact.consumer.PactVerification;
 import com.jayway.jsonassert.JsonAssert;
-import com.jayway.restassured.response.ValidatableResponse;
 import io.dropwizard.testing.junit.DropwizardAppRule;
+import io.restassured.response.ValidatableResponse;
 import org.apache.http.client.fluent.Executor;
 import org.junit.After;
 import org.junit.Rule;
@@ -18,10 +18,10 @@ import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 import javax.ws.rs.core.HttpHeaders;
 import java.time.ZonedDateTime;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.http.ContentType.JSON;
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
+import static io.restassured.RestAssured.given;
+import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;

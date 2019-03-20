@@ -1,6 +1,6 @@
 package uk.gov.pay.api.it;
 
-import com.jayway.restassured.RestAssured;
+import io.restassured.RestAssured;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
