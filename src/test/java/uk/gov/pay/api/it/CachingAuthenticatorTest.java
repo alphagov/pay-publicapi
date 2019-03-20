@@ -99,6 +99,7 @@ public class CachingAuthenticatorTest {
         JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
                 .add("charge_id", "chargeId")
                 .add("amount", 100)
+                .add("language", "en")
                 .add("reference", "ref 12")
                 .add("state", new PaymentState("created", false, null, null))
                 .add("email", "test@example.com")
