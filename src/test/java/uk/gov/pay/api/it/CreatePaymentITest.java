@@ -1,7 +1,7 @@
 package uk.gov.pay.api.it;
 
 import com.jayway.jsonassert.JsonAssert;
-import com.jayway.restassured.response.ValidatableResponse;
+import io.restassured.response.ValidatableResponse;
 import org.junit.Test;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetails;
@@ -15,8 +15,8 @@ import javax.ws.rs.core.HttpHeaders;
 import java.io.InputStream;
 import java.time.ZonedDateTime;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.http.ContentType.JSON;
+import static io.restassured.RestAssured.given;
+import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.CoreMatchers.nullValue;

@@ -18,10 +18,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.http.ContentType.JSON;
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
+import static io.restassured.RestAssured.given;
+import static io.restassured.http.ContentType.JSON;
 import static java.lang.String.format;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -99,6 +99,7 @@ public class CachingAuthenticatorTest {
         JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
                 .add("charge_id", "chargeId")
                 .add("amount", 100)
+                .add("language", "en")
                 .add("reference", "ref 12")
                 .add("state", new PaymentState("created", false, null, null))
                 .add("email", "test@example.com")

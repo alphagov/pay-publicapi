@@ -1,7 +1,7 @@
 package uk.gov.pay.api.it;
 
 import com.google.common.collect.ImmutableMap;
-import com.jayway.restassured.response.ValidatableResponse;
+import io.restassured.response.ValidatableResponse;
 import org.junit.Test;
 
 import java.util.Arrays;

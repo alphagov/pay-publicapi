@@ -6,8 +6,8 @@ import org.junit.Test;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 
-import static com.jayway.restassured.RestAssured.given;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
+import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 
 public class PingTest {

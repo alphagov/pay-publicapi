@@ -1,7 +1,7 @@
 package uk.gov.pay.api.it.validation;
 
 import com.jayway.jsonassert.JsonAssert;
-import com.jayway.restassured.response.ValidatableResponse;
+import io.restassured.response.ValidatableResponse;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,8 +10,8 @@ import uk.gov.pay.api.it.PaymentResourceITestBase;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.http.ContentType.JSON;
+import static io.restassured.RestAssured.given;
+import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
