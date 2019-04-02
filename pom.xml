@@ -266,7 +266,7 @@
         <dependency>
             <groupId>black.door</groupId>
             <artifactId>hate</artifactId>
-            <version>v1r4t2</version>
+            <version>v1r4t3</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.fasterxml.jackson.core</groupId>
