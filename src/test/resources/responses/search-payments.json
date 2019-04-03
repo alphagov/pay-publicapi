@@ -1,0 +1,98 @@
+{
+  "total": 100,
+  "count": 20,
+  "page": 1,
+  "_links": {
+    "self": {
+      "href": "https://an.example.link/from/payment/platform",
+      "method": "GET"
+    },
+    "first_page": {
+      "href": "https://an.example.link/from/payment/platform",
+      "method": "GET"
+    },
+    "last_page": {
+      "href": "https://an.example.link/from/payment/platform",
+      "method": "GET"
+    },
+    "prev_page": {
+      "href": "https://an.example.link/from/payment/platform",
+      "method": "GET"
+    },
+    "next_page": {
+      "href": "https://an.example.link/from/payment/platform",
+      "method": "GET"
+    }
+  },
+  "results": [
+    {
+      "amount": 1200,
+      "state": {
+        "status": "created",
+        "finished": true,
+        "message": "User cancelled the payment",
+        "code": "P010"
+      },
+      "description": "Your Service Description",
+      "reference": "your-reference",
+      "email": "your email",
+      "language": "en",
+      "payment_id": "hu20sqlact5260q2nanm0q8u93",
+      "payment_provider": "worldpay",
+      "return_url": "http://your.service.domain/your-reference",
+      "created_date": "2016-01-21T17:15:000Z",
+      "refund_summary": {
+        "status": "available",
+        "amount_available": 100,
+        "amount_submitted": 0
+      },
+      "settlement_summary": {
+        "capture_submit_time": "2016-01-21T17:15:000Z",
+        "captured_date": "2016-01-21"
+      },
+      "card_details": {
+        "last_digits_card_number": "1234",
+        "first_digits_card_number": "123456",
+        "cardholder_name": "Mr. Card holder",
+        "expiry_date": "12/20",
+        "billing_address": {
+          "line1": "address line 1",
+          "line2": "address line 2",
+          "postcode": "AB1 2CD",
+          "city": "address city",
+          "country": "GB"
+        },
+        "card_brand": "Visa"
+      },
+      "delayed_capture": false,
+      "corporate_card_surcharge": 250,
+      "total_amount": 1450,
+      "provider_id": "reference-from-payment-gateway",
+      "_links": {
+        "self": {
+          "href": "https://an.example.link/from/payment/platform",
+          "method": "GET"
+        },
+        "cancel": {
+          "type": "application/x-www-form-urlencoded",
+          "href": "https://an.example.link/from/payment/platform",
+          "method": "POST"
+        },
+        "events": {
+          "href": "https://an.example.link/from/payment/platform",
+          "method": "GET"
+        },
+        "refunds": {
+          "href": "https://an.example.link/from/payment/platform",
+          "method": "GET"
+        },
+        "capture": {
+          "type": "application/x-www-form-urlencoded",
+          "href": "https://an.example.link/from/payment/platform",
+          "method": "POST"
+        }
+      },
+      "card_brand": "Visa"
+    }
+  ]
+}

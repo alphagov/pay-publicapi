@@ -1,0 +1,117 @@
+{
+  "provider": {
+    "name": "Petstore"
+  },
+  "consumer": {
+    "name": "ExampleConsumer"
+  },
+  "interactions": [
+    {
+      "providerState": null,
+      "description": "GET pet",
+      "request": {
+        "method": "GET",
+        "headers": {
+          "Authorization": "apy_key"
+        },
+        "path": "/v1/payments/123",
+        "body": null
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json; charset=UTF-8"
+        },
+        "body": {
+          "amount": 1200,
+          "state": {
+            "status": "created",
+            "finished": true,
+            "message": "User cancelled the payment",
+            "code": "P010"
+          },
+          "description": "Your Service Description",
+          "reference": "your-reference",
+          "email1": "your email",
+          "language": "en",
+          "payment_id": "hu20sqlact5260q2nanm0q8u93",
+          "payment_provider": "worldpay",
+          "return_url": "http://your.service.domain/your-reference",
+          "created_date": "2016-01-21T17:15:000Z",
+          "refund_summary": {
+            "status": "available",
+            "amount_available": 100,
+            "amount_submitted": 0
+          },
+          "settlement_summary": {
+            "capture_submit_time": "2016-01-21T17:15:000Z",
+            "captured_date": "2016-01-21"
+          },
+          "card_details": {
+            "last_digits_card_number": "1234",
+            "first_digits_card_number": "123456",
+            "cardholder_name": "Mr. Card holder",
+            "expiry_date": "12/20",
+            "billing_address": {
+              "line1": "address line 1",
+              "line2": "address line 2",
+              "postcode": "AB1 2CD",
+              "city": "address city",
+              "country": "GB"
+            },
+            "card_brand": "Visa"
+          },
+          "delayed_capture": false,
+          "corporate_card_surcharge": 250,
+          "total_amount": 1450,
+          "provider_id": "reference-from-payment-gateway",
+          "_links": {
+            "self": {
+              "href": "https://an.example.link/from/payment/platform",
+              "method": "GET"
+            },
+            "next_url": {
+              "href": "https://an.example.link/from/payment/platform",
+              "method": "GET"
+            },
+            "next_url_post": {
+              "type": "application/x-www-form-urlencoded",
+              "params": "\"description\":\"This is a value for a parameter called description\"",
+              "href": "https://an.example.link/from/payment/platform",
+              "method": "POST"
+            },
+            "events": {
+              "href": "https://an.example.link/from/payment/platform",
+              "method": "GET"
+            },
+            "refunds": {
+              "href": "https://an.example.link/from/payment/platform",
+              "method": "GET"
+            },
+            "cancel": {
+              "type": "application/x-www-form-urlencoded",
+              "params": "\"description\":\"This is a value for a parameter called description\"",
+              "href": "https://an.example.link/from/payment/platform",
+              "method": "POST"
+            },
+            "capture": {
+              "type": "application/x-www-form-urlencoded",
+              "params": "\"description\":\"This is a value for a parameter called description\"",
+              "href": "https://an.example.link/from/payment/platform",
+              "method": "POST"
+            }
+          },
+          "card_brand": "Visa"
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pact-specification": {
+      "version": "2.0.0"
+    },
+    "pact-jvm": {
+      "version": "3.2.6"
+    }
+  }
+}

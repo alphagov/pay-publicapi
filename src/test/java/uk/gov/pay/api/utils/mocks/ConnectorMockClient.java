@@ -74,7 +74,6 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withChargeId(chargeId)
                 .withAmount(amount)
                 .withMatchingReference(reference)
-                .withEmail(email)
                 .withDescription(description)
                 .withState(state)
                 .withReturnUrl(returnUrl)
@@ -84,8 +83,15 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withDelayedCapture(delayedCapture)
                 .withLinks(asList(links))
                 .withRefundSummary(refundSummary)
-                .withSettlementSummary(settlementSummary)
-                .withCardDetails(cardDetails);
+                .withSettlementSummary(settlementSummary);
+
+        if (cardDetails != null) {
+            resultBuilder.withCardDetails(cardDetails);
+        }
+
+        if (email != null) {
+            resultBuilder.withEmail(email);
+        }
 
         if (gatewayTransactionId != null) {
             resultBuilder.withGatewayTransactionId(gatewayTransactionId);
@@ -130,7 +136,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     String nextUrlPost() {
         return "http://frontend_card/charge/";
     }
-    
+
     String captureUrlPost() {
         return "http:///";
     }
@@ -239,7 +245,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                                        SupportedLanguage language, boolean delayedCapture, String chargeTokenId, RefundSummary refundSummary, SettlementSummary settlementSummary,
                                        CardDetails cardDetails, Long corporateCardSurcharge, Long totalAmount, String gatewayTransactionId) {
         String chargeResponseBody;
-        
+
         if (AWAITING_CAPTURE_REQUEST == state) {
             chargeResponseBody = buildChargeResponse(amount, chargeId, state, returnUrl,
                     description, reference, email, paymentProvider, gatewayTransactionId, createdDate, language, delayedCapture,
@@ -382,7 +388,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withBody(createChargePayload(amount, returnUrl, description, reference))
         );
     }
-    
+
     private ForwardChainExpectation whenCreateRefund(int amount, int refundAmountAvailable, String gatewayAccountId, String chargeId) {
         String payload = new GsonBuilder().create().toJson(
                 ImmutableMap.of("amount", amount, "refund_amount_available", refundAmountAvailable));

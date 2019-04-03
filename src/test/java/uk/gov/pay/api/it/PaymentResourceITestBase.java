@@ -80,15 +80,15 @@ public abstract class PaymentResourceITestBase {
         return "http://localhost:" + publicAuthMockRule.getPort() + "/v1/auth";
     }
 
-    String frontendUrlFor(TokenPaymentType paymentType) {
+    protected String frontendUrlFor(TokenPaymentType paymentType) {
         return "http://frontend_" + paymentType.toString().toLowerCase() + "/charge/";
     }
     
-    String paymentEventsLocationFor(String chargeId) {
+    protected String paymentEventsLocationFor(String chargeId) {
         return paymentLocationFor(configuration.getBaseUrl(), chargeId) + "/events";
     }
 
-    String paymentRefundsLocationFor(String chargeId) {
+    protected String paymentRefundsLocationFor(String chargeId) {
         return paymentLocationFor(configuration.getBaseUrl(), chargeId) + "/refunds";
     }
 
@@ -96,7 +96,7 @@ public abstract class PaymentResourceITestBase {
         return "http://publicapi.url" + PAYMENTS_PATH + chargeId + "/refunds/" + refundId;
     }
 
-    String paymentCancelLocationFor(String chargeId) {
+    protected String paymentCancelLocationFor(String chargeId) {
         return paymentLocationFor(configuration.getBaseUrl(), chargeId) + "/cancel";
     }
 
