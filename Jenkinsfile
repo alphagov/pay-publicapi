@@ -21,6 +21,7 @@ pipeline {
     DOCKER_HOST = "unix:///var/run/docker.sock"
     RUN_END_TO_END_ON_PR = "${params.runEndToEndTestsOnPR}"
     RUN_ZAP_ON_PR = "${params.runZapTestsOnPR}"
+    JAVA_HOME="/usr/lib/jvm/java-1.11.0-openjdk-amd64"
   }
 
   stages {
