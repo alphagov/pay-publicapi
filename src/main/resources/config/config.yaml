@@ -1,10 +1,10 @@
 server:
   applicationConnectors:
     - type: http
-      port: ${PORT}
+      port: ${PORT:-8080}
   adminConnectors:
     - type: http
-      port: ${ADMIN_PORT}
+      port: ${ADMIN_PORT:-8081}
 
 logging:
   level: INFO
@@ -24,7 +24,7 @@ graphiteHost: ${METRICS_HOST:-localhost}
 graphitePort: ${METRICS_PORT:-8092}
 
 jerseyClientConfig:
-  disabledSecureConnection: ${DISABLE_INTERNAL_HTTPS}
+  disabledSecureConnection: ${DISABLE_INTERNAL_HTTPS:-false}
 
 rateLimiter:  # rate = noOfReq per perMillis
   noOfReq: ${RATE_LIMITER_VALUE:-75}  # for requests except POST and across all publicapi instances.

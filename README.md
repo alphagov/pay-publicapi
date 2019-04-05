@@ -1,44 +1,52 @@
 # pay-publicapi
+
 GOV.UK Pay Public API service in Java (Dropwizard)
 
-## Keystore setup for HTTPS outbound calls:
+## General configuration
 
-Following variables are needed in order to import the trusted certificates and public keys to a java keystore, which will be used for secure outbound HTTPS calls.
-Importing certs/keys are handled in `docker-startup.sh`. This script assumes the infrastructure provids a trusted certificate file (CERT_FILE), a key (KEY_FILE) in a 
-known directory (CERTS_DIR). 
-Then the script creates a keystore (KEYSTORE_FILE) in a separate directory (KEYSTORE_DIR) and imports the certificate and key in to it.
+Configuration of the application is performed via environment variables, some of which are mandatory.
 
-| Variable                    | required |  Description                               |
-| --------------------------- |:--------:| ------------------------------------------ |
-| CERTS_DIR                   | Yes      |  The directory where the import script can find a trusted certificate and any public key |
-| CERT_FILE                   | Yes      |  The name of the certificate file to import  |
-| KEY_FILE                    | Yes      |  The key file to import |
-| KEYSTORE_DIR                | Yes      |  The directory where the java keystore will be created |
-| KEYSTORE_FILE               | Yes      |  The name of the java keystore file |
+| Variable                    | Required? | Default        | Description                                                                                                |
+| --------------------------- | --------- | -------------- | ---------------------------------------------------------------------------------------------------------- |
+| `ADMIN_PORT`                | No        | 8081           | The port number to listen for Dropwizard admin requests on.                                                |
+| `ALLOW_HTTP_FOR_RETURN_URL` | No        | false          | Whether to allow service return URLs to be non-HTTPS                                                       |
+| `CONNECTOR_DD_URL`          | Yes       | N/A            | The URL to the [direct-debit-connector](https://github.com/alphagov/pay-direct-debit-connector) service    |
+| `CONNECTOR_URL`             | Yes       | N/A            | The URL to the [connector](https://github.com/alphagov/pay-connector) service                              |
+| `DISABLE_INTERNAL_HTTPS`    | No        | false          | The port number to send graphite metrics to.                                                               |
+| `METRICS_HOST`              | No        | localhost      | The hostname to send graphite metrics to.                                                                  |
+| `METRICS_PORT`              | No        | 8092           | The port number to send graphite metrics to.                                                               |
+| `PORT`                      | No        | 8080           | The port number to listen for requests on.                                                                 |
+| `PUBLICAPI_BASE`            | Yes       | N/A            | The base URL clients can use to reach the API. e.g. http://api.example.org:1234/                           |
+| `PUBLIC_AUTH_URL`           | Yes       | N/A            | The URL to the [publicauth](https://github.com/alphagov/pay-publicauth) service                            |
+| `REDIS_URL`                 | No        | localhost:6379 | The location of the redis endpoint to store rate-limiter information in                                    |
+| `TOKEN_API_HMAC_SECRET`     | Yes       | N/A            | Hmac secret to be used to validate that the given token is genuine (Api Key = Token + Hmac (Token, Secret) |
 
-## Rate limiter and Authorization filters setup
+## Custom CA certificates
 
-These are the variables related to Public API filters.
+By default, the application will use the default Java truststore for validating
+TLS connections. The docker startup script will add any PEM-format certificates
+in `CERTS_PATH` to the default truststore prior to starting the application.
 
-| Variable                    | required         |  Description                               |
-| --------------------------- | -----------------| ------------------------------------------ |
-| RATE_LIMITER_VALUE          | No (Default 3)   | Number of requests (other than POST) allowed per time defined by RATE_LIMITER_PER_MILLIS |
-| RATE_LIMITER_VALUE_POST     | No (Default 3)   | Number of POST requests allowed per time defined by RATE_LIMITER_PER_MILLIS |
-| RATE_LIMITER_PER_MILLIS     | No (Default 1000)| Rate limiter time window |
-| TOKEN_API_HMAC_SECRET       | Yes              | Hmac secret to be used to validate that the given token is genuine (Api Key = Token + Hmac (Token, Secret) |
+If `CERTS_PATH` is not specified, the default truststore will be used as-is.
 
-For example:
+| Variable     | Description                               |
+| -------------| ----------------------------------------- |
+| `CERTS_PATH` | A directory within the container containing CA certificates to add to the default Java truststore |
 
-```
-$ ./redirect.sh start
-$ ./env.sh mvn exec:java
-...
-(pay-publicapi log output)
-...
-(press CTRL+C to stop service)
-...
-$ ./redirect.sh stop
-```
+## Rate limiting
+
+The application will rate-limit incoming API requests, recording the current
+rate limit state in Redis (see `REDIS_URL` above). The rate-limiting behaviour
+can be tuned via the following environment variables which all have default
+values:
+
+| Variable                           | Default      |  Description                               |
+| ---------------------------------- | ------------ | ------------------------------------------ |
+| `RATE_LIMITER_VALUE`               | Default 75   | Number of non-`POST` requests allowed per `RATE_LIMITER_PER_MILLIS` milliseconds |
+| `RATE_LIMITER_VALUE_POST`          | Default 15   | Number of `POST` requests allowed per `RATE_LIMITER_PER_MILLIS` milliseconds |
+| `RATE_LIMITER_VALUE_PER_NODE`      | Default 25   | Number of non-`POST` requests allowed per `RATE_LIMITER_PER_MILLIS` milliseconds for a given client |
+| `RATE_LIMITER_VALUE_PER_NODE_POST` | Default 5    | Number of `POST` requests allowed per `RATE_LIMITER_PER_MILLIS` milliseconds for a given client |
+| `RATE_LIMITER_PER_MILLIS`          | Default 1000 | Rate limiter time window |
 
 ## API through gelato.io 
 
