@@ -13,7 +13,6 @@ EXPOSE 8081
 WORKDIR /app
 
 ADD docker-startup.sh /app/docker-startup.sh
-ADD run-with-chamber.sh /app/run-with-chamber.sh
 ADD target/*.yaml /app/
 ADD target/pay-*-allinone.jar /app/
 
