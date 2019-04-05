@@ -8,7 +8,6 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -48,7 +47,7 @@ public class RedisDockerRule implements TestRule {
                 DockerClient docker = DefaultDockerClient.fromEnv().build();
                 container = new RedisContainer(docker, host);
             }
-        } catch (DockerCertificateException | InterruptedException | IOException e) {
+        } catch (DockerCertificateException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }

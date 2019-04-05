@@ -34,7 +34,7 @@ public class ValidCreatePaymentRequest {
     private Boolean delayedCapture;
 
     public ValidCreatePaymentRequest(CreatePaymentRequest createPaymentRequest) {
-        amount = Objects.requireNonNull(createPaymentRequest.getAmount());
+        amount = createPaymentRequest.getAmount();
         reference = Objects.requireNonNull(createPaymentRequest.getReference());
         description = Objects.requireNonNull(createPaymentRequest.getDescription());
 

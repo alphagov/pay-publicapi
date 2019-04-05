@@ -14,13 +14,12 @@ import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static java.lang.Integer.parseInt;
-import static java.util.stream.Collectors.joining;
 
-public class RedisContainer {
+class RedisContainer {
 
     private static final Logger logger = LoggerFactory.getLogger(RedisContainer.class);
 
@@ -34,12 +33,12 @@ public class RedisContainer {
     private static final String REDIS_IMAGE = "redis:latest";
     private static final String INTERNAL_PORT = "6379";
 
-    public RedisContainer(DockerClient docker, String host) throws DockerException, InterruptedException, IOException {
+    RedisContainer(DockerClient docker, String host) throws DockerException, InterruptedException {
 
         this.docker = docker;
         this.host = host;
 
-        failsafeDockerPull(docker, REDIS_IMAGE);
+        failsafeDockerPull(docker);
         docker.listImages(DockerClient.ListImagesParam.create("name", REDIS_IMAGE));
 
         final HostConfig hostConfig = HostConfig.builder().logConfig(LogConfig.create("json-file")).publishAllPorts(true).build();
@@ -54,23 +53,33 @@ public class RedisContainer {
         waitForRedisToStart();
     }
 
-    private void failsafeDockerPull(DockerClient docker, String image) {
+    private void failsafeDockerPull(DockerClient docker) {
         try {
-            docker.pull(image);
+            docker.pull(REDIS_IMAGE);
         } catch (Exception e) {
-            logger.error("Docker image " + image + " could not be pulled from DockerHub", e);
+            logger.error("Docker image " + REDIS_IMAGE + " could not be pulled from DockerHub", e);
         }
     }
 
-    public String getConnectionUrl() {
+    String getConnectionUrl() {
         return host + ":" + port;
     }
 
     private static int hostPortNumber(ContainerInfo containerInfo) {
-        List<PortBinding> portBindings =
-                containerInfo.networkSettings().ports().get(INTERNAL_PORT + "/tcp");
-        logger.info("Redis host port: {}", portBindings.stream().map(PortBinding::hostPort).collect(joining(", ")));
-        return parseInt(portBindings.get(0).hostPort());
+        String redisPortSpec = INTERNAL_PORT + "/tcp";
+        PortBinding portBinding;
+        try {
+            portBinding = Objects.requireNonNull(containerInfo
+                    .networkSettings()
+                    .ports())
+                    .get(redisPortSpec)
+                    .get(0);
+            logger.info("Redis host port: {}", portBinding.hostPort());
+            return parseInt(portBinding.hostPort());
+        } catch (NullPointerException e) {
+            logger.error("Unable to find host port mapping for {} in container {}", redisPortSpec, containerInfo.id());
+            throw e;
+        }
     }
 
     private void registerShutdownHook() {
@@ -91,14 +100,14 @@ public class RedisContainer {
     }
 
     private boolean checkRedisConnection() {
-        try (Jedis jedis = new Jedis(host, port)) {
+        try (Jedis ignored = new Jedis(host, port)) {
             return true;
         } catch (Exception except) {
             return false;
         }
     }
 
-    public void stop() {
+    void stop() {
         if (stopped) {
             return;
         }

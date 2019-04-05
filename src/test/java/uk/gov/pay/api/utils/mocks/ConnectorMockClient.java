@@ -305,7 +305,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     public void respondRefundWithError(String gatewayAccountId, String chargeId, String refundId) {
         whenGetRefundById(gatewayAccountId, chargeId, refundId)
-                .respond(withStatusAndErrorMessage(INTERNAL_SERVER_ERROR_500, String.format("server error", refundId)));
+                .respond(withStatusAndErrorMessage(INTERNAL_SERVER_ERROR_500, "server error"));
 
     }
 
