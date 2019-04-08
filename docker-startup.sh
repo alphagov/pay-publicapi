@@ -4,7 +4,7 @@ set -eu
 
 if [ -n "${CERTS_PATH:-}" ]; then
   i=0
-  truststore=/etc/ssl/certs/java/cacerts
+  truststore=$JAVA_HOME/lib/security/cacerts
   truststore_pass=changeit
   for cert in "$CERTS_PATH"/*; do
     [ -f "$cert" ] || continue
