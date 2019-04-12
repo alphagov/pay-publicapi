@@ -18,7 +18,7 @@
         <logback.version>1.2.3</logback.version>
         <docker-client.version>8.15.2</docker-client.version>
         <pay-java-commons.version>1.0.20190412112936</pay-java-commons.version>
-        <pact.version>3.6.2</pact.version>
+        <pact.version>3.6.3</pact.version>
         <PACT_BROKER_URL/>
         <PACT_BROKER_USERNAME/>
         <PACT_BROKER_PASSWORD/>
