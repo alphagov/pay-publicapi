@@ -896,6 +896,20 @@
           "example" : 1450,
           "readOnly" : true
         },
+        "fee" : {
+          "type" : "integer",
+          "format" : "int64",
+          "example" : 5,
+          "description" : "processing fee taken by the GOV.UK Pay platform, in pence. Only available depending on payment service provider",
+          "readOnly" : true
+        },
+        "net_amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "example" : 1195,
+          "description" : "amount including all surcharges and less all fees, in pence. Only available depending on payment service provider",
+          "readOnly" : true
+        },
         "provider_id" : {
           "type" : "string",
           "example" : "reference-from-payment-gateway",
@@ -1007,6 +1021,20 @@
           "type" : "integer",
           "format" : "int64",
           "example" : 1450,
+          "readOnly" : true
+        },
+        "fee" : {
+          "type" : "integer",
+          "format" : "int64",
+          "example" : 5,
+          "description" : "processing fee taken by the GOV.UK Pay platform, in pence. Only available depending on payment service provider",
+          "readOnly" : true
+        },
+        "net_amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "example" : 1195,
+          "description" : "amount including all surcharges and less all fees, in pence. Only available depending on payment service provider",
           "readOnly" : true
         },
         "provider_id" : {

@@ -23,6 +23,8 @@ public class ChargeResponseFromConnector {
     private final CardDetails cardDetails;
     private final List<Map<?, ?>> links;
     private final Optional<Map<String, Object>> metadata;
+    private final Long fee;
+    private final Long netAmount;
 
     public Long getAmount() {
         return amount;
@@ -100,6 +102,14 @@ public class ChargeResponseFromConnector {
         return metadata;
     }
 
+    public Long getFee() {
+        return fee;
+    }
+
+    public Long getNetAmount() {
+        return netAmount;
+    }
+
     private ChargeResponseFromConnector(ChargeResponseFromConnectorBuilder builder) {
         this.amount = builder.amount;
         this.chargeId = builder.chargeId;
@@ -119,7 +129,9 @@ public class ChargeResponseFromConnector {
         this.settlementSummary = builder.settlementSummary;
         this.cardDetails = builder.cardDetails;
         this.links = builder.links;
-        this.metadata = builder.metadata == null || builder.metadata.isEmpty() ? Optional.empty() : Optional.of(builder.metadata);;
+        this.metadata = builder.metadata == null || builder.metadata.isEmpty() ? Optional.empty() : Optional.of(builder.metadata);
+        this.fee = builder.fee;
+        this.netAmount = builder.netAmount;
     }
 
     public static final class ChargeResponseFromConnectorBuilder {
@@ -133,6 +145,8 @@ public class ChargeResponseFromConnector {
         private CardDetails cardDetails;
         private List<Map<?, ?>> links = new ArrayList<>();
         private Map<String, Object> metadata = Map.of();
+        private Long fee = null;
+        private Long netAmount = null;
 
         private ChargeResponseFromConnectorBuilder() {
         }
@@ -160,7 +174,9 @@ public class ChargeResponseFromConnector {
                     .withRefundSummary(responseFromConnector.refundSummary)
                     .withSettlementSummary(responseFromConnector.settlementSummary)
                     .withCardDetails(responseFromConnector.cardDetails)
-                    .withMetadata(responseFromConnector.metadata.orElse(null));
+                    .withMetadata(responseFromConnector.metadata.orElse(null))
+                    .withNetAmount(responseFromConnector.getNetAmount())
+                    .withFee(responseFromConnector.getFee());
         }
 
         public ChargeResponseFromConnectorBuilder withAmount(long amount) {
@@ -261,6 +277,16 @@ public class ChargeResponseFromConnector {
 
         public ChargeResponseFromConnectorBuilder withMetadata(Map<String, Object> metadata) {
             this.metadata = metadata;
+            return this;
+        }
+        
+        public ChargeResponseFromConnectorBuilder withFee(Long fee) {
+            this.fee = fee;
+            return this;
+        }
+        
+        public ChargeResponseFromConnectorBuilder withNetAmount(Long netAmount) {
+            this.netAmount = netAmount;
             return this;
         }
     }

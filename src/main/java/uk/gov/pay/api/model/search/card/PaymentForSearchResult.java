@@ -27,9 +27,12 @@ public class PaymentForSearchResult extends CardPayment {
                                   String reference, String email, String paymentProvider, String createdDate, SupportedLanguage language,
                                   boolean delayedCapture, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
                                   List<PaymentConnectorResponseLink> links, URI selfLink, URI paymentEventsLink, URI paymentCancelLink, URI paymentRefundsLink, URI paymentCaptureUri,
-                                  Long corporateCardSurcharge, Long totalAmount, String providerId, ExternalMetadata externalMetadata) {
+                                  Long corporateCardSurcharge, Long totalAmount, String providerId, ExternalMetadata externalMetadata,
+                                  Long fee, Long netAmount) {
+        
         super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider,
-                createdDate, refundSummary, settlementSummary, cardDetails, language, delayedCapture, corporateCardSurcharge, totalAmount, providerId, externalMetadata);
+                createdDate, refundSummary, settlementSummary, cardDetails, language, delayedCapture, corporateCardSurcharge, totalAmount, providerId, externalMetadata,
+                fee, netAmount);
         this.links.addSelf(selfLink.toString());
         this.links.addEvents(paymentEventsLink.toString());
         this.links.addRefunds(paymentRefundsLink.toString());
@@ -74,7 +77,9 @@ public class PaymentForSearchResult extends CardPayment {
                 paymentResult.getCorporateCardSurcharge(),
                 paymentResult.getTotalAmount(),
                 paymentResult.getGatewayTransactionId(),
-                paymentResult.getMetadata().orElse(null));
+                paymentResult.getMetadata().orElse(null),
+                paymentResult.getFee(),
+                paymentResult.getNetAmount());
     }
 
     @ApiModelProperty(name = LINKS_JSON_ATTRIBUTE, dataType = "uk.gov.pay.api.model.links.PaymentLinksForSearch")
