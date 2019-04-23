@@ -287,6 +287,8 @@ Content-Type: application/json
     },
     "payment_id": "ab2341da231434",
     "amount": 50000,
+    "fee": 10,
+    "net_amount": 49995
     "description": "Payment description",
     "status": "CREATED",
     "return_url": "https://service.example.com/some-reference-to-this-payment",
@@ -1368,6 +1370,8 @@ GET /v1/refunds
 | `results[i].created_date`            | Yes            | The created date in ISO_8601 format (```yyyy-MM-ddTHH:mm:ssZ```)  |
 | `results[i].status`   | Yes            | The status of this refund                             |
 | `results[i].amount`| Yes     | The total amount for this refund                |
+| `results[i].fee`| No     |  processing fee taken by the GOV.UK Pay platform, in pence. Only available depending on payment service provider               |
+| `results[i].net_amount`| No     | amount including all surcharges and less all fees, in pence. Only available depending on payment service provider         |
 | `results[i]._links.self`             | Yes            | Link to the refund                                               |
 | `results[i]._links.payment`           | Yes            | Link to the original payment                                          |
 | `_links.self.href`                | Yes            | Href link of the current page                                     |

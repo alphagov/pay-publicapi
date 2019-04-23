@@ -126,6 +126,8 @@ public class PaymentsResourceCreatePaymentTest {
                 URI.create(paymentUri + "/capture"),
                 null,
                 null,
-                "providerId");
+                "providerId",
+                null,
+                null);
     }
 }

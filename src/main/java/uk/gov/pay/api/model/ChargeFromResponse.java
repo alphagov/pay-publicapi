@@ -57,6 +57,12 @@ public class ChargeFromResponse {
     @JsonProperty("total_amount")
     private Long totalAmount;
 
+    @JsonProperty("fee")
+    private Long fee;
+
+    @JsonProperty("net_amount")
+    private Long netAmount;
+
     @JsonProperty(value = "created_date")
     private String createdDate;
 
@@ -107,6 +113,14 @@ public class ChargeFromResponse {
         return totalAmount;
     }
     
+    public Long getFee() {
+        return fee;
+    }
+
+    public Long getNetAmount() {
+        return netAmount;
+    }
+
     public String getPaymentProvider() {
         return paymentProvider;
     }

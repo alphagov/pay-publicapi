@@ -12,7 +12,7 @@ import static com.google.common.collect.Lists.newArrayList;
 public class PaymentSearchResultBuilder extends PaymentResultBuilder {
 
     private int noOfResults = DEFAULT_NUMBER_OF_RESULTS;
-    
+
 
     public static PaymentSearchResultBuilder aSuccessfulSearchPayment() {
         return new PaymentSearchResultBuilder();
@@ -30,7 +30,7 @@ public class PaymentSearchResultBuilder extends PaymentResultBuilder {
         this.chargeId = chargeId;
         return this;
     }
-    
+
     public PaymentSearchResultBuilder withCardDetails(uk.gov.pay.api.model.CardDetails cardDetails) {
         this.cardDetails = new CardDetails(cardDetails);
         return this;
@@ -38,6 +38,16 @@ public class PaymentSearchResultBuilder extends PaymentResultBuilder {
 
     public PaymentSearchResultBuilder withReference(String reference) {
         this.reference = reference;
+        return this;
+    }
+
+    public PaymentSearchResultBuilder withFee(Long fee) {
+        this.fee = fee;
+        return this;
+    }
+
+    public PaymentSearchResultBuilder withNetAmount(Long netAmount) {
+        this.netAmount = netAmount;
         return this;
     }
 
@@ -60,7 +70,7 @@ public class PaymentSearchResultBuilder extends PaymentResultBuilder {
         this.state = new TestPaymentSuccessState(status);
         return this;
     }
-    
+
     public PaymentSearchResultBuilder withDelayedCapture(boolean delayedCapture) {
         this.delayedCapture = delayedCapture;
         return this;
@@ -76,7 +86,7 @@ public class PaymentSearchResultBuilder extends PaymentResultBuilder {
         this.noOfResults = numberOfResults;
         return this;
     }
-    
+
     public List<TestPayment> getResults() {
         List<TestPayment> results = newArrayList();
         for (int i = 0; i < noOfResults; i++) {

@@ -49,6 +49,16 @@ public class PaymentSingleResultBuilder extends PaymentResultBuilder {
         this.totalAmount = totalAmount;
         return this;
     }
+
+    public PaymentSingleResultBuilder withFee(Long fee) {
+        this.fee = fee;
+        return this;
+    }
+
+    public PaymentSingleResultBuilder withNetAmount(Long netAmount) {
+        this.netAmount = netAmount;
+        return this;
+    }
     
     public PaymentSingleResultBuilder withAmount(long amount) {
         this.amount = amount;

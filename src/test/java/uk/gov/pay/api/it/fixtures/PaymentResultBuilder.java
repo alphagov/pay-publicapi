@@ -114,7 +114,7 @@ public abstract class PaymentResultBuilder {
         public RefundSummary refund_summary;
         public SettlementSummary settlement_summary;
         public CardDetails card_details = new CardDetails();
-        public Long corporate_card_surcharge, total_amount;
+        public Long corporate_card_surcharge, total_amount, fee, net_amount;
         public List<ImmutableMap<?,?>> links;
     }
 
@@ -169,6 +169,8 @@ public abstract class PaymentResultBuilder {
     protected CardDetails cardDetails;
     protected Long corporateCardSurcharge = null;
     protected Long totalAmount = null;
+    protected Long fee = null;
+    protected Long netAmount = null;
     protected String chargeId = null;
     protected String description;
     protected String returnUrl;
@@ -214,6 +216,8 @@ public abstract class PaymentResultBuilder {
                 new SettlementSummary(DEFAULT_CAPTURE_SUBMIT_TIME, DEFAULT_CAPTURED_DATE) : settlementSummary;
         payment.corporate_card_surcharge = corporateCardSurcharge;
         payment.total_amount = totalAmount;
+        payment.fee = fee;
+        payment.net_amount = netAmount;
         payment.links = links ;
 
         return payment;

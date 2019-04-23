@@ -77,6 +77,8 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                         .withDelayedCapture(true)
                         .withNumberOfResults(1)
                         .withEmail(TEST_EMAIL)
+                        .withFee(5L)
+                        .withNetAmount(9995L)
                         .withGatewayTransactionId("gateway-tx-123456")
                         .getResults())
                 .build();
@@ -93,6 +95,8 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .body("results[0].description", is("description-0"))
                 .body("results[0].state.status", is(TEST_STATE))
                 .body("results[0].amount", is(DEFAULT_AMOUNT))
+                .body("results[0].fee", is(5))
+                .body("results[0].net_amount", is(9995))
                 .body("results[0].payment_provider", is(DEFAULT_PAYMENT_PROVIDER))
                 .body("results[0].payment_id", is("0"))
                 .body("results[0].language", is("en"))
