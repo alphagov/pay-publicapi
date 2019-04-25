@@ -714,8 +714,10 @@
         "delayed_capture" : {
           "type" : "boolean",
           "example" : false,
-          "description" : "delayed capture flag",
-          "readOnly" : true
+          "description" : "delayed capture flag"
+        },
+        "metadata" : {
+          "$ref" : "#/definitions/ExternalMetadata"
         }
       }
     },
@@ -802,6 +804,17 @@
       },
       "description" : "An error response"
     },
+    "ExternalMetadata" : {
+      "type" : "object",
+      "properties" : {
+        "metadata" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object"
+          }
+        }
+      }
+    },
     "GetPaymentResult" : {
       "type" : "object",
       "properties" : {
@@ -829,6 +842,12 @@
           "type" : "string",
           "example" : "en",
           "enum" : [ "en", "cy" ]
+        },
+        "metadata" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object"
+          }
         },
         "payment_id" : {
           "type" : "string",
@@ -939,6 +958,12 @@
           "type" : "string",
           "example" : "en",
           "enum" : [ "en", "cy" ]
+        },
+        "metadata" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object"
+          }
         },
         "payment_id" : {
           "type" : "string",

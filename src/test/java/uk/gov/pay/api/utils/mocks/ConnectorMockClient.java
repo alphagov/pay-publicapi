@@ -3,6 +3,7 @@ package uk.gov.pay.api.utils.mocks;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
 import org.mockserver.client.server.ForwardChainExpectation;
+import org.mockserver.matchers.MatchType;
 import org.mockserver.model.HttpResponse;
 import org.mockserver.model.Parameter;
 import uk.gov.pay.api.it.fixtures.PaymentRefundJsonFixture;
@@ -15,8 +16,11 @@ import uk.gov.pay.api.model.links.Link;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,10 +45,12 @@ import static org.eclipse.jetty.http.HttpStatus.OK_200;
 import static org.eclipse.jetty.http.HttpStatus.PRECONDITION_FAILED_412;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
+import static org.mockserver.model.JsonBody.json;
 import static org.mockserver.verify.VerificationTimes.once;
 import static uk.gov.pay.api.it.GetPaymentITest.AWAITING_CAPTURE_REQUEST;
 import static uk.gov.pay.api.it.fixtures.PaymentSingleResultBuilder.aSuccessfulSinglePayment;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonString;
+import static uk.gov.pay.api.utils.mocks.CreateChargeResponseFromConnector.CreateChargeResponseFromConnectorBuilder.aCreateChargeResponseFromConnector;
 
 public class ConnectorMockClient extends BaseConnectorMockClient {
 
@@ -61,44 +67,35 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     public static final String LAST_DIGITS_CARD_NUMBER_KEY = "last_digits_card_number";
     private static final String FROM_DATE_KEY = "from_date";
     private static final String TO_DATE_KEY = "to_date";
+    private static final DateFormat SDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     public ConnectorMockClient(int port, String baseUrl) {
         super(port, baseUrl);
     }
-
-    private String buildChargeResponse(long amount, String chargeId, PaymentState state, String returnUrl, String description,
-                                       String reference, String email, String paymentProvider, String gatewayTransactionId, String createdDate,
-                                       SupportedLanguage language, boolean delayedCapture, Long corporateCardSurcharge, Long totalAmount, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
-                                       ImmutableMap<?, ?>... links) {
+    
+    private String buildChargeResponse(CreateChargeResponseFromConnector responseFromConnector) {
         PaymentSingleResultBuilder resultBuilder = aSuccessfulSinglePayment()
-                .withChargeId(chargeId)
-                .withAmount(amount)
-                .withMatchingReference(reference)
-                .withEmail(email)
-                .withDescription(description)
-                .withState(state)
-                .withReturnUrl(returnUrl)
-                .withCreatedDate(createdDate)
-                .withLanguage(language)
-                .withPaymentProvider(paymentProvider)
-                .withDelayedCapture(delayedCapture)
-                .withLinks(asList(links))
-                .withRefundSummary(refundSummary)
-                .withSettlementSummary(settlementSummary)
-                .withCardDetails(cardDetails);
-
-        if (gatewayTransactionId != null) {
-            resultBuilder.withGatewayTransactionId(gatewayTransactionId);
-        }
-
-        if (corporateCardSurcharge != null) {
-            resultBuilder.withCorporateCardSurcharge(corporateCardSurcharge);
-        }
-
-        if (totalAmount != null) {
-            resultBuilder.withTotalAmount(totalAmount);
-        }
-
+                .withChargeId(responseFromConnector.chargeId)
+                .withAmount(responseFromConnector.amount)
+                .withMatchingReference(responseFromConnector.reference)
+                .withEmail(responseFromConnector.email)
+                .withDescription(responseFromConnector.description)
+                .withState(responseFromConnector.state)
+                .withReturnUrl(responseFromConnector.returnUrl)
+                .withCreatedDate(responseFromConnector.createdDate)
+                .withLanguage(responseFromConnector.language)
+                .withPaymentProvider(responseFromConnector.paymentProvider)
+                .withDelayedCapture(responseFromConnector.delayedCapture)
+                .withLinks(responseFromConnector.links)
+                .withSettlementSummary(responseFromConnector.settlementSummary)
+                .withCardDetails(responseFromConnector.cardDetails);
+        
+        if (responseFromConnector.refundSummary != null) resultBuilder.withRefundSummary(responseFromConnector.refundSummary);
+        if (responseFromConnector.gatewayTransactionId != null) resultBuilder.withGatewayTransactionId(responseFromConnector.gatewayTransactionId);
+        if (responseFromConnector.corporateCardSurcharge != null) resultBuilder.withCorporateCardSurcharge(responseFromConnector.corporateCardSurcharge);
+        if (responseFromConnector.totalAmount != null) resultBuilder.withTotalAmount(responseFromConnector.totalAmount);
+        responseFromConnector.metadata.ifPresent(m -> resultBuilder.withMetadata(m));
+        
         return resultBuilder.build();
     }
 
@@ -130,13 +127,40 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     String nextUrlPost() {
         return "http://frontend_card/charge/";
     }
-    
-    String captureUrlPost() {
-        return "http:///";
-    }
 
     private String chargeEventsLocation(String accountId, String chargeId) {
         return baseUrl + format(CONNECTOR_MOCK_CHARGE_EVENTS_PATH, accountId, chargeId);
+    }
+    
+    public void respondOk_whenCreateCharge(String gatewayAccountId, CreateChargeRequestParams requestParams) {
+
+        var responseFromConnector = aCreateChargeResponseFromConnector()
+                .withAmount(requestParams.getAmount())
+                .withChargeId("chargeId")
+                .withState(new PaymentState("created", false, null, null))
+                .withReturnUrl(requestParams.getReturnUrl())
+                .withDescription(requestParams.getDescription())
+                .withReference(requestParams.getReference())
+                .withEmail("email@email.com")
+                .withPaymentProvider("Sandbox")
+                .withGatewayTransactionId("gatewayTransactionId")
+                .withCreatedDate(SDF.format(new Date()))
+                .withLanguage(SupportedLanguage.ENGLISH)
+                .withDelayedCapture(false)
+                .withCardDetails(new CardDetails("1234", "123456", "Mr. Payment", "12/19", null, "Mastercard"))
+                .withLink(validGetLink(chargeLocation(gatewayAccountId, "chargeId"), "self"))
+                .withLink(validGetLink(nextUrl("chargeTokenId"), "next_url"))
+                .withLink(validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap("chargeTokenId")));
+        
+        if (!requestParams.getMetadata().isEmpty()) 
+            responseFromConnector.withMetadata(requestParams.getMetadata());
+        
+        whenCreateCharge(gatewayAccountId, requestParams)
+                .respond(response()
+                        .withStatusCode(CREATED_201)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withHeader(LOCATION, chargeLocation(gatewayAccountId, "chargeId"))
+                        .withBody(buildChargeResponse(responseFromConnector.build())));
     }
 
     public void respondOk_whenCreateCharge(int amount, String gatewayAccountId, String chargeId, String chargeTokenId, PaymentState state, String returnUrl,
@@ -144,32 +168,33 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                                            SupportedLanguage language, boolean delayedCapture, RefundSummary refundSummary, SettlementSummary settlementSummary,
                                            CardDetails cardDetails, String gatewayTransactionId) {
 
+        CreateChargeResponseFromConnector responseFromConnector = aCreateChargeResponseFromConnector()
+                .withAmount(amount)
+                .withChargeId(chargeId)
+                .withState(state)
+                .withReturnUrl(returnUrl)
+                .withDescription(description)
+                .withReference(reference)
+                .withEmail(email)
+                .withPaymentProvider(paymentProvider)
+                .withGatewayTransactionId(gatewayTransactionId)
+                .withCreatedDate(createdDate)
+                .withLanguage(language)
+                .withDelayedCapture(delayedCapture)
+                .withRefundSummary(refundSummary)
+                .withSettlementSummary(settlementSummary)
+                .withCardDetails(cardDetails)
+                .withLink(validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"))
+                .withLink(validGetLink(nextUrl(chargeTokenId), "next_url"))
+                .withLink(validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap(chargeTokenId)))
+                .build();
+
         whenCreateCharge(amount, gatewayAccountId, returnUrl, description, reference)
                 .respond(response()
                         .withStatusCode(CREATED_201)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                         .withHeader(LOCATION, chargeLocation(gatewayAccountId, chargeId))
-                        .withBody(buildChargeResponse(
-                                amount,
-                                chargeId,
-                                state,
-                                returnUrl,
-                                description,
-                                reference,
-                                email,
-                                paymentProvider,
-                                gatewayTransactionId,
-                                createdDate,
-                                language,
-                                delayedCapture,
-                                null,
-                                null,
-                                refundSummary,
-                                settlementSummary,
-                                cardDetails,
-                                validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
-                                validGetLink(nextUrl(chargeTokenId), "next_url"),
-                                validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap(chargeTokenId)))));
+                        .withBody(buildChargeResponse(responseFromConnector)));
     }
 
     public void respondAccepted_whenCreateARefund(int amount, int refundAmountAvailable, String gatewayAccountId, String chargeId, String refundId, String status, String createdDate) {
@@ -239,23 +264,43 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                                        SupportedLanguage language, boolean delayedCapture, String chargeTokenId, RefundSummary refundSummary, SettlementSummary settlementSummary,
                                        CardDetails cardDetails, Long corporateCardSurcharge, Long totalAmount, String gatewayTransactionId) {
         String chargeResponseBody;
-        
+
+        var responseFromConnector = aCreateChargeResponseFromConnector()
+                .withAmount(amount)
+                .withChargeId(chargeId)
+                .withState(state)
+                .withReturnUrl(returnUrl)
+                .withDescription(description)
+                .withReference(reference)
+                .withEmail(email)
+                .withPaymentProvider(paymentProvider)
+                .withGatewayTransactionId(gatewayTransactionId)
+                .withCreatedDate(createdDate)
+                .withLanguage(language)
+                .withDelayedCapture(delayedCapture)
+                .withCorporateCardSurcharge(corporateCardSurcharge)
+                .withTotalAmount(totalAmount)
+                .withRefundSummary(refundSummary)
+                .withSettlementSummary(settlementSummary)
+                .withCardDetails(cardDetails)
+                .withLink(validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"));
+                
         if (AWAITING_CAPTURE_REQUEST == state) {
-            chargeResponseBody = buildChargeResponse(amount, chargeId, state, returnUrl,
-                    description, reference, email, paymentProvider, gatewayTransactionId, createdDate, language, delayedCapture,
-                    corporateCardSurcharge, totalAmount, refundSummary, settlementSummary, cardDetails,
-                    validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
-                    validGetLink(chargeLocation(gatewayAccountId, chargeId) + "/refunds", "refunds"),
-                    validPostLink(chargeLocation(gatewayAccountId, chargeId) + "/capture", "capture", "application/x-www-form-urlencoded",
-                            new HashMap<>()));
+
+            responseFromConnector.withLink(validGetLink(chargeLocation(gatewayAccountId, chargeId) + "/refunds", "refunds"))
+                    .withLink(validPostLink(chargeLocation(gatewayAccountId, chargeId) + "/capture", "capture", "application/x-www-form-urlencoded", new HashMap<>()))
+                    .build();
+            
+            chargeResponseBody = buildChargeResponse(responseFromConnector.build());
+            
         } else {
-            chargeResponseBody = buildChargeResponse(amount, chargeId, state, returnUrl,
-                    description, reference, email, paymentProvider, gatewayTransactionId, createdDate, language, delayedCapture,
-                    corporateCardSurcharge, totalAmount, refundSummary, settlementSummary, cardDetails,
-                    validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
-                    validGetLink(chargeLocation(gatewayAccountId, chargeId) + "/refunds", "refunds"),
-                    validGetLink(nextUrl(chargeId), "next_url"),
-                    validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap(chargeTokenId)));
+
+            responseFromConnector.withLink(validGetLink(chargeLocation(gatewayAccountId, chargeId) + "/refunds", "refunds"))
+                    .withLink(validGetLink(nextUrl(chargeId), "next_url"))
+                    .withLink(validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap(chargeTokenId)))
+                    .build();
+            
+            chargeResponseBody = buildChargeResponse(responseFromConnector.build());
         }
         whenGetCharge(gatewayAccountId, chargeId)
                 .respond(response()
@@ -380,6 +425,15 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withPath(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId))
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                 .withBody(createChargePayload(amount, returnUrl, description, reference))
+        );
+    }
+
+    public ForwardChainExpectation whenCreateCharge(String gatewayAccountId, CreateChargeRequestParams createChargeRequestParams) {
+        return mockClient.when(request()
+                .withMethod(POST)
+                .withPath(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId))
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                .withBody(json(createChargePayload(createChargeRequestParams), MatchType.ONLY_MATCHING_FIELDS))
         );
     }
     

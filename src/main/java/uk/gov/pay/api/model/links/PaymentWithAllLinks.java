@@ -15,9 +15,11 @@ import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.SettlementSummary;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.commons.model.SupportedLanguage;
+import uk.gov.pay.commons.model.charge.ExternalMetadata;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 import static uk.gov.pay.api.model.Payment.LINKS_JSON_ATTRIBUTE;
 
@@ -44,9 +46,9 @@ public class PaymentWithAllLinks {
                                String reference, String email, String paymentProvider, String createdDate, SupportedLanguage language,
                                boolean delayedCapture, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
                                List<PaymentConnectorResponseLink> paymentConnectorResponseLinks, URI selfLink, URI paymentEventsUri, URI paymentCancelUri,
-                               URI paymentRefundsUri, URI paymentCaptureUri, Long corporateCardSurcharge, Long totalAmount, String providerId) {
+                               URI paymentRefundsUri, URI paymentCaptureUri, Long corporateCardSurcharge, Long totalAmount, String providerId, ExternalMetadata metadata) {
         this.payment = new CardPayment(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate,
-                refundSummary, settlementSummary, cardDetails, language, delayedCapture, corporateCardSurcharge, totalAmount, providerId);
+                refundSummary, settlementSummary, cardDetails, language, delayedCapture, corporateCardSurcharge, totalAmount, providerId, metadata);
         this.links.addSelf(selfLink.toString());
         this.links.addKnownLinksValueOf(paymentConnectorResponseLinks);
         this.links.addEvents(paymentEventsUri.toString());
@@ -115,7 +117,8 @@ public class PaymentWithAllLinks {
                 paymentsCaptureUri,
                 paymentConnector.getCorporateCardSurcharge(),
                 paymentConnector.getTotalAmount(),
-                paymentConnector.getGatewayTransactionId());
+                paymentConnector.getGatewayTransactionId(),
+                paymentConnector.getMetadata().orElse(null));
     }
 
     public static PaymentWithAllLinks getPaymentWithLinks(

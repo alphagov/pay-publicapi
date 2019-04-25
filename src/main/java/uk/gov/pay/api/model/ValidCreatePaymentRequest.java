@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.commons.model.SupportedLanguage;
+import uk.gov.pay.commons.model.charge.ExternalMetadata;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -30,8 +31,9 @@ public class ValidCreatePaymentRequest {
     @ApiModelProperty(name = "language", value = "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages", required = false, example = "en", allowableValues = "en,cy")
     private SupportedLanguage language;
     @ApiModelProperty(name = "delayed_capture", value = "delayed capture flag", required = false, example = "false" )
-    @JsonProperty("delayed_capture")
     private Boolean delayedCapture;
+    
+    private ExternalMetadata metadata;
 
     public ValidCreatePaymentRequest(CreatePaymentRequest createPaymentRequest) {
         amount = createPaymentRequest.getAmount();
@@ -47,6 +49,7 @@ public class ValidCreatePaymentRequest {
         }
 
         delayedCapture = createPaymentRequest.getDelayedCapture();
+        metadata = createPaymentRequest.getMetadata();
     }
 
     public int getAmount() {
@@ -76,6 +79,10 @@ public class ValidCreatePaymentRequest {
 
     public Optional<Boolean> getDelayedCapture() {
         return Optional.ofNullable(delayedCapture);
+    }
+
+    public Optional<ExternalMetadata> getMetadata() {
+        return Optional.ofNullable(metadata);
     }
 
     /**

@@ -1,11 +1,18 @@
 package uk.gov.pay.api.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.validation.LanguageValidator;
+import uk.gov.pay.commons.api.json.ExternalMetadataDeserialiser;
+import uk.gov.pay.commons.model.charge.ExternalMetadata;
+
+import java.io.IOException;
+import java.util.Map;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.gov.pay.api.model.CreatePaymentRefundRequest.REFUND_AMOUNT_AVAILABLE;
@@ -23,6 +30,8 @@ import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_VALIDATION_E
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 
 class RequestJsonParser {
+
+    private static ObjectMapper objectMapper = new ObjectMapper();
 
     static CreatePaymentRequest parsePaymentRequest(JsonNode paymentRequest) {
         Integer amount = parseInteger(paymentRequest, AMOUNT_FIELD_NAME, true, CREATE_PAYMENT_VALIDATION_ERROR, CREATE_PAYMENT_MISSING_FIELD_ERROR);
@@ -59,6 +68,11 @@ class RequestJsonParser {
             String returnUrl = parseString(paymentRequest, RETURN_URL_FIELD_NAME, true,
                     aPaymentError(RETURN_URL_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid URL format"));
             createPaymentRequestBuilder.returnUrl(returnUrl);
+        }
+        
+        if (paymentRequest.has("metadata")) {
+            Map<String, Object> metadata = objectMapper.convertValue(paymentRequest.get("metadata"), Map.class);
+            createPaymentRequestBuilder.metadata(new ExternalMetadata(metadata));
         }
 
         return createPaymentRequestBuilder.build();
