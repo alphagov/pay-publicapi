@@ -22,7 +22,6 @@ import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
@@ -59,14 +58,15 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 .withDescription(DESCRIPTION)
                 .withReference(REFERENCE)
                 .withReturnUrl(RETURN_URL)
-                .withMetadata(Map.of("foo", "foo you", "fuh", "fuh you"))
+                .withMetadata(Map.of("reconciled", true, "ledger_code", 123, "fuh", "fuh you"))
                 .build();
         connectorMock.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
 
         postPaymentResponse(API_KEY, paymentPayload(createChargeRequestParams))
                 .statusCode(201)
                 .contentType(JSON).log().body()
-                .body("metadata.foo", is("foo you"))
+                .body("metadata.reconciled", is(true))
+                .body("metadata.ledger_code", is(123))
                 .body("metadata.fuh", is("fuh you"));
 
         connectorMock.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
