@@ -6,10 +6,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import uk.gov.pay.commons.api.json.ExternalMetadataSerialiser;
 import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.commons.model.charge.ExternalMetadata;
 
-import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
@@ -44,8 +44,9 @@ public class CardPayment extends Payment {
     @JsonProperty("provider_id")
     @ApiModelProperty(example = "reference-from-payment-gateway")
     private final String providerId;
-    
-    private final Map<String, Object> metadata;
+
+    @JsonSerialize(using = ExternalMetadataSerialiser.class)
+    private final ExternalMetadata metadata;
 
     public CardPayment(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                        String reference, String email, String paymentProvider, String createdDate,
@@ -57,7 +58,7 @@ public class CardPayment extends Payment {
         this.settlementSummary = settlementSummary;
         this.cardDetails = cardDetails;
         this.providerId = providerId;
-        this.metadata = metadata == null ? Map.of() : metadata.getMetadata();
+        this.metadata = metadata;
         this.paymentType = CARD.getFriendlyName();
         this.language = language;
         this.delayedCapture = delayedCapture;
@@ -78,7 +79,7 @@ public class CardPayment extends Payment {
         return cardDetails != null ? cardDetails.getCardBrand() : null;
     }
 
-    public Map<String, Object> getMetadata() {
+    public ExternalMetadata getMetadata() {
         return metadata;
     }
 

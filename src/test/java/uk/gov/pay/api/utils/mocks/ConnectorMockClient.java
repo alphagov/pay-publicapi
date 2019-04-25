@@ -90,10 +90,18 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withSettlementSummary(responseFromConnector.settlementSummary)
                 .withCardDetails(responseFromConnector.cardDetails);
         
-        if (responseFromConnector.refundSummary != null) resultBuilder.withRefundSummary(responseFromConnector.refundSummary);
-        if (responseFromConnector.gatewayTransactionId != null) resultBuilder.withGatewayTransactionId(responseFromConnector.gatewayTransactionId);
-        if (responseFromConnector.corporateCardSurcharge != null) resultBuilder.withCorporateCardSurcharge(responseFromConnector.corporateCardSurcharge);
-        if (responseFromConnector.totalAmount != null) resultBuilder.withTotalAmount(responseFromConnector.totalAmount);
+        if (responseFromConnector.refundSummary != null) {
+            resultBuilder.withRefundSummary(responseFromConnector.refundSummary);
+        }
+        if (responseFromConnector.gatewayTransactionId != null) {
+            resultBuilder.withGatewayTransactionId(responseFromConnector.gatewayTransactionId);
+        }
+        if (responseFromConnector.corporateCardSurcharge != null) {
+            resultBuilder.withCorporateCardSurcharge(responseFromConnector.corporateCardSurcharge);
+        }
+        if (responseFromConnector.totalAmount != null) {
+            resultBuilder.withTotalAmount(responseFromConnector.totalAmount);
+        }
         responseFromConnector.metadata.ifPresent(m -> resultBuilder.withMetadata(m));
         
         return resultBuilder.build();

@@ -166,7 +166,7 @@ public abstract class PaymentResultBuilder {
     protected RefundSummary refundSummary;
     protected SettlementSummary settlementSummary;
     protected String gatewayTransactionId;
-    protected Map<String, ?> metadata;
+    protected Map<String, Object> metadata;
 
     public abstract String build();
     

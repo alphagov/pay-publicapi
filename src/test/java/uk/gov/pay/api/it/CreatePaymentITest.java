@@ -64,7 +64,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
 
         postPaymentResponse(API_KEY, paymentPayload(createChargeRequestParams))
                 .statusCode(201)
-                .contentType(JSON).log().body()
+                .contentType(JSON)
                 .body("metadata.reconciled", is(true))
                 .body("metadata.ledger_code", is(123))
                 .body("metadata.fuh", is("fuh you"));
@@ -83,7 +83,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
         String responseBody = postPaymentResponse(API_KEY, SUCCESS_PAYLOAD)
                 .statusCode(201)
                 .contentType(JSON)
-                .header(HttpHeaders.LOCATION, is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID))).log().body()
+                .header(HttpHeaders.LOCATION, is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)))
                 .body("payment_id", is(CHARGE_ID))
                 .body("amount", is(9999999))
                 .body("reference", is(REFERENCE))
