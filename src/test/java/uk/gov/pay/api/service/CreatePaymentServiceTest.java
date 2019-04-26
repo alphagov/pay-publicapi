@@ -20,11 +20,14 @@ import uk.gov.pay.api.model.links.Link;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.model.links.PostLink;
 import uk.gov.pay.commons.model.SupportedLanguage;
+import uk.gov.pay.commons.model.charge.ExternalMetadata;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
 import javax.ws.rs.client.Client;
+import java.io.Serializable;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.core.Is.is;
@@ -56,6 +59,28 @@ public class CreatePaymentServiceTest {
                 publicApiUriGenerator, connectorUriGenerator);
     }
 
+    @Test
+    @PactVerification({"connector"})
+    @Pacts(pacts = {"publicapi-connector-create-payment-with-metadata"})
+    public void testCreatePaymentWithMetadata() {
+        Account account = new Account("123456", TokenPaymentType.CARD);
+        Map<String, Object> metadata = Map.of(
+                "ledger_code", 123, 
+                "fund_code", "ISIN122038", 
+                "cancellable", false);
+        ValidCreatePaymentRequest requestPayload = new ValidCreatePaymentRequest(CreatePaymentRequest.builder()
+                .amount(100)
+                .returnUrl("https://somewhere.gov.uk/rainbow/1")
+                .reference("a reference")
+                .description("a description")
+                .metadata(new ExternalMetadata(metadata))
+                .build());
+
+        PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
+        CardPayment payment = (CardPayment) paymentResponse.getPayment();
+        assertThat(payment.getMetadata().getMetadata(), is(metadata));
+    }
+    
     @Test
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-create-payment"})
