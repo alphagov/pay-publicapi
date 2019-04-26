@@ -54,4 +54,21 @@ public class JsonStringBuilderTest {
 
         assertEquals("{\"error\":{\"message\":\"There was an error\",\"type\":\"card_error\",\"param\":\"number\",\"metadata\":{\"orderid\":\"our-order-id\"},\"empty\":{}}}", result);
     }
+
+    @Test
+    public void nestedMapsWithMapKeyVarArgs() {
+        String message = "There was an error";
+
+        String result = new JsonStringBuilder()
+                .addRoot("error")
+                .add("message", message)
+                .add("type", "card_error")
+                .add("param", "number")
+                .addToMap("metadata", "orderid", "our-order-id")
+                .addToNestedMap("error_meta", "meta data of error", "metadata", "meta_error")
+                .noPrettyPrint()
+                .build();
+
+        assertEquals("{\"error\":{\"message\":\"There was an error\",\"type\":\"card_error\",\"param\":\"number\",\"metadata\":{\"orderid\":\"our-order-id\",\"meta_error\":{\"error_meta\":\"meta data of error\"}}}}", result);
+    }
 }

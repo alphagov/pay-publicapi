@@ -3,7 +3,9 @@ package uk.gov.pay.api.service;
 import org.apache.http.HttpStatus;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateChargeException;
+import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.ChargeFromResponse;
+import uk.gov.pay.api.model.PrefilledCardholderDetails;
 import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.utils.JsonStringBuilder;
@@ -76,6 +78,22 @@ public class CreatePaymentService {
         requestPayload.getAgreementId().ifPresent(agreementId -> request.add("agreement_id", agreementId));
         requestPayload.getDelayedCapture().ifPresent(delayedCapture -> request.add("delayed_capture", delayedCapture));
         requestPayload.getMetadata().ifPresent(metadata -> request.add("metadata", metadata.getMetadata()));
+        requestPayload.getEmail().ifPresent(email -> request.add("email", email));
+        requestPayload.getPrefilledCardholderDetails().ifPresent(prefilledCardholderDetails -> buildPrefilledCardHolderDetails(prefilledCardholderDetails, request));
         return json(request.build());
+    }
+    
+    private void buildPrefilledCardHolderDetails(PrefilledCardholderDetails prefilledCardholderDetails, JsonStringBuilder request) {
+        if (prefilledCardholderDetails.getCardholderName().isPresent()) {
+            request.addToMap("prefilled_cardholder_details", "cardholder_name", prefilledCardholderDetails.getCardholderName().get());
+        }
+        if (prefilledCardholderDetails.getBillingAddress().isPresent()) {
+            Address address = prefilledCardholderDetails.getBillingAddress().get();
+            request.addToNestedMap("line1", address.getLine1(), "prefilled_cardholder_details", "billing_address");
+            request.addToNestedMap("line2", address.getLine2(), "prefilled_cardholder_details", "billing_address");
+            request.addToNestedMap("postcode", address.getPostcode(), "prefilled_cardholder_details", "billing_address");
+            request.addToNestedMap("city", address.getCity(), "prefilled_cardholder_details", "billing_address");
+            request.addToNestedMap("country", address.getCountry(), "prefilled_cardholder_details", "billing_address");
+        }
     }
 }

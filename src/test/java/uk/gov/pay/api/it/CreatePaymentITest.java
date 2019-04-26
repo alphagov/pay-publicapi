@@ -163,9 +163,17 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 .withCardDetails(CARD_DETAILS)
                 .build());
 
-        postPaymentResponse(API_KEY, paymentPayload(minimumAmount, RETURN_URL, DESCRIPTION, REFERENCE))
+        CreateChargeRequestParams params = aCreateChargeRequestParams()
+                .withAmount(minimumAmount)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withReturnUrl(RETURN_URL)
+                .withEmail(EMAIL)
+                .build();
+        postPaymentResponse(API_KEY, paymentPayload(params))
                 .statusCode(201)
                 .contentType(JSON)
+                .log().body()
                 .body("payment_id", is(CHARGE_ID))
                 .body("amount", is(minimumAmount))
                 .body("reference", is(REFERENCE))
@@ -183,7 +191,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
         int amount = 10000000;
         String reference = randomAlphanumeric(255);
         String description = randomAlphanumeric(255);
-        String email = randomAlphanumeric(254) + "@mail.fake";
+        String email = randomAlphanumeric(244) + "@mail.fake";
         String return_url = "https://govdemopay.gov.uk?data=" + randomAlphanumeric(1969);
 
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
@@ -299,7 +307,13 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 .add("description", params.getDescription())
                 .add("return_url", params.getReturnUrl());
 
-        if (!params.getMetadata().isEmpty()) payload.add("metadata", params.getMetadata());
+        if (!params.getMetadata().isEmpty()) {
+            payload.add("metadata", params.getMetadata());
+        }
+        
+        if (params.getEmail() != null) {
+            payload.add("email", params.getEmail());
+        }
 
         return payload.build();
     }

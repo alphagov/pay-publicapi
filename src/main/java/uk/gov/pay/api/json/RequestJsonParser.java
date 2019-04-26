@@ -27,8 +27,17 @@ import static uk.gov.pay.api.model.CreatePaymentRequest.AGREEMENT_ID_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.AMOUNT_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.DELAYED_CAPTURE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.DESCRIPTION_FIELD_NAME;
+import static uk.gov.pay.api.model.CreatePaymentRequest.EMAIL_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.LANGUAGE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.METADATA;
+import static uk.gov.pay.api.model.CreatePaymentRequest.PREFILLED_ADDRESS_CITY_FIELD_NAME;
+import static uk.gov.pay.api.model.CreatePaymentRequest.PREFILLED_ADDRESS_COUNTRY_FIELD_NAME;
+import static uk.gov.pay.api.model.CreatePaymentRequest.PREFILLED_ADDRESS_LINE1_FIELD_NAME;
+import static uk.gov.pay.api.model.CreatePaymentRequest.PREFILLED_ADDRESS_LINE2_FIELD_NAME;
+import static uk.gov.pay.api.model.CreatePaymentRequest.PREFILLED_ADDRESS_POSTCODE_FIELD_NAME;
+import static uk.gov.pay.api.model.CreatePaymentRequest.PREFILLED_BILLING_ADDRESS_FIELD_NAME;
+import static uk.gov.pay.api.model.CreatePaymentRequest.PREFILLED_CARDHOLDER_DETAILS_FIELD_NAME;
+import static uk.gov.pay.api.model.CreatePaymentRequest.PREFILLED_CARDHOLDER_NAME_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.REFERENCE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.RETURN_URL_FIELD_NAME;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_METADATA_VALIDATION_ERROR;
@@ -56,15 +65,62 @@ class RequestJsonParser {
                 .reference(validateAndGetReference(paymentRequest))
                 .description(validateAndGetDescription(paymentRequest));
 
-        if (paymentRequest.has(LANGUAGE_FIELD_NAME))
+        if (paymentRequest.has(LANGUAGE_FIELD_NAME)) {
             builder.language(validateAndGetLanguage(paymentRequest));
+        }
 
-        if (paymentRequest.has(DELAYED_CAPTURE_FIELD_NAME))
+        if (paymentRequest.has(DELAYED_CAPTURE_FIELD_NAME)) {
             builder.delayedCapture(validateAndGetDelayedCapture(paymentRequest));
+        }
 
-        if (paymentRequest.has(AGREEMENT_ID_FIELD_NAME))
+        if (paymentRequest.has(AGREEMENT_ID_FIELD_NAME)) {
             builder.agreementId(validateAndGetAgreementId(paymentRequest));
-        else builder.returnUrl(validateAndGetReturnUrl(paymentRequest));
+        } else {
+            builder.returnUrl(validateAndGetReturnUrl(paymentRequest));
+        }
+        
+        if (paymentRequest.has(EMAIL_FIELD_NAME)) {
+            String email = getStringValue(paymentRequest.get(EMAIL_FIELD_NAME),
+                    aPaymentError(EMAIL_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
+            builder.email(email);
+        }
+        
+        if (paymentRequest.has(PREFILLED_CARDHOLDER_DETAILS_FIELD_NAME)) {
+            JsonNode prefilledNode = paymentRequest.get(PREFILLED_CARDHOLDER_DETAILS_FIELD_NAME);
+            if (prefilledNode.has(PREFILLED_CARDHOLDER_NAME_FIELD_NAME)) {
+                String cardHolderName = getStringValue(prefilledNode.get(PREFILLED_CARDHOLDER_NAME_FIELD_NAME),
+                        aPaymentError(PREFILLED_CARDHOLDER_NAME_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
+                builder.cardholderName(cardHolderName);
+            }
+            if (prefilledNode.has(PREFILLED_BILLING_ADDRESS_FIELD_NAME)) {
+                JsonNode addressNode = prefilledNode.get(PREFILLED_BILLING_ADDRESS_FIELD_NAME);
+                if (addressNode.has(PREFILLED_ADDRESS_LINE1_FIELD_NAME)) {
+                    String addressLine1 = getStringValue(addressNode.get(PREFILLED_ADDRESS_LINE1_FIELD_NAME), 
+                            aPaymentError(PREFILLED_ADDRESS_LINE1_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
+                    builder.addressLine1(addressLine1);
+                }
+                if (addressNode.has(PREFILLED_ADDRESS_LINE2_FIELD_NAME)) {
+                    String addressLine1 = getStringValue(addressNode.get(PREFILLED_ADDRESS_LINE2_FIELD_NAME),
+                            aPaymentError(PREFILLED_ADDRESS_LINE2_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
+                    builder.addressLine2(addressLine1);
+                }
+                if (addressNode.has(PREFILLED_ADDRESS_CITY_FIELD_NAME)) {
+                    String addressCity = getStringValue(addressNode.get(PREFILLED_ADDRESS_CITY_FIELD_NAME),
+                            aPaymentError(PREFILLED_ADDRESS_CITY_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
+                    builder.city(addressCity);
+                }
+                if (addressNode.has(PREFILLED_ADDRESS_POSTCODE_FIELD_NAME)) {
+                    String addressPostcode = getStringValue(addressNode.get(PREFILLED_ADDRESS_POSTCODE_FIELD_NAME),
+                            aPaymentError(PREFILLED_ADDRESS_POSTCODE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
+                    builder.postcode(addressPostcode);
+                }
+                if (addressNode.has(PREFILLED_ADDRESS_COUNTRY_FIELD_NAME)) {
+                    String countryCode = getStringValue(addressNode.get(PREFILLED_ADDRESS_COUNTRY_FIELD_NAME),
+                            aPaymentError(PREFILLED_ADDRESS_COUNTRY_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
+                    builder.country(countryCode);
+                }
+            }
+        }
 
         if (paymentRequest.has(METADATA))
             builder.metadata(validateAndGetMetadata(paymentRequest));
@@ -166,5 +222,18 @@ class RequestJsonParser {
         if (!condition) {
             throw new BadRequestException(error);
         }
+    }
+
+    private static String getStringValue(JsonNode fieldNode, PaymentError formatError) {
+        String fieldValue = null;
+        if (notNull(fieldNode)) {
+            check(fieldNode.isTextual(), formatError);
+            fieldValue = fieldNode.asText();
+        }
+        return fieldValue;
+    }
+
+    private static boolean notNull(JsonNode fieldNode) {
+        return fieldNode != null && !fieldNode.isNull();
     }
 }

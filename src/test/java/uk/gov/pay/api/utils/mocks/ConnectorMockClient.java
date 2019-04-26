@@ -49,6 +49,7 @@ import static uk.gov.pay.api.it.GetPaymentITest.AWAITING_CAPTURE_REQUEST;
 import static uk.gov.pay.api.it.fixtures.PaymentSingleResultBuilder.aSuccessfulSinglePayment;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonString;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
+import static uk.gov.pay.api.utils.mocks.CreateChargeRequestParams.CreateChargeRequestParamsBuilder.aCreateChargeRequestParams;
 
 public class ConnectorMockClient extends BaseConnectorMockClient {
 
@@ -173,10 +174,15 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         ChargeResponseFromConnector build = aCreateOrGetChargeResponseFromConnector(responseFromConnector)
                 .withLink(validGetLink(chargeLocation(gatewayAccountId, responseFromConnector.getChargeId()), "self"))
                 .withLink(validGetLink(nextUrl(chargeTokenId), "next_url"))
-                .withLink(validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap(chargeTokenId))).build();
-        
-        whenCreateCharge(responseFromConnector.getAmount(), gatewayAccountId, responseFromConnector.getReturnUrl(),
-                responseFromConnector.getDescription(), responseFromConnector.getReference())
+                .withLink(validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap(chargeTokenId)))      .build();
+        CreateChargeRequestParams params = aCreateChargeRequestParams()
+                .withAmount(responseFromConnector.getAmount().intValue())
+                .withReturnUrl(responseFromConnector.getReturnUrl())
+                .withReference(responseFromConnector.getReference())
+                .withDescription(responseFromConnector.getDescription())
+                .withEmail(responseFromConnector.getEmail())
+                .build();
+        whenCreateCharge(gatewayAccountId, params)
                 .respond(response()
                         .withStatusCode(CREATED_201)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
@@ -386,6 +392,15 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         );
     }
 
+    public ForwardChainExpectation whenCreateCharge(long amount, String gatewayAccountId, String returnUrl, String description, String reference, String email) {
+        return mockClient.when(request()
+                .withMethod(POST)
+                .withPath(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId))
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                .withBody(createChargePayload(amount, returnUrl, description, reference))
+        );
+    }
+
     public ForwardChainExpectation whenCreateCharge(String gatewayAccountId, CreateChargeRequestParams createChargeRequestParams) {
         return mockClient.when(request()
                 .withMethod(POST)
@@ -394,7 +409,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withBody(json(createChargePayload(createChargeRequestParams), MatchType.ONLY_MATCHING_FIELDS))
         );
     }
-
+    
     private ForwardChainExpectation whenCreateRefund(int amount, int refundAmountAvailable, String gatewayAccountId, String chargeId) {
         String payload = new GsonBuilder().create().toJson(
                 ImmutableMap.of("amount", amount, "refund_amount_available", refundAmountAvailable));

@@ -711,13 +711,29 @@
           "description" : "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages",
           "enum" : [ "en", "cy" ]
         },
+        "email" : {
+          "type" : "string",
+          "example" : "joe.bogs@example.org",
+          "description" : "email of the card holder"
+        },
         "delayed_capture" : {
           "type" : "boolean",
           "example" : false,
+<<<<<<< HEAD
           "description" : "delayed capture flag"
         },
         "metadata" : {
           "$ref" : "#/definitions/ExternalMetadata"
+=======
+          "description" : "delayed capture flag",
+          "readOnly" : true
+        },
+        "prefilled_cardholder_details" : {
+          "example" : "J. Bogs",
+          "description" : "prefilled cardholder details",
+          "readOnly" : true,
+          "$ref" : "#/definitions/PrefilledCardholderDetails"
+>>>>>>> PP-5091 Add create payment prefilled cardholder details pact test
         }
       }
     },
@@ -1292,6 +1308,18 @@
         }
       },
       "description" : "A POST link related to a payment"
+    },
+    "PrefilledCardholderDetails" : {
+      "type" : "object",
+      "properties" : {
+        "cardholder_name" : {
+          "type" : "string"
+        },
+        "billing_address" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/Address"
+        }
+      }
     },
     "Refund" : {
       "type" : "object",

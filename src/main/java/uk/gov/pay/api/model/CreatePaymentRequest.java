@@ -20,6 +20,15 @@ public class CreatePaymentRequest {
     public static final String LANGUAGE_FIELD_NAME = "language";
     public static final String DELAYED_CAPTURE_FIELD_NAME = "delayed_capture";
     public static final String METADATA = "metadata";
+    public static final String EMAIL_FIELD_NAME = "email";
+    public static final String PREFILLED_CARDHOLDER_DETAILS_FIELD_NAME = "prefilled_cardholder_details";
+    public static final String PREFILLED_CARDHOLDER_NAME_FIELD_NAME = "cardholder_name";
+    public static final String PREFILLED_BILLING_ADDRESS_FIELD_NAME = "billing_address";
+    public static final String PREFILLED_ADDRESS_LINE1_FIELD_NAME = "line1";
+    public static final String PREFILLED_ADDRESS_LINE2_FIELD_NAME = "line2";
+    public static final String PREFILLED_ADDRESS_CITY_FIELD_NAME = "city";
+    public static final String PREFILLED_ADDRESS_POSTCODE_FIELD_NAME = "postcode";
+    public static final String PREFILLED_ADDRESS_COUNTRY_FIELD_NAME = "country";
 
     private final int amount;
     private final String returnUrl;
@@ -29,6 +38,8 @@ public class CreatePaymentRequest {
     private final String language;
     private final Boolean delayedCapture;
     private final ExternalMetadata metadata;
+    private final String email;
+    private final PrefilledCardholderDetails prefilledCardholderDetails;
     
     private CreatePaymentRequest(CreatePaymentRequestBuilder createPaymentRequestBuilder) {
         this.amount = createPaymentRequestBuilder.amount;
@@ -39,6 +50,8 @@ public class CreatePaymentRequest {
         this.language = createPaymentRequestBuilder.language;
         this.delayedCapture = createPaymentRequestBuilder.delayedCapture;
         this.metadata = createPaymentRequestBuilder.metadata;
+        this.email = createPaymentRequestBuilder.email;
+        this.prefilledCardholderDetails = createPaymentRequestBuilder.getPrefilledCardholderDetails();
     }
 
     @ApiModelProperty(value = "amount in pence", required = true, allowableValues = "range[1, 10000000]", example = "12000")
@@ -85,6 +98,18 @@ public class CreatePaymentRequest {
         return metadata;
     }
 
+    @ApiModelProperty(value = "email", required = false, example = "Joe.Bogs@example.org")
+    @JsonProperty(EMAIL_FIELD_NAME)
+    public String getEmail() {
+        return email;
+    }
+
+    @ApiModelProperty(value = "prefilled_cardholder_details", required = false, example = "Joe.Bogs@example.org")
+    @JsonProperty(PREFILLED_CARDHOLDER_DETAILS_FIELD_NAME)
+    public PrefilledCardholderDetails getPrefilledCardholderDetails() {
+        return prefilledCardholderDetails;
+    }
+
     public boolean hasReturnUrl() {
         return StringUtils.isNotBlank(returnUrl);
     }
@@ -95,6 +120,14 @@ public class CreatePaymentRequest {
 
     public boolean hasLanguage() {
         return StringUtils.isNotBlank(language);
+    }
+
+    public boolean hasEmail() {
+        return StringUtils.isNotBlank(email);
+    }
+
+    public boolean hasPrefilledCardholderDetails() {
+        return prefilledCardholderDetails != null;
     }
 
     /**
@@ -123,6 +156,14 @@ public class CreatePaymentRequest {
         private String agreementId;
         private String language;
         private Boolean delayedCapture;
+        private String email;
+        private String cardholderName;
+        private String addressLine1;
+        private String addressLine2;
+        private String city;
+        private String postcode;
+        private String country;
+        private PrefilledCardholderDetails prefilledCardholderDetails;
 
         public CreatePaymentRequestBuilder amount(int amount) {
             this.amount = amount;
@@ -163,6 +204,59 @@ public class CreatePaymentRequest {
             this.metadata = metadata;
             return this;
         }
+
+        public CreatePaymentRequestBuilder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public CreatePaymentRequestBuilder cardholderName(String cardHolderName) {
+            this.cardholderName = cardHolderName;
+            return this;
+        }
+
+        public CreatePaymentRequestBuilder addressLine1(String addressLine1) {
+            this.addressLine1 = addressLine1;
+            return this;
+        }
+
+        public CreatePaymentRequestBuilder addressLine2(String addressLine2) {
+            this.addressLine2 = addressLine2;
+            return this;
+        }
+
+        public CreatePaymentRequestBuilder city(String city) {
+            this.city = city;
+            return this;
+        }
+
+        public CreatePaymentRequestBuilder postcode(String postcode) {
+            this.postcode = postcode;
+            return this;
+        }
+
+        public CreatePaymentRequestBuilder country(String country) {
+            this.country = country;
+            return this;
+        }
+
+        private PrefilledCardholderDetails getPrefilledCardholderDetails() {
+            if (cardholderName != null) {
+                if (this.prefilledCardholderDetails == null) {
+                    this.prefilledCardholderDetails = new PrefilledCardholderDetails();
+                }
+                this.prefilledCardholderDetails.setCardholderName(cardholderName);
+            }
+            if (addressLine1 != null || addressLine2 != null ||
+                    postcode != null || city != null || country != null) {
+                if (this.prefilledCardholderDetails == null) {
+                    this.prefilledCardholderDetails = new PrefilledCardholderDetails();
+                }
+                this.prefilledCardholderDetails.setAddress(addressLine1, addressLine2, postcode, city, country);
+            }
+            return prefilledCardholderDetails;
+        }
+
 
         public CreatePaymentRequest build() {
             return new CreatePaymentRequest(this);

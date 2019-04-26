@@ -9,17 +9,20 @@ public class CreateChargeRequestParams {
     private final int amount;
     private final String returnUrl, description, reference;
     private final Map<String, Object> metadata;
+    private final String email;
 
     private CreateChargeRequestParams(int amount, 
                                       String returnUrl, 
                                       String description, 
                                       String reference, 
-                                      Map<String, Object> metadata) {
+                                      Map<String, Object> metadata,
+                                      String email) {
         this.amount = amount;
         this.returnUrl = returnUrl;
         this.description = description;
         this.reference = reference;
         this.metadata = metadata;
+        this.email = email;
     }
 
     public int getAmount() {
@@ -42,12 +45,17 @@ public class CreateChargeRequestParams {
         return metadata;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
     public static final class CreateChargeRequestParamsBuilder {
         private Integer amount;
         private String returnUrl;
         private String description;
         private String reference;
         private Map<String, Object> metadata = Map.of();
+        private String email;
 
         private CreateChargeRequestParamsBuilder() {
         }
@@ -80,10 +88,15 @@ public class CreateChargeRequestParams {
             this.metadata = metadata;
             return this;
         }
+        
+        public CreateChargeRequestParamsBuilder withEmail(String email) {
+            this.email = email;
+            return this;
+        }
 
         public CreateChargeRequestParams build() {
             List.of(amount, reference, returnUrl, description).forEach(Objects::requireNonNull);
-            return new CreateChargeRequestParams(amount, returnUrl, description, reference, metadata);
+            return new CreateChargeRequestParams(amount, returnUrl, description, reference, metadata, email);
         }
     }
 }
