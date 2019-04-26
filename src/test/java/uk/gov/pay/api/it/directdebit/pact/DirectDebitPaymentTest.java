@@ -41,7 +41,7 @@ public class DirectDebitPaymentTest {
     private static final String EMAIL = "alice.111@mail.fake";
     private static final String DESCRIPTION = "a description";
     private static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(ZonedDateTime.parse("2010-12-31T22:59:59.132012345Z"));
-    private static final String SUCCESS_PAYLOAD = aSuccessfulPaymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL);
+    private static final String SUCCESS_PAYLOAD = aSuccessfulPaymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE);
 
     //Must use same secret set int configured test-config.xml
     protected static final String API_KEY = ApiKeyGenerator.apiKeyValueOf("TEST_BEARER_TOKEN", "qwer9yuhgf");

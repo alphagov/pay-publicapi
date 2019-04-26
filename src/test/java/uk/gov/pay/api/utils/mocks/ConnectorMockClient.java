@@ -8,6 +8,7 @@ import org.mockserver.model.HttpResponse;
 import org.mockserver.model.Parameter;
 import uk.gov.pay.api.it.fixtures.PaymentRefundJsonFixture;
 import uk.gov.pay.api.it.fixtures.PaymentSingleResultBuilder;
+import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.links.Link;
@@ -49,6 +50,7 @@ import static uk.gov.pay.api.it.GetPaymentITest.AWAITING_CAPTURE_REQUEST;
 import static uk.gov.pay.api.it.fixtures.PaymentSingleResultBuilder.aSuccessfulSinglePayment;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonString;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
+import static uk.gov.pay.api.utils.mocks.CreateChargeRequestParams.CreateChargeRequestParamsBuilder.aCreateChargeRequestParams;
 
 public class ConnectorMockClient extends BaseConnectorMockClient {
 
@@ -155,7 +157,6 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withReturnUrl(requestParams.getReturnUrl())
                 .withDescription(requestParams.getDescription())
                 .withReference(requestParams.getReference())
-                .withEmail("email@email.com")
                 .withPaymentProvider("Sandbox")
                 .withGatewayTransactionId("gatewayTransactionId")
                 .withCreatedDate(SDF.format(new Date()))
@@ -168,6 +169,20 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
         if (!requestParams.getMetadata().isEmpty())
             responseFromConnector.withMetadata(requestParams.getMetadata());
+        
+        if (requestParams.getEmail() != null) {
+            responseFromConnector.withEmail(requestParams.getEmail());
+        }
+        
+        if (requestParams.getCardholderName().isPresent() || requestParams.getAddressLine1().isPresent() || 
+                requestParams.getAddressLine2().isPresent() || requestParams.getAddressPostcode().isPresent() || 
+                requestParams.getAddressCity().isPresent() || requestParams.getAddressCountry().isPresent()) {
+            Address billingAddress = new Address(requestParams.getAddressLine1().orElse(null), requestParams.getAddressLine2().orElse(null),
+                    requestParams.getAddressPostcode().orElse(null), requestParams.getAddressCity().orElse(null), requestParams.getAddressCountry().orElse(null));
+            CardDetails cardDetails = new CardDetails(null, null, requestParams.getCardholderName().orElse(null),
+                    null, billingAddress, null);
+            responseFromConnector.withCardDetails(cardDetails);
+        }
 
         whenCreateCharge(gatewayAccountId, requestParams)
                 .respond(response()
@@ -182,9 +197,15 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withLink(validGetLink(chargeLocation(gatewayAccountId, responseFromConnector.getChargeId()), "self"))
                 .withLink(validGetLink(nextUrl(chargeTokenId), "next_url"))
                 .withLink(validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap(chargeTokenId))).build();
+        CreateChargeRequestParams params = aCreateChargeRequestParams()
+                .withAmount(responseFromConnector.getAmount().intValue())
+                .withReturnUrl(responseFromConnector.getReturnUrl())
+                .withReference(responseFromConnector.getReference())
+                .withDescription(responseFromConnector.getDescription())
+                .withEmail(responseFromConnector.getEmail())
+                .build();
 
-        whenCreateCharge(responseFromConnector.getAmount(), gatewayAccountId, responseFromConnector.getReturnUrl(),
-                responseFromConnector.getDescription(), responseFromConnector.getReference())
+        whenCreateCharge(gatewayAccountId, params)
                 .respond(response()
                         .withStatusCode(CREATED_201)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)

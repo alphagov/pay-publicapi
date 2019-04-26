@@ -6,6 +6,7 @@ import org.junit.Test;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.PaymentState;
+import uk.gov.pay.api.model.PrefilledCardholderDetails;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
@@ -70,6 +71,83 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 .body("metadata.ledger_code", is(123))
                 .body("metadata.fuh", is("fuh you"));
 
+        connectorMock.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
+    }
+    
+    @Test
+    public void createCardPaymentWithPrefilledCardholderDetails() {
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+        CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
+                .withAmount(100)
+                .withDescription("description")
+                .withReference("reference")
+                .withReturnUrl(RETURN_URL)
+                .withEmail("j.bogs@example.org")
+                .witCardHolderName("J. Bogs")
+                .withAddressLine1("address line 1")
+                .withAddressLine2("address line 2")
+                .withAddressPostcode("AB1 CD2")
+                .withAddressCity("address city")
+                .withAddressCountry("GB")
+                .build();
+        connectorMock.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
+
+        postPaymentResponse(API_KEY, paymentPayload(createChargeRequestParams))
+                .statusCode(201)
+                .contentType(JSON)
+                .body("email", is("j.bogs@example.org"))
+                .body("card_details.cardholder_name", is("J. Bogs"))
+                .body("card_details.billing_address.line1", is("address line 1"))
+                .body("card_details.billing_address.line2", is("address line 2"))
+                .body("card_details.billing_address.postcode", is("AB1 CD2"))
+                .body("card_details.billing_address.city", is("address city"))
+                .body("card_details.billing_address.country", is("GB"));
+        connectorMock.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
+    }
+    
+    @Test
+    public void createCardPaymentShouldRespondWith400ErrorWhenNumericFieldInPrefilledCardholderDetails() {
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+        String payload = new JsonStringBuilder()
+                .add("amount", 1000)
+                .add("reference", "reference")
+                .add("description", "description")
+                .add("return_url", RETURN_URL)
+                .addToNestedMap("line1", 123, "prefilled_cardholder_details", "billing_address")
+                .build();
+        postPaymentResponse(API_KEY, payload)
+                .statusCode(400)
+                .contentType(JSON)
+                .body("code", is("P0102"))
+                .body("field", is("line1"))
+                .body("description", is("Invalid attribute value: line1. Field must be a string"));
+    }
+
+    @Test
+    public void createCardPaymentWithSomePrefilledCardholderDetails() {
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+        CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
+                .withAmount(100)
+                .withDescription("description")
+                .withReference("reference")
+                .withReturnUrl(RETURN_URL)
+                .witCardHolderName("J. Bogs")
+                .withAddressLine1("address line 1")
+                .withAddressCity("address city")
+                .withAddressCountry("GB")
+                .build();
+        connectorMock.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
+
+        postPaymentResponse(API_KEY, paymentPayload(createChargeRequestParams))
+                .statusCode(201)
+                .contentType(JSON)
+                .body("email", is(nullValue()))
+                .body("card_details.cardholder_name", is("J. Bogs"))
+                .body("card_details.billing_address.line1", is("address line 1"))
+                .body("card_details.billing_address.line2", is(nullValue()))
+                .body("card_details.billing_address.postcode", is(nullValue()))
+                .body("card_details.billing_address.city", is("address city"))
+                .body("card_details.billing_address.country", is("GB"));
         connectorMock.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
     }
 
@@ -163,7 +241,14 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 .withCardDetails(CARD_DETAILS)
                 .build());
 
-        postPaymentResponse(API_KEY, paymentPayload(minimumAmount, RETURN_URL, DESCRIPTION, REFERENCE))
+        CreateChargeRequestParams params = aCreateChargeRequestParams()
+                .withAmount(minimumAmount)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withReturnUrl(RETURN_URL)
+                .withEmail(EMAIL)
+                .build();
+        postPaymentResponse(API_KEY, paymentPayload(params))
                 .statusCode(201)
                 .contentType(JSON)
                 .body("payment_id", is(CHARGE_ID))
@@ -299,7 +384,33 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 .add("description", params.getDescription())
                 .add("return_url", params.getReturnUrl());
 
-        if (!params.getMetadata().isEmpty()) payload.add("metadata", params.getMetadata());
+        if (!params.getMetadata().isEmpty()) {
+            payload.add("metadata", params.getMetadata());
+        }
+        
+        if (params.getEmail() != null) {
+            payload.add("email", params.getEmail());
+        }
+        
+        if (params.getCardholderName().isPresent()) {
+            payload.addToNestedMap("cardholder_name", params.getCardholderName().get(), "prefilled_cardholder_details");
+        }
+        
+        if (params.getAddressLine2().isPresent()) {
+            payload.addToNestedMap("line2", params.getAddressLine2().get(), "prefilled_cardholder_details", "billing_address");
+        }
+
+        if (params.getAddressPostcode().isPresent()) {
+            payload.addToNestedMap("postcode", params.getAddressPostcode().get(), "prefilled_cardholder_details", "billing_address");
+        }
+
+        if (params.getAddressCity().isPresent()) {
+            payload.addToNestedMap("city", params.getAddressCity().get(), "prefilled_cardholder_details", "billing_address");
+        }
+
+        if (params.getAddressCountry().isPresent()) {
+            payload.addToNestedMap("country", params.getAddressCountry().get(), "prefilled_cardholder_details", "billing_address");
+        }
 
         return payload.build();
     }
