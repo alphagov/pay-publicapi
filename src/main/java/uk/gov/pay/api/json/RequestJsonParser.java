@@ -2,17 +2,22 @@ package uk.gov.pay.api.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import org.apache.http.HttpStatus;
 import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.validation.LanguageValidator;
-import uk.gov.pay.commons.api.json.ExternalMetadataDeserialiser;
 import uk.gov.pay.commons.model.charge.ExternalMetadata;
 
-import java.io.IOException;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.gov.pay.api.model.CreatePaymentRefundRequest.REFUND_AMOUNT_AVAILABLE;
@@ -21,8 +26,10 @@ import static uk.gov.pay.api.model.CreatePaymentRequest.AMOUNT_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.DELAYED_CAPTURE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.DESCRIPTION_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.LANGUAGE_FIELD_NAME;
+import static uk.gov.pay.api.model.CreatePaymentRequest.METADATA;
 import static uk.gov.pay.api.model.CreatePaymentRequest.REFERENCE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.RETURN_URL_FIELD_NAME;
+import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_METADATA_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_MISSING_FIELD_ERROR;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_REFUND_MISSING_FIELD_ERROR;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_REFUND_VALIDATION_ERROR;
@@ -32,6 +39,7 @@ import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 class RequestJsonParser {
 
     private static ObjectMapper objectMapper = new ObjectMapper();
+    private static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     static CreatePaymentRequest parsePaymentRequest(JsonNode paymentRequest) {
         Integer amount = parseInteger(paymentRequest, AMOUNT_FIELD_NAME, true, CREATE_PAYMENT_VALIDATION_ERROR, CREATE_PAYMENT_MISSING_FIELD_ERROR);
@@ -70,9 +78,22 @@ class RequestJsonParser {
             createPaymentRequestBuilder.returnUrl(returnUrl);
         }
         
-        if (paymentRequest.has("metadata")) {
-            Map<String, Object> metadata = objectMapper.convertValue(paymentRequest.get("metadata"), Map.class);
-            createPaymentRequestBuilder.metadata(new ExternalMetadata(metadata));
+        if (paymentRequest.has(METADATA)) {
+            Map<String, Object> metadataMap = null;
+            try {
+                metadataMap = objectMapper.convertValue(paymentRequest.get("metadata"), Map.class);
+            } catch (IllegalArgumentException e) {
+                PaymentError paymentError = new PaymentError(METADATA, CREATE_PAYMENT_METADATA_VALIDATION_ERROR, "Field [metadata] must be an object of JSON key-value pairs");
+                throw new WebApplicationException(Response.status(HttpStatus.SC_UNPROCESSABLE_ENTITY).entity(paymentError).build());
+            }
+            ExternalMetadata metadata = new ExternalMetadata(metadataMap);
+            Set<ConstraintViolation<ExternalMetadata>> violations = validator.validate(metadata);
+            if (violations.size() > 0) {
+                String message = violations.stream().map(v -> v.getMessage()).collect(Collectors.joining(";\n"));
+                PaymentError paymentError = new PaymentError(METADATA, CREATE_PAYMENT_METADATA_VALIDATION_ERROR, message);
+                throw new WebApplicationException(Response.status(HttpStatus.SC_UNPROCESSABLE_ENTITY).entity(paymentError).build());
+            }
+            createPaymentRequestBuilder.metadata(metadata);
         }
 
         return createPaymentRequestBuilder.build();

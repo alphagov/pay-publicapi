@@ -19,6 +19,7 @@ public class PaymentError {
         CREATE_PAYMENT_PARSING_ERROR("P0197", "Unable to parse JSON"),
         CREATE_PAYMENT_MISSING_FIELD_ERROR("P0101", "Missing mandatory attribute: %s"),
         CREATE_PAYMENT_VALIDATION_ERROR("P0102", "Invalid attribute value: %s. %s"),
+        CREATE_PAYMENT_METADATA_VALIDATION_ERROR("P0102", "Invalid attribute value: %s"),
 
         CREATE_PAYMENT_AGREEMENT_TYPE_ERROR("P0140", "Can't collect payment from this type of agreement"),
 
@@ -79,6 +80,12 @@ public class PaymentError {
     private String field;
     private final Code code;
     private final String description;
+
+    public PaymentError(String field, Code code, String message) {
+        this.field = field;
+        this.code = code;
+        this.description = format(code.getFormat(), message);
+    }
 
     public static PaymentError aPaymentError(Code code, Object... parameters) {
         return new PaymentError(code, parameters);
