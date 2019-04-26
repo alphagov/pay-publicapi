@@ -19,6 +19,7 @@ public class CreatePaymentRequest {
     public static final String AGREEMENT_ID_FIELD_NAME = "agreement_id";
     public static final String LANGUAGE_FIELD_NAME = "language";
     public static final String DELAYED_CAPTURE_FIELD_NAME = "delayed_capture";
+    public static final String METADATA = "metadata";
 
     private final int amount;
     private final String returnUrl;

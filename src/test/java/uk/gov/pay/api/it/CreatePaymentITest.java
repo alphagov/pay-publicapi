@@ -251,7 +251,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 .build();
     }
 
-    private static String paymentPayload(CreateChargeRequestParams params) {
+    public static String paymentPayload(CreateChargeRequestParams params) {
         JsonStringBuilder payload = new JsonStringBuilder()
                 .add("amount", params.getAmount())
                 .add("reference", params.getReference())

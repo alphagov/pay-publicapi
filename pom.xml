@@ -263,6 +263,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>pl.pragmatists</groupId>
+            <artifactId>JUnitParams</artifactId>
+            <version>1.1.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>black.door</groupId>
             <artifactId>hate</artifactId>
             <version>v1r4t2</version>
