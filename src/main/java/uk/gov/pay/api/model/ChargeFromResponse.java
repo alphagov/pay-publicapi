@@ -5,10 +5,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import uk.gov.pay.api.utils.CustomSupportedLanguageDeserializer;
+import uk.gov.pay.commons.api.json.ExternalMetadataDeserialiser;
 import uk.gov.pay.commons.model.SupportedLanguage;
+import uk.gov.pay.commons.model.charge.ExternalMetadata;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -62,6 +65,13 @@ public class ChargeFromResponse {
 
     @JsonProperty(value = "gateway_transaction_id")
     private String gatewayTransactionId;
+
+    @JsonDeserialize(using = ExternalMetadataDeserialiser.class)
+    private ExternalMetadata metadata;
+
+    public Optional<ExternalMetadata> getMetadata() {
+        return Optional.ofNullable(metadata);
+    }
 
     public String getChargeId() {
         return chargeId;

@@ -28,6 +28,6 @@ public class GetPaymentResult extends CardPayment {
                             Long totalAmount, String providerId) {
         super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate, 
                 refundSummary, settlementSummary, cardDetails, language, delayedCapture, corporateCardSurcharge, 
-                totalAmount, providerId);
+                totalAmount, providerId, null);
     }
 }

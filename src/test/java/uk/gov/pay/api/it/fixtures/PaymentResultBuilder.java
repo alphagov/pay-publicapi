@@ -1,6 +1,5 @@
 package uk.gov.pay.api.it.fixtures;
 
-import com.google.common.collect.ImmutableMap;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
@@ -8,6 +7,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import static java.util.UUID.randomUUID;
@@ -24,7 +24,7 @@ public abstract class PaymentResultBuilder {
     public static final int DEFAULT_AMOUNT = 10000;
     public static final String DEFAULT_PAYMENT_PROVIDER = "worldpay";
     public static final String DEFAULT_CARD_BRAND_LABEL = "Mastercard";
-
+    
     protected static class Address {
         public String line1;
         public String line2;
@@ -106,16 +106,16 @@ public abstract class PaymentResultBuilder {
 
     protected static class TestPayment {
         public TestPaymentState state;
-        public String charge_id, description, reference, email, created_date;
+        public String charge_id, description, reference, email, created_date, gateway_transaction_id, return_url, 
+                payment_provider, language;
         public long amount;
-        public String gateway_transaction_id, return_url, payment_provider;
-        public String language;
         public boolean delayed_capture;
         public RefundSummary refund_summary;
         public SettlementSummary settlement_summary;
         public CardDetails card_details = new CardDetails();
         public Long corporate_card_surcharge, total_amount;
-        public List<ImmutableMap<?,?>> links;
+        public List<Map<?,?>> links;
+        public Map<String, ?> metadata;
     }
 
     protected static class TestPaymentState {
@@ -134,18 +134,6 @@ public abstract class PaymentResultBuilder {
         protected TestPaymentSuccessState(String status) {
             super(status, true);
             this.success = true;
-        }
-    }
-
-    protected static class TestPaymentFailureState extends TestPaymentState {
-        private boolean success;
-        private String message, code;
-
-        protected TestPaymentFailureState(String status, String message, String code) {
-            super(status, true);
-            this.success = false;
-            this.message = message;
-            this.code = code;
         }
     }
 
@@ -174,10 +162,11 @@ public abstract class PaymentResultBuilder {
     protected String returnUrl;
     protected String paymentProvider;
     protected String createdDate;
-    protected List<ImmutableMap<?, ?>> links = new ArrayList<>();
+    protected List<Map<?, ?>> links = new ArrayList<>();
     protected RefundSummary refundSummary;
     protected SettlementSummary settlementSummary;
     protected String gatewayTransactionId;
+    protected Map<String, Object> metadata;
 
     public abstract String build();
     
@@ -215,6 +204,7 @@ public abstract class PaymentResultBuilder {
         payment.corporate_card_surcharge = corporateCardSurcharge;
         payment.total_amount = totalAmount;
         payment.links = links ;
+        payment.metadata = metadata;
 
         return payment;
     }

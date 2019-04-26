@@ -28,7 +28,7 @@ public class PaymentForSearchResult extends CardPayment {
                                   List<PaymentConnectorResponseLink> links, URI selfLink, URI paymentEventsLink, URI paymentCancelLink, URI paymentRefundsLink, URI paymentCaptureUri,
                                   Long corporateCardSurcharge, Long totalAmount, String providerId) {
         super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider,
-                createdDate, refundSummary, settlementSummary, cardDetails, language, delayedCapture, corporateCardSurcharge, totalAmount, providerId);
+                createdDate, refundSummary, settlementSummary, cardDetails, language, delayedCapture, corporateCardSurcharge, totalAmount, providerId, null);
         this.links.addSelf(selfLink.toString());
         this.links.addEvents(paymentEventsLink.toString());
         this.links.addRefunds(paymentRefundsLink.toString());

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang3.StringUtils;
+import uk.gov.pay.commons.model.charge.ExternalMetadata;
 
 import java.util.Optional;
 import java.util.StringJoiner;
@@ -26,8 +27,93 @@ public class CreatePaymentRequest {
     private final String agreementId;
     private final String language;
     private final Boolean delayedCapture;
+    private final ExternalMetadata metadata;
+    
+    private CreatePaymentRequest(CreatePaymentRequestBuilder createPaymentRequestBuilder) {
+        this.amount = createPaymentRequestBuilder.amount;
+        this.returnUrl = createPaymentRequestBuilder.returnUrl;
+        this.reference = createPaymentRequestBuilder.reference;
+        this.description = createPaymentRequestBuilder.description;
+        this.agreementId = createPaymentRequestBuilder.agreementId;
+        this.language = createPaymentRequestBuilder.language;
+        this.delayedCapture = createPaymentRequestBuilder.delayedCapture;
+        this.metadata = createPaymentRequestBuilder.metadata;
+    }
+
+    @ApiModelProperty(value = "amount in pence", required = true, allowableValues = "range[1, 10000000]", example = "12000")
+    public int getAmount() {
+        return amount;
+    }
+
+    @ApiModelProperty(value = "payment reference", required = true, example = "12345")
+    public String getReference() {
+        return reference;
+    }
+
+    @ApiModelProperty(value = "payment description", required = true, example = "New passport application")
+    public String getDescription() {
+        return description;
+    }
+
+    @ApiModelProperty(value = "service return url", required = false, example = "https://service-name.gov.uk/transactions/12345")
+    @JsonProperty("return_url")
+    public String getReturnUrl() {
+        return returnUrl;
+    }
+
+    @ApiModelProperty(value = "ID of the agreement being used to collect the payment", required = false, example = "33890b55-b9ea-4e2f-90fd-77ae0e9009e2")
+    @JsonProperty(AGREEMENT_ID_FIELD_NAME)
+    public String getAgreementId() {
+        return agreementId;
+    }
+
+    @ApiModelProperty(value = "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages", required = false, example = "en")
+    @JsonProperty(LANGUAGE_FIELD_NAME)
+    public String getLanguage() {
+        return language;
+    }
+
+    @ApiModelProperty(value = "delayed capture flag", required = false, example = "false")
+    @JsonProperty(DELAYED_CAPTURE_FIELD_NAME)
+    public Boolean getDelayedCapture() {
+        return delayedCapture;
+    }
+
+    @JsonProperty("metadata")
+    public ExternalMetadata getMetadata() {
+        return metadata;
+    }
+
+    public boolean hasReturnUrl() {
+        return StringUtils.isNotBlank(returnUrl);
+    }
+
+    public boolean hasAgreementId() {
+        return StringUtils.isNotBlank(agreementId);
+    }
+
+    public boolean hasLanguage() {
+        return StringUtils.isNotBlank(language);
+    }
+
+    /**
+     * This looks JSONesque but is not identical to the received request
+     */
+    @Override
+    public String toString() {
+        // Some services put PII in the description, so don’t include it in the stringification
+        StringJoiner joiner = new StringJoiner(", ", "{", "}");
+        joiner.add("amount: ").add(String.valueOf(amount));
+        joiner.add("reference: ").add(reference);
+        Optional.ofNullable(returnUrl).ifPresent(value -> joiner.add("return_url: ").add(value));
+        Optional.ofNullable(agreementId).ifPresent(value -> joiner.add("agreement_id: ").add(value));
+        Optional.ofNullable(language).ifPresent(value -> joiner.add("language: ").add(value));
+        Optional.ofNullable(delayedCapture).ifPresent(value -> joiner.add("delayed_capture: ").add(value.toString()));
+        return joiner.toString();
+    }
 
     public static class CreatePaymentRequestBuilder {
+        private ExternalMetadata metadata;
         private int amount;
         private String returnUrl;
         private String reference;
@@ -71,6 +157,11 @@ public class CreatePaymentRequest {
             return this;
         }
 
+        public CreatePaymentRequestBuilder metadata(ExternalMetadata metadata) {
+            this.metadata = metadata;
+            return this;
+        }
+
         public CreatePaymentRequest build() {
             return new CreatePaymentRequest(this);
         }
@@ -79,82 +170,4 @@ public class CreatePaymentRequest {
     public static CreatePaymentRequestBuilder builder() {
         return new CreatePaymentRequestBuilder();
     }
-
-    private CreatePaymentRequest(CreatePaymentRequestBuilder createPaymentRequestBuilder) {
-        this.amount = createPaymentRequestBuilder.amount;
-        this.returnUrl = createPaymentRequestBuilder.returnUrl;
-        this.reference = createPaymentRequestBuilder.reference;
-        this.description = createPaymentRequestBuilder.description;
-        this.agreementId = createPaymentRequestBuilder.agreementId;
-        this.language = createPaymentRequestBuilder.language;
-        this.delayedCapture = createPaymentRequestBuilder.delayedCapture;
-    }
-
-    @ApiModelProperty(value = "amount in pence", required = true, allowableValues = "range[1, 10000000]", example = "12000")
-    public int getAmount() {
-        return amount;
-    }
-
-    @ApiModelProperty(value = "payment reference", required = true, example = "12345")
-    public String getReference() {
-        return reference;
-    }
-
-    @ApiModelProperty(value = "payment description", required = true, example = "New passport application")
-    public String getDescription() {
-        return description;
-    }
-
-    @ApiModelProperty(value = "service return url", required = false, example = "https://service-name.gov.uk/transactions/12345")
-    @JsonProperty("return_url")
-    public String getReturnUrl() {
-        return returnUrl;
-    }
-
-    @ApiModelProperty(value = "ID of the agreement being used to collect the payment", required = false, example = "33890b55-b9ea-4e2f-90fd-77ae0e9009e2")
-    @JsonProperty(AGREEMENT_ID_FIELD_NAME)
-    public String getAgreementId() {
-        return agreementId;
-    }
-
-    @ApiModelProperty(value = "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages", required = false, example = "en")
-    @JsonProperty(LANGUAGE_FIELD_NAME)
-    public String getLanguage() {
-        return language;
-    }
-
-    @ApiModelProperty(value = "delayed capture flag", required = false, example = "false")
-    @JsonProperty(DELAYED_CAPTURE_FIELD_NAME)
-    public Boolean getDelayedCapture() {
-        return delayedCapture;
-    }
-
-    public boolean hasReturnUrl() {
-        return StringUtils.isNotBlank(returnUrl);
-    }
-
-    public boolean hasAgreementId() {
-        return StringUtils.isNotBlank(agreementId);
-    }
-
-    public boolean hasLanguage() {
-        return StringUtils.isNotBlank(language);
-    }
-
-    /**
-     * This looks JSONesque but is not identical to the received request
-     */
-    @Override
-    public String toString() {
-        // Some services put PII in the description, so don’t include it in the stringification
-        StringJoiner joiner = new StringJoiner(", ", "{", "}");
-        joiner.add("amount: ").add(String.valueOf(amount));
-        joiner.add("reference: ").add(reference);
-        Optional.ofNullable(returnUrl).ifPresent(value -> joiner.add("return_url: ").add(value));
-        Optional.ofNullable(agreementId).ifPresent(value -> joiner.add("agreement_id: ").add(value));
-        Optional.ofNullable(language).ifPresent(value -> joiner.add("language: ").add(value));
-        Optional.ofNullable(delayedCapture).ifPresent(value -> joiner.add("delayed_capture: ").add(value.toString()));
-        return joiner.toString();
-    }
-
 }

@@ -86,11 +86,33 @@ public abstract class BaseConnectorMockClient {
                 .build();
     }
 
+    String createChargePayload(CreateChargeRequestParams createChargeRequestParams) {
+        JsonStringBuilder payload = new JsonStringBuilder()
+                .add("amount", createChargeRequestParams.getAmount())
+                .add("reference", createChargeRequestParams.getReference())
+                .add("description", createChargeRequestParams.getDescription())
+                .add("return_url", createChargeRequestParams.getReturnUrl());
+
+        if (!createChargeRequestParams.getMetadata().isEmpty())
+            payload.add("metadata", createChargeRequestParams.getMetadata());
+
+        return payload.build();
+    }
+
     public void verifyCreateChargeConnectorRequest(int amount, String gatewayAccountId, String returnUrl, String description, String reference) {
         mockClient.verify(request()
                         .withMethod(POST)
                         .withPath(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId))
                         .withBody(createChargePayload(amount, returnUrl, description, reference)),
+                once()
+        );
+    }
+
+    public void verifyCreateChargeConnectorRequest(String gatewayAccountId, CreateChargeRequestParams createChargeRequestParams) {
+        mockClient.verify(request()
+                        .withMethod(POST)
+                        .withPath(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId))
+                        .withBody(createChargePayload(createChargeRequestParams)),
                 once()
         );
     }

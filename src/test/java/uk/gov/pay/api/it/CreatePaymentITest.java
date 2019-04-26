@@ -9,11 +9,13 @@ import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
+import uk.gov.pay.api.utils.mocks.CreateChargeRequestParams;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
 import javax.ws.rs.core.HttpHeaders;
 import java.io.InputStream;
 import java.time.ZonedDateTime;
+import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
@@ -24,6 +26,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
+import static uk.gov.pay.api.utils.mocks.CreateChargeRequestParams.CreateChargeRequestParamsBuilder.aCreateChargeRequestParams;
 import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public class CreatePaymentITest extends PaymentResourceITestBase {
@@ -43,8 +46,31 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
     private static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(TIMESTAMP);
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
     private static final CardDetails CARD_DETAILS = new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL);
-    private static final String SUCCESS_PAYLOAD = paymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL);
+    private static final String SUCCESS_PAYLOAD = paymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE);
     private static final String GATEWAY_TRANSACTION_ID = "gateway-tx-123456";
+
+    @Test
+    public void createCardPaymentWithMetadata() {
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+
+        CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
+                .withAmount(100)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withReturnUrl(RETURN_URL)
+                .withMetadata(Map.of("reconciled", true, "ledger_code", 123, "fuh", "fuh you"))
+                .build();
+        connectorMock.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
+
+        postPaymentResponse(API_KEY, paymentPayload(createChargeRequestParams))
+                .statusCode(201)
+                .contentType(JSON)
+                .body("metadata.reconciled", is(true))
+                .body("metadata.ledger_code", is(123))
+                .body("metadata.fuh", is("fuh you"));
+
+        connectorMock.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
+    }
 
     @Test
     public void createCardPayment() {
@@ -87,6 +113,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 .body("_links.cancel.method", is("POST"))
                 .body("_links.refunds.href", is(paymentRefundsLocationFor(CHARGE_ID)))
                 .body("_links.refunds.method", is("GET"))
+                .body("metadata", nullValue())
                 .extract().body().asString();
 
         JsonAssert.with(responseBody)
@@ -109,7 +136,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 CREATED, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH,
                 false, REFUND_SUMMARY, null, CARD_DETAILS, GATEWAY_TRANSACTION_ID);
 
-        postPaymentResponse(API_KEY, paymentPayload(minimumAmount, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL))
+        postPaymentResponse(API_KEY, paymentPayload(minimumAmount, RETURN_URL, DESCRIPTION, REFERENCE))
                 .statusCode(201)
                 .contentType(JSON)
                 .body("payment_id", is(CHARGE_ID))
@@ -214,14 +241,26 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 .statusCode(503);
     }
 
-    private static String paymentPayload(long amount, String returnUrl, String description, String reference, String email) {
+    @Deprecated
+    private static String paymentPayload(long amount, String returnUrl, String description, String reference) {
         return new JsonStringBuilder()
                 .add("amount", amount)
                 .add("reference", reference)
-                .add("email", email)
                 .add("description", description)
                 .add("return_url", returnUrl)
                 .build();
+    }
+
+    private static String paymentPayload(CreateChargeRequestParams params) {
+        JsonStringBuilder payload = new JsonStringBuilder()
+                .add("amount", params.getAmount())
+                .add("reference", params.getReference())
+                .add("description", params.getDescription())
+                .add("return_url", params.getReturnUrl());
+        
+        if (!params.getMetadata().isEmpty()) payload.add("metadata", params.getMetadata());
+        
+        return payload.build();
     }
 
 

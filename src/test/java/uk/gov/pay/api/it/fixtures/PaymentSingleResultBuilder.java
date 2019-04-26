@@ -1,12 +1,12 @@
 package uk.gov.pay.api.it.fixtures;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.util.List;
+import java.util.Map;
 
 public class PaymentSingleResultBuilder extends PaymentResultBuilder {
     
@@ -87,7 +87,7 @@ public class PaymentSingleResultBuilder extends PaymentResultBuilder {
         return this;
     }
     
-    public PaymentSingleResultBuilder withLinks(List<ImmutableMap< ?,? >> links) {
+    public PaymentSingleResultBuilder withLinks(List<Map< ?,? >> links) {
         this.links = links;
         return this;
     }
@@ -107,12 +107,13 @@ public class PaymentSingleResultBuilder extends PaymentResultBuilder {
         return this;
     }
 
-    public TestPayment getResult() {
-        return getPayment();
+    public String build() {
+        TestPayment result = getPayment();
+        return new Gson().toJson(result, new TypeReference<TestPayment>() {}.getType()); 
     }
 
-    public String build() {
-        TestPayment result = getResult();
-        return new Gson().toJson(result, new TypeReference<TestPayment>() {}.getType()); 
+    public PaymentSingleResultBuilder withMetadata(Map<String, Object> metadata) {
+        this.metadata = metadata;
+        return this;
     }
 }

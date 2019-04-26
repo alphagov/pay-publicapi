@@ -75,6 +75,7 @@ public class CreatePaymentService {
         requestPayload.getReturnUrl().ifPresent(returnUrl -> request.add("return_url", returnUrl));
         requestPayload.getAgreementId().ifPresent(agreementId -> request.add("agreement_id", agreementId));
         requestPayload.getDelayedCapture().ifPresent(delayedCapture -> request.add("delayed_capture", delayedCapture));
+        requestPayload.getMetadata().ifPresent(metadata -> request.add("metadata", metadata.getMetadata()));
         return json(request.build());
     }
 }
