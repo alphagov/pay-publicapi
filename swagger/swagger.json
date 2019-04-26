@@ -844,10 +844,7 @@
           "enum" : [ "en", "cy" ]
         },
         "metadata" : {
-          "type" : "object",
-          "additionalProperties" : {
-            "type" : "object"
-          }
+          "$ref" : "#/definitions/ExternalMetadata"
         },
         "payment_id" : {
           "type" : "string",
@@ -960,10 +957,7 @@
           "enum" : [ "en", "cy" ]
         },
         "metadata" : {
-          "type" : "object",
-          "additionalProperties" : {
-            "type" : "object"
-          }
+          "$ref" : "#/definitions/ExternalMetadata"
         },
         "payment_id" : {
           "type" : "string",

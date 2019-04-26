@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.http.HttpStatus.SC_UNPROCESSABLE_ENTITY;
 import static uk.gov.pay.api.model.CreatePaymentRefundRequest.REFUND_AMOUNT_AVAILABLE;
 import static uk.gov.pay.api.model.CreatePaymentRequest.AGREEMENT_ID_FIELD_NAME;
@@ -47,7 +48,7 @@ class RequestJsonParser {
         Integer refundAmountAvailable = rootNode.get(REFUND_AMOUNT_AVAILABLE) == null ? null : rootNode.get(REFUND_AMOUNT_AVAILABLE).asInt();
         return new CreatePaymentRefundRequest(amount, refundAmountAvailable);
     }
-    
+
     static CreatePaymentRequest parsePaymentRequest(JsonNode paymentRequest) {
 
         var builder = CreatePaymentRequest.builder()
@@ -61,7 +62,7 @@ class RequestJsonParser {
         if (paymentRequest.has(DELAYED_CAPTURE_FIELD_NAME))
             builder.delayedCapture(validateAndGetDelayedCapture(paymentRequest));
 
-        if (paymentRequest.has(AGREEMENT_ID_FIELD_NAME)) 
+        if (paymentRequest.has(AGREEMENT_ID_FIELD_NAME))
             builder.agreementId(validateAndGetAgreementId(paymentRequest));
         else builder.returnUrl(validateAndGetReturnUrl(paymentRequest));
 
@@ -72,46 +73,48 @@ class RequestJsonParser {
     }
 
     private static String validateAndGetReturnUrl(JsonNode paymentRequest) {
-        return getStringValue(
+        return validateAndGetString(
                 paymentRequest.get(RETURN_URL_FIELD_NAME),
                 aPaymentError(RETURN_URL_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid URL format"),
                 aPaymentError(RETURN_URL_FIELD_NAME, CREATE_PAYMENT_MISSING_FIELD_ERROR));
     }
 
     private static String validateAndGetAgreementId(JsonNode paymentRequest) {
-        return getStringValue(
+        return validateAndGetString(
                 paymentRequest.get(AGREEMENT_ID_FIELD_NAME),
                 aPaymentError(AGREEMENT_ID_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid agreement ID"),
                 aPaymentError(AGREEMENT_ID_FIELD_NAME, CREATE_PAYMENT_MISSING_FIELD_ERROR));
     }
 
     private static String validateAndGetLanguage(JsonNode paymentRequest) {
-        return getStringValue(
+        return validateAndGetString(
                 paymentRequest.get(LANGUAGE_FIELD_NAME),
                 aPaymentError(LANGUAGE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, LanguageValidator.ERROR_MESSAGE),
                 aPaymentError(LANGUAGE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, LanguageValidator.ERROR_MESSAGE));
     }
 
     private static String validateAndGetDescription(JsonNode paymentRequest) {
-        return getStringValue(
+        return validateAndGetString(
                 paymentRequest.get(DESCRIPTION_FIELD_NAME),
-                aPaymentError(DESCRIPTION_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR,"Must be a valid string format"),
+                aPaymentError(DESCRIPTION_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid string format"),
                 aPaymentError(DESCRIPTION_FIELD_NAME, CREATE_PAYMENT_MISSING_FIELD_ERROR));
     }
 
     private static String validateAndGetReference(JsonNode paymentRequest) {
-        return getStringValue(
+        return validateAndGetString(
                 paymentRequest.get(REFERENCE_FIELD_NAME),
-                aPaymentError(REFERENCE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR,"Must be a valid string format"),
+                aPaymentError(REFERENCE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid string format"),
                 aPaymentError(REFERENCE_FIELD_NAME, CREATE_PAYMENT_MISSING_FIELD_ERROR));
     }
-    
-    private static String getStringValue(JsonNode jsonNode, PaymentError validationError, PaymentError missingError) {
-        return getValue(jsonNode, validationError, missingError, JsonNode::isTextual, JsonNode::asText);
+
+    private static String validateAndGetString(JsonNode jsonNode, PaymentError validationError, PaymentError missingError) {
+        String value = validateAndGetValue(jsonNode, validationError, missingError, JsonNode::isTextual, JsonNode::asText);
+        check(isNotBlank(value), missingError);
+        return value;
     }
 
     private static Boolean validateAndGetDelayedCapture(JsonNode paymentRequest) {
-        return getValue(
+        return validateAndGetValue(
                 paymentRequest.get(DELAYED_CAPTURE_FIELD_NAME),
                 aPaymentError(DELAYED_CAPTURE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be true or false"),
                 aPaymentError(DELAYED_CAPTURE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be true or false"),
@@ -120,7 +123,7 @@ class RequestJsonParser {
     }
 
     private static Integer validateAndGetAmount(JsonNode paymentRequest, Code validationError, Code missingError) {
-        return getValue(
+        return validateAndGetValue(
                 paymentRequest.get(AMOUNT_FIELD_NAME),
                 aPaymentError(AMOUNT_FIELD_NAME, validationError, "Must be a valid numeric format"),
                 aPaymentError(AMOUNT_FIELD_NAME, missingError),
@@ -146,12 +149,12 @@ class RequestJsonParser {
         }
         return metadata;
     }
-    
-    private static <T> T getValue(JsonNode jsonNode,
-                                  PaymentError validationError,
-                                  PaymentError missingError,
-                                  Function<JsonNode, Boolean> isExpectedType,
-                                  Function<JsonNode, T> valueFromJsonNode) {
+
+    private static <T> T validateAndGetValue(JsonNode jsonNode,
+                                             PaymentError validationError,
+                                             PaymentError missingError,
+                                             Function<JsonNode, Boolean> isExpectedType,
+                                             Function<JsonNode, T> valueFromJsonNode) {
         if (jsonNode != null && !jsonNode.isNull()) {
             check(isExpectedType.apply(jsonNode), validationError);
             return valueFromJsonNode.apply(jsonNode);
