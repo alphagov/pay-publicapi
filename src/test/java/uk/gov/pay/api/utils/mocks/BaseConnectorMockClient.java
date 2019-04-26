@@ -13,6 +13,7 @@ import static javax.ws.rs.HttpMethod.POST;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.JsonBody.json;
 import static org.mockserver.verify.VerificationTimes.once;
 
 public abstract class BaseConnectorMockClient {
@@ -103,7 +104,7 @@ public abstract class BaseConnectorMockClient {
         mockClient.verify(request()
                         .withMethod(POST)
                         .withPath(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId))
-                        .withBody(createChargePayload(amount, returnUrl, description, reference)),
+                        .withBody(json(createChargePayload(amount, returnUrl, description, reference))),
                 once()
         );
     }
@@ -112,7 +113,7 @@ public abstract class BaseConnectorMockClient {
         mockClient.verify(request()
                         .withMethod(POST)
                         .withPath(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId))
-                        .withBody(createChargePayload(createChargeRequestParams)),
+                        .withBody(json(createChargePayload(createChargeRequestParams))),
                 once()
         );
     }
