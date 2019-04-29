@@ -25,6 +25,7 @@ import static javax.ws.rs.core.Response.Status.ACCEPTED;
 import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
+import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
@@ -152,9 +153,17 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
     public void createRefundWithNoRefundAmountAvailable_shouldGetAcceptedResponse() {
         String payload = new GsonBuilder().create().toJson(
                 ImmutableMap.of("amount", AMOUNT));
-        connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, null, null, null, null, null,
-                null, null, SupportedLanguage.ENGLISH, false, null,
-                new RefundSummary("available", 9000, 1000), null, CARD_DETAILS, "gatewayTransactionId");
+
+        connectorMock.respondWithChargeFound(null, GATEWAY_ACCOUNT_ID,
+                aCreateOrGetChargeResponseFromConnector()
+                        .withAmount(AMOUNT)
+                        .withChargeId(CHARGE_ID)
+                        .withLanguage(SupportedLanguage.ENGLISH)
+                        .withDelayedCapture(false)
+                        .withRefundSummary(new RefundSummary("available", 9000, 1000))
+                        .withCardDetails(CARD_DETAILS)
+                        .withGatewayTransactionId("gatewayTransactionId")
+                        .build());
 
         postRefundRequest(payload);
     }

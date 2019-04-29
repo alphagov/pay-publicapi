@@ -14,15 +14,29 @@ import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.assertThat;
 import static uk.gov.pay.api.it.fixtures.PaginatedPaymentSearchResultFixture.aPaginatedPaymentSearchResult;
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.aSuccessfulSearchPayment;
+import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 
 public class ResourcesFilterRateLimiterITest extends ResourcesFilterITestBase {
 
     @Test
     public void createPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
 
-        connectorMock.respondOk_whenCreateCharge(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID, CREATED,
-                RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH,
-                false, REFUND_SUMMARY, null, CARD_DETAILS, "gatewayTxId");
+        connectorMock.respondOk_whenCreateCharge(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
+                .withAmount(AMOUNT)
+                .withChargeId(CHARGE_ID)
+                .withState(CREATED)
+                .withReturnUrl(RETURN_URL)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withEmail(EMAIL)
+                .withPaymentProvider(PAYMENT_PROVIDER)
+                .withCreatedDate(CREATED_DATE)
+                .withLanguage(SupportedLanguage.ENGLISH)
+                .withDelayedCapture(false)
+                .withRefundSummary(REFUND_SUMMARY)
+                .withCardDetails(CARD_DETAILS)
+                .withGatewayTransactionId("gatewayTxId")
+                .build());
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> postPaymentResponse(API_KEY, PAYLOAD),
@@ -39,9 +53,22 @@ public class ResourcesFilterRateLimiterITest extends ResourcesFilterITestBase {
     @Test
     public void getPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
 
-        connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CREATED,
-                RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH,
-                false, CHARGE_TOKEN_ID, REFUND_SUMMARY, null, CARD_DETAILS, null);
+        connectorMock.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+                aCreateOrGetChargeResponseFromConnector()
+                        .withAmount(AMOUNT)
+                        .withChargeId(CHARGE_ID)
+                        .withState(CREATED)
+                        .withReturnUrl(RETURN_URL)
+                        .withDescription(DESCRIPTION)
+                        .withReference(REFERENCE)
+                        .withEmail(EMAIL)
+                        .withPaymentProvider(PAYMENT_PROVIDER)
+                        .withCreatedDate(CREATED_DATE)
+                        .withLanguage(SupportedLanguage.ENGLISH)
+                        .withDelayedCapture(false)
+                        .withRefundSummary(REFUND_SUMMARY)
+                        .withCardDetails(CARD_DETAILS)
+                        .build());
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> getPaymentResponse(API_KEY, CHARGE_ID),

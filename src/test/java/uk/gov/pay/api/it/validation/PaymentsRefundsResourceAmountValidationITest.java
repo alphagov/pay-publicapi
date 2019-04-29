@@ -18,6 +18,7 @@ import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
+import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 
 public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourceITestBase {
 
@@ -272,9 +273,17 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
         int amount = 1000;
         String externalChargeId = "charge_12345";
 
-        connectorMock.respondWithChargeFound(amount, GATEWAY_ACCOUNT_ID, externalChargeId, null, null, null, null,
-                null, null, null, SupportedLanguage.ENGLISH, false, null,
-                new RefundSummary("available", REFUND_AMOUNT_AVAILABLE, 1000), null, CARD_DETAILS, "gatewayTransactionId");
+        connectorMock.respondWithChargeFound(null, GATEWAY_ACCOUNT_ID,
+                aCreateOrGetChargeResponseFromConnector()
+                        .withAmount(amount)
+                        .withChargeId(externalChargeId)
+                        .withLanguage(SupportedLanguage.ENGLISH)
+                        .withDelayedCapture(false)
+                        .withRefundSummary(new RefundSummary("available", REFUND_AMOUNT_AVAILABLE, 1000))
+                        .withCardDetails(CARD_DETAILS)
+                        .withGatewayTransactionId("gatewayTransactionId")
+                        .build());
+        
         connectorMock.respondBadRequest_whenCreateARefund("full", amount, REFUND_AMOUNT_AVAILABLE, GATEWAY_ACCOUNT_ID, externalChargeId);
 
         String refundRequest = "{\"amount\":" + amount + "}";
@@ -296,9 +305,17 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
         int amount = 1000;
         String externalChargeId = "charge_12345";
 
-        connectorMock.respondWithChargeFound(amount, GATEWAY_ACCOUNT_ID, externalChargeId, null, null, null, null,
-                null, null, null, SupportedLanguage.ENGLISH, false, null,
-                new RefundSummary("available", REFUND_AMOUNT_AVAILABLE, 1000), null, CARD_DETAILS, "gatewayTransactionId");
+        connectorMock.respondWithChargeFound(null, GATEWAY_ACCOUNT_ID,
+                aCreateOrGetChargeResponseFromConnector()
+                        .withAmount(amount)
+                        .withChargeId(externalChargeId)
+                        .withLanguage(SupportedLanguage.ENGLISH)
+                        .withDelayedCapture(false)
+                        .withRefundSummary(new RefundSummary("available", REFUND_AMOUNT_AVAILABLE, 1000))
+                        .withCardDetails(CARD_DETAILS)
+                        .withGatewayTransactionId("gatewayTransactionId")
+                        .build());
+        
         connectorMock.respondBadRequest_whenCreateARefund("pending", amount, REFUND_AMOUNT_AVAILABLE, GATEWAY_ACCOUNT_ID, externalChargeId);
 
         String refundRequest = "{\"amount\":" + amount + "}";
