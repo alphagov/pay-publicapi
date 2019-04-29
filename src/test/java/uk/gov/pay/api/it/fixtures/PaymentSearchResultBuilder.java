@@ -46,6 +46,11 @@ public class PaymentSearchResultBuilder extends PaymentResultBuilder {
         return this;
     }
 
+    public PaymentSearchResultBuilder withMetadata(Map<String, Object> metadata) {
+        this.metadata = metadata;
+        return this;
+    }
+
     public PaymentSearchResultBuilder withGatewayTransactionId(String gatewayTransactionId) {
         this.gatewayTransactionId = gatewayTransactionId;
         return this;
