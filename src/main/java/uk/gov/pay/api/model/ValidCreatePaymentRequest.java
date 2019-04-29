@@ -97,6 +97,7 @@ public class ValidCreatePaymentRequest {
         Optional.ofNullable(agreementId).ifPresent(value -> joiner.add("agreement_id: ").add(value));
         Optional.ofNullable(language).ifPresent(value -> joiner.add("language: ").add(value.toString()));
         Optional.ofNullable(delayedCapture).ifPresent(value -> joiner.add("delayed_capture: ").add(value.toString()));
+        Optional.ofNullable(metadata).ifPresent(value -> joiner.add("metadata: ").add(value.toString()));
         return joiner.toString();
     }
 
