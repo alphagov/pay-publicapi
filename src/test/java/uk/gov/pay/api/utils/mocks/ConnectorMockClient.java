@@ -2,7 +2,7 @@ package uk.gov.pay.api.utils.mocks;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
-import org.mockserver.client.server.ForwardChainExpectation;
+import org.mockserver.client.ForwardChainExpectation;
 import org.mockserver.matchers.MatchType;
 import org.mockserver.model.HttpResponse;
 import org.mockserver.model.Parameter;
