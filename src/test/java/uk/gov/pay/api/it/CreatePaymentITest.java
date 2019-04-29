@@ -26,6 +26,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
+import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 import static uk.gov.pay.api.utils.mocks.CreateChargeRequestParams.CreateChargeRequestParamsBuilder.aCreateChargeRequestParams;
 import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
@@ -75,10 +76,22 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
     @Test
     public void createCardPayment() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
-
-        connectorMock.respondOk_whenCreateCharge(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID,
-                CREATED, RETURN_URL, DESCRIPTION, REFERENCE, null, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH, true, REFUND_SUMMARY,
-                null, CARD_DETAILS, GATEWAY_TRANSACTION_ID);
+        
+        connectorMock.respondOk_whenCreateCharge(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
+                .withAmount(AMOUNT)
+                .withChargeId(CHARGE_ID)
+                .withState(CREATED)
+                .withReturnUrl(RETURN_URL)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withPaymentProvider(PAYMENT_PROVIDER)
+                .withGatewayTransactionId(GATEWAY_TRANSACTION_ID)
+                .withCreatedDate(CREATED_DATE)
+                .withLanguage(SupportedLanguage.ENGLISH)
+                .withDelayedCapture(true)
+                .withRefundSummary(REFUND_SUMMARY)
+                .withCardDetails(CARD_DETAILS)
+                .build());
 
         String responseBody = postPaymentResponse(API_KEY, SUCCESS_PAYLOAD)
                 .statusCode(201)
@@ -132,9 +145,23 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
         int minimumAmount = 1;
 
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondOk_whenCreateCharge(minimumAmount, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID,
-                CREATED, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH,
-                false, REFUND_SUMMARY, null, CARD_DETAILS, GATEWAY_TRANSACTION_ID);
+
+        connectorMock.respondOk_whenCreateCharge(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
+                .withAmount(minimumAmount)
+                .withChargeId(CHARGE_ID)
+                .withState(CREATED)
+                .withReturnUrl(RETURN_URL)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withEmail(EMAIL)
+                .withPaymentProvider(PAYMENT_PROVIDER)
+                .withGatewayTransactionId(GATEWAY_TRANSACTION_ID)
+                .withCreatedDate(CREATED_DATE)
+                .withLanguage(SupportedLanguage.ENGLISH)
+                .withDelayedCapture(false)
+                .withRefundSummary(REFUND_SUMMARY)
+                .withCardDetails(CARD_DETAILS)
+                .build());
 
         postPaymentResponse(API_KEY, paymentPayload(minimumAmount, RETURN_URL, DESCRIPTION, REFERENCE))
                 .statusCode(201)
@@ -160,9 +187,23 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
         String return_url = "https://govdemopay.gov.uk?data=" + randomAlphanumeric(1969);
 
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondOk_whenCreateCharge(amount, GATEWAY_ACCOUNT_ID, CHARGE_ID, CHARGE_TOKEN_ID,
-                CREATED, return_url, description, reference, email, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH,
-                false, REFUND_SUMMARY, null, CARD_DETAILS, GATEWAY_TRANSACTION_ID);
+
+        connectorMock.respondOk_whenCreateCharge(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
+                .withAmount(amount)
+                .withChargeId(CHARGE_ID)
+                .withState(CREATED)
+                .withReturnUrl(return_url)
+                .withDescription(description)
+                .withReference(reference)
+                .withEmail(email)
+                .withPaymentProvider(PAYMENT_PROVIDER)
+                .withGatewayTransactionId(GATEWAY_TRANSACTION_ID)
+                .withCreatedDate(CREATED_DATE)
+                .withLanguage(SupportedLanguage.ENGLISH)
+                .withDelayedCapture(false)
+                .withRefundSummary(REFUND_SUMMARY)
+                .withCardDetails(CARD_DETAILS)
+                .build());
 
         String body = new JsonStringBuilder()
                 .add("amount", amount)
@@ -257,9 +298,9 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 .add("reference", params.getReference())
                 .add("description", params.getDescription())
                 .add("return_url", params.getReturnUrl());
-        
+
         if (!params.getMetadata().isEmpty()) payload.add("metadata", params.getMetadata());
-        
+
         return payload.build();
     }
 

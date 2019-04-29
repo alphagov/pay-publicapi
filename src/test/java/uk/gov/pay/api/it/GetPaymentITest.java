@@ -31,6 +31,7 @@ import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 import static uk.gov.pay.api.utils.Urls.directDebitFrontendSecureUrl;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
+import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public class GetPaymentITest extends PaymentResourceITestBase {
@@ -59,13 +60,34 @@ public class GetPaymentITest extends PaymentResourceITestBase {
     private static final CardDetails CARD_DETAILS = new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL);
 
     @Test
+    public void getPaymentWithMetadata() {
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+
+
+    }
+
+    @Test
     public void getPayment_ReturnsPayment() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
-        connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CAPTURED, RETURN_URL,
-                DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH, 
-                true, CHARGE_TOKEN_ID, REFUND_SUMMARY, SETTLEMENT_SUMMARY,
-                CARD_DETAILS, GATEWAY_TRANSACTION_ID);
+        connectorMock.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+                aCreateOrGetChargeResponseFromConnector()
+                        .withAmount(AMOUNT)
+                        .withChargeId(CHARGE_ID)
+                        .withState(CAPTURED)
+                        .withReturnUrl(RETURN_URL)
+                        .withDescription(DESCRIPTION)
+                        .withReference(REFERENCE)
+                        .withEmail(EMAIL)
+                        .withPaymentProvider(PAYMENT_PROVIDER)
+                        .withCreatedDate(CREATED_DATE)
+                        .withLanguage(SupportedLanguage.ENGLISH)
+                        .withDelayedCapture(true)
+                        .withRefundSummary(REFUND_SUMMARY)
+                        .withSettlementSummary(SETTLEMENT_SUMMARY)
+                        .withCardDetails(CARD_DETAILS)
+                        .withGatewayTransactionId(GATEWAY_TRANSACTION_ID)
+                        .build());
 
         getPaymentResponse(API_KEY, CHARGE_ID)
                 .statusCode(200)
@@ -154,8 +176,25 @@ public class GetPaymentITest extends PaymentResourceITestBase {
         CardDetails cardDetails = new CardDetails(null, null, "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL);
 
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CAPTURED, RETURN_URL,
-                DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH, true, CHARGE_TOKEN_ID, REFUND_SUMMARY, SETTLEMENT_SUMMARY, cardDetails, GATEWAY_TRANSACTION_ID);
+
+        connectorMock.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+                aCreateOrGetChargeResponseFromConnector()
+                        .withAmount(AMOUNT)
+                        .withChargeId(CHARGE_ID)
+                        .withState(CAPTURED)
+                        .withReturnUrl(RETURN_URL)
+                        .withDescription(DESCRIPTION)
+                        .withReference(REFERENCE)
+                        .withEmail(EMAIL)
+                        .withPaymentProvider(PAYMENT_PROVIDER)
+                        .withCreatedDate(CREATED_DATE)
+                        .withLanguage(SupportedLanguage.ENGLISH)
+                        .withDelayedCapture(true)
+                        .withRefundSummary(REFUND_SUMMARY)
+                        .withSettlementSummary(SETTLEMENT_SUMMARY)
+                        .withCardDetails(cardDetails)
+                        .withGatewayTransactionId(GATEWAY_TRANSACTION_ID)
+                        .build());
 
         getPaymentResponse(API_KEY, CHARGE_ID)
                 .statusCode(200)
@@ -164,14 +203,28 @@ public class GetPaymentITest extends PaymentResourceITestBase {
                 .body("card_details.first_digits_card_number", is(nullValue()))
                 .body("card_details.last_digits_card_number", is(nullValue()));
     }
-    
+
     @Test
     public void getPayment_ShouldNotIncludeCancelLinkIfPaymentCannotBeCancelled() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID,
-                new PaymentState("success", true, null, null),
-                RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH, false, CHARGE_TOKEN_ID, REFUND_SUMMARY,
-                null, CARD_DETAILS, GATEWAY_TRANSACTION_ID);
+
+        connectorMock.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+                aCreateOrGetChargeResponseFromConnector()
+                        .withAmount(AMOUNT)
+                        .withChargeId(CHARGE_ID)
+                        .withState(new PaymentState("success", true, null, null))
+                        .withReturnUrl(RETURN_URL)
+                        .withDescription(DESCRIPTION)
+                        .withReference(REFERENCE)
+                        .withEmail(EMAIL)
+                        .withPaymentProvider(PAYMENT_PROVIDER)
+                        .withCreatedDate(CREATED_DATE)
+                        .withLanguage(SupportedLanguage.ENGLISH)
+                        .withDelayedCapture(true)
+                        .withRefundSummary(REFUND_SUMMARY)
+                        .withCardDetails(CARD_DETAILS)
+                        .withGatewayTransactionId(GATEWAY_TRANSACTION_ID)
+                        .build());
 
         getPaymentResponse(API_KEY, CHARGE_ID)
                 .statusCode(200)
@@ -182,9 +235,25 @@ public class GetPaymentITest extends PaymentResourceITestBase {
     @Test
     public void getPayment_ShouldNotIncludeSettlementFieldsIfNull() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID,
-                CREATED, RETURN_URL, DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH, false, CHARGE_TOKEN_ID, REFUND_SUMMARY,
-                new SettlementSummary(null, null), CARD_DETAILS, GATEWAY_TRANSACTION_ID);
+
+        connectorMock.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+                aCreateOrGetChargeResponseFromConnector()
+                        .withAmount(AMOUNT)
+                        .withChargeId(CHARGE_ID)
+                        .withState(CREATED)
+                        .withReturnUrl(RETURN_URL)
+                        .withDescription(DESCRIPTION)
+                        .withReference(REFERENCE)
+                        .withEmail(EMAIL)
+                        .withPaymentProvider(PAYMENT_PROVIDER)
+                        .withCreatedDate(CREATED_DATE)
+                        .withLanguage(SupportedLanguage.ENGLISH)
+                        .withDelayedCapture(true)
+                        .withRefundSummary(REFUND_SUMMARY)
+                        .withSettlementSummary(new SettlementSummary(null, null))
+                        .withCardDetails(CARD_DETAILS)
+                        .withGatewayTransactionId(GATEWAY_TRANSACTION_ID)
+                        .build());
 
         getPaymentResponse(API_KEY, CHARGE_ID)
                 .statusCode(200)
@@ -203,9 +272,25 @@ public class GetPaymentITest extends PaymentResourceITestBase {
                 null,
                 CARD_BRAND_LABEL);
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CAPTURED, RETURN_URL,
-                DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH,
-                true, CHARGE_TOKEN_ID, REFUND_SUMMARY, SETTLEMENT_SUMMARY, cardDetails, GATEWAY_TRANSACTION_ID);
+
+        connectorMock.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+                aCreateOrGetChargeResponseFromConnector()
+                        .withAmount(AMOUNT)
+                        .withChargeId(CHARGE_ID)
+                        .withState(CAPTURED)
+                        .withReturnUrl(RETURN_URL)
+                        .withDescription(DESCRIPTION)
+                        .withReference(REFERENCE)
+                        .withEmail(EMAIL)
+                        .withPaymentProvider(PAYMENT_PROVIDER)
+                        .withCreatedDate(CREATED_DATE)
+                        .withLanguage(SupportedLanguage.ENGLISH)
+                        .withDelayedCapture(true)
+                        .withRefundSummary(REFUND_SUMMARY)
+                        .withSettlementSummary(SETTLEMENT_SUMMARY)
+                        .withCardDetails(cardDetails)
+                        .withGatewayTransactionId(GATEWAY_TRANSACTION_ID)
+                        .build());
 
         getPaymentResponse(API_KEY, CHARGE_ID)
                 .statusCode(200)
@@ -323,9 +408,27 @@ public class GetPaymentITest extends PaymentResourceITestBase {
     @Test
     public void getPayment_ReturnsPaymentWithCorporateCardSurcharge() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CAPTURED, RETURN_URL,
-                DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH,
-                true, CHARGE_TOKEN_ID, REFUND_SUMMARY, SETTLEMENT_SUMMARY, CARD_DETAILS, 250L, AMOUNT + 250L, GATEWAY_TRANSACTION_ID);
+
+        connectorMock.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+                aCreateOrGetChargeResponseFromConnector()
+                        .withAmount(AMOUNT)
+                        .withChargeId(CHARGE_ID)
+                        .withState(CAPTURED)
+                        .withReturnUrl(RETURN_URL)
+                        .withDescription(DESCRIPTION)
+                        .withReference(REFERENCE)
+                        .withEmail(EMAIL)
+                        .withPaymentProvider(PAYMENT_PROVIDER)
+                        .withCreatedDate(CREATED_DATE)
+                        .withLanguage(SupportedLanguage.ENGLISH)
+                        .withDelayedCapture(true)
+                        .withRefundSummary(REFUND_SUMMARY)
+                        .withSettlementSummary(SETTLEMENT_SUMMARY)
+                        .withCardDetails(CARD_DETAILS)
+                        .withGatewayTransactionId(GATEWAY_TRANSACTION_ID)
+                        .withCorporateCardSurcharge(250L)
+                        .withTotalAmount(AMOUNT + 250L)
+                        .build());
 
         getPaymentResponse(API_KEY, CHARGE_ID)
                 .statusCode(200)
@@ -337,10 +440,27 @@ public class GetPaymentITest extends PaymentResourceITestBase {
     @Test
     public void getPayment_ReturnsPaymentWithCaptureUrl() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, AWAITING_CAPTURE_REQUEST, RETURN_URL,
-                DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, SupportedLanguage.ENGLISH,
-                true, CHARGE_TOKEN_ID, REFUND_SUMMARY, SETTLEMENT_SUMMARY, CARD_DETAILS,
-                0L, 0L, GATEWAY_TRANSACTION_ID);
+
+        connectorMock.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+                aCreateOrGetChargeResponseFromConnector()
+                        .withAmount(AMOUNT)
+                        .withChargeId(CHARGE_ID)
+                        .withState(AWAITING_CAPTURE_REQUEST)
+                        .withReturnUrl(RETURN_URL)
+                        .withDescription(DESCRIPTION)
+                        .withReference(REFERENCE)
+                        .withEmail(EMAIL)
+                        .withPaymentProvider(PAYMENT_PROVIDER)
+                        .withCreatedDate(CREATED_DATE)
+                        .withLanguage(SupportedLanguage.ENGLISH)
+                        .withDelayedCapture(true)
+                        .withRefundSummary(REFUND_SUMMARY)
+                        .withSettlementSummary(SETTLEMENT_SUMMARY)
+                        .withCardDetails(CARD_DETAILS)
+                        .withGatewayTransactionId(GATEWAY_TRANSACTION_ID)
+                        .withCorporateCardSurcharge(0L)
+                        .withTotalAmount(0L)
+                        .build());
 
         getPaymentResponse(API_KEY, CHARGE_ID)
                 .statusCode(200)
