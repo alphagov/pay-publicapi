@@ -12,6 +12,7 @@ import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.SettlementSummary;
 import uk.gov.pay.api.model.links.PaymentLinksForSearch;
 import uk.gov.pay.commons.model.SupportedLanguage;
+import uk.gov.pay.commons.model.charge.ExternalMetadata;
 
 import java.net.URI;
 import java.util.List;
@@ -26,9 +27,9 @@ public class PaymentForSearchResult extends CardPayment {
                                   String reference, String email, String paymentProvider, String createdDate, SupportedLanguage language,
                                   boolean delayedCapture, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
                                   List<PaymentConnectorResponseLink> links, URI selfLink, URI paymentEventsLink, URI paymentCancelLink, URI paymentRefundsLink, URI paymentCaptureUri,
-                                  Long corporateCardSurcharge, Long totalAmount, String providerId) {
+                                  Long corporateCardSurcharge, Long totalAmount, String providerId, ExternalMetadata externalMetadata) {
         super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider,
-                createdDate, refundSummary, settlementSummary, cardDetails, language, delayedCapture, corporateCardSurcharge, totalAmount, providerId, null);
+                createdDate, refundSummary, settlementSummary, cardDetails, language, delayedCapture, corporateCardSurcharge, totalAmount, providerId, externalMetadata);
         this.links.addSelf(selfLink.toString());
         this.links.addEvents(paymentEventsLink.toString());
         this.links.addRefunds(paymentRefundsLink.toString());
@@ -72,7 +73,8 @@ public class PaymentForSearchResult extends CardPayment {
                 paymentCaptureUri,
                 paymentResult.getCorporateCardSurcharge(),
                 paymentResult.getTotalAmount(),
-                paymentResult.getGatewayTransactionId());
+                paymentResult.getGatewayTransactionId(),
+                paymentResult.getMetadata().orElse(null));
     }
 
     @ApiModelProperty(name = LINKS_JSON_ATTRIBUTE, dataType = "uk.gov.pay.api.model.links.PaymentLinksForSearch")

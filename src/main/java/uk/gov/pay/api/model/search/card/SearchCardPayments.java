@@ -76,28 +76,26 @@ public class SearchCardPayments extends SearchPaymentsBase {
     }
 
     private Response processResponse(Response connectorResponse) {
+        PaymentSearchResponse response;
         try {
-            JsonNode responseJson = connectorResponse.readEntity(JsonNode.class);
-            TypeReference<PaymentSearchResponse> typeRef = new TypeReference<PaymentSearchResponse>() {
-            };
-            PaymentSearchResponse searchResponse = objectMapper.readValue(responseJson.traverse(), typeRef);
-            List<PaymentForSearchResult> chargeFromResponses = searchResponse.getPayments()
-                    .stream()
-                    .map(charge -> PaymentForSearchResult.valueOf(
-                            charge,
-                            paymentUriGenerator.getPaymentURI(baseUrl, charge.getChargeId()),
-                            paymentUriGenerator.getPaymentEventsURI(baseUrl, charge.getChargeId()),
-                            paymentUriGenerator.getPaymentCancelURI(baseUrl, charge.getChargeId()),
-                            paymentUriGenerator.getPaymentRefundsURI(baseUrl, charge.getChargeId()),
-                            paymentUriGenerator.getPaymentCaptureURI(baseUrl, charge.getChargeId())))
-                    .collect(Collectors.toList());
-            HalRepresentation.HalRepresentationBuilder halRepresentation = HalRepresentation
-                    .builder()
-                    .addProperty("results", chargeFromResponses);
-
-            return Response.ok().entity(decoratePagination(halRepresentation, searchResponse, PAYMENTS_PATH).build().toString()).build();
-        } catch (IOException | ProcessingException ex) {
+            response = connectorResponse.readEntity(PaymentSearchResponse.class);
+        } catch (ProcessingException ex) {
             throw new SearchPaymentsException(ex);
         }
+        List<PaymentForSearchResult> chargeFromResponses = response.getPayments()
+                .stream()
+                .map(charge -> PaymentForSearchResult.valueOf(
+                        charge,
+                        paymentUriGenerator.getPaymentURI(baseUrl, charge.getChargeId()),
+                        paymentUriGenerator.getPaymentEventsURI(baseUrl, charge.getChargeId()),
+                        paymentUriGenerator.getPaymentCancelURI(baseUrl, charge.getChargeId()),
+                        paymentUriGenerator.getPaymentRefundsURI(baseUrl, charge.getChargeId()),
+                        paymentUriGenerator.getPaymentCaptureURI(baseUrl, charge.getChargeId())))
+                .collect(Collectors.toList());
+        HalRepresentation.HalRepresentationBuilder halRepresentation = HalRepresentation
+                .builder()
+                .addProperty("results", chargeFromResponses);
+
+        return Response.ok().entity(decoratePagination(halRepresentation, response, PAYMENTS_PATH).build().toString()).build();
     }
 }

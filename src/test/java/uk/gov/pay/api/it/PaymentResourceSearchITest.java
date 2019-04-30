@@ -65,6 +65,36 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
     }
 
     @Test
+    public void searchPaymentsWithMetadata() {
+        String payments = aPaginatedPaymentSearchResult()
+                .withCount(2)
+                .withPage(1)
+                .withTotal(2)
+                .withPayments(aSuccessfulSearchPayment()
+                        .withInProgressState(TEST_STATE)
+                        .withReference(TEST_REFERENCE)
+                        .withCardDetails(CARD_DETAILS)
+                        .withNumberOfResults(2)
+                        .withEmail(TEST_EMAIL)
+                        .withMetadata(Map.of("reconciled", true, "ledger_code", 123, "fuh", "fuh you", "surcharge", 1.23))
+                        .getResults())
+                .build();
+
+        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, null, null, null, null, null, null, null, null, payments);
+        
+        searchPayments(Map.of()).statusCode(200)
+                .contentType(JSON).log().body()
+                .body("results[0].metadata.reconciled", is(true))
+                .body("results[0].metadata.ledger_code", is(123))
+                .body("results[0].metadata.fuh", is("fuh you"))
+                .body("results[0].metadata.surcharge", is(1.23f))
+                .body("results[1].metadata.reconciled", is(true))
+                .body("results[1].metadata.ledger_code", is(123))
+                .body("results[1].metadata.fuh", is("fuh you"))
+                .body("results[1].metadata.surcharge", is(1.23f));
+    }
+    
+    @Test
     public void searchPayments_shouldOnlyReturnAllowedProperties() {
         String payments = aPaginatedPaymentSearchResult()
                 .withCount(10)
@@ -83,7 +113,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
         connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null, null, null, null, null, null, payments);
 
-        String responseBody = searchPayments(API_KEY, ImmutableMap.of("reference", TEST_REFERENCE))
+        String responseBody = searchPayments(ImmutableMap.of("reference", TEST_REFERENCE))
                 .statusCode(200)
                 .contentType(JSON)
                 .body("results[0].created_date", is(DEFAULT_CREATED_DATE))
@@ -121,6 +151,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .body("results[0].card_details.billing_address.postcode", is(CARD_DETAILS.getBillingAddress().get().getPostcode()))
                 .body("results[0].card_details.billing_address.country", is(CARD_DETAILS.getBillingAddress().get().getCountry()))
                 .body("results[0].card_details.card_brand", is(CARD_DETAILS.getCardBrand()))
+                .body("results[0].metadata", is(nullValue()))
                 .extract().asString();
 
         JsonAssert.with(responseBody)
@@ -135,7 +166,6 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
     @Test
     public void searchPayments_ShouldNotIncludeCancelLinkIfThePaymentCannotBeCancelled() {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         String SUCCEEDED_STATE = "success";
 
         String payments = aPaginatedPaymentSearchResult()
@@ -153,7 +183,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 payments
         );
 
-        searchPayments(API_KEY, ImmutableMap.of("reference", TEST_REFERENCE))
+        searchPayments(ImmutableMap.of("reference", TEST_REFERENCE))
                 .statusCode(200)
                 .contentType(JSON)
                 .body("results[0]._links.cancel", is(nullValue()));
@@ -175,7 +205,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 payments
         );
 
-        ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of("reference", TEST_REFERENCE))
+        ValidatableResponse response = searchPayments(ImmutableMap.of("reference", TEST_REFERENCE))
                 .statusCode(200)
                 .contentType(JSON)
                 .body("results.size()", equalTo(3));
@@ -200,7 +230,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 payments
         );
 
-        ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of("state", TEST_STATE))
+        ValidatableResponse response = searchPayments(ImmutableMap.of("state", TEST_STATE))
                 .statusCode(200)
                 .contentType(JSON)
                 .body("results.size()", equalTo(3));
@@ -224,7 +254,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 payments
         );
 
-        ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of("state", TEST_STATE.toLowerCase()))
+        ValidatableResponse response = searchPayments(ImmutableMap.of("state", TEST_STATE.toLowerCase()))
                 .statusCode(200)
                 .contentType(JSON)
                 .body("results.size()", equalTo(3));
@@ -246,7 +276,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
         connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, TEST_EMAIL, null, null, null, null, null, null, null, payments);
 
-        ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of(
+        ValidatableResponse response = searchPayments(ImmutableMap.of(
                 "email", TEST_EMAIL))
                 .statusCode(200)
                 .contentType(JSON)
@@ -269,7 +299,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
         connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, null, null, null, null, null, TEST_LAST_DIGITS_CARD_NUMBER, null, null, payments);
 
-        ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of(
+        ValidatableResponse response = searchPayments(ImmutableMap.of(
                 "last_digits_card_number", TEST_LAST_DIGITS_CARD_NUMBER))
                 .statusCode(200)
                 .contentType(JSON)
@@ -292,7 +322,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
         connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, null, null, null, null, TEST_FIRST_DIGITS_CARD_NUMBER, null, null, null, payments);
 
-        ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of(
+        ValidatableResponse response = searchPayments(ImmutableMap.of(
                 "first_digits_card_number", TEST_FIRST_DIGITS_CARD_NUMBER))
                 .statusCode(200)
                 .contentType(JSON)
@@ -315,7 +345,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
         connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, null, null, null, TEST_CARDHOLDER_NAME, null, null, null, null, payments);
 
-        ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of(
+        ValidatableResponse response = searchPayments(ImmutableMap.of(
                 "cardholder_name", TEST_CARDHOLDER_NAME))
                 .statusCode(200)
                 .contentType(JSON)
@@ -338,7 +368,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
         connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, "alice", null, null, null, null, null, null, null, payments);
 
-        ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of(
+        ValidatableResponse response = searchPayments(ImmutableMap.of(
                 "email", "alice"))
                 .statusCode(200)
                 .contentType(JSON)
@@ -362,7 +392,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 payments
         );
 
-        ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of("from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
+        ValidatableResponse response = searchPayments(ImmutableMap.of("from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
                 .statusCode(200)
                 .contentType(JSON)
                 .body("results.size()", equalTo(3));
@@ -390,7 +420,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 payments
         );
 
-        ValidatableResponse response = searchPayments(API_KEY, ImmutableMap.of(
+        ValidatableResponse response = searchPayments(ImmutableMap.of(
                 "reference", TEST_REFERENCE,
                 "email", TEST_EMAIL,
                 "state", TEST_STATE,
@@ -442,7 +472,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 "page", "2",
                 "display_size", "10"
         );
-        ValidatableResponse response = searchPayments(API_KEY, queryParams)
+        ValidatableResponse response = searchPayments(queryParams)
                 .statusCode(200)
                 .contentType(JSON)
                 .body("results.size()", equalTo(10))
@@ -469,7 +499,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
     @Test
     public void searchPayments_errorIfConnectorRespondsWith404() throws Exception {
-        InputStream body = searchPayments(API_KEY,
+        InputStream body = searchPayments(
                 ImmutableMap.of("reference", TEST_REFERENCE, "state", TEST_STATE, "from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
                 .statusCode(404)
                 .contentType(JSON).extract()
@@ -489,7 +519,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                         .withBody("wtf"));
 
-        InputStream body = searchPayments(API_KEY,
+        InputStream body = searchPayments(
                 ImmutableMap.of(
                         "reference", TEST_REFERENCE,
                         "email", TEST_EMAIL,
@@ -543,13 +573,13 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
         connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, null, null, null, TEST_CARD_BRAND, null, null, null, null, null, payments);
 
-        return searchPayments(API_KEY, ImmutableMap.of(
+        return searchPayments(ImmutableMap.of(
                 "card_brand", cardBrand));
     }
 
     @Test
     public void searchPayments_filterByInvalidCardBrand() throws Exception {
-        InputStream body = searchPayments(API_KEY,
+        InputStream body = searchPayments(
                 ImmutableMap.of("card_brand", "my_credit_card"))
                 .statusCode(404)
                 .contentType(JSON).extract()
@@ -563,7 +593,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
     @Test
     public void searchPayments_withMandateId_whenCardPayment_shouldReturnABadRequestResponse() throws Exception {
-        InputStream body = searchPayments(API_KEY,
+        InputStream body = searchPayments(
                 ImmutableMap.of("agreement_id", "my_agreement"))
                 .statusCode(400)
                 .contentType(JSON).extract()
@@ -595,7 +625,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
         connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, TEST_REFERENCE, null, null, null, null, null, null, null, null, payments);
 
-        searchPayments(API_KEY, ImmutableMap.of("reference", TEST_REFERENCE))
+        searchPayments(ImmutableMap.of("reference", TEST_REFERENCE))
                 .statusCode(200)
                 .contentType(JSON)
                 .body("results[0]._links", hasKey("capture"))
@@ -620,7 +650,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
         connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, payments);
         ImmutableMap<String, String> queryParams = ImmutableMap.of();
-        searchPayments(API_KEY, queryParams)
+        searchPayments(queryParams)
                 .statusCode(200)
                 .contentType(JSON)
                 .body("results[0].card_details", hasKey("billing_address"))
@@ -678,11 +708,11 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
         return DateTimeUtils.toUTCZonedDateTime(dateString).get();
     }
 
-    private ValidatableResponse searchPayments(String bearerToken, ImmutableMap<String, String> queryParams) {
+    private ValidatableResponse searchPayments(Map<String, String> queryParams) {
         return given().port(app.getLocalPort())
                 .accept(JSON)
                 .contentType(JSON)
-                .header(AUTHORIZATION, "Bearer " + bearerToken)
+                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
                 .queryParameters(queryParams)
                 .get(SEARCH_PATH)
                 .then();
