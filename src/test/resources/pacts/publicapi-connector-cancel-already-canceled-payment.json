@@ -22,10 +22,7 @@
         "path": "/v1/api/accounts/123456/charges/charge8133029783750964630/cancel"
       },
       "response": {
-        "status": 400,
-        "body": {
-          "message": "Charge not in correct state to be processed, charge8133029783750964630"
-        }
+        "status": 400
       }
     }
   ],
