@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -56,6 +57,17 @@ public class GetPaymentServiceTest {
         getPaymentService = new GetPaymentService(client, publicApiUriGenerator, connectorUriGenerator);
     }
 
+    @Test
+    @PactVerification({"connector"})
+    @Pacts(pacts = {"publicapi-connector-get-payment-with-metadata"})
+    public void testGetPaymentWithMetadata() {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, "ch_999abc456def");
+        CardPayment payment = (CardPayment) paymentResponse.getPayment();
+        assertThat(payment.getMetadata(), is(notNullValue()));
+        assertThat(payment.getMetadata().getMetadata().isEmpty(), is(false));
+    }
+    
     @Test
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-get-payment-with-gateway-transaction-id"})
