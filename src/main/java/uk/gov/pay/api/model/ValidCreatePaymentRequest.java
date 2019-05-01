@@ -31,8 +31,11 @@ public class ValidCreatePaymentRequest {
     private SupportedLanguage language;
     @ApiModelProperty(name = "delayed_capture", value = "delayed capture flag", required = false, example = "false" )
     private Boolean delayedCapture;
-    
     private ExternalMetadata metadata;
+    @ApiModelProperty(name = "email", value = "email of the card holder", required = false, example = "joe.bogs@example.org")
+    private String email;
+    @ApiModelProperty(name = "prefilled_cardholder_details", value = "prefilled cardholder details", required = false, example = "J. Bogs" )
+    private PrefilledCardholderDetails prefilledCardholderDetails;
 
     public ValidCreatePaymentRequest(CreatePaymentRequest createPaymentRequest) {
         amount = createPaymentRequest.getAmount();
@@ -49,6 +52,8 @@ public class ValidCreatePaymentRequest {
 
         delayedCapture = createPaymentRequest.getDelayedCapture();
         metadata = createPaymentRequest.getMetadata();
+        email = createPaymentRequest.getEmail();
+        prefilledCardholderDetails = createPaymentRequest.getPrefilledCardholderDetails();
     }
 
     public int getAmount() {
@@ -78,6 +83,14 @@ public class ValidCreatePaymentRequest {
 
     public Optional<Boolean> getDelayedCapture() {
         return Optional.ofNullable(delayedCapture);
+    }
+    
+    public Optional<String> getEmail() {
+        return Optional.ofNullable(email);
+    }
+    
+    public Optional<PrefilledCardholderDetails> getPrefilledCardholderDetails() {
+        return Optional.ofNullable(prefilledCardholderDetails);
     }
 
     public Optional<ExternalMetadata> getMetadata() {

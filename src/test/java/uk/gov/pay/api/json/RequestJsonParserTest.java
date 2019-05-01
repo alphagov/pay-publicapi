@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.CreatePaymentRequest;
+import uk.gov.pay.api.model.PrefilledCardholderDetails;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -333,5 +335,139 @@ public class RequestJsonParserTest {
 
         parsePaymentRequest(jsonNode);
     }
-    
+
+    @Test
+    public void parsePaymentRequest_withAllPrefilledCardholderDetails_shouldParseSuccessfully() throws Exception {
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "\"email\": \"j.bogs@example.org\",\n" +
+                "\"prefilled_cardholder_details\": {\n" +
+                "\"cardholder_name\": \"J Bogs\",\n" +
+                "\"billing_address\": {\n" +
+                "\"line1\": \"address line 1\",\n" +
+                "\"line2\": \"address line 2\",\n" +
+                "\"city\": \"address city\",\n" +
+                "\"postcode\": \"AB1 CD2\",\n" +
+                "\"country\": \"GB\"\n" +
+                "}" + "}" + "}";
+
+        JsonNode jsonNode = objectMapper.readTree(payload);
+
+        CreatePaymentRequest createPaymentRequest = parsePaymentRequest(jsonNode);
+
+        assertThat(createPaymentRequest, is(notNullValue()));
+        assertThat(createPaymentRequest.getAmount(), is(1000));
+        assertThat(createPaymentRequest.getReference(), is("Some reference"));
+        assertThat(createPaymentRequest.getDescription(), is("Some description"));
+        assertThat(createPaymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(createPaymentRequest.getEmail(), is("j.bogs@example.org"));
+        assertThat(createPaymentRequest.getPrefilledCardholderDetails(), is(notNullValue()));
+        PrefilledCardholderDetails cardholderDetails = createPaymentRequest.getPrefilledCardholderDetails();
+        assertThat(cardholderDetails.getCardholderName().isPresent(), is(true));
+        assertThat(cardholderDetails.getCardholderName().get(), is("J Bogs"));
+        assertThat(cardholderDetails.getBillingAddress().isPresent(), is(true));
+        Address billingAddress = cardholderDetails.getBillingAddress().get();
+        assertThat(billingAddress.getLine1(), is("address line 1"));
+        assertThat(billingAddress.getLine2(), is("address line 2"));
+        assertThat(billingAddress.getCity(), is("address city"));
+        assertThat(billingAddress.getPostcode(), is("AB1 CD2"));
+        assertThat(billingAddress.getCountry(), is("GB"));
+    }
+
+    @Test
+    public void parsePaymentRequest_withSomePrefilledCardholderDetails_shouldParseSuccessfully() throws Exception {
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "\"email\": null,\n" +
+                "\"prefilled_cardholder_details\": {\n" +
+                "\"cardholder_name\": null,\n" +
+                "\"billing_address\": {\n" +
+                "\"line1\": \"address line 1\",\n" +
+                "\"line2\": null,\n" +
+                "\"city\": \"address city\",\n" +
+                "\"postcode\": \"AB1 CD2\",\n" +
+                "\"country\": \"GB\"\n" +
+                "}" + "}" + "}";
+
+        JsonNode jsonNode = objectMapper.readTree(payload);
+
+        CreatePaymentRequest createPaymentRequest = parsePaymentRequest(jsonNode);
+
+        assertThat(createPaymentRequest, is(notNullValue()));
+        assertThat(createPaymentRequest.getAmount(), is(1000));
+        assertThat(createPaymentRequest.getReference(), is("Some reference"));
+        assertThat(createPaymentRequest.getDescription(), is("Some description"));
+        assertThat(createPaymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(createPaymentRequest.getEmail(), is(nullValue()));
+        assertThat(createPaymentRequest.getPrefilledCardholderDetails(), is(notNullValue()));
+        PrefilledCardholderDetails cardholderDetails = createPaymentRequest.getPrefilledCardholderDetails();
+        assertThat(cardholderDetails.getCardholderName().isPresent(), is(false));
+        assertThat(cardholderDetails.getBillingAddress().isPresent(), is(true));
+        Address billingAddress = cardholderDetails.getBillingAddress().get();
+        assertThat(billingAddress.getLine1(), is("address line 1"));
+        assertThat(billingAddress.getLine2(), is(nullValue()));
+        assertThat(billingAddress.getCity(), is("address city"));
+        assertThat(billingAddress.getPostcode(), is("AB1 CD2"));
+        assertThat(billingAddress.getCountry(), is("GB"));
+    }
+
+    @Test
+    public void parsePaymentRequest_withEmailFieldIsNotAString() throws Exception {
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "\"email\": false,\n" +
+                "\"prefilled_cardholder_details\": {\n" +
+                "\"cardholder_name\": \"J Bogs\",\n" +
+                "\"billing_address\": {\n" +
+                "\"line1\": \"address line 1\",\n" +
+                "\"line2\": \"address line 2\",\n" +
+                "\"city\": \"address city\",\n" +
+                "\"postcode\": \"AB1 CD2\",\n" +
+                "\"country\": \"GB\"\n" +
+                "}" + "}" + "}";
+
+        JsonNode jsonNode = objectMapper.readTree(payload);
+
+        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: email. Field must be a string"));
+
+        parsePaymentRequest(jsonNode);
+    }
+
+    @Test
+    public void parsePaymentRequest_withLine1FieldIsNotAString() throws Exception {
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "\"email\": \"j.bogs@example.com\",\n" +
+                "\"prefilled_cardholder_details\": {\n" +
+                "\"cardholder_name\": \"J Bogs\",\n" +
+                "\"billing_address\": {\n" +
+                "\"line1\": 182,\n" +
+                "\"line2\": \"address line 2\",\n" +
+                "\"city\": \"address city\",\n" +
+                "\"postcode\": \"AB1 CD2\",\n" +
+                "\"country\": \"GB\"\n" +
+                "}" + "}" + "}";
+
+        JsonNode jsonNode = objectMapper.readTree(payload);
+
+        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: line1. Field must be a string"));
+
+        parsePaymentRequest(jsonNode);
+    }
 }

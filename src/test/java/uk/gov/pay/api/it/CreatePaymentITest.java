@@ -183,7 +183,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
         int amount = 10000000;
         String reference = randomAlphanumeric(255);
         String description = randomAlphanumeric(255);
-        String email = randomAlphanumeric(254) + "@mail.fake";
+        String email = randomAlphanumeric(242) + "@example.org";
         String return_url = "https://govdemopay.gov.uk?data=" + randomAlphanumeric(1969);
 
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
