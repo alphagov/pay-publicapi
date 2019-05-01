@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.api.exception.BadRequestException;
+import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.validation.PaymentRequestValidator;
 import uk.gov.pay.api.validation.URLValidator;
@@ -20,6 +21,7 @@ import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.util.Optional;
 
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -62,6 +64,8 @@ public class CreatePaymentRequestDeserializerTest {
         assertThat(paymentRequest.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(paymentRequest.getLanguage(), is(Optional.empty()));
         assertThat(paymentRequest.getDelayedCapture(), is(Optional.empty()));
+        assertThat(paymentRequest.getEmail(), is(Optional.empty()));
+        assertThat(paymentRequest.getPrefilledCardholderDetails(), is(Optional.empty()));
     }
 
     @Test
@@ -600,6 +604,325 @@ public class CreatePaymentRequestDeserializerTest {
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }
+    
+    @Test
+    public void shouldDeserializeARequestWithPrefilledCardholderDetailsSuccessfully() throws Exception {
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "\"email\": \"j.bogs@example.org\",\n" +
+                "\"prefilled_cardholder_details\": {\n" +
+                "\"cardholder_name\": \"J Bogs\",\n" +
+                "\"billing_address\": {\n" +
+                "\"line1\": \"address line 1\",\n" +
+                "\"line2\": null,\n" +
+                "\"city\": \"address city\",\n" +
+                "\"postcode\": \"AB1 CD2\",\n" +
+                "\"country\": \"GB\"\n" +
+                "}" + "}" + "}";
+
+        ValidCreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(payload), ctx);
+        assertThat(paymentRequest.getAmount(), is(1000));
+        assertThat(paymentRequest.getReference(), is("Some reference"));
+        assertThat(paymentRequest.getDescription(), is("Some description"));
+        assertThat(paymentRequest.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentRequest.getLanguage(), is(Optional.empty()));
+        assertThat(paymentRequest.getDelayedCapture(), is(Optional.empty()));
+        assertThat(paymentRequest.getEmail().get(), is("j.bogs@example.org"));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().isPresent(), is(true));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getCardholderName().isPresent(), is(true));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getCardholderName().get(), is("J Bogs"));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getBillingAddress().isPresent(), is(true));
+        Address billingAddress = paymentRequest.getPrefilledCardholderDetails().get().getBillingAddress().get();
+        assertThat(billingAddress.getLine1(), is("address line 1"));
+        assertThat(billingAddress.getLine2(), is(nullValue()));
+        assertThat(billingAddress.getPostcode(), is("AB1 CD2"));
+        assertThat(billingAddress.getCity(), is("address city"));
+        assertThat(billingAddress.getCountry(), is("GB"));
+    }
+
+    @Test
+    public void shouldDeserializeARequestWithCardholderNameAndNoBillingAddressSuccessfully() throws Exception {
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "\"email\": \"j.bogs@example.org\",\n" +
+                "\"prefilled_cardholder_details\": {\n" +
+                "\"cardholder_name\": \"J Bogs\"\n" +
+                "}" + "}";
+
+        ValidCreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(payload), ctx);
+        assertThat(paymentRequest.getAmount(), is(1000));
+        assertThat(paymentRequest.getReference(), is("Some reference"));
+        assertThat(paymentRequest.getDescription(), is("Some description"));
+        assertThat(paymentRequest.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentRequest.getLanguage(), is(Optional.empty()));
+        assertThat(paymentRequest.getDelayedCapture(), is(Optional.empty()));
+        assertThat(paymentRequest.getEmail().get(), is("j.bogs@example.org"));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().isPresent(), is(true));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getCardholderName().isPresent(), is(true));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getCardholderName().get(), is("J Bogs"));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getBillingAddress().isPresent(), is(false));
+    }
+
+    @Test
+    public void shouldDeserializeARequestWithBillingAddressSuccessfully() throws Exception {
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "\"email\": null,\n" +
+                "\"prefilled_cardholder_details\": {\n" +
+                "\"billing_address\": {\n" +
+                "\"line1\": \"address line 1\",\n" +
+                "\"line2\": \"address line 2\",\n" +
+                "\"city\": \"address city\",\n" +
+                "\"postcode\": \"AB1 CD2\",\n" +
+                "\"country\": null\n" +
+                "}" + "}" + "}";
+
+        ValidCreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(payload), ctx);
+        assertThat(paymentRequest.getAmount(), is(1000));
+        assertThat(paymentRequest.getReference(), is("Some reference"));
+        assertThat(paymentRequest.getDescription(), is("Some description"));
+        assertThat(paymentRequest.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentRequest.getLanguage(), is(Optional.empty()));
+        assertThat(paymentRequest.getDelayedCapture(), is(Optional.empty()));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().isPresent(), is(true));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getCardholderName().isPresent(), is(false));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getBillingAddress().isPresent(), is(true));
+        Address billingAddress = paymentRequest.getPrefilledCardholderDetails().get().getBillingAddress().get();
+        assertThat(billingAddress.getLine1(), is("address line 1"));
+        assertThat(billingAddress.getLine2(), is("address line 2"));
+        assertThat(billingAddress.getPostcode(), is("AB1 CD2"));
+        assertThat(billingAddress.getCity(), is("address city"));
+        assertThat(billingAddress.getCountry(), is(nullValue()));
+    }
+
+    @Test
+    public void shouldDeserializeARequestWithEmptyCountrySuccessfully() throws Exception {
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "\"email\": null,\n" +
+                "\"prefilled_cardholder_details\": {\n" +
+                "\"billing_address\": {\n" +
+                "\"line1\": \"address line 1\",\n" +
+                "\"line2\": \"address line 2\",\n" +
+                "\"city\": \"address city\",\n" +
+                "\"postcode\": \"AB1 CD2\",\n" +
+                "\"country\": \"\"\n" +
+                "}" + "}" + "}";
+
+        ValidCreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(payload), ctx);
+        assertThat(paymentRequest.getAmount(), is(1000));
+        assertThat(paymentRequest.getReference(), is("Some reference"));
+        assertThat(paymentRequest.getDescription(), is("Some description"));
+        assertThat(paymentRequest.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentRequest.getLanguage(), is(Optional.empty()));
+        assertThat(paymentRequest.getDelayedCapture(), is(Optional.empty()));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().isPresent(), is(true));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getCardholderName().isPresent(), is(false));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getBillingAddress().isPresent(), is(true));
+        Address billingAddress = paymentRequest.getPrefilledCardholderDetails().get().getBillingAddress().get();
+        assertThat(billingAddress.getLine1(), is("address line 1"));
+        assertThat(billingAddress.getLine2(), is("address line 2"));
+        assertThat(billingAddress.getPostcode(), is("AB1 CD2"));
+        assertThat(billingAddress.getCity(), is("address city"));
+        assertThat(billingAddress.getCountry(), is(""));
+    }
+
+    @Test
+    public void deserialize_shouldThrowValidationException_whenLine1IsNumeric() throws Exception {
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "\"email\": null,\n" +
+                "\"prefilled_cardholder_details\": {\n" +
+                "\"billing_address\": {\n" +
+                "\"line1\": 172,\n" +
+                "\"line2\": \"address line 2\",\n" +
+                "\"city\": \"address city\",\n" +
+                "\"postcode\": \"AB1 CD2\",\n" +
+                "\"country\": null\n" +
+                "}" + "}" + "}";
+
+        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: line1. Field must be a string"));
+
+        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+    }
+
+    @Test
+    public void deserialize_shouldThrowValidationException_whenEmailIs255Character() throws Exception {
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"email\": \"" + RandomStringUtils.randomAlphanumeric(255) + "\"\n" +
+                "}";
+
+        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: email. Must be less than or equal to 254 characters length"));
+
+        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+    }
+
+    @Test
+    public void deserialize_shouldThrowValidationException_whenCardholderNameIs256Character() throws Exception {
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "\"prefilled_cardholder_details\": {\n" +
+                "\"cardholder_name\": \"" + RandomStringUtils.randomAlphanumeric(256) + "\"\n" +
+                "}" + "}";
+
+        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: cardholder_name. Must be less than or equal to 255 characters length"));
+
+        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+    }
+
+    @Test
+    public void deserialize_shouldThrowValidationException_whenLine1Is256Character() throws Exception {
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "\"prefilled_cardholder_details\": {\n" +
+                "\"billing_address\": {\n" +
+                "\"line1\": \"" + RandomStringUtils.randomAlphanumeric(256) + "\"\n" +
+                "}" + "}" + "}";
+
+        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: line1. Must be less than or equal to 255 characters length"));
+
+        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+    }
+
+    @Test
+    public void deserialize_shouldThrowValidationException_whenLine2Is256Character() throws Exception {
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "\"prefilled_cardholder_details\": {\n" +
+                "\"billing_address\": {\n" +
+                "\"line2\": \"" + RandomStringUtils.randomAlphanumeric(256) + "\"\n" +
+                "}" + "}" + "}";
+
+        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: line2. Must be less than or equal to 255 characters length"));
+
+        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+    }
+
+    @Test
+    public void deserialize_shouldThrowValidationException_whenPostcodeIs26Character() throws Exception {
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "\"prefilled_cardholder_details\": {\n" +
+                "\"billing_address\": {\n" +
+                "\"postcode\": \"" + RandomStringUtils.randomAlphanumeric(26) + "\"\n" +
+                "}" + "}" + "}";
+
+        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: postcode. Must be less than or equal to 25 characters length"));
+
+        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+    }
+
+    @Test
+    public void deserialize_shouldThrowValidationException_whenCityIs256Character() throws Exception {
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "\"prefilled_cardholder_details\": {\n" +
+                "\"billing_address\": {\n" +
+                "\"city\": \"" + RandomStringUtils.randomAlphanumeric(256) + "\"\n" +
+                "}" + "}" + "}";
+
+        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: city. Must be less than or equal to 255 characters length"));
+
+        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+    }
+
+    @Test
+    public void deserialize_shouldThrowValidationException_whenCountryIsMoreThan2Character() throws Exception {
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "\"prefilled_cardholder_details\": {\n" +
+                "\"billing_address\": {\n" +
+                "\"country\": \"" + RandomStringUtils.randomAlphanumeric(3) + "\"\n" +
+                "}" + "}" + "}";
+
+        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: country. Must be exactly 2 characters length"));
+
+        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+    }
+
+    @Test
+    public void deserialize_shouldThrowValidationException_whenCountryIsLessThan2Character() throws Exception {
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "\"prefilled_cardholder_details\": {\n" +
+                "\"billing_address\": {\n" +
+                "\"country\": \"" + RandomStringUtils.randomAlphanumeric(1) + "\"\n" +
+                "}" + "}" + "}";
+
+        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: country. Must be exactly 2 characters length"));
+
+        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+    }
+
+    @Test
+    public void deserialize_shouldNotThrowValidationException_whenCountryIsEmptyString() throws Exception {
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "\"prefilled_cardholder_details\": {\n" +
+                "\"billing_address\": {\n" +
+                "\"country\": \"\"\n" +
+                "}" + "}" + "}";
+        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+        assertThat(true, is(true));
+    }
+
 
     @After
     public void tearDown() {
