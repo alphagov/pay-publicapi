@@ -46,9 +46,10 @@ public class PaymentWithAllLinks {
                                String reference, String email, String paymentProvider, String createdDate, SupportedLanguage language,
                                boolean delayedCapture, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
                                List<PaymentConnectorResponseLink> paymentConnectorResponseLinks, URI selfLink, URI paymentEventsUri, URI paymentCancelUri,
-                               URI paymentRefundsUri, URI paymentCaptureUri, Long corporateCardSurcharge, Long totalAmount, String providerId, ExternalMetadata metadata) {
+                               URI paymentRefundsUri, URI paymentCaptureUri, Long corporateCardSurcharge, Long totalAmount, String providerId, ExternalMetadata metadata,
+                               Long fee, Long netAmount) {
         this.payment = new CardPayment(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate,
-                refundSummary, settlementSummary, cardDetails, language, delayedCapture, corporateCardSurcharge, totalAmount, providerId, metadata);
+                refundSummary, settlementSummary, cardDetails, language, delayedCapture, corporateCardSurcharge, totalAmount, providerId, metadata, fee, netAmount);
         this.links.addSelf(selfLink.toString());
         this.links.addKnownLinksValueOf(paymentConnectorResponseLinks);
         this.links.addEvents(paymentEventsUri.toString());
@@ -118,7 +119,9 @@ public class PaymentWithAllLinks {
                 paymentConnector.getCorporateCardSurcharge(),
                 paymentConnector.getTotalAmount(),
                 paymentConnector.getGatewayTransactionId(),
-                paymentConnector.getMetadata().orElse(null));
+                paymentConnector.getMetadata().orElse(null),
+                paymentConnector.getFee(),
+                paymentConnector.getNetAmount());
     }
 
     public static PaymentWithAllLinks getPaymentWithLinks(

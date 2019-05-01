@@ -41,6 +41,12 @@ public class CardPayment extends Payment {
     @JsonProperty("total_amount")
     private final Long totalAmount;
 
+    @JsonProperty("fee")
+    private final Long fee;
+
+    @JsonProperty("net_amount")
+    private final Long netAmount;
+
     @JsonProperty("provider_id")
     @ApiModelProperty(example = "reference-from-payment-gateway")
     private final String providerId;
@@ -52,7 +58,7 @@ public class CardPayment extends Payment {
                        String reference, String email, String paymentProvider, String createdDate,
                        RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
                        SupportedLanguage language, boolean delayedCapture, Long corporateCardSurcharge, Long totalAmount,
-                       String providerId, ExternalMetadata metadata) {
+                       String providerId, ExternalMetadata metadata, Long fee, Long netAmount) {
         super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate);
         this.refundSummary = refundSummary;
         this.settlementSummary = settlementSummary;
@@ -64,6 +70,8 @@ public class CardPayment extends Payment {
         this.delayedCapture = delayedCapture;
         this.corporateCardSurcharge = corporateCardSurcharge;
         this.totalAmount = totalAmount;
+        this.fee = fee;
+        this.netAmount = netAmount;
     }
 
     /**
@@ -113,11 +121,21 @@ public class CardPayment extends Payment {
         return Optional.ofNullable(corporateCardSurcharge);
     }
 
+    @ApiModelProperty(example = "5", value = "processing fee taken by the GOV.UK Pay platform, in pence. Only available depending on payment service provider")
+    public Optional<Long> getFee() {
+        return Optional.ofNullable(fee);
+    }
+
+    @ApiModelProperty(example = "1195", value = "amount including all surcharges and less all fees, in pence. Only available depending on payment service provider")
+    public Optional<Long> getNetAmount() {
+        return Optional.ofNullable(netAmount);
+    }
+
     @ApiModelProperty(example = "1450")
     public Optional<Long> getTotalAmount() {
         return Optional.ofNullable(totalAmount);
     }
-    
+
     public String getProviderId() {
         return providerId;
     }
@@ -130,6 +148,8 @@ public class CardPayment extends Payment {
                 ", paymentProvider='" + paymentProvider + '\'' +
                 ", cardBrandLabel='" + getCardBrand() + '\'' +
                 ", amount=" + amount +
+                ", fee=" + fee +
+                ", netAmount=" + netAmount +
                 ", corporateCardSurcharge='" + corporateCardSurcharge + '\'' +
                 ", state='" + state + '\'' +
                 ", returnUrl='" + returnUrl + '\'' +

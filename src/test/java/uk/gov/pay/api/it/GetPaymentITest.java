@@ -40,6 +40,8 @@ public class GetPaymentITest extends PaymentResourceITestBase {
     private static final ZonedDateTime CAPTURE_SUBMIT_TIME = ZonedDateTime.parse("2016-01-02T15:02:00Z");
     private static final SettlementSummary SETTLEMENT_SUMMARY = new SettlementSummary(ISO_INSTANT_MILLISECOND_PRECISION.format(CAPTURE_SUBMIT_TIME), DateTimeUtils.toLocalDateString(CAPTURED_DATE));
     private static final int AMOUNT = 9999999;
+    private static final Long FEE = 5l;
+    private static final Long NET_AMOUNT = 9999994l;
     private static final String CHARGE_ID = "ch_ab2341da231434l";
     private static final String CHARGE_TOKEN_ID = "token_1234567asdf";
     private static final PaymentState CREATED = new PaymentState("created", false, null, null);
@@ -507,6 +509,72 @@ public class GetPaymentITest extends PaymentResourceITestBase {
                 .contentType(JSON)
                 .body("corporate_card_surcharge", is(250))
                 .body("total_amount", is(AMOUNT + 250));
+    }
+
+    @Test
+    public void getPayment_ReturnsPaymentWithFeeAndNetAmount() {
+
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+
+        connectorMock.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+                aCreateOrGetChargeResponseFromConnector()
+                        .withAmount(AMOUNT)
+                        .withChargeId(CHARGE_ID)
+                        .withState(CAPTURED)
+                        .withReturnUrl(RETURN_URL)
+                        .withDescription(DESCRIPTION)
+                        .withReference(REFERENCE)
+                        .withEmail(EMAIL)
+                        .withPaymentProvider(PAYMENT_PROVIDER)
+                        .withCreatedDate(CREATED_DATE)
+                        .withLanguage(SupportedLanguage.ENGLISH)
+                        .withDelayedCapture(true)
+                        .withRefundSummary(REFUND_SUMMARY)
+                        .withSettlementSummary(SETTLEMENT_SUMMARY)
+                        .withCardDetails(CARD_DETAILS)
+                        .withGatewayTransactionId(GATEWAY_TRANSACTION_ID)
+                        .withFee(FEE)
+                        .withNetAmount(NET_AMOUNT)
+                        .build());
+
+        getPaymentResponse(API_KEY, CHARGE_ID)
+                .statusCode(200)
+                .contentType(JSON)
+                .body("fee", is(FEE.intValue()))
+                .body("net_amount", is(NET_AMOUNT.intValue()))
+                .body("amount", is(AMOUNT));
+    }
+
+    @Test
+    public void getPayment_ReturnsPaymentWithOutFeeAndNetAmount_IfNotAvailableFromConnector() {
+
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+
+        connectorMock.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+                aCreateOrGetChargeResponseFromConnector()
+                        .withAmount(AMOUNT)
+                        .withChargeId(CHARGE_ID)
+                        .withState(CAPTURED)
+                        .withReturnUrl(RETURN_URL)
+                        .withDescription(DESCRIPTION)
+                        .withReference(REFERENCE)
+                        .withEmail(EMAIL)
+                        .withPaymentProvider(PAYMENT_PROVIDER)
+                        .withCreatedDate(CREATED_DATE)
+                        .withLanguage(SupportedLanguage.ENGLISH)
+                        .withDelayedCapture(true)
+                        .withRefundSummary(REFUND_SUMMARY)
+                        .withSettlementSummary(SETTLEMENT_SUMMARY)
+                        .withCardDetails(CARD_DETAILS)
+                        .withGatewayTransactionId(GATEWAY_TRANSACTION_ID)
+                        .build());
+
+        getPaymentResponse(API_KEY, CHARGE_ID)
+                .statusCode(200)
+                .contentType(JSON)
+                .body("containsKey('fee')", is(false))
+                .body("containsKey('net_amount')", is(false))
+                .body("amount", is(AMOUNT));
     }
 
     @Test

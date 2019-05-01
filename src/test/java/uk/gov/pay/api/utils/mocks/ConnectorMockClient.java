@@ -100,6 +100,14 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         if (responseFromConnector.getTotalAmount() != null) {
             resultBuilder.withTotalAmount(responseFromConnector.getTotalAmount());
         }
+        if(responseFromConnector.getFee() != null){
+            resultBuilder.withFee(responseFromConnector.getFee());
+        }
+        if(responseFromConnector.getNetAmount() != null){
+            resultBuilder.withNetAmount(responseFromConnector.getNetAmount());
+        }
+        System.out.println("net amount : " + responseFromConnector.getNetAmount());
+        System.out.println(responseFromConnector.getFee());
         responseFromConnector.getMetadata().ifPresent(m -> resultBuilder.withMetadata(m));
 
         return resultBuilder.build();
@@ -174,7 +182,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withLink(validGetLink(chargeLocation(gatewayAccountId, responseFromConnector.getChargeId()), "self"))
                 .withLink(validGetLink(nextUrl(chargeTokenId), "next_url"))
                 .withLink(validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap(chargeTokenId))).build();
-        
+
         whenCreateCharge(responseFromConnector.getAmount(), gatewayAccountId, responseFromConnector.getReturnUrl(),
                 responseFromConnector.getDescription(), responseFromConnector.getReference())
                 .respond(response()
