@@ -2,6 +2,7 @@ package uk.gov.pay.api.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.CreatePaymentRequest;
@@ -40,7 +41,6 @@ import static uk.gov.pay.api.model.CreatePaymentRequest.PREFILLED_CARDHOLDER_DET
 import static uk.gov.pay.api.model.CreatePaymentRequest.PREFILLED_CARDHOLDER_NAME_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.REFERENCE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.RETURN_URL_FIELD_NAME;
-import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_METADATA_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_MISSING_FIELD_ERROR;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_REFUND_MISSING_FIELD_ERROR;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_REFUND_VALIDATION_ERROR;
@@ -157,15 +157,19 @@ class RequestJsonParser {
         try {
             metadataMap = objectMapper.convertValue(paymentRequest.get("metadata"), Map.class);
         } catch (IllegalArgumentException e) {
-            PaymentError paymentError = new PaymentError(METADATA, CREATE_PAYMENT_METADATA_VALIDATION_ERROR,
-                    "Field [metadata] must be an object of JSON key-value pairs");
+            PaymentError paymentError = aPaymentError(METADATA, CREATE_PAYMENT_VALIDATION_ERROR,
+                    "Must be an object of JSON key-value pairs");
             throw new WebApplicationException(Response.status(SC_UNPROCESSABLE_ENTITY).entity(paymentError).build());
         }
         ExternalMetadata metadata = new ExternalMetadata(metadataMap);
         Set<ConstraintViolation<ExternalMetadata>> violations = validator.validate(metadata);
         if (violations.size() > 0) {
-            String message = violations.stream().map(v -> v.getMessage()).collect(Collectors.joining(";\n"));
-            PaymentError paymentError = new PaymentError(METADATA, CREATE_PAYMENT_METADATA_VALIDATION_ERROR, message);
+            String message = violations.stream()
+                    .map(ConstraintViolation::getMessage)
+                    .map(msg -> msg.replace("Field [metadata] ", ""))
+                    .map(StringUtils::capitalize)
+                    .collect(Collectors.joining(". "));
+            PaymentError paymentError = aPaymentError(METADATA, CREATE_PAYMENT_VALIDATION_ERROR, message);
             throw new WebApplicationException(Response.status(SC_UNPROCESSABLE_ENTITY).entity(paymentError).build());
         }
         return metadata;

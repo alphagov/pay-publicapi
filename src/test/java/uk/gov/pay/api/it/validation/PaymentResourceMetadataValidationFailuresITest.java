@@ -50,7 +50,7 @@ public class PaymentResourceMetadataValidationFailuresITest extends PaymentResou
                 .build();
 
         assertMetadataValidationError(createChargeRequestParams, 
-                "Invalid attribute value: Field [metadata] values must be of type String, Boolean or Number");
+                "Invalid attribute value: metadata. Values must be of type String, Boolean or Number");
     }
 
     @Test
@@ -60,18 +60,18 @@ public class PaymentResourceMetadataValidationFailuresITest extends PaymentResou
         var createChargeRequestParams = createChargeRequestParamsBuilder.withMetadata(Map.of(key, "boo")).build();
 
         assertMetadataValidationError(createChargeRequestParams, 
-                "Invalid attribute value: Field [metadata] keys must be between 1 and 30 characters long");
+                "Invalid attribute value: metadata. Keys must be between 1 and 30 characters long");
     }
     
     @Test
     @Parameters({
-            "null, Field [metadata] must not have null values", 
-            "valueMoreThanFiftyCharsvalueMoreThanFiftyCharsvalueMoreThanFiftyCharsvalueMoreThanFiftyChars, Field [metadata] values must be no greater than 50 characters long"})
+            "null, Must not have null values", 
+            "valueMoreThanFiftyCharsvalueMoreThanFiftyCharsvalueMoreThanFiftyCharsvalueMoreThanFiftyChars, Values must be no greater than 50 characters long"})
     public void valueIsInvalid(@Nullable String value, String expectedMessage) {
         
         Map<String, Object> metadata = new HashMap<>() {{ put("key", value); }};
         var createChargeRequestParams = createChargeRequestParamsBuilder.withMetadata(metadata).build();
-        assertMetadataValidationError(createChargeRequestParams, "Invalid attribute value: " + expectedMessage);
+        assertMetadataValidationError(createChargeRequestParams, "Invalid attribute value: metadata. " + expectedMessage);
     }
 
     @Test
@@ -95,7 +95,7 @@ public class PaymentResourceMetadataValidationFailuresITest extends PaymentResou
         var createChargeRequestParams = createChargeRequestParamsBuilder.withMetadata(metadata).build();
         
         assertMetadataValidationError(createChargeRequestParams, 
-                "Invalid attribute value: Field [metadata] cannot have more than 10 key-value pairs");
+                "Invalid attribute value: metadata. Cannot have more than 10 key-value pairs");
     }
     
     @Test
@@ -115,13 +115,13 @@ public class PaymentResourceMetadataValidationFailuresITest extends PaymentResou
                 .contentType(JSON)
                 .body("field", is("metadata"))
                 .body("code", is("P0102"))
-                .body("description", is("Invalid attribute value: Field [metadata] must be an object of JSON key-value pairs"));
+                .body("description", is("Invalid attribute value: metadata. Must be an object of JSON key-value pairs"));
     }
 
     @Test
     public void testMultipleValidationErrors() {
 
-        Map<String, Object> metadata = Map.of("key", "valueMoreThanFiftyCharsvalueMoreThanFiftyCharsvalueMoreThanFiftyCharsvalueMoreThanFiftyChars",
+        var metadata = Map.of("key", "valueMoreThanFiftyCharsvalueMoreThanFiftyCharsvalueMoreThanFiftyCharsvalueMoreThanFiftyChars",
                 "keyMoreThanThirtyCharskeyMoreThanThirtyCharskeyMoreThanThirtyChars", "fuh",
                 "badKey", List.of("cake", "chocolate"));
 
@@ -134,11 +134,13 @@ public class PaymentResourceMetadataValidationFailuresITest extends PaymentResou
                 .body("code", is("P0102"))
                 .extract().body().as(JsonNode.class);
 
-        var descriptions = asList(jsonBody.get("description").asText().replace("Invalid attribute value: ", "").split(";\n"));
+        var descriptions = asList(jsonBody.get("description").asText()
+                .replace("Invalid attribute value: metadata. ", "")
+                .split("\\. "));
         assertThat(descriptions).containsExactlyInAnyOrder(
-                "Field [metadata] values must be no greater than 50 characters long",
-                "Field [metadata] keys must be between 1 and 30 characters long",
-                "Field [metadata] values must be of type String, Boolean or Number"
+                "Values must be no greater than 50 characters long",
+                "Keys must be between 1 and 30 characters long",
+                "Values must be of type String, Boolean or Number"
         );
     }
 
