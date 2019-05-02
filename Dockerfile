@@ -1,10 +1,9 @@
-FROM govukpay/openjdk:adoptopenjdk-jre-11.0.3.7-alpine
+FROM govukpay/openjdk:adoptopenjdk-jre-11.0.3_7-alpine
 
 RUN apk --no-cache upgrade
 
 RUN apk --no-cache add bash
 
-ENV JAVA_HOME /opt/java/openjdk
 ENV PORT 8080
 ENV ADMIN_PORT 8081
 
