@@ -18,6 +18,31 @@ Content-Type: application/json
     "reference" : "some-reference-to-this-payment"
 }
 ```
+### Request example with optional fields
+#### Note: these optional fields are only valid for card payments!
+```
+POST /v1/payments
+Authorization: Bearer BEARER_TOKEN
+Content-Type: application/json
+
+{
+    "amount": 50000,
+    "description": "Payment description",
+    "return_url": "https://service.example.com/some-reference-to-this-payment",
+    "reference" : "some-reference-to-this-payment",
+    "email": "foo@example.org",
+    "prefilled_cardholder_details": {
+     	"cardholder_name": "J Foo",
+        "billing_address": {
+              "line1": "address line 1",
+              "line2": "address line 2",
+              "postcode": "AB1 CD2",
+              "city": "address city",
+              "country": "GB"
+        }
+     }
+}
+```
 
 #### Request description
 
@@ -29,6 +54,13 @@ BEARER_TOKEN: A valid bearer token for the account to associate the payment with
 | `description`            | Yes      | Payment description                              |
 | `return_url`             | Yes      | The URL where the user should be redirected to when the payment workflow is finished (**must be HTTPS only**).         |
 | `reference`              | Yes      | There reference issued by the government service for this payment         |
+| `email`                  | No       | Email address of the payer |
+| `cardholder_name`        | No       | Name of the payer |
+| `line1`                  | No       | Line 1 of the payer's address |
+| `line2`                  | No       | Line 2 of the payer's address |
+| `postcode`               | No       | Postcode of the payer's address |
+| `city`                   | No       | City of the payer's address |
+| `country`                | No       | ISO 3166-1 country code of the payer's address |
 
 ### Payment created response
 In case of a card payment:
@@ -80,6 +112,21 @@ Content-Type: application/json
     "payment_provider": "Sandbox",
     "card_brand": "Mastercard",
     "created_date": "2016-01-15T16:30:56Z",
+    "email": "foo@example.org",
+    "card_details": {
+        "last_digits_card_number": null,
+        "first_digits_card_number": null,
+        "cardholder_name": "J Foo",
+        "expiry_date": null,
+        "billing_address": {
+            "line1": "address line 1",
+            "line2": "address line 2",
+            "postcode": "AB1 CD2",
+            "city": "address city",
+            "country": "GB"
+        },
+        "card_brand": ""
+    },
     "refund_summary": {
         "status": "available"
         "amount_available": 14500
