@@ -509,7 +509,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         return response()
                 .withStatusCode(statusCode)
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                .withBody(jsonString("message", errorMsg));
+                .withBody(jsonString("message", List.of(errorMsg)));
     }
 
     //"Gson can not automatically deserialize the pure inner classes since their no-args constructor"
@@ -540,6 +540,6 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                         .withBody(new JsonStringBuilder()
                                 .add("reason", reason)
-                                .add("message", "A message that should be completely ignored (only log)").build()));
+                                .add("message", List.of("A message that should be completely ignored (only log)")).build()));
     }
 }

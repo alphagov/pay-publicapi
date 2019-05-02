@@ -69,13 +69,13 @@ public class ConnectorResponseErrorException extends RuntimeException {
     public static class ConnectorErrorResponse {
 
         private String reason;
-        private String message;
+        private Object message;
 
         public String getReason() {
             return reason;
         }
 
-        public String getMessage() {
+        public Object getMessage() {
             return message;
         }
 
