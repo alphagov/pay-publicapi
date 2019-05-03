@@ -139,4 +139,20 @@ public class GetPaymentServiceTest {
         assertThat(paymentResponse.getLinks().getNextUrl(), is(nullValue()));
         assertThat(paymentResponse.getLinks().getNextUrlPost(), is(nullValue()));
     }
+
+    @Test
+    @PactVerification({"connector"})
+    @Pacts(pacts = {"publicapi-connector-get-payment-with-fee-and-net-amount"})
+    public void testGetPaymentWithFeeAndNetAmount() {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+
+        PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID);
+        CardPayment payment = (CardPayment) paymentResponse.getPayment();
+
+        assertThat(payment.getPaymentId(), is(CHARGE_ID));
+        assertThat(payment.getPaymentProvider(), is("sandbox"));
+        assertThat(payment.getAmount(), is(100L));
+        assertThat(payment.getFee().get(), is(5L));
+        assertThat(payment.getNetAmount().get(), is(95L));
+    }
 }
