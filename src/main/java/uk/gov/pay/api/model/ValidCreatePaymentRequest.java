@@ -34,7 +34,7 @@ public class ValidCreatePaymentRequest {
     private ExternalMetadata metadata;
     @ApiModelProperty(name = "email", value = "email of the card holder", required = false, example = "joe.bogs@example.org")
     private String email;
-    @ApiModelProperty(name = "prefilled_cardholder_details", value = "prefilled cardholder details", required = false, example = "J. Bogs" )
+    @ApiModelProperty(name = "prefilled_cardholder_details", value = "prefilled cardholder details", required = false)
     private PrefilledCardholderDetails prefilledCardholderDetails;
 
     public ValidCreatePaymentRequest(CreatePaymentRequest createPaymentRequest) {

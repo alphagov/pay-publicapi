@@ -56,7 +56,6 @@ public class ResourcesFilterLocalRateLimiterITest {
     private static final String PAYMENT_PROVIDER = "Sandbox";
     private static final String RETURN_URL = "https://somewhere.gov.uk/rainbow/1";
     private static final String REFERENCE = "Some reference";
-    private static final String EMAIL = "alice.111@mail.fake";
     private static final String DESCRIPTION = "Some description";
     private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
     private static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(TIMESTAMP);
@@ -95,7 +94,6 @@ public class ResourcesFilterLocalRateLimiterITest {
                 .withReturnUrl(RETURN_URL)
                 .withDescription(DESCRIPTION)
                 .withReference(REFERENCE)
-                .withEmail(EMAIL)
                 .withPaymentProvider(PAYMENT_PROVIDER)
                 .withCreatedDate(CREATED_DATE)
                 .withLanguage(SupportedLanguage.ENGLISH)

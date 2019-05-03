@@ -3,7 +3,9 @@ package uk.gov.pay.api.service;
 import org.apache.http.HttpStatus;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateChargeException;
+import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.ChargeFromResponse;
+import uk.gov.pay.api.model.PrefilledCardholderDetails;
 import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.utils.JsonStringBuilder;
@@ -21,6 +23,8 @@ public class CreatePaymentService {
     private final Client client;
     private final PublicApiUriGenerator publicApiUriGenerator;
     private final ConnectorUriGenerator connectorUriGenerator;
+    private static final String PREFILLED_CARDHOLDER_DETAILS = "prefilled_cardholder_details";
+    private static final String BILLING_ADDRESS = "billing_address";
 
     @Inject
     public CreatePaymentService(Client client, PublicApiUriGenerator publicApiUriGenerator, ConnectorUriGenerator connectorUriGenerator) {
@@ -76,6 +80,20 @@ public class CreatePaymentService {
         requestPayload.getAgreementId().ifPresent(agreementId -> request.add("agreement_id", agreementId));
         requestPayload.getDelayedCapture().ifPresent(delayedCapture -> request.add("delayed_capture", delayedCapture));
         requestPayload.getMetadata().ifPresent(metadata -> request.add("metadata", metadata.getMetadata()));
+        requestPayload.getEmail().ifPresent(email -> request.add("email", email));
+        requestPayload.getPrefilledCardholderDetails().ifPresent(prefilledCardholderDetails -> buildPrefilledCardHolderDetails(prefilledCardholderDetails, request));
         return json(request.build());
+    }
+    
+    private void buildPrefilledCardHolderDetails(PrefilledCardholderDetails prefilledCardholderDetails, JsonStringBuilder request) {
+        prefilledCardholderDetails.getCardholderName()
+                .ifPresent(name -> request.addToMap(PREFILLED_CARDHOLDER_DETAILS, "cardholder_name", name));
+        prefilledCardholderDetails.getBillingAddress().ifPresent(address -> {
+            request.addToNestedMap("line1", address.getLine1(), PREFILLED_CARDHOLDER_DETAILS, BILLING_ADDRESS);
+            request.addToNestedMap("line2", address.getLine2(), PREFILLED_CARDHOLDER_DETAILS, BILLING_ADDRESS);
+            request.addToNestedMap("postcode", address.getPostcode(), PREFILLED_CARDHOLDER_DETAILS, BILLING_ADDRESS);
+            request.addToNestedMap("city", address.getCity(), PREFILLED_CARDHOLDER_DETAILS, BILLING_ADDRESS);
+            request.addToNestedMap("country", address.getCountry(), PREFILLED_CARDHOLDER_DETAILS, BILLING_ADDRESS);
+        });
     }
 }

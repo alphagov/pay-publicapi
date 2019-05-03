@@ -53,7 +53,16 @@ public class JsonStringBuilder {
         ensureNestedMap(mapKey);
         return this;
     }
-
+    
+    public JsonStringBuilder addToNestedMap(String key, Object value, String... mapKeys) {
+        Map<String, Object> localMap = map;
+        for (String mapKey : mapKeys) {
+            localMap = ensureNestedMap(localMap, mapKey);
+        }
+        localMap.put(key, value);
+        return this;
+    }
+    
     public String build() {
         ObjectWriter writer = WRITER;
         if (prettyPrint) {
@@ -83,6 +92,16 @@ public class JsonStringBuilder {
         if (nestedMap == null) {
             nestedMap = new LinkedHashMap<>();
             map.put(mapKey, nestedMap);
+        }
+        return nestedMap;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> ensureNestedMap(Map<String, Object> localMap, String mapKey) {
+        Map<String, Object> nestedMap = (Map<String, Object>) localMap.get(mapKey);
+        if (nestedMap == null) {
+            nestedMap = new LinkedHashMap<>();
+            localMap.put(mapKey, nestedMap);
         }
         return nestedMap;
     }

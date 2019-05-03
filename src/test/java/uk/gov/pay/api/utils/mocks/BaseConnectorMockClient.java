@@ -96,6 +96,9 @@ public abstract class BaseConnectorMockClient {
 
         if (!createChargeRequestParams.getMetadata().isEmpty())
             payload.add("metadata", createChargeRequestParams.getMetadata());
+        if (createChargeRequestParams.getEmail() != null) {
+            payload.add("email", createChargeRequestParams.getEmail());
+        }
 
         return payload.build();
     }

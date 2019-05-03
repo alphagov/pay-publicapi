@@ -718,6 +718,15 @@
         },
         "metadata" : {
           "$ref" : "#/definitions/ExternalMetadata"
+        },
+        "email" : {
+          "type" : "string",
+          "example" : "joe.bogs@example.org",
+          "description" : "email of the card holder"
+        },
+        "prefilled_cardholder_details" : {
+          "description" : "prefilled cardholder details",
+          "$ref" : "#/definitions/PrefilledCardholderDetails"
         }
       }
     },
@@ -1320,6 +1329,21 @@
         }
       },
       "description" : "A POST link related to a payment"
+    },
+    "PrefilledCardholderDetails" : {
+      "type" : "object",
+      "properties" : {
+        "cardholder_name" : {
+          "type" : "string",
+          "example" : "J. Bogs",
+          "description" : "prefilled cardholder name"
+        },
+        "billing_address" : {
+          "description" : "prefilled billing address",
+          "readOnly" : true,
+          "$ref" : "#/definitions/Address"
+        }
+      }
     },
     "Refund" : {
       "type" : "object",
