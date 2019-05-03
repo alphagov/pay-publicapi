@@ -11,6 +11,7 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.PaymentState;
@@ -25,7 +26,6 @@ import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
 import javax.ws.rs.client.Client;
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -178,4 +178,42 @@ public class CreatePaymentServiceTest {
         assertThat(paymentResponse.getLinks().getNextUrlPost(), is(expectedLink));
     }
 
+    @Test
+    @PactVerification({"connector"})
+    @Pacts(pacts = {"publicapi-connector-create-payment-with-prefilled-cardholder-details"})
+    public void testCreatePaymentWithPrefilledCardholderDetails() {
+        Account account = new Account("123456", TokenPaymentType.CARD);
+        CreatePaymentRequest createPaymentRequest = CreatePaymentRequest.builder()
+                .amount(100)
+                .returnUrl("https://somewhere.gov.uk/rainbow/1")
+                .reference("a reference")
+                .description("a description")
+                .email("joe.bogs@example.org")
+                .cardholderName("J. Bogs")
+                .addressLine1("address line 1")
+                .addressLine2("address line 2")
+                .city("address city")
+                .postcode("AB1 CD2")
+                .country("GB")
+                .build();
+        ValidCreatePaymentRequest requestPayload = new ValidCreatePaymentRequest(createPaymentRequest);
+        PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
+        CardPayment payment = (CardPayment) paymentResponse.getPayment();
+
+        assertThat(payment.getPaymentId(), is("ch_ab2341da231434l"));
+        assertThat(payment.getAmount(), is(100L));
+        assertThat(payment.getReference(), is("a reference"));
+        assertThat(payment.getDescription(), is("a description"));
+        assertThat(payment.getEmail().isPresent(), is(true));
+        assertThat(payment.getEmail().get(), is("joe.bogs@example.org"));
+        assertThat(payment.getCardDetails().isPresent(), is(true));
+        assertThat(payment.getCardDetails().get().getCardHolderName(), is("J. Bogs"));
+        assertThat(payment.getCardDetails().get().getBillingAddress().isPresent(), is(true));
+        Address billingAddress = payment.getCardDetails().get().getBillingAddress().get();
+        assertThat(billingAddress.getLine1(), is("address line 1"));
+        assertThat(billingAddress.getLine2(), is("address line 2"));
+        assertThat(billingAddress.getCity(), is("address city"));
+        assertThat(billingAddress.getPostcode(), is("AB1 CD2"));
+        assertThat(billingAddress.getCountry(), is("GB"));
+    }
 }
