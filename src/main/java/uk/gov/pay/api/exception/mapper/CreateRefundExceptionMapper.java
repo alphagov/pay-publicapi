@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.exception.CreateRefundException;
 import uk.gov.pay.api.model.PaymentError;
+import uk.gov.pay.commons.model.ErrorIdentifier;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -26,10 +27,10 @@ public class CreateRefundExceptionMapper implements ExceptionMapper<CreateRefund
             paymentError = aPaymentError(CREATE_PAYMENT_REFUND_NOT_FOUND_ERROR);
             status = NOT_FOUND;
 
-        } else if (exception.getErrorStatus() == BAD_REQUEST.getStatusCode() && exception.hasReason()) {
+        } else if (exception.getErrorIdentifier() == ErrorIdentifier.REFUND_NOT_AVAILABLE && exception.hasReason()) {
             paymentError = aPaymentError(CREATE_PAYMENT_REFUND_NOT_AVAILABLE, exception.getReason());
             status = BAD_REQUEST;
-        } else if (exception.getErrorStatus() == PRECONDITION_FAILED.getStatusCode()) {
+        } else if (exception.getErrorIdentifier() == ErrorIdentifier.REFUND_AMOUNT_AVAILABLE_MISMATCH) {
             paymentError = aPaymentError(CREATE_PAYMENT_REFUND_AMOUNT_AVAILABLE_MISMATCH);
             status = PRECONDITION_FAILED;
         } else {

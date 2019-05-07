@@ -336,6 +336,28 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
     }
 
     @Test
+    public void createPayment_responseWith500_whenInvalidDirectDebitAgreementType() throws Exception {
+        String gatewayAccountId = "1234567";
+        String errorMessage = "something went wrong";
+
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, gatewayAccountId);
+
+        connectorMock.respondMandateTypeInvalid_whenCreateCharge(AMOUNT, gatewayAccountId, errorMessage, RETURN_URL, DESCRIPTION, REFERENCE);
+
+        InputStream body = postPaymentResponse(API_KEY, SUCCESS_PAYLOAD)
+                .statusCode(500)
+                .contentType(JSON).extract()
+                .body().asInputStream();
+
+        JsonAssert.with(body)
+                .assertThat("$.*", hasSize(2))
+                .assertThat("$.code", is("P0140"))
+                .assertThat("$.description", is("Can't collect payment from this type of agreement"));
+
+        connectorMock.verifyCreateChargeConnectorRequest(AMOUNT, gatewayAccountId, RETURN_URL, DESCRIPTION, REFERENCE);
+    }
+
+    @Test
     public void createPayment_responseWith500_whenTokenForGatewayAccountIsValidButConnectorResponseIsNotFound() {
         String notFoundGatewayAccountId = "9876545";
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, notFoundGatewayAccountId);

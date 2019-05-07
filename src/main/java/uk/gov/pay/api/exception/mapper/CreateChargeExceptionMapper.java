@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.exception.CreateChargeException;
 import uk.gov.pay.api.model.PaymentError;
+import uk.gov.pay.commons.model.ErrorIdentifier;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -27,7 +28,7 @@ public class CreateChargeExceptionMapper implements ExceptionMapper<CreateCharge
 
         if (exception.getErrorStatus() == NOT_FOUND.getStatusCode()) {
             paymentError = aPaymentError(CREATE_PAYMENT_ACCOUNT_ERROR);
-        } else if (exception.getErrorStatus() == PRECONDITION_FAILED.getStatusCode()) {
+        } else if (exception.getErrorIdentifier() == ErrorIdentifier.INVALID_MANDATE_TYPE) {
             paymentError = aPaymentError(CREATE_PAYMENT_AGREEMENT_TYPE_ERROR);
         } else {
             paymentError = aPaymentError(CREATE_PAYMENT_CONNECTOR_ERROR);

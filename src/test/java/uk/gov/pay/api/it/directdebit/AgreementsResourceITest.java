@@ -105,6 +105,35 @@ public class AgreementsResourceITest extends PaymentResourceITestBase {
     }
 
     @Test
+    public void createPayment_respondsWith500_whenConnectorResponseIsAgreementTypeInvalid() {
+
+        String errorMessage = "something went wrong";
+
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
+
+        connectorDDMock.respondWithMandateTypeInvalid_whenCreateAgreementRequest(
+                MandateType.ONE_OFF,
+                "https://service-name.gov.uk/transactions/12345",
+                GATEWAY_ACCOUNT_ID,
+                errorMessage
+        );
+
+        String payload = agreementPayload("https://service-name.gov.uk/transactions/12345", AgreementType.ONE_OFF);
+        given().port(app.getLocalPort())
+                .body(payload)
+                .accept(JSON)
+                .contentType(JSON)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
+                .post("/v1/agreements")
+                .then()
+                .statusCode(500)
+                .contentType(JSON)
+                .body("code", is("P0197"))
+                .body("description", is("It is not possible to create an agreement of this type"))
+                .extract().body().asString();
+    }
+
+    @Test
     public void shouldGetADirectDebitAgreement_withReference() {
 
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);

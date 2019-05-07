@@ -13,6 +13,7 @@ import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.links.Link;
 import uk.gov.pay.api.utils.JsonStringBuilder;
+import uk.gov.pay.commons.model.ErrorIdentifier;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.text.DateFormat;
@@ -90,7 +91,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withSettlementSummary(responseFromConnector.getSettlementSummary())
                 .withCardDetails(responseFromConnector.getCardDetails());
 
-        if (responseFromConnector.getRefundSummary()!= null) {
+        if (responseFromConnector.getRefundSummary() != null) {
             resultBuilder.withRefundSummary(responseFromConnector.getRefundSummary());
         }
         if (responseFromConnector.getGatewayTransactionId() != null) {
@@ -102,10 +103,10 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         if (responseFromConnector.getTotalAmount() != null) {
             resultBuilder.withTotalAmount(responseFromConnector.getTotalAmount());
         }
-        if(responseFromConnector.getFee() != null){
+        if (responseFromConnector.getFee() != null) {
             resultBuilder.withFee(responseFromConnector.getFee());
         }
-        if(responseFromConnector.getNetAmount() != null){
+        if (responseFromConnector.getNetAmount() != null) {
             resultBuilder.withNetAmount(responseFromConnector.getNetAmount());
         }
         System.out.println("net amount : " + responseFromConnector.getNetAmount());
@@ -169,13 +170,13 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
         if (!requestParams.getMetadata().isEmpty())
             responseFromConnector.withMetadata(requestParams.getMetadata());
-        
+
         if (requestParams.getEmail() != null) {
             responseFromConnector.withEmail(requestParams.getEmail());
         }
-        
-        if (requestParams.getCardholderName().isPresent() || requestParams.getAddressLine1().isPresent() || 
-                requestParams.getAddressLine2().isPresent() || requestParams.getAddressPostcode().isPresent() || 
+
+        if (requestParams.getCardholderName().isPresent() || requestParams.getAddressLine1().isPresent() ||
+                requestParams.getAddressLine2().isPresent() || requestParams.getAddressPostcode().isPresent() ||
                 requestParams.getAddressCity().isPresent() || requestParams.getAddressCountry().isPresent()) {
             Address billingAddress = new Address(requestParams.getAddressLine1().orElse(null), requestParams.getAddressLine2().orElse(null),
                     requestParams.getAddressPostcode().orElse(null), requestParams.getAddressCity().orElse(null), requestParams.getAddressCountry().orElse(null));
@@ -257,12 +258,17 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     public void respondBadRequest_whenCreateCharge(long amount, String gatewayAccountId, String errorMsg, String returnUrl, String description, String reference) {
         whenCreateCharge(amount, gatewayAccountId, returnUrl, description, reference)
-                .respond(withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg));
+                .respond(withErrorResponse(BAD_REQUEST_400, errorMsg));
+    }
+    
+    public void respondMandateTypeInvalid_whenCreateCharge(long amount, String gatewayAccountId, String errorMsg, String returnUrl, String description, String reference) {
+        whenCreateCharge(amount, gatewayAccountId, returnUrl, description, reference)
+                .respond(withErrorResponse(PRECONDITION_FAILED_412, errorMsg, ErrorIdentifier.INVALID_MANDATE_TYPE));
     }
 
     public void respondPreconditionFailed_whenCreateRefund(int amount, int refundAmountAvailable, String gatewayAccountId, String errorMsg, String chargeId) {
         whenCreateRefund(amount, refundAmountAvailable, gatewayAccountId, chargeId)
-                .respond(withStatusAndErrorMessage(PRECONDITION_FAILED_412, errorMsg));
+                .respond(withErrorResponse(PRECONDITION_FAILED_412, errorMsg, ErrorIdentifier.REFUND_AMOUNT_AVAILABLE_MISMATCH));
     }
 
     public void respondWithChargeFound(String chargeTokenId, String gatewayAccountId, ChargeResponseFromConnector chargeResponseFromConnector) {
@@ -331,13 +337,13 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     public void respondRefundNotFound(String gatewayAccountId, String chargeId, String refundId) {
         whenGetRefundById(gatewayAccountId, chargeId, refundId)
-                .respond(withStatusAndErrorMessage(BAD_REQUEST_400, String.format("Refund with id [%s] not found.", refundId)));
+                .respond(withErrorResponse(BAD_REQUEST_400, String.format("Refund with id [%s] not found.", refundId)));
 
     }
 
     public void respondRefundWithError(String gatewayAccountId, String chargeId, String refundId) {
         whenGetRefundById(gatewayAccountId, chargeId, refundId)
-                .respond(withStatusAndErrorMessage(INTERNAL_SERVER_ERROR_500, "server error"));
+                .respond(withErrorResponse(INTERNAL_SERVER_ERROR_500, "server error"));
 
     }
 
@@ -356,7 +362,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     public void respondWhenGetCharge(String gatewayAccountId, String chargeId, String errorMsg, int status) {
         whenGetCharge(gatewayAccountId, chargeId)
-                .respond(withStatusAndErrorMessage(status, errorMsg));
+                .respond(withErrorResponse(status, errorMsg));
     }
 
     public void respondChargeEventsNotFound(String gatewayAccountId, String chargeId, String errorMsg) {
@@ -365,7 +371,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     public void respondWhenGetChargeEvents(String gatewayAccountId, String chargeId, String errorMsg, int status) {
         whenGetChargeEvents(gatewayAccountId, chargeId)
-                .respond(withStatusAndErrorMessage(status, errorMsg));
+                .respond(withErrorResponse(status, errorMsg));
     }
 
     public void respondOk_whenCancelCharge(String paymentId, String accountId) {
@@ -398,12 +404,12 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     public void respond_WhenCancelCharge(String paymentId, String accountId, String errorMessage, int status) {
         whenCancelCharge(paymentId, accountId)
-                .respond(withStatusAndErrorMessage(status, errorMessage));
+                .respond(withErrorResponse(status, errorMessage));
     }
 
     public void respond_WhenCaptureCharge(String paymentId, String accountId, String errorMessage, int status) {
         whenCaptureCharge(paymentId, accountId)
-                .respond(withStatusAndErrorMessage(status, errorMessage));
+                .respond(withErrorResponse(status, errorMessage));
     }
 
     public ForwardChainExpectation whenCreateCharge(long amount, String gatewayAccountId, String returnUrl, String description, String reference) {
@@ -526,11 +532,26 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         return format(CONNECTOR_MOCK_CHARGE_PATH + "/capture", accountId, paymentId);
     }
 
-    private HttpResponse withStatusAndErrorMessage(int statusCode, String errorMsg) {
+    private HttpResponse withErrorResponse(int statusCode, String errorMsg) {
+        return withErrorResponse(statusCode, errorMsg, ErrorIdentifier.GENERIC);
+    }
+
+    private HttpResponse withErrorResponse(int statusCode, String errorMsg, ErrorIdentifier errorIdentifier) {
+        return withErrorResponse(statusCode, errorMsg, errorIdentifier, null);
+    }
+
+    private HttpResponse withErrorResponse(int statusCode, String errorMsg, ErrorIdentifier errorIdentifier, String reason) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("message", List.of(errorMsg));
+        payload.put("error_identifier", errorIdentifier.toString());
+        if (reason != null) {
+            payload.put("reason", reason);
+        }
+        
         return response()
                 .withStatusCode(statusCode)
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                .withBody(jsonString("message", List.of(errorMsg)));
+                .withBody(new GsonBuilder().create().toJson(payload));
     }
 
     //"Gson can not automatically deserialize the pure inner classes since their no-args constructor"
@@ -556,11 +577,9 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     public void respondBadRequest_whenCreateARefund(String reason, int amount, int refundAmountAvailable, String gatewayAccountId, String chargeId) {
         whenCreateRefund(amount, refundAmountAvailable, gatewayAccountId, chargeId)
-                .respond(response()
-                        .withStatusCode(BAD_REQUEST_400)
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withBody(new JsonStringBuilder()
-                                .add("reason", reason)
-                                .add("message", List.of("A message that should be completely ignored (only log)")).build()));
+                .respond(withErrorResponse(BAD_REQUEST_400,
+                        "A message that should be completely ignored (only log)",
+                        ErrorIdentifier.REFUND_NOT_AVAILABLE,
+                        reason));
     }
 }
