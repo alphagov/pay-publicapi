@@ -8,6 +8,8 @@ import uk.gov.pay.api.model.directdebit.agreement.MandateState;
 import uk.gov.pay.api.model.directdebit.agreement.MandateType;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
+import uk.gov.pay.api.utils.PublicAuthMockClient;
+import uk.gov.pay.api.utils.mocks.ConnectorDDMockClient;
 
 import javax.ws.rs.core.HttpHeaders;
 import java.time.ZonedDateTime;
@@ -22,6 +24,9 @@ import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_
 
 public class AgreementsResourceITest extends PaymentResourceITestBase {
 
+    private ConnectorDDMockClient connectorDDMockClient = new ConnectorDDMockClient(connectorDDMock);
+    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    
     private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
     private static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(TIMESTAMP);
     private static final String CHARGE_TOKEN_ID = "token_1234567asdf";
@@ -32,9 +37,9 @@ public class AgreementsResourceITest extends PaymentResourceITestBase {
 
     @Test
     public void createDirectDebitAgreement_withReference() {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
         
-        connectorDDMock.respondOk_whenCreateAgreementRequest(
+        connectorDDMockClient.respondOk_whenCreateAgreementRequest(
                 MANDATE_ID,
                 MandateType.ON_DEMAND,
                 MANDATE_REFERENCE,
@@ -80,14 +85,9 @@ public class AgreementsResourceITest extends PaymentResourceITestBase {
 
         String errorMessage = "something went wrong";
 
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
 
-        connectorDDMock.respondBadRequest_whenCreateAgreementRequest(
-                MandateType.ON_DEMAND,
-                "https://service-name.gov.uk/transactions/12345",
-                GATEWAY_ACCOUNT_ID,
-                errorMessage
-        );
+        connectorDDMockClient.respondBadRequest_whenCreateAgreementRequest(GATEWAY_ACCOUNT_ID, errorMessage);
 
         String payload = agreementPayload("https://service-name.gov.uk/transactions/12345", AgreementType.ON_DEMAND);
         given().port(app.getLocalPort())
@@ -136,9 +136,9 @@ public class AgreementsResourceITest extends PaymentResourceITestBase {
     @Test
     public void shouldGetADirectDebitAgreement_withReference() {
 
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
 
-        connectorDDMock.respondOk_whenGetAgreementRequest(
+        connectorDDMockClient.respondOk_whenGetAgreementRequest(
                 MANDATE_ID,
                 MandateType.ON_DEMAND,
                 MANDATE_REFERENCE,

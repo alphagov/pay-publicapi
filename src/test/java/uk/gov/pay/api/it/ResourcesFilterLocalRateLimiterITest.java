@@ -1,5 +1,6 @@
 package uk.gov.pay.api.it;
 
+import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -9,7 +10,6 @@ import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockserver.junit.MockServerRule;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.model.Address;
@@ -20,7 +20,6 @@ import uk.gov.pay.api.utils.ApiKeyGenerator;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
-import uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
@@ -39,11 +38,15 @@ import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertThat;
+import static org.mockserver.socket.PortFactory.findFreePort;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public class ResourcesFilterLocalRateLimiterITest {
 
+    private static final int CONNECTOR_PORT = findFreePort();
+    private static final int PUBLIC_AUTH_PORT = findFreePort();
+    
     private static final String API_KEY = ApiKeyGenerator.apiKeyValueOf("TEST_BEARER_TOKEN", "qwer9yuhgf");
     private static final String GATEWAY_ACCOUNT_ID = "GATEWAY_ACCOUNT_ID";
     private static final String PAYMENTS_PATH = "/v1/payments/";
@@ -66,28 +69,28 @@ public class ResourcesFilterLocalRateLimiterITest {
     private ExecutorService executor = Executors.newFixedThreadPool(2);
 
     @Rule
-    public MockServerRule connectorMockRule = new MockServerRule(this);
+    public WireMockClassRule connectorMock = new WireMockClassRule(CONNECTOR_PORT);
 
     @Rule
-    public MockServerRule publicAuthMockRule = new MockServerRule(this);
-
+    public WireMockClassRule publicAuthMock = new WireMockClassRule(PUBLIC_AUTH_PORT);
+    
     @Rule
     public DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
             PublicApi.class
             , resourceFilePath("config/test-config.yaml")
-            , config("connectorUrl", connectorBaseUrl())
-            , config("publicAuthUrl", publicAuthBaseUrl())
+            , config("connectorUrl", "http://localhost:" + CONNECTOR_PORT)
+            , config("publicAuthUrl", "http://localhost:" + PUBLIC_AUTH_PORT + "/v1/auth")
             , config("redis.endpoint", "http://path:6379")
     );
 
     @Before
     public void setup() {
-        ConnectorMockClient connectorMock = new ConnectorMockClient(connectorMockRule.getPort(), connectorBaseUrl());
-        PublicAuthMockClient publicAuthMock = new PublicAuthMockClient(publicAuthMockRule.getPort());
+        ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
+        PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
 
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
-        connectorMock.respondOk_whenCreateCharge(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
+        connectorMockClient.respondOk_whenCreateCharge(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
                 .withAmount(AMOUNT)
                 .withChargeId(CHARGE_ID)
                 .withState(CREATED)
@@ -179,14 +182,4 @@ public class ResourcesFilterLocalRateLimiterITest {
                 .post(PAYMENTS_PATH)
                 .then();
     }
-
-    private String connectorBaseUrl() {
-        return "http://localhost:" + connectorMockRule.getPort();
-    }
-
-    private String publicAuthBaseUrl() {
-        return "http://localhost:" + publicAuthMockRule.getPort() + "/v1/auth";
-    }
-
-
 }

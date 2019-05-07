@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import io.restassured.response.ValidatableResponse;
 import org.junit.Test;
 import uk.gov.pay.api.it.fixtures.PaymentNavigationLinksFixture;
+import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.util.Arrays;
@@ -18,10 +19,12 @@ import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeRespo
 
 public class ResourcesFilterRateLimiterITest extends ResourcesFilterITestBase {
 
+    private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
+    
     @Test
     public void createPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
 
-        connectorMock.respondOk_whenCreateCharge(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
+        connectorMockClient.respondOk_whenCreateCharge(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
                 .withAmount(AMOUNT)
                 .withChargeId(CHARGE_ID)
                 .withState(CREATED)
@@ -52,7 +55,7 @@ public class ResourcesFilterRateLimiterITest extends ResourcesFilterITestBase {
     @Test
     public void getPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
 
-        connectorMock.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+        connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 aCreateOrGetChargeResponseFromConnector()
                         .withAmount(AMOUNT)
                         .withChargeId(CHARGE_ID)
@@ -84,7 +87,7 @@ public class ResourcesFilterRateLimiterITest extends ResourcesFilterITestBase {
     @Test
     public void getPaymentEvents_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
 
-        connectorMock.respondWithChargeEventsFound(GATEWAY_ACCOUNT_ID, CHARGE_ID, EVENTS);
+        connectorMockClient.respondWithChargeEventsFound(GATEWAY_ACCOUNT_ID, CHARGE_ID, EVENTS);
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> getPaymentEventsResponse(API_KEY, CHARGE_ID),
@@ -112,7 +115,7 @@ public class ResourcesFilterRateLimiterITest extends ResourcesFilterITestBase {
                         .withNumberOfResults(1).getResults())
                 .build();
 
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, REFERENCE, null, null, null, null, null, null, null, null, payments);
+        connectorMockClient.respondOk_whenSearchCharges(null, payments);
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> searchPayments(API_KEY, ImmutableMap.of("reference", REFERENCE)),
@@ -129,7 +132,7 @@ public class ResourcesFilterRateLimiterITest extends ResourcesFilterITestBase {
     @Test
     public void cancelPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
 
-        connectorMock.respondOk_whenCancelCharge(CHARGE_ID, GATEWAY_ACCOUNT_ID);
+        connectorMockClient.respondOk_whenCancelCharge(CHARGE_ID, GATEWAY_ACCOUNT_ID);
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> postCancelPaymentResponse(API_KEY, CHARGE_ID),

@@ -1,20 +1,20 @@
 package uk.gov.pay.api.utils.mocks;
 
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
+import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.google.common.collect.ImmutableMap;
-import org.mockserver.client.server.ForwardChainExpectation;
-import org.mockserver.client.server.MockServerClient;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import java.util.Map;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static java.lang.String.format;
 import static javax.ws.rs.HttpMethod.GET;
 import static javax.ws.rs.HttpMethod.POST;
-import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.JsonBody.json;
-import static org.mockserver.verify.VerificationTimes.once;
 
 public abstract class BaseConnectorMockClient {
 
@@ -23,13 +23,11 @@ public abstract class BaseConnectorMockClient {
     static String CONNECTOR_MOCK_CHARGE_PATH = CONNECTOR_MOCK_CHARGES_PATH + "/%s";
     static String CONNECTOR_MOCK_MANDATES_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/mandates";
     static String CONNECTOR_MOCK_MANDATE_PATH = CONNECTOR_MOCK_MANDATES_PATH + "/%s";
+    
+    protected WireMockClassRule wireMockClassRule;
 
-    final MockServerClient mockClient;
-    final String baseUrl;
-
-    BaseConnectorMockClient(int port, String baseUrl) {
-        this.mockClient = new MockServerClient("localhost", port);
-        this.baseUrl = baseUrl;
+    public BaseConnectorMockClient(WireMockClassRule wireMockClassRule) {
+        this.wireMockClassRule = wireMockClassRule;
     }
 
     ImmutableMap<String, String> validGetLink(String href, String rel) {
@@ -49,11 +47,11 @@ public abstract class BaseConnectorMockClient {
     }
 
     String chargeLocation(String accountId, String chargeId) {
-        return baseUrl + format(CONNECTOR_MOCK_CHARGE_PATH, accountId, chargeId);
+        return format(CONNECTOR_MOCK_CHARGE_PATH, accountId, chargeId);
     }
 
     public String mandateLocation(String accountId, String mandateId) {
-        return baseUrl + format(CONNECTOR_MOCK_MANDATE_PATH, accountId, mandateId);
+        return format(CONNECTOR_MOCK_MANDATE_PATH, accountId, mandateId);
     }
 
     abstract String nextUrlPost();
@@ -62,20 +60,9 @@ public abstract class BaseConnectorMockClient {
         return nextUrlPost() + tokenId;
     }
 
-    ForwardChainExpectation whenCreateCharge(long amount, String gatewayAccountId, String returnUrl, String description, String reference) {
-        return mockClient.when(request()
-                .withMethod(POST)
-                .withPath(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId))
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                .withBody(createChargePayload(amount, returnUrl, description, reference))
-        );
-    }
-
-    ForwardChainExpectation whenGetCharge(String gatewayAccountId, String chargeId) {
-        return mockClient.when(request()
-                .withMethod(GET)
-                .withPath(format(CONNECTOR_MOCK_CHARGE_PATH, gatewayAccountId, chargeId))
-        );
+    void whenGetCharge(String gatewayAccountId, String chargeId, ResponseDefinitionBuilder response) {
+        wireMockClassRule.stubFor(get(urlPathEqualTo(format(CONNECTOR_MOCK_CHARGE_PATH, gatewayAccountId, chargeId)))
+                .willReturn(response));
     }
 
     String createChargePayload(long amount, String returnUrl, String description, String reference) {
@@ -104,20 +91,14 @@ public abstract class BaseConnectorMockClient {
     }
 
     public void verifyCreateChargeConnectorRequest(int amount, String gatewayAccountId, String returnUrl, String description, String reference) {
-        mockClient.verify(request()
-                        .withMethod(POST)
-                        .withPath(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId))
-                        .withBody(json(createChargePayload(amount, returnUrl, description, reference))),
-                once()
-        );
+        wireMockClassRule.verify(1, 
+                postRequestedFor(urlEqualTo(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId)))
+                        .withRequestBody(equalTo(createChargePayload(amount, returnUrl, description, reference))));
     }
 
     public void verifyCreateChargeConnectorRequest(String gatewayAccountId, CreateChargeRequestParams createChargeRequestParams) {
-        mockClient.verify(request()
-                        .withMethod(POST)
-                        .withPath(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId))
-                        .withBody(json(createChargePayload(createChargeRequestParams))),
-                once()
-        );
+        wireMockClassRule.verify(1,
+                postRequestedFor(urlEqualTo(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId)))
+                        .withRequestBody(equalTo(createChargePayload(createChargeRequestParams))));
     }
 }

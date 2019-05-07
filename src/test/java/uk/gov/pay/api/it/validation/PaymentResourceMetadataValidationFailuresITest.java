@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
 import uk.gov.pay.api.utils.JsonStringBuilder;
+import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.CreateChargeRequestParams;
 import uk.gov.pay.api.utils.mocks.CreateChargeRequestParams.CreateChargeRequestParamsBuilder;
 
@@ -36,10 +37,12 @@ public class PaymentResourceMetadataValidationFailuresITest extends PaymentResou
                 .withDescription("DESCRIPTION")
                 .withReference("REFERENCE")
                 .withReturnUrl("https://somewhere.gov.uk/rainbow/1");
+
+    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
     
     @Before
     public void before() {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
     }
 
     @Test

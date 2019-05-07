@@ -10,6 +10,8 @@ import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.utils.DateTimeUtils;
+import uk.gov.pay.api.utils.PublicAuthMockClient;
+import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.time.ZonedDateTime;
@@ -39,10 +41,13 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
     private static final CardDetails CARD_DETAILS = new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, "Visa");
 
+    private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
+    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    
     @Test
     public void getRefundById_shouldGetValidResponse() {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondWithGetRefundById(GATEWAY_ACCOUNT_ID, CHARGE_ID, REFUND_ID, AMOUNT, REFUND_AMOUNT_AVAILABLE, "available", CREATED_DATE);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMockClient.respondWithGetRefundById(GATEWAY_ACCOUNT_ID, CHARGE_ID, REFUND_ID, AMOUNT, REFUND_AMOUNT_AVAILABLE, "available", CREATED_DATE);
 
         getPaymentRefundByIdResponse(API_KEY, CHARGE_ID, REFUND_ID)
                 .statusCode(200)
@@ -57,7 +62,7 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
 
     @Test
     public void getRefundById_shouldGetNonAuthorized_whenPublicAuthRespondsUnauthorised() {
-        publicAuthMock.respondUnauthorised();
+        publicAuthMockClient.respondUnauthorised();
 
         getPaymentRefundByIdResponse(API_KEY, CHARGE_ID, REFUND_ID)
                 .statusCode(401);
@@ -65,8 +70,8 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
 
     @Test
     public void getRefundById_shouldReturnNotFound_whenRefundDoesNotExist() {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondRefundNotFound(GATEWAY_ACCOUNT_ID, CHARGE_ID, "unknown-refund-id");
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMockClient.respondRefundNotFound(GATEWAY_ACCOUNT_ID, CHARGE_ID, "unknown-refund-id");
 
         getPaymentRefundByIdResponse(API_KEY, CHARGE_ID, REFUND_ID)
                 .statusCode(404)
@@ -77,8 +82,8 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
 
     @Test
     public void getRefundById_returns500_whenConnectorRespondsWithResponseOtherThan200Or404() {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondRefundWithError(GATEWAY_ACCOUNT_ID, CHARGE_ID, REFUND_ID);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMockClient.respondRefundWithError(GATEWAY_ACCOUNT_ID, CHARGE_ID, REFUND_ID);
 
         getPaymentRefundByIdResponse(API_KEY, CHARGE_ID, REFUND_ID)
                 .statusCode(500)
@@ -89,12 +94,12 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
 
     @Test
     public void getRefunds_shouldGetValidResponse() {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         PaymentRefundJsonFixture refund_1 = new PaymentRefundJsonFixture(100L, CREATED_DATE, "100", "available", new ArrayList<>());
         PaymentRefundJsonFixture refund_2 = new PaymentRefundJsonFixture(300L, CREATED_DATE, "300", "pending", new ArrayList<>());
 
-        connectorMock.respondWithGetAllRefunds(GATEWAY_ACCOUNT_ID, CHARGE_ID, refund_1, refund_2);
+        connectorMockClient.respondWithGetAllRefunds(GATEWAY_ACCOUNT_ID, CHARGE_ID, refund_1, refund_2);
 
         getPaymentRefundsResponse(API_KEY, CHARGE_ID)
                 .statusCode(200)
@@ -121,8 +126,8 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
 
     @Test
     public void getRefunds_shouldGetValidResponse_whenListReturnedIsEmpty() {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondWithGetAllRefunds(GATEWAY_ACCOUNT_ID, CHARGE_ID);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMockClient.respondWithGetAllRefunds(GATEWAY_ACCOUNT_ID, CHARGE_ID);
 
         getPaymentRefundsResponse(API_KEY, CHARGE_ID)
                 .statusCode(200)
@@ -135,7 +140,7 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
 
     @Test
     public void getRefunds_shouldGetNonAuthorized_whenPublicAuthRespondsUnauthorised() {
-        publicAuthMock.respondUnauthorised();
+        publicAuthMockClient.respondUnauthorised();
 
         getPaymentRefundsResponse(API_KEY, CHARGE_ID)
                 .statusCode(401);
@@ -154,7 +159,7 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
         String payload = new GsonBuilder().create().toJson(
                 ImmutableMap.of("amount", AMOUNT));
 
-        connectorMock.respondWithChargeFound(null, GATEWAY_ACCOUNT_ID,
+        connectorMockClient.respondWithChargeFound(null, GATEWAY_ACCOUNT_ID,
                 aCreateOrGetChargeResponseFromConnector()
                         .withAmount(AMOUNT)
                         .withChargeId(CHARGE_ID)
@@ -172,10 +177,10 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
     public void createRefundWhenRefundAmountAvailableMismatch_shouldReturn412Response() {
         String payload = new GsonBuilder().create().toJson(
                 ImmutableMap.of("amount", AMOUNT, "refund_amount_available", REFUND_AMOUNT_AVAILABLE));
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         String errorMessage = new GsonBuilder().create().toJson(
                 ImmutableMap.of("code", "P0604", "description", "Refund amount available mismatch."));
-        connectorMock.respondPreconditionFailed_whenCreateRefund(AMOUNT, REFUND_AMOUNT_AVAILABLE, GATEWAY_ACCOUNT_ID, errorMessage, CHARGE_ID);
+        connectorMockClient.respondPreconditionFailed_whenCreateRefund(GATEWAY_ACCOUNT_ID, errorMessage, CHARGE_ID);
 
         postRefunds(payload)
                 .then()
@@ -187,7 +192,7 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
 
     @Test
     public void createRefund_shouldGetNonAuthorized_whenPublicAuthRespondsUnauthorised() {
-        publicAuthMock.respondUnauthorised();
+        publicAuthMockClient.respondUnauthorised();
 
         postRefunds("{\"amount\": 1000}")
                 .then()
@@ -195,9 +200,9 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
     }
 
     private void postRefundRequest(String payload) {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         String refundStatus = "available";
-        connectorMock.respondAccepted_whenCreateARefund(AMOUNT, REFUND_AMOUNT_AVAILABLE, GATEWAY_ACCOUNT_ID, CHARGE_ID, REFUND_ID, refundStatus, CREATED_DATE);
+        connectorMockClient.respondAccepted_whenCreateARefund(AMOUNT, REFUND_AMOUNT_AVAILABLE, GATEWAY_ACCOUNT_ID, CHARGE_ID, REFUND_ID, refundStatus, CREATED_DATE);
 
         postRefunds(payload)
                 .then()

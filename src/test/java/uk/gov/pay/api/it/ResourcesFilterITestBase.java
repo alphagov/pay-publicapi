@@ -14,6 +14,7 @@ import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
+import uk.gov.pay.api.utils.PublicAuthMockClient;
 
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -54,9 +55,11 @@ abstract public class ResourcesFilterITestBase extends PaymentResourceITestBase 
     protected static final String PAYLOAD = paymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE);
     protected ExecutorService executor = Executors.newFixedThreadPool(2);
 
+    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+
     @Before
     public void setupApiKey() {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
     }
 
     protected List<ValidatableResponse> invokeAll(List<Callable<ValidatableResponse>> tasks) throws InterruptedException {

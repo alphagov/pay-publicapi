@@ -725,6 +725,7 @@
           "description" : "email of the card holder"
         },
         "prefilled_cardholder_details" : {
+          "example" : "J. Bogs",
           "description" : "prefilled cardholder details",
           "$ref" : "#/definitions/PrefilledCardholderDetails"
         }

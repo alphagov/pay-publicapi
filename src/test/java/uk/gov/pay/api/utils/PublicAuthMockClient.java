@@ -1,28 +1,27 @@
 package uk.gov.pay.api.utils;
 
-import org.mockserver.client.server.MockServerClient;
+import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import uk.gov.pay.api.model.TokenPaymentType;
 
-import static javax.ws.rs.HttpMethod.GET;
-import static javax.ws.rs.core.HttpHeaders.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.matching;
+import static javax.ws.rs.core.HttpHeaders.ACCEPT;
+import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
 
 public class PublicAuthMockClient {
 
-    private final MockServerClient mockClient;
+    private WireMockClassRule publicAuthClassRule;
 
-    public PublicAuthMockClient(int mockServerPort) {
-        this.mockClient = new MockServerClient("localhost", mockServerPort);
+    public PublicAuthMockClient(WireMockClassRule publicAuthClassRule) {
+        this.publicAuthClassRule = publicAuthClassRule;
     }
 
     public void respondUnauthorised() {
-        mockClient.when(request()
-                .withMethod(GET)
-                .withHeader(ACCEPT, APPLICATION_JSON))
-                .respond(response().withStatusCode(401));
-
+        publicAuthClassRule.stubFor(get("/v1/auth").withHeader(ACCEPT, matching(APPLICATION_JSON))
+                .willReturn(aResponse().withStatus(401)));
     }
 
     public void mapBearerTokenToAccountId(String bearerToken, String gatewayAccountId) {
@@ -30,19 +29,15 @@ public class PublicAuthMockClient {
     }
 
     public void mapBearerTokenToAccountId(String bearerToken, String gatewayAccountId, TokenPaymentType tokenType) {
-        mockClient.when(request()
-                .withPath("/v1/auth")
-                .withMethod(GET)
-                .withHeader(ACCEPT, APPLICATION_JSON)
-                .withHeader(AUTHORIZATION, "Bearer " + bearerToken))
-                .respond(response().withStatusCode(200).withBody("{\"account_id\" : \"" + gatewayAccountId + "\", \"token_type\" : \"" + tokenType.toString() + "\"}").withHeader(CONTENT_TYPE, APPLICATION_JSON));
+        publicAuthClassRule.stubFor(get("/v1/auth")
+                .withHeader(ACCEPT, matching(APPLICATION_JSON))
+                .withHeader(AUTHORIZATION, matching("Bearer " + bearerToken))
+                .willReturn(aResponse().withStatus(200).withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withBody("{\"account_id\" : \"" + gatewayAccountId + "\", \"token_type\" : \"" + tokenType.toString() + "\"}")));
     }
 
     public void respondWithError() {
-        mockClient.when(request()
-                .withMethod(GET)
-                .withHeader(ACCEPT, APPLICATION_JSON))
-                .respond(response().withStatusCode(500));
-
+        publicAuthClassRule.stubFor(get("").withHeader(ACCEPT, matching(APPLICATION_JSON))
+                .willReturn(aResponse().withStatus(500)));
     }
 }

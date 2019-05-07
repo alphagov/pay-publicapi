@@ -8,6 +8,8 @@ import uk.gov.pay.api.it.PaymentResourceITestBase;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.RefundSummary;
+import uk.gov.pay.api.utils.PublicAuthMockClient;
+import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.io.IOException;
@@ -26,9 +28,12 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
     private static final CardDetails CARD_DETAILS = new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, "Visa");
 
+    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
+    
     @Before
     public void setUpBearerToken() {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
     }
 
     @Test
@@ -273,7 +278,7 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
         int amount = 1000;
         String externalChargeId = "charge_12345";
 
-        connectorMock.respondWithChargeFound(null, GATEWAY_ACCOUNT_ID,
+        connectorMockClient.respondWithChargeFound(null, GATEWAY_ACCOUNT_ID,
                 aCreateOrGetChargeResponseFromConnector()
                         .withAmount(amount)
                         .withChargeId(externalChargeId)
@@ -284,7 +289,7 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
                         .withGatewayTransactionId("gatewayTransactionId")
                         .build());
         
-        connectorMock.respondBadRequest_whenCreateARefund("full", amount, REFUND_AMOUNT_AVAILABLE, GATEWAY_ACCOUNT_ID, externalChargeId);
+        connectorMockClient.respondBadRequest_whenCreateARefund("full", GATEWAY_ACCOUNT_ID, externalChargeId);
 
         String refundRequest = "{\"amount\":" + amount + "}";
 
@@ -305,7 +310,7 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
         int amount = 1000;
         String externalChargeId = "charge_12345";
 
-        connectorMock.respondWithChargeFound(null, GATEWAY_ACCOUNT_ID,
+        connectorMockClient.respondWithChargeFound(null, GATEWAY_ACCOUNT_ID,
                 aCreateOrGetChargeResponseFromConnector()
                         .withAmount(amount)
                         .withChargeId(externalChargeId)
@@ -316,7 +321,7 @@ public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourc
                         .withGatewayTransactionId("gatewayTransactionId")
                         .build());
         
-        connectorMock.respondBadRequest_whenCreateARefund("pending", amount, REFUND_AMOUNT_AVAILABLE, GATEWAY_ACCOUNT_ID, externalChargeId);
+        connectorMockClient.respondBadRequest_whenCreateARefund("pending", GATEWAY_ACCOUNT_ID, externalChargeId);
 
         String refundRequest = "{\"amount\":" + amount + "}";
 
