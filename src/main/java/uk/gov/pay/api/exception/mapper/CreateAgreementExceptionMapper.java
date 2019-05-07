@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.exception.CreateAgreementException;
 import uk.gov.pay.api.model.directdebit.agreement.AgreementError;
 import uk.gov.pay.api.model.directdebit.agreement.AgreementError.Code;
+import uk.gov.pay.commons.model.ErrorIdentifier;
 
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
@@ -22,7 +23,7 @@ public class CreateAgreementExceptionMapper implements ExceptionMapper<CreateAgr
         AgreementError agreementError;
         if (exception.getErrorStatus() == NOT_FOUND.getStatusCode()) {
             agreementError = anAgreementError(AgreementError.Code.CREATE_AGREEMENT_ACCOUNT_ERROR);
-        } else if (exception.getErrorStatus() == PRECONDITION_FAILED.getStatusCode()) {
+        } else if (exception.getErrorIdentifier() == ErrorIdentifier.INVALID_MANDATE_TYPE) {
             agreementError = anAgreementError(Code.CREATE_AGREEMENT_TYPE_ERROR);
         } else {
             agreementError = anAgreementError(AgreementError.Code.CREATE_AGREEMENT_CONNECTOR_ERROR);

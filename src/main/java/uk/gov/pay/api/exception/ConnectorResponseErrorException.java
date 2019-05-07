@@ -1,8 +1,10 @@
 package uk.gov.pay.api.exception;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.commons.model.ErrorIdentifier;
 
 import javax.ws.rs.core.Response;
 
@@ -26,6 +28,10 @@ public class ConnectorResponseErrorException extends RuntimeException {
 
     public int getErrorStatus() {
         return status;
+    }
+    
+    public ErrorIdentifier getErrorIdentifier() {
+        return error == null ? ErrorIdentifier.GENERIC : error.errorIdentifier;
     }
 
     public String getReason() {
@@ -68,13 +74,21 @@ public class ConnectorResponseErrorException extends RuntimeException {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class ConnectorErrorResponse {
 
+        @JsonProperty("error_identifier")
+        private ErrorIdentifier errorIdentifier;
+        
         private String reason;
+        
         private Object message;
+
+        public ErrorIdentifier getErrorIdentifier() {
+            return errorIdentifier;
+        }
 
         public String getReason() {
             return reason;
         }
-
+        
         public Object getMessage() {
             return message;
         }
@@ -82,7 +96,8 @@ public class ConnectorResponseErrorException extends RuntimeException {
         @Override
         public String toString() {
             return "ConnectorErrorResponse{" +
-                    "reason='" + reason + '\'' +
+                    "error_identifier='" + errorIdentifier + '\'' +
+                    ", reason='" + reason + '\'' +
                     ", message='" + message + '\'' +
                     '}';
         }

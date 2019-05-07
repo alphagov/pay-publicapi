@@ -1,14 +1,18 @@
 package uk.gov.pay.api.utils.mocks;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.GsonBuilder;
 import org.mockserver.client.server.ForwardChainExpectation;
 import org.mockserver.model.HttpResponse;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.directdebit.agreement.MandateState;
 import uk.gov.pay.api.model.directdebit.agreement.MandateType;
 import uk.gov.pay.api.utils.JsonStringBuilder;
+import uk.gov.pay.commons.model.ErrorIdentifier;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -20,9 +24,9 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
 import static org.eclipse.jetty.http.HttpStatus.CREATED_201;
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
+import static org.eclipse.jetty.http.HttpStatus.PRECONDITION_FAILED_412;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
-import static uk.gov.pay.api.utils.JsonStringBuilder.jsonString;
 
 public class ConnectorDDMockClient extends BaseConnectorMockClient {
 
@@ -115,7 +119,15 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                                                              String gatewayAccountId,
                                                              String errorMsg) {
         whenCreateAgreement(returnUrl, mandateType, gatewayAccountId)
-                .respond(withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg));
+                .respond(withErrorResponse(BAD_REQUEST_400, errorMsg));
+    }
+
+    public void respondWithMandateTypeInvalid_whenCreateAgreementRequest(MandateType mandateType,
+                                                                         String returnUrl,
+                                                                         String gatewayAccountId,
+                                                                         String errorMsg) {
+        whenCreateAgreement(returnUrl, mandateType, gatewayAccountId)
+                .respond(withErrorResponse(PRECONDITION_FAILED_412, errorMsg, ErrorIdentifier.INVALID_MANDATE_TYPE));
     }
 
     private String buildCreateAgreementResponse(String mandateId,
@@ -205,10 +217,17 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                 .build();
     }
 
-    private HttpResponse withStatusAndErrorMessage(int statusCode, String errorMsg) {
+    private HttpResponse withErrorResponse(int statusCode, String errorMsg) {
+        return withErrorResponse(statusCode, errorMsg, ErrorIdentifier.GENERIC);
+    }
+    
+    private HttpResponse withErrorResponse(int statusCode, String errorMsg, ErrorIdentifier errorIdentifier) {
         return response()
                 .withStatusCode(statusCode)
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                .withBody(jsonString("message", errorMsg));
+                .withBody(new GsonBuilder().create().toJson(Map.of(
+                        "message", List.of(errorMsg),
+                        "error_identifier", errorIdentifier.toString()
+                )));
     }
 }
