@@ -54,7 +54,7 @@ public class RedisRateLimiter {
         try (Jedis jedis = getResource()) {
             Long count = jedis.incr(derivedKey);
             
-            if (count == 1) {   
+            if (count == 1) {
                 jedis.expire(derivedKey, perMillis / 1000);
             }
             return count;

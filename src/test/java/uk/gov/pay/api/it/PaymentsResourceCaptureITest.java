@@ -2,6 +2,7 @@ package uk.gov.pay.api.it;
 
 import com.jayway.jsonassert.JsonAssert;
 import io.restassured.response.ValidatableResponse;
+import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
@@ -28,19 +29,14 @@ public class PaymentsResourceCaptureITest extends PaymentResourceITestBase {
     @Test
     public void capturePayment_Returns401_WhenUnauthorised() {
         publicAuthMockClient.respondUnauthorised();
-
-        postCapturePaymentResponse(TEST_CHARGE_ID)
-                .statusCode(401);
+        postCapturePaymentResponse(TEST_CHARGE_ID).statusCode(401);
     }
 
     @Test
     public void successful_whenConnector_AllowsCapture() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMockClient.respondOk_whenCaptureCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID);
-
-        postCapturePaymentResponse(TEST_CHARGE_ID)
-                .statusCode(204);
-
+        postCapturePaymentResponse(TEST_CHARGE_ID).statusCode(204);
         connectorMockClient.verifyCaptureCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID);
     }
 

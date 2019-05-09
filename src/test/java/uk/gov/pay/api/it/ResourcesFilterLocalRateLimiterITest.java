@@ -8,6 +8,7 @@ import io.restassured.response.ValidatableResponse;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.pay.api.app.PublicApi;
@@ -68,14 +69,14 @@ public class ResourcesFilterLocalRateLimiterITest {
     private static final String PAYLOAD = paymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE);
     private ExecutorService executor = Executors.newFixedThreadPool(2);
 
-    @Rule
-    public WireMockClassRule connectorMock = new WireMockClassRule(CONNECTOR_PORT);
+    @ClassRule
+    public static WireMockClassRule connectorMock = new WireMockClassRule(CONNECTOR_PORT);
 
-    @Rule
-    public WireMockClassRule publicAuthMock = new WireMockClassRule(PUBLIC_AUTH_PORT);
+    @ClassRule
+    public static WireMockClassRule publicAuthMock = new WireMockClassRule(PUBLIC_AUTH_PORT);
     
-    @Rule
-    public DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
+    @ClassRule
+    public static DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
             PublicApi.class
             , resourceFilePath("config/test-config.yaml")
             , config("connectorUrl", "http://localhost:" + CONNECTOR_PORT)

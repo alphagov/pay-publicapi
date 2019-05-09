@@ -10,7 +10,6 @@ import uk.gov.pay.api.model.directdebit.agreement.MandateType;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.commons.model.ErrorIdentifier;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +27,8 @@ import static org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
 import static org.eclipse.jetty.http.HttpStatus.CREATED_201;
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
 import static org.eclipse.jetty.http.HttpStatus.PRECONDITION_FAILED_412;
+import static uk.gov.pay.commons.model.ErrorIdentifier.GENERIC;
+import static uk.gov.pay.commons.model.ErrorIdentifier.INVALID_MANDATE_TYPE;
 
 public class ConnectorDDMockClient extends BaseConnectorMockClient {
 
@@ -43,10 +44,7 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                 description, reference, email, paymentProvider, createdDate,
                 validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
                 validGetLink(nextUrl(chargeId), "next_url"),
-                validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",
-                        new HashMap<String, String>() {{
-                            put("chargeTokenId", chargeTokenId);
-                        }}));
+                validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", Map.of("chargeTokenId", chargeTokenId)));
         whenGetCharge(gatewayAccountId, chargeId, aResponse()
                         .withStatus(OK_200)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
@@ -76,11 +74,8 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                                 state,
                                 validGetLink(mandateLocation(gatewayAccountId, mandateId), "self"),
                                 validGetLink(nextUrl(chargeTokenId), "next_url"),
-                                validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",
-                                        new HashMap<String, String>() {{
-                                            put("chargeTokenId", chargeTokenId);
-                                        }})
-                        ))
+                                validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", Map.of("chargeTokenId", chargeTokenId)
+                        )))
                 );
     }
 
@@ -104,24 +99,17 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                                 state,
                                 validGetLink(mandateLocation(gatewayAccountId, mandateId), "self"),
                                 validGetLink(nextUrl(chargeTokenId), "next_url"),
-                                validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded",
-                                        new HashMap<String, String>() {{
-                                            put("chargeTokenId", chargeTokenId);
-                                        }})
-                        ))
+                                validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", Map.of("chargeTokenId", chargeTokenId)
+                        )))
                 );
     }
 
     public void respondBadRequest_whenCreateAgreementRequest(String gatewayAccountId, String errorMsg) {
-        setupCreateAgreement(gatewayAccountId, withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg));
+        setupCreateAgreement(gatewayAccountId, withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg, GENERIC));
     }
 
-    public void respondWithMandateTypeInvalid_whenCreateAgreementRequest(MandateType mandateType,
-                                                                         String returnUrl,
-                                                                         String gatewayAccountId,
-                                                                         String errorMsg) {
-        whenCreateAgreement(returnUrl, mandateType, gatewayAccountId)
-                .respond(withErrorResponse(PRECONDITION_FAILED_412, errorMsg, ErrorIdentifier.INVALID_MANDATE_TYPE));
+    public void respondWithMandateTypeInvalid_whenCreateAgreementRequest(String gatewayAccountId, String errorMsg) {
+        setupCreateAgreement(gatewayAccountId, withStatusAndErrorMessage(PRECONDITION_FAILED_412, errorMsg, INVALID_MANDATE_TYPE));
     }
 
     private String buildCreateAgreementResponse(String mandateId,
@@ -194,17 +182,6 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
         wireMockClassRule.stubFor(get(urlPathEqualTo(format("/v1/api/accounts/%s/mandates/%s", gatewayAccountId, mandateId)))
                 .willReturn(response));
     }
-
-    private String createAgreementPayload(String returnUrl, MandateType mandateType) {
-        return new JsonStringBuilder()
-                .add("return_url", returnUrl)
-                .add("agreement_type", mandateType)
-                .build();
-    }
-    
-    private ResponseDefinitionBuilder withErrorResponse(int statusCode, String errorMsg) {
-        return withStatusAndErrorMessage(statusCode, errorMsg, ErrorIdentifier.GENERIC);
-    }
     
     private ResponseDefinitionBuilder withStatusAndErrorMessage(int statusCode, String errorMsg, ErrorIdentifier errorIdentifier) {
         return aResponse()
@@ -212,7 +189,6 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                 .withBody(new GsonBuilder().create().toJson(Map.of(
                         "message", List.of(errorMsg),
-                        "error_identifier", errorIdentifier.toString()
-                )));
+                        "error_identifier", errorIdentifier.toString())));
     }
 }

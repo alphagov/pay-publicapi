@@ -28,19 +28,14 @@ public class PaymentsCancelResourceITest extends PaymentResourceITestBase {
     @Test
     public void cancelPayment_Returns401_WhenUnauthorised() {
         publicAuthMockClient.respondUnauthorised();
-
-        postCancelPaymentResponse(TEST_CHARGE_ID)
-                .statusCode(401);
+        postCancelPaymentResponse(TEST_CHARGE_ID).statusCode(401);
     }
 
     @Test
     public void successful_whenConnector_AllowsCancellation() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMockClient.respondOk_whenCancelCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID);
-
-        postCancelPaymentResponse(TEST_CHARGE_ID)
-                .statusCode(204);
-
+        postCancelPaymentResponse(TEST_CHARGE_ID).statusCode(204);
         connectorMockClient.verifyCancelCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID);
     }
 

@@ -2,6 +2,7 @@ package uk.gov.pay.api.utils.mocks;
 
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
+import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
 import org.mockserver.model.Parameter;
@@ -53,6 +54,10 @@ import static uk.gov.pay.api.it.fixtures.PaymentSingleResultBuilder.aSuccessfulS
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonString;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 import static uk.gov.pay.api.utils.mocks.CreateChargeRequestParams.CreateChargeRequestParamsBuilder.aCreateChargeRequestParams;
+import static uk.gov.pay.commons.model.ErrorIdentifier.GENERIC;
+import static uk.gov.pay.commons.model.ErrorIdentifier.INVALID_MANDATE_TYPE;
+import static uk.gov.pay.commons.model.ErrorIdentifier.REFUND_AMOUNT_AVAILABLE_MISMATCH;
+import static uk.gov.pay.commons.model.ErrorIdentifier.REFUND_NOT_AVAILABLE;
 
 public class ConnectorMockClient extends BaseConnectorMockClient {
 
@@ -211,21 +216,15 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     }
 
     public void respondBadRequest_whenCreateCharge(String gatewayAccountId, String errorMsg) {
-        mockCreateCharge(gatewayAccountId, withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg));
+        mockCreateCharge(gatewayAccountId, withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg, GENERIC));
     }
 
-    public void respondBadRequest_whenCreateCharge(long amount, String gatewayAccountId, String errorMsg, String returnUrl, String description, String reference) {
-        whenCreateCharge(amount, gatewayAccountId, returnUrl, description, reference)
-                .respond(withErrorResponse(BAD_REQUEST_400, errorMsg));
-    }
-
-    public void respondMandateTypeInvalid_whenCreateCharge(long amount, String gatewayAccountId, String errorMsg, String returnUrl, String description, String reference) {
-        whenCreateCharge(amount, gatewayAccountId, returnUrl, description, reference)
-                .respond(withErrorResponse(PRECONDITION_FAILED_412, errorMsg, ErrorIdentifier.INVALID_MANDATE_TYPE));
+    public void respondMandateTypeInvalid_whenCreateCharge(String gatewayAccountId, String errorMsg) {
+        mockCreateCharge(gatewayAccountId, withStatusAndErrorMessage(PRECONDITION_FAILED_412, errorMsg, INVALID_MANDATE_TYPE));
     }
 
     public void respondPreconditionFailed_whenCreateRefund(String gatewayAccountId, String errorMsg, String chargeId) {
-        whenCreateRefund(gatewayAccountId, chargeId, withStatusAndErrorMessage(PRECONDITION_FAILED_412, errorMsg, ErrorIdentifier.REFUND_AMOUNT_AVAILABLE_MISMATCH));
+        whenCreateRefund(gatewayAccountId, chargeId, withStatusAndErrorMessage(PRECONDITION_FAILED_412, errorMsg, REFUND_AMOUNT_AVAILABLE_MISMATCH));
     }
 
     public void respondWithChargeFound(String chargeTokenId, String gatewayAccountId, ChargeResponseFromConnector chargeResponseFromConnector) {
@@ -291,13 +290,13 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     public void respondRefundNotFound(String gatewayAccountId, String chargeId, String refundId) {
         whenGetRefundById(gatewayAccountId, chargeId, refundId,
-                withStatusAndErrorMessage(BAD_REQUEST_400, String.format("Refund with id [%s] not found.", refundId)));
+                withStatusAndErrorMessage(BAD_REQUEST_400, String.format("Refund with id [%s] not found.", refundId), GENERIC));
 
     }
 
     public void respondRefundWithError(String gatewayAccountId, String chargeId, String refundId) {
         whenGetRefundById(gatewayAccountId, chargeId, refundId,
-                withStatusAndErrorMessage(INTERNAL_SERVER_ERROR_500, "server error"));
+                withStatusAndErrorMessage(INTERNAL_SERVER_ERROR_500, "server error", GENERIC));
 
     }
 
@@ -314,7 +313,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     }
 
     public void respondWhenGetCharge(String gatewayAccountId, String chargeId, String errorMsg, int status) {
-        whenGetCharge(gatewayAccountId, chargeId, withStatusAndErrorMessage(status, errorMsg));
+        whenGetCharge(gatewayAccountId, chargeId, withStatusAndErrorMessage(status, errorMsg, GENERIC));
     }
 
     public void respondChargeEventsNotFound(String gatewayAccountId, String chargeId, String errorMsg) {
@@ -322,7 +321,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     }
 
     public void respondWhenGetChargeEvents(String gatewayAccountId, String chargeId, String errorMsg, int status) {
-        whenGetChargeEvents(gatewayAccountId, chargeId, withStatusAndErrorMessage(status, errorMsg));
+        whenGetChargeEvents(gatewayAccountId, chargeId, withStatusAndErrorMessage(status, errorMsg, GENERIC));
     }
 
     public void respondOk_whenCancelCharge(String paymentId, String accountId) {
@@ -346,11 +345,11 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     }
 
     public void respond_WhenCancelCharge(String paymentId, String accountId, String errorMessage, int status) {
-        whenCancelCharge(paymentId, accountId, withStatusAndErrorMessage(status, errorMessage));
+        whenCancelCharge(paymentId, accountId, withStatusAndErrorMessage(status, errorMessage, GENERIC, null));
     }
 
     public void respond_WhenCaptureCharge(String paymentId, String accountId, String errorMessage, int status) {
-        whenCaptureCharge(paymentId, accountId, withStatusAndErrorMessage(status, errorMessage));
+        whenCaptureCharge(paymentId, accountId, withStatusAndErrorMessage(status, errorMessage, GENERIC, null));
     }
 
     public void mockCreateCharge(String gatewayAccountId, ResponseDefinitionBuilder responseDefinitionBuilder) {
@@ -437,6 +436,10 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         return format(CONNECTOR_MOCK_CHARGE_PATH + "/capture", accountId, paymentId);
     }
 
+    private ResponseDefinitionBuilder withStatusAndErrorMessage(int statusCode, String errorMsg, ErrorIdentifier errorIdentifier) {
+        return withStatusAndErrorMessage(statusCode, errorMsg, errorIdentifier, null);
+    }
+    
     private ResponseDefinitionBuilder withStatusAndErrorMessage(int statusCode, String errorMsg, ErrorIdentifier errorIdentifier, String reason) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("message", List.of(errorMsg));
@@ -467,17 +470,8 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     }
 
     public void respondBadRequest_whenCreateARefund(String reason, String gatewayAccountId, String chargeId) {
-        whenCreateRefund(gatewayAccountId, chargeId, aResponse()
-                .withStatus(BAD_REQUEST_400)
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                .withBody(new JsonStringBuilder()
-                        .add("reason", reason)
-                        .add("message", List.of("A message that should be completely ignored (only log)")).build()));
-//    public void respondBadRequest_whenCreateARefund(String reason, int amount, int refundAmountAvailable, String gatewayAccountId, String chargeId) {
-//        whenCreateRefund(amount, refundAmountAvailable, gatewayAccountId, chargeId)
-//                .respond(withErrorResponse(BAD_REQUEST_400,
-//                        "A message that should be completely ignored (only log)",
-//                        ErrorIdentifier.REFUND_NOT_AVAILABLE,
-//                        reason));
+        whenCreateRefund(gatewayAccountId, chargeId, 
+                withStatusAndErrorMessage(BAD_REQUEST_400, 
+                        "A message that should be completely ignored (only log)", REFUND_NOT_AVAILABLE, reason));
     }
 }

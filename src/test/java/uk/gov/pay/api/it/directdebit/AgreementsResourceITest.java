@@ -109,11 +109,9 @@ public class AgreementsResourceITest extends PaymentResourceITestBase {
 
         String errorMessage = "something went wrong";
 
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
 
-        connectorDDMock.respondWithMandateTypeInvalid_whenCreateAgreementRequest(
-                MandateType.ONE_OFF,
-                "https://service-name.gov.uk/transactions/12345",
+        connectorDDMockClient.respondWithMandateTypeInvalid_whenCreateAgreementRequest(
                 GATEWAY_ACCOUNT_ID,
                 errorMessage
         );

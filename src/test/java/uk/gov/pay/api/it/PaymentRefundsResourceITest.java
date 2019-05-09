@@ -1,6 +1,5 @@
 package uk.gov.pay.api.it;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
@@ -16,6 +15,7 @@ import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
@@ -148,16 +148,13 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
 
     @Test
     public void createRefund_shouldGetAcceptedResponse() {
-        String payload = new GsonBuilder().create().toJson(
-                ImmutableMap.of("amount", AMOUNT, "refund_amount_available", REFUND_AMOUNT_AVAILABLE));
-
+        String payload = new GsonBuilder().create().toJson(Map.of("amount", AMOUNT, "refund_amount_available", REFUND_AMOUNT_AVAILABLE));
         postRefundRequest(payload);
     }
 
     @Test
     public void createRefundWithNoRefundAmountAvailable_shouldGetAcceptedResponse() {
-        String payload = new GsonBuilder().create().toJson(
-                ImmutableMap.of("amount", AMOUNT));
+        String payload = new GsonBuilder().create().toJson(Map.of("amount", AMOUNT));
 
         connectorMockClient.respondWithChargeFound(null, GATEWAY_ACCOUNT_ID,
                 aCreateOrGetChargeResponseFromConnector()
@@ -176,10 +173,10 @@ public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
     @Test
     public void createRefundWhenRefundAmountAvailableMismatch_shouldReturn412Response() {
         String payload = new GsonBuilder().create().toJson(
-                ImmutableMap.of("amount", AMOUNT, "refund_amount_available", REFUND_AMOUNT_AVAILABLE));
+                Map.of("amount", AMOUNT, "refund_amount_available", REFUND_AMOUNT_AVAILABLE));
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         String errorMessage = new GsonBuilder().create().toJson(
-                ImmutableMap.of("code", "P0604", "description", "Refund amount available mismatch."));
+                Map.of("code", "P0604", "description", "Refund amount available mismatch."));
         connectorMockClient.respondPreconditionFailed_whenCreateRefund(GATEWAY_ACCOUNT_ID, errorMessage, CHARGE_ID);
 
         postRefunds(payload)

@@ -175,14 +175,12 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
 
     @Test
     public void searchPayments_ShouldNotIncludeCancelLinkIfThePaymentCannotBeCancelled() {
-        String SUCCEEDED_STATE = "success";
-
         String payments = aPaginatedPaymentSearchResult()
                 .withCount(10)
                 .withPage(2)
                 .withTotal(20)
                 .withPayments(aSuccessfulSearchPayment()
-                        .withSuccessState(SUCCEEDED_STATE)
+                        .withSuccessState("success")
                         .withReference(TEST_REFERENCE)
                         .withNumberOfResults(1)
                         .getResults())
