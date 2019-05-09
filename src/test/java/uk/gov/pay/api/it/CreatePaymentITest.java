@@ -6,7 +6,6 @@ import org.junit.Test;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.PaymentState;
-import uk.gov.pay.api.model.PrefilledCardholderDetails;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
@@ -23,7 +22,9 @@ import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
@@ -51,6 +52,31 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
     private static final String SUCCESS_PAYLOAD = paymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE);
     private static final String GATEWAY_TRANSACTION_ID = "gateway-tx-123456";
 
+    @Test
+    public void createCardPaymentWithEmptyMetadataDoesNotStoreMetadata() {
+        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+        
+        String payload = new JsonStringBuilder()
+                .add("amount", 100)
+                .add("reference", REFERENCE)
+                .add("description", DESCRIPTION)
+                .add("return_url", RETURN_URL)
+                .add("metadata", Map.of())
+                .build();
+
+        connectorMock.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, aCreateChargeRequestParams()
+                .withAmount(100)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withReturnUrl(RETURN_URL)
+                .build());
+
+        postPaymentResponse(API_KEY, payload)
+                .statusCode(201)
+                .contentType(JSON).log().body()
+                .body("$", not(hasKey("metadata")));
+    }
+    
     @Test
     public void createCardPaymentWithMetadata() {
         publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
