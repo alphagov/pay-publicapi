@@ -28,8 +28,8 @@ public class ResourcesFilterAuthorisationITest extends ResourcesFilterITestBase 
     public void getPayment_whenInvalidAuthorizationHeader_shouldReturn401Response() throws Exception {
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
-                () -> getPaymentResponse("InvalidToken2", CHARGE_ID),
-                () -> getPaymentResponse("InvalidToken2", CHARGE_ID)
+                () -> getPaymentResponse("InvalidToken2"),
+                () -> getPaymentResponse("InvalidToken2")
         );
 
         List<ValidatableResponse> finishedTasks = invokeAll(tasks);
@@ -42,8 +42,8 @@ public class ResourcesFilterAuthorisationITest extends ResourcesFilterITestBase 
     public void getPaymentEvents_whenInvalidAuthorizationHeader_shouldReturn401Response() throws Exception {
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
-                () -> getPaymentEventsResponse("InvalidToken3", CHARGE_ID),
-                () -> getPaymentEventsResponse("InvalidToken3", CHARGE_ID)
+                () -> getPaymentEventsResponse("InvalidToken3"),
+                () -> getPaymentEventsResponse("InvalidToken3")
         );
 
         List<ValidatableResponse> finishedTasks = invokeAll(tasks);
@@ -70,8 +70,8 @@ public class ResourcesFilterAuthorisationITest extends ResourcesFilterITestBase 
     public void cancelPayment_whenInvalidAuthorizationHeader_shouldReturn401Response() throws Exception {
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
-                () -> postCancelPaymentResponse("InvalidToken6", CHARGE_ID),
-                () -> postCancelPaymentResponse("InvalidToken6", CHARGE_ID)
+                () -> postCancelPaymentResponse("InvalidToken6"),
+                () -> postCancelPaymentResponse("InvalidToken6")
         );
 
         List<ValidatableResponse> finishedTasks = invokeAll(tasks);

@@ -34,6 +34,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static java.util.Optional.ofNullable;
 import static javax.ws.rs.core.HttpHeaders.ACCEPT;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.HttpHeaders.LOCATION;
@@ -47,7 +48,6 @@ import static org.eclipse.jetty.http.HttpStatus.NOT_FOUND_404;
 import static org.eclipse.jetty.http.HttpStatus.NO_CONTENT_204;
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
 import static org.eclipse.jetty.http.HttpStatus.PRECONDITION_FAILED_412;
-import static org.mockserver.model.HttpResponse.response;
 import static uk.gov.pay.api.it.GetPaymentITest.AWAITING_CAPTURE_REQUEST;
 import static uk.gov.pay.api.it.fixtures.PaymentSingleResultBuilder.aSuccessfulSinglePayment;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonString;
@@ -89,29 +89,15 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withPaymentProvider(responseFromConnector.getPaymentProvider())
                 .withDelayedCapture(responseFromConnector.isDelayedCapture())
                 .withLinks(responseFromConnector.getLinks())
-                .withSettlementSummary(responseFromConnector.getSettlementSummary())
-                .withCardDetails(responseFromConnector.getCardDetails());
+                .withSettlementSummary(responseFromConnector.getSettlementSummary());
 
-        if (responseFromConnector.getRefundSummary() != null) {
-            resultBuilder.withRefundSummary(responseFromConnector.getRefundSummary());
-        }
-        if (responseFromConnector.getGatewayTransactionId() != null) {
-            resultBuilder.withGatewayTransactionId(responseFromConnector.getGatewayTransactionId());
-        }
-        if (responseFromConnector.getCorporateCardSurcharge() != null) {
-            resultBuilder.withCorporateCardSurcharge(responseFromConnector.getCorporateCardSurcharge());
-        }
-        if (responseFromConnector.getTotalAmount() != null) {
-            resultBuilder.withTotalAmount(responseFromConnector.getTotalAmount());
-        }
-        if (responseFromConnector.getFee() != null) {
-            resultBuilder.withFee(responseFromConnector.getFee());
-        }
-        if (responseFromConnector.getNetAmount() != null) {
-            resultBuilder.withNetAmount(responseFromConnector.getNetAmount());
-        }
-        System.out.println("net amount : " + responseFromConnector.getNetAmount());
-        System.out.println(responseFromConnector.getFee());
+        ofNullable(responseFromConnector.getCardDetails()).ifPresent(x -> resultBuilder.withCardDetails(x));
+        ofNullable(responseFromConnector.getRefundSummary()).ifPresent(x -> resultBuilder.withRefundSummary(x));
+        ofNullable(responseFromConnector.getGatewayTransactionId()).ifPresent(x -> resultBuilder.withGatewayTransactionId(x));
+        ofNullable(responseFromConnector.getCorporateCardSurcharge()).ifPresent(x -> resultBuilder.withCorporateCardSurcharge(x));
+        ofNullable(responseFromConnector.getTotalAmount()).ifPresent(x -> resultBuilder.withTotalAmount(x));
+        ofNullable(responseFromConnector.getFee()).ifPresent(x -> resultBuilder.withFee(x));
+        ofNullable(responseFromConnector.getNetAmount()).ifPresent(x -> resultBuilder.withNetAmount(x));
         responseFromConnector.getMetadata().ifPresent(m -> resultBuilder.withMetadata(m));
 
         return resultBuilder.build();

@@ -18,7 +18,7 @@ import static org.mockserver.socket.PortFactory.findFreePort;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 
 public abstract class PaymentResourceITestBase {
-    //Must use same secret set int confiPaymentsResourceReferenceVgured test-config.xml
+    //Must use same secret set in test-config.xml's apiKeyHmacSecret
     protected static final String API_KEY = ApiKeyGenerator.apiKeyValueOf("TEST_BEARER_TOKEN", "qwer9yuhgf");
     protected static final String GATEWAY_ACCOUNT_ID = "GATEWAY_ACCOUNT_ID";
     protected static final String PAYMENTS_PATH = "/v1/payments/";

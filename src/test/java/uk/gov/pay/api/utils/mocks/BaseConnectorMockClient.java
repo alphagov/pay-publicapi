@@ -8,6 +8,7 @@ import uk.gov.pay.api.utils.JsonStringBuilder;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
@@ -99,6 +100,6 @@ public abstract class BaseConnectorMockClient {
     public void verifyCreateChargeConnectorRequest(String gatewayAccountId, CreateChargeRequestParams createChargeRequestParams) {
         wireMockClassRule.verify(1,
                 postRequestedFor(urlEqualTo(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId)))
-                        .withRequestBody(equalTo(createChargePayload(createChargeRequestParams))));
+                        .withRequestBody(equalToJson(createChargePayload(createChargeRequestParams))));
     }
 }

@@ -61,4 +61,7 @@ public class RedisDockerRule implements TestRule {
         return container.getConnectionUrl();
     }
 
+    public void clearCache() {
+        container.clearRedisCache();
+    }
 }
