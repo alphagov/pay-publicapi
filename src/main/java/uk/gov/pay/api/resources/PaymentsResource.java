@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CaptureChargeException;
 import uk.gov.pay.api.exception.GetEventsException;
+import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.CreatePaymentResult;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.PaymentEvents;
@@ -30,8 +31,10 @@ import uk.gov.pay.api.service.CreatePaymentService;
 import uk.gov.pay.api.service.GetPaymentService;
 import uk.gov.pay.api.service.PaymentSearchService;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
+import uk.gov.pay.api.validation.PaymentRequestValidator;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -64,6 +67,7 @@ public class PaymentsResource {
     private final GetPaymentService getPaymentService;
     private final CapturePaymentService capturePaymentService;
     private final CancelPaymentService cancelPaymentService;
+    private PaymentRequestValidator paymentRequestValidator;
 
     @Inject
     public PaymentsResource(Client client,
@@ -73,7 +77,8 @@ public class PaymentsResource {
                             ConnectorUriGenerator connectorUriGenerator,
                             GetPaymentService getPaymentService,
                             CapturePaymentService capturePaymentService,
-                            CancelPaymentService cancelPaymentService) {
+                            CancelPaymentService cancelPaymentService,
+                            PaymentRequestValidator paymentRequestValidator) {
         this.client = client;
         this.createPaymentService = createPaymentService;
         this.publicApiUriGenerator = publicApiUriGenerator;
@@ -82,6 +87,7 @@ public class PaymentsResource {
         this.getPaymentService = getPaymentService;
         this.capturePaymentService = capturePaymentService;
         this.cancelPaymentService = cancelPaymentService;
+        this.paymentRequestValidator = paymentRequestValidator;
     }
 
     @GET
@@ -241,7 +247,11 @@ public class PaymentsResource {
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response createNewPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                                     @ApiParam(value = "requestPayload", required = true) ValidCreatePaymentRequest validCreatePaymentRequest) {
+                                     @ApiParam(value = "requestPayload", required = true) CreatePaymentRequest createPaymentRequest) {
+        logger.info("Payment create request parsed to {}", createPaymentRequest);
+
+        paymentRequestValidator.validate(createPaymentRequest);
+        ValidCreatePaymentRequest validCreatePaymentRequest = new ValidCreatePaymentRequest(createPaymentRequest);
         logger.info("Payment create request passed validation and parsed to {}", validCreatePaymentRequest);
 
         PaymentWithAllLinks createdPayment = createPaymentService.create(account, validCreatePaymentRequest);
