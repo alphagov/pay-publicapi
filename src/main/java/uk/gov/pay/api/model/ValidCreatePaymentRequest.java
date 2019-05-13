@@ -115,4 +115,25 @@ public class ValidCreatePaymentRequest {
         return joiner.toString();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ValidCreatePaymentRequest that = (ValidCreatePaymentRequest) o;
+        return amount == that.amount &&
+                Objects.equals(reference, that.reference) &&
+                Objects.equals(returnUrl, that.returnUrl) &&
+                Objects.equals(description, that.description) &&
+                Objects.equals(agreementId, that.agreementId) &&
+                language == that.language &&
+                Objects.equals(delayedCapture, that.delayedCapture) &&
+                Objects.equals(metadata, that.metadata) &&
+                Objects.equals(email, that.email) &&
+                Objects.equals(prefilledCardholderDetails, that.prefilledCardholderDetails);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(amount, reference, returnUrl, description, agreementId, language, delayedCapture, metadata, email, prefilledCardholderDetails);
+    }
 }

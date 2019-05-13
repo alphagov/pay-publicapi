@@ -6,6 +6,8 @@ import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.PrefilledCardholderDetails;
 
+import javax.inject.Inject;
+
 import static java.lang.String.format;
 import static uk.gov.pay.api.model.CreatePaymentRequest.AGREEMENT_ID_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.AMOUNT_FIELD_NAME;
@@ -40,15 +42,16 @@ public class PaymentRequestValidator {
     static final int EMAIL_MAX_LENGTH = 254;
     static final int CARD_BRAND_MAX_LENGTH = 20;
     static final int AGREEMENT_ID_MAX_LENGTH = 26;
-    private static final int CARDHOLDER_NAME_MAX_LENGTH = 255;
-    private static final int ADDRESS_LINE1_MAX_LENGTH = 255;
-    private static final int ADDRESS_LINE2_MAX_LENGTH = 255;
-    private static final int POSTCODE_MAX_LENGTH = 25;
-    private static final int CITY_MAX_LENGTH = 255;
-    private static final int COUNTRY_EXACT_LENGTH = 2;
+    static final int CARDHOLDER_NAME_MAX_LENGTH = 255;
+    static final int ADDRESS_LINE1_MAX_LENGTH = 255;
+    static final int ADDRESS_LINE2_MAX_LENGTH = 255;
+    static final int POSTCODE_MAX_LENGTH = 25;
+    static final int CITY_MAX_LENGTH = 255;
+    static final int COUNTRY_EXACT_LENGTH = 2;
 
     private URLValidator urlValidator;
 
+    @Inject
     public PaymentRequestValidator(URLValidator urlValidator) {
         this.urlValidator = urlValidator;
     }
