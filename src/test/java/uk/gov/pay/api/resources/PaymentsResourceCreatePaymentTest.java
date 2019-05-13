@@ -1,9 +1,11 @@
 package uk.gov.pay.api.resources;
 
+import org.hamcrest.Matchers;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.api.auth.Account;
@@ -23,6 +25,7 @@ import uk.gov.pay.api.service.CreatePaymentService;
 import uk.gov.pay.api.service.GetPaymentService;
 import uk.gov.pay.api.service.PaymentSearchService;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
+import uk.gov.pay.api.validation.PaymentRequestValidator;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
 import javax.ws.rs.client.Client;
@@ -30,10 +33,12 @@ import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.any;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -65,6 +70,9 @@ public class PaymentsResourceCreatePaymentTest {
     @Mock
     private CancelPaymentService cancelPaymentService;
 
+    @Mock
+    private PaymentRequestValidator paymentRequestValidator;
+
     private final String paymentUri = "https://my.link/v1/payments/abc123";
 
     @Before
@@ -76,22 +84,26 @@ public class PaymentsResourceCreatePaymentTest {
                 connectorUriGenerator,
                 getPaymentService,
                 capturePaymentService,
-                cancelPaymentService);
+                cancelPaymentService,
+                paymentRequestValidator);
         when(publicApiUriGenerator.getPaymentURI(anyString())).thenReturn(URI.create(paymentUri));
     }
 
     @Test
     public void createNewPayment_withCardPayment_invokesCreatePaymentService() {
         final Account account = new Account("foo", TokenPaymentType.CARD);
-        final ValidCreatePaymentRequest createPaymentRequest = new ValidCreatePaymentRequest(CreatePaymentRequest.builder()
+        final CreatePaymentRequest createPaymentRequest = CreatePaymentRequest.builder()
                 .amount(100)
                 .returnUrl("https://somewhere.test")
                 .reference("my_ref")
                 .description("New Passport")
-                .build());
+                .build();
+
+        final ValidCreatePaymentRequest validCreatePaymentRequest = new ValidCreatePaymentRequest(createPaymentRequest);
+
         PaymentWithAllLinks injectedResponse = aSuccessfullyCreatedPayment();
 
-        when(createPaymentService.create(account, createPaymentRequest)).thenReturn(injectedResponse);
+        when(createPaymentService.create(account, validCreatePaymentRequest)).thenReturn(injectedResponse);
 
         final Response newPayment = paymentsResource.createNewPayment(account, createPaymentRequest);
 

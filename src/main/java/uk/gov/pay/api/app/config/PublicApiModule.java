@@ -14,6 +14,7 @@ import uk.gov.pay.api.filter.ratelimit.RedisRateLimiter;
 import uk.gov.pay.api.json.CreatePaymentRefundRequestDeserializer;
 import uk.gov.pay.api.json.CreatePaymentRequestDeserializer;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
+import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.validation.PaymentRefundRequestValidator;
 import uk.gov.pay.api.validation.PaymentRequestValidator;
@@ -37,6 +38,7 @@ public class PublicApiModule extends AbstractModule {
     protected void configure() {
         bind(PublicApiConfig.class).toInstance(configuration);
         bind(Environment.class).toInstance(environment);
+        bind(URLValidator.class).toInstance(urlValidatorValueOf(configuration.getAllowHttpForReturnUrl()));
     }
 
     @Provides
@@ -50,12 +52,11 @@ public class PublicApiModule extends AbstractModule {
     public ObjectMapper provideObjectMapper() {
         ObjectMapper objectMapper = environment.getObjectMapper();
 
-        URLValidator urlValidator = urlValidatorValueOf(configuration.getAllowHttpForReturnUrl());
-        CreatePaymentRequestDeserializer paymentRequestDeserializer = new CreatePaymentRequestDeserializer(new PaymentRequestValidator(urlValidator));
+        CreatePaymentRequestDeserializer paymentRequestDeserializer = new CreatePaymentRequestDeserializer();
         CreatePaymentRefundRequestDeserializer paymentRefundRequestDeserializer = new CreatePaymentRefundRequestDeserializer(new PaymentRefundRequestValidator());
 
         SimpleModule publicApiDeserializationModule = new SimpleModule("publicApiDeserializationModule");
-        publicApiDeserializationModule.addDeserializer(ValidCreatePaymentRequest.class, paymentRequestDeserializer);
+        publicApiDeserializationModule.addDeserializer(CreatePaymentRequest.class, paymentRequestDeserializer);
         publicApiDeserializationModule.addDeserializer(CreatePaymentRefundRequest.class, paymentRefundRequestDeserializer);
 
         objectMapper.configure(DeserializationFeature.ACCEPT_FLOAT_AS_INT, false);
