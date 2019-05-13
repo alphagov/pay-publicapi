@@ -52,6 +52,7 @@ public class CardPayment extends Payment {
     private final String providerId;
 
     @JsonSerialize(using = ExternalMetadataSerialiser.class)
+    @ApiModelProperty(name = "metadata", dataType = "Map[String,String]")
     private final ExternalMetadata metadata;
 
     public CardPayment(String chargeId, long amount, PaymentState state, String returnUrl, String description,

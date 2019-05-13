@@ -31,6 +31,7 @@ public class ValidCreatePaymentRequest {
     private SupportedLanguage language;
     @ApiModelProperty(name = "delayed_capture", value = "delayed capture flag", required = false, example = "false" )
     private Boolean delayedCapture;
+    @ApiModelProperty(name = "metadata", dataType = "Map[String,String]")
     private ExternalMetadata metadata;
     @ApiModelProperty(name = "email", value = "email of the card holder", required = false, example = "joe.bogs@example.org")
     private String email;

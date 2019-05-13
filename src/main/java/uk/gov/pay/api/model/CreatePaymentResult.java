@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.links.PaymentLinks;
 import uk.gov.pay.commons.model.SupportedLanguage;
+import uk.gov.pay.commons.model.charge.ExternalMetadata;
 
 import static uk.gov.pay.api.model.Payment.LINKS_JSON_ATTRIBUTE;
 
@@ -67,4 +68,8 @@ public class CreatePaymentResult {
     @JsonProperty
     @ApiModelProperty(name = "provider_id", example = "null")
     private String providerId;
+
+    @JsonProperty
+    @ApiModelProperty(name = "metadata", dataType = "Map[String,String]")
+    private ExternalMetadata metadata;
 }
