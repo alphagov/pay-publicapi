@@ -38,6 +38,7 @@ import uk.gov.pay.api.exception.mapper.PaymentValidationExceptionMapper;
 import uk.gov.pay.api.exception.mapper.RefundsValidationExceptionMapper;
 import uk.gov.pay.api.exception.mapper.SearchChargesExceptionMapper;
 import uk.gov.pay.api.exception.mapper.SearchRefundsExceptionMapper;
+import uk.gov.pay.api.exception.mapper.ViolationExceptionMapper;
 import uk.gov.pay.api.filter.AuthorizationValidationFilter;
 import uk.gov.pay.api.filter.RateLimiterFilter;
 import uk.gov.pay.api.healthcheck.Ping;
@@ -138,6 +139,7 @@ public class PublicApi extends Application<PublicApiConfig> {
     }
 
     private void attachExceptionMappersTo(JerseyEnvironment jersey) {
+        jersey.register(ViolationExceptionMapper.class);
         jersey.register(CreateChargeExceptionMapper.class);
         jersey.register(GetChargeExceptionMapper.class);
         jersey.register(GetEventsExceptionMapper.class);

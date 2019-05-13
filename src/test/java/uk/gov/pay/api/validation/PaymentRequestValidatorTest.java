@@ -3,7 +3,6 @@ package uk.gov.pay.api.validation;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import uk.gov.pay.api.exception.PaymentValidationException;
 import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
@@ -58,37 +57,13 @@ public class PaymentRequestValidatorTest {
 
     @Test
     public void validateMinimumAmount_shouldSuccessValue() {
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().amount(PaymentRequestValidator.AMOUNT_MIN_VALUE).build();
-        paymentRequestValidator.validate(createPaymentRequest);
-    }
-
-    @Test
-    public void validateMinimumAmount_shouldFailValue() {
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().amount(PaymentRequestValidator.AMOUNT_MIN_VALUE - 1).build();
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: amount. Must be greater than or equal to 1"));
-
-        paymentRequestValidator.validate(createPaymentRequest);
-    }
-
-    @Test
-    public void validateMaximumAmount_shouldSuccessValue() {
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().amount(PaymentRequestValidator.AMOUNT_MAX_VALUE).build();
-        paymentRequestValidator.validate(createPaymentRequest);
-    }
-
-    @Test
-    public void validateMaximumAmount_shouldFailValue() {
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().amount(PaymentRequestValidator.AMOUNT_MAX_VALUE + 1).build();
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: amount. Must be less than or equal to 10000000"));
-
+        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().amount(CreatePaymentRequest.AMOUNT_MIN_VALUE).build();
         paymentRequestValidator.validate(createPaymentRequest);
     }
 
     @Test
     public void validateReturnUrlMaxLength_shouldFailValue() {
-        String invalidMaxLengthReturnUrl = "https://" + randomAlphanumeric(PaymentRequestValidator.URL_MAX_LENGTH) + ".com/";
+        String invalidMaxLengthReturnUrl = "https://" + randomAlphanumeric(CreatePaymentRequest.URL_MAX_LENGTH) + ".com/";
         CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().returnUrl(invalidMaxLengthReturnUrl).build();
 
         expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: return_url. Must be less than or equal to 2000 characters length"));
@@ -112,36 +87,6 @@ public class PaymentRequestValidatorTest {
         CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().returnUrl(invalidUrlFormat).build();
 
         expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: return_url. Must be a valid URL format"));
-
-        paymentRequestValidator.validate(createPaymentRequest);
-    }
-
-    @Test
-    public void validateReferenceMaxLength_shouldFailValue() {
-        String invalidMaxLengthReference = randomAlphanumeric(PaymentRequestValidator.REFERENCE_MAX_LENGTH + 1);
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().reference(invalidMaxLengthReference).build();
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: reference. Must be less than or equal to 255 characters length"));
-
-        paymentRequestValidator.validate(createPaymentRequest);
-    }
-
-    @Test
-    public void validateDescriptionMaxLength_shouldFailValue() {
-        String invalidMaxLengthDescription = randomAlphanumeric(PaymentRequestValidator.DESCRIPTION_MAX_LENGTH + 1);
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().description(invalidMaxLengthDescription).build();
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: description. Must be less than or equal to 255 characters length"));
-
-        paymentRequestValidator.validate(createPaymentRequest);
-    }
-
-    @Test
-    public void validateAgreementIdMaxLength_shouldFailValue() {
-        String invalidMaxLengthAgreementId = randomAlphanumeric(PaymentRequestValidator.AGREEMENT_ID_MAX_LENGTH + 1);
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithAgreementId().agreementId(invalidMaxLengthAgreementId).build();
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: agreement_id. Must be less than or equal to 26 characters length"));
 
         paymentRequestValidator.validate(createPaymentRequest);
     }

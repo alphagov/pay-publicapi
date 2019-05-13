@@ -247,7 +247,7 @@ public class PaymentsResource {
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response createNewPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                                     @ApiParam(value = "requestPayload", required = true) CreatePaymentRequest createPaymentRequest) {
+                                     @ApiParam(value = "requestPayload", required = true) @Valid CreatePaymentRequest createPaymentRequest) {
         logger.info("Payment create request parsed to {}", createPaymentRequest);
 
         paymentRequestValidator.validate(createPaymentRequest);
