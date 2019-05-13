@@ -10,6 +10,9 @@ import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.SettlementSummary;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
 import uk.gov.pay.api.utils.DateTimeUtils;
+import uk.gov.pay.api.utils.PublicAuthMockClient;
+import uk.gov.pay.api.utils.mocks.ConnectorDDMockClient;
+import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.io.IOException;
@@ -61,11 +64,15 @@ public class GetPaymentITest extends PaymentResourceITestBase {
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
     private static final CardDetails CARD_DETAILS = new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL);
 
+    private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
+    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    private ConnectorDDMockClient connectorDDMockClient = new ConnectorDDMockClient(connectorDDMock);
+
     @Test
     public void getPaymentWithMetadata() {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
-        connectorMock.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+        connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 aCreateOrGetChargeResponseFromConnector()
                         .withAmount(AMOUNT)
                         .withChargeId(CHARGE_ID)
@@ -141,9 +148,9 @@ public class GetPaymentITest extends PaymentResourceITestBase {
 
     @Test
     public void getPayment_ReturnsPayment() {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
-        connectorMock.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+        connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 aCreateOrGetChargeResponseFromConnector()
                         .withAmount(AMOUNT)
                         .withChargeId(CHARGE_ID)
@@ -215,9 +222,9 @@ public class GetPaymentITest extends PaymentResourceITestBase {
 
     @Test
     public void getPayment_ReturnsDirectDebitPayment() {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
 
-        connectorDDMock.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CREATED, RETURN_URL,
+        connectorDDMockClient.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CREATED, RETURN_URL,
                 DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID);
 
         getPaymentResponse(API_KEY, CHARGE_ID)
@@ -249,9 +256,9 @@ public class GetPaymentITest extends PaymentResourceITestBase {
     public void getPayment_DoesNotReturnCardDigits_IfNotPresentInCardDetails() {
         CardDetails cardDetails = new CardDetails(null, null, "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL);
 
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
-        connectorMock.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+        connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 aCreateOrGetChargeResponseFromConnector()
                         .withAmount(AMOUNT)
                         .withChargeId(CHARGE_ID)
@@ -280,9 +287,9 @@ public class GetPaymentITest extends PaymentResourceITestBase {
 
     @Test
     public void getPayment_ShouldNotIncludeCancelLinkIfPaymentCannotBeCancelled() {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
-        connectorMock.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+        connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 aCreateOrGetChargeResponseFromConnector()
                         .withAmount(AMOUNT)
                         .withChargeId(CHARGE_ID)
@@ -308,9 +315,9 @@ public class GetPaymentITest extends PaymentResourceITestBase {
 
     @Test
     public void getPayment_ShouldNotIncludeSettlementFieldsIfNull() {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
-        connectorMock.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+        connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 aCreateOrGetChargeResponseFromConnector()
                         .withAmount(AMOUNT)
                         .withChargeId(CHARGE_ID)
@@ -345,9 +352,9 @@ public class GetPaymentITest extends PaymentResourceITestBase {
                 "12/19",
                 null,
                 CARD_BRAND_LABEL);
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
-        connectorMock.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+        connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 aCreateOrGetChargeResponseFromConnector()
                         .withAmount(AMOUNT)
                         .withChargeId(CHARGE_ID)
@@ -376,7 +383,7 @@ public class GetPaymentITest extends PaymentResourceITestBase {
 
     @Test
     public void getPayment_Returns401_WhenUnauthorised() {
-        publicAuthMock.respondUnauthorised();
+        publicAuthMockClient.respondUnauthorised();
 
         getPaymentResponse(API_KEY, CHARGE_ID)
                 .statusCode(401);
@@ -386,8 +393,8 @@ public class GetPaymentITest extends PaymentResourceITestBase {
     public void getPayment_returns404_whenConnectorRespondsWith404() throws IOException {
         String paymentId = "ds2af2afd3df112";
         String errorMessage = "backend-error-message";
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondChargeNotFound(GATEWAY_ACCOUNT_ID, paymentId, errorMessage);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMockClient.respondChargeNotFound(GATEWAY_ACCOUNT_ID, paymentId, errorMessage);
 
         InputStream body = getPaymentResponse(API_KEY, paymentId)
                 .statusCode(404)
@@ -404,8 +411,8 @@ public class GetPaymentITest extends PaymentResourceITestBase {
     public void getPayment_returns500_whenConnectorRespondsWithResponseOtherThan200Or404() throws IOException {
         String paymentId = "ds2af2afd3df112";
         String errorMessage = "backend-error-message";
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondWhenGetCharge(GATEWAY_ACCOUNT_ID, paymentId, errorMessage, SC_NOT_ACCEPTABLE);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMockClient.respondWhenGetCharge(GATEWAY_ACCOUNT_ID, paymentId, errorMessage, SC_NOT_ACCEPTABLE);
 
         InputStream body = getPaymentResponse(API_KEY, paymentId)
                 .statusCode(500)
@@ -420,8 +427,8 @@ public class GetPaymentITest extends PaymentResourceITestBase {
 
     @Test
     public void getPaymentEvents_ReturnsPaymentEvents() {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondWithChargeEventsFound(GATEWAY_ACCOUNT_ID, CHARGE_ID, EVENTS);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMockClient.respondWithChargeEventsFound(GATEWAY_ACCOUNT_ID, CHARGE_ID, EVENTS);
 
         getPaymentEventsResponse(API_KEY, CHARGE_ID)
                 .statusCode(200)
@@ -437,7 +444,7 @@ public class GetPaymentITest extends PaymentResourceITestBase {
 
     @Test
     public void getPaymentEvents_Returns401_WhenUnauthorised() {
-        publicAuthMock.respondUnauthorised();
+        publicAuthMockClient.respondUnauthorised();
 
         getPaymentEventsResponse(API_KEY, CHARGE_ID)
                 .statusCode(401);
@@ -447,8 +454,8 @@ public class GetPaymentITest extends PaymentResourceITestBase {
     public void getPaymentEvents_returns404_whenConnectorRespondsWith404() throws IOException {
         String paymentId = "ds2af2afd3df112";
         String errorMessage = "backend-error-message";
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondChargeEventsNotFound(GATEWAY_ACCOUNT_ID, paymentId, errorMessage);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMockClient.respondChargeEventsNotFound(GATEWAY_ACCOUNT_ID, paymentId, errorMessage);
 
         InputStream body = getPaymentEventsResponse(API_KEY, paymentId)
                 .statusCode(404)
@@ -465,8 +472,8 @@ public class GetPaymentITest extends PaymentResourceITestBase {
     public void getPaymentEvents_returns500_whenConnectorRespondsWithResponseOtherThan200Or404() throws IOException {
         String paymentId = "ds2af2afd3df112";
         String errorMessage = "backend-error-message";
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondWhenGetChargeEvents(GATEWAY_ACCOUNT_ID, paymentId, errorMessage, SC_NOT_ACCEPTABLE);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMockClient.respondWhenGetChargeEvents(GATEWAY_ACCOUNT_ID, paymentId, errorMessage, SC_NOT_ACCEPTABLE);
 
         InputStream body = getPaymentEventsResponse(API_KEY, paymentId)
                 .statusCode(500)
@@ -481,9 +488,9 @@ public class GetPaymentITest extends PaymentResourceITestBase {
 
     @Test
     public void getPayment_ReturnsPaymentWithCorporateCardSurcharge() {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
-        connectorMock.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+        connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 aCreateOrGetChargeResponseFromConnector()
                         .withAmount(AMOUNT)
                         .withChargeId(CHARGE_ID)
@@ -514,9 +521,9 @@ public class GetPaymentITest extends PaymentResourceITestBase {
     @Test
     public void getPayment_ReturnsPaymentWithFeeAndNetAmount() {
 
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
-        connectorMock.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+        connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 aCreateOrGetChargeResponseFromConnector()
                         .withAmount(AMOUNT)
                         .withChargeId(CHARGE_ID)
@@ -548,9 +555,9 @@ public class GetPaymentITest extends PaymentResourceITestBase {
     @Test
     public void getPayment_ReturnsPaymentWithOutFeeAndNetAmount_IfNotAvailableFromConnector() {
 
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
-        connectorMock.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+        connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 aCreateOrGetChargeResponseFromConnector()
                         .withAmount(AMOUNT)
                         .withChargeId(CHARGE_ID)
@@ -579,9 +586,9 @@ public class GetPaymentITest extends PaymentResourceITestBase {
 
     @Test
     public void getPayment_ReturnsPaymentWithCaptureUrl() {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
-        connectorMock.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+        connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 aCreateOrGetChargeResponseFromConnector()
                         .withAmount(AMOUNT)
                         .withChargeId(CHARGE_ID)

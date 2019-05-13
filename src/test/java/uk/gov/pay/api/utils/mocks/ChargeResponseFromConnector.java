@@ -265,7 +265,7 @@ public class ChargeResponseFromConnector {
         }
 
         public ChargeResponseFromConnector build() {
-            List.of(amount, chargeId, language, cardDetails, links).forEach(Objects::requireNonNull);
+            List.of(amount, chargeId, language, links).forEach(Objects::requireNonNull);
             
             return new ChargeResponseFromConnector(this);
         }

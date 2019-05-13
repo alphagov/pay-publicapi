@@ -6,6 +6,7 @@ import com.spotify.docker.client.LogStream;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.ContainerInfo;
+import com.spotify.docker.client.messages.ExecCreation;
 import com.spotify.docker.client.messages.HostConfig;
 import com.spotify.docker.client.messages.LogConfig;
 import com.spotify.docker.client.messages.PortBinding;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -122,6 +124,16 @@ class RedisContainer {
         } catch (DockerException | InterruptedException | IOException e) {
             System.err.println("Could not shutdown " + containerId);
             e.printStackTrace();
+        }
+    }
+
+    public void clearRedisCache() {
+        try {
+            String[] command = {"redis-cli", "FLUSHALL"};
+            String id = docker.execCreate(containerId, command).id();
+            docker.execStart(id);
+        } catch (DockerException | InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 }

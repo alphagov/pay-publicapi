@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import io.restassured.response.ValidatableResponse;
 import org.junit.Test;
 import uk.gov.pay.api.it.fixtures.PaymentNavigationLinksFixture;
+import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.util.Arrays;
@@ -18,22 +19,22 @@ import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeRespo
 
 public class ResourcesFilterRateLimiterITest extends ResourcesFilterITestBase {
 
+    private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
+    
     @Test
     public void createPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
 
-        connectorMock.respondOk_whenCreateCharge(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
+        connectorMockClient.respondOk_whenCreateCharge("token_1234567asdf", GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
                 .withAmount(AMOUNT)
                 .withChargeId(CHARGE_ID)
                 .withState(CREATED)
                 .withReturnUrl(RETURN_URL)
                 .withDescription(DESCRIPTION)
                 .withReference(REFERENCE)
-                .withPaymentProvider(PAYMENT_PROVIDER)
+                .withPaymentProvider("Sandbox")
                 .withCreatedDate(CREATED_DATE)
                 .withLanguage(SupportedLanguage.ENGLISH)
                 .withDelayedCapture(false)
-                .withRefundSummary(REFUND_SUMMARY)
-                .withCardDetails(CARD_DETAILS)
                 .withGatewayTransactionId("gatewayTxId")
                 .build());
 
@@ -46,13 +47,13 @@ public class ResourcesFilterRateLimiterITest extends ResourcesFilterITestBase {
         List<ValidatableResponse> finishedTasks = invokeAll(tasks);
 
         assertThat(finishedTasks, hasItem(aResponse(201)));
-        assertThat(finishedTasks, hasItem(anErrorResponse(429, "P0900", "Too many requests")));
+        assertThat(finishedTasks, hasItem(anErrorResponse()));
     }
 
     @Test
     public void getPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
 
-        connectorMock.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+        connectorMockClient.respondWithChargeFound("token_1234567asdf", GATEWAY_ACCOUNT_ID,
                 aCreateOrGetChargeResponseFromConnector()
                         .withAmount(AMOUNT)
                         .withChargeId(CHARGE_ID)
@@ -60,43 +61,41 @@ public class ResourcesFilterRateLimiterITest extends ResourcesFilterITestBase {
                         .withReturnUrl(RETURN_URL)
                         .withDescription(DESCRIPTION)
                         .withReference(REFERENCE)
-                        .withPaymentProvider(PAYMENT_PROVIDER)
+                        .withPaymentProvider("Sandbox")
                         .withCreatedDate(CREATED_DATE)
                         .withLanguage(SupportedLanguage.ENGLISH)
                         .withDelayedCapture(false)
-                        .withRefundSummary(REFUND_SUMMARY)
-                        .withCardDetails(CARD_DETAILS)
                         .build());
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
-                () -> getPaymentResponse(API_KEY, CHARGE_ID),
-                () -> getPaymentResponse(API_KEY, CHARGE_ID),
-                () -> getPaymentResponse(API_KEY, CHARGE_ID),
-                () -> getPaymentResponse(API_KEY, CHARGE_ID)
+                () -> getPaymentResponse(API_KEY),
+                () -> getPaymentResponse(API_KEY),
+                () -> getPaymentResponse(API_KEY),
+                () -> getPaymentResponse(API_KEY)
         );
 
         List<ValidatableResponse> finishedTasks = invokeAll(tasks);
 
         assertThat(finishedTasks, hasItem(aResponse(200)));
-        assertThat(finishedTasks, hasItem(anErrorResponse(429, "P0900", "Too many requests")));
+        assertThat(finishedTasks, hasItem(anErrorResponse()));
     }
 
     @Test
     public void getPaymentEvents_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
 
-        connectorMock.respondWithChargeEventsFound(GATEWAY_ACCOUNT_ID, CHARGE_ID, EVENTS);
+        connectorMockClient.respondWithChargeEventsFound(GATEWAY_ACCOUNT_ID, CHARGE_ID, EVENTS);
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
-                () -> getPaymentEventsResponse(API_KEY, CHARGE_ID),
-                () -> getPaymentEventsResponse(API_KEY, CHARGE_ID),
-                () -> getPaymentEventsResponse(API_KEY, CHARGE_ID),
-                () -> getPaymentEventsResponse(API_KEY, CHARGE_ID)
+                () -> getPaymentEventsResponse(API_KEY),
+                () -> getPaymentEventsResponse(API_KEY),
+                () -> getPaymentEventsResponse(API_KEY),
+                () -> getPaymentEventsResponse(API_KEY)
         );
 
         List<ValidatableResponse> finishedTasks = invokeAll(tasks);
 
         assertThat(finishedTasks, hasItem(aResponse(200)));
-        assertThat(finishedTasks, hasItem(anErrorResponse(429, "P0900", "Too many requests")));
+        assertThat(finishedTasks, hasItem(anErrorResponse()));
     }
 
     @Test
@@ -112,7 +111,7 @@ public class ResourcesFilterRateLimiterITest extends ResourcesFilterITestBase {
                         .withNumberOfResults(1).getResults())
                 .build();
 
-        connectorMock.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, REFERENCE, null, null, null, null, null, null, null, null, payments);
+        connectorMockClient.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, payments);
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> searchPayments(API_KEY, ImmutableMap.of("reference", REFERENCE)),
@@ -123,23 +122,23 @@ public class ResourcesFilterRateLimiterITest extends ResourcesFilterITestBase {
         List<ValidatableResponse> finishedTasks = invokeAll(tasks);
 
         assertThat(finishedTasks, hasItem(aResponse(200)));
-        assertThat(finishedTasks, hasItem(anErrorResponse(429, "P0900", "Too many requests")));
+        assertThat(finishedTasks, hasItem(anErrorResponse()));
     }
 
     @Test
     public void cancelPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
 
-        connectorMock.respondOk_whenCancelCharge(CHARGE_ID, GATEWAY_ACCOUNT_ID);
+        connectorMockClient.respondOk_whenCancelCharge(CHARGE_ID, GATEWAY_ACCOUNT_ID);
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
-                () -> postCancelPaymentResponse(API_KEY, CHARGE_ID),
-                () -> postCancelPaymentResponse(API_KEY, CHARGE_ID),
-                () -> postCancelPaymentResponse(API_KEY, CHARGE_ID)
+                () -> postCancelPaymentResponse(API_KEY),
+                () -> postCancelPaymentResponse(API_KEY),
+                () -> postCancelPaymentResponse(API_KEY)
         );
 
         List<ValidatableResponse> finishedTasks = invokeAll(tasks);
 
         assertThat(finishedTasks, hasItem(aResponse(204)));
-        assertThat(finishedTasks, hasItem(anErrorResponse(429, "P0900", "Too many requests")));
+        assertThat(finishedTasks, hasItem(anErrorResponse()));
     }
 }

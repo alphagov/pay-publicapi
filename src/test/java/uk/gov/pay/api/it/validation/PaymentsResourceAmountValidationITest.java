@@ -5,6 +5,7 @@ import io.restassured.response.ValidatableResponse;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
+import uk.gov.pay.api.utils.PublicAuthMockClient;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,9 +18,11 @@ import static org.hamcrest.core.Is.is;
 
 public class PaymentsResourceAmountValidationITest extends PaymentResourceITestBase {
 
+    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    
     @Before
     public void setUpBearerToken() {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
     }
 
     @Test

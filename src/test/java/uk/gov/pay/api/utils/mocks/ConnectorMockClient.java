@@ -1,10 +1,10 @@
 package uk.gov.pay.api.utils.mocks;
 
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
+import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
+import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
-import org.mockserver.client.server.ForwardChainExpectation;
-import org.mockserver.matchers.MatchType;
-import org.mockserver.model.HttpResponse;
 import org.mockserver.model.Parameter;
 import uk.gov.pay.api.it.fixtures.PaymentRefundJsonFixture;
 import uk.gov.pay.api.it.fixtures.PaymentSingleResultBuilder;
@@ -25,11 +25,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.matching;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static javax.ws.rs.HttpMethod.GET;
-import static javax.ws.rs.HttpMethod.POST;
+import static java.util.Optional.ofNullable;
 import static javax.ws.rs.core.HttpHeaders.ACCEPT;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.HttpHeaders.LOCATION;
@@ -43,15 +49,15 @@ import static org.eclipse.jetty.http.HttpStatus.NOT_FOUND_404;
 import static org.eclipse.jetty.http.HttpStatus.NO_CONTENT_204;
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
 import static org.eclipse.jetty.http.HttpStatus.PRECONDITION_FAILED_412;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
-import static org.mockserver.model.JsonBody.json;
-import static org.mockserver.verify.VerificationTimes.once;
 import static uk.gov.pay.api.it.GetPaymentITest.AWAITING_CAPTURE_REQUEST;
 import static uk.gov.pay.api.it.fixtures.PaymentSingleResultBuilder.aSuccessfulSinglePayment;
 import static uk.gov.pay.api.utils.JsonStringBuilder.jsonString;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 import static uk.gov.pay.api.utils.mocks.CreateChargeRequestParams.CreateChargeRequestParamsBuilder.aCreateChargeRequestParams;
+import static uk.gov.pay.commons.model.ErrorIdentifier.GENERIC;
+import static uk.gov.pay.commons.model.ErrorIdentifier.INVALID_MANDATE_TYPE;
+import static uk.gov.pay.commons.model.ErrorIdentifier.REFUND_AMOUNT_AVAILABLE_MISMATCH;
+import static uk.gov.pay.commons.model.ErrorIdentifier.REFUND_NOT_AVAILABLE;
 
 public class ConnectorMockClient extends BaseConnectorMockClient {
 
@@ -70,8 +76,8 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     private static final String TO_DATE_KEY = "to_date";
     private static final DateFormat SDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
-    public ConnectorMockClient(int port, String baseUrl) {
-        super(port, baseUrl);
+    public ConnectorMockClient(WireMockClassRule connectorMock) {
+        super(connectorMock);
     }
 
     private String buildChargeResponse(ChargeResponseFromConnector responseFromConnector) {
@@ -88,29 +94,15 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withPaymentProvider(responseFromConnector.getPaymentProvider())
                 .withDelayedCapture(responseFromConnector.isDelayedCapture())
                 .withLinks(responseFromConnector.getLinks())
-                .withSettlementSummary(responseFromConnector.getSettlementSummary())
-                .withCardDetails(responseFromConnector.getCardDetails());
+                .withSettlementSummary(responseFromConnector.getSettlementSummary());
 
-        if (responseFromConnector.getRefundSummary() != null) {
-            resultBuilder.withRefundSummary(responseFromConnector.getRefundSummary());
-        }
-        if (responseFromConnector.getGatewayTransactionId() != null) {
-            resultBuilder.withGatewayTransactionId(responseFromConnector.getGatewayTransactionId());
-        }
-        if (responseFromConnector.getCorporateCardSurcharge() != null) {
-            resultBuilder.withCorporateCardSurcharge(responseFromConnector.getCorporateCardSurcharge());
-        }
-        if (responseFromConnector.getTotalAmount() != null) {
-            resultBuilder.withTotalAmount(responseFromConnector.getTotalAmount());
-        }
-        if (responseFromConnector.getFee() != null) {
-            resultBuilder.withFee(responseFromConnector.getFee());
-        }
-        if (responseFromConnector.getNetAmount() != null) {
-            resultBuilder.withNetAmount(responseFromConnector.getNetAmount());
-        }
-        System.out.println("net amount : " + responseFromConnector.getNetAmount());
-        System.out.println(responseFromConnector.getFee());
+        ofNullable(responseFromConnector.getCardDetails()).ifPresent(x -> resultBuilder.withCardDetails(x));
+        ofNullable(responseFromConnector.getRefundSummary()).ifPresent(x -> resultBuilder.withRefundSummary(x));
+        ofNullable(responseFromConnector.getGatewayTransactionId()).ifPresent(x -> resultBuilder.withGatewayTransactionId(x));
+        ofNullable(responseFromConnector.getCorporateCardSurcharge()).ifPresent(x -> resultBuilder.withCorporateCardSurcharge(x));
+        ofNullable(responseFromConnector.getTotalAmount()).ifPresent(x -> resultBuilder.withTotalAmount(x));
+        ofNullable(responseFromConnector.getFee()).ifPresent(x -> resultBuilder.withFee(x));
+        ofNullable(responseFromConnector.getNetAmount()).ifPresent(x -> resultBuilder.withNetAmount(x));
         responseFromConnector.getMetadata().ifPresent(m -> resultBuilder.withMetadata(m));
 
         return resultBuilder.build();
@@ -146,7 +138,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     }
 
     private String chargeEventsLocation(String accountId, String chargeId) {
-        return baseUrl + format(CONNECTOR_MOCK_CHARGE_EVENTS_PATH, accountId, chargeId);
+        return format(CONNECTOR_MOCK_CHARGE_EVENTS_PATH, accountId, chargeId);
     }
 
     public void respondOk_whenCreateCharge(String gatewayAccountId, CreateChargeRequestParams requestParams) {
@@ -184,91 +176,55 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                     null, billingAddress, null);
             responseFromConnector.withCardDetails(cardDetails);
         }
-
-        whenCreateCharge(gatewayAccountId, requestParams)
-                .respond(response()
-                        .withStatusCode(CREATED_201)
+        
+        mockCreateCharge(gatewayAccountId, aResponse()
+                        .withStatus(CREATED_201)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                         .withHeader(LOCATION, chargeLocation(gatewayAccountId, "chargeId"))
                         .withBody(buildChargeResponse(responseFromConnector.build())));
     }
-
+    
     public void respondOk_whenCreateCharge(String chargeTokenId, String gatewayAccountId, ChargeResponseFromConnector responseFromConnector) {
         ChargeResponseFromConnector build = aCreateOrGetChargeResponseFromConnector(responseFromConnector)
                 .withLink(validGetLink(chargeLocation(gatewayAccountId, responseFromConnector.getChargeId()), "self"))
                 .withLink(validGetLink(nextUrl(chargeTokenId), "next_url"))
                 .withLink(validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap(chargeTokenId))).build();
-        CreateChargeRequestParams params = aCreateChargeRequestParams()
-                .withAmount(responseFromConnector.getAmount().intValue())
-                .withReturnUrl(responseFromConnector.getReturnUrl())
-                .withReference(responseFromConnector.getReference())
-                .withDescription(responseFromConnector.getDescription())
-                .withEmail(responseFromConnector.getEmail())
-                .build();
 
-        whenCreateCharge(gatewayAccountId, params)
-                .respond(response()
-                        .withStatusCode(CREATED_201)
+        mockCreateCharge(gatewayAccountId,
+                aResponse().withStatus(CREATED_201)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                         .withHeader(LOCATION, chargeLocation(gatewayAccountId, responseFromConnector.getChargeId()))
                         .withBody(buildChargeResponse(build)));
     }
 
     public void respondAccepted_whenCreateARefund(int amount, int refundAmountAvailable, String gatewayAccountId, String chargeId, String refundId, String status, String createdDate) {
-        whenCreateRefund(amount, refundAmountAvailable, gatewayAccountId, chargeId)
-                .respond(response()
-                        .withStatusCode(ACCEPTED_202)
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withBody(buildGetRefundResponse(refundId, amount, refundAmountAvailable, status, createdDate))
-                );
-    }
-
-    public void respondOk_whenSearchCharges(String accountId, String reference, String email, String state, String cardBrand, String cardHolderName, String firstDigitsCardNumber, String lastDigitsCardNumber, String fromDate, String toDate, String expectedResponse) {
-        whenSearchCharges(accountId, reference, email, state, cardBrand, cardHolderName, firstDigitsCardNumber, lastDigitsCardNumber, fromDate, toDate)
-                .respond(response()
-                        .withStatusCode(OK_200)
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withBody(expectedResponse)
-                );
+        whenCreateRefund(gatewayAccountId, chargeId, aResponse()
+                .withStatus(ACCEPTED_202)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                .withBody(buildGetRefundResponse(refundId, amount, refundAmountAvailable, status, createdDate)));
     }
 
     public void respondOk_whenSearchCharges(String accountId, String expectedResponse) {
-        whenSearchCharges(accountId, null, null, null, null, null, null, null, null, null)
-                .respond(response()
-                        .withStatusCode(OK_200)
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withBody(expectedResponse)
-                );
+        whenSearchCharges(accountId, aResponse()
+                .withStatus(OK_200)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                .withBody(expectedResponse));
     }
 
-    public void respondOk_whenSearchChargesWithPageAndSize(String accountId, String reference, String email, String page, String displaySize, String expectedResponse) {
-        whenSearchCharges(accountId, reference, email, null, null, null, null, null, null, null, page, displaySize)
-                .respond(response()
-                        .withStatusCode(OK_200)
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withBody(expectedResponse)
-                );
-
+    public void respondNotFound_whenCreateCharge(String gatewayAccountId) {
+        mockCreateCharge(gatewayAccountId, aResponse().withStatus(NOT_FOUND_404));
     }
 
-    public void respondNotFound_whenCreateCharge(long amount, String gatewayAccountId, String returnUrl, String description, String reference) {
-        whenCreateCharge(amount, gatewayAccountId, returnUrl, description, reference)
-                .respond(response().withStatusCode(NOT_FOUND_404));
+    public void respondBadRequest_whenCreateCharge(String gatewayAccountId, String errorMsg) {
+        mockCreateCharge(gatewayAccountId, withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg, GENERIC));
     }
 
-    public void respondBadRequest_whenCreateCharge(long amount, String gatewayAccountId, String errorMsg, String returnUrl, String description, String reference) {
-        whenCreateCharge(amount, gatewayAccountId, returnUrl, description, reference)
-                .respond(withErrorResponse(BAD_REQUEST_400, errorMsg));
-    }
-    
-    public void respondMandateTypeInvalid_whenCreateCharge(long amount, String gatewayAccountId, String errorMsg, String returnUrl, String description, String reference) {
-        whenCreateCharge(amount, gatewayAccountId, returnUrl, description, reference)
-                .respond(withErrorResponse(PRECONDITION_FAILED_412, errorMsg, ErrorIdentifier.INVALID_MANDATE_TYPE));
+    public void respondMandateTypeInvalid_whenCreateCharge(String gatewayAccountId, String errorMsg) {
+        mockCreateCharge(gatewayAccountId, withStatusAndErrorMessage(PRECONDITION_FAILED_412, errorMsg, INVALID_MANDATE_TYPE));
     }
 
-    public void respondPreconditionFailed_whenCreateRefund(int amount, int refundAmountAvailable, String gatewayAccountId, String errorMsg, String chargeId) {
-        whenCreateRefund(amount, refundAmountAvailable, gatewayAccountId, chargeId)
-                .respond(withErrorResponse(PRECONDITION_FAILED_412, errorMsg, ErrorIdentifier.REFUND_AMOUNT_AVAILABLE_MISMATCH));
+    public void respondPreconditionFailed_whenCreateRefund(String gatewayAccountId, String errorMsg, String chargeId) {
+        whenCreateRefund(gatewayAccountId, chargeId, withStatusAndErrorMessage(PRECONDITION_FAILED_412, errorMsg, REFUND_AMOUNT_AVAILABLE_MISMATCH));
     }
 
     public void respondWithChargeFound(String chargeTokenId, String gatewayAccountId, ChargeResponseFromConnector chargeResponseFromConnector) {
@@ -295,20 +251,18 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
             chargeResponseBody = buildChargeResponse(responseFromConnector.build());
         }
-        whenGetCharge(gatewayAccountId, chargeId)
-                .respond(response()
-                        .withStatusCode(OK_200)
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withBody(chargeResponseBody));
+        whenGetCharge(gatewayAccountId, chargeId, aResponse()
+                .withStatus(OK_200)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                .withBody(chargeResponseBody));
     }
 
     public void respondWithGetRefundById(String gatewayAccountId, String chargeId, String refundId, int amount, int totalRefundAmountAvailable, String refundStatus, String createdDate) {
         String refundResponse = buildGetRefundResponse(refundId, amount, totalRefundAmountAvailable, refundStatus, createdDate);
-        whenGetRefundById(gatewayAccountId, chargeId, refundId)
-                .respond(response()
-                        .withStatusCode(OK_200)
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withBody(refundResponse));
+        whenGetRefundById(gatewayAccountId, chargeId, refundId, aResponse()
+                .withStatus(OK_200)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                .withBody(refundResponse));
     }
 
     public void respondWithGetAllRefunds(String gatewayAccountId, String chargeId, PaymentRefundJsonFixture... refunds) {
@@ -328,31 +282,29 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .add("_links", links)
                 .add("_embedded", refundList);
 
-        whenGetAllRefunds(gatewayAccountId, chargeId)
-                .respond(response()
-                        .withStatusCode(OK_200)
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withBody(jsonStringBuilder.build()));
+        whenGetAllRefunds(gatewayAccountId, chargeId, aResponse()
+                .withStatus(OK_200)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                .withBody(jsonStringBuilder.build()));
     }
 
     public void respondRefundNotFound(String gatewayAccountId, String chargeId, String refundId) {
-        whenGetRefundById(gatewayAccountId, chargeId, refundId)
-                .respond(withErrorResponse(BAD_REQUEST_400, String.format("Refund with id [%s] not found.", refundId)));
+        whenGetRefundById(gatewayAccountId, chargeId, refundId,
+                withStatusAndErrorMessage(BAD_REQUEST_400, String.format("Refund with id [%s] not found.", refundId), GENERIC));
 
     }
 
     public void respondRefundWithError(String gatewayAccountId, String chargeId, String refundId) {
-        whenGetRefundById(gatewayAccountId, chargeId, refundId)
-                .respond(withErrorResponse(INTERNAL_SERVER_ERROR_500, "server error"));
+        whenGetRefundById(gatewayAccountId, chargeId, refundId,
+                withStatusAndErrorMessage(INTERNAL_SERVER_ERROR_500, "server error", GENERIC));
 
     }
 
     public void respondWithChargeEventsFound(String gatewayAccountId, String chargeId, List<Map<String, String>> events) {
-        whenGetChargeEvents(gatewayAccountId, chargeId)
-                .respond(response()
-                        .withStatusCode(OK_200)
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withBody(buildChargeEventsResponse(chargeId, events, validGetLink(chargeEventsLocation(gatewayAccountId, chargeId), "self"))));
+        whenGetChargeEvents(gatewayAccountId, chargeId, aResponse()
+                .withStatus(OK_200)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                .withBody(buildChargeEventsResponse(chargeId, events, validGetLink(chargeEventsLocation(gatewayAccountId, chargeId), "self"))));
     }
 
 
@@ -361,8 +313,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     }
 
     public void respondWhenGetCharge(String gatewayAccountId, String chargeId, String errorMsg, int status) {
-        whenGetCharge(gatewayAccountId, chargeId)
-                .respond(withErrorResponse(status, errorMsg));
+        whenGetCharge(gatewayAccountId, chargeId, withStatusAndErrorMessage(status, errorMsg, GENERIC));
     }
 
     public void respondChargeEventsNotFound(String gatewayAccountId, String chargeId, String errorMsg) {
@@ -370,20 +321,15 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     }
 
     public void respondWhenGetChargeEvents(String gatewayAccountId, String chargeId, String errorMsg, int status) {
-        whenGetChargeEvents(gatewayAccountId, chargeId)
-                .respond(withErrorResponse(status, errorMsg));
+        whenGetChargeEvents(gatewayAccountId, chargeId, withStatusAndErrorMessage(status, errorMsg, GENERIC));
     }
 
     public void respondOk_whenCancelCharge(String paymentId, String accountId) {
-        whenCancelCharge(paymentId, accountId)
-                .respond(response()
-                        .withStatusCode(NO_CONTENT_204));
+        whenCancelCharge(paymentId, accountId, aResponse().withStatus(NO_CONTENT_204));
     }
 
     public void respondOk_whenCaptureCharge(String paymentId, String accountId) {
-        whenCaptureCharge(paymentId, accountId)
-                .respond(response()
-                        .withStatusCode(NO_CONTENT_204));
+        whenCaptureCharge(paymentId, accountId, aResponse().withStatus(NO_CONTENT_204));
     }
 
     public void respondChargeNotFound_WhenCancelCharge(String paymentId, String accountId, String errorMsg) {
@@ -394,84 +340,46 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         respond_WhenCaptureCharge(paymentId, accountId, errorMsg, NOT_FOUND_404);
     }
 
-    public void respondBadRequest_WhenCancelCharge(String paymentId, String accountId, String errorMessage) {
-        respond_WhenCancelCharge(paymentId, accountId, errorMessage, BAD_REQUEST_400);
-    }
-
     public void respondBadRequest_WhenCaptureCharge(String paymentId, String accountId, String errorMessage) {
         respond_WhenCaptureCharge(paymentId, accountId, errorMessage, BAD_REQUEST_400);
     }
 
     public void respond_WhenCancelCharge(String paymentId, String accountId, String errorMessage, int status) {
-        whenCancelCharge(paymentId, accountId)
-                .respond(withErrorResponse(status, errorMessage));
+        whenCancelCharge(paymentId, accountId, withStatusAndErrorMessage(status, errorMessage, GENERIC, null));
     }
 
     public void respond_WhenCaptureCharge(String paymentId, String accountId, String errorMessage, int status) {
-        whenCaptureCharge(paymentId, accountId)
-                .respond(withErrorResponse(status, errorMessage));
+        whenCaptureCharge(paymentId, accountId, withStatusAndErrorMessage(status, errorMessage, GENERIC, null));
     }
 
-    public ForwardChainExpectation whenCreateCharge(long amount, String gatewayAccountId, String returnUrl, String description, String reference) {
-        return mockClient.when(request()
-                .withMethod(POST)
-                .withPath(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId))
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                .withBody(createChargePayload(amount, returnUrl, description, reference))
-        );
+    public void mockCreateCharge(String gatewayAccountId, ResponseDefinitionBuilder responseDefinitionBuilder) {
+        wireMockClassRule.stubFor(post(urlPathEqualTo(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId)))
+                .withHeader(CONTENT_TYPE, matching(APPLICATION_JSON)).willReturn(responseDefinitionBuilder));
     }
 
-    public ForwardChainExpectation whenCreateCharge(String gatewayAccountId, CreateChargeRequestParams createChargeRequestParams) {
-        return mockClient.when(request()
-                .withMethod(POST)
-                .withPath(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId))
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                .withBody(json(createChargePayload(createChargeRequestParams), MatchType.ONLY_MATCHING_FIELDS))
-        );
+    private void whenCreateRefund(String gatewayAccountId, String chargeId, ResponseDefinitionBuilder response) {
+        wireMockClassRule.stubFor(post(urlPathEqualTo(format(CONNECTOR_MOCK_CHARGE_REFUNDS_PATH, gatewayAccountId, chargeId)))
+                .willReturn(response));
     }
 
-    private ForwardChainExpectation whenCreateRefund(int amount, int refundAmountAvailable, String gatewayAccountId, String chargeId) {
-        String payload = new GsonBuilder().create().toJson(
-                ImmutableMap.of("amount", amount, "refund_amount_available", refundAmountAvailable));
-        return mockClient.when(request()
-                .withMethod(POST)
-                .withPath(format(CONNECTOR_MOCK_CHARGE_REFUNDS_PATH, gatewayAccountId, chargeId))
-                .withBody(payload)
-        );
+    private void whenGetRefundById(String gatewayAccountId, String chargeId, String refundId, ResponseDefinitionBuilder response) {
+        wireMockClassRule.stubFor(get(urlPathEqualTo(format(CONNECTOR_MOCK_CHARGE_REFUND_BY_ID_PATH, gatewayAccountId, chargeId, refundId)))
+                .willReturn(response));
     }
 
-    private ForwardChainExpectation whenGetRefundById(String gatewayAccountId, String chargeId, String refundId) {
-        return mockClient.when(request()
-                .withMethod(GET)
-                .withPath(format(CONNECTOR_MOCK_CHARGE_REFUND_BY_ID_PATH, gatewayAccountId, chargeId, refundId))
-        );
+    private void whenGetAllRefunds(String gatewayAccountId, String chargeId, ResponseDefinitionBuilder response) {
+        wireMockClassRule.stubFor(get(urlPathEqualTo(format(CONNECTOR_MOCK_CHARGE_REFUNDS_PATH, gatewayAccountId, chargeId)))
+                .willReturn(response));
     }
 
-    private ForwardChainExpectation whenGetAllRefunds(String gatewayAccountId, String chargeId) {
-        return mockClient.when(request()
-                .withMethod(GET)
-                .withPath(format(CONNECTOR_MOCK_CHARGE_REFUNDS_PATH, gatewayAccountId, chargeId))
-        );
+    private void whenGetChargeEvents(String gatewayAccountId, String chargeId, ResponseDefinitionBuilder response) {
+        wireMockClassRule.stubFor(get(urlPathEqualTo(format(CONNECTOR_MOCK_CHARGE_EVENTS_PATH, gatewayAccountId, chargeId)))
+                .willReturn(response));
     }
 
-    private ForwardChainExpectation whenGetChargeEvents(String gatewayAccountId, String chargeId) {
-        return mockClient.when(request()
-                .withMethod(GET)
-                .withPath(format(CONNECTOR_MOCK_CHARGE_EVENTS_PATH, gatewayAccountId, chargeId))
-        );
-    }
-
-    public ForwardChainExpectation whenSearchCharges(String gatewayAccountId, String reference, String email, String state, String cardBrand, String cardHolderName, String firstDigitsCardNumber, String lastDigitsCardNumber, String fromDate, String toDate) {
-        return whenSearchCharges(gatewayAccountId, reference, email, state, cardBrand, cardHolderName, firstDigitsCardNumber, lastDigitsCardNumber, fromDate, toDate, null, null);
-    }
-
-    public ForwardChainExpectation whenSearchCharges(String gatewayAccountId, String reference, String email, String state, String cardBrand, String cardHolderName, String firstDigitsCardNumber, String lastDigitsCardNumber, String fromDate, String toDate, String page, String displaySize) {
-        return mockClient.when(request()
-                .withMethod(GET)
-                .withPath(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId))
-                .withHeader(ACCEPT, APPLICATION_JSON)
-                .withQueryStringParameters(notNullQueryParamsFrom(reference, email, state, cardBrand, cardHolderName, firstDigitsCardNumber, lastDigitsCardNumber, fromDate, toDate, page, displaySize))
-        );
+    public void whenSearchCharges(String gatewayAccountId, ResponseDefinitionBuilder response) {
+        wireMockClassRule.stubFor(get(urlPathEqualTo(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId)))
+                .withHeader(ACCEPT, matching(APPLICATION_JSON)).willReturn(response));
     }
 
     private Parameter[] notNullQueryParamsFrom(String reference, String email, String state, String cardBrand, String cardHolderName, String firstDigitsCardNumber, String lastDigitsCardNumber, String fromDate, String toDate, String page, String displaySize) {
@@ -512,16 +420,12 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         return params.toArray(new Parameter[0]);
     }
 
-    private ForwardChainExpectation whenCancelCharge(String paymentId, String accountId) {
-        return mockClient.when(request()
-                .withMethod(POST)
-                .withPath(connectorCancelChargePathFor(paymentId, accountId)));
+    private void whenCancelCharge(String paymentId, String accountId, ResponseDefinitionBuilder response) {
+        wireMockClassRule.stubFor(post(urlPathEqualTo(connectorCancelChargePathFor(paymentId, accountId))).willReturn(response));
     }
 
-    private ForwardChainExpectation whenCaptureCharge(String paymentId, String accountId) {
-        return mockClient.when(request()
-                .withMethod(POST)
-                .withPath(connectorCaptureChargePathFor(paymentId, accountId)));
+    private void whenCaptureCharge(String paymentId, String accountId, ResponseDefinitionBuilder response) {
+        wireMockClassRule.stubFor(post(urlPathEqualTo(connectorCaptureChargePathFor(paymentId, accountId))).willReturn(response));
     }
 
     private String connectorCancelChargePathFor(String paymentId, String accountId) {
@@ -532,15 +436,11 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         return format(CONNECTOR_MOCK_CHARGE_PATH + "/capture", accountId, paymentId);
     }
 
-    private HttpResponse withErrorResponse(int statusCode, String errorMsg) {
-        return withErrorResponse(statusCode, errorMsg, ErrorIdentifier.GENERIC);
+    private ResponseDefinitionBuilder withStatusAndErrorMessage(int statusCode, String errorMsg, ErrorIdentifier errorIdentifier) {
+        return withStatusAndErrorMessage(statusCode, errorMsg, errorIdentifier, null);
     }
-
-    private HttpResponse withErrorResponse(int statusCode, String errorMsg, ErrorIdentifier errorIdentifier) {
-        return withErrorResponse(statusCode, errorMsg, errorIdentifier, null);
-    }
-
-    private HttpResponse withErrorResponse(int statusCode, String errorMsg, ErrorIdentifier errorIdentifier, String reason) {
+    
+    private ResponseDefinitionBuilder withStatusAndErrorMessage(int statusCode, String errorMsg, ErrorIdentifier errorIdentifier, String reason) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("message", List.of(errorMsg));
         payload.put("error_identifier", errorIdentifier.toString());
@@ -548,8 +448,8 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
             payload.put("reason", reason);
         }
         
-        return response()
-                .withStatusCode(statusCode)
+        return aResponse()
+                .withStatus(statusCode)
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                 .withBody(new GsonBuilder().create().toJson(payload));
     }
@@ -562,24 +462,16 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     }
 
     public void verifyCancelCharge(String paymentId, String accountId) {
-        mockClient.verify(request()
-                        .withMethod(POST)
-                        .withPath(connectorCancelChargePathFor(paymentId, accountId)),
-                once());
+        wireMockClassRule.verify(1, postRequestedFor(urlEqualTo(connectorCancelChargePathFor(paymentId, accountId))));
     }
 
     public void verifyCaptureCharge(String paymentId, String accountId) {
-        mockClient.verify(request()
-                        .withMethod(POST)
-                        .withPath(connectorCaptureChargePathFor(paymentId, accountId)),
-                once());
+        wireMockClassRule.verify(1, postRequestedFor(urlEqualTo(connectorCaptureChargePathFor(paymentId, accountId))));
     }
 
-    public void respondBadRequest_whenCreateARefund(String reason, int amount, int refundAmountAvailable, String gatewayAccountId, String chargeId) {
-        whenCreateRefund(amount, refundAmountAvailable, gatewayAccountId, chargeId)
-                .respond(withErrorResponse(BAD_REQUEST_400,
-                        "A message that should be completely ignored (only log)",
-                        ErrorIdentifier.REFUND_NOT_AVAILABLE,
-                        reason));
+    public void respondBadRequest_whenCreateARefund(String reason, String gatewayAccountId, String chargeId) {
+        whenCreateRefund(gatewayAccountId, chargeId, 
+                withStatusAndErrorMessage(BAD_REQUEST_400, 
+                        "A message that should be completely ignored (only log)", REFUND_NOT_AVAILABLE, reason));
     }
 }

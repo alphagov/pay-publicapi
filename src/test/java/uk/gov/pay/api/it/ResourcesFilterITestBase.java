@@ -1,22 +1,28 @@
 package uk.gov.pay.api.it;
 
+import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.google.common.collect.ImmutableMap;
+import com.spotify.docker.client.exceptions.DockerException;
+import io.dropwizard.testing.junit.DropwizardAppRule;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
-import uk.gov.pay.api.model.Address;
-import uk.gov.pay.api.model.CardDetails;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import uk.gov.pay.api.app.PublicApi;
+import uk.gov.pay.api.app.config.PublicApiConfig;
+import uk.gov.pay.api.it.rule.RedisDockerRule;
 import uk.gov.pay.api.model.PaymentState;
-import uk.gov.pay.api.model.RefundSummary;
+import uk.gov.pay.api.utils.ApiKeyGenerator;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
+import uk.gov.pay.api.utils.PublicAuthMockClient;
 
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -24,42 +30,75 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import static io.dropwizard.testing.ConfigOverride.config;
+import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static org.eclipse.jetty.http.HttpStatus.TOO_MANY_REQUESTS_429;
 import static org.junit.Assert.fail;
+import static org.mockserver.socket.PortFactory.findFreePort;
 import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
-abstract public class ResourcesFilterITestBase extends PaymentResourceITestBase {
+abstract public class ResourcesFilterITestBase {
 
-    protected static final int AMOUNT = 9999999;
-    protected static final String CHARGE_ID = "ch_ab2341da231434l";
-    protected static final String CHARGE_TOKEN_ID = "token_1234567asdf";
-    protected static final PaymentState CREATED = new PaymentState("created", false, null, null);
-    protected static final RefundSummary REFUND_SUMMARY = new RefundSummary("pending", 100L, 50L);
-    protected static final String PAYMENT_PROVIDER = "Sandbox";
-    protected static final String CARD_BRAND = "master-card";
-    protected static final String CARD_BRAND_LABEL = "Mastercard";
-    protected static final String RETURN_URL = "https://somewhere.gov.uk/rainbow/1";
-    protected static final String REFERENCE = "Some reference";
-    protected static final String EMAIL = "alice.111@mail.fake";
-    protected static final String DESCRIPTION = "Some description";
-    protected static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
-    protected static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(TIMESTAMP);
-    protected static final Map<String, String> PAYMENT_CREATED = new ChargeEventBuilder(CREATED, CREATED_DATE).build();
-    protected static final List<Map<String, String>> EVENTS = Collections.singletonList(PAYMENT_CREATED);
-    protected static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
-    protected static final CardDetails CARD_DETAILS = new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, "Visa");
+    static final String API_KEY = ApiKeyGenerator.apiKeyValueOf("TEST_BEARER_TOKEN", "qwer9yuhgf"); //Must use same secret set in test-config.xml's apiKeyHmacSecret
+    static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
+    static final String PAYMENTS_PATH = "/v1/payments/";
+    static final int AMOUNT = 9999999;
+    static final String CHARGE_ID = "ch_ab2341da231434l";
+    static final PaymentState CREATED = new PaymentState("created", false, null, null);
+    static final String RETURN_URL = "https://somewhere.gov.uk/rainbow/1";
+    static final String REFERENCE = "Some reference";
+    static final String DESCRIPTION = "Some description";
+    static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(TIMESTAMP);
+    static final List<Map<String, String>> EVENTS = List.of(new ChargeEventBuilder(CREATED, CREATED_DATE).build());
+    static final String GATEWAY_ACCOUNT_ID = "GATEWAY_ACCOUNT_ID";
+    static final String PAYLOAD = paymentPayload();
+    
+    private static final int CONNECTOR_PORT = findFreePort();
+    private static final int PUBLIC_AUTH_PORT = findFreePort();
 
-    protected static final String PAYLOAD = paymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE);
-    protected ExecutorService executor = Executors.newFixedThreadPool(2);
+    private ExecutorService executor = Executors.newFixedThreadPool(2);
+    
+    @ClassRule
+    public static RedisDockerRule redisDockerRule;
+
+    static {
+        try {
+            redisDockerRule = new RedisDockerRule();
+        } catch (DockerException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    @ClassRule
+    public static WireMockClassRule connectorMock = new WireMockClassRule(CONNECTOR_PORT);
+
+    @ClassRule
+    public static WireMockClassRule publicAuthMock = new WireMockClassRule(PUBLIC_AUTH_PORT);
+
+    @Rule
+    public DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
+            PublicApi.class, 
+            resourceFilePath("config/test-config.yaml"), 
+            config("connectorUrl", "http://localhost:" + CONNECTOR_PORT), 
+            config("connectorDDUrl", "http://localhost"), 
+            config("publicAuthUrl", "http://localhost:" + PUBLIC_AUTH_PORT + "/v1/auth"), 
+            config("redis.endpoint", redisDockerRule.getRedisUrl()),
+            config("rateLimiter.noOfReq", "1"),
+            config("rateLimiter.noOfReqForPost", "1")
+    );
+
+    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
 
     @Before
     public void setupApiKey() {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        redisDockerRule.clearCache();
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
     }
 
-    protected List<ValidatableResponse> invokeAll(List<Callable<ValidatableResponse>> tasks) throws InterruptedException {
+    List<ValidatableResponse> invokeAll(List<Callable<ValidatableResponse>> tasks) throws InterruptedException {
         return executor.invokeAll(tasks)
                 .stream()
                 .map(future -> {
@@ -73,8 +112,8 @@ abstract public class ResourcesFilterITestBase extends PaymentResourceITestBase 
                 .collect(Collectors.toList());
     }
 
-    protected TypeSafeMatcher<ValidatableResponse> aResponse(final int statusCode) {
-        return new TypeSafeMatcher<ValidatableResponse>() {
+    TypeSafeMatcher<ValidatableResponse> aResponse(final int statusCode) {
+        return new TypeSafeMatcher<>() {
             @Override
             protected boolean matchesSafely(ValidatableResponse validatableResponse) {
                 return validatableResponse.extract().statusCode() == statusCode;
@@ -88,49 +127,49 @@ abstract public class ResourcesFilterITestBase extends PaymentResourceITestBase 
         };
     }
 
-    protected TypeSafeMatcher<ValidatableResponse> anErrorResponse(int statusCode, String publicApiErrorCode, String expectedDescription) {
-        return new TypeSafeMatcher<ValidatableResponse>() {
+    TypeSafeMatcher<ValidatableResponse> anErrorResponse() {
+        return new TypeSafeMatcher<>() {
             @Override
             protected boolean matchesSafely(ValidatableResponse validatableResponse) {
                 ExtractableResponse<Response> extract = validatableResponse.extract();
-                return extract.statusCode() == statusCode
-                        && publicApiErrorCode.equals(extract.body().<String>path("code"))
-                        && expectedDescription.equals(extract.body().<String>path("description"));
+                return extract.statusCode() == TOO_MANY_REQUESTS_429
+                        && "P0900".equals(extract.body().<String>path("code"))
+                        && "Too many requests".equals(extract.body().<String>path("description"));
             }
 
             @Override
             public void describeTo(Description description) {
                 description.appendText(" Status code: ")
-                        .appendValue(statusCode)
+                        .appendValue(TOO_MANY_REQUESTS_429)
                         .appendText(", error code: ")
-                        .appendValue(publicApiErrorCode)
+                        .appendValue("P0900")
                         .appendText(", message: ")
-                        .appendValue(expectedDescription)
+                        .appendValue("Too many requests")
                 ;
             }
         };
     }
 
-    protected static String paymentPayload(long amount, String returnUrl, String description, String reference) {
+    private static String paymentPayload() {
         return new JsonStringBuilder()
-                .add("amount", amount)
-                .add("reference", reference)
-                .add("description", description)
-                .add("return_url", returnUrl)
+                .add("amount", (long) ResourcesFilterITestBase.AMOUNT)
+                .add("reference", ResourcesFilterITestBase.REFERENCE)
+                .add("description", ResourcesFilterITestBase.DESCRIPTION)
+                .add("return_url", ResourcesFilterITestBase.RETURN_URL)
                 .build();
     }
 
-    protected ValidatableResponse getPaymentResponse(String bearerToken, String paymentId) {
+    ValidatableResponse getPaymentResponse(String bearerToken) {
         return given().port(app.getLocalPort())
                 .header(AUTHORIZATION, "Bearer " + bearerToken)
-                .get(PAYMENTS_PATH + paymentId)
+                .get(PAYMENTS_PATH + CHARGE_ID)
                 .then();
     }
 
-    protected ValidatableResponse getPaymentEventsResponse(String bearerToken, String paymentId) {
+    ValidatableResponse getPaymentEventsResponse(String bearerToken) {
         return given().port(app.getLocalPort())
                 .header(AUTHORIZATION, "Bearer " + bearerToken)
-                .get(String.format("/v1/payments/%s/events", paymentId))
+                .get(String.format("/v1/payments/%s/events", CHARGE_ID))
                 .then();
     }
 
@@ -144,7 +183,7 @@ abstract public class ResourcesFilterITestBase extends PaymentResourceITestBase 
                 .then();
     }
 
-    protected ValidatableResponse searchPayments(String bearerToken, ImmutableMap<String, String> queryParams) {
+    ValidatableResponse searchPayments(String bearerToken, ImmutableMap<String, String> queryParams) {
         return given().port(app.getLocalPort())
                 .accept(JSON)
                 .contentType(JSON)
@@ -154,10 +193,10 @@ abstract public class ResourcesFilterITestBase extends PaymentResourceITestBase 
                 .then();
     }
 
-    protected ValidatableResponse postCancelPaymentResponse(String bearerToken, String paymentId) {
+    ValidatableResponse postCancelPaymentResponse(String bearerToken) {
         return given().port(app.getLocalPort())
                 .header(AUTHORIZATION, "Bearer " + bearerToken)
-                .post(String.format("/v1/payments/%s/cancel", paymentId))
+                .post(String.format("/v1/payments/%s/cancel", CHARGE_ID))
                 .then();
     }
 }

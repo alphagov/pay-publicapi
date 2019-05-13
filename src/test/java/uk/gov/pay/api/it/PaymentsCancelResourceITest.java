@@ -3,6 +3,8 @@ package uk.gov.pay.api.it;
 import com.jayway.jsonassert.JsonAssert;
 import io.restassured.response.ValidatableResponse;
 import org.junit.Test;
+import uk.gov.pay.api.utils.PublicAuthMockClient;
+import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,29 +22,27 @@ public class PaymentsCancelResourceITest extends PaymentResourceITestBase {
     private static final String TEST_CHARGE_ID = "ch_ab2341da231434";
     private static final String CANCEL_PAYMENTS_PATH = PAYMENTS_PATH + "%s/cancel";
 
+    private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
+    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    
     @Test
     public void cancelPayment_Returns401_WhenUnauthorised() {
-        publicAuthMock.respondUnauthorised();
-
-        postCancelPaymentResponse(TEST_CHARGE_ID)
-                .statusCode(401);
+        publicAuthMockClient.respondUnauthorised();
+        postCancelPaymentResponse(TEST_CHARGE_ID).statusCode(401);
     }
 
     @Test
     public void successful_whenConnector_AllowsCancellation() {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondOk_whenCancelCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID);
-
-        postCancelPaymentResponse(TEST_CHARGE_ID)
-                .statusCode(204);
-
-        connectorMock.verifyCancelCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMockClient.respondOk_whenCancelCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID);
+        postCancelPaymentResponse(TEST_CHARGE_ID).statusCode(204);
+        connectorMockClient.verifyCancelCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID);
     }
 
     @Test
     public void cancelPayment_returns404_whenPaymentNotFound() throws IOException {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondChargeNotFound_WhenCancelCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID, "some backend error message");
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMockClient.respondChargeNotFound_WhenCancelCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID, "some backend error message");
 
         InputStream body = postCancelPaymentResponse(TEST_CHARGE_ID)
                 .statusCode(404)
@@ -57,8 +57,8 @@ public class PaymentsCancelResourceITest extends PaymentResourceITestBase {
 
     @Test
     public void cancelPayment_returns409_whenConnectorReturns409() throws IOException {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respond_WhenCancelCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID, "some backend error message", CONFLICT_409);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMockClient.respond_WhenCancelCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID, "some backend error message", CONFLICT_409);
 
         InputStream body = postCancelPaymentResponse(TEST_CHARGE_ID)
                 .statusCode(409)
@@ -73,8 +73,8 @@ public class PaymentsCancelResourceITest extends PaymentResourceITestBase {
 
     @Test
     public void cancelPayment_returns500_whenConnectorResponseIsUnexpected() throws IOException {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respond_WhenCancelCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID, "some backend error message", LENGTH_REQUIRED_411);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMockClient.respond_WhenCancelCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID, "some backend error message", LENGTH_REQUIRED_411);
 
         InputStream body = postCancelPaymentResponse(TEST_CHARGE_ID)
                 .statusCode(500)

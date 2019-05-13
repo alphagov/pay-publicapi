@@ -2,7 +2,10 @@ package uk.gov.pay.api.it;
 
 import com.jayway.jsonassert.JsonAssert;
 import io.restassured.response.ValidatableResponse;
+import org.junit.Before;
 import org.junit.Test;
+import uk.gov.pay.api.utils.PublicAuthMockClient;
+import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,29 +23,27 @@ public class PaymentsResourceCaptureITest extends PaymentResourceITestBase {
     private static final String TEST_CHARGE_ID = "ch_e36c168c41a0";
     private static final String CAPTURE_PAYMENTS_PATH = PAYMENTS_PATH + "%s/capture";
 
+    private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
+    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+
     @Test
     public void capturePayment_Returns401_WhenUnauthorised() {
-        publicAuthMock.respondUnauthorised();
-
-        postCapturePaymentResponse(TEST_CHARGE_ID)
-                .statusCode(401);
+        publicAuthMockClient.respondUnauthorised();
+        postCapturePaymentResponse(TEST_CHARGE_ID).statusCode(401);
     }
 
     @Test
     public void successful_whenConnector_AllowsCapture() {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondOk_whenCaptureCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID);
-
-        postCapturePaymentResponse(TEST_CHARGE_ID)
-                .statusCode(204);
-
-        connectorMock.verifyCaptureCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMockClient.respondOk_whenCaptureCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID);
+        postCapturePaymentResponse(TEST_CHARGE_ID).statusCode(204);
+        connectorMockClient.verifyCaptureCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID);
     }
 
     @Test
     public void capturePayment_returns400_whenConnectorRespondsWithA400() throws IOException {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondBadRequest_WhenCaptureCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID, "Invalid account Id");
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMockClient.respondBadRequest_WhenCaptureCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID, "Invalid account Id");
 
         InputStream body = postCapturePaymentResponse(TEST_CHARGE_ID)
                 .statusCode(400)
@@ -57,8 +58,8 @@ public class PaymentsResourceCaptureITest extends PaymentResourceITestBase {
 
     @Test
     public void capturePayment_returns404_whenPaymentNotFound() throws IOException {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respondChargeNotFound_WhenCaptureCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID, "some backend error message");
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMockClient.respondChargeNotFound_WhenCaptureCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID, "some backend error message");
 
         InputStream body = postCapturePaymentResponse(TEST_CHARGE_ID)
                 .statusCode(404)
@@ -73,8 +74,8 @@ public class PaymentsResourceCaptureITest extends PaymentResourceITestBase {
 
     @Test
     public void capturePayment_returns409_whenConnectorReturns409() throws IOException {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respond_WhenCaptureCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID, "some backend error message", CONFLICT_409);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMockClient.respond_WhenCaptureCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID, "some backend error message", CONFLICT_409);
 
         InputStream body = postCapturePaymentResponse(TEST_CHARGE_ID)
                 .statusCode(409)
@@ -89,8 +90,8 @@ public class PaymentsResourceCaptureITest extends PaymentResourceITestBase {
 
     @Test
     public void capturePayment_returns500_whenConnectorResponseIsUnexpected() throws IOException {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        connectorMock.respond_WhenCaptureCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID, "some backend error message", LENGTH_REQUIRED_411);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMockClient.respond_WhenCaptureCharge(TEST_CHARGE_ID, GATEWAY_ACCOUNT_ID, "some backend error message", LENGTH_REQUIRED_411);
 
         InputStream body = postCapturePaymentResponse(TEST_CHARGE_ID)
                 .statusCode(500)

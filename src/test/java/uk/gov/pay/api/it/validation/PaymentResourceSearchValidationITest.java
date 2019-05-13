@@ -8,6 +8,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
+import uk.gov.pay.api.utils.PublicAuthMockClient;
 
 import java.io.InputStream;
 
@@ -30,9 +31,11 @@ public class PaymentResourceSearchValidationITest extends PaymentResourceITestBa
 
     private static final String SEARCH_PATH = "/v1/payments";
 
+    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+
     @Before
     public void mapBearerTokenToAccountId() {
-        publicAuthMock.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
     }
 
     @Test

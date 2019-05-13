@@ -28,9 +28,9 @@ jerseyClientConfig:
   disabledSecureConnection: "true"
 
 rateLimiter:
-  noOfReq: 1
+  noOfReq: 1000
   perMillis: 1000
-  noOfReqForPost: 1
+  noOfReqForPost: 1000
   noOfReqPerNode: 1
   noOfReqForPostPerNode: 1
 
