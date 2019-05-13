@@ -67,7 +67,7 @@ public class PaymentsResource {
     private final GetPaymentService getPaymentService;
     private final CapturePaymentService capturePaymentService;
     private final CancelPaymentService cancelPaymentService;
-    private PaymentRequestValidator paymentRequestValidator;
+    private final PaymentRequestValidator paymentRequestValidator;
 
     @Inject
     public PaymentsResource(Client client,

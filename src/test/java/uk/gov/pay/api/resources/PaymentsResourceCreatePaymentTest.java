@@ -99,9 +99,11 @@ public class PaymentsResourceCreatePaymentTest {
                 .description("New Passport")
                 .build();
 
+        final ValidCreatePaymentRequest validCreatePaymentRequest = new ValidCreatePaymentRequest(createPaymentRequest);
+
         PaymentWithAllLinks injectedResponse = aSuccessfullyCreatedPayment();
 
-        when(createPaymentService.create(eq(account), ArgumentMatchers.any())).thenReturn(injectedResponse);
+        when(createPaymentService.create(account, validCreatePaymentRequest)).thenReturn(injectedResponse);
 
         final Response newPayment = paymentsResource.createNewPayment(account, createPaymentRequest);
 
