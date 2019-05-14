@@ -188,7 +188,7 @@ abstract public class ResourcesFilterITestBase {
                 .accept(JSON)
                 .contentType(JSON)
                 .header(AUTHORIZATION, "Bearer " + bearerToken)
-                .queryParameters(queryParams)
+                .queryParams(queryParams)
                 .get("/v1/payments")
                 .then();
     }
