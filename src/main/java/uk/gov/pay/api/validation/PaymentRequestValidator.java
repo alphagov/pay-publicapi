@@ -24,8 +24,6 @@ import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 
 public class PaymentRequestValidator {
 
-    static final String CONSTRAINT_GREATER_THAN_MESSAGE_INT_TEMPLATE = "Must be greater than or equal to %d";
-    static final String CONSTRAINT_LESS_THAN_MESSAGE_INT_TEMPLATE = "Must be less than or equal to %d";
     private static final String CONSTRAINT_MESSAGE_STRING_TEMPLATE = "Must be less than or equal to %d characters length";
     private static final String CONSTRAINT_MESSAGE_EXACT_STRING_TEMPLATE = "Must be exactly %d characters length";
     private static final String URL_FORMAT_MESSAGE = "Must be a valid URL format";

@@ -20,10 +20,10 @@ public class PaymentRefundRequestValidator {
 
     private void validateAmount(int amount) {
         validate(amount >= AMOUNT_MIN_VALUE,
-                aPaymentError(AMOUNT_FIELD_NAME, CREATE_PAYMENT_REFUND_VALIDATION_ERROR, format(CONSTRAINT_GREATER_THAN_MESSAGE_INT_TEMPLATE, AMOUNT_MIN_VALUE)));
+                aPaymentError(AMOUNT_FIELD_NAME, CREATE_PAYMENT_REFUND_VALIDATION_ERROR, format("Must be greater than or equal to %d", AMOUNT_MIN_VALUE)));
 
         validate(amount <= AMOUNT_MAX_VALUE,
-                aPaymentError(AMOUNT_FIELD_NAME, CREATE_PAYMENT_REFUND_VALIDATION_ERROR, format(CONSTRAINT_LESS_THAN_MESSAGE_INT_TEMPLATE, AMOUNT_MAX_VALUE)));
+                aPaymentError(AMOUNT_FIELD_NAME, CREATE_PAYMENT_REFUND_VALIDATION_ERROR, format("Must be less than or equal to %d", AMOUNT_MAX_VALUE)));
     }
 
     private static void validate(boolean condition, PaymentError error) {
