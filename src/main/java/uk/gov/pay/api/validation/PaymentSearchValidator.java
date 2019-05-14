@@ -11,6 +11,7 @@ import java.util.Set;
 
 import static org.apache.commons.lang3.StringUtils.join;
 import static org.eclipse.jetty.util.StringUtil.isBlank;
+import static uk.gov.pay.api.model.CreatePaymentRequest.REFERENCE_MAX_LENGTH;
 import static uk.gov.pay.api.model.PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
@@ -18,7 +19,6 @@ import static uk.gov.pay.api.validation.MaxLengthValidator.isValid;
 import static uk.gov.pay.api.validation.PaymentRequestValidator.AGREEMENT_ID_MAX_LENGTH;
 import static uk.gov.pay.api.validation.PaymentRequestValidator.CARD_BRAND_MAX_LENGTH;
 import static uk.gov.pay.api.validation.PaymentRequestValidator.EMAIL_MAX_LENGTH;
-import static uk.gov.pay.api.validation.PaymentRequestValidator.REFERENCE_MAX_LENGTH;
 import static uk.gov.pay.api.validation.SearchValidator.validateDisplaySizeIfNotNull;
 import static uk.gov.pay.api.validation.SearchValidator.validateFromDate;
 import static uk.gov.pay.api.validation.SearchValidator.validatePageIfNotNull;

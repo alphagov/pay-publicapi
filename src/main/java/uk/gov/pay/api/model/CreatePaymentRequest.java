@@ -6,8 +6,13 @@ import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.pay.commons.model.charge.ExternalMetadata;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 import java.util.Optional;
 import java.util.StringJoiner;
+
+import static uk.gov.pay.api.validation.PaymentRequestValidator.AGREEMENT_ID_MAX_LENGTH;
 
 @ApiModel(value = "CreatePaymentRequest", description = "The Payment Request Payload")
 public class CreatePaymentRequest {
@@ -29,12 +34,28 @@ public class CreatePaymentRequest {
     public static final String PREFILLED_ADDRESS_CITY_FIELD_NAME = "city";
     public static final String PREFILLED_ADDRESS_POSTCODE_FIELD_NAME = "postcode";
     public static final String PREFILLED_ADDRESS_COUNTRY_FIELD_NAME = "country";
+    public static final int REFERENCE_MAX_LENGTH = 255;
+    public static final int AMOUNT_MAX_VALUE = 10000000;
+    public static final int AMOUNT_MIN_VALUE = 1;
+    public static final int DESCRIPTION_MAX_LENGTH = 255;
+    public static final int URL_MAX_LENGTH = 2000;
+    
+    @Min(value = AMOUNT_MIN_VALUE, message = "Must be greater than or equal to {value}")
+    @Max(value = AMOUNT_MAX_VALUE, message = "Must be less than or equal to {value}")
+    public final int amount;
 
-    private final int amount;
     private final String returnUrl;
-    private final String reference;
-    private final String description;
-    private final String agreementId;
+
+    @Size(max = REFERENCE_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
+    public final String reference;
+
+    @Size(max = DESCRIPTION_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
+    public final String description;
+
+    @Size(max = AGREEMENT_ID_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
+    @JsonProperty(value = "agreement_id")
+    public final String agreementId;
+    
     private final String language;
     private final Boolean delayedCapture;
     private final ExternalMetadata metadata;

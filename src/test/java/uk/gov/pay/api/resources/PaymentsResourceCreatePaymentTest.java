@@ -96,7 +96,7 @@ public class PaymentsResourceCreatePaymentTest {
                 .amount(100)
                 .returnUrl("https://somewhere.test")
                 .reference("my_ref")
-                .description("New Passport")
+                .description("New passport")
                 .build();
 
         final ValidCreatePaymentRequest validCreatePaymentRequest = new ValidCreatePaymentRequest(createPaymentRequest);
