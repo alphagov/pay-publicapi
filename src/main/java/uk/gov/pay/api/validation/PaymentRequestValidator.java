@@ -9,7 +9,6 @@ import uk.gov.pay.api.model.PrefilledCardholderDetails;
 import javax.inject.Inject;
 
 import static java.lang.String.format;
-import static uk.gov.pay.api.model.CreatePaymentRequest.LANGUAGE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.PREFILLED_ADDRESS_CITY_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.PREFILLED_ADDRESS_COUNTRY_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.PREFILLED_ADDRESS_LINE1_FIELD_NAME;
@@ -48,10 +47,6 @@ public class PaymentRequestValidator {
             validateReturnUrl(paymentRequest.getReturnUrl());
         }
 
-        if (paymentRequest.hasLanguage()) {
-            validateLanguage(paymentRequest.getLanguage());
-        }
-        
         if (paymentRequest.hasPrefilledCardholderDetails()) {
             validatePrefilledCardholderDetails(paymentRequest.getPrefilledCardholderDetails());
         }
@@ -65,12 +60,7 @@ public class PaymentRequestValidator {
         validate(urlValidator.isValid(returnUrl),
                 aPaymentError(RETURN_URL_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, URL_FORMAT_MESSAGE));
     }
-
-    private void validateLanguage(String language) {
-        validate(LanguageValidator.isValid(language),
-                aPaymentError(LANGUAGE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, LanguageValidator.ERROR_MESSAGE));
-    }
-
+    
     private void validatePrefilledCardholderDetails(PrefilledCardholderDetails prefilledCardholderDetails) {
         if (prefilledCardholderDetails.getCardholderName().isPresent()) {
             validate(MaxLengthValidator.isValid(prefilledCardholderDetails.getCardholderName().get(), CARDHOLDER_NAME_MAX_LENGTH),

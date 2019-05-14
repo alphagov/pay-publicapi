@@ -47,15 +47,6 @@ public class PaymentRequestValidatorTest {
     }
 
     @Test
-    public void validateUnsupportedLanguage_shouldFailValue() {
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().language("unsupported language").build();
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: language. Must be \"en\" or \"cy\""));
-
-        paymentRequestValidator.validate(createPaymentRequest);
-    }
-
-    @Test
     public void validateMinimumAmount_shouldSuccessValue() {
         CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().amount(CreatePaymentRequest.AMOUNT_MIN_VALUE).build();
         paymentRequestValidator.validate(createPaymentRequest);

@@ -18,6 +18,7 @@ import javax.ws.rs.core.HttpHeaders;
 import java.io.InputStream;
 import java.time.ZonedDateTime;
 import java.util.Map;
+import java.util.Optional;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
@@ -54,7 +55,9 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
             .withAmount(AMOUNT)
             .withDescription(DESCRIPTION)
             .withReference(REFERENCE)
-            .withReturnUrl(RETURN_URL).build());
+            .withReturnUrl(RETURN_URL)
+            .withLanguage(SupportedLanguage.ENGLISH)
+            .build());
     private static final String GATEWAY_TRANSACTION_ID = "gateway-tx-123456";
 
     private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
@@ -455,6 +458,8 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
         if (params.getAddressCountry().isPresent()) {
             payload.addToNestedMap("country", params.getAddressCountry().get(), "prefilled_cardholder_details", "billing_address");
         }
+
+        Optional.ofNullable(params.getLanguage()).ifPresent(x -> payload.add("language", x.toString()));
 
         return payload.build();
     }

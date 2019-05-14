@@ -9,6 +9,7 @@ import uk.gov.pay.commons.model.charge.ExternalMetadata;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Optional;
 import java.util.StringJoiner;
@@ -58,6 +59,7 @@ public class CreatePaymentRequest {
     @JsonProperty(value = "agreement_id")
     private final String agreementId;
     
+    @Pattern(regexp = "en|cy", message = "Must be \"en\" or \"cy\"")
     private final String language;
     
     private final Boolean delayedCapture;

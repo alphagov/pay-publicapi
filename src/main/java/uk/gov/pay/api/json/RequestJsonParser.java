@@ -8,7 +8,6 @@ import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.PaymentError.Code;
-import uk.gov.pay.api.validation.LanguageValidator;
 import uk.gov.pay.commons.model.charge.ExternalMetadata;
 
 import javax.validation.ConstraintViolation;
@@ -108,10 +107,11 @@ class RequestJsonParser {
     }
 
     private static String validateAndGetLanguage(JsonNode paymentRequest) {
+        String errorMessage = "Must be \"en\" or \"cy\"";
         return validateAndGetString(
                 paymentRequest.get(LANGUAGE_FIELD_NAME),
-                aPaymentError(LANGUAGE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, LanguageValidator.ERROR_MESSAGE),
-                aPaymentError(LANGUAGE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, LanguageValidator.ERROR_MESSAGE));
+                aPaymentError(LANGUAGE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, errorMessage),
+                aPaymentError(LANGUAGE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, errorMessage));
     }
 
     private static String validateAndGetDescription(JsonNode paymentRequest) {
