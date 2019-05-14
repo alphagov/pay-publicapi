@@ -92,16 +92,6 @@ public class PaymentRequestValidatorTest {
     }
 
     @Test
-    public void validateEmailMaxLength_shouldFailValue() {
-        String invalidMaxLengthEmail = randomAlphanumeric(PaymentRequestValidator.EMAIL_MAX_LENGTH + 1);
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithAgreementId().email(invalidMaxLengthEmail).build();
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: email. Must be less than or equal to 254 characters length"));
-
-        paymentRequestValidator.validate(createPaymentRequest);
-    }
-
-    @Test
     public void validateCardHolderNameMaxLength_shouldFailValue() {
         String invalidMaxLengthEmail = randomAlphanumeric(PaymentRequestValidator.CARDHOLDER_NAME_MAX_LENGTH + 1);
         CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithAgreementId().cardholderName(invalidMaxLengthEmail).build();

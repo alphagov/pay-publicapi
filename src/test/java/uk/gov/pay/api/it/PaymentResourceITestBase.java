@@ -1,8 +1,11 @@
 package uk.gov.pay.api.it;
 
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.spotify.docker.client.exceptions.DockerException;
 import io.dropwizard.testing.junit.DropwizardAppRule;
+import io.restassured.response.ValidatableResponse;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -12,8 +15,13 @@ import uk.gov.pay.api.it.rule.RedisDockerRule;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
 
+import java.util.Map;
+
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
+import static io.restassured.RestAssured.given;
+import static io.restassured.http.ContentType.JSON;
+import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.mockserver.socket.PortFactory.findFreePort;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 
@@ -37,6 +45,7 @@ public abstract class PaymentResourceITestBase {
     private static final int CONNECTOR_PORT = findFreePort();
     private static final int CONNECTOR_DD_PORT = findFreePort();
     private static final int PUBLIC_AUTH_PORT = findFreePort();
+    private static final Gson GSON = new GsonBuilder().create();
     
     @ClassRule
     public static WireMockClassRule connectorMock = new WireMockClassRule(CONNECTOR_PORT);
@@ -87,4 +96,17 @@ public abstract class PaymentResourceITestBase {
         return paymentLocationFor(configuration.getBaseUrl(), chargeId) + "/cancel";
     }
 
+    protected ValidatableResponse postPaymentResponse(String payload) {
+        return given().port(app.getLocalPort())
+                .body(payload)
+                .accept(JSON)
+                .contentType(JSON)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
+                .post(PAYMENTS_PATH)
+                .then();
+    }
+    
+    protected static String toJson(Map map) {
+        return GSON.toJson(map);
+    }
 }

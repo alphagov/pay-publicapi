@@ -9,7 +9,6 @@ import uk.gov.pay.api.model.PrefilledCardholderDetails;
 import javax.inject.Inject;
 
 import static java.lang.String.format;
-import static uk.gov.pay.api.model.CreatePaymentRequest.EMAIL_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.LANGUAGE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.PREFILLED_ADDRESS_CITY_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.PREFILLED_ADDRESS_COUNTRY_FIELD_NAME;
@@ -24,13 +23,10 @@ import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 
 public class PaymentRequestValidator {
 
-    static final String CONSTRAINT_GREATER_THAN_MESSAGE_INT_TEMPLATE = "Must be greater than or equal to %d";
-    static final String CONSTRAINT_LESS_THAN_MESSAGE_INT_TEMPLATE = "Must be less than or equal to %d";
     private static final String CONSTRAINT_MESSAGE_STRING_TEMPLATE = "Must be less than or equal to %d characters length";
     private static final String CONSTRAINT_MESSAGE_EXACT_STRING_TEMPLATE = "Must be exactly %d characters length";
     private static final String URL_FORMAT_MESSAGE = "Must be a valid URL format";
 
-    static final int EMAIL_MAX_LENGTH = 254;
     static final int CARD_BRAND_MAX_LENGTH = 20;
     public static final int AGREEMENT_ID_MAX_LENGTH = 26;
     static final int CARDHOLDER_NAME_MAX_LENGTH = 255;
@@ -56,10 +52,6 @@ public class PaymentRequestValidator {
             validateLanguage(paymentRequest.getLanguage());
         }
         
-        if (paymentRequest.hasEmail()) {
-            validateEmail(paymentRequest.getEmail());
-        }
-        
         if (paymentRequest.hasPrefilledCardholderDetails()) {
             validatePrefilledCardholderDetails(paymentRequest.getPrefilledCardholderDetails());
         }
@@ -77,11 +69,6 @@ public class PaymentRequestValidator {
     private void validateLanguage(String language) {
         validate(LanguageValidator.isValid(language),
                 aPaymentError(LANGUAGE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, LanguageValidator.ERROR_MESSAGE));
-    }
-
-    private static void validateEmail(String email) {
-        validate(MaxLengthValidator.isValid(email, EMAIL_MAX_LENGTH),
-                aPaymentError(EMAIL_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, format(CONSTRAINT_MESSAGE_STRING_TEMPLATE, EMAIL_MAX_LENGTH)));
     }
 
     private void validatePrefilledCardholderDetails(PrefilledCardholderDetails prefilledCardholderDetails) {

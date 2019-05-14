@@ -1,7 +1,6 @@
 package uk.gov.pay.api.it.validation;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.restassured.response.ValidatableResponse;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import junitparams.converters.Nullable;
@@ -19,10 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static java.util.Arrays.asList;
-import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.it.CreatePaymentITest.paymentPayload;
@@ -145,16 +142,6 @@ public class PaymentResourceMetadataValidationFailuresITest extends PaymentResou
                 "Keys must be between 1 and 30 characters long",
                 "Values must be of type String, Boolean or Number"
         );
-    }
-
-    private ValidatableResponse postPaymentResponse(String payload) {
-        return given().port(app.getLocalPort())
-                .body(payload)
-                .accept(JSON)
-                .contentType(JSON)
-                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
-                .post(PAYMENTS_PATH)
-                .then();
     }
 
     private void assertMetadataValidationError(CreateChargeRequestParams createChargeRequestParams, String message) {
