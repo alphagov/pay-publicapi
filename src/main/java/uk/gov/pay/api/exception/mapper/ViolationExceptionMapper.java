@@ -51,7 +51,9 @@ public class ViolationExceptionMapper implements ExceptionMapper<JerseyViolation
         Class<?> leafBean = firstException.getLeafBean().getClass();
         String fieldName = getFieldNameFromPath(firstException.getPropertyPath());
         try {
-            return leafBean.getField(fieldName);
+            Field f = leafBean.getDeclaredField(fieldName);
+            f.setAccessible(true);
+            return f;
         } catch (NoSuchFieldException e) {
             LOGGER.error(String.format("Cannot process violation exception. " +
                     "Field %s does not exist or is not public on class %s", fieldName, leafBean.toString()));
