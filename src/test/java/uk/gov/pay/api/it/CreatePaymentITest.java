@@ -79,7 +79,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 .withReturnUrl(RETURN_URL)
                 .build());
 
-        postPaymentResponse(API_KEY, payload)
+        postPaymentResponse(payload)
                 .statusCode(201)
                 .contentType(JSON).log().body()
                 .body("$", not(hasKey("metadata")));
@@ -98,7 +98,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 .build();
         connectorMockClient.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
 
-        postPaymentResponse(API_KEY, paymentPayload(createChargeRequestParams))
+        postPaymentResponse(paymentPayload(createChargeRequestParams))
                 .statusCode(201)
                 .contentType(JSON)
                 .body("metadata.reconciled", is(true))
@@ -126,7 +126,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 .build();
         connectorMockClient.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
 
-        postPaymentResponse(API_KEY, paymentPayload(createChargeRequestParams))
+        postPaymentResponse(paymentPayload(createChargeRequestParams))
                 .statusCode(201)
                 .contentType(JSON)
                 .body("email", is("j.bogs@example.org"))
@@ -149,7 +149,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 .add("return_url", RETURN_URL)
                 .addToNestedMap("line1", 123, "prefilled_cardholder_details", "billing_address")
                 .build();
-        postPaymentResponse(API_KEY, payload)
+        postPaymentResponse(payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .body("code", is("P0102"))
@@ -172,7 +172,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 .build();
         connectorMockClient.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
 
-        postPaymentResponse(API_KEY, paymentPayload(createChargeRequestParams))
+        postPaymentResponse(paymentPayload(createChargeRequestParams))
                 .statusCode(201)
                 .contentType(JSON)
                 .body("email", is(nullValue()))
@@ -205,7 +205,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 .withCardDetails(CARD_DETAILS)
                 .build());
 
-        String responseBody = postPaymentResponse(API_KEY, SUCCESS_PAYLOAD)
+        String responseBody = postPaymentResponse(SUCCESS_PAYLOAD)
                 .statusCode(201)
                 .contentType(JSON)
                 .header(HttpHeaders.LOCATION, is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)))
@@ -281,7 +281,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 .withReturnUrl(RETURN_URL)
                 .build();
         
-        postPaymentResponse(API_KEY, paymentPayload(params))
+        postPaymentResponse(paymentPayload(params))
                 .statusCode(201)
                 .contentType(JSON)
                 .body("payment_id", is(CHARGE_ID))
@@ -331,7 +331,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 .add("return_url", return_url)
                 .build();
 
-        postPaymentResponse(API_KEY, body)
+        postPaymentResponse(body)
                 .statusCode(201)
                 .contentType(JSON)
                 .body("payment_id", is(CHARGE_ID))
@@ -354,7 +354,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
 
         connectorMockClient.respondBadRequest_whenCreateCharge(gatewayAccountId, errorMessage);
 
-        InputStream body = postPaymentResponse(API_KEY, SUCCESS_PAYLOAD)
+        InputStream body = postPaymentResponse(SUCCESS_PAYLOAD)
                 .statusCode(500)
                 .contentType(JSON).extract()
                 .body().asInputStream();
@@ -376,7 +376,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
 
         connectorMockClient.respondMandateTypeInvalid_whenCreateCharge(gatewayAccountId, errorMessage);
 
-        InputStream body = postPaymentResponse(API_KEY, SUCCESS_PAYLOAD)
+        InputStream body = postPaymentResponse(SUCCESS_PAYLOAD)
                 .statusCode(500)
                 .contentType(JSON).extract()
                 .body().asInputStream();
@@ -396,7 +396,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
 
         connectorMockClient.respondNotFound_whenCreateCharge(notFoundGatewayAccountId);
 
-        postPaymentResponse(API_KEY, SUCCESS_PAYLOAD)
+        postPaymentResponse(SUCCESS_PAYLOAD)
                 .statusCode(500)
                 .contentType(JSON)
                 .body("code", is("P0199"))
@@ -408,13 +408,13 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
     @Test
     public void createPayment_Returns401_WhenUnauthorised() {
         publicAuthMockClient.respondUnauthorised();
-        postPaymentResponse(API_KEY, SUCCESS_PAYLOAD).statusCode(401);
+        postPaymentResponse(SUCCESS_PAYLOAD).statusCode(401);
     }
 
     @Test
     public void createPayment_Returns_WhenPublicAuthInaccessible() {
         publicAuthMockClient.respondWithError();
-        postPaymentResponse(API_KEY, SUCCESS_PAYLOAD).statusCode(503);
+        postPaymentResponse(SUCCESS_PAYLOAD).statusCode(503);
     }
 
     public static String paymentPayload(CreateChargeRequestParams params) {
@@ -460,12 +460,12 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
     }
 
 
-    private ValidatableResponse postPaymentResponse(String bearerToken, String payload) {
+    protected ValidatableResponse postPaymentResponse(String payload) {
         return given().port(app.getLocalPort())
                 .body(payload)
                 .accept(JSON)
                 .contentType(JSON)
-                .header(AUTHORIZATION, "Bearer " + bearerToken)
+                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
                 .post(PAYMENTS_PATH)
                 .then();
     }

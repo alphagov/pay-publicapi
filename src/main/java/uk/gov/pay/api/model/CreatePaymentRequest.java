@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.validator.constraints.Length;
 import uk.gov.pay.commons.model.charge.ExternalMetadata;
 
 import javax.validation.constraints.Max;
@@ -17,6 +18,7 @@ import static uk.gov.pay.api.validation.PaymentRequestValidator.AGREEMENT_ID_MAX
 @ApiModel(value = "CreatePaymentRequest", description = "The Payment Request Payload")
 public class CreatePaymentRequest {
 
+    public static final int EMAIL_MAX_LENGTH = 254;
     public static final String AMOUNT_FIELD_NAME = "amount";
     public static final String RETURN_URL_FIELD_NAME = "return_url";
     public static final String REFERENCE_FIELD_NAME = "reference";
@@ -57,9 +59,14 @@ public class CreatePaymentRequest {
     public final String agreementId;
     
     private final String language;
+    
     private final Boolean delayedCapture;
+    
     private final ExternalMetadata metadata;
-    private final String email;
+
+    @Length(max = EMAIL_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
+    public final String email;
+    
     private final PrefilledCardholderDetails prefilledCardholderDetails;
     
     private CreatePaymentRequest(CreatePaymentRequestBuilder createPaymentRequestBuilder) {
