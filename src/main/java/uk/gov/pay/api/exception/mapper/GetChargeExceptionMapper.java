@@ -30,9 +30,9 @@ public class GetChargeExceptionMapper implements ExceptionMapper<GetChargeExcept
         } else {
             paymentError = aPaymentError(GET_PAYMENT_CONNECTOR_ERROR);
             status = INTERNAL_SERVER_ERROR;
+            LOGGER.error("Connector invalid response was {}.\n Returning http status {} with error body {}", exception.getMessage(), status, paymentError);
         }
 
-        LOGGER.error("Connector invalid response was {}.\n Returning http status {} with error body {}", exception.getMessage(), status, paymentError);
         return Response
                 .status(status)
                 .entity(paymentError)
