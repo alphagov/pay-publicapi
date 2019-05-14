@@ -2,23 +2,32 @@ package uk.gov.pay.api.it.validation;
 
 import com.jayway.jsonassert.JsonAssert;
 import io.restassured.response.ValidatableResponse;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+import junitparams.converters.Nullable;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
+import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
+import static uk.gov.pay.api.utils.mocks.CreateChargeRequestParams.CreateChargeRequestParamsBuilder.aCreateChargeRequestParams;
 
+@RunWith(JUnitParamsRunner.class)
 public class PaymentsResourceLanguageValidationITest extends PaymentResourceITestBase {
 
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
     
     @Before
     public void setUpBearerToken() {
@@ -26,31 +35,48 @@ public class PaymentsResourceLanguageValidationITest extends PaymentResourceITes
     }
 
     @Test
-    public void createPayment_responseWith422_whenLanguageIsNotSupported() throws IOException {
-        // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 9900,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://example.com\",\n" +
-                "  \"language\": \"fr\"\n" +
-                "}";
+    @Parameters({"en", "cy"})
+    public void valid(String language) {
+        String payload = toJson(
+                Map.of("amount", 100,
+                        "reference", "Some ref",
+                        "description","hi", 
+                        "return_url", "https://somewhere.gov.uk/rainbow/1",
+                        "email", "dorothy@rainbow.com",
+                        "language", language));
 
-        InputStream body = postPaymentResponse(API_KEY, payload)
-                .statusCode(422)
+        connectorMockClient.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, aCreateChargeRequestParams()
+                .withAmount(100)
+                .withDescription("hi")
+                .withReference("Some ref")
+                .withReturnUrl("https://somewhere.gov.uk/rainbow/1")
+                .build());
+
+        postPaymentResponse(payload).statusCode(201);
+    }
+    
+    @Test
+    @Parameters({"fr,422", " ,400", ",400"})
+    public void invalidLanguage(String language, int statusCode) {
+        String payload = toJson(
+                Map.of("amount", 100,
+                        "reference", "Some ref",
+                        "description",
+                        "hi", "return_url", "https://somewhere.gov.uk/rainbow/1",
+                        "email", "dorothy@rainbow.com",
+                        "language", language));
+
+        postPaymentResponse(payload)
+                .statusCode(statusCode)
                 .contentType(JSON)
-                .extract()
-                .body().asInputStream();
-
-        JsonAssert.with(body)
-                .assertThat("$.*", hasSize(3))
-                .assertThat("$.field", is("language"))
-                .assertThat("$.code", is("P0102"))
-                .assertThat("$.description", is("Invalid attribute value: language. Must be \"en\" or \"cy\""));
+                .body("size()", is(3))
+                .body("field", is("language"))
+                .body("code", is("P0102"))
+                .body("description", is("Invalid attribute value: language. Must be \"en\" or \"cy\""));
     }
 
     @Test
-    public void createPayment_responseWith400_whenLanguageIsNumeric() throws IOException {
+    public void createPayment_responseWith400_whenLanguageIsNumeric() {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 9900,\n" +
@@ -60,65 +86,13 @@ public class PaymentsResourceLanguageValidationITest extends PaymentResourceITes
                 "  \"language\": 1337\n" +
                 "}";
 
-        InputStream body = postPaymentResponse(API_KEY, payload)
+        postPaymentResponse(payload)
                 .statusCode(400)
                 .contentType(JSON)
-                .extract()
-                .body().asInputStream();
-
-        JsonAssert.with(body)
-                .assertThat("$.*", hasSize(3))
-                .assertThat("$.field", is("language"))
-                .assertThat("$.code", is("P0102"))
-                .assertThat("$.description", is("Invalid attribute value: language. Must be \"en\" or \"cy\""));
-    }
-
-    @Test
-    public void createPayment_responseWith400_whenLanguageIsEmpty() throws IOException {
-        // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 9900,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://example.com\",\n" +
-                "  \"language\": \"\"\n" +
-                "}";
-
-        InputStream body = postPaymentResponse(API_KEY, payload)
-                .statusCode(400)
-                .contentType(JSON)
-                .extract()
-                .body().asInputStream();
-
-        JsonAssert.with(body)
-                .assertThat("$.*", hasSize(3))
-                .assertThat("$.field", is("language"))
-                .assertThat("$.code", is("P0102"))
-                .assertThat("$.description", is("Invalid attribute value: language. Must be \"en\" or \"cy\""));
-    }
-
-    @Test
-    public void createPayment_responseWith400_whenLanguageIsBlank() throws IOException {
-        // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 9900,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://example.com\",\n" +
-                "  \"language\": \" \"\n" +
-                "}";
-
-        InputStream body = postPaymentResponse(API_KEY, payload)
-                .statusCode(400)
-                .contentType(JSON)
-                .extract()
-                .body().asInputStream();
-
-        JsonAssert.with(body)
-                .assertThat("$.*", hasSize(3))
-                .assertThat("$.field", is("language"))
-                .assertThat("$.code", is("P0102"))
-                .assertThat("$.description", is("Invalid attribute value: language. Must be \"en\" or \"cy\""));
+                .body("size()", is(3))
+                .body("field", is("language"))
+                .body("code", is("P0102"))
+                .body("description", is("Invalid attribute value: language. Must be \"en\" or \"cy\""));
     }
 
     @Test
@@ -132,17 +106,13 @@ public class PaymentsResourceLanguageValidationITest extends PaymentResourceITes
                 "  \"language\": null\n" +
                 "}";
 
-        InputStream body = postPaymentResponse(API_KEY, payload)
+        postPaymentResponse(payload)
                 .statusCode(400)
                 .contentType(JSON)
-                .extract()
-                .body().asInputStream();
-
-        JsonAssert.with(body)
-                .assertThat("$.*", hasSize(3))
-                .assertThat("$.field", is("language"))
-                .assertThat("$.code", is("P0102"))
-                .assertThat("$.description", is("Invalid attribute value: language. Must be \"en\" or \"cy\""));
+                .body("size()", is(3))
+                .body("field", is("language"))
+                .body("code", is("P0102"))
+                .body("description", is("Invalid attribute value: language. Must be \"en\" or \"cy\""));
     }
 
     @Test
@@ -155,16 +125,12 @@ public class PaymentsResourceLanguageValidationITest extends PaymentResourceITes
                 "  \"language\" : " +
                 "}";
 
-        InputStream body = postPaymentResponse(API_KEY, payload)
+        postPaymentResponse(payload)
                 .statusCode(400)
                 .contentType(JSON)
-                .extract()
-                .body().asInputStream();
-
-        JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0197"))
-                .assertThat("$.description", is("Unable to parse JSON"));
+                .body("size()", is(2))
+                .body("code", is("P0197"))
+                .body("description", is("Unable to parse JSON"));
     }
 
     @Test
@@ -180,26 +146,12 @@ public class PaymentsResourceLanguageValidationITest extends PaymentResourceITes
                 "  \"return_url\": \"https://example.com\"\n" +
                 "}";
 
-        InputStream body = postPaymentResponse(API_KEY, payload)
+        postPaymentResponse(payload)
                 .statusCode(400)
                 .contentType(JSON)
-                .extract()
-                .body().asInputStream();
-
-        JsonAssert.with(body)
-                .assertThat("$.*", hasSize(3))
-                .assertThat("$.field", is("language"))
-                .assertThat("$.code", is("P0102"))
-                .assertThat("$.description", is("Invalid attribute value: language. Must be \"en\" or \"cy\""));
-    }
-
-    private ValidatableResponse postPaymentResponse(String bearerToken, String payload) {
-        return given().port(app.getLocalPort())
-                .body(payload)
-                .accept(JSON)
-                .contentType(JSON)
-                .header(AUTHORIZATION, "Bearer " + bearerToken)
-                .post(PAYMENTS_PATH)
-                .then();
+                .body("size()", is(3))
+                .body("field", is("language"))
+                .body("code", is("P0102"))
+                .body("description", is("Invalid attribute value: language. Must be \"en\" or \"cy\""));
     }
 }
