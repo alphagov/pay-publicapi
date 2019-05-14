@@ -247,7 +247,7 @@ public class PaymentResourceSearchValidationITest extends PaymentResourceITestBa
                 .accept(JSON)
                 .contentType(JSON)
                 .header(AUTHORIZATION, "Bearer " + bearerToken)
-                .queryParameters(queryParams)
+                .queryParams(queryParams)
                 .get(SEARCH_PATH)
                 .then();
     }

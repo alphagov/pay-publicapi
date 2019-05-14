@@ -703,7 +703,7 @@ public class PaymentResourceSearchITest extends PaymentResourceITestBase {
                 .accept(JSON)
                 .contentType(JSON)
                 .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
-                .queryParameters(queryParams)
+                .queryParams(queryParams)
                 .get(SEARCH_PATH)
                 .then();
     }
