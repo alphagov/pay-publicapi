@@ -717,7 +717,10 @@
           "description" : "delayed capture flag"
         },
         "metadata" : {
-          "$ref" : "#/definitions/ExternalMetadata"
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
         },
         "email" : {
           "type" : "string",
@@ -725,7 +728,6 @@
           "description" : "email of the card holder"
         },
         "prefilled_cardholder_details" : {
-          "example" : "J. Bogs",
           "description" : "prefilled cardholder details",
           "$ref" : "#/definitions/PrefilledCardholderDetails"
         }
@@ -781,6 +783,12 @@
           "type" : "string",
           "example" : "null"
         },
+        "metadata" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
         "refund_summary" : {
           "$ref" : "#/definitions/RefundSummary"
         },
@@ -814,17 +822,6 @@
       },
       "description" : "An error response"
     },
-    "ExternalMetadata" : {
-      "type" : "object",
-      "properties" : {
-        "metadata" : {
-          "type" : "object",
-          "additionalProperties" : {
-            "type" : "object"
-          }
-        }
-      }
-    },
     "GetPaymentResult" : {
       "type" : "object",
       "properties" : {
@@ -854,7 +851,10 @@
           "enum" : [ "en", "cy" ]
         },
         "metadata" : {
-          "$ref" : "#/definitions/ExternalMetadata"
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
         },
         "payment_id" : {
           "type" : "string",
@@ -981,7 +981,10 @@
           "enum" : [ "en", "cy" ]
         },
         "metadata" : {
-          "$ref" : "#/definitions/ExternalMetadata"
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
         },
         "payment_id" : {
           "type" : "string",

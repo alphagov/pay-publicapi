@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.model.Address;
+import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.validation.PaymentRequestValidator;
 import uk.gov.pay.api.validation.URLValidator;
@@ -43,7 +44,7 @@ public class CreatePaymentRequestDeserializerTest {
     @Before
     public void setup() {
         URLValidator urlValidator = URLValidator.urlValidatorValueOf(true);
-        deserializer = new CreatePaymentRequestDeserializer(new PaymentRequestValidator(urlValidator));
+        deserializer = new CreatePaymentRequestDeserializer();
     }
 
     @Test
@@ -56,16 +57,16 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
-        ValidCreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+        CreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
 
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(paymentRequest.getLanguage(), is(Optional.empty()));
-        assertThat(paymentRequest.getDelayedCapture(), is(Optional.empty()));
-        assertThat(paymentRequest.getEmail(), is(Optional.empty()));
-        assertThat(paymentRequest.getPrefilledCardholderDetails(), is(Optional.empty()));
+        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentRequest.getLanguage(), is(nullValue()));
+        assertThat(paymentRequest.getDelayedCapture(), is(nullValue()));
+        assertThat(paymentRequest.getEmail(), is(nullValue()));
+        assertThat(paymentRequest.getPrefilledCardholderDetails(), is(nullValue()));
     }
 
     @Test
@@ -79,13 +80,13 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"language\": \"en\"\n" +
                 "}";
 
-        ValidCreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+        CreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
 
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(paymentRequest.getLanguage().get(), is(SupportedLanguage.ENGLISH));
+        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentRequest.getLanguage(), is(SupportedLanguage.ENGLISH.toString()));
     }
 
     @Test
@@ -99,13 +100,13 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"language\": \"cy\"\n" +
                 "}";
 
-        ValidCreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+        CreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
 
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(paymentRequest.getLanguage().get(), is(SupportedLanguage.WELSH));
+        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentRequest.getLanguage(), is(SupportedLanguage.WELSH.toString()));
     }
 
     @Test
@@ -119,13 +120,13 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"delayed_capture\": true\n" +
                 "}";
 
-        ValidCreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+        CreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
 
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(paymentRequest.getDelayedCapture().get(), is(Boolean.TRUE));
+        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentRequest.getDelayedCapture(), is(Boolean.TRUE));
     }
 
     @Test
@@ -139,13 +140,13 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"delayed_capture\": false\n" +
                 "}";
 
-        ValidCreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+        CreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
 
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(paymentRequest.getDelayedCapture().get(), is(Boolean.FALSE));
+        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentRequest.getDelayedCapture(), is(Boolean.FALSE));
     }
 
     @Test
@@ -158,13 +159,13 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"description\": \"Some description\"\n" +
                 "}";
 
-        ValidCreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+        CreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
 
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl(), is(Optional.empty()));
-        assertThat(paymentRequest.getAgreementId().get(), is("abc123"));
+        assertThat(paymentRequest.getReturnUrl(), is(nullValue()));
+        assertThat(paymentRequest.getAgreementId(), is("abc123"));
     }
 
     @Test
@@ -227,36 +228,6 @@ public class CreatePaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_whenAmountIsLessThanMinimum() throws Exception {
-        // language=JSON
-        String json = "{\n" +
-                "  \"amount\": 0,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
-                "}";
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: amount. Must be greater than or equal to 1"));
-
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
-    }
-
-    @Test
-    public void deserialize_shouldThrowValidationException_whenAmountIsMoreThanMaximum() throws Exception {
-        // language=JSON
-        String json = "{\n" +
-                "  \"amount\": 10000001,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
-                "}";
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: amount. Must be less than or equal to 10000000"));
-
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
-    }
-
-    @Test
     public void deserialize_shouldThrowValidationException_whenReturnUrlIsNotAStringValue() throws Exception {
         // language=JSON
         String json = "{\n" +
@@ -267,36 +238,6 @@ public class CreatePaymentRequestDeserializerTest {
                 "}";
 
         expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: return_url. Must be a valid URL format"));
-
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
-    }
-
-    @Test
-    public void deserialize_shouldThrowValidationException_whenReturnUrlLengthIsMoreThan2000CharactersLength() throws Exception {
-        // language=JSON
-        String json = "{\n" +
-                "  \"amount\": 1000000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"" + RandomStringUtils.randomAlphanumeric(2001) + "\"\n" +
-                "}";
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: return_url. Must be less than or equal to 2000 characters length"));
-
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
-    }
-
-    @Test
-    public void deserialize_shouldThrowValidationException_whenReturnUrlIsAMalformedUrl() throws Exception {
-        // language=JSON
-        String json = "{\n" +
-                "  \"amount\": 666,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"" + RandomStringUtils.randomAlphanumeric(50) + "\"\n" +
-                "}";
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: return_url. Must be a valid URL format"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }
@@ -375,21 +316,6 @@ public class CreatePaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_whenReferenceIsMoreThan255CharactersLength() throws Exception {
-        // language=JSON
-        String json = "{\n" +
-                "  \"amount\": 666,\n" +
-                "  \"reference\": \"" + RandomStringUtils.randomAlphanumeric(256) + "\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
-                "}";
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: reference. Must be less than or equal to 255 characters length"));
-
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
-    }
-
-    @Test
     public void deserialize_shouldThrowValidationException_whenDescriptionIsMissing() throws Exception {
         // language=JSON
         String json = "{\n" +
@@ -434,21 +360,6 @@ public class CreatePaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_whenDescriptionIsMoreThan255CharactersLength() throws Exception {
-        // language=JSON
-        String json = "{\n" +
-                "  \"amount\": 666,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"" + RandomStringUtils.randomAlphanumeric(256) + "\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
-                "}";
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: description. Must be less than or equal to 255 characters length"));
-
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
-    }
-
-    @Test
     public void deserialize_shouldThrowValidationException_AsAgreementIdIsMissing_whenAgreementIdIsNullValue() throws Exception {
         // language=JSON
         String json = "{\n" +
@@ -474,37 +385,6 @@ public class CreatePaymentRequestDeserializerTest {
                 "}";
 
         expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: agreement_id. Must be a valid agreement ID"));
-
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
-    }
-
-    @Test
-    public void deserialize_shouldThrowValidationException_whenAgreementIdIsMoreThan26CharactersLength() throws Exception {
-        // language=JSON
-        String json = "{\n" +
-                "  \"amount\": 666,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"agreement_id\": \"" + RandomStringUtils.randomAlphanumeric(27) + "\"\n" +
-                "}";
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: agreement_id. Must be less than or equal to 26 characters length"));
-
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
-    }
-
-    @Test
-    public void deserialize_shouldThrowValidationException_whenLanguageIsNotSupported() throws Exception {
-        // language=JSON
-        String json = "{\n" +
-                "  \"amount\": 1337,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "  \"language\": \"fr\"\n" +
-                "}";
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: language. Must be \"en\" or \"cy\""));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }
@@ -624,19 +504,18 @@ public class CreatePaymentRequestDeserializerTest {
                 "\"country\": \"GB\"\n" +
                 "}" + "}" + "}";
 
-        ValidCreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(payload), ctx);
+        CreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(payload), ctx);
         assertThat(paymentRequest.getAmount(), is(1000));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(paymentRequest.getLanguage(), is(Optional.empty()));
-        assertThat(paymentRequest.getDelayedCapture(), is(Optional.empty()));
-        assertThat(paymentRequest.getEmail().get(), is("j.bogs@example.org"));
-        assertThat(paymentRequest.getPrefilledCardholderDetails().isPresent(), is(true));
-        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getCardholderName().isPresent(), is(true));
-        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getCardholderName().get(), is("J Bogs"));
-        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getBillingAddress().isPresent(), is(true));
-        Address billingAddress = paymentRequest.getPrefilledCardholderDetails().get().getBillingAddress().get();
+        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentRequest.getLanguage(), is(nullValue()));
+        assertThat(paymentRequest.getDelayedCapture(), is(nullValue()));
+        assertThat(paymentRequest.getEmail(), is("j.bogs@example.org"));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().getCardholderName().isPresent(), is(true));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().getCardholderName().get(), is("J Bogs"));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().getBillingAddress().isPresent(), is(true));
+        Address billingAddress = paymentRequest.getPrefilledCardholderDetails().getBillingAddress().get();
         assertThat(billingAddress.getLine1(), is("address line 1"));
         assertThat(billingAddress.getLine2(), is(nullValue()));
         assertThat(billingAddress.getPostcode(), is("AB1 CD2"));
@@ -657,18 +536,14 @@ public class CreatePaymentRequestDeserializerTest {
                 "\"cardholder_name\": \"J Bogs\"\n" +
                 "}" + "}";
 
-        ValidCreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(payload), ctx);
+        CreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(payload), ctx);
         assertThat(paymentRequest.getAmount(), is(1000));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(paymentRequest.getLanguage(), is(Optional.empty()));
-        assertThat(paymentRequest.getDelayedCapture(), is(Optional.empty()));
-        assertThat(paymentRequest.getEmail().get(), is("j.bogs@example.org"));
-        assertThat(paymentRequest.getPrefilledCardholderDetails().isPresent(), is(true));
-        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getCardholderName().isPresent(), is(true));
-        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getCardholderName().get(), is("J Bogs"));
-        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getBillingAddress().isPresent(), is(false));
+        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentRequest.getEmail(), is("j.bogs@example.org"));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().getCardholderName().get(), is("J Bogs"));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().getBillingAddress().isPresent(), is(false));
     }
 
     @Test
@@ -689,17 +564,16 @@ public class CreatePaymentRequestDeserializerTest {
                 "\"country\": null\n" +
                 "}" + "}" + "}";
 
-        ValidCreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(payload), ctx);
+        CreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(payload), ctx);
         assertThat(paymentRequest.getAmount(), is(1000));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(paymentRequest.getLanguage(), is(Optional.empty()));
-        assertThat(paymentRequest.getDelayedCapture(), is(Optional.empty()));
-        assertThat(paymentRequest.getPrefilledCardholderDetails().isPresent(), is(true));
-        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getCardholderName().isPresent(), is(false));
-        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getBillingAddress().isPresent(), is(true));
-        Address billingAddress = paymentRequest.getPrefilledCardholderDetails().get().getBillingAddress().get();
+        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentRequest.getLanguage(), is(nullValue()));
+        assertThat(paymentRequest.getDelayedCapture(), is(nullValue()));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().getCardholderName(), is(Optional.empty()));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().getBillingAddress().isPresent(), is(true));
+        Address billingAddress = paymentRequest.getPrefilledCardholderDetails().getBillingAddress().get();
         assertThat(billingAddress.getLine1(), is("address line 1"));
         assertThat(billingAddress.getLine2(), is("address line 2"));
         assertThat(billingAddress.getPostcode(), is("AB1 CD2"));
@@ -725,17 +599,16 @@ public class CreatePaymentRequestDeserializerTest {
                 "\"country\": \"\"\n" +
                 "}" + "}" + "}";
 
-        ValidCreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(payload), ctx);
+        CreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(payload), ctx);
         assertThat(paymentRequest.getAmount(), is(1000));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(paymentRequest.getLanguage(), is(Optional.empty()));
-        assertThat(paymentRequest.getDelayedCapture(), is(Optional.empty()));
-        assertThat(paymentRequest.getPrefilledCardholderDetails().isPresent(), is(true));
-        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getCardholderName().isPresent(), is(false));
-        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getBillingAddress().isPresent(), is(true));
-        Address billingAddress = paymentRequest.getPrefilledCardholderDetails().get().getBillingAddress().get();
+        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentRequest.getLanguage(), is(nullValue()));
+        assertThat(paymentRequest.getDelayedCapture(), is(nullValue()));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().getCardholderName().isPresent(), is(false));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().getBillingAddress().isPresent(), is(true));
+        Address billingAddress = paymentRequest.getPrefilledCardholderDetails().getBillingAddress().get();
         assertThat(billingAddress.getLine1(), is("address line 1"));
         assertThat(billingAddress.getLine2(), is("address line 2"));
         assertThat(billingAddress.getPostcode(), is("AB1 CD2"));
@@ -762,147 +635,6 @@ public class CreatePaymentRequestDeserializerTest {
                 "}" + "}" + "}";
 
         expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: line1. Field must be a string"));
-
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
-    }
-
-    @Test
-    public void deserialize_shouldThrowValidationException_whenEmailIs255Character() throws Exception {
-        // language=JSON
-        String json = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "  \"email\": \"" + RandomStringUtils.randomAlphanumeric(255) + "\"\n" +
-                "}";
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: email. Must be less than or equal to 254 characters length"));
-
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
-    }
-
-    @Test
-    public void deserialize_shouldThrowValidationException_whenCardholderNameIs256Character() throws Exception {
-        // language=JSON
-        String json = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "\"prefilled_cardholder_details\": {\n" +
-                "\"cardholder_name\": \"" + RandomStringUtils.randomAlphanumeric(256) + "\"\n" +
-                "}" + "}";
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: cardholder_name. Must be less than or equal to 255 characters length"));
-
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
-    }
-
-    @Test
-    public void deserialize_shouldThrowValidationException_whenLine1Is256Character() throws Exception {
-        // language=JSON
-        String json = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "\"prefilled_cardholder_details\": {\n" +
-                "\"billing_address\": {\n" +
-                "\"line1\": \"" + RandomStringUtils.randomAlphanumeric(256) + "\"\n" +
-                "}" + "}" + "}";
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: line1. Must be less than or equal to 255 characters length"));
-
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
-    }
-
-    @Test
-    public void deserialize_shouldThrowValidationException_whenLine2Is256Character() throws Exception {
-        // language=JSON
-        String json = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "\"prefilled_cardholder_details\": {\n" +
-                "\"billing_address\": {\n" +
-                "\"line2\": \"" + RandomStringUtils.randomAlphanumeric(256) + "\"\n" +
-                "}" + "}" + "}";
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: line2. Must be less than or equal to 255 characters length"));
-
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
-    }
-
-    @Test
-    public void deserialize_shouldThrowValidationException_whenPostcodeIs26Character() throws Exception {
-        // language=JSON
-        String json = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "\"prefilled_cardholder_details\": {\n" +
-                "\"billing_address\": {\n" +
-                "\"postcode\": \"" + RandomStringUtils.randomAlphanumeric(26) + "\"\n" +
-                "}" + "}" + "}";
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: postcode. Must be less than or equal to 25 characters length"));
-
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
-    }
-
-    @Test
-    public void deserialize_shouldThrowValidationException_whenCityIs256Character() throws Exception {
-        // language=JSON
-        String json = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "\"prefilled_cardholder_details\": {\n" +
-                "\"billing_address\": {\n" +
-                "\"city\": \"" + RandomStringUtils.randomAlphanumeric(256) + "\"\n" +
-                "}" + "}" + "}";
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: city. Must be less than or equal to 255 characters length"));
-
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
-    }
-
-    @Test
-    public void deserialize_shouldThrowValidationException_whenCountryIsMoreThan2Character() throws Exception {
-        // language=JSON
-        String json = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "\"prefilled_cardholder_details\": {\n" +
-                "\"billing_address\": {\n" +
-                "\"country\": \"" + RandomStringUtils.randomAlphanumeric(3) + "\"\n" +
-                "}" + "}" + "}";
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: country. Must be exactly 2 characters length"));
-
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
-    }
-
-    @Test
-    public void deserialize_shouldThrowValidationException_whenCountryIsLessThan2Character() throws Exception {
-        // language=JSON
-        String json = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "\"prefilled_cardholder_details\": {\n" +
-                "\"billing_address\": {\n" +
-                "\"country\": \"" + RandomStringUtils.randomAlphanumeric(1) + "\"\n" +
-                "}" + "}" + "}";
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: country. Must be exactly 2 characters length"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }
