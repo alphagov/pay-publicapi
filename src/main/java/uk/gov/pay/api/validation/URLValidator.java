@@ -16,7 +16,8 @@ public enum URLValidator {
             return URL_VALIDATOR.isValid(value);
         }
 
-    }, SECURITY_DISABLED {
+    }, 
+    SECURITY_DISABLED {
         private final UrlValidator URL_VALIDATOR = new UrlValidator(new String[]{"http", "https"}, ALLOW_LOCAL_URLS + ALLOW_2_SLASHES);
 
         @Override

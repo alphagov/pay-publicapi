@@ -54,8 +54,8 @@ public class PaymentsResourceLanguageValidationITest extends PaymentResourceITes
         String payload = toJson(
                 Map.of("amount", 100,
                         "reference", "Some ref",
-                        "description",
-                        "hi", "return_url", "https://somewhere.gov.uk/rainbow/1",
+                        "description","hi", 
+                        "return_url", "https://somewhere.gov.uk/rainbow/1",
                         "email", "dorothy@rainbow.com",
                         "language", language));
 

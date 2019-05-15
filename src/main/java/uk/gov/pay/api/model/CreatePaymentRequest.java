@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
+import uk.gov.pay.api.validation.ValidReturnUrl;
 import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.commons.model.charge.ExternalMetadata;
 
@@ -48,6 +49,9 @@ public class CreatePaymentRequest {
     @Max(value = AMOUNT_MAX_VALUE, message = "Must be less than or equal to {value}")
     private final int amount;
 
+    @ValidReturnUrl
+    @Size(max = URL_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
+    @JsonProperty("return_url")
     private final String returnUrl;
 
     @Size(max = REFERENCE_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")

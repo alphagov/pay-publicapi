@@ -10,6 +10,7 @@ import uk.gov.pay.api.utils.PublicAuthMockClient;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
@@ -33,6 +34,7 @@ public class PaymentsResourceAgreementIdValidationITest extends PaymentResourceI
                 "  \"amount\" : 9900," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
+                "  \"return_url\" : \"https://somewhere.com\"," +
                 "  \"agreement_id\" : 1234" +
                 "}";
 
@@ -56,6 +58,7 @@ public class PaymentsResourceAgreementIdValidationITest extends PaymentResourceI
                 "  \"amount\" : 9900," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
+                "  \"return_url\" : \"https://somewhere.com\"," +
                 "  \"agreement_id\" : \"\"" +
                 "}";
 
@@ -79,6 +82,7 @@ public class PaymentsResourceAgreementIdValidationITest extends PaymentResourceI
                 "  \"amount\" : 9900," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
+                "  \"return_url\" : \"https://somewhere.com\"," +
                 "  \"agreement_id\" : \"    \"" +
                 "}";
 
@@ -102,6 +106,7 @@ public class PaymentsResourceAgreementIdValidationITest extends PaymentResourceI
                 "  \"amount\" : 9900," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
+                "  \"return_url\" : \"https://somewhere.com\"," +
                 "  \"agreement_id\" : null" +
                 "}";
 
@@ -123,12 +128,11 @@ public class PaymentsResourceAgreementIdValidationITest extends PaymentResourceI
 
         String aTooLongAgreementId = RandomStringUtils.randomAlphanumeric(27);
 
-        String payload = "{" +
-                "  \"amount\" : 9900," +
-                "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"agreement_id\" : \"" + aTooLongAgreementId + "\"" +
-                "}";
+        String payload = toJson(Map.of("amount", 9900,
+                "reference", "Some ref",
+                "description","hi",
+                "return_url", "http://somewhere.gov.uk/",
+                "agreement_id", aTooLongAgreementId));
 
         InputStream body = postPaymentResponse(API_KEY, payload)
                 .statusCode(422)
@@ -150,6 +154,7 @@ public class PaymentsResourceAgreementIdValidationITest extends PaymentResourceI
                 "  \"amount\" : 9900," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
+                "  \"return_url\" : \"https://somewhere.com\"," +
                 "  \"agreement_id\" : " +
                 "}";
 
@@ -172,6 +177,7 @@ public class PaymentsResourceAgreementIdValidationITest extends PaymentResourceI
                 "  \"amount\" : 9900," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
+                "  \"return_url\" : \"https://somewhere.com\"," +
                 "  \"agreement_id\" : []" +
                 "}";
 

@@ -707,18 +707,23 @@
         "return_url" : {
           "type" : "string",
           "example" : "https://service-name.gov.uk/transactions/12345",
-          "description" : "service return url"
+          "description" : "service return url",
+          "readOnly" : true,
+          "minLength" : 0,
+          "maxLength" : 2000
         },
         "language" : {
           "type" : "string",
           "example" : "en",
           "description" : "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages",
+          "readOnly" : true,
           "enum" : [ "en", "cy" ]
         },
         "delayed_capture" : {
           "type" : "boolean",
           "example" : false,
-          "description" : "delayed capture flag"
+          "description" : "delayed capture flag",
+          "readOnly" : true
         },
         "metadata" : {
           "type" : "object",
@@ -728,14 +733,17 @@
         },
         "email" : {
           "type" : "string",
-          "example" : "joe.bogs@example.org",
-          "description" : "email of the card holder"
+          "example" : "Joe.Bogs@example.org",
+          "description" : "email",
+          "readOnly" : true
         },
         "prefilled_cardholder_details" : {
-          "description" : "prefilled cardholder details",
+          "description" : "prefilled_cardholder_details",
+          "readOnly" : true,
           "$ref" : "#/definitions/PrefilledCardholderDetails"
         }
-      }
+      },
+      "description" : "The Payment Request Payload"
     },
     "CreatePaymentResult" : {
       "type" : "object",
