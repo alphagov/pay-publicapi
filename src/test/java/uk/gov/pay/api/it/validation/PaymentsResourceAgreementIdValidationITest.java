@@ -127,12 +127,14 @@ public class PaymentsResourceAgreementIdValidationITest extends PaymentResourceI
     public void createPayment_responseWith422_whenAgreementIdSizeIsGreaterThanMaxLength() throws IOException {
 
         String aTooLongAgreementId = RandomStringUtils.randomAlphanumeric(27);
-
-        String payload = toJson(Map.of("amount", 9900,
-                "reference", "Some ref",
-                "description","hi",
-                "return_url", "http://somewhere.gov.uk/",
-                "agreement_id", aTooLongAgreementId));
+        
+        String payload = "{" +
+                "  \"amount\" : 9900," +
+                "  \"reference\" : \"Some reference\"," +
+                "  \"description\" : \"Some description\"," +
+                "  \"return_url\" : \"https://somewhere.com\"," +
+                "  \"agreement_id\" : \"" + aTooLongAgreementId + "\"" +
+                "}";
 
         InputStream body = postPaymentResponse(API_KEY, payload)
                 .statusCode(422)
