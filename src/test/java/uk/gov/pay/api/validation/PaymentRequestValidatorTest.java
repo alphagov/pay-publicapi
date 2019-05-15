@@ -21,36 +21,6 @@ public class PaymentRequestValidatorTest {
     private static final String VALID_AGREEMENT_ID = "abcdef1234567890abcedf1234";
 
     private final PaymentRequestValidator paymentRequestValidator = new PaymentRequestValidator();
-
-    @Test
-    public void validParameters_withReturnUrl_shouldSuccessValue() {
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().build();
-        paymentRequestValidator.validate(createPaymentRequest);
-    }
-
-    @Test
-    public void validParameters_withAgreementId_shouldSuccessValue() {
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithAgreementId().build();
-        paymentRequestValidator.validate(createPaymentRequest);
-    }
-
-    @Test
-    public void validParameters_withEnglishLanguage_shouldSuccessValue() {
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().language(SupportedLanguage.ENGLISH).build();
-        paymentRequestValidator.validate(createPaymentRequest);
-    }
-
-    @Test
-    public void validParameters_withWelshLanguage_shouldSuccessValue() {
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().language(SupportedLanguage.WELSH).build();
-        paymentRequestValidator.validate(createPaymentRequest);
-    }
-
-    @Test
-    public void validateMinimumAmount_shouldSuccessValue() {
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().amount(CreatePaymentRequest.AMOUNT_MIN_VALUE).build();
-        paymentRequestValidator.validate(createPaymentRequest);
-    }
     
     @Test
     public void validateCardHolderNameMaxLength_shouldFailValue() {
