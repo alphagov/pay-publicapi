@@ -9,6 +9,7 @@ import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.PrefilledCardholderDetails;
+import uk.gov.pay.commons.model.SupportedLanguage;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -66,7 +67,7 @@ public class RequestJsonParserTest {
         assertThat(createPaymentRequest.getReference(), is("Some reference"));
         assertThat(createPaymentRequest.getDescription(), is("Some description"));
         assertThat(createPaymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(createPaymentRequest.getLanguage(), is("en"));
+        assertThat(createPaymentRequest.getLanguage(), is(SupportedLanguage.ENGLISH));
         assertThat(createPaymentRequest.getDelayedCapture(), is(true));
     }
 

@@ -36,22 +36,13 @@ public class PaymentRequestValidatorTest {
 
     @Test
     public void validParameters_withEnglishLanguage_shouldSuccessValue() {
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().language(SupportedLanguage.ENGLISH.toString()).build();
+        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().language(SupportedLanguage.ENGLISH).build();
         paymentRequestValidator.validate(createPaymentRequest);
     }
 
     @Test
     public void validParameters_withWelshLanguage_shouldSuccessValue() {
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().language(SupportedLanguage.WELSH.toString()).build();
-        paymentRequestValidator.validate(createPaymentRequest);
-    }
-
-    @Test
-    public void validateUnsupportedLanguage_shouldFailValue() {
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().language("unsupported language").build();
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: language. Must be \"en\" or \"cy\""));
-
+        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().language(SupportedLanguage.WELSH).build();
         paymentRequestValidator.validate(createPaymentRequest);
     }
 

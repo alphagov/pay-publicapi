@@ -42,15 +42,9 @@ public class ValidCreatePaymentRequest {
         amount = createPaymentRequest.getAmount();
         reference = Objects.requireNonNull(createPaymentRequest.getReference());
         description = Objects.requireNonNull(createPaymentRequest.getDescription());
-
         returnUrl = createPaymentRequest.getReturnUrl();
         agreementId = createPaymentRequest.getAgreementId();
-
-        String createPaymentRequestLanguage = createPaymentRequest.getLanguage();
-        if (createPaymentRequestLanguage != null) {
-            language = SupportedLanguage.fromIso639AlphaTwoCode(createPaymentRequestLanguage);
-        }
-
+        language = createPaymentRequest.getLanguage();
         delayedCapture = createPaymentRequest.getDelayedCapture();
         metadata = createPaymentRequest.getMetadata();
         email = createPaymentRequest.getEmail();

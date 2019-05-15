@@ -693,17 +693,21 @@
         "reference" : {
           "type" : "string",
           "example" : "12345",
-          "description" : "payment reference"
+          "description" : "payment reference",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "New passport application",
+          "description" : "payment description",
+          "minLength" : 0,
+          "maxLength" : 255
         },
         "return_url" : {
           "type" : "string",
           "example" : "https://service-name.gov.uk/transactions/12345",
           "description" : "service return url"
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "New passport application",
-          "description" : "payment description"
         },
         "language" : {
           "type" : "string",

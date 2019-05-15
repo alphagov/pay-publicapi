@@ -156,7 +156,7 @@ public class CreatePaymentServiceTest {
                 .returnUrl("https://somewhere.gov.uk/rainbow/1")
                 .reference("a reference")
                 .description("a description")
-                .language("cy")
+                .language(SupportedLanguage.WELSH)
                 .build());
 
         PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);

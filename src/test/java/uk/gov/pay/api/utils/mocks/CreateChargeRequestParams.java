@@ -1,5 +1,8 @@
 package uk.gov.pay.api.utils.mocks;
 
+import uk.gov.pay.api.utils.JsonStringBuilder;
+import uk.gov.pay.commons.model.SupportedLanguage;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -17,31 +20,22 @@ public class CreateChargeRequestParams {
     private final String addressPostcode;
     private final String addressCity;
     private final String addressCountry;
+    private final SupportedLanguage language;
 
-    private CreateChargeRequestParams(int amount, 
-                                      String returnUrl, 
-                                      String description, 
-                                      String reference, 
-                                      Map<String, Object> metadata,
-                                      String email,
-                                      String cardholderName,
-                                      String addressLine1,
-                                      String addressLine2,
-                                      String addressPostcode,
-                                      String addressCity,
-                                      String addressCountry) {
-        this.amount = amount;
-        this.returnUrl = returnUrl;
-        this.description = description;
-        this.reference = reference;
-        this.metadata = metadata;
-        this.email = email;
-        this.cardholderName = cardholderName;
-        this.addressLine1 = addressLine1;
-        this.addressLine2 = addressLine2;
-        this.addressPostcode = addressPostcode;
-        this.addressCity = addressCity;
-        this.addressCountry = addressCountry;
+    private CreateChargeRequestParams(CreateChargeRequestParamsBuilder builder) {
+        this.amount = builder.amount;
+        this.returnUrl = builder.returnUrl;
+        this.description = builder.description;
+        this.reference = builder.reference;
+        this.metadata = builder.metadata;
+        this.email = builder.email;
+        this.cardholderName = builder.cardholderName;
+        this.addressLine1 = builder.addressLine1;
+        this.addressLine2 = builder.addressLine2;
+        this.addressPostcode = builder.addressPostcode;
+        this.addressCity = builder.addressCity;
+        this.addressCountry = builder.addressCountry;
+        this.language = builder.language;
     }
 
     public int getAmount() {
@@ -92,6 +86,10 @@ public class CreateChargeRequestParams {
         return Optional.ofNullable(addressCountry);
     }
 
+    public SupportedLanguage getLanguage() {
+        return language;
+    }
+
     public static final class CreateChargeRequestParamsBuilder {
         private Integer amount;
         private String returnUrl;
@@ -105,6 +103,7 @@ public class CreateChargeRequestParams {
         private String addressPostcode;
         private String addressCity;
         private String addressCountry;
+        private SupportedLanguage language;
 
         private CreateChargeRequestParamsBuilder() {
         }
@@ -175,9 +174,12 @@ public class CreateChargeRequestParams {
 
         public CreateChargeRequestParams build() {
             List.of(amount, reference, returnUrl, description).forEach(Objects::requireNonNull);
-            return new CreateChargeRequestParams(amount, returnUrl, description, reference, 
-                    metadata, email, cardholderName, addressLine1, addressLine2, addressPostcode,
-                    addressCity, addressCountry);
+            return new CreateChargeRequestParams(this);
+        }
+
+        public CreateChargeRequestParamsBuilder withLanguage(SupportedLanguage language) {
+            this.language = language;
+            return this;
         }
     }
 }
