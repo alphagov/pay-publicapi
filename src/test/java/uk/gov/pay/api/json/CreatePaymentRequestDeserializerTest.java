@@ -86,7 +86,7 @@ public class CreatePaymentRequestDeserializerTest {
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
         assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(paymentRequest.getLanguage(), is(SupportedLanguage.ENGLISH.toString()));
+        assertThat(paymentRequest.getLanguage(), is(SupportedLanguage.ENGLISH));
     }
 
     @Test
@@ -106,7 +106,7 @@ public class CreatePaymentRequestDeserializerTest {
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
         assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(paymentRequest.getLanguage(), is(SupportedLanguage.WELSH.toString()));
+        assertThat(paymentRequest.getLanguage(), is(SupportedLanguage.WELSH));
     }
 
     @Test

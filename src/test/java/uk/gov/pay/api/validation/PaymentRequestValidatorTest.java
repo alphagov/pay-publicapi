@@ -36,13 +36,13 @@ public class PaymentRequestValidatorTest {
 
     @Test
     public void validParameters_withEnglishLanguage_shouldSuccessValue() {
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().language(SupportedLanguage.ENGLISH.toString()).build();
+        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().language(SupportedLanguage.ENGLISH).build();
         paymentRequestValidator.validate(createPaymentRequest);
     }
 
     @Test
     public void validParameters_withWelshLanguage_shouldSuccessValue() {
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().language(SupportedLanguage.WELSH.toString()).build();
+        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().language(SupportedLanguage.WELSH).build();
         paymentRequestValidator.validate(createPaymentRequest);
     }
 

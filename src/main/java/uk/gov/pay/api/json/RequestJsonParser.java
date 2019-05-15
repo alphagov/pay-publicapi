@@ -3,11 +3,13 @@ package uk.gov.pay.api.json;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
 import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.PaymentError.Code;
+import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.commons.model.charge.ExternalMetadata;
 
 import javax.validation.ConstraintViolation;
@@ -106,12 +108,15 @@ class RequestJsonParser {
                 aPaymentError(AGREEMENT_ID_FIELD_NAME, CREATE_PAYMENT_MISSING_FIELD_ERROR));
     }
 
-    private static String validateAndGetLanguage(JsonNode paymentRequest) {
+    private static SupportedLanguage validateAndGetLanguage(JsonNode paymentRequest) {
         String errorMessage = "Must be \"en\" or \"cy\"";
-        return validateAndGetString(
-                paymentRequest.get(LANGUAGE_FIELD_NAME),
-                aPaymentError(LANGUAGE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, errorMessage),
-                aPaymentError(LANGUAGE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, errorMessage));
+        PaymentError paymentError = aPaymentError(LANGUAGE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, errorMessage);
+        String language = validateAndGetString(paymentRequest.get(LANGUAGE_FIELD_NAME), paymentError, paymentError);
+        try {
+            return SupportedLanguage.fromIso639AlphaTwoCode(language);
+        } catch (IllegalArgumentException e) {
+            throw new WebApplicationException(Response.status(SC_UNPROCESSABLE_ENTITY).entity(paymentError).build());
+        }
     }
 
     private static String validateAndGetDescription(JsonNode paymentRequest) {

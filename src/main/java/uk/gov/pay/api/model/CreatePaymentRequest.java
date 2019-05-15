@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
+import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.commons.model.charge.ExternalMetadata;
 
 import javax.validation.constraints.Max;
@@ -59,8 +60,7 @@ public class CreatePaymentRequest {
     @JsonProperty(value = "agreement_id")
     private final String agreementId;
     
-    @Pattern(regexp = "en|cy", message = "Must be \"en\" or \"cy\"")
-    private final String language;
+    private final SupportedLanguage language;
     
     private final Boolean delayedCapture;
     
@@ -99,7 +99,7 @@ public class CreatePaymentRequest {
         return description;
     }
 
-    @ApiModelProperty(value = "service return url", required = false, example = "https://service-name.gov.uk/transactions/12345")
+    @ApiModelProperty(value = "service return url", required = true, example = "https://service-name.gov.uk/transactions/12345")
     @JsonProperty("return_url")
     public String getReturnUrl() {
         return returnUrl;
@@ -113,7 +113,7 @@ public class CreatePaymentRequest {
 
     @ApiModelProperty(value = "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages", required = false, example = "en")
     @JsonProperty(LANGUAGE_FIELD_NAME)
-    public String getLanguage() {
+    public SupportedLanguage getLanguage() {
         return language;
     }
 
@@ -149,7 +149,7 @@ public class CreatePaymentRequest {
     }
 
     public boolean hasLanguage() {
-        return StringUtils.isNotBlank(language);
+        return language != null;
     }
 
     public boolean hasEmail() {
@@ -171,7 +171,7 @@ public class CreatePaymentRequest {
         joiner.add("reference: ").add(reference);
         Optional.ofNullable(returnUrl).ifPresent(value -> joiner.add("return_url: ").add(value));
         Optional.ofNullable(agreementId).ifPresent(value -> joiner.add("agreement_id: ").add(value));
-        Optional.ofNullable(language).ifPresent(value -> joiner.add("language: ").add(value));
+        Optional.ofNullable(language).ifPresent(value -> joiner.add("language: ").add(value.toString()));
         Optional.ofNullable(delayedCapture).ifPresent(value -> joiner.add("delayed_capture: ").add(value.toString()));
         Optional.ofNullable(metadata).ifPresent(value -> joiner.add("metadata: ").add(value.toString()));
         return joiner.toString();
@@ -184,7 +184,7 @@ public class CreatePaymentRequest {
         private String reference;
         private String description;
         private String agreementId;
-        private String language;
+        private SupportedLanguage language;
         private Boolean delayedCapture;
         private String email;
         private String cardholderName;
@@ -220,7 +220,7 @@ public class CreatePaymentRequest {
             return this;
         }
 
-        public CreatePaymentRequestBuilder language(String language) {
+        public CreatePaymentRequestBuilder language(SupportedLanguage language) {
             this.language = language;
             return this;
         }
