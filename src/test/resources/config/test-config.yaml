@@ -20,7 +20,6 @@ connectorUrl: http://connector_card.url/
 connectorDDUrl: http://connector_direct_debit.url/
 publicAuthUrl: http://publicauth.url/v1/auth
 
-
 graphiteHost: ${METRICS_HOST:-localhost}
 graphitePort: ${METRICS_PORT:-8092}
 

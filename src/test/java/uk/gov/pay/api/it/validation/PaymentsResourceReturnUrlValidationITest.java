@@ -141,34 +141,9 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
     }
 
     @Test
-    public void createPayment_responseWith422_whenReturnUrlSizeIsGreaterThanMaxLengthAndHasInvalidFormat() throws IOException {
-
-        String aVeryBigInvalidReturnUrl = RandomStringUtils.randomAlphanumeric(2001);
-
-        String payload = "{" +
-                "  \"amount\" : 9900," +
-                "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"" + aVeryBigInvalidReturnUrl + "\"" +
-                "}";
-
-        InputStream body = postPaymentResponse(API_KEY, payload)
-                .statusCode(422)
-                .contentType(JSON)
-                .extract()
-                .body().asInputStream();
-
-        JsonAssert.with(body)
-                .assertThat("$.*", hasSize(3))
-                .assertThat("$.field", is("return_url"))
-                .assertThat("$.code", is("P0102"))
-                .assertThat("$.description", is("Invalid attribute value: return_url. Must be less than or equal to 2000 characters length"));
-    }
-
-    @Test
     public void createPayment_responseWith422_whenReturnUrlSizeIsGreaterThanMaxLengthAndHasValidFormat_lengthIsFirstToCheck_failFast() throws IOException {
 
-        String aVeryBigValidReturnUrl = "http://payments.gov.uk?something=" + RandomStringUtils.randomAlphanumeric(2000);
+        String aVeryBigValidReturnUrl = "https://payments.gov.uk?something=" + "aVeryLongString12345".repeat(100);
 
         String payload = "{" +
                 "  \"amount\" : 9900," +

@@ -20,7 +20,7 @@ public class PaymentRequestValidatorTest {
     private static final String VALID_DESCRIPTION = "description";
     private static final String VALID_AGREEMENT_ID = "abcdef1234567890abcedf1234";
 
-    private final PaymentRequestValidator paymentRequestValidator = new PaymentRequestValidator(URLValidator.SECURITY_ENABLED);
+    private final PaymentRequestValidator paymentRequestValidator = new PaymentRequestValidator();
 
     @Test
     public void validParameters_withReturnUrl_shouldSuccessValue() {
@@ -52,30 +52,10 @@ public class PaymentRequestValidatorTest {
         paymentRequestValidator.validate(createPaymentRequest);
     }
 
-    @Test
-    public void validateReturnUrlMaxLength_shouldFailValue() {
-        String invalidMaxLengthReturnUrl = "https://" + randomAlphanumeric(CreatePaymentRequest.URL_MAX_LENGTH) + ".com/";
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().returnUrl(invalidMaxLengthReturnUrl).build();
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: return_url. Must be less than or equal to 2000 characters length"));
-
-        paymentRequestValidator.validate(createPaymentRequest);
-    }
-
-    @Test
+    @Test //TODO move to integration test
     public void validateReturnUrlNotHttps_shouldFailValue() {
         String validHttpOnlyUrl = "http://www.example.com/";
         CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().returnUrl(validHttpOnlyUrl).build();
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: return_url. Must be a valid URL format"));
-
-        paymentRequestValidator.validate(createPaymentRequest);
-    }
-
-    @Test
-    public void validateReturnUrlInvalidFormat_shouldFailValue() {
-        String invalidUrlFormat = randomAlphanumeric(50);
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().returnUrl(invalidUrlFormat).build();
 
         expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: return_url. Must be a valid URL format"));
 
