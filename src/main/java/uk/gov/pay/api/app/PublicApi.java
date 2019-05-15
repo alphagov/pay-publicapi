@@ -49,6 +49,7 @@ import uk.gov.pay.api.resources.PaymentRefundsResource;
 import uk.gov.pay.api.resources.PaymentsResource;
 import uk.gov.pay.api.resources.RequestDeniedResource;
 import uk.gov.pay.api.resources.SearchRefundsResource;
+import uk.gov.pay.api.validation.InjectingValidationFeature;
 import uk.gov.pay.commons.utils.logging.LoggingFilter;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -93,6 +94,8 @@ public class PublicApi extends Application<PublicApiConfig> {
         environment.jersey().register(injector.getInstance(RequestDeniedResource.class));
         environment.jersey().register(injector.getInstance(AgreementsResource.class));
         environment.jersey().register(injector.getInstance(SearchRefundsResource.class));
+        
+        environment.jersey().register(new InjectingValidationFeature(injector));
 
         environment.servlets().addFilter("AuthorizationValidationFilter", injector.getInstance(AuthorizationValidationFilter.class))
                 .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");

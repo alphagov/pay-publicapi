@@ -51,17 +51,7 @@ public class PaymentRequestValidatorTest {
         CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().amount(CreatePaymentRequest.AMOUNT_MIN_VALUE).build();
         paymentRequestValidator.validate(createPaymentRequest);
     }
-
-    @Test //TODO move to integration test
-    public void validateReturnUrlNotHttps_shouldFailValue() {
-        String validHttpOnlyUrl = "http://www.example.com/";
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithReturnUrl().returnUrl(validHttpOnlyUrl).build();
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: return_url. Must be a valid URL format"));
-
-        paymentRequestValidator.validate(createPaymentRequest);
-    }
-
+    
     @Test
     public void validateCardHolderNameMaxLength_shouldFailValue() {
         String invalidMaxLengthEmail = randomAlphanumeric(PaymentRequestValidator.CARDHOLDER_NAME_MAX_LENGTH + 1);

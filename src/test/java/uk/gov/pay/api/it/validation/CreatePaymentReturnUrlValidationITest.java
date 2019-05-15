@@ -1,7 +1,6 @@
 package uk.gov.pay.api.it.validation;
 
 import com.jayway.jsonassert.JsonAssert;
-import io.restassured.response.ValidatableResponse;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,14 +9,13 @@ import uk.gov.pay.api.utils.PublicAuthMockClient;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
-import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
-import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 
-public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITestBase {
+public class CreatePaymentReturnUrlValidationITest extends PaymentResourceITestBase {
 
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
     
@@ -27,7 +25,23 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
     }
 
     @Test
-    public void createPayment_responseWith400_whenReturnUrlIsNumeric() throws IOException {
+    public void respondWith422_whenReturnUrlIsHttp() {
+        String payload = toJson(Map.of("amount", 100,
+                "reference", "Some ref",
+                "description","hi", 
+                "return_url", "http://somewhere.gov.uk/"));
+
+        postPaymentResponse(payload)
+                .statusCode(422)
+                .contentType(JSON)
+                .body("size()", is(3))
+                .body("field", is("return_url"))
+                .body("code", is("P0102"))
+                .body("description", is("Invalid attribute value: return_url. Must be a valid URL format"));
+    }
+    
+    @Test
+    public void respondWith400_whenReturnUrlIsNumeric() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
@@ -36,7 +50,7 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
                 "  \"return_url\" : 123" +
                 "}";
 
-        InputStream body = postPaymentResponse(API_KEY, payload)
+        InputStream body = postPaymentResponse(payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .extract()
@@ -50,7 +64,7 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
     }
 
     @Test
-    public void createPayment_responseWith400_whenReturnUrlIsEmpty() throws IOException {
+    public void respondWith400_whenReturnUrlIsEmpty() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
@@ -59,7 +73,7 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
                 "  \"return_url\" : \"\"" +
                 "}";
 
-        InputStream body = postPaymentResponse(API_KEY, payload)
+        InputStream body = postPaymentResponse(payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .extract()
@@ -73,7 +87,7 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
     }
 
     @Test
-    public void createPayment_responseWith400_whenReturnUrlIsBlank() throws IOException {
+    public void respondWith400_whenReturnUrlIsBlank() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
@@ -82,7 +96,7 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
                 "  \"return_url\" : \"  \"" +
                 "}";
 
-        InputStream body = postPaymentResponse(API_KEY, payload)
+        InputStream body = postPaymentResponse(payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .extract()
@@ -96,7 +110,7 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
     }
 
     @Test
-    public void createPayment_responseWith400_whenReturnUrlIsMissing() throws IOException {
+    public void respondWith400_whenReturnUrlIsMissing() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
@@ -104,7 +118,7 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
                 "  \"description\" : \"Some description\"" +
                 "}";
 
-        InputStream body = postPaymentResponse(API_KEY, payload)
+        InputStream body = postPaymentResponse(payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .extract()
@@ -118,7 +132,7 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
     }
 
     @Test
-    public void createPayment_responseWith400_whenReturnUrlIsNull() throws IOException {
+    public void respondWith400_whenReturnUrlIsNull() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
@@ -127,7 +141,7 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
                 "  \"return_url\" : null" +
                 "}";
 
-        InputStream body = postPaymentResponse(API_KEY, payload)
+        InputStream body = postPaymentResponse(payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .extract()
@@ -141,7 +155,7 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
     }
 
     @Test
-    public void createPayment_responseWith422_whenReturnUrlSizeIsGreaterThanMaxLengthAndHasValidFormat_lengthIsFirstToCheck_failFast() throws IOException {
+    public void respondWith422_whenReturnUrlSizeIsGreaterThanMaxLengthAndHasValidFormat_lengthIsFirstToCheck_failFast() throws IOException {
 
         String aVeryBigValidReturnUrl = "https://payments.gov.uk?something=" + "aVeryLongString12345".repeat(100);
 
@@ -152,7 +166,7 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
                 "  \"return_url\" : \"" + aVeryBigValidReturnUrl + "\"" +
                 "}";
 
-        InputStream body = postPaymentResponse(API_KEY, payload)
+        InputStream body = postPaymentResponse(payload)
                 .statusCode(422)
                 .contentType(JSON)
                 .extract()
@@ -166,7 +180,7 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
     }
 
     @Test
-    public void createPayment_responseWith422_whenReturnUrlIsNotAnUrl() throws IOException {
+    public void respondWith422_whenReturnUrlIsNotAnUrl() throws IOException {
 
         String anInvalidUrl = RandomStringUtils.randomAlphanumeric(50);
 
@@ -177,7 +191,7 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
                 "  \"return_url\" : \"" + anInvalidUrl + "\"" +
                 "}";
 
-        InputStream body = postPaymentResponse(API_KEY, payload)
+        InputStream body = postPaymentResponse(payload)
                 .statusCode(422)
                 .contentType(JSON)
                 .extract()
@@ -191,7 +205,7 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
     }
 
     @Test
-    public void createPayment_responseWith400_whenReturnUrlHasNotAValidJsonValue() throws IOException {
+    public void respondWith400_whenReturnUrlHasNotAValidJsonValue() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
@@ -200,7 +214,7 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
                 "  \"return_url\" : " +
                 "}";
 
-        InputStream body = postPaymentResponse(API_KEY, payload)
+        InputStream body = postPaymentResponse(payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .extract()
@@ -213,7 +227,7 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
     }
 
     @Test
-    public void createPayment_responseWith400_whenReturnUrlFieldIsNotExpectedJsonField() throws IOException {
+    public void respondWith400_whenReturnUrlFieldIsNotExpectedJsonField() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
@@ -222,7 +236,7 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
                 "  \"return_url\" : []" +
                 "}";
 
-        InputStream body = postPaymentResponse(API_KEY, payload)
+        InputStream body = postPaymentResponse(payload)
                 .statusCode(400)
                 .contentType(JSON)
                 .extract()
@@ -233,15 +247,5 @@ public class PaymentsResourceReturnUrlValidationITest extends PaymentResourceITe
                 .assertThat("$.field", is("return_url"))
                 .assertThat("$.code", is("P0102"))
                 .assertThat("$.description", is("Invalid attribute value: return_url. Must be a valid URL format"));
-    }
-
-    private ValidatableResponse postPaymentResponse(String bearerToken, String payload) {
-        return given().port(app.getLocalPort())
-                .body(payload)
-                .accept(JSON)
-                .contentType(JSON)
-                .header(AUTHORIZATION, "Bearer " + bearerToken)
-                .post(PAYMENTS_PATH)
-                .then();
     }
 }

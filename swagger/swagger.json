@@ -717,7 +717,7 @@
           "example" : "en",
           "description" : "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages",
           "readOnly" : true,
-          "enum" : [ "ENGLISH", "WELSH" ]
+          "enum" : [ "en", "cy" ]
         },
         "delayed_capture" : {
           "type" : "boolean",
