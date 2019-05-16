@@ -9,6 +9,7 @@ import uk.gov.pay.api.validation.ValidReturnUrl;
 import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.commons.model.charge.ExternalMetadata;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
@@ -73,6 +74,7 @@ public class CreatePaymentRequest {
     @Length(max = EMAIL_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
     private final String email;
     
+    @Valid
     private final PrefilledCardholderDetails prefilledCardholderDetails;
     
     private CreatePaymentRequest(CreatePaymentRequestBuilder createPaymentRequestBuilder) {

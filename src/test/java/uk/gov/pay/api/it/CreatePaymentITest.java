@@ -108,6 +108,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
     }
     
+    //TODO move
     @Test
     public void createCardPaymentWithPrefilledCardholderDetails() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
@@ -138,7 +139,8 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 .body("card_details.billing_address.country", is("GB"));
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
     }
-    
+
+    //TODO move
     @Test
     public void createCardPaymentShouldRespondWith400ErrorWhenNumericFieldInPrefilledCardholderDetails() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
@@ -157,6 +159,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 .body("description", is("Invalid attribute value: line1. Field must be a string"));
     }
 
+    //TODO move
     @Test
     public void createCardPaymentWithSomePrefilledCardholderDetails() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);

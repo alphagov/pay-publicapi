@@ -36,10 +36,6 @@ public class PaymentRequestValidator {
     }
     
     private void validatePrefilledCardholderDetails(PrefilledCardholderDetails prefilledCardholderDetails) {
-        if (prefilledCardholderDetails.getCardholderName().isPresent()) {
-            validate(MaxLengthValidator.isValid(prefilledCardholderDetails.getCardholderName().get(), CARDHOLDER_NAME_MAX_LENGTH),
-                    aPaymentError(PREFILLED_CARDHOLDER_NAME_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, format(CONSTRAINT_MESSAGE_STRING_TEMPLATE, CARDHOLDER_NAME_MAX_LENGTH)));
-        }
         if (prefilledCardholderDetails.getBillingAddress().isPresent()) {
             Address billingAddress = prefilledCardholderDetails.getBillingAddress().get();
             if (billingAddress.getLine1() != null) {
