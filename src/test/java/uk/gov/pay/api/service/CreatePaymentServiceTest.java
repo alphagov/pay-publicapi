@@ -11,6 +11,7 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.exception.CreateChargeException;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.CreatePaymentRequest;
@@ -20,6 +21,7 @@ import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.model.links.Link;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.model.links.PostLink;
+import uk.gov.pay.commons.model.ErrorIdentifier;
 import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.commons.model.charge.ExternalMetadata;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
@@ -32,6 +34,7 @@ import java.util.Optional;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -215,5 +218,25 @@ public class CreatePaymentServiceTest {
         assertThat(billingAddress.getCity(), is("address city"));
         assertThat(billingAddress.getPostcode(), is("AB1 CD2"));
         assertThat(billingAddress.getCountry(), is("GB"));
+    }
+    
+    @Test
+    @PactVerification({"connector"})
+    @Pacts(pacts = {"publicapi-connector-create-payment-with-zero-amount-not-allowed"})
+    public void testCreatePaymentWithZeroAmountWhenZeroAmountNotAllowedForAccount() {
+        Account account = new Account("123456", TokenPaymentType.CARD);
+        ValidCreatePaymentRequest requestPayload = new ValidCreatePaymentRequest(CreatePaymentRequest.builder()
+                .amount(0)
+                .returnUrl("https://somewhere.gov.uk/rainbow/1")
+                .reference("a reference")
+                .description("a description")
+                .build());
+
+        try {
+            createPaymentService.create(account, requestPayload);
+            fail("Expected CreateChargeException to be thrown");
+        } catch (CreateChargeException e) {
+            assertThat(e.getErrorIdentifier(), is(ErrorIdentifier.ZERO_AMOUNT_NOT_ALLOWED));
+        }
     }
 }
