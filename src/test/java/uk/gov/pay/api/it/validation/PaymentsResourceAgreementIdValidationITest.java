@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
 import uk.gov.pay.api.service.AgreementService;
+import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 
 import java.io.IOException;
@@ -133,15 +134,15 @@ public class PaymentsResourceAgreementIdValidationITest extends PaymentResourceI
     @Test
     public void createPayment_responseWith422_whenAgreementIdSizeIsGreaterThanMaxLength() throws IOException {
 
-        String aTooLongAgreementId = RandomStringUtils.randomAlphanumeric(27);
+        String aTooLongAgreementId = RandomStringUtils.randomAlphanumeric(40);
         
-        String payload = "{" +
-                "  \"amount\" : 9900," +
-                "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"https://somewhere.com\"," +
-                "  \"agreement_id\" : \"" + aTooLongAgreementId + "\"" +
-                "}";
+        String payload = new JsonStringBuilder()
+                .add("amount", 100)
+                .add("reference", "ref")
+                .add("description", "desc")
+                .add("return_url", "http://somewhere.com")
+                .add("agreement_id", aTooLongAgreementId)
+                .build();
 
         InputStream body = postPaymentResponse(API_KEY, payload)
                 .statusCode(422)
