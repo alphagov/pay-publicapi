@@ -2,6 +2,7 @@ package uk.gov.pay.api.it;
 
 import com.google.common.collect.ImmutableMap;
 import io.restassured.response.ValidatableResponse;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import uk.gov.pay.api.it.fixtures.PaymentNavigationLinksFixture;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
@@ -10,8 +11,10 @@ import uk.gov.pay.commons.model.SupportedLanguage;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
-import static org.hamcrest.core.IsCollectionContaining.hasItem;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertThat;
 import static uk.gov.pay.api.it.fixtures.PaginatedPaymentSearchResultFixture.aPaginatedPaymentSearchResult;
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.aSuccessfulSearchPayment;
@@ -45,8 +48,9 @@ public class ResourcesFilterRateLimiterITest extends ResourcesFilterITestBase {
                 () -> postPaymentResponse(API_KEY, PAYLOAD));
 
         List<ValidatableResponse> finishedTasks = invokeAll(tasks);
+        List<Integer> statusCodes = extractStatusCodes(finishedTasks);
 
-        assertThat(finishedTasks, hasItem(aResponse(201)));
+        assertThat(statusCodes, hasItems(201, 429));
         assertThat(finishedTasks, hasItem(anErrorResponse()));
     }
 
@@ -75,8 +79,9 @@ public class ResourcesFilterRateLimiterITest extends ResourcesFilterITestBase {
         );
 
         List<ValidatableResponse> finishedTasks = invokeAll(tasks);
+        List<Integer> statusCodes = extractStatusCodes(finishedTasks);
 
-        assertThat(finishedTasks, hasItem(aResponse(200)));
+        assertThat(statusCodes, hasItems(200, 429));
         assertThat(finishedTasks, hasItem(anErrorResponse()));
     }
 
@@ -93,8 +98,9 @@ public class ResourcesFilterRateLimiterITest extends ResourcesFilterITestBase {
         );
 
         List<ValidatableResponse> finishedTasks = invokeAll(tasks);
+        List<Integer> statusCodes = extractStatusCodes(finishedTasks);
 
-        assertThat(finishedTasks, hasItem(aResponse(200)));
+        assertThat(statusCodes, hasItems(200, 429));
         assertThat(finishedTasks, hasItem(anErrorResponse()));
     }
 
@@ -120,8 +126,9 @@ public class ResourcesFilterRateLimiterITest extends ResourcesFilterITestBase {
         );
 
         List<ValidatableResponse> finishedTasks = invokeAll(tasks);
+        List<Integer> statusCodes = extractStatusCodes(finishedTasks);
 
-        assertThat(finishedTasks, hasItem(aResponse(200)));
+        assertThat(statusCodes, hasItems(200, 429));
         assertThat(finishedTasks, hasItem(anErrorResponse()));
     }
 
@@ -137,8 +144,17 @@ public class ResourcesFilterRateLimiterITest extends ResourcesFilterITestBase {
         );
 
         List<ValidatableResponse> finishedTasks = invokeAll(tasks);
+        List<Integer> statusCodes = extractStatusCodes(finishedTasks);
 
-        assertThat(finishedTasks, hasItem(aResponse(204)));
+        assertThat(statusCodes, hasItems(204, 429));
         assertThat(finishedTasks, hasItem(anErrorResponse()));
+    }
+
+    @NotNull
+    private List<Integer> extractStatusCodes(List<ValidatableResponse> validatableResponses) {
+        return validatableResponses
+                .stream()
+                .map(validatableResponse -> validatableResponse.extract().statusCode())
+                .collect(Collectors.toList());
     }
 }

@@ -112,21 +112,6 @@ abstract public class ResourcesFilterITestBase {
                 .collect(Collectors.toList());
     }
 
-    TypeSafeMatcher<ValidatableResponse> aResponse(final int statusCode) {
-        return new TypeSafeMatcher<>() {
-            @Override
-            protected boolean matchesSafely(ValidatableResponse validatableResponse) {
-                return validatableResponse.extract().statusCode() == statusCode;
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText(" Status code: ")
-                        .appendValue(statusCode);
-            }
-        };
-    }
-
     TypeSafeMatcher<ValidatableResponse> anErrorResponse() {
         return new TypeSafeMatcher<>() {
             @Override
