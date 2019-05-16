@@ -20,6 +20,6 @@ public class ReturnUrlValidator implements ConstraintValidator<ValidReturnUrl, S
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
         logger.info("Calling URL validator for URL " + value);
-        return urlValidator.isValid(value);
+        return value == null || urlValidator.isValid(value);
     }
 }
