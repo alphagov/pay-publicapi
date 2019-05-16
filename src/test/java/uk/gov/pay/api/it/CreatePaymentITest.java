@@ -138,7 +138,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 .body("card_details.billing_address.country", is("GB"));
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
     }
-    
+
     @Test
     public void createCardPaymentShouldRespondWith400ErrorWhenNumericFieldInPrefilledCardholderDetails() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);

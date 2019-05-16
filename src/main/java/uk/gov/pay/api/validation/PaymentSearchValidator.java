@@ -11,14 +11,13 @@ import java.util.Set;
 
 import static org.apache.commons.lang3.StringUtils.join;
 import static org.eclipse.jetty.util.StringUtil.isBlank;
+import static uk.gov.pay.api.model.CreatePaymentRequest.AGREEMENT_ID_MAX_LENGTH;
 import static uk.gov.pay.api.model.CreatePaymentRequest.EMAIL_MAX_LENGTH;
 import static uk.gov.pay.api.model.CreatePaymentRequest.REFERENCE_MAX_LENGTH;
 import static uk.gov.pay.api.model.PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 import static uk.gov.pay.api.validation.MaxLengthValidator.isValid;
-import static uk.gov.pay.api.validation.PaymentRequestValidator.AGREEMENT_ID_MAX_LENGTH;
-import static uk.gov.pay.api.validation.PaymentRequestValidator.CARD_BRAND_MAX_LENGTH;
 import static uk.gov.pay.api.validation.SearchValidator.validateDisplaySizeIfNotNull;
 import static uk.gov.pay.api.validation.SearchValidator.validateFromDate;
 import static uk.gov.pay.api.validation.SearchValidator.validatePageIfNotNull;
@@ -76,13 +75,13 @@ public class PaymentSearchValidator {
     }
 
     private static void validateFirstDigitsCardNumber(String firstDigitsCardNumber, List<String> validationErrors) {
-        if (!ExactLengthValidator.isValid(firstDigitsCardNumber, FIRST_DIGITS_CARD_NUMBER_LENGTH) || !NumericValidator.isValidOrNull(firstDigitsCardNumber)) {
+        if (!ExactLengthOrEmptyValidator.isValid(firstDigitsCardNumber, FIRST_DIGITS_CARD_NUMBER_LENGTH) || !NumericValidator.isValidOrNull(firstDigitsCardNumber)) {
             validationErrors.add("first_digits_card_number");
         }
     }
 
     private static void validateLastDigitsCardNumber(String lastDigitsCardNumber, List<String> validationErrors) {
-        if (!ExactLengthValidator.isValid(lastDigitsCardNumber, LAST_DIGITS_CARD_NUMBER_LENGTH) || !NumericValidator.isValidOrNull(lastDigitsCardNumber)) {
+        if (!ExactLengthOrEmptyValidator.isValid(lastDigitsCardNumber, LAST_DIGITS_CARD_NUMBER_LENGTH) || !NumericValidator.isValidOrNull(lastDigitsCardNumber)) {
             validationErrors.add("last_digits_card_number");
         }
     }
@@ -100,7 +99,7 @@ public class PaymentSearchValidator {
     }
 
     private static void validateCardBrand(String cardBrand, List<String> validationErrors) {
-        if (!isValid(cardBrand, CARD_BRAND_MAX_LENGTH)) {
+        if (!isValid(cardBrand, 20)) {
             validationErrors.add("card_brand");
         }
     }
