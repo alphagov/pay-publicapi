@@ -75,13 +75,13 @@ public class PaymentSearchValidator {
     }
 
     private static void validateFirstDigitsCardNumber(String firstDigitsCardNumber, List<String> validationErrors) {
-        if (!ExactLengthValidator.isValid(firstDigitsCardNumber, FIRST_DIGITS_CARD_NUMBER_LENGTH) || !NumericValidator.isValidOrNull(firstDigitsCardNumber)) {
+        if (!ExactLengthOrEmptyValidator.isValid(firstDigitsCardNumber, FIRST_DIGITS_CARD_NUMBER_LENGTH) || !NumericValidator.isValidOrNull(firstDigitsCardNumber)) {
             validationErrors.add("first_digits_card_number");
         }
     }
 
     private static void validateLastDigitsCardNumber(String lastDigitsCardNumber, List<String> validationErrors) {
-        if (!ExactLengthValidator.isValid(lastDigitsCardNumber, LAST_DIGITS_CARD_NUMBER_LENGTH) || !NumericValidator.isValidOrNull(lastDigitsCardNumber)) {
+        if (!ExactLengthOrEmptyValidator.isValid(lastDigitsCardNumber, LAST_DIGITS_CARD_NUMBER_LENGTH) || !NumericValidator.isValidOrNull(lastDigitsCardNumber)) {
             validationErrors.add("last_digits_card_number");
         }
     }

@@ -15,13 +15,15 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Target({ FIELD, METHOD, PARAMETER, ANNOTATION_TYPE, TYPE_USE })
 @Retention(RUNTIME)
-@Constraint(validatedBy = ExactLengthValidator.class)
+@Constraint(validatedBy = ExactLengthOrEmptyValidator.class)
 @Documented
-public @interface ValidCountry {
+public @interface ExactLengthOrEmpty {
 
-    String message() default "Must be exactly 2 characters length";
+    String message() default "Must be exactly {length} characters length";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
+
+    int length();
 }
