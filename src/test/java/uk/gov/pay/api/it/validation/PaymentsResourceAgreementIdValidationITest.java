@@ -34,7 +34,6 @@ public class PaymentsResourceAgreementIdValidationITest extends PaymentResourceI
                 "  \"amount\" : 9900," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"https://somewhere.com\"," +
                 "  \"agreement_id\" : 1234" +
                 "}";
 
@@ -58,7 +57,6 @@ public class PaymentsResourceAgreementIdValidationITest extends PaymentResourceI
                 "  \"amount\" : 9900," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"https://somewhere.com\"," +
                 "  \"agreement_id\" : \"\"" +
                 "}";
 
@@ -82,7 +80,6 @@ public class PaymentsResourceAgreementIdValidationITest extends PaymentResourceI
                 "  \"amount\" : 9900," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"https://somewhere.com\"," +
                 "  \"agreement_id\" : \"    \"" +
                 "}";
 
@@ -106,7 +103,6 @@ public class PaymentsResourceAgreementIdValidationITest extends PaymentResourceI
                 "  \"amount\" : 9900," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"https://somewhere.com\"," +
                 "  \"agreement_id\" : null" +
                 "}";
 
@@ -132,7 +128,6 @@ public class PaymentsResourceAgreementIdValidationITest extends PaymentResourceI
                 "  \"amount\" : 9900," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"https://somewhere.com\"," +
                 "  \"agreement_id\" : \"" + aTooLongAgreementId + "\"" +
                 "}";
 
@@ -156,7 +151,6 @@ public class PaymentsResourceAgreementIdValidationITest extends PaymentResourceI
                 "  \"amount\" : 9900," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"https://somewhere.com\"," +
                 "  \"agreement_id\" : " +
                 "}";
 
@@ -179,7 +173,6 @@ public class PaymentsResourceAgreementIdValidationITest extends PaymentResourceI
                 "  \"amount\" : 9900," +
                 "  \"reference\" : \"Some reference\"," +
                 "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"https://somewhere.com\"," +
                 "  \"agreement_id\" : []" +
                 "}";
 
