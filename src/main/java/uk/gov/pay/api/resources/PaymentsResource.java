@@ -20,7 +20,6 @@ import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.CreatePaymentResult;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.PaymentEvents;
-import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.model.search.card.GetPaymentResult;
@@ -54,6 +53,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.http.HttpStatus.SC_OK;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
+import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 
 @Path("/")
 @Api(value = "/", description = "Public Api Endpoints")
@@ -250,7 +250,7 @@ public class PaymentsResource {
                                      @ApiParam(value = "requestPayload", required = true) @Valid CreatePaymentRequest createPaymentRequest) {
         logger.info("Payment create request parsed to {}", createPaymentRequest);
 
-        if (account.getPaymentType().equals(TokenPaymentType.DIRECT_DEBIT) && createPaymentRequest.getAmount() == 0) {
+        if (account.getPaymentType().equals(DIRECT_DEBIT) && createPaymentRequest.getAmount() == 0) {
             throw new PaymentValidationException(aPaymentError("amount", CREATE_PAYMENT_VALIDATION_ERROR,
                     "Must be greater than or equal to 1"));
         }
