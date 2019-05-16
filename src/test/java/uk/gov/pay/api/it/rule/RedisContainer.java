@@ -129,9 +129,11 @@ class RedisContainer {
 
     public void clearRedisCache() {
         try {
+            logger.info("Clearing redis cache");
             String[] command = {"redis-cli", "FLUSHALL"};
             String id = docker.execCreate(containerId, command).id();
             docker.execStart(id);
+            logger.info("Cleared redis cache");
         } catch (DockerException | InterruptedException e) {
             throw new RuntimeException(e);
         }
