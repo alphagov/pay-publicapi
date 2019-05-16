@@ -134,13 +134,12 @@ public class PaymentsResourceAgreementIdValidationITest extends PaymentResourceI
     @Test
     public void createPayment_responseWith422_whenAgreementIdSizeIsGreaterThanMaxLength() throws IOException {
 
-        String aTooLongAgreementId = RandomStringUtils.randomAlphanumeric(40);
+        String aTooLongAgreementId = RandomStringUtils.randomAlphanumeric(27);
         
         String payload = new JsonStringBuilder()
                 .add("amount", 100)
                 .add("reference", "ref")
                 .add("description", "desc")
-                .add("return_url", "http://somewhere.com")
                 .add("agreement_id", aTooLongAgreementId)
                 .build();
 
