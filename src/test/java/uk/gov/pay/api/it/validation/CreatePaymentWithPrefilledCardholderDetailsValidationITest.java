@@ -1,7 +1,10 @@
 package uk.gov.pay.api.it.validation;
 
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
@@ -9,9 +12,11 @@ import uk.gov.pay.api.utils.PublicAuthMockClient;
 import java.util.Map;
 
 import static io.restassured.http.ContentType.JSON;
+import static java.lang.String.format;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.core.Is.is;
 
+@RunWith(JUnitParamsRunner.class)
 public class CreatePaymentWithPrefilledCardholderDetailsValidationITest extends PaymentResourceITestBase {
 
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
@@ -40,16 +45,20 @@ public class CreatePaymentWithPrefilledCardholderDetailsValidationITest extends 
     }
 
     @Test
-    public void shouldFailOnInvalidAddress() {
+    @Parameters({
+            "line1, 255", 
+            "line2, 255"
+    })
+    public void shouldFailOnInvalidAddress(String addressField, String maxLength) {
         payload.add("prefilled_cardholder_details", Map.of("billing_address", 
-                Map.of("line1", randomAlphanumeric(256))));
+                Map.of(addressField, randomAlphanumeric(256))));
         postPaymentResponse(payload.build())
                 .statusCode(422)
                 .contentType(JSON)
                 .body("size()", is(3))
-                .body("field", is("line1"))
+                .body("field", is(addressField))
                 .body("code", is("P0102"))
-                .body("description", is("Invalid attribute value: line1. Must be less than or equal to 255 characters length"));
+                .body("description", is(format("Invalid attribute value: %s. Must be less than or equal to %s characters length", addressField, maxLength)));
     }
 
     @Test

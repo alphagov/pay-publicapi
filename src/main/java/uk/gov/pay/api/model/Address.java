@@ -18,6 +18,8 @@ public class Address {
 
     @Size(max = 255, message = "Must be less than or equal to {max} characters length")
     private String line1;
+
+    @Size(max = 255, message = "Must be less than or equal to {max} characters length")
     private String line2;
     private String postcode;
     private String city;
