@@ -5,9 +5,9 @@ import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.PaymentError;
 
 import static java.lang.String.format;
+import static uk.gov.pay.api.model.CreatePaymentRefundRequest.REFUND_MIN_VALUE;
 import static uk.gov.pay.api.model.CreatePaymentRequest.AMOUNT_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.AMOUNT_MAX_VALUE;
-import static uk.gov.pay.api.model.CreatePaymentRequest.AMOUNT_MIN_VALUE;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_REFUND_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 
@@ -18,8 +18,8 @@ public class PaymentRefundRequestValidator {
     }
 
     private void validateAmount(int amount) {
-        validate(amount >= AMOUNT_MIN_VALUE,
-                aPaymentError(AMOUNT_FIELD_NAME, CREATE_PAYMENT_REFUND_VALIDATION_ERROR, format("Must be greater than or equal to %d", AMOUNT_MIN_VALUE)));
+        validate(amount >= REFUND_MIN_VALUE,
+                aPaymentError(AMOUNT_FIELD_NAME, CREATE_PAYMENT_REFUND_VALIDATION_ERROR, format("Must be greater than or equal to %d", REFUND_MIN_VALUE)));
 
         validate(amount <= AMOUNT_MAX_VALUE,
                 aPaymentError(AMOUNT_FIELD_NAME, CREATE_PAYMENT_REFUND_VALIDATION_ERROR, format("Must be less than or equal to %d", AMOUNT_MAX_VALUE)));

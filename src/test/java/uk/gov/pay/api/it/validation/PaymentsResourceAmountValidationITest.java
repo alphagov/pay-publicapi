@@ -45,30 +45,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 .assertThat("$.*", hasSize(3))
                 .assertThat("$.field", is("amount"))
                 .assertThat("$.code", is("P0102"))
-                .assertThat("$.description", is("Invalid attribute value: amount. Must be greater than or equal to 1"));
-    }
-
-    @Test
-    public void createPayment_responseWith422_whenAmountIsLessThanMin() throws IOException {
-
-        String payload = "{" +
-                "  \"amount\" : 0," +
-                "  \"reference\" : \"Some reference\"," +
-                "  \"description\" : \"Some description\"," +
-                "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
-                "}";
-
-        InputStream body = postPaymentResponse(API_KEY, payload)
-                .statusCode(422)
-                .contentType(JSON)
-                .extract()
-                .body().asInputStream();
-
-        JsonAssert.with(body)
-                .assertThat("$.*", hasSize(3))
-                .assertThat("$.field", is("amount"))
-                .assertThat("$.code", is("P0102"))
-                .assertThat("$.description", is("Invalid attribute value: amount. Must be greater than or equal to 1"));
+                .assertThat("$.description", is("Invalid attribute value: amount. Must be greater than or equal to 0"));
     }
 
     @Test

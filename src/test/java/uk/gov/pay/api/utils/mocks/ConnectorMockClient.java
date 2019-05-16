@@ -2,7 +2,6 @@ package uk.gov.pay.api.utils.mocks;
 
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
-import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
 import org.mockserver.model.Parameter;
@@ -49,15 +48,15 @@ import static org.eclipse.jetty.http.HttpStatus.NOT_FOUND_404;
 import static org.eclipse.jetty.http.HttpStatus.NO_CONTENT_204;
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
 import static org.eclipse.jetty.http.HttpStatus.PRECONDITION_FAILED_412;
+import static org.eclipse.jetty.http.HttpStatus.UNPROCESSABLE_ENTITY_422;
 import static uk.gov.pay.api.it.GetPaymentITest.AWAITING_CAPTURE_REQUEST;
 import static uk.gov.pay.api.it.fixtures.PaymentSingleResultBuilder.aSuccessfulSinglePayment;
-import static uk.gov.pay.api.utils.JsonStringBuilder.jsonString;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
-import static uk.gov.pay.api.utils.mocks.CreateChargeRequestParams.CreateChargeRequestParamsBuilder.aCreateChargeRequestParams;
 import static uk.gov.pay.commons.model.ErrorIdentifier.GENERIC;
 import static uk.gov.pay.commons.model.ErrorIdentifier.INVALID_MANDATE_TYPE;
 import static uk.gov.pay.commons.model.ErrorIdentifier.REFUND_AMOUNT_AVAILABLE_MISMATCH;
 import static uk.gov.pay.commons.model.ErrorIdentifier.REFUND_NOT_AVAILABLE;
+import static uk.gov.pay.commons.model.ErrorIdentifier.ZERO_AMOUNT_NOT_ALLOWED;
 
 public class ConnectorMockClient extends BaseConnectorMockClient {
 
@@ -225,6 +224,10 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     public void respondPreconditionFailed_whenCreateRefund(String gatewayAccountId, String errorMsg, String chargeId) {
         whenCreateRefund(gatewayAccountId, chargeId, withStatusAndErrorMessage(PRECONDITION_FAILED_412, errorMsg, REFUND_AMOUNT_AVAILABLE_MISMATCH));
+    }
+    
+    public void respondZeroAmountNotAllowed(String gatewayAccountId) {
+        mockCreateCharge(gatewayAccountId, withStatusAndErrorMessage(UNPROCESSABLE_ENTITY_422, "anything", ZERO_AMOUNT_NOT_ALLOWED));
     }
 
     public void respondWithChargeFound(String chargeTokenId, String gatewayAccountId, ChargeResponseFromConnector chargeResponseFromConnector) {
