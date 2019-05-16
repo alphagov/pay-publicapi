@@ -406,6 +406,22 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
     }
 
     @Test
+    public void createPayment_responseWith422_whenZeroAmountNotAllowed() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+
+        connectorMockClient.respondZeroAmountNotAllowed(GATEWAY_ACCOUNT_ID);
+
+        postPaymentResponse(SUCCESS_PAYLOAD)
+                .statusCode(422)
+                .contentType(JSON)
+                .body("code", is("P0102"))
+                .body("field", is("amount"))
+                .body("description", is("Invalid attribute value: amount. Must be greater than or equal to 1"));
+
+        connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, SUCCESS_PAYLOAD);
+    }
+
+    @Test
     public void createPayment_Returns401_WhenUnauthorised() {
         publicAuthMockClient.respondUnauthorised();
         postPaymentResponse(SUCCESS_PAYLOAD).statusCode(401);

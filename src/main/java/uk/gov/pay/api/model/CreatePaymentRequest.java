@@ -40,7 +40,7 @@ public class CreatePaymentRequest {
     public static final String PREFILLED_ADDRESS_COUNTRY_FIELD_NAME = "country";
     public static final int REFERENCE_MAX_LENGTH = 255;
     public static final int AMOUNT_MAX_VALUE = 10000000;
-    public static final int AMOUNT_MIN_VALUE = 1;
+    public static final int AMOUNT_MIN_VALUE = 0;
     public static final int DESCRIPTION_MAX_LENGTH = 255;
     public static final int URL_MAX_LENGTH = 2000;
     

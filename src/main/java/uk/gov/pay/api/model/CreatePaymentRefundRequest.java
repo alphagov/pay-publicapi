@@ -9,7 +9,8 @@ import java.util.Optional;
 @ApiModel(value = "PaymentRefundRequest", description = "The Payment Refund Request Payload")
 public class CreatePaymentRefundRequest {
 
-    public static final String REFUND_AMOUNT_AVAILABLE="refund_amount_available";
+    public static final String REFUND_AMOUNT_AVAILABLE = "refund_amount_available";
+    public static final int REFUND_MIN_VALUE = 1;
 
     private int amount;
     @JsonProperty("refund_amount_available")
@@ -30,6 +31,7 @@ public class CreatePaymentRefundRequest {
 
     /**
      * This field should be made compulsory at a later stage
+     *
      * @return
      */
     @ApiModelProperty(value = "Amount in pence. Total amount still available before issuing the refund", required = false, allowableValues = "range[1, 10000000]", example = "200000")
