@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import java.util.Objects;
 import java.util.Optional;
@@ -18,6 +19,7 @@ public class PrefilledCardholderDetails {
 
     @ApiModelProperty(name = "billing_address", value = "prefilled billing address", required = false)
     @JsonProperty("billing_address")
+    @Valid
     private Address billingAddress;
 
     public Optional<Address> getBillingAddress() {

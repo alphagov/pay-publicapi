@@ -30,7 +30,6 @@ public class CreatePaymentWithPrefilledCardholderDetailsValidationITest extends 
     @Test
     public void shouldFailOnInvalidCardHolderName() {
         payload.add("prefilled_cardholder_details", Map.of("cardholder_name", randomAlphanumeric(256)));
-
         postPaymentResponse(payload.build())
                 .statusCode(422)
                 .contentType(JSON)
@@ -42,7 +41,15 @@ public class CreatePaymentWithPrefilledCardholderDetailsValidationITest extends 
 
     @Test
     public void shouldFailOnInvalidAddress() {
-
+        payload.add("prefilled_cardholder_details", Map.of("billing_address", 
+                Map.of("line1", randomAlphanumeric(256))));
+        postPaymentResponse(payload.build())
+                .statusCode(422)
+                .contentType(JSON)
+                .body("size()", is(3))
+                .body("field", is("line1"))
+                .body("code", is("P0102"))
+                .body("description", is("Invalid attribute value: line1. Must be less than or equal to 255 characters length"));
     }
 
     @Test

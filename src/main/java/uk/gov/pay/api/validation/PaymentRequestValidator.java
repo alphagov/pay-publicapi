@@ -23,8 +23,6 @@ public class PaymentRequestValidator {
 
     static final int CARD_BRAND_MAX_LENGTH = 20;
     public static final int AGREEMENT_ID_MAX_LENGTH = 26;
-    static final int CARDHOLDER_NAME_MAX_LENGTH = 255;
-    static final int ADDRESS_LINE1_MAX_LENGTH = 255;
     static final int ADDRESS_LINE2_MAX_LENGTH = 255;
     static final int POSTCODE_MAX_LENGTH = 25;
     static final int CITY_MAX_LENGTH = 255;
@@ -38,10 +36,6 @@ public class PaymentRequestValidator {
     private void validatePrefilledCardholderDetails(PrefilledCardholderDetails prefilledCardholderDetails) {
         if (prefilledCardholderDetails.getBillingAddress().isPresent()) {
             Address billingAddress = prefilledCardholderDetails.getBillingAddress().get();
-            if (billingAddress.getLine1() != null) {
-                validate(MaxLengthValidator.isValid(billingAddress.getLine1(), ADDRESS_LINE1_MAX_LENGTH),
-                        aPaymentError(PREFILLED_ADDRESS_LINE1_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, format(CONSTRAINT_MESSAGE_STRING_TEMPLATE, ADDRESS_LINE1_MAX_LENGTH)));
-            }
             if (billingAddress.getLine2() != null) {
                 validate(MaxLengthValidator.isValid(billingAddress.getLine2(), ADDRESS_LINE2_MAX_LENGTH),
                         aPaymentError(PREFILLED_ADDRESS_LINE2_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, format(CONSTRAINT_MESSAGE_STRING_TEMPLATE, ADDRESS_LINE2_MAX_LENGTH)));

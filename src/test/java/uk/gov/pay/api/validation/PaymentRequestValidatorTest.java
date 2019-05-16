@@ -21,16 +21,6 @@ public class PaymentRequestValidatorTest {
     private static final String VALID_AGREEMENT_ID = "abcdef1234567890abcedf1234";
 
     private final PaymentRequestValidator paymentRequestValidator = new PaymentRequestValidator();
-    
-    @Test
-    public void validateLine1MaxLength_shouldFailValue() {
-        String invalidMaxLengthEmail = randomAlphanumeric(PaymentRequestValidator.ADDRESS_LINE1_MAX_LENGTH+ 1);
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithAgreementId().addressLine1(invalidMaxLengthEmail).build();
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: line1. Must be less than or equal to 255 characters length"));
-
-        paymentRequestValidator.validate(createPaymentRequest);
-    }
 
     @Test
     public void validateLine2MaxLength_shouldFailValue() {

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
@@ -15,6 +16,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 @ApiModel(value = "Address", description = "A structure representing the billing address of a card")
 public class Address {
 
+    @Size(max = 255, message = "Must be less than or equal to {max} characters length")
     private String line1;
     private String line2;
     private String postcode;
