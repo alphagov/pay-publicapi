@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import uk.gov.pay.api.validation.ValidCountry;
 
 import javax.validation.constraints.Size;
 import java.util.Objects;
@@ -28,7 +29,7 @@ public class Address {
     @Size(max = 255, message = "Must be less than or equal to {max} characters length")
     private String city;
 
-    @Size(max = 2, min = 2, message = "Must be exactly 2 characters length")
+    @ValidCountry
     private String country;
 
     public Address(@JsonProperty("line1") String line1,

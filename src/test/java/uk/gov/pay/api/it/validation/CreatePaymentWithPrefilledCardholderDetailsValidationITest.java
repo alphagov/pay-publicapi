@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
+import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 
 import java.util.Map;
 
@@ -15,11 +16,13 @@ import static io.restassured.http.ContentType.JSON;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.core.Is.is;
+import static uk.gov.pay.api.utils.mocks.CreateChargeRequestParams.CreateChargeRequestParamsBuilder.aCreateChargeRequestParams;
 
 @RunWith(JUnitParamsRunner.class)
 public class CreatePaymentWithPrefilledCardholderDetailsValidationITest extends PaymentResourceITestBase {
 
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
     private JsonStringBuilder payload;
 
     @Before
@@ -66,6 +69,16 @@ public class CreatePaymentWithPrefilledCardholderDetailsValidationITest extends 
 
     @Test
     public void shouldCreateSuccessfullyWithEmptyCountry() {
+        payload.add("prefilled_cardholder_details", Map.of("billing_address",
+                Map.of("country", "")));
 
+        connectorMockClient.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, aCreateChargeRequestParams()
+                .withAmount(100)
+                .withDescription("hi")
+                .withReference("Ref")
+                .withReturnUrl("https://somewhere.gov.uk/rainbow/1")
+                .build());
+
+        postPaymentResponse(payload.build()).statusCode(201);
     }
 }
