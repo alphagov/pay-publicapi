@@ -31,7 +31,6 @@ import uk.gov.pay.api.service.CreatePaymentService;
 import uk.gov.pay.api.service.GetPaymentService;
 import uk.gov.pay.api.service.PaymentSearchService;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
-import uk.gov.pay.api.validation.PaymentRequestValidator;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -67,7 +66,6 @@ public class PaymentsResource {
     private final GetPaymentService getPaymentService;
     private final CapturePaymentService capturePaymentService;
     private final CancelPaymentService cancelPaymentService;
-    private final PaymentRequestValidator paymentRequestValidator;
 
     @Inject
     public PaymentsResource(Client client,
@@ -77,8 +75,7 @@ public class PaymentsResource {
                             ConnectorUriGenerator connectorUriGenerator,
                             GetPaymentService getPaymentService,
                             CapturePaymentService capturePaymentService,
-                            CancelPaymentService cancelPaymentService,
-                            PaymentRequestValidator paymentRequestValidator) {
+                            CancelPaymentService cancelPaymentService) {
         this.client = client;
         this.createPaymentService = createPaymentService;
         this.publicApiUriGenerator = publicApiUriGenerator;
@@ -87,7 +84,6 @@ public class PaymentsResource {
         this.getPaymentService = getPaymentService;
         this.capturePaymentService = capturePaymentService;
         this.cancelPaymentService = cancelPaymentService;
-        this.paymentRequestValidator = paymentRequestValidator;
     }
 
     @GET
@@ -250,7 +246,6 @@ public class PaymentsResource {
                                      @ApiParam(value = "requestPayload", required = true) @Valid CreatePaymentRequest createPaymentRequest) {
         logger.info("Payment create request parsed to {}", createPaymentRequest);
 
-        paymentRequestValidator.validate(createPaymentRequest);
         ValidCreatePaymentRequest validCreatePaymentRequest = new ValidCreatePaymentRequest(createPaymentRequest);
         logger.info("Payment create request passed validation and parsed to {}", validCreatePaymentRequest);
 

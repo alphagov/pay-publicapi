@@ -3,7 +3,6 @@ package uk.gov.pay.api.json;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -15,8 +14,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CreatePaymentRequest;
-import uk.gov.pay.api.model.ValidCreatePaymentRequest;
-import uk.gov.pay.api.validation.PaymentRequestValidator;
 import uk.gov.pay.api.validation.URLValidator;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
@@ -27,7 +24,6 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.pay.api.matcher.BadRequestExceptionMatcher.aBadRequestExceptionWithError;
-import static uk.gov.pay.api.matcher.PaymentValidationExceptionMatcher.aValidationExceptionContaining;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreatePaymentRequestDeserializerTest {

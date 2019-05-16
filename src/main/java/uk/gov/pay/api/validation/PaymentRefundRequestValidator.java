@@ -10,7 +10,6 @@ import static uk.gov.pay.api.model.CreatePaymentRequest.AMOUNT_MAX_VALUE;
 import static uk.gov.pay.api.model.CreatePaymentRequest.AMOUNT_MIN_VALUE;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_REFUND_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
-import static uk.gov.pay.api.validation.PaymentRequestValidator.*;
 
 public class PaymentRefundRequestValidator {
 

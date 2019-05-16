@@ -12,16 +12,14 @@ import uk.gov.pay.commons.model.charge.ExternalMetadata;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Optional;
 import java.util.StringJoiner;
 
-import static uk.gov.pay.api.validation.PaymentRequestValidator.AGREEMENT_ID_MAX_LENGTH;
-
 @ApiModel(value = "CreatePaymentRequest", description = "The Payment Request Payload")
 public class CreatePaymentRequest {
 
+    public static final int AGREEMENT_ID_MAX_LENGTH = 26;
     public static final int EMAIL_MAX_LENGTH = 254;
     public static final String AMOUNT_FIELD_NAME = "amount";
     public static final String RETURN_URL_FIELD_NAME = "return_url";
