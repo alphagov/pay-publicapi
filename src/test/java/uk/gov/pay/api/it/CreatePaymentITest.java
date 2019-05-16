@@ -29,6 +29,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
+import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 import static uk.gov.pay.api.utils.mocks.CreateChargeRequestParams.CreateChargeRequestParamsBuilder.aCreateChargeRequestParams;
@@ -63,7 +64,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
     @Test
     public void createCardPaymentWithEmptyMetadataDoesNotStoreMetadata() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
-        
+
         String payload = new JsonStringBuilder()
                 .add("amount", 100)
                 .add("reference", REFERENCE)
@@ -84,7 +85,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 .contentType(JSON).log().body()
                 .body("$", not(hasKey("metadata")));
     }
-    
+
     @Test
     public void createCardPaymentWithMetadata() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
@@ -107,7 +108,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
 
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
     }
-    
+
     @Test
     public void createCardPaymentWithPrefilledCardholderDetails() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
@@ -188,7 +189,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
     @Test
     public void createCardPayment() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
-        
+
         connectorMockClient.respondOk_whenCreateCharge(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
                 .withAmount(AMOUNT)
                 .withChargeId(CHARGE_ID)
@@ -280,7 +281,7 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
                 .withReference(REFERENCE)
                 .withReturnUrl(RETURN_URL)
                 .build();
-        
+
         postPaymentResponse(paymentPayload(params))
                 .statusCode(201)
                 .contentType(JSON)
@@ -422,6 +423,25 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
     }
 
     @Test
+    public void createPayment_responseWith422_whenZeroAmountForDirectDebitAccount() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
+
+        String payload = new JsonStringBuilder()
+                .add("amount", 0)
+                .add("reference", REFERENCE)
+                .add("description", DESCRIPTION)
+                .add("return_url", RETURN_URL)
+                .build();
+
+        postPaymentResponse(payload)
+                .statusCode(422)
+                .contentType(JSON)
+                .body("code", is("P0102"))
+                .body("field", is("amount"))
+                .body("description", is("Invalid attribute value: amount. Must be greater than or equal to 1"));
+    }
+
+    @Test
     public void createPayment_Returns401_WhenUnauthorised() {
         publicAuthMockClient.respondUnauthorised();
         postPaymentResponse(SUCCESS_PAYLOAD).statusCode(401);
@@ -443,15 +463,15 @@ public class CreatePaymentITest extends PaymentResourceITestBase {
         if (!params.getMetadata().isEmpty()) {
             payload.add("metadata", params.getMetadata());
         }
-        
+
         if (params.getEmail() != null) {
             payload.add("email", params.getEmail());
         }
-        
+
         if (params.getCardholderName().isPresent()) {
             payload.addToNestedMap("cardholder_name", params.getCardholderName().get(), "prefilled_cardholder_details");
         }
-        
+
         if (params.getAddressLine1().isPresent()) {
             payload.addToNestedMap("line1", params.getAddressLine1().get(), "prefilled_cardholder_details", "billing_address");
         }
