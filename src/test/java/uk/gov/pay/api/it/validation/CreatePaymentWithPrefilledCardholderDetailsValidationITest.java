@@ -46,10 +46,13 @@ public class CreatePaymentWithPrefilledCardholderDetailsValidationITest extends 
 
     @Test
     @Parameters({
-            "line1, 255", 
-            "line2, 255"
+            "line1, Must be less than or equal to 255 characters length", 
+            "line2, Must be less than or equal to 255 characters length",
+            "city, Must be less than or equal to 255 characters length",
+            "postcode, Must be less than or equal to 25 characters length",
+            "country, Must be exactly 2 characters length"
     })
-    public void shouldFailOnInvalidAddress(String addressField, String maxLength) {
+    public void shouldFailOnInvalidAddress(String addressField, String message) {
         payload.add("prefilled_cardholder_details", Map.of("billing_address", 
                 Map.of(addressField, randomAlphanumeric(256))));
         postPaymentResponse(payload.build())
@@ -58,7 +61,7 @@ public class CreatePaymentWithPrefilledCardholderDetailsValidationITest extends 
                 .body("size()", is(3))
                 .body("field", is(addressField))
                 .body("code", is("P0102"))
-                .body("description", is(format("Invalid attribute value: %s. Must be less than or equal to %s characters length", addressField, maxLength)));
+                .body("description", is(format("Invalid attribute value: %s. %s", addressField, message)));
     }
 
     @Test

@@ -23,46 +23,6 @@ public class PaymentRequestValidatorTest {
     private final PaymentRequestValidator paymentRequestValidator = new PaymentRequestValidator();
     
     @Test
-    public void validatePostCodeMaxLength_shouldFailValue() {
-        String invalidMaxLengthEmail = randomAlphanumeric(PaymentRequestValidator.POSTCODE_MAX_LENGTH+ 1);
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithAgreementId().postcode(invalidMaxLengthEmail).build();
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: postcode. Must be less than or equal to 25 characters length"));
-
-        paymentRequestValidator.validate(createPaymentRequest);
-    }
-
-    @Test
-    public void validateCityMaxLength_shouldFailValue() {
-        String invalidMaxLengthEmail = randomAlphanumeric(PaymentRequestValidator.CITY_MAX_LENGTH+ 1);
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithAgreementId().city(invalidMaxLengthEmail).build();
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: city. Must be less than or equal to 255 characters length"));
-
-        paymentRequestValidator.validate(createPaymentRequest);
-    }
-
-    @Test
-    public void validateCountryMaxLength_shouldFailValue() {
-        String invalidMaxLengthEmail = randomAlphanumeric(PaymentRequestValidator.COUNTRY_EXACT_LENGTH+ 1);
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithAgreementId().country(invalidMaxLengthEmail).build();
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: country. Must be exactly 2 characters length"));
-
-        paymentRequestValidator.validate(createPaymentRequest);
-    }
-
-    @Test
-    public void validateCountryMinLength_shouldFailValue() {
-        String invalidMaxLengthEmail = randomAlphanumeric(1);
-        CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithAgreementId().country(invalidMaxLengthEmail).build();
-
-        expectedException.expect(aValidationExceptionContaining("P0102", "Invalid attribute value: country. Must be exactly 2 characters length"));
-
-        paymentRequestValidator.validate(createPaymentRequest);
-    }
-    
-    @Test
     public void validateCountryEmpty_shouldPass() {
         CreatePaymentRequest createPaymentRequest = createPaymentRequestBuilderWithAgreementId().country("").build();
 

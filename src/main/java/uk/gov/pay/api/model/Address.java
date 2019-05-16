@@ -21,8 +21,14 @@ public class Address {
 
     @Size(max = 255, message = "Must be less than or equal to {max} characters length")
     private String line2;
+
+    @Size(max = 25, message = "Must be less than or equal to {max} characters length")
     private String postcode;
+
+    @Size(max = 255, message = "Must be less than or equal to {max} characters length")
     private String city;
+
+    @Size(max = 2, min = 2, message = "Must be exactly 2 characters length")
     private String country;
 
     public Address(@JsonProperty("line1") String line1,

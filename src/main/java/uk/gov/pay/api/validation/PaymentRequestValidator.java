@@ -18,13 +18,10 @@ import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 
 public class PaymentRequestValidator {
 
-    private static final String CONSTRAINT_MESSAGE_STRING_TEMPLATE = "Must be less than or equal to %d characters length";
     private static final String CONSTRAINT_MESSAGE_EXACT_STRING_TEMPLATE = "Must be exactly %d characters length";
 
     static final int CARD_BRAND_MAX_LENGTH = 20;
     public static final int AGREEMENT_ID_MAX_LENGTH = 26;
-    static final int POSTCODE_MAX_LENGTH = 25;
-    static final int CITY_MAX_LENGTH = 255;
     static final int COUNTRY_EXACT_LENGTH = 2;
     
     public void validate(CreatePaymentRequest paymentRequest) {
@@ -35,14 +32,6 @@ public class PaymentRequestValidator {
     private void validatePrefilledCardholderDetails(PrefilledCardholderDetails prefilledCardholderDetails) {
         if (prefilledCardholderDetails.getBillingAddress().isPresent()) {
             Address billingAddress = prefilledCardholderDetails.getBillingAddress().get();
-            if (billingAddress.getPostcode() != null) {
-                validate(MaxLengthValidator.isValid(billingAddress.getPostcode(), POSTCODE_MAX_LENGTH),
-                        aPaymentError(PREFILLED_ADDRESS_POSTCODE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, format(CONSTRAINT_MESSAGE_STRING_TEMPLATE, POSTCODE_MAX_LENGTH)));
-            }
-            if (billingAddress.getCity() != null) {
-                validate(MaxLengthValidator.isValid(billingAddress.getCity(), CITY_MAX_LENGTH),
-                        aPaymentError(PREFILLED_ADDRESS_CITY_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, format(CONSTRAINT_MESSAGE_STRING_TEMPLATE, CITY_MAX_LENGTH)));
-            }
             if (billingAddress.getCountry() != null) {
                 validate(ExactLengthValidator.isValid(billingAddress.getCountry(), COUNTRY_EXACT_LENGTH),
                         aPaymentError(PREFILLED_ADDRESS_COUNTRY_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, format(CONSTRAINT_MESSAGE_EXACT_STRING_TEMPLATE, COUNTRY_EXACT_LENGTH)));
