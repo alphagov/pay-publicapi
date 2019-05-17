@@ -15,7 +15,7 @@ import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 
-public class CreatePaymentReturnUrlValidationITest extends PaymentResourceITestBase {
+public class CreatePaymentReturnUrlValidationIT extends PaymentResourceITestBase {
 
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
     

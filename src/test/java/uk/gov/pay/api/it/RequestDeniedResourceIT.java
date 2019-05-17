@@ -11,7 +11,7 @@ import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 
-public class RequestDeniedResourceITest extends PaymentResourceITestBase {
+public class RequestDeniedResourceIT extends PaymentResourceITestBase {
 
     @Test
     public void requestDeniedPost() throws IOException {

@@ -28,7 +28,7 @@ import static org.mockserver.socket.PortFactory.findFreePort;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.utils.mocks.CreateChargeRequestParams.CreateChargeRequestParamsBuilder.aCreateChargeRequestParams;
 
-public class CreatePaymentWithHttpReturnUrlTest {
+public class CreatePaymentWithHttpReturnUrlIT {
 
     private static final String API_KEY = ApiKeyGenerator.apiKeyValueOf("TEST_BEARER_TOKEN", "qwer9yuhgf");
     private static final String GATEWAY_ACCOUNT_ID = "GATEWAY_ACCOUNT_ID";

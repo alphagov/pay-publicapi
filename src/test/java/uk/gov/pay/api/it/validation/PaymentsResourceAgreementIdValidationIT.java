@@ -19,7 +19,7 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 
-public class PaymentsResourceAgreementIdValidationITest extends PaymentResourceITestBase {
+public class PaymentsResourceAgreementIdValidationIT extends PaymentResourceITestBase {
 
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
     

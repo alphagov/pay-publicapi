@@ -40,7 +40,7 @@ pipeline {
                   string(credentialsId: 'pact_broker_password', variable: 'PACT_BROKER_PASSWORD')]
           ) {
               sh 'mvn -version'
-              sh "mvn clean package pact:publish -DPACT_BROKER_URL=https://pact-broker-test.cloudapps.digital -DPACT_CONSUMER_VERSION=${commit}" +
+              sh "mvn clean verify pact:publish -DPACT_BROKER_URL=https://pact-broker-test.cloudapps.digital -DPACT_CONSUMER_VERSION=${commit}" +
                       " -DPACT_BROKER_USERNAME=${PACT_BROKER_USERNAME} -DPACT_BROKER_PASSWORD=${PACT_BROKER_PASSWORD} -DPACT_CONSUMER_TAG=${branchName}"
           }
           postSuccessfulMetrics("publicapi.maven-build", stepBuildTime)
@@ -69,7 +69,7 @@ pipeline {
                   string(credentialsId: 'pact_broker_password', variable: 'PACT_BROKER_PASSWORD')]
           ) {
               sh 'mvn -version'
-              sh "mvn clean package pact:publish -DPACT_BROKER_URL=https://pact-broker-test.cloudapps.digital -DPACT_CONSUMER_VERSION=${commit}" +
+              sh "mvn clean verify pact:publish -DPACT_BROKER_URL=https://pact-broker-test.cloudapps.digital -DPACT_CONSUMER_VERSION=${commit}" +
                       " -DPACT_BROKER_USERNAME=${PACT_BROKER_USERNAME} -DPACT_BROKER_PASSWORD=${PACT_BROKER_PASSWORD} -DPACT_CONSUMER_TAG=${branchName}"
           }
           postSuccessfulMetrics("publicapi.maven-build", stepBuildTime)

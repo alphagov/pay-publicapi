@@ -43,7 +43,7 @@ import static org.mockserver.socket.PortFactory.findFreePort;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
-public class ResourcesFilterLocalRateLimiterITest {
+public class ResourcesFilterLocalRateLimiterIT {
 
     private static final int CONNECTOR_PORT = findFreePort();
     private static final int PUBLIC_AUTH_PORT = findFreePort();

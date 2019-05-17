@@ -30,7 +30,7 @@ import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
-public class PaymentRefundsResourceITest extends PaymentResourceITestBase {
+public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
 
     private static final int AMOUNT = 1000;
     private static final int REFUND_AMOUNT_AVAILABLE = 9000;

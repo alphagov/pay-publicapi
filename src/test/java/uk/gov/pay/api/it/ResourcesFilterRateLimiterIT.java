@@ -17,7 +17,7 @@ import static uk.gov.pay.api.it.fixtures.PaginatedPaymentSearchResultFixture.aPa
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.aSuccessfulSearchPayment;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 
-public class ResourcesFilterRateLimiterITest extends ResourcesFilterITestBase {
+public class ResourcesFilterRateLimiterIT extends ResourcesFilterITestBase {
 
     private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
     

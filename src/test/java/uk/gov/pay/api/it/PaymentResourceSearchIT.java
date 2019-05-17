@@ -44,7 +44,7 @@ import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.DEFAULT_RETU
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.aSuccessfulSearchPayment;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 
-public class PaymentResourceSearchITest extends PaymentResourceITestBase {
+public class PaymentResourceSearchIT extends PaymentResourceITestBase {
 
     private static final String TEST_REFERENCE = "test_reference";
     private static final String TEST_EMAIL = "alice.111@mail.fake";

@@ -35,7 +35,7 @@ import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeRespo
 import static uk.gov.pay.api.utils.mocks.CreateChargeRequestParams.CreateChargeRequestParamsBuilder.aCreateChargeRequestParams;
 import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
-public class CreatePaymentITest extends PaymentResourceITestBase {
+public class CreatePaymentIT extends PaymentResourceITestBase {
 
     private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
     private static final int AMOUNT = 9999999;

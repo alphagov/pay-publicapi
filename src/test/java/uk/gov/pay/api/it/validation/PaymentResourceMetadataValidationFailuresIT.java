@@ -22,12 +22,12 @@ import static io.restassured.http.ContentType.JSON;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
-import static uk.gov.pay.api.it.CreatePaymentITest.paymentPayload;
+import static uk.gov.pay.api.it.CreatePaymentIT.paymentPayload;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.utils.mocks.CreateChargeRequestParams.CreateChargeRequestParamsBuilder.aCreateChargeRequestParams;
 
 @RunWith(JUnitParamsRunner.class)
-public class PaymentResourceMetadataValidationFailuresITest extends PaymentResourceITestBase {
+public class PaymentResourceMetadataValidationFailuresIT extends PaymentResourceITestBase {
 
     private static CreateChargeRequestParamsBuilder createChargeRequestParamsBuilder = aCreateChargeRequestParams()
                 .withAmount(100)

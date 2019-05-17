@@ -23,7 +23,7 @@ import static org.mockserver.socket.PortFactory.findFreePort;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.utils.WiremockStubbing.stubPublicAuthV1ApiAuth;
 
-public class CancelPaymentTest {
+public class CancelPaymentIT {
 
     private static final String API_KEY = ApiKeyGenerator.apiKeyValueOf("TEST_BEARER_TOKEN", "qwer9yuhgf");
 

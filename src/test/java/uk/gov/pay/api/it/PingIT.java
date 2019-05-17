@@ -10,7 +10,7 @@ import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 
-public class PingTest {
+public class PingIT {
 
     @Rule
     public DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(PublicApi.class, resourceFilePath("config/test-config.yaml"));

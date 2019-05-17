@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-public class ResourcesFilterAuthorisationITest extends ResourcesFilterITestBase {
+public class ResourcesFilterAuthorisationIT extends ResourcesFilterITestBase {
 
     @Test
     public void createPayment_whenInvalidAuthorizationHeader_shouldReturn401Response() throws Exception {

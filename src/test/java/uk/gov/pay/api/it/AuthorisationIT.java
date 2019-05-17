@@ -13,7 +13,7 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static uk.gov.pay.api.utils.Payloads.aSuccessfulPaymentPayload;
 
-public class AuthorisationTest {
+public class AuthorisationIT {
 
     @Rule
     public DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(

@@ -4,5 +4,5 @@ set -e
 
 cd "$(dirname "$0")"
 
-mvn -DskipTests clean package
+mvn -DskipITs clean verify
 docker build -t govukpay/publicapi:local .
