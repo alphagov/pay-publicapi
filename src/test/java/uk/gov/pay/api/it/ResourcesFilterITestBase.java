@@ -37,8 +37,8 @@ import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.eclipse.jetty.http.HttpStatus.TOO_MANY_REQUESTS_429;
 import static org.junit.Assert.fail;
-import static org.mockserver.socket.PortFactory.findFreePort;
 import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
+import static uk.gov.pay.commons.testing.port.PortFactory.findFreePort;
 
 abstract public class ResourcesFilterITestBase {
 

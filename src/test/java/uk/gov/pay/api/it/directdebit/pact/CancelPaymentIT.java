@@ -19,9 +19,9 @@ import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static io.restassured.RestAssured.given;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.Matchers.is;
-import static org.mockserver.socket.PortFactory.findFreePort;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.utils.WiremockStubbing.stubPublicAuthV1ApiAuth;
+import static uk.gov.pay.commons.testing.port.PortFactory.findFreePort;
 
 public class CancelPaymentIT {
 

@@ -6,7 +6,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockserver.socket.PortFactory;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
@@ -27,14 +26,15 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.utils.WiremockStubbing.stubPublicAuthV1ApiAuth;
+import static uk.gov.pay.commons.testing.port.PortFactory.findFreePort;
 
 public class CachingAuthenticatorIT {
     
     private String accountId = "123";
     private String bearerToken = ApiKeyGenerator.apiKeyValueOf("TEST_BEARER_TOKEN", "qwer9yuhgf");
 
-    private int publicAuthRulePort = PortFactory.findFreePort();
-    private int connectorRulePort = PortFactory.findFreePort();
+    private int publicAuthRulePort = findFreePort();
+    private int connectorRulePort = findFreePort();
     
     @Rule
     public WireMockRule publicAuthRule = new WireMockRule(publicAuthRulePort);

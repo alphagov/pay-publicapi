@@ -1,8 +1,6 @@
 package uk.gov.pay.api.it.validation;
 
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.spotify.docker.client.exceptions.DockerException;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 import io.restassured.response.ValidatableResponse;
@@ -24,9 +22,9 @@ import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
-import static org.mockserver.socket.PortFactory.findFreePort;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.utils.mocks.CreateChargeRequestParams.CreateChargeRequestParamsBuilder.aCreateChargeRequestParams;
+import static uk.gov.pay.commons.testing.port.PortFactory.findFreePort;
 
 public class CreatePaymentWithHttpReturnUrlIT {
 
@@ -47,7 +45,6 @@ public class CreatePaymentWithHttpReturnUrlIT {
 
     private static final int CONNECTOR_PORT = findFreePort();
     private static final int PUBLIC_AUTH_PORT = findFreePort();
-    private static final Gson GSON = new GsonBuilder().create();
 
     @ClassRule
     public static WireMockClassRule connectorMock = new WireMockClassRule(CONNECTOR_PORT);
