@@ -45,7 +45,7 @@ public class PaymentsResourceAmountValidationITest extends PaymentResourceITestB
                 .assertThat("$.*", hasSize(3))
                 .assertThat("$.field", is("amount"))
                 .assertThat("$.code", is("P0102"))
-                .assertThat("$.description", is("Invalid attribute value: amount. Must be greater than or equal to 0"));
+                .assertThat("$.description", is("Invalid attribute value: amount. Must be greater than or equal to 1"));
     }
 
     @Test
