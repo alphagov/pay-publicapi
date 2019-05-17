@@ -10,7 +10,7 @@ import java.util.Map;
 import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.core.Is.is;
 
-public class PaymentsResourceEmailValidationITest extends PaymentResourceITestBase {
+public class PaymentsResourceEmailValidationIT extends PaymentResourceITestBase {
 
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
 

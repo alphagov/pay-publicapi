@@ -18,7 +18,7 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 
-public class PaymentResourceSearchValidationITest extends PaymentResourceITestBase {
+public class PaymentResourceSearchValidationIT extends PaymentResourceITestBase {
 
     private static final String VALID_REFERENCE = "test_reference";
     private static final String VALID_LAST_DIGITS_CARD_NUMBER = "4242";

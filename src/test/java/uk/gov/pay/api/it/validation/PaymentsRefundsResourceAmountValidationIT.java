@@ -22,7 +22,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 
-public class PaymentsRefundsResourceAmountValidationITest extends PaymentResourceITestBase {
+public class PaymentsRefundsResourceAmountValidationIT extends PaymentResourceITestBase {
 
     private static final int REFUND_AMOUNT_AVAILABLE = 9000;
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");

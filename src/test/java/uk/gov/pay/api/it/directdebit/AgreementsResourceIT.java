@@ -22,7 +22,7 @@ import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 import static uk.gov.pay.api.utils.Urls.directDebitFrontendSecureUrl;
 import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
-public class AgreementsResourceITest extends PaymentResourceITestBase {
+public class AgreementsResourceIT extends PaymentResourceITestBase {
 
     private ConnectorDDMockClient connectorDDMockClient = new ConnectorDDMockClient(connectorDDMock);
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);

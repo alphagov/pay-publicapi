@@ -6,7 +6,7 @@ import org.junit.Test;
 import static org.hamcrest.Matchers.is;
 import static uk.gov.pay.api.resources.HealthCheckResource.HEALTHCHECK;
 
-public class HealthCheckResourceITest extends PaymentResourceITestBase {
+public class HealthCheckResourceIT extends PaymentResourceITestBase {
 
     @Test
     public void getAccountShouldReturn404IfAccountIdIsUnknown() {

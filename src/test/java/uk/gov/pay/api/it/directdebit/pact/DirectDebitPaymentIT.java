@@ -30,7 +30,7 @@ import static uk.gov.pay.api.utils.Urls.directDebitFrontendSecureUrl;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
-public class DirectDebitPaymentTest {
+public class DirectDebitPaymentIT {
 
     private static final int AMOUNT = 100;
     private static final String CHARGE_ID = "ch_ab2341da231434l";

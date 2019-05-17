@@ -19,7 +19,7 @@ import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.utils.mocks.CreateChargeRequestParams.CreateChargeRequestParamsBuilder.aCreateChargeRequestParams;
 
 @RunWith(JUnitParamsRunner.class)
-public class CreatePaymentWithPrefilledCardholderDetailsValidationITest extends PaymentResourceITestBase {
+public class CreatePaymentWithPrefilledCardholderDetailsValidationIT extends PaymentResourceITestBase {
 
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
     private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);

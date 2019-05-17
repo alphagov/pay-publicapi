@@ -17,7 +17,7 @@ import static org.eclipse.jetty.http.HttpStatus.LENGTH_REQUIRED_411;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 
-public class PaymentsCancelResourceITest extends PaymentResourceITestBase {
+public class PaymentsCancelResourceIT extends PaymentResourceITestBase {
 
     private static final String TEST_CHARGE_ID = "ch_ab2341da231434";
     private static final String CANCEL_PAYMENTS_PATH = PAYMENTS_PATH + "%s/cancel";
