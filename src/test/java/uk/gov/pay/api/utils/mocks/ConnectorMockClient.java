@@ -4,7 +4,6 @@ import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
-import org.mockserver.model.Parameter;
 import uk.gov.pay.api.it.fixtures.PaymentRefundJsonFixture;
 import uk.gov.pay.api.it.fixtures.PaymentSingleResultBuilder;
 import uk.gov.pay.api.model.Address;
@@ -31,7 +30,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
-import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
@@ -39,7 +37,6 @@ import static javax.ws.rs.core.HttpHeaders.ACCEPT;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.HttpHeaders.LOCATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.eclipse.jetty.http.HttpStatus.ACCEPTED_202;
 import static org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
 import static org.eclipse.jetty.http.HttpStatus.CREATED_201;
@@ -383,44 +380,6 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     public void whenSearchCharges(String gatewayAccountId, ResponseDefinitionBuilder response) {
         wireMockClassRule.stubFor(get(urlPathEqualTo(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId)))
                 .withHeader(ACCEPT, matching(APPLICATION_JSON)).willReturn(response));
-    }
-
-    private Parameter[] notNullQueryParamsFrom(String reference, String email, String state, String cardBrand, String cardHolderName, String firstDigitsCardNumber, String lastDigitsCardNumber, String fromDate, String toDate, String page, String displaySize) {
-        List<Parameter> params = newArrayList();
-        if (isNotBlank(reference)) {
-            params.add(Parameter.param(REFERENCE_KEY, reference));
-        }
-        if (isNotBlank(email)) {
-            params.add(Parameter.param(EMAIL_KEY, email));
-        }
-        if (isNotBlank(state)) {
-            params.add(Parameter.param(STATE_KEY, state));
-        }
-        if (isNotBlank(cardBrand)) {
-            params.add(Parameter.param(CARD_BRAND_KEY, CARD_BRAND.toLowerCase()));
-        }
-        if (isNotBlank(cardHolderName)) {
-            params.add(Parameter.param(CARDHOLDER_NAME_KEY, cardHolderName));
-        }
-        if (isNotBlank(firstDigitsCardNumber)) {
-            params.add(Parameter.param(FIRST_DIGITS_CARD_NUMBER_KEY, firstDigitsCardNumber));
-        }
-        if (isNotBlank(lastDigitsCardNumber)) {
-            params.add(Parameter.param(LAST_DIGITS_CARD_NUMBER_KEY, lastDigitsCardNumber));
-        }
-        if (isNotBlank(fromDate)) {
-            params.add(Parameter.param(FROM_DATE_KEY, fromDate));
-        }
-        if (isNotBlank(toDate)) {
-            params.add(Parameter.param(TO_DATE_KEY, toDate));
-        }
-        if (isNotBlank(page)) {
-            params.add(Parameter.param("page", page));
-        }
-        if (isNotBlank(displaySize)) {
-            params.add(Parameter.param("display_size", displaySize));
-        }
-        return params.toArray(new Parameter[0]);
     }
 
     private void whenCancelCharge(String paymentId, String accountId, ResponseDefinitionBuilder response) {
