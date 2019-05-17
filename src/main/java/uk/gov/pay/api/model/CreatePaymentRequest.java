@@ -44,7 +44,9 @@ public class CreatePaymentRequest {
     public static final int DESCRIPTION_MAX_LENGTH = 255;
     public static final int URL_MAX_LENGTH = 2000;
     
-    @Min(value = AMOUNT_MIN_VALUE, message = "Must be greater than or equal to {value}")
+    // Even though the minimum is 0, this is only allowed for accounts this is enabled for and is a hidden feature
+    // so the validation error message will always state that the minimum is 1 for consistency.
+    @Min(value = AMOUNT_MIN_VALUE, message = "Must be greater than or equal to 1")
     @Max(value = AMOUNT_MAX_VALUE, message = "Must be less than or equal to {value}")
     private final int amount;
 
