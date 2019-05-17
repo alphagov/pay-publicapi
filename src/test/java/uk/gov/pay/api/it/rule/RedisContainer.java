@@ -128,12 +128,11 @@ class RedisContainer {
     }
 
     public void clearRedisCache() {
-        try {
-            String[] command = {"redis-cli", "FLUSHALL"};
-            String id = docker.execCreate(containerId, command).id();
-            docker.execStart(id);
-        } catch (DockerException | InterruptedException e) {
-            throw new RuntimeException(e);
+        Jedis jedis = new Jedis(host, port);
+        String response = jedis.flushAll();
+        if (!response.equals("OK")) {
+            logger.warn("Unexpected response from redis flushAll command: " + response);
         }
+        jedis.disconnect();
     }
 }
