@@ -20,7 +20,6 @@ import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.CreatePaymentResult;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.PaymentEvents;
-import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.model.search.card.GetPaymentResult;
 import uk.gov.pay.api.model.search.card.PaymentSearchResults;
@@ -255,10 +254,7 @@ public class PaymentsResource {
                     "Must be greater than or equal to 1"));
         }
         
-        ValidCreatePaymentRequest validCreatePaymentRequest = new ValidCreatePaymentRequest(createPaymentRequest);
-        logger.info("Payment create request passed validation and parsed to {}", validCreatePaymentRequest);
-
-        PaymentWithAllLinks createdPayment = createPaymentService.create(account, validCreatePaymentRequest);
+        PaymentWithAllLinks createdPayment = createPaymentService.create(account, createPaymentRequest);
 
         Response response = Response
                 .created(publicApiUriGenerator.getPaymentURI(createdPayment.getPayment().getPaymentId()))

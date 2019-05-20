@@ -14,7 +14,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CreatePaymentRequest;
-import uk.gov.pay.api.validation.URLValidator;
+import uk.gov.pay.api.model.PrefilledCardholderDetails;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.util.Optional;
@@ -39,7 +39,6 @@ public class CreatePaymentRequestDeserializerTest {
 
     @Before
     public void setup() {
-        URLValidator urlValidator = URLValidator.urlValidatorValueOf(true);
         deserializer = new CreatePaymentRequestDeserializer();
     }
 
@@ -58,11 +57,11 @@ public class CreatePaymentRequestDeserializerTest {
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(paymentRequest.getLanguage(), is(nullValue()));
-        assertThat(paymentRequest.getDelayedCapture(), is(nullValue()));
-        assertThat(paymentRequest.getEmail(), is(nullValue()));
-        assertThat(paymentRequest.getPrefilledCardholderDetails(), is(nullValue()));
+        assertThat(paymentRequest.getReturnUrl(), is(Optional.of("https://somewhere.gov.uk/rainbow/1")));
+        assertThat(paymentRequest.getLanguage(), is(Optional.empty()));
+        assertThat(paymentRequest.getDelayedCapture(), is(Optional.empty()));
+        assertThat(paymentRequest.getEmail(), is(Optional.empty()));
+        assertThat(paymentRequest.getPrefilledCardholderDetails(), is(Optional.empty()));
     }
 
     @Test
@@ -81,8 +80,8 @@ public class CreatePaymentRequestDeserializerTest {
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(paymentRequest.getLanguage(), is(SupportedLanguage.ENGLISH));
+        assertThat(paymentRequest.getReturnUrl(), is(Optional.of("https://somewhere.gov.uk/rainbow/1")));
+        assertThat(paymentRequest.getLanguage(), is(Optional.of(SupportedLanguage.ENGLISH)));
     }
 
     @Test
@@ -101,8 +100,8 @@ public class CreatePaymentRequestDeserializerTest {
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(paymentRequest.getLanguage(), is(SupportedLanguage.WELSH));
+        assertThat(paymentRequest.getReturnUrl(), is(Optional.of("https://somewhere.gov.uk/rainbow/1")));
+        assertThat(paymentRequest.getLanguage(), is(Optional.of(SupportedLanguage.WELSH)));
     }
 
     @Test
@@ -121,8 +120,8 @@ public class CreatePaymentRequestDeserializerTest {
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(paymentRequest.getDelayedCapture(), is(Boolean.TRUE));
+        assertThat(paymentRequest.getReturnUrl(), is(Optional.of("https://somewhere.gov.uk/rainbow/1")));
+        assertThat(paymentRequest.getDelayedCapture(), is(Optional.of(Boolean.TRUE)));
     }
 
     @Test
@@ -141,8 +140,8 @@ public class CreatePaymentRequestDeserializerTest {
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(paymentRequest.getDelayedCapture(), is(Boolean.FALSE));
+        assertThat(paymentRequest.getReturnUrl(), is(Optional.of("https://somewhere.gov.uk/rainbow/1")));
+        assertThat(paymentRequest.getDelayedCapture(), is(Optional.of(Boolean.FALSE)));
     }
 
     @Test
@@ -160,8 +159,8 @@ public class CreatePaymentRequestDeserializerTest {
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl(), is(nullValue()));
-        assertThat(paymentRequest.getAgreementId(), is("abc123"));
+        assertThat(paymentRequest.getReturnUrl(), is(Optional.empty()));
+        assertThat(paymentRequest.getAgreementId(), is(Optional.of("abc123")));
     }
 
     @Test
@@ -480,7 +479,7 @@ public class CreatePaymentRequestDeserializerTest {
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }
-    
+
     @Test
     public void shouldDeserializeARequestWithPrefilledCardholderDetailsSuccessfully() throws Exception {
         // language=JSON
@@ -504,14 +503,17 @@ public class CreatePaymentRequestDeserializerTest {
         assertThat(paymentRequest.getAmount(), is(1000));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(paymentRequest.getLanguage(), is(nullValue()));
-        assertThat(paymentRequest.getDelayedCapture(), is(nullValue()));
-        assertThat(paymentRequest.getEmail(), is("j.bogs@example.org"));
-        assertThat(paymentRequest.getPrefilledCardholderDetails().getCardholderName().isPresent(), is(true));
-        assertThat(paymentRequest.getPrefilledCardholderDetails().getCardholderName().get(), is("J Bogs"));
-        assertThat(paymentRequest.getPrefilledCardholderDetails().getBillingAddress().isPresent(), is(true));
-        Address billingAddress = paymentRequest.getPrefilledCardholderDetails().getBillingAddress().get();
+        assertThat(paymentRequest.getReturnUrl(), is(Optional.of("https://somewhere.gov.uk/rainbow/1")));
+        assertThat(paymentRequest.getLanguage(), is(Optional.empty()));
+        assertThat(paymentRequest.getDelayedCapture(), is(Optional.empty()));
+        assertThat(paymentRequest.getEmail(), is(Optional.of("j.bogs@example.org")));
+
+        assertThat(paymentRequest.getPrefilledCardholderDetails().isPresent(), is(true));
+        PrefilledCardholderDetails prefilledCardholderDetails = paymentRequest.getPrefilledCardholderDetails().get();
+        assertThat(prefilledCardholderDetails.getCardholderName().isPresent(), is(true));
+        assertThat(prefilledCardholderDetails.getCardholderName().get(), is("J Bogs"));
+        assertThat(prefilledCardholderDetails.getBillingAddress().isPresent(), is(true));
+        Address billingAddress = prefilledCardholderDetails.getBillingAddress().get();
         assertThat(billingAddress.getLine1(), is("address line 1"));
         assertThat(billingAddress.getLine2(), is(nullValue()));
         assertThat(billingAddress.getPostcode(), is("AB1 CD2"));
@@ -536,10 +538,12 @@ public class CreatePaymentRequestDeserializerTest {
         assertThat(paymentRequest.getAmount(), is(1000));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(paymentRequest.getEmail(), is("j.bogs@example.org"));
-        assertThat(paymentRequest.getPrefilledCardholderDetails().getCardholderName().get(), is("J Bogs"));
-        assertThat(paymentRequest.getPrefilledCardholderDetails().getBillingAddress().isPresent(), is(false));
+        assertThat(paymentRequest.getReturnUrl(), is(Optional.of("https://somewhere.gov.uk/rainbow/1")));
+        assertThat(paymentRequest.getEmail(), is(Optional.of("j.bogs@example.org")));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().isPresent(), is(true));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getCardholderName().isPresent(), is(true));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getCardholderName().get(), is("J Bogs"));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getBillingAddress().isPresent(), is(false));
     }
 
     @Test
@@ -564,12 +568,13 @@ public class CreatePaymentRequestDeserializerTest {
         assertThat(paymentRequest.getAmount(), is(1000));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(paymentRequest.getLanguage(), is(nullValue()));
-        assertThat(paymentRequest.getDelayedCapture(), is(nullValue()));
-        assertThat(paymentRequest.getPrefilledCardholderDetails().getCardholderName(), is(Optional.empty()));
-        assertThat(paymentRequest.getPrefilledCardholderDetails().getBillingAddress().isPresent(), is(true));
-        Address billingAddress = paymentRequest.getPrefilledCardholderDetails().getBillingAddress().get();
+        assertThat(paymentRequest.getReturnUrl(), is(Optional.of("https://somewhere.gov.uk/rainbow/1")));
+        assertThat(paymentRequest.getLanguage(), is(Optional.empty()));
+        assertThat(paymentRequest.getDelayedCapture(), is(Optional.empty()));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().isPresent(), is(true));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getCardholderName(), is(Optional.empty()));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getBillingAddress().isPresent(), is(true));
+        Address billingAddress = paymentRequest.getPrefilledCardholderDetails().get().getBillingAddress().get();
         assertThat(billingAddress.getLine1(), is("address line 1"));
         assertThat(billingAddress.getLine2(), is("address line 2"));
         assertThat(billingAddress.getPostcode(), is("AB1 CD2"));
@@ -599,12 +604,14 @@ public class CreatePaymentRequestDeserializerTest {
         assertThat(paymentRequest.getAmount(), is(1000));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(paymentRequest.getLanguage(), is(nullValue()));
-        assertThat(paymentRequest.getDelayedCapture(), is(nullValue()));
-        assertThat(paymentRequest.getPrefilledCardholderDetails().getCardholderName().isPresent(), is(false));
-        assertThat(paymentRequest.getPrefilledCardholderDetails().getBillingAddress().isPresent(), is(true));
-        Address billingAddress = paymentRequest.getPrefilledCardholderDetails().getBillingAddress().get();
+        assertThat(paymentRequest.getReturnUrl(), is(Optional.of("https://somewhere.gov.uk/rainbow/1")));
+        assertThat(paymentRequest.getLanguage(), is(Optional.empty()));
+        assertThat(paymentRequest.getDelayedCapture(), is(Optional.empty()));
+
+        assertThat(paymentRequest.getPrefilledCardholderDetails().isPresent(), is(true));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getCardholderName().isPresent(), is(false));
+        assertThat(paymentRequest.getPrefilledCardholderDetails().get().getBillingAddress().isPresent(), is(true));
+        Address billingAddress = paymentRequest.getPrefilledCardholderDetails().get().getBillingAddress().get();
         assertThat(billingAddress.getLine1(), is("address line 1"));
         assertThat(billingAddress.getLine2(), is("address line 2"));
         assertThat(billingAddress.getPostcode(), is("AB1 CD2"));

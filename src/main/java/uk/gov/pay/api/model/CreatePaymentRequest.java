@@ -107,43 +107,43 @@ public class CreatePaymentRequest {
 
     @ApiModelProperty(value = "service return url", required = true, example = "https://service-name.gov.uk/transactions/12345")
     @JsonProperty("return_url")
-    public String getReturnUrl() {
-        return returnUrl;
+    public Optional<String> getReturnUrl() {
+        return Optional.ofNullable(returnUrl);
     }
 
     @ApiModelProperty(value = "ID of the agreement being used to collect the payment", required = false, example = "33890b55-b9ea-4e2f-90fd-77ae0e9009e2")
     @JsonProperty(AGREEMENT_ID_FIELD_NAME)
-    public String getAgreementId() {
-        return agreementId;
+    public Optional<String> getAgreementId() {
+        return Optional.ofNullable(agreementId);
     }
 
     @ApiModelProperty(value = "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages", required = false, example = "en")
     @JsonProperty(LANGUAGE_FIELD_NAME)
-    public SupportedLanguage getLanguage() {
-        return language;
+    public Optional<SupportedLanguage> getLanguage() {
+        return Optional.ofNullable(language);
     }
 
     @ApiModelProperty(value = "delayed capture flag", required = false, example = "false")
     @JsonProperty(DELAYED_CAPTURE_FIELD_NAME)
-    public Boolean getDelayedCapture() {
-        return delayedCapture;
+    public Optional<Boolean> getDelayedCapture() {
+        return Optional.ofNullable(delayedCapture);
     }
 
     @JsonProperty("metadata")
-    public ExternalMetadata getMetadata() {
-        return metadata;
+    public Optional<ExternalMetadata> getMetadata() {
+        return Optional.ofNullable(metadata);
     }
 
     @ApiModelProperty(value = "email", required = false, example = "Joe.Bogs@example.org")
     @JsonProperty(EMAIL_FIELD_NAME)
-    public String getEmail() {
-        return email;
+    public Optional<String> getEmail() {
+        return Optional.ofNullable(email);
     }
 
     @ApiModelProperty(value = "prefilled_cardholder_details", required = false)
     @JsonProperty(PREFILLED_CARDHOLDER_DETAILS_FIELD_NAME)
-    public PrefilledCardholderDetails getPrefilledCardholderDetails() {
-        return prefilledCardholderDetails;
+    public Optional<PrefilledCardholderDetails> getPrefilledCardholderDetails() {
+        return Optional.ofNullable(prefilledCardholderDetails);
     }
 
     public boolean hasReturnUrl() {
