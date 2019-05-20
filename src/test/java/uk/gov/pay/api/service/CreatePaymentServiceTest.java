@@ -17,7 +17,6 @@ import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.TokenPaymentType;
-import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.model.links.Link;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.model.links.PostLink;
@@ -71,13 +70,13 @@ public class CreatePaymentServiceTest {
                 "ledger_code", 123, 
                 "fund_code", "ISIN122038", 
                 "cancellable", false);
-        ValidCreatePaymentRequest requestPayload = new ValidCreatePaymentRequest(CreatePaymentRequest.builder()
+        CreatePaymentRequest requestPayload = CreatePaymentRequest.builder()
                 .amount(100)
                 .returnUrl("https://somewhere.gov.uk/rainbow/1")
                 .reference("a reference")
                 .description("a description")
                 .metadata(new ExternalMetadata(metadata))
-                .build());
+                .build();
 
         PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
         CardPayment payment = (CardPayment) paymentResponse.getPayment();
@@ -89,12 +88,12 @@ public class CreatePaymentServiceTest {
     @Pacts(pacts = {"publicapi-connector-create-payment"})
     public void testCreatePayment() {
         Account account = new Account("123456", TokenPaymentType.CARD);
-        ValidCreatePaymentRequest requestPayload = new ValidCreatePaymentRequest(CreatePaymentRequest.builder()
+        CreatePaymentRequest requestPayload = CreatePaymentRequest.builder()
                 .amount(100)
                 .returnUrl("https://somewhere.gov.uk/rainbow/1")
                 .reference("a reference")
                 .description("a description")
-                .build());
+                .build();
 
         PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
         CardPayment payment = (CardPayment) paymentResponse.getPayment();
@@ -121,13 +120,13 @@ public class CreatePaymentServiceTest {
     @Pacts(pacts = {"publicapi-connector-create-payment-with-delayed-capture-true"})
     public void testCreatePaymentWithDelayedCaptureEqualsTrue() {
         Account account = new Account("123456", TokenPaymentType.CARD);
-        ValidCreatePaymentRequest requestPayload = new ValidCreatePaymentRequest(CreatePaymentRequest.builder()
+        CreatePaymentRequest requestPayload = CreatePaymentRequest.builder()
                 .amount(100)
                 .returnUrl("https://somewhere.gov.uk/rainbow/1")
                 .reference("a reference")
                 .description("a description")
                 .delayedCapture(Boolean.TRUE)
-                .build());
+                .build();
 
         PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
         CardPayment payment = (CardPayment) paymentResponse.getPayment();
@@ -154,13 +153,13 @@ public class CreatePaymentServiceTest {
     @Pacts(pacts = {"publicapi-connector-create-payment-with-language-welsh"})
     public void testCreatePaymentWithWelshLanguage() {
         Account account = new Account("123456", TokenPaymentType.CARD);
-        ValidCreatePaymentRequest requestPayload = new ValidCreatePaymentRequest(CreatePaymentRequest.builder()
+        CreatePaymentRequest requestPayload = CreatePaymentRequest.builder()
                 .amount(100)
                 .returnUrl("https://somewhere.gov.uk/rainbow/1")
                 .reference("a reference")
                 .description("a description")
                 .language(SupportedLanguage.WELSH)
-                .build());
+                .build();
 
         PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
         CardPayment payment = (CardPayment) paymentResponse.getPayment();
@@ -199,8 +198,7 @@ public class CreatePaymentServiceTest {
                 .postcode("AB1 CD2")
                 .country("GB")
                 .build();
-        ValidCreatePaymentRequest requestPayload = new ValidCreatePaymentRequest(createPaymentRequest);
-        PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
+        PaymentWithAllLinks paymentResponse = createPaymentService.create(account, createPaymentRequest);
         CardPayment payment = (CardPayment) paymentResponse.getPayment();
 
         assertThat(payment.getPaymentId(), is("ch_ab2341da231434l"));
@@ -225,12 +223,12 @@ public class CreatePaymentServiceTest {
     @Pacts(pacts = {"publicapi-connector-create-payment-with-zero-amount-not-allowed"})
     public void testCreatePaymentWithZeroAmountWhenZeroAmountNotAllowedForAccount() {
         Account account = new Account("123456", TokenPaymentType.CARD);
-        ValidCreatePaymentRequest requestPayload = new ValidCreatePaymentRequest(CreatePaymentRequest.builder()
+        CreatePaymentRequest requestPayload = CreatePaymentRequest.builder()
                 .amount(0)
                 .returnUrl("https://somewhere.gov.uk/rainbow/1")
                 .reference("a reference")
                 .description("a description")
-                .build());
+                .build();
 
         try {
             createPaymentService.create(account, requestPayload);

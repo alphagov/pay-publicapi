@@ -14,7 +14,6 @@ import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.SettlementSummary;
 import uk.gov.pay.api.model.TokenPaymentType;
-import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.service.CancelPaymentService;
 import uk.gov.pay.api.service.CapturePaymentService;
@@ -90,11 +89,9 @@ public class PaymentsResourceCreatePaymentTest {
                 .description("New passport")
                 .build();
 
-        final ValidCreatePaymentRequest validCreatePaymentRequest = new ValidCreatePaymentRequest(createPaymentRequest);
-
         PaymentWithAllLinks injectedResponse = aSuccessfullyCreatedPayment();
 
-        when(createPaymentService.create(account, validCreatePaymentRequest)).thenReturn(injectedResponse);
+        when(createPaymentService.create(account, createPaymentRequest)).thenReturn(injectedResponse);
 
         final Response newPayment = paymentsResource.createNewPayment(account, createPaymentRequest);
 

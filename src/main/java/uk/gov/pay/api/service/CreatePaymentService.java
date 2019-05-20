@@ -3,10 +3,9 @@ package uk.gov.pay.api.service;
 import org.apache.http.HttpStatus;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateChargeException;
-import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.ChargeFromResponse;
+import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.PrefilledCardholderDetails;
-import uk.gov.pay.api.model.ValidCreatePaymentRequest;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
@@ -33,7 +32,7 @@ public class CreatePaymentService {
         this.connectorUriGenerator = connectorUriGenerator;
     }
 
-    public PaymentWithAllLinks create(Account account, ValidCreatePaymentRequest validCreatePaymentRequest) {
+    public PaymentWithAllLinks create(Account account, CreatePaymentRequest validCreatePaymentRequest) {
         Response connectorResponse = createCharge(account, validCreatePaymentRequest);
 
         if (!createdSuccessfully(connectorResponse)) {
@@ -59,7 +58,7 @@ public class CreatePaymentService {
         return connectorResponse.getStatus() == HttpStatus.SC_CREATED;
     }
 
-    private Response createCharge(Account account, ValidCreatePaymentRequest validCreatePaymentRequest) {
+    private Response createCharge(Account account, CreatePaymentRequest validCreatePaymentRequest) {
         return client
                 .target(connectorUriGenerator.chargesURI(account, validCreatePaymentRequest.getAgreementId().orElse(null)))
                 .request()
@@ -67,7 +66,7 @@ public class CreatePaymentService {
                 .post(buildChargeRequestPayload(validCreatePaymentRequest));
     }
 
-    private Entity buildChargeRequestPayload(ValidCreatePaymentRequest requestPayload) {
+    private Entity buildChargeRequestPayload(CreatePaymentRequest requestPayload) {
         int amount = requestPayload.getAmount();
         String reference = requestPayload.getReference();
         String description = requestPayload.getDescription();
