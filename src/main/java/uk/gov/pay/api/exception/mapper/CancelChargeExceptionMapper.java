@@ -37,7 +37,9 @@ public class CancelChargeExceptionMapper implements ExceptionMapper<CancelCharge
             status = INTERNAL_SERVER_ERROR;
         }
 
-        LOGGER.error("Connector invalid response was {}.\n Returning http status {} with error body {}", exception.getMessage(), status, paymentError);
+        if (status != NOT_FOUND) {
+            LOGGER.error("Connector invalid response was {}.\n Returning http status {} with error body {}", exception.getMessage(), status, paymentError);
+        }
         return Response
                 .status(status)
                 .entity(paymentError)

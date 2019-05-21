@@ -20,17 +20,20 @@ public class SearchChargesExceptionMapper implements ExceptionMapper<SearchPayme
     @Override
     public Response toResponse(SearchPaymentsException exception) {
         if (exception.getErrorStatus() == NOT_FOUND.getStatusCode()) {
-            return buildResponse(exception, SEARCH_PAYMENTS_NOT_FOUND, NOT_FOUND);
+            return Response
+                    .status(NOT_FOUND)
+                    .entity(aPaymentError(SEARCH_PAYMENTS_NOT_FOUND))
+                    .build();
         }
-        return buildResponse(exception, SEARCH_PAYMENTS_CONNECTOR_ERROR, INTERNAL_SERVER_ERROR);
+        else {
+            PaymentError paymentError = aPaymentError(SEARCH_PAYMENTS_CONNECTOR_ERROR);
+            final Response.Status status = INTERNAL_SERVER_ERROR;
+            LOGGER.error("Connector response was {}.\n Returning http status {} with error body {}", exception.getMessage(), status, paymentError);
+            return Response
+                    .status(status)
+                    .entity(paymentError)
+                    .build();
+        }
     }
 
-    private Response buildResponse(SearchPaymentsException exception, PaymentError.Code searchPaymentsConnectorError, Response.Status status) {
-        PaymentError paymentError = aPaymentError(searchPaymentsConnectorError);
-        LOGGER.error("Connector response was {}.\n Returning http status {} with error body {}", exception.getMessage(), status, paymentError);
-        return Response
-                .status(status)
-                .entity(paymentError)
-                .build();
-    }
 }
