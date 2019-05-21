@@ -6,8 +6,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import uk.gov.pay.api.model.Address;
+import uk.gov.pay.api.model.CreateCardPaymentRequest;
+import uk.gov.pay.api.model.CreateDirectDebitPaymentRequest;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
-import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.PrefilledCardholderDetails;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
@@ -39,13 +40,13 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        CreatePaymentRequest createPaymentRequest = parsePaymentRequest(jsonNode);
+        CreateCardPaymentRequest createPaymentRequest = (CreateCardPaymentRequest) parsePaymentRequest(jsonNode);
 
         assertThat(createPaymentRequest, is(notNullValue()));
         assertThat(createPaymentRequest.getAmount(), is(1000));
         assertThat(createPaymentRequest.getReference(), is("Some reference"));
         assertThat(createPaymentRequest.getDescription(), is("Some description"));
-        assertThat(createPaymentRequest.getReturnUrl(), is(Optional.of("https://somewhere.gov.uk/rainbow/1")));
+        assertThat(createPaymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
     }
 
     @Test
@@ -62,13 +63,13 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        CreatePaymentRequest createPaymentRequest = parsePaymentRequest(jsonNode);
+        CreateCardPaymentRequest createPaymentRequest = (CreateCardPaymentRequest) parsePaymentRequest(jsonNode);
 
         assertThat(createPaymentRequest, is(notNullValue()));
         assertThat(createPaymentRequest.getAmount(), is(1000));
         assertThat(createPaymentRequest.getReference(), is("Some reference"));
         assertThat(createPaymentRequest.getDescription(), is("Some description"));
-        assertThat(createPaymentRequest.getReturnUrl(), is(Optional.of("https://somewhere.gov.uk/rainbow/1")));
+        assertThat(createPaymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(createPaymentRequest.getLanguage(), is(Optional.of(SupportedLanguage.ENGLISH)));
         assertThat(createPaymentRequest.getDelayedCapture(), is(Optional.of(true)));
     }
@@ -85,14 +86,13 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        CreatePaymentRequest createPaymentRequest = parsePaymentRequest(jsonNode);
+        CreateDirectDebitPaymentRequest createPaymentRequest = (CreateDirectDebitPaymentRequest) parsePaymentRequest(jsonNode);
 
         assertThat(createPaymentRequest, is(notNullValue()));
         assertThat(createPaymentRequest.getAmount(), is(1000));
         assertThat(createPaymentRequest.getReference(), is("Some reference"));
         assertThat(createPaymentRequest.getDescription(), is("Some description"));
-        assertThat(createPaymentRequest.getAgreementId(), is(Optional.of("abcdef1234567890abcedf1234")));
-        assertThat(createPaymentRequest.getReturnUrl(), is(Optional.empty()));
+        assertThat(createPaymentRequest.getAgreementId(), is("abcdef1234567890abcedf1234"));
     }
 
     @Test
@@ -360,13 +360,13 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        CreatePaymentRequest createPaymentRequest = parsePaymentRequest(jsonNode);
+        CreateCardPaymentRequest createPaymentRequest = (CreateCardPaymentRequest) parsePaymentRequest(jsonNode);
 
         assertThat(createPaymentRequest, is(notNullValue()));
         assertThat(createPaymentRequest.getAmount(), is(1000));
         assertThat(createPaymentRequest.getReference(), is("Some reference"));
         assertThat(createPaymentRequest.getDescription(), is("Some description"));
-        assertThat(createPaymentRequest.getReturnUrl(), is(Optional.of("https://somewhere.gov.uk/rainbow/1")));
+        assertThat(createPaymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(createPaymentRequest.getEmail(), is(Optional.of("j.bogs@example.org")));
         assertThat(createPaymentRequest.getPrefilledCardholderDetails(), is(notNullValue()));
         PrefilledCardholderDetails cardholderDetails = createPaymentRequest.getPrefilledCardholderDetails().get();
@@ -402,13 +402,13 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        CreatePaymentRequest createPaymentRequest = parsePaymentRequest(jsonNode);
+        CreateCardPaymentRequest createPaymentRequest = (CreateCardPaymentRequest) parsePaymentRequest(jsonNode);
 
         assertThat(createPaymentRequest, is(notNullValue()));
         assertThat(createPaymentRequest.getAmount(), is(1000));
         assertThat(createPaymentRequest.getReference(), is("Some reference"));
         assertThat(createPaymentRequest.getDescription(), is("Some description"));
-        assertThat(createPaymentRequest.getReturnUrl(), is(Optional.of("https://somewhere.gov.uk/rainbow/1")));
+        assertThat(createPaymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(createPaymentRequest.getEmail(), is(Optional.empty()));
         assertThat(createPaymentRequest.getPrefilledCardholderDetails(), is(notNullValue()));
         assertThat(createPaymentRequest.getPrefilledCardholderDetails().isPresent(), is(true));

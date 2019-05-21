@@ -13,7 +13,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.model.Address;
-import uk.gov.pay.api.model.CreatePaymentRequest;
+import uk.gov.pay.api.model.CreateCardPaymentRequest;
+import uk.gov.pay.api.model.CreateDirectDebitPaymentRequest;
 import uk.gov.pay.api.model.PrefilledCardholderDetails;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
@@ -52,12 +53,12 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
-        CreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+        CreateCardPaymentRequest paymentRequest = (CreateCardPaymentRequest) deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
 
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl(), is(Optional.of("https://somewhere.gov.uk/rainbow/1")));
+        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(paymentRequest.getLanguage(), is(Optional.empty()));
         assertThat(paymentRequest.getDelayedCapture(), is(Optional.empty()));
         assertThat(paymentRequest.getEmail(), is(Optional.empty()));
@@ -75,12 +76,12 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"language\": \"en\"\n" +
                 "}";
 
-        CreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+        CreateCardPaymentRequest paymentRequest = (CreateCardPaymentRequest) deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
 
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl(), is(Optional.of("https://somewhere.gov.uk/rainbow/1")));
+        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(paymentRequest.getLanguage(), is(Optional.of(SupportedLanguage.ENGLISH)));
     }
 
@@ -95,12 +96,12 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"language\": \"cy\"\n" +
                 "}";
 
-        CreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+        CreateCardPaymentRequest paymentRequest = (CreateCardPaymentRequest) deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
 
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl(), is(Optional.of("https://somewhere.gov.uk/rainbow/1")));
+        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(paymentRequest.getLanguage(), is(Optional.of(SupportedLanguage.WELSH)));
     }
 
@@ -115,12 +116,12 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"delayed_capture\": true\n" +
                 "}";
 
-        CreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+        CreateCardPaymentRequest paymentRequest = (CreateCardPaymentRequest) deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
 
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl(), is(Optional.of("https://somewhere.gov.uk/rainbow/1")));
+        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(paymentRequest.getDelayedCapture(), is(Optional.of(Boolean.TRUE)));
     }
 
@@ -135,12 +136,12 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"delayed_capture\": false\n" +
                 "}";
 
-        CreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+        CreateCardPaymentRequest paymentRequest = (CreateCardPaymentRequest) deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
 
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl(), is(Optional.of("https://somewhere.gov.uk/rainbow/1")));
+        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(paymentRequest.getDelayedCapture(), is(Optional.of(Boolean.FALSE)));
     }
 
@@ -154,13 +155,12 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"description\": \"Some description\"\n" +
                 "}";
 
-        CreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+        CreateDirectDebitPaymentRequest paymentRequest = (CreateDirectDebitPaymentRequest) deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
 
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl(), is(Optional.empty()));
-        assertThat(paymentRequest.getAgreementId(), is(Optional.of("abc123")));
+        assertThat(paymentRequest.getAgreementId(), is("abc123"));
     }
 
     @Test
@@ -499,11 +499,11 @@ public class CreatePaymentRequestDeserializerTest {
                 "\"country\": \"GB\"\n" +
                 "}" + "}" + "}";
 
-        CreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(payload), ctx);
+        CreateCardPaymentRequest paymentRequest = (CreateCardPaymentRequest) deserializer.deserialize(jsonFactory.createParser(payload), ctx);
         assertThat(paymentRequest.getAmount(), is(1000));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl(), is(Optional.of("https://somewhere.gov.uk/rainbow/1")));
+        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(paymentRequest.getLanguage(), is(Optional.empty()));
         assertThat(paymentRequest.getDelayedCapture(), is(Optional.empty()));
         assertThat(paymentRequest.getEmail(), is(Optional.of("j.bogs@example.org")));
@@ -534,11 +534,11 @@ public class CreatePaymentRequestDeserializerTest {
                 "\"cardholder_name\": \"J Bogs\"\n" +
                 "}" + "}";
 
-        CreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(payload), ctx);
+        CreateCardPaymentRequest paymentRequest = (CreateCardPaymentRequest) deserializer.deserialize(jsonFactory.createParser(payload), ctx);
         assertThat(paymentRequest.getAmount(), is(1000));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl(), is(Optional.of("https://somewhere.gov.uk/rainbow/1")));
+        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(paymentRequest.getEmail(), is(Optional.of("j.bogs@example.org")));
         assertThat(paymentRequest.getPrefilledCardholderDetails().isPresent(), is(true));
         assertThat(paymentRequest.getPrefilledCardholderDetails().get().getCardholderName().isPresent(), is(true));
@@ -564,11 +564,11 @@ public class CreatePaymentRequestDeserializerTest {
                 "\"country\": null\n" +
                 "}" + "}" + "}";
 
-        CreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(payload), ctx);
+        CreateCardPaymentRequest paymentRequest = (CreateCardPaymentRequest) deserializer.deserialize(jsonFactory.createParser(payload), ctx);
         assertThat(paymentRequest.getAmount(), is(1000));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl(), is(Optional.of("https://somewhere.gov.uk/rainbow/1")));
+        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(paymentRequest.getLanguage(), is(Optional.empty()));
         assertThat(paymentRequest.getDelayedCapture(), is(Optional.empty()));
         assertThat(paymentRequest.getPrefilledCardholderDetails().isPresent(), is(true));
@@ -600,11 +600,11 @@ public class CreatePaymentRequestDeserializerTest {
                 "\"country\": \"\"\n" +
                 "}" + "}" + "}";
 
-        CreatePaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(payload), ctx);
+        CreateCardPaymentRequest paymentRequest = (CreateCardPaymentRequest) deserializer.deserialize(jsonFactory.createParser(payload), ctx);
         assertThat(paymentRequest.getAmount(), is(1000));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl(), is(Optional.of("https://somewhere.gov.uk/rainbow/1")));
+        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(paymentRequest.getLanguage(), is(Optional.empty()));
         assertThat(paymentRequest.getDelayedCapture(), is(Optional.empty()));
 

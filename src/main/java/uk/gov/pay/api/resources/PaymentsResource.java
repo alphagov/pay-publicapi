@@ -248,11 +248,6 @@ public class PaymentsResource {
     public Response createNewPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                      @ApiParam(value = "requestPayload", required = true) @Valid CreatePaymentRequest createPaymentRequest) {
         logger.info("Payment create request parsed to {}", createPaymentRequest);
-
-        if (account.getPaymentType().equals(DIRECT_DEBIT) && createPaymentRequest.getAmount() == 0) {
-            throw new PaymentValidationException(aPaymentError("amount", CREATE_PAYMENT_VALIDATION_ERROR,
-                    "Must be greater than or equal to 1"));
-        }
         
         PaymentWithAllLinks createdPayment = createPaymentService.create(account, createPaymentRequest);
 

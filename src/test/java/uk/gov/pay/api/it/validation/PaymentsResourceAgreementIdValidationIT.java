@@ -123,7 +123,6 @@ public class PaymentsResourceAgreementIdValidationIT extends PaymentResourceITes
     // Ignoring this for now as the return url will always be validated via the @ValidReturnUrl on the CreatePaymentRequest,
     // but the RequestJsonParser specifies that where there is an agreement Id, the return url will be null. We can fix 
     // this later as recurring payments aren't used in production at the moment.
-    @Ignore //TODO fixme
     @Test
     public void createPayment_responseWith422_whenAgreementIdSizeIsGreaterThanMaxLength() throws IOException {
 

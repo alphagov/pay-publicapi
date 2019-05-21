@@ -11,7 +11,7 @@ import java.util.Set;
 
 import static org.apache.commons.lang3.StringUtils.join;
 import static org.eclipse.jetty.util.StringUtil.isBlank;
-import static uk.gov.pay.api.model.CreatePaymentRequest.AGREEMENT_ID_MAX_LENGTH;
+import static uk.gov.pay.api.model.CreateDirectDebitPaymentRequest.AGREEMENT_ID_MAX_LENGTH;
 import static uk.gov.pay.api.model.CreatePaymentRequest.EMAIL_MAX_LENGTH;
 import static uk.gov.pay.api.model.CreatePaymentRequest.REFERENCE_MAX_LENGTH;
 import static uk.gov.pay.api.model.PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR;
