@@ -3,6 +3,9 @@ package uk.gov.pay.api.service;
 import com.google.common.collect.Maps;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.model.CreateCardPaymentRequest;
+import uk.gov.pay.api.model.CreatePaymentRequest;
+import uk.gov.pay.api.model.TokenPaymentType;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
@@ -24,9 +27,9 @@ public class ConnectorUriGenerator {
         this.configuration = configuration;
     }
 
-    String chargesURI(Account account, String agreementId) {
+    String chargesURI(Account account, TokenPaymentType tokenPaymentType) {
         String chargePath = "/v1/api/accounts/%s/charges";
-        if (account.getPaymentType().equals(DIRECT_DEBIT) && agreementId != null) {
+        if (account.getPaymentType().equals(DIRECT_DEBIT) && DIRECT_DEBIT.equals(tokenPaymentType)) {
             chargePath += "/collect";
         }
         return buildConnectorUri(account, format(chargePath, account.getAccountId()));

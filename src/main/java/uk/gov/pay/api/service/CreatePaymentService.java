@@ -5,9 +5,8 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateChargeException;
 import uk.gov.pay.api.model.ChargeFromResponse;
 import uk.gov.pay.api.model.CreatePaymentRequest;
-import uk.gov.pay.api.model.PrefilledCardholderDetails;
+import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
-import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
@@ -22,8 +21,6 @@ public class CreatePaymentService {
     private final Client client;
     private final PublicApiUriGenerator publicApiUriGenerator;
     private final ConnectorUriGenerator connectorUriGenerator;
-    private static final String PREFILLED_CARDHOLDER_DETAILS = "prefilled_cardholder_details";
-    private static final String BILLING_ADDRESS = "billing_address";
 
     @Inject
     public CreatePaymentService(Client client, PublicApiUriGenerator publicApiUriGenerator, ConnectorUriGenerator connectorUriGenerator) {
@@ -60,39 +57,13 @@ public class CreatePaymentService {
 
     private Response createCharge(Account account, CreatePaymentRequest validCreatePaymentRequest) {
         return client
-                .target(connectorUriGenerator.chargesURI(account, validCreatePaymentRequest.getAgreementId().orElse(null)))
+                .target(connectorUriGenerator.chargesURI(account, validCreatePaymentRequest.getRequestType()))
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .post(buildChargeRequestPayload(validCreatePaymentRequest));
     }
 
     private Entity buildChargeRequestPayload(CreatePaymentRequest requestPayload) {
-        int amount = requestPayload.getAmount();
-        String reference = requestPayload.getReference();
-        String description = requestPayload.getDescription();
-        JsonStringBuilder request = new JsonStringBuilder()
-                .add("amount", amount)
-                .add("reference", reference)
-                .add("description", description);
-        requestPayload.getLanguage().ifPresent(language -> request.add("language", language.toString()));
-        requestPayload.getReturnUrl().ifPresent(returnUrl -> request.add("return_url", returnUrl));
-        requestPayload.getAgreementId().ifPresent(agreementId -> request.add("agreement_id", agreementId));
-        requestPayload.getDelayedCapture().ifPresent(delayedCapture -> request.add("delayed_capture", delayedCapture));
-        requestPayload.getMetadata().ifPresent(metadata -> request.add("metadata", metadata.getMetadata()));
-        requestPayload.getEmail().ifPresent(email -> request.add("email", email));
-        requestPayload.getPrefilledCardholderDetails().ifPresent(prefilledCardholderDetails -> buildPrefilledCardHolderDetails(prefilledCardholderDetails, request));
-        return json(request.build());
-    }
-    
-    private void buildPrefilledCardHolderDetails(PrefilledCardholderDetails prefilledCardholderDetails, JsonStringBuilder request) {
-        prefilledCardholderDetails.getCardholderName()
-                .ifPresent(name -> request.addToMap(PREFILLED_CARDHOLDER_DETAILS, "cardholder_name", name));
-        prefilledCardholderDetails.getBillingAddress().ifPresent(address -> {
-            request.addToNestedMap("line1", address.getLine1(), PREFILLED_CARDHOLDER_DETAILS, BILLING_ADDRESS);
-            request.addToNestedMap("line2", address.getLine2(), PREFILLED_CARDHOLDER_DETAILS, BILLING_ADDRESS);
-            request.addToNestedMap("postcode", address.getPostcode(), PREFILLED_CARDHOLDER_DETAILS, BILLING_ADDRESS);
-            request.addToNestedMap("city", address.getCity(), PREFILLED_CARDHOLDER_DETAILS, BILLING_ADDRESS);
-            request.addToNestedMap("country", address.getCountry(), PREFILLED_CARDHOLDER_DETAILS, BILLING_ADDRESS);
-        });
+        return json(requestPayload.toConnectorPayload());
     }
 }

@@ -9,6 +9,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.model.CreateCardPaymentRequest;
+import uk.gov.pay.api.model.CreateDirectDebitPaymentRequest;
+import uk.gov.pay.api.model.CreatePaymentRequest;
+import uk.gov.pay.api.model.CreatePaymentRequestBuilder;
+import uk.gov.pay.api.model.TokenPaymentType;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -56,21 +61,23 @@ public class ConnectorUriGeneratorTest {
     
     @Test
     public void shouldGenerateTheRightChargeURIForCardConnectorIfAgreementIdIsPassed() {
-        String uri = connectorUriGenerator.chargesURI(cardAccount, "shouldntbehere");
+        String uri = connectorUriGenerator.chargesURI(cardAccount, DIRECT_DEBIT);
         assertThat(uri, is("https://bla.test/v1/api/accounts/accountId/charges"));
     }
 
     @Test
-    public void shouldGenerateTheRightChargeURIForDirectDebitConnector() {
+    public void shouldGenerateTheRightChargeURIForDirectDebitConnector_ONEOFF() {
         Account account = new Account("accountId", DIRECT_DEBIT);
-        String uri = connectorUriGenerator.chargesURI(account, null);
+
+        String uri = connectorUriGenerator.chargesURI(account, CARD);
         assertThat(uri, is("https://dd-bla.test/v1/api/accounts/accountId/charges"));
     }
 
     @Test
     public void shouldGenerateTheRightChargeURIForDirectDebitConnectorIfAgreementIdIsPassed() {
         Account account = new Account("accountId", DIRECT_DEBIT);
-        String uri = connectorUriGenerator.chargesURI(account, "agreement_id");
+        
+        String uri = connectorUriGenerator.chargesURI(account, DIRECT_DEBIT);
         assertThat(uri, is("https://dd-bla.test/v1/api/accounts/accountId/charges/collect"));
     }
 

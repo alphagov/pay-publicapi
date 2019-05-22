@@ -430,7 +430,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .add("amount", 0)
                 .add("reference", REFERENCE)
                 .add("description", DESCRIPTION)
-                .add("return_url", RETURN_URL)
+                .add("agreement_id", "1234")
                 .build();
 
         postPaymentResponse(payload)
