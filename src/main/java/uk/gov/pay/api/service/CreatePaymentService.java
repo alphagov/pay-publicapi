@@ -5,7 +5,6 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateChargeException;
 import uk.gov.pay.api.model.ChargeFromResponse;
 import uk.gov.pay.api.model.CreatePaymentRequest;
-import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 
 import javax.inject.Inject;
@@ -29,8 +28,8 @@ public class CreatePaymentService {
         this.connectorUriGenerator = connectorUriGenerator;
     }
 
-    public PaymentWithAllLinks create(Account account, CreatePaymentRequest validCreatePaymentRequest) {
-        Response connectorResponse = createCharge(account, validCreatePaymentRequest);
+    public PaymentWithAllLinks create(Account account, CreatePaymentRequest createPaymentRequest) {
+        Response connectorResponse = createCharge(account, createPaymentRequest);
 
         if (!createdSuccessfully(connectorResponse)) {
             throw new CreateChargeException(connectorResponse);
@@ -57,7 +56,7 @@ public class CreatePaymentService {
 
     private Response createCharge(Account account, CreatePaymentRequest validCreatePaymentRequest) {
         return client
-                .target(connectorUriGenerator.chargesURI(account, validCreatePaymentRequest.getRequestType()))
+                .target(connectorUriGenerator.chargesURI(account))
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .post(buildChargeRequestPayload(validCreatePaymentRequest));

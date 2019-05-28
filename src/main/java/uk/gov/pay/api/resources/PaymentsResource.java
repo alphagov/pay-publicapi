@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CaptureChargeException;
 import uk.gov.pay.api.exception.GetEventsException;
-import uk.gov.pay.api.exception.PaymentValidationException;
 import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.model.CreatePaymentResult;
 import uk.gov.pay.api.model.PaymentError;
@@ -50,9 +49,6 @@ import java.net.URI;
 import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.http.HttpStatus.SC_OK;
-import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
-import static uk.gov.pay.api.model.PaymentError.aPaymentError;
-import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 
 @Path("/")
 @Api(value = "/", description = "Public Api Endpoints")
@@ -248,7 +244,9 @@ public class PaymentsResource {
     public Response createNewPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                      @ApiParam(value = "requestPayload", required = true) @Valid CreatePaymentRequest createPaymentRequest) {
         logger.info("Payment create request parsed to {}", createPaymentRequest);
-        
+
+        createPaymentRequest.validateRequestType(account);
+
         PaymentWithAllLinks createdPayment = createPaymentService.create(account, createPaymentRequest);
 
         Response response = Response

@@ -246,7 +246,7 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"description\": \"Some description\"\n" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: return_url"));
+        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing either return_url or agreement_id attribute"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }

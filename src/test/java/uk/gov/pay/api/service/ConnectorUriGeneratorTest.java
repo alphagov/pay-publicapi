@@ -46,7 +46,7 @@ public class ConnectorUriGeneratorTest {
 
     @Test
     public void shouldGenerateTheRightChargeURIForCardConnector() {
-        String uri = connectorUriGenerator.chargesURI(cardAccount, null);
+        String uri = connectorUriGenerator.chargesURI(cardAccount);
         assertThat(uri, is("https://bla.test/v1/api/accounts/accountId/charges"));
     }
     
@@ -58,26 +58,12 @@ public class ConnectorUriGeneratorTest {
         ));
         assertThat(uri, is("https://bla.test/v1/api/accounts/accountId/refunds?param1=value1&param2=value2"));
     }
-    
-    @Test
-    public void shouldGenerateTheRightChargeURIForCardConnectorIfAgreementIdIsPassed() {
-        String uri = connectorUriGenerator.chargesURI(cardAccount, DIRECT_DEBIT);
-        assertThat(uri, is("https://bla.test/v1/api/accounts/accountId/charges"));
-    }
 
     @Test
-    public void shouldGenerateTheRightChargeURIForDirectDebitConnector_ONEOFF() {
-        Account account = new Account("accountId", DIRECT_DEBIT);
-
-        String uri = connectorUriGenerator.chargesURI(account, CARD);
-        assertThat(uri, is("https://dd-bla.test/v1/api/accounts/accountId/charges"));
-    }
-
-    @Test
-    public void shouldGenerateTheRightChargeURIForDirectDebitConnectorIfAgreementIdIsPassed() {
+    public void shouldGenerateTheRightChargeURIForDirectDebitConnector() {
         Account account = new Account("accountId", DIRECT_DEBIT);
         
-        String uri = connectorUriGenerator.chargesURI(account, DIRECT_DEBIT);
+        String uri = connectorUriGenerator.chargesURI(account);
         assertThat(uri, is("https://dd-bla.test/v1/api/accounts/accountId/charges/collect"));
     }
 

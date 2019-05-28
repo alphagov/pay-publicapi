@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.Length;
+import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
 import javax.validation.constraints.Max;
@@ -25,7 +26,7 @@ public abstract class CreatePaymentRequest {
     public static final int AMOUNT_MAX_VALUE = 10000000;
     public static final int AMOUNT_MIN_VALUE = 0;
     public static final int DESCRIPTION_MAX_LENGTH = 255;
-    
+
     // Even though the minimum is 0, this is only allowed for accounts this is enabled for and is a hidden feature
     // so the validation error message will always state that the minimum is 1 for consistency.
     @Min(value = AMOUNT_MIN_VALUE, message = "Must be greater than or equal to 1")
@@ -37,12 +38,12 @@ public abstract class CreatePaymentRequest {
 
     @Size(max = DESCRIPTION_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
     private final String description;
-    
+
     private final SupportedLanguage language;
 
     @Length(max = EMAIL_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
     private final String email;
-    
+
     public CreatePaymentRequest(CreatePaymentRequestBuilder createPaymentRequestBuilder) {
         this.amount = createPaymentRequestBuilder.getAmount();
         this.reference = createPaymentRequestBuilder.getReference();
@@ -53,7 +54,7 @@ public abstract class CreatePaymentRequest {
 
     public abstract String toConnectorPayload();
 
-    public abstract TokenPaymentType getRequestType();
+    public abstract void validateRequestType(Account account);
 
     @ApiModelProperty(value = "amount in pence", required = true, allowableValues = "range[1, 10000000]", example = "12000")
     public int getAmount() {

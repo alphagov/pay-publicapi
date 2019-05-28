@@ -125,10 +125,9 @@ public class CreatePaymentReturnUrlValidationIT extends PaymentResourceITestBase
                 .body().asInputStream();
 
         JsonAssert.with(body)
-                .assertThat("$.*", hasSize(3))
-                .assertThat("$.field", is("return_url"))
+                .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", is("P0101"))
-                .assertThat("$.description", is("Missing mandatory attribute: return_url"));
+                .assertThat("$.description", is("Missing either return_url or agreement_id attribute"));
     }
 
     @Test

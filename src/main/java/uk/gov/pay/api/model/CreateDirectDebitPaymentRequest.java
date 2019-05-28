@@ -3,12 +3,15 @@ package uk.gov.pay.api.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
-import java.util.Optional;
 import java.util.StringJoiner;
+
+import static uk.gov.pay.api.model.CreateCardPaymentRequest.RETURN_URL_FIELD_NAME;
 
 @ApiModel(value = "CreatePaymentRequest", description = "The Payment Request Payload")
 public class CreateDirectDebitPaymentRequest extends CreatePaymentRequest{
@@ -38,11 +41,6 @@ public class CreateDirectDebitPaymentRequest extends CreatePaymentRequest{
     }
 
     @Override
-    public TokenPaymentType getRequestType() {
-        return TokenPaymentType.DIRECT_DEBIT;
-    }
-
-    @Override
     public String toConnectorPayload() {
         JsonStringBuilder request = new JsonStringBuilder()
                 .add("amount", this.getAmount())
@@ -53,6 +51,13 @@ public class CreateDirectDebitPaymentRequest extends CreatePaymentRequest{
         getEmail().ifPresent(email -> request.add("email", email));
 
         return request.build();
+    }
+
+    @Override
+    public void validateRequestType(Account account) {
+        if (account.getPaymentType() != TokenPaymentType.DIRECT_DEBIT) {
+            throw new BadRequestException(PaymentError.aPaymentError(RETURN_URL_FIELD_NAME, PaymentError.Code.CREATE_PAYMENT_MISSING_FIELD_ERROR));
+        }
     }
 
     /**
