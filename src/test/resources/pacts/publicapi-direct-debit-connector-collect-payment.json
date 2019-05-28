@@ -3,7 +3,7 @@
     "name": "publicapi"
   },
   "provider": {
-    "name": "connector"
+    "name": "direct-debit-connector"
   },
   "interactions": [
     {
@@ -43,30 +43,12 @@
             "status": "created",
             "finished": false
           },
-          "created_date": "2016-01-01T12:00:00Z",
+          "created_date": "2010-12-31T22:59:59.132Z",
           "links": [
             {
-              "href": "http://connector.service.backend/v1/api/accounts/GATEWAY_ACCOUNT_ID/charges/ch_ab2341da231434l",
-              "rel": "self",
-              "method": "GET"
-            },
-            {
-              "rel": "refunds",
-              "href": "url"
-            },
-            {
-              "href": "http://frontend_connector/charge/token_1234567asdf",
-              "rel": "next_url",
-              "method": "GET"
-            },
-            {
-              "href": "http://frontend_connector/charge/",
-              "rel": "next_url_post",
-              "type": "application/x-www-form-urlencoded",
-              "params": {
-                "chargeTokenId": "token_1234567asdf"
-              },
-              "method": "POST"
+              "href": "http://localhost:1234/v1/api/accounts/GATEWAY_ACCOUNT_ID/charges/ch_ab2341da231434l",
+              "method": "GET",
+              "rel": "self"
             }
           ]
         },
@@ -75,7 +57,7 @@
             "Location": {
               "matchers": [
                 {
-                  "regex": "https*:\/\/.*\/v1\/api\/accounts\/GATEWAY_ACCOUNT_ID\/charges\/[a-z0-9]*"
+                  "regex": "http:\/\/.*\/v1\/api\/accounts\/GATEWAY_ACCOUNT_ID\/charges\/[a-z0-9]*"
                 }
               ]
             }
@@ -84,58 +66,50 @@
             "$.links[0].href": {
               "matchers": [
                 {
-                  "regex": "https*:\/\/.*\/v1\/api\/accounts\/GATEWAY_ACCOUNT_ID\/charges\/[a-z0-9]*"
+                  "regex": "http:\/\/.*\/v1\/api\/accounts\/GATEWAY_ACCOUNT_ID\/charges\/[a-z0-9]*"
                 }
               ]
             },
-            "$.links[1].href": {
-              "matchers": [
-                {"match": "type"}
-              ]
-            },
-            "$.links[2].href": {
-              "matchers": [
-                {"match": "type"}
-              ]
-            },
-            "$.links[2].params.chargeTokenId": {
-              "matchers": [
-                {"match": "type"}
-              ]
-            },
-            "$.links[3].href": {
-              "matchers": [
-                {"match": "type"}
-              ]
-            },
-            "$.links[3].params.chargeTokenId": {
-              "matchers": [
-                {"match": "type"}
-              ]
-            },
             "$.charge_id": {
-              "matchers": [{"match": "type"}]
-            },
-            "$.amount": {
-              "matchers": [{"match": "type"}]
-            },
-            "$.reference": {
-              "matchers": [{"match": "type"}]
-            },
-            "$.email": {
-              "matchers": [{"match": "type"}]
-            },
-            "$.description": {
-              "matchers": [{"match": "type"}]
-            },
-            "$.state.status": {
-              "matchers": [{"match": "type"}]
-            },
-            "$.payment_provider": {
-              "matchers": [{"match": "type"}]
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
             },
             "$.created_date": {
-              "matchers": [{ "date": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" }]
+              "matchers": [
+                {
+                  "match": "date",
+                  "date": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.description": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.payment_provider": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.state.status": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
             }
           }
         }
