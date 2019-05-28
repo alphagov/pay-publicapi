@@ -95,8 +95,7 @@ public class AgreementService {
 
     private Entity buildMandateConnectorRequestPayload(MandateConnectorRequest requestPayload) {
         JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
-                .add(MandateConnectorRequest.RETURN_URL_FIELD_NAME, requestPayload.getReturnUrl())
-                .add(MandateConnectorRequest.AGREEMENT_TYPE_FIELD_NAME, requestPayload.getAgreementType());
+                .add(MandateConnectorRequest.RETURN_URL_FIELD_NAME, requestPayload.getReturnUrl());
 
         if (isNotBlank(requestPayload.getServiceReference())) {
             jsonStringBuilder.add(MandateConnectorRequest.SERVICE_REFERENCE_FIELD_NAME, requestPayload.getServiceReference());

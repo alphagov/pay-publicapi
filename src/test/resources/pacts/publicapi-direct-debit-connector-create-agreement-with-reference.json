@@ -21,7 +21,6 @@
         "path": "/v1/api/accounts/7959d395-e720-4081-9e8a-a534cf76460a/mandates",
         "body": {
           "return_url": "https://example.com/return",
-          "agreement_type": "ON_DEMAND",
           "service_reference": "test_service_reference"
         }
       },
@@ -34,7 +33,6 @@
         "body": {
           "mandate_id": "test_mandate_id_xyz",
           "mandate_reference": "test_mandate_reference",
-          "mandate_type": "ON_DEMAND",
           "service_reference": "test_service_reference",
           "return_url": "https://example.com/return",
           "created_date": "2016-01-01T12:00:00.000Z",
@@ -83,13 +81,6 @@
               ]
             },
             "$.mandate_reference": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ]
-            },
-            "$.mandate_type": {
               "matchers": [
                 {
                   "match": "type"

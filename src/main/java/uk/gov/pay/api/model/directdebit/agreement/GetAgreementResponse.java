@@ -9,7 +9,6 @@ import uk.gov.pay.api.model.links.directdebit.AgreementLinks;
 public class GetAgreementResponse {
 
     private static final String AGREEMENT_ID_FIELD_NAME = "agreement_id";
-    private static final String AGREEMENT_TYPE_FIELD_NAME = "agreement_type";
     private static final String RETURN_URL_FIELD_NAME = "return_url";
     private static final String STATE_FIELD_NAME = "state";
     private static final String LINKS_FIELD_NAME = "_links";
@@ -17,7 +16,6 @@ public class GetAgreementResponse {
     private static final String REFERENCE_FIELD_NAME = "reference";
 
     private String agreementId;
-    private AgreementType agreementType;
     private String providerId;
     private String reference;
     private String returnUrl;
@@ -25,12 +23,12 @@ public class GetAgreementResponse {
     private AgreementLinks links;
 
     private GetAgreementResponse(String agreementId,
-                                 AgreementType agreementType,
-                                 String providerId, String reference, String returnUrl,
+                                 String providerId,
+                                 String reference,
+                                 String returnUrl,
                                  AgreementStatus state,
                                  AgreementLinks links) {
         this.agreementId = agreementId;
-        this.agreementType = agreementType;
         this.providerId = providerId;
         this.reference = reference;
         this.returnUrl = returnUrl;
@@ -41,7 +39,6 @@ public class GetAgreementResponse {
     public static GetAgreementResponse from(MandateConnectorResponse mandate, AgreementLinks links) {
         return new GetAgreementResponse(
                 mandate.getMandateId(),
-                AgreementType.valueOf(mandate.getMandateType().toString()),
                 mandate.getMandateReference(),
                 mandate.getServiceReference(),
                 mandate.getReturnUrl(),
@@ -53,12 +50,6 @@ public class GetAgreementResponse {
     @JsonProperty(value = AGREEMENT_ID_FIELD_NAME)
     public String getAgreementId() {
         return this.agreementId;
-    }
-
-    @ApiModelProperty(value = "agreement type", required = true, example = "ON_DEMAND")
-    @JsonProperty(value = AGREEMENT_TYPE_FIELD_NAME)
-    public AgreementType getAgreementType() {
-        return this.agreementType;
     }
 
     @ApiModelProperty(value = "provider id", required = true, example = "jhjcvaiqlediuhh23d89hd3")

@@ -3,9 +3,7 @@ package uk.gov.pay.api.it.directdebit;
 import org.junit.Test;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
 import uk.gov.pay.api.model.directdebit.agreement.AgreementStatus;
-import uk.gov.pay.api.model.directdebit.agreement.AgreementType;
 import uk.gov.pay.api.model.directdebit.agreement.MandateState;
-import uk.gov.pay.api.model.directdebit.agreement.MandateType;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
@@ -41,7 +39,6 @@ public class AgreementsResourceIT extends PaymentResourceITestBase {
         
         connectorDDMockClient.respondOk_whenCreateAgreementRequest(
                 MANDATE_ID,
-                MandateType.ON_DEMAND,
                 MANDATE_REFERENCE,
                 SERVICE_REFERENCE,
                 RETURN_URL,
@@ -51,7 +48,7 @@ public class AgreementsResourceIT extends PaymentResourceITestBase {
                 CHARGE_TOKEN_ID
         );
 
-        String payload = agreementPayload(RETURN_URL, AgreementType.ON_DEMAND);
+        String payload = agreementPayload(RETURN_URL);
         given().port(app.getLocalPort())
                 .body(payload)
                 .accept(JSON)
@@ -63,7 +60,6 @@ public class AgreementsResourceIT extends PaymentResourceITestBase {
                 .contentType(JSON)
                 .header(HttpHeaders.LOCATION, is("http://publicapi.url/v1/agreements/mandateId"))
                 .body("agreement_id", is(MANDATE_ID))
-                .body("agreement_type", is(AgreementType.ON_DEMAND.toString()))
                 .body("provider_id", is(MANDATE_REFERENCE))
                 .body("reference", is(SERVICE_REFERENCE))
                 .body("return_url", is(RETURN_URL))
@@ -89,7 +85,7 @@ public class AgreementsResourceIT extends PaymentResourceITestBase {
 
         connectorDDMockClient.respondBadRequest_whenCreateAgreementRequest(GATEWAY_ACCOUNT_ID, errorMessage);
 
-        String payload = agreementPayload("https://service-name.gov.uk/transactions/12345", AgreementType.ON_DEMAND);
+        String payload = agreementPayload("https://service-name.gov.uk/transactions/12345");
         given().port(app.getLocalPort())
                 .body(payload)
                 .accept(JSON)
@@ -116,7 +112,7 @@ public class AgreementsResourceIT extends PaymentResourceITestBase {
                 errorMessage
         );
 
-        String payload = agreementPayload("https://service-name.gov.uk/transactions/12345", AgreementType.ONE_OFF);
+        String payload = agreementPayload("https://service-name.gov.uk/transactions/12345");
         given().port(app.getLocalPort())
                 .body(payload)
                 .accept(JSON)
@@ -138,7 +134,6 @@ public class AgreementsResourceIT extends PaymentResourceITestBase {
 
         connectorDDMockClient.respondOk_whenGetAgreementRequest(
                 MANDATE_ID,
-                MandateType.ON_DEMAND,
                 MANDATE_REFERENCE,
                 SERVICE_REFERENCE,
                 RETURN_URL,
@@ -156,7 +151,6 @@ public class AgreementsResourceIT extends PaymentResourceITestBase {
                 .statusCode(200)
                 .contentType(JSON)
                 .body("agreement_id", is(MANDATE_ID))
-                .body("agreement_type", is(AgreementType.ON_DEMAND.toString()))
                 .body("provider_id", is(MANDATE_REFERENCE))
                 .body("reference", is(SERVICE_REFERENCE))
                 .body("return_url", is(RETURN_URL))
@@ -176,10 +170,9 @@ public class AgreementsResourceIT extends PaymentResourceITestBase {
         return "http://publicapi.url/v1/agreements/" + mandateId;
     }
 
-    private static String agreementPayload(String returnUrl, AgreementType agreementType) {
+    private static String agreementPayload(String returnUrl) {
         return new JsonStringBuilder()
                 .add("return_url", returnUrl)
-                .add("agreement_type", agreementType)
                 .build();
     }
 }

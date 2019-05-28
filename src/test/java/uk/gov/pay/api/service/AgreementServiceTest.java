@@ -13,11 +13,9 @@ import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.TokenPaymentType;
-import uk.gov.pay.api.model.directdebit.agreement.AgreementType;
 import uk.gov.pay.api.model.directdebit.agreement.MandateConnectorRequest;
 import uk.gov.pay.api.model.directdebit.agreement.MandateConnectorResponse;
 import uk.gov.pay.api.model.directdebit.agreement.MandateState;
-import uk.gov.pay.api.model.directdebit.agreement.MandateType;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
@@ -62,7 +60,6 @@ public class AgreementServiceTest {
         Account account = new Account("9ddfcc27-acf5-43f9-92d5-52247540714b", TokenPaymentType.DIRECT_DEBIT);
         MandateConnectorRequest mandateConnectorRequest = new MandateConnectorRequest(
                 "https://example.com/return",
-                AgreementType.ON_DEMAND,
                 null
         );
         Response connectorResponse = agreementService.createMandate(account, mandateConnectorRequest);
@@ -70,7 +67,6 @@ public class AgreementServiceTest {
 
         assertThat(mandateConnectorResponse.getMandateId(), is(MANDATE_ID));
         assertThat(mandateConnectorResponse.getMandateReference(), is(MANDATE_REFERENCE));
-        assertThat(mandateConnectorResponse.getMandateType(), is(MandateType.ON_DEMAND));
         assertThat(mandateConnectorResponse.getServiceReference(), is(nullValue()));
         assertThat(mandateConnectorResponse.getCreatedDate(), is("2016-01-01T12:00:00.000Z"));
         assertThat(mandateConnectorResponse.getReturnUrl(), is("https://example.com/return"));
@@ -105,7 +101,6 @@ public class AgreementServiceTest {
         Account account = new Account("7959d395-e720-4081-9e8a-a534cf76460a", TokenPaymentType.DIRECT_DEBIT);
         MandateConnectorRequest mandateConnectorRequest = new MandateConnectorRequest(
                 "https://example.com/return",
-                AgreementType.ON_DEMAND,
                 SERVICE_REFERENCE
         );
         Response connectorResponse = agreementService.createMandate(account, mandateConnectorRequest);
@@ -113,7 +108,6 @@ public class AgreementServiceTest {
 
         assertThat(mandateConnectorResponse.getMandateId(), is(MANDATE_ID));
         assertThat(mandateConnectorResponse.getMandateReference(), is(MANDATE_REFERENCE));
-        assertThat(mandateConnectorResponse.getMandateType(), is(MandateType.ON_DEMAND));
         assertThat(mandateConnectorResponse.getServiceReference(), is(SERVICE_REFERENCE));
         assertThat(mandateConnectorResponse.getCreatedDate(), is("2016-01-01T12:00:00.000Z"));
         assertThat(mandateConnectorResponse.getReturnUrl(), is("https://example.com/return"));
@@ -152,7 +146,6 @@ public class AgreementServiceTest {
         assertThat(mandateConnectorResponse.getMandateId(), is(MANDATE_ID));
         assertThat(mandateConnectorResponse.getMandateReference(), is(MANDATE_REFERENCE));
         assertThat(mandateConnectorResponse.getServiceReference(), is(SERVICE_REFERENCE));
-        assertThat(mandateConnectorResponse.getMandateType(), is(MandateType.ON_DEMAND));
         assertThat(mandateConnectorResponse.getReturnUrl(), is("https://example.com/return"));
         assertThat(mandateConnectorResponse.getState(), is(new MandateState("created", false)));
         assertThat(mandateConnectorResponse.getLinks().get(0), is(new PaymentConnectorResponseLink(

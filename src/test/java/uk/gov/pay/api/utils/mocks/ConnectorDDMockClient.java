@@ -6,7 +6,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.directdebit.agreement.MandateState;
-import uk.gov.pay.api.model.directdebit.agreement.MandateType;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.commons.model.ErrorIdentifier;
 
@@ -52,7 +51,6 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
     }
 
     public void respondOk_whenCreateAgreementRequest(String mandateId,
-                                                     MandateType mandateType,
                                                      String providerId,
                                                      String serviceReference,
                                                      String returnUrl,
@@ -66,7 +64,6 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                         .withHeader(LOCATION, format("/v1/api/accounts/%s/mandates/%s", gatewayAccountId, mandateId))
                         .withBody(buildCreateAgreementResponse(
                                 mandateId,
-                                mandateType,
                                 providerId,
                                 serviceReference,
                                 returnUrl,
@@ -80,7 +77,6 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
     }
 
     public void respondOk_whenGetAgreementRequest(String mandateId,
-                                                  MandateType mandateType,
                                                   String mandateReference,
                                                   String serviceReference,
                                                   String returnUrl,
@@ -92,7 +88,6 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                         .withBody(buildGetAgreementResponse(
                                 mandateId,
-                                mandateType,
                                 mandateReference,
                                 serviceReference,
                                 returnUrl,
@@ -113,7 +108,6 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
     }
 
     private String buildCreateAgreementResponse(String mandateId,
-                                                MandateType mandateType,
                                                 String mandateReference,
                                                 String serviceReference,
                                                 String returnUrl,
@@ -122,7 +116,6 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                                                 ImmutableMap<?, ?>... links) {
         return new JsonStringBuilder()
                 .add("mandate_id", mandateId)
-                .add("mandate_type", mandateType)
                 .add("mandate_reference", mandateReference)
                 .add("service_reference", serviceReference)
                 .add("return_url", returnUrl)
@@ -133,7 +126,6 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
     }
 
     private String buildGetAgreementResponse(String mandateId,
-                                             MandateType mandateType,
                                              String mandateReference,
                                              String serviceReference,
                                              String returnUrl,
@@ -141,7 +133,6 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                                              ImmutableMap<?, ?>... links) {
         return new JsonStringBuilder()
                 .add("mandate_id", mandateId)
-                .add("mandate_type", mandateType)
                 .add("mandate_reference", mandateReference)
                 .add("return_url", returnUrl)
                 .add("service_reference", serviceReference)
