@@ -12,23 +12,15 @@ import io.swagger.annotations.ApiModelProperty;
 public class CreateAgreementRequest {
 
     private static final String RETURN_URL_FIELD_NAME = "return_url";
-    private static final String AGREEMENT_TYPE_FIELD_NAME = "agreement_type";
     private static final String REFERENCE_FIELD_NAME = "reference";
 
     private String returnUrl;
-    private AgreementType agreementType;
     private String reference;
 
     @ApiModelProperty(value = "agreement return url", required = true, example = "https://service-name.gov.uk/transactions/12345")
     @JsonProperty(value = RETURN_URL_FIELD_NAME)
     public String getReturnUrl() {
         return returnUrl;
-    }
-
-    @ApiModelProperty(value = "agreement type", required = true, example = "ON_DEMAND")
-    @JsonProperty(value = AGREEMENT_TYPE_FIELD_NAME)
-    public AgreementType getAgreementType() {
-        return agreementType;
     }
 
     @ApiModelProperty(value = "agreement reference", example = "test_service_reference")

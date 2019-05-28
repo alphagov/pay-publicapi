@@ -20,8 +20,7 @@
         "method": "POST",
         "path": "/v1/api/accounts/9ddfcc27-acf5-43f9-92d5-52247540714b/mandates",
         "body": {
-          "return_url": "https://example.com/return",
-          "agreement_type": "ON_DEMAND"
+          "return_url": "https://example.com/return"
         }
       },
       "response": {
@@ -33,7 +32,6 @@
         "body": {
           "mandate_id": "test_mandate_id_xyz",
           "mandate_reference": "test_mandate_reference",
-          "mandate_type": "ON_DEMAND",
           "return_url": "https://example.com/return",
           "created_date": "2016-01-01T12:00:00.000Z",
           "state": {
@@ -81,13 +79,6 @@
               ]
             },
             "$.mandate_reference": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ]
-            },
-            "$.mandate_type": {
               "matchers": [
                 {
                   "match": "type"

@@ -9,31 +9,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class MandateConnectorRequest {
 
     public static final String RETURN_URL_FIELD_NAME = "return_url";
-    public static final String AGREEMENT_TYPE_FIELD_NAME = "agreement_type";
     public static final String SERVICE_REFERENCE_FIELD_NAME = "service_reference";
 
     private String returnUrl;
-    private AgreementType agreementType;
     private String serviceReference;
 
-    public MandateConnectorRequest(String returnUrl, AgreementType agreementType, String serviceReference) {
+    public MandateConnectorRequest(String returnUrl, String serviceReference) {
         this.returnUrl = returnUrl;
-        this.agreementType = agreementType;
         this.serviceReference = serviceReference;
     }
 
     public static MandateConnectorRequest from(CreateAgreementRequest request) {
-        return new MandateConnectorRequest(request.getReturnUrl(), request.getAgreementType(), request.getReference());
+        return new MandateConnectorRequest(request.getReturnUrl(), request.getReference());
     }
 
     @JsonProperty(value = RETURN_URL_FIELD_NAME)
     public String getReturnUrl() {
         return returnUrl;
-    }
-
-    @JsonProperty(value = AGREEMENT_TYPE_FIELD_NAME)
-    public AgreementType getAgreementType() {
-        return agreementType;
     }
 
     @JsonProperty(value = SERVICE_REFERENCE_FIELD_NAME)
