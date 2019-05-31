@@ -28,7 +28,6 @@
         },
         "body": {
           "mandate_id": "test_mandate_id_xyz",
-          "mandate_type": "ON_DEMAND",
           "mandate_reference": "test_mandate_reference",
           "service_reference": "test_service_reference",
           "return_url": "https://example.com/return",
@@ -75,13 +74,6 @@
               ]
             },
             "$.service_reference": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ]
-            },
-            "$.mandate_type": {
               "matchers": [
                 {
                   "match": "type"
