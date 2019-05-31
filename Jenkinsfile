@@ -235,5 +235,8 @@ pipeline {
     success {
       postSuccessfulMetrics(appendBranchSuffix("publicapi"))
     }
+    always {
+        junit "**/target/surefire-reports/*.xml,**/target/failsafe-reports/*.xml"
+    }
   }
 }
