@@ -18,6 +18,7 @@ public class PaymentError {
         CREATE_PAYMENT_CONNECTOR_ERROR("P0198", "Downstream system error"),
         CREATE_PAYMENT_PARSING_ERROR("P0197", "Unable to parse JSON"),
         CREATE_PAYMENT_MISSING_FIELD_ERROR("P0101", "Missing mandatory attribute: %s"),
+        CREATE_PAYMENT_INDETERMINABLE_TYPE("P0101", "Missing either return_url or agreement_id attribute"),
         CREATE_PAYMENT_VALIDATION_ERROR("P0102", "Invalid attribute value: %s. %s"),
 
         CREATE_PAYMENT_AGREEMENT_TYPE_ERROR("P0140", "Can't collect payment from this type of agreement"),

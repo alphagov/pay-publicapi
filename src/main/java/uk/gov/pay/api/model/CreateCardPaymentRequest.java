@@ -3,6 +3,8 @@ package uk.gov.pay.api.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.api.validation.ValidReturnUrl;
 import uk.gov.pay.commons.model.charge.ExternalMetadata;
@@ -11,6 +13,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import java.util.Optional;
 import java.util.StringJoiner;
+
+import static uk.gov.pay.api.model.CreateDirectDebitPaymentRequest.AGREEMENT_ID_FIELD_NAME;
 
 @ApiModel(value = "CreatePaymentRequest", description = "The Payment Request Payload")
 public class CreateCardPaymentRequest extends CreatePaymentRequest {
@@ -48,11 +52,6 @@ public class CreateCardPaymentRequest extends CreatePaymentRequest {
         this.delayedCapture = createPaymentRequestBuilder.getDelayedCapture();
         this.returnUrl = createPaymentRequestBuilder.getReturnUrl();
         this.metadata = createPaymentRequestBuilder.getMetadata();
-    }
-
-    @Override
-    public TokenPaymentType getRequestType() {
-        return TokenPaymentType.CARD;
     }
 
     @ApiModelProperty(value = "service return url", required = true, example = "https://service-name.gov.uk/transactions/12345")
@@ -101,6 +100,13 @@ public class CreateCardPaymentRequest extends CreatePaymentRequest {
         });
         
         return request.build();
+    }
+
+    @Override
+    public void validateRequestType(Account account) {
+        if (account.getPaymentType() != TokenPaymentType.CARD) {
+            throw new BadRequestException(PaymentError.aPaymentError(AGREEMENT_ID_FIELD_NAME, PaymentError.Code.CREATE_PAYMENT_MISSING_FIELD_ERROR));
+        }
     }
 
     /**

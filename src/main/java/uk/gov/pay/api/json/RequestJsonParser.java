@@ -42,6 +42,7 @@ import static uk.gov.pay.api.model.CreateCardPaymentRequest.PREFILLED_CARDHOLDER
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.PREFILLED_CARDHOLDER_NAME_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRequest.REFERENCE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.RETURN_URL_FIELD_NAME;
+import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_INDETERMINABLE_TYPE;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_MISSING_FIELD_ERROR;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_REFUND_MISSING_FIELD_ERROR;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_REFUND_VALIDATION_ERROR;
@@ -72,6 +73,9 @@ class RequestJsonParser {
         if (paymentRequest.has(DELAYED_CAPTURE_FIELD_NAME))
             builder.delayedCapture(validateAndGetDelayedCapture(paymentRequest));
 
+        if (!(paymentRequest.has(AGREEMENT_ID_FIELD_NAME) || paymentRequest.has(RETURN_URL_FIELD_NAME)))
+            throw new BadRequestException(aPaymentError(CREATE_PAYMENT_INDETERMINABLE_TYPE));
+        
         if (paymentRequest.has(AGREEMENT_ID_FIELD_NAME))
             builder.agreementId(validateAndGetAgreementId(paymentRequest));
         else

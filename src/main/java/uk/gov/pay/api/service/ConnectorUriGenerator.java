@@ -27,9 +27,9 @@ public class ConnectorUriGenerator {
         this.configuration = configuration;
     }
 
-    String chargesURI(Account account, TokenPaymentType tokenPaymentType) {
+    String chargesURI(Account account) {
         String chargePath = "/v1/api/accounts/%s/charges";
-        if (account.getPaymentType().equals(DIRECT_DEBIT) && DIRECT_DEBIT.equals(tokenPaymentType)) {
+        if (account.getPaymentType().equals(DIRECT_DEBIT)) {
             chargePath += "/collect";
         }
         return buildConnectorUri(account, format(chargePath, account.getAccountId()));

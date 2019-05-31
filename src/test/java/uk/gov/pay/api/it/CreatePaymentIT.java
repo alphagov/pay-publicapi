@@ -423,7 +423,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPayment_responseWith422_whenZeroAmountForDirectDebitAccount() {
+    public void createDirectDebitPayment_responseWith422_whenZeroAmount() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
 
         String payload = new JsonStringBuilder()
@@ -439,6 +439,44 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .body("code", is("P0102"))
                 .body("field", is("amount"))
                 .body("description", is("Invalid attribute value: amount. Must be greater than or equal to 1"));
+    }
+
+    @Test
+    public void createDirectDebitPayment_responseWith400_whenReturnUrlAndNoAgreementId() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
+
+        String payload = new JsonStringBuilder()
+                .add("amount", AMOUNT)
+                .add("reference", REFERENCE)
+                .add("description", DESCRIPTION)
+                .add("return_url", RETURN_URL)
+                .build();
+
+        postPaymentResponse(payload)
+                .statusCode(400)
+                .contentType(JSON)
+                .body("code", is("P0101"))
+                .body("field", is("agreement_id"))
+                .body("description", is("Missing mandatory attribute: agreement_id"));
+    }
+
+    @Test
+    public void createCardPayment_responseWith400_whenAgreementIdAndNoReturnUrl() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+
+        String payload = new JsonStringBuilder()
+                .add("amount", AMOUNT)
+                .add("reference", REFERENCE)
+                .add("description", DESCRIPTION)
+                .add("agreement_id", "1234")
+                .build();
+
+        postPaymentResponse(payload)
+                .statusCode(400)
+                .contentType(JSON)
+                .body("code", is("P0101"))
+                .body("field", is("return_url"))
+                .body("description", is("Missing mandatory attribute: return_url"));
     }
 
     @Test

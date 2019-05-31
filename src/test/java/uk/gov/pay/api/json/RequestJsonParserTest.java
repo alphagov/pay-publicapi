@@ -334,7 +334,7 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: return_url"));
+        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing either return_url or agreement_id attribute"));
 
         parsePaymentRequest(jsonNode);
     }
