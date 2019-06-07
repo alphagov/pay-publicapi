@@ -96,39 +96,6 @@
         },
         "matchingRules": {
           "body": {
-            "$.results[*].links[0].href": {
-              "matchers": [
-                {
-                  "regex": "https.*:\/\/.*\/v1\/api\/accounts\/123456\/charges\/charge8133029783750964639"
-                }
-              ]
-            },
-            "$.results[*].links[1].href": {
-              "matchers": [
-                {
-                  "regex": "https.*:\/\/.*\/v1\/api\/accounts\/123456\/charges\/charge8133029783750964639\/refunds"
-                }
-              ]
-            },
-            "$.results[*].links[2].href": {
-              "matchers": [
-                {
-                  "regex": "http.*:\/\/.*\/secure\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
-                }
-              ]
-            },
-            "$.results[*].links[3].href": {
-              "matchers": [
-                {
-                  "regex": "http.*:\/\/.*\/secure"
-                }
-              ]
-            },
-            "$.results[*].links[3].params.chargeTokenId": {
-              "matchers": [
-                {"match": "type"}
-              ]
-            },
             "$._links.self.href": {
               "matchers": [
                 {
