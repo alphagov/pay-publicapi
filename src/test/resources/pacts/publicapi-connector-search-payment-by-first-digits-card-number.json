@@ -48,32 +48,6 @@
               "description": "Test description",
               "reference": "aReference",
               "language": "en",
-              "links": [
-                {
-                  "rel": "self",
-                  "method": "GET",
-                  "href": "http://connector.service.backend/v1/api/accounts/123456/charges/charge8133029783750964639"
-                },
-                {
-                  "rel": "refunds",
-                  "method": "GET",
-                  "href": "http://connector.service.backend/v1/api/accounts/123456/charges/charge8133029783750964639/refunds"
-                },
-                {
-                  "rel": "next_url",
-                  "method": "GET",
-                  "href": "http://Frontend/secure/ae749781-6562-4e0e-8f56-32d9639079dc"
-                },
-                {
-                  "rel": "next_url_post",
-                  "method": "POST",
-                  "href": "http://Frontend/secure",
-                  "type": "application/x-www-form-urlencoded",
-                  "params": {
-                    "chargeTokenId": "ae749781-6562-4e0e-8f56-32d9639079dc"
-                  }
-                }
-              ],
               "charge_id": "charge8133029783750964639",
               "gateway_transaction_id": "txId-1234",
               "return_url": "aReturnUrl",
