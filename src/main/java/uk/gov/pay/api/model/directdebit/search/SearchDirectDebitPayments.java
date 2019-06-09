@@ -95,9 +95,9 @@ public class SearchDirectDebitPayments implements SearchPayments {
 //        transaction.getAgreementId()
         
         final URI selfLink = paymentUriGenerator.getPaymentURI(baseUrl, transaction.getTransactionId());
-        
-        
-        return new PaymentForSearchResult(
+
+
+        final PaymentForSearchResult paymentForSearchResult = new PaymentForSearchResult(
                 transaction.getTransactionId(),
                 transaction.getAmount(),
                 PaymentState.from(transaction.getState()),
@@ -125,6 +125,9 @@ public class SearchDirectDebitPayments implements SearchPayments {
                 null,
                 null
         );
+        paymentForSearchResult.name = transaction.getName();
+        paymentForSearchResult.agreementId = transaction.getAgreementId();
+        return paymentForSearchResult;
     }
 
     private DirectDebitSearchResponse callDDConnector(Account account, Map<String, String> queryParams) {

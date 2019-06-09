@@ -18,6 +18,11 @@ public class PaymentForSearchResult extends CardPayment {
     @JsonProperty(LINKS_JSON_ATTRIBUTE)
     private PaymentLinksForSearch links = new PaymentLinksForSearch();
 
+    public String name;
+    
+    @JsonProperty("agreement_id")
+    public String agreementId;
+    
     public PaymentForSearchResult(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                                   String reference, String email, String paymentProvider, String createdDate, SupportedLanguage language,
                                   boolean delayedCapture, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,

@@ -4,6 +4,7 @@ import au.com.dius.pact.consumer.PactVerification;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonassert.JsonAssert;
+import io.dropwizard.jackson.Jackson;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,6 +32,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class DirectDebitPaymentSearchServiceTest {
 
+    private static final ObjectMapper objectMapper = Jackson.newObjectMapper();
+    
     @Rule
     public PactProviderRule connectorRule = new PactProviderRule("direct-debit-connector", this);
 
@@ -49,7 +52,7 @@ public class DirectDebitPaymentSearchServiceTest {
                 configuration,
                 new ConnectorUriGenerator(configuration),
                 new PaymentUriGenerator(),
-                new ObjectMapper());
+                objectMapper);
     }
 
     @Test
@@ -101,7 +104,6 @@ public class DirectDebitPaymentSearchServiceTest {
                         null, null, null,
                         agreementId, null, null, null);
         
-        ObjectMapper objectMapper = new ObjectMapper();
         final String s = objectMapper.writeValueAsString(response.getEntity());
         JsonAssert.with(s)
                 .assertThat("count", is(3))
@@ -115,7 +117,7 @@ public class DirectDebitPaymentSearchServiceTest {
                 .assertThat("results[1]", hasKey("email"))
                 .assertThat("results[0].state", hasKey("status"))
                 .assertThat("results[2].state", hasKey("finished"))
-                .assertThat("results[0]", hasKey("links"))
+                .assertThat("results[0]", hasKey("_links"))
                 .assertThat("results[1]", hasKey("agreement_id"))
                 .assertThat("results[2].agreement_id", is(agreementId))
                 .assertThat("_links", hasKey("self"))
