@@ -52,25 +52,6 @@
                   "rel": "self",
                   "method": "GET",
                   "href": "http://connector.service.backend/v1/api/accounts/123456/charges/charge8133029783750964639"
-                },
-                {
-                  "rel": "refunds",
-                  "method": "GET",
-                  "href": "http://connector.service.backend/v1/api/accounts/123456/charges/charge8133029783750964639/refunds"
-                },
-                {
-                  "rel": "next_url",
-                  "method": "GET",
-                  "href": "http://Frontend/secure/ae749781-6562-4e0e-8f56-32d9639079dc"
-                },
-                {
-                  "rel": "next_url_post",
-                  "method": "POST",
-                  "href": "http://Frontend/secure",
-                  "type": "application/x-www-form-urlencoded",
-                  "params": {
-                    "chargeTokenId": "ae749781-6562-4e0e-8f56-32d9639079dc"
-                  }
                 }
               ],
               "charge_id": "charge8133029783750964639",
@@ -78,16 +59,6 @@
               "email": "test@test.com",
               "payment_provider": "sandbox",
               "created_date": "2018-09-22T10:13:16.067Z",
-              "refund_summary": {
-                "status": "pending",
-                "user_external_id": null,
-                "amount_available": 100,
-                "amount_submitted": 0
-              },
-              "settlement_summary": {
-                "capture_submit_time": null,
-                "captured_date": null
-              },
               "card_details": {
                 "last_digits_card_number": "1234",
                 "first_digits_card_number": "123456",
@@ -102,8 +73,7 @@
                   "country": "aCountry"
                 },
                 "card_brand": "Visa"
-              },
-              "delayed_capture": true
+              }
             }
           ],
           "_links": {

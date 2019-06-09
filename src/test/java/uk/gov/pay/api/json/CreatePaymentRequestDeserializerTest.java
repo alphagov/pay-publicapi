@@ -13,7 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.model.Address;
-import uk.gov.pay.api.model.CreateCardPaymentRequest;
+import uk.gov.pay.api.model.request.CreateCardPaymentRequest;
 import uk.gov.pay.api.model.CreateDirectDebitPaymentRequest;
 import uk.gov.pay.api.model.PrefilledCardholderDetails;
 import uk.gov.pay.commons.model.SupportedLanguage;

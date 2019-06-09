@@ -1,6 +1,6 @@
 package uk.gov.pay.api.it.fixtures;
 
-import uk.gov.pay.api.model.links.Link;
+import uk.gov.pay.api.model.response.Link;
 
 public class PaymentNavigationLinksFixture {
 

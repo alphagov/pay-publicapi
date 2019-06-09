@@ -2,7 +2,7 @@ package uk.gov.pay.api.it.fixtures;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.gson.Gson;
-import uk.gov.pay.api.model.PaymentState;
+import uk.gov.pay.api.model.response.PaymentState;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.util.List;
@@ -15,7 +15,7 @@ public class PaymentSingleResultBuilder extends PaymentResultBuilder {
     }
 
 
-    public PaymentSingleResultBuilder withCardDetails(uk.gov.pay.api.model.CardDetails cardDetails) {
+    public PaymentSingleResultBuilder withCardDetails(uk.gov.pay.api.model.response.CardDetails cardDetails) {
         this.cardDetails = new CardDetails(cardDetails);
         return this;
     }

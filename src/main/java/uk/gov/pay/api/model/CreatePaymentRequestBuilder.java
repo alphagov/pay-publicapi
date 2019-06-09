@@ -1,5 +1,7 @@
 package uk.gov.pay.api.model;
 
+import uk.gov.pay.api.model.request.CreateCardPaymentRequest;
+import uk.gov.pay.api.model.request.CreatePaymentRequest;
 import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.commons.model.charge.ExternalMetadata;
 

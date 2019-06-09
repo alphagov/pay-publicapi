@@ -2,7 +2,8 @@ package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
-import uk.gov.pay.api.model.links.PaymentWithAllLinks;
+import uk.gov.pay.api.model.card.ChargeFromResponse;
+import uk.gov.pay.api.model.response.PaymentWithAllLinks;
 
 import java.io.IOException;
 import java.net.URI;

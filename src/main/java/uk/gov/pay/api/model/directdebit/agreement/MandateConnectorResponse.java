@@ -2,7 +2,7 @@ package uk.gov.pay.api.model.directdebit.agreement;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.pay.api.model.PaymentConnectorResponseLink;
+import uk.gov.pay.api.model.response.HalLink;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ public class MandateConnectorResponse {
     private String returnUrl;
     private String createdDate;
     private MandateState state;
-    private List<PaymentConnectorResponseLink> links = new ArrayList<>();
+    private List<HalLink> links = new ArrayList<>();
 
     @JsonProperty(value = "mandate_id")
     public String getMandateId() {
@@ -47,7 +47,7 @@ public class MandateConnectorResponse {
     }
 
     @JsonProperty(value = "links")
-    public List<PaymentConnectorResponseLink> getLinks() {
+    public List<HalLink> getLinks() {
         return links;
     }
 

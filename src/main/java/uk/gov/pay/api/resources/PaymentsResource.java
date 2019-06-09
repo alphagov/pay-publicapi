@@ -15,13 +15,13 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CaptureChargeException;
 import uk.gov.pay.api.exception.GetEventsException;
-import uk.gov.pay.api.model.CreatePaymentRequest;
-import uk.gov.pay.api.model.CreatePaymentResult;
+import uk.gov.pay.api.model.request.CreatePaymentRequest;
+import uk.gov.pay.api.model.response.CreatePaymentResult;
 import uk.gov.pay.api.model.PaymentError;
-import uk.gov.pay.api.model.PaymentEvents;
-import uk.gov.pay.api.model.links.PaymentWithAllLinks;
-import uk.gov.pay.api.model.search.card.GetPaymentResult;
-import uk.gov.pay.api.model.search.card.PaymentSearchResults;
+import uk.gov.pay.api.model.response.PaymentEvents;
+import uk.gov.pay.api.model.response.PaymentWithAllLinks;
+import uk.gov.pay.api.model.card.GetPaymentResult;
+import uk.gov.pay.api.model.response.PaymentSearchResults;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
 import uk.gov.pay.api.service.CancelPaymentService;
 import uk.gov.pay.api.service.CapturePaymentService;
@@ -163,6 +163,24 @@ public class PaymentsResource {
 
         throw new GetEventsException(connectorResponse);
     }
+//
+//    class Foo implements HalResource {
+//        @Override
+//        public HalRepresentation.HalRepresentationBuilder representationBuilder() {
+//            return HalRepresentation.HalRepresentationBuilder;
+//        }
+//
+//        @Override
+//        public URI location() {
+//            return null;
+//        }
+//    }
+//    
+//    @GET
+//    @Path("/v1/test")
+//    public Response test() {
+//        
+//    }
 
     @GET
     @Timed

@@ -1,7 +1,6 @@
 package uk.gov.pay.api.it.directdebit.pact;
 
 import au.com.dius.pact.consumer.PactVerification;
-import com.jayway.jsonassert.JsonAssert;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 import io.restassured.response.ValidatableResponse;
 import org.apache.http.client.fluent.Executor;
@@ -10,7 +9,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
-import uk.gov.pay.api.model.PaymentState;
+import uk.gov.pay.api.model.response.PaymentState;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
@@ -27,7 +26,6 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.utils.Payloads.aSuccessfulPaymentPayload;
-import static uk.gov.pay.api.utils.Urls.directDebitFrontendSecureUrl;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 

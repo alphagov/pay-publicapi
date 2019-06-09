@@ -4,8 +4,8 @@ import black.door.hate.HalRepresentation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.exception.SearchPaymentsException;
-import uk.gov.pay.api.model.links.Link;
-import uk.gov.pay.api.model.links.SearchNavigationLinks;
+import uk.gov.pay.api.model.response.Link;
+import uk.gov.pay.api.model.response.SearchNavigationLinks;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 
 import javax.ws.rs.client.Client;

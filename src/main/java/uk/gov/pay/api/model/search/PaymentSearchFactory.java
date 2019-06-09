@@ -3,8 +3,8 @@ package uk.gov.pay.api.model.search;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.model.search.card.SearchCardPayments;
-import uk.gov.pay.api.model.search.directdebit.SearchDirectDebitPayments;
+import uk.gov.pay.api.model.card.SearchCardPayments;
+import uk.gov.pay.api.model.directdebit.search.SearchDirectDebitPayments;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.PaymentUriGenerator;
 
@@ -15,12 +15,12 @@ import static java.lang.String.format;
 
 public class PaymentSearchFactory {
     
-    public static SearchPaymentsBase getPaymentService(Account account,
-                                                       Client client,
-                                                       PublicApiConfig configuration,
-                                                       ConnectorUriGenerator connectorUriGenerator,
-                                                       PaymentUriGenerator paymentUriGenerator,
-                                                       ObjectMapper objectMapper) {
+    public static SearchPayments getPaymentService(Account account,
+                                                   Client client,
+                                                   PublicApiConfig configuration,
+                                                   ConnectorUriGenerator connectorUriGenerator,
+                                                   PaymentUriGenerator paymentUriGenerator,
+                                                   ObjectMapper objectMapper) {
         switch (account.getPaymentType()) {
             case CARD:
                 return new SearchCardPayments(client, configuration, connectorUriGenerator, paymentUriGenerator, objectMapper);

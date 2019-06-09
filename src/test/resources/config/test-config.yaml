@@ -1,4 +1,5 @@
 server:
+  shutdownGracePeriod: 5 seconds
   applicationConnectors:
     - type: http
       port: 0
@@ -10,7 +11,7 @@ logging:
   level: INFO
   appenders:
     - type: console
-      threshold: ALL
+      threshold: WARN
       timeZone: UTC
       target: stdout
       logFormat: "[%d{yyyy-MM-dd HH:mm:ss.SSS}] [thread=%thread] [level=%-5level] [logger=%logger{15}] [requestID=%X{X-Request-Id:-(none)}] - %msg%n"

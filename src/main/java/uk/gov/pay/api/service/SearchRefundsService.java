@@ -6,7 +6,7 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.BadRefundsRequestException;
 import uk.gov.pay.api.model.RefundError;
 import uk.gov.pay.api.model.TokenPaymentType;
-import uk.gov.pay.api.model.search.card.SearchRefunds;
+import uk.gov.pay.api.model.card.SearchRefunds;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;

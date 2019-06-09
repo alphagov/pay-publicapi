@@ -1,8 +1,12 @@
 package uk.gov.pay.api.service;
 
 import au.com.dius.pact.consumer.PactVerification;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonassert.JsonAssert;
+import com.jayway.jsonassert.JsonAsserter;
+import io.dropwizard.jackson.Jackson;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,6 +39,7 @@ public class CardPaymentSearchServiceTest {
     @Mock
     private PublicApiConfig configuration;
     private PaymentSearchService paymentSearchService;
+    private ObjectMapper objectMapper = Jackson.newObjectMapper();
 
     @Before
     public void setUp() {
@@ -47,7 +52,7 @@ public class CardPaymentSearchServiceTest {
                 configuration,
                 new ConnectorUriGenerator(configuration),
                 new PaymentUriGenerator(),
-                new ObjectMapper());
+                objectMapper);
     }
     
     @Test
@@ -60,7 +65,7 @@ public class CardPaymentSearchServiceTest {
                         null, null, null,
                         null, null, null,
                         null, null, null, "1234");
-        JsonAssert.with(response.getEntity().toString())
+        jsonAssert(response)
                 .assertThat("count", is(1))
                 .assertThat("total", is(1))
                 .assertThat("page", is(1))
@@ -92,7 +97,7 @@ public class CardPaymentSearchServiceTest {
                         null, null, null,
                         null, null, null,
                         null, null, "123456", null);
-        JsonAssert.with(response.getEntity().toString())
+        jsonAssert(response)
                 .assertThat("count", is(1))
                 .assertThat("total", is(1))
                 .assertThat("page", is(1))
@@ -124,7 +129,7 @@ public class CardPaymentSearchServiceTest {
                         null, null, null,
                         null, null, null,
                         null, "pay", null, null);
-        JsonAssert.with(response.getEntity().toString())
+        jsonAssert(response)
                 .assertThat("count", is(1))
                 .assertThat("total", is(1))
                 .assertThat("page", is(1))
@@ -157,8 +162,19 @@ public class CardPaymentSearchServiceTest {
                         null, null, null,
                         null, null, null,
                         null, null, null, null);
-        JsonAssert.with(response.getEntity().toString())
+        jsonAssert(response)
                 .assertThat("results[0]._links", hasKey("capture"))
                 .assertThat("results[0]._links.capture.method", is("POST"));
+    }
+
+    
+    @NotNull
+    private JsonAsserter jsonAssert(Response response) {
+        try {
+            final String json = objectMapper.writeValueAsString(response.getEntity());
+            return JsonAssert.with(json);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

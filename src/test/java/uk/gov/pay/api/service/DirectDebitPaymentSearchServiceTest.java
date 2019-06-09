@@ -1,6 +1,7 @@
 package uk.gov.pay.api.service;
 
 import au.com.dius.pact.consumer.PactVerification;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonassert.JsonAssert;
 import org.junit.Before;
@@ -91,7 +92,7 @@ public class DirectDebitPaymentSearchServiceTest {
     @Test
     @PactVerification({"direct-debit-connector"})
     @Pacts(pacts = {"publicapi-direct-debit-connector-search-by-mandate-three-results"})
-    public void doSearchShouldReturnADirectDebitSearchResponseWithThreeTransactions() {
+    public void doSearchShouldReturnADirectDebitSearchResponseWithThreeTransactions() throws JsonProcessingException {
         Account account = new Account("2po9ycynwq8yxdgg2qwq9e9qpyrtre", TokenPaymentType.DIRECT_DEBIT);
         String agreementId = "jkdjsvd8f78ffkwfek2q";
         Response response =
@@ -99,7 +100,10 @@ public class DirectDebitPaymentSearchServiceTest {
                         null, null, null,
                         null, null, null,
                         agreementId, null, null, null);
-        JsonAssert.with(response.getEntity().toString())
+        
+        ObjectMapper objectMapper = new ObjectMapper();
+        final String s = objectMapper.writeValueAsString(response.getEntity());
+        JsonAssert.with(s)
                 .assertThat("count", is(3))
                 .assertThat("total", is(3))
                 .assertThat("page", is(1))

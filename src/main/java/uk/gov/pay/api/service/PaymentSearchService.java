@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.search.PaymentSearchFactory;
-import uk.gov.pay.api.model.search.SearchPaymentsBase;
+import uk.gov.pay.api.model.search.SearchPayments;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
@@ -72,7 +72,7 @@ public class PaymentSearchService {
         queryParams.put(PAGE, pageNumber);
         queryParams.put(DISPLAY_SIZE, displaySize);
         
-        SearchPaymentsBase paymentsService = PaymentSearchFactory.getPaymentService(
+        SearchPayments paymentsService = PaymentSearchFactory.getPaymentService(
                                 account,
                                 client,
                                 configuration, 

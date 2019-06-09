@@ -31,7 +31,7 @@ public class PaymentSearchResultBuilder extends PaymentResultBuilder {
         return this;
     }
 
-    public PaymentSearchResultBuilder withCardDetails(uk.gov.pay.api.model.CardDetails cardDetails) {
+    public PaymentSearchResultBuilder withCardDetails(uk.gov.pay.api.model.response.CardDetails cardDetails) {
         this.cardDetails = new CardDetails(cardDetails);
         return this;
     }

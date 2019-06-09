@@ -3,9 +3,6 @@ package uk.gov.pay.api.service;
 import com.google.common.collect.Maps;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.model.CreateCardPaymentRequest;
-import uk.gov.pay.api.model.CreatePaymentRequest;
-import uk.gov.pay.api.model.TokenPaymentType;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;

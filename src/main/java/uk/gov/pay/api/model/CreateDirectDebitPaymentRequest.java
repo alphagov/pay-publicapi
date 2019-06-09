@@ -5,16 +5,17 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.BadRequestException;
+import uk.gov.pay.api.model.request.CreatePaymentRequest;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import java.util.StringJoiner;
 
-import static uk.gov.pay.api.model.CreateCardPaymentRequest.RETURN_URL_FIELD_NAME;
+import static uk.gov.pay.api.model.request.CreateCardPaymentRequest.RETURN_URL_FIELD_NAME;
 
 @ApiModel(value = "CreatePaymentRequest", description = "The Payment Request Payload")
-public class CreateDirectDebitPaymentRequest extends CreatePaymentRequest{
+public class CreateDirectDebitPaymentRequest extends CreatePaymentRequest {
 
     public static final int AGREEMENT_ID_MAX_LENGTH = 26;
     public static final String AGREEMENT_ID_FIELD_NAME = "agreement_id";

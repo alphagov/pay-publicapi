@@ -6,7 +6,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import uk.gov.pay.api.model.Address;
-import uk.gov.pay.api.model.CreateCardPaymentRequest;
+import uk.gov.pay.api.model.request.CreateCardPaymentRequest;
 import uk.gov.pay.api.model.CreateDirectDebitPaymentRequest;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.PrefilledCardholderDetails;

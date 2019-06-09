@@ -11,7 +11,7 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.model.PaymentConnectorResponseLink;
+import uk.gov.pay.api.model.response.HalLink;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.directdebit.agreement.MandateConnectorRequest;
 import uk.gov.pay.api.model.directdebit.agreement.MandateConnectorResponse;
@@ -71,21 +71,21 @@ public class AgreementServiceTest {
         assertThat(mandateConnectorResponse.getCreatedDate(), is("2016-01-01T12:00:00.000Z"));
         assertThat(mandateConnectorResponse.getReturnUrl(), is("https://example.com/return"));
         assertThat(mandateConnectorResponse.getState(), is(new MandateState("created", false)));
-        assertThat(mandateConnectorResponse.getLinks().get(0), is(new PaymentConnectorResponseLink(
+        assertThat(mandateConnectorResponse.getLinks().get(0), is(new HalLink(
                 "self",
                 "http://localhost:1234/v1/api/accounts/9ddfcc27-acf5-43f9-92d5-52247540714b/mandates/" + MANDATE_ID,
                 "GET",
                 null,
                 null
         )));
-        assertThat(mandateConnectorResponse.getLinks().get(1), is(new PaymentConnectorResponseLink(
+        assertThat(mandateConnectorResponse.getLinks().get(1), is(new HalLink(
                 "next_url",
                 "http://frontend_direct_debit/secure/token_1234567asdf",
                 "GET",
                 null,
                 null
         )));
-        assertThat(mandateConnectorResponse.getLinks().get(2), is(new PaymentConnectorResponseLink(
+        assertThat(mandateConnectorResponse.getLinks().get(2), is(new HalLink(
                 "next_url_post",
                 "http://frontend_direct_debit/secure/",
                 "POST",
@@ -112,21 +112,21 @@ public class AgreementServiceTest {
         assertThat(mandateConnectorResponse.getCreatedDate(), is("2016-01-01T12:00:00.000Z"));
         assertThat(mandateConnectorResponse.getReturnUrl(), is("https://example.com/return"));
         assertThat(mandateConnectorResponse.getState(), is(new MandateState("created", false)));
-        assertThat(mandateConnectorResponse.getLinks().get(0), is(new PaymentConnectorResponseLink(
+        assertThat(mandateConnectorResponse.getLinks().get(0), is(new HalLink(
                 "self",
                 "http://localhost:1234/v1/api/accounts/7959d395-e720-4081-9e8a-a534cf76460a/mandates/" + MANDATE_ID,
                 "GET",
                 null,
                 null
         )));
-        assertThat(mandateConnectorResponse.getLinks().get(1), is(new PaymentConnectorResponseLink(
+        assertThat(mandateConnectorResponse.getLinks().get(1), is(new HalLink(
                 "next_url",
                 "http://frontend_direct_debit/secure/token_1234567asdf",
                 "GET",
                 null,
                 null
         )));
-        assertThat(mandateConnectorResponse.getLinks().get(2), is(new PaymentConnectorResponseLink(
+        assertThat(mandateConnectorResponse.getLinks().get(2), is(new HalLink(
                 "next_url_post",
                 "http://frontend_direct_debit/secure/",
                 "POST",
@@ -148,21 +148,21 @@ public class AgreementServiceTest {
         assertThat(mandateConnectorResponse.getServiceReference(), is(SERVICE_REFERENCE));
         assertThat(mandateConnectorResponse.getReturnUrl(), is("https://example.com/return"));
         assertThat(mandateConnectorResponse.getState(), is(new MandateState("created", false)));
-        assertThat(mandateConnectorResponse.getLinks().get(0), is(new PaymentConnectorResponseLink(
+        assertThat(mandateConnectorResponse.getLinks().get(0), is(new HalLink(
                 "self",
                 "http://localhost:1234/v1/api/accounts/9ddfcc27-acf5-43f9-92d5-52247540714c/mandates/" + MANDATE_ID,
                 "GET",
                 null,
                 null
         )));
-        assertThat(mandateConnectorResponse.getLinks().get(1), is(new PaymentConnectorResponseLink(
+        assertThat(mandateConnectorResponse.getLinks().get(1), is(new HalLink(
                 "next_url",
                 "http://frontend_direct_debit/secure/token_1234567asdf",
                 "GET",
                 null,
                 null
         )));
-        assertThat(mandateConnectorResponse.getLinks().get(2), is(new PaymentConnectorResponseLink(
+        assertThat(mandateConnectorResponse.getLinks().get(2), is(new HalLink(
                 "next_url_post",
                 "http://frontend_direct_debit/secure/",
                 "POST",

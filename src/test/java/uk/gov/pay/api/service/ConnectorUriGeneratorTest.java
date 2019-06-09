@@ -9,11 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.model.CreateCardPaymentRequest;
-import uk.gov.pay.api.model.CreateDirectDebitPaymentRequest;
-import uk.gov.pay.api.model.CreatePaymentRequest;
-import uk.gov.pay.api.model.CreatePaymentRequestBuilder;
-import uk.gov.pay.api.model.TokenPaymentType;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import uk.gov.pay.api.exception.BadRequestException;
-import uk.gov.pay.api.model.CreatePaymentRequest;
+import uk.gov.pay.api.model.request.CreatePaymentRequest;
 
 import java.io.IOException;
 

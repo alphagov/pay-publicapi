@@ -18,15 +18,15 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateRefundException;
 import uk.gov.pay.api.exception.GetRefundException;
 import uk.gov.pay.api.exception.GetRefundsException;
-import uk.gov.pay.api.model.ChargeFromResponse;
+import uk.gov.pay.api.model.card.ChargeFromResponse;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.RefundFromConnector;
 import uk.gov.pay.api.model.RefundResponse;
 import uk.gov.pay.api.model.RefundsFromConnector;
 import uk.gov.pay.api.model.RefundsResponse;
-import uk.gov.pay.api.model.search.card.RefundForSearchResult;
-import uk.gov.pay.api.model.search.card.RefundResult;
+import uk.gov.pay.api.model.card.RefundForSearchResult;
+import uk.gov.pay.api.model.card.RefundResult;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
 
 import javax.inject.Inject;

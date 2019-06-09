@@ -1,7 +1,7 @@
 package uk.gov.pay.api.utils.mocks;
 
-import uk.gov.pay.api.model.CardDetails;
-import uk.gov.pay.api.model.PaymentState;
+import uk.gov.pay.api.model.response.CardDetails;
+import uk.gov.pay.api.model.response.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.SettlementSummary;
 import uk.gov.pay.commons.model.SupportedLanguage;

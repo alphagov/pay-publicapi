@@ -56,7 +56,7 @@ public abstract class PaymentResultBuilder {
         public CardDetails() {
         }
 
-        public CardDetails(uk.gov.pay.api.model.CardDetails cardDetails) {
+        public CardDetails(uk.gov.pay.api.model.response.CardDetails cardDetails) {
             this.last_digits_card_number = cardDetails.getLastDigitsCardNumber();
             this.first_digits_card_number = cardDetails.getFirstDigitsCardNumber();
             this.cardholder_name = cardDetails.getCardHolderName();
@@ -129,11 +129,8 @@ public abstract class PaymentResultBuilder {
     }
 
     protected static class TestPaymentSuccessState extends TestPaymentState {
-        private boolean success;
-
         protected TestPaymentSuccessState(String status) {
             super(status, true);
-            this.success = true;
         }
     }
 
