@@ -22,23 +22,7 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.PublicApiModule;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.auth.AccountAuthenticator;
-import uk.gov.pay.api.exception.mapper.BadRefundsRequestExceptionMapper;
-import uk.gov.pay.api.exception.mapper.BadRequestExceptionMapper;
-import uk.gov.pay.api.exception.mapper.CancelChargeExceptionMapper;
-import uk.gov.pay.api.exception.mapper.CaptureChargeExceptionMapper;
-import uk.gov.pay.api.exception.mapper.CreateAgreementExceptionMapper;
-import uk.gov.pay.api.exception.mapper.CreateChargeExceptionMapper;
-import uk.gov.pay.api.exception.mapper.CreateRefundExceptionMapper;
-import uk.gov.pay.api.exception.mapper.GetAgreementExceptionMapper;
-import uk.gov.pay.api.exception.mapper.GetChargeExceptionMapper;
-import uk.gov.pay.api.exception.mapper.GetEventsExceptionMapper;
-import uk.gov.pay.api.exception.mapper.GetRefundExceptionMapper;
-import uk.gov.pay.api.exception.mapper.GetRefundsExceptionMapper;
-import uk.gov.pay.api.exception.mapper.PaymentValidationExceptionMapper;
-import uk.gov.pay.api.exception.mapper.RefundsValidationExceptionMapper;
-import uk.gov.pay.api.exception.mapper.SearchChargesExceptionMapper;
-import uk.gov.pay.api.exception.mapper.SearchRefundsExceptionMapper;
-import uk.gov.pay.api.exception.mapper.ViolationExceptionMapper;
+import uk.gov.pay.api.exception.mapper.*;
 import uk.gov.pay.api.filter.AuthorizationValidationFilter;
 import uk.gov.pay.api.filter.RateLimiterFilter;
 import uk.gov.pay.api.healthcheck.Ping;
@@ -159,6 +143,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         jersey.register(CreateAgreementExceptionMapper.class);
         jersey.register(GetAgreementExceptionMapper.class);
         jersey.register(CaptureChargeExceptionMapper.class);
+        jersey.register(NoGatewayAccessTokenMapper.class);
     }
 
     private void initialiseMetrics(PublicApiConfig configuration, Environment environment) {

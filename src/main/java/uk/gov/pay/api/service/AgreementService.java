@@ -7,6 +7,7 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateAgreementException;
 import uk.gov.pay.api.exception.GetAgreementException;
+import uk.gov.pay.api.exception.NoGatewayAccessTokenException;
 import uk.gov.pay.api.model.directdebit.agreement.CreateAgreementRequest;
 import uk.gov.pay.api.model.directdebit.agreement.CreateAgreementResponse;
 import uk.gov.pay.api.model.directdebit.agreement.GetAgreementResponse;
@@ -51,9 +52,12 @@ public class AgreementService {
             CreateAgreementResponse createAgreementResponse = CreateAgreementResponse.from(mandate, agreementLinks);
             LOGGER.info("Agreement returned (created): [ {} ]", createAgreementResponse);
             return createAgreementResponse;
+        } else {
+            if(connectorResponse.getStatus() == 403) {
+                throw new NoGatewayAccessTokenException(connectorResponse);
+            }
+            throw new CreateAgreementException(connectorResponse);
         }
-
-        throw new CreateAgreementException(connectorResponse);
     }
 
     public GetAgreementResponse get(Account account, String agreementId) {
