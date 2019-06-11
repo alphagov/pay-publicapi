@@ -127,6 +127,34 @@ public class AgreementsResourceIT extends PaymentResourceITestBase {
                 .extract().body().asString();
     }
 
+
+    @Test
+    public void createPayment_respondsWith500_whenConnectorResponseIsGCAccountNotLinked() {
+
+        String errorMessage = "something went wrong";
+
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
+
+        connectorDDMockClient.respondWithGCAccountNotLinked_whenCreateAgreementRequest(
+                GATEWAY_ACCOUNT_ID,
+                errorMessage
+        );
+
+        String payload = agreementPayload("https://service-name.gov.uk/transactions/12345");
+        given().port(app.getLocalPort())
+                .body(payload)
+                .accept(JSON)
+                .contentType(JSON)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
+                .post("/v1/agreements")
+                .then()
+                .statusCode(500)
+                .contentType(JSON)
+                .body("code", is("P0199"))
+                .body("description", is("There is an error with this account. Please contact support"))
+                .extract().body().asString();
+    }
+    
     @Test
     public void shouldGetADirectDebitAgreement_withReference() {
 

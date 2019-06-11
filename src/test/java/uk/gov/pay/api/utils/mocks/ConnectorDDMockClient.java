@@ -24,9 +24,11 @@ import static javax.ws.rs.core.HttpHeaders.LOCATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
 import static org.eclipse.jetty.http.HttpStatus.CREATED_201;
+import static org.eclipse.jetty.http.HttpStatus.FORBIDDEN_403;
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
 import static org.eclipse.jetty.http.HttpStatus.PRECONDITION_FAILED_412;
 import static uk.gov.pay.commons.model.ErrorIdentifier.GENERIC;
+import static uk.gov.pay.commons.model.ErrorIdentifier.GO_CARDLESS_ACCOUNT_NOT_LINKED;
 import static uk.gov.pay.commons.model.ErrorIdentifier.INVALID_MANDATE_TYPE;
 
 public class ConnectorDDMockClient extends BaseConnectorMockClient {
@@ -106,6 +108,11 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
     public void respondWithMandateTypeInvalid_whenCreateAgreementRequest(String gatewayAccountId, String errorMsg) {
         setupCreateAgreement(gatewayAccountId, withStatusAndErrorMessage(PRECONDITION_FAILED_412, errorMsg, INVALID_MANDATE_TYPE));
     }
+
+    public void respondWithGCAccountNotLinked_whenCreateAgreementRequest(String gatewayAccountId, String errorMsg) {
+        setupCreateAgreement(gatewayAccountId, withStatusAndErrorMessage(FORBIDDEN_403, errorMsg, GO_CARDLESS_ACCOUNT_NOT_LINKED));
+    }
+
 
     private String buildCreateAgreementResponse(String mandateId,
                                                 String mandateReference,

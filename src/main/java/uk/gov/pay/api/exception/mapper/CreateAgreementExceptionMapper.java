@@ -25,7 +25,10 @@ public class CreateAgreementExceptionMapper implements ExceptionMapper<CreateAgr
             agreementError = anAgreementError(AgreementError.Code.CREATE_AGREEMENT_ACCOUNT_ERROR);
         } else if (exception.getErrorIdentifier() == ErrorIdentifier.INVALID_MANDATE_TYPE) {
             agreementError = anAgreementError(Code.CREATE_AGREEMENT_TYPE_ERROR);
-        } else {
+        } else if (exception.getErrorIdentifier() == ErrorIdentifier.GO_CARDLESS_ACCOUNT_NOT_LINKED) {
+            agreementError = anAgreementError(Code.CREATE_AGREEMENT_ACCOUNT_ERROR);
+        }
+        else {
             agreementError = anAgreementError(AgreementError.Code.CREATE_AGREEMENT_CONNECTOR_ERROR);
         }
 
