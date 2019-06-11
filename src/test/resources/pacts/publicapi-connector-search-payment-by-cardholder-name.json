@@ -47,6 +47,18 @@
               "description": "Test description",
               "reference": "aReference",
               "language": "en",
+              "links": [
+                {
+                  "rel": "self",
+                  "method": "GET",
+                  "href": "http://connector.service.backend/v1/api/accounts/123456/charges/charge8133029783750964639"
+                },
+                {
+                  "rel": "refunds",
+                  "method": "GET",
+                  "href": "http://connector.service.backend/v1/api/accounts/123456/charges/charge8133029783750964639/refunds"
+                }
+              ],
               "charge_id": "charge8133029783750964639",
               "return_url": "aReturnUrl",
               "email": "test@test.com",
