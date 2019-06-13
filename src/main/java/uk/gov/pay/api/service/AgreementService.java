@@ -44,16 +44,11 @@ public class AgreementService {
     }
 
     public CreateAgreementResponse create(Account account, CreateAgreementRequest createAgreementRequest) {
-        Response connectorResponse = createMandate(account, MandateConnectorRequest.from(createAgreementRequest));
-        if (isCreated(connectorResponse)) {
-            MandateConnectorResponse mandate = connectorResponse.readEntity(MandateConnectorResponse.class);
-            AgreementLinks agreementLinks = createLinksFromMandateResponse(mandate);
-            CreateAgreementResponse createAgreementResponse = CreateAgreementResponse.from(mandate, agreementLinks);
-            LOGGER.info("Agreement returned (created): [ {} ]", createAgreementResponse);
-            return createAgreementResponse;
-        }
-
-        throw new CreateAgreementException(connectorResponse);
+        MandateConnectorResponse mandate = createMandate(account, MandateConnectorRequest.from(createAgreementRequest));
+        AgreementLinks agreementLinks = createLinksFromMandateResponse(mandate);
+        CreateAgreementResponse createAgreementResponse = CreateAgreementResponse.from(mandate, agreementLinks);
+        LOGGER.info("Agreement returned (created): [ {} ]", createAgreementResponse);
+        return createAgreementResponse;
     }
 
     public GetAgreementResponse get(Account account, String agreementId) {
@@ -75,12 +70,16 @@ public class AgreementService {
         return agreementLinks;
     }
 
-    Response createMandate(Account account, MandateConnectorRequest mandateConnectorRequest) {
-        return client
-                .target(getDDConnectorUrl(format("/v1/api/accounts/%s/mandates", account.getName())))
+    MandateConnectorResponse createMandate(Account account, MandateConnectorRequest mandateConnectorRequest) {
+        Response response = client.target(getDDConnectorUrl(format("/v1/api/accounts/%s/mandates", account.getName())))
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .post(buildMandateConnectorRequestPayload(mandateConnectorRequest));
+        
+        if (response.getStatus() == HttpStatus.SC_CREATED) 
+            return response.readEntity(MandateConnectorResponse.class);
+
+        throw new CreateAgreementException(response);
     }
 
     Response getMandate(Account account, String mandateExternalId) {
@@ -100,6 +99,9 @@ public class AgreementService {
         if (isNotBlank(requestPayload.getServiceReference())) {
             jsonStringBuilder.add(MandateConnectorRequest.SERVICE_REFERENCE_FIELD_NAME, requestPayload.getServiceReference());
         }
+        
+        if (isNotBlank(requestPayload.getDescription()))
+            jsonStringBuilder.add(MandateConnectorRequest.DESCRIPTION_FIELD_NAME, requestPayload.getDescription());
 
         return json(jsonStringBuilder.build());
     }
@@ -107,11 +109,7 @@ public class AgreementService {
     private boolean isFound(Response connectorResponse) {
         return connectorResponse.getStatus() == HttpStatus.SC_OK;
     }
-
-    private boolean isCreated(Response connectorResponse) {
-        return connectorResponse.getStatus() == HttpStatus.SC_CREATED;
-    }
-
+    
     private String getDDConnectorUrl(String urlPath) {
         UriBuilder builder = UriBuilder
                 .fromPath(connectorDDUrl)

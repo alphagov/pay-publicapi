@@ -23,7 +23,6 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
@@ -52,81 +51,41 @@ public class AgreementServiceTest {
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
         agreementService = new AgreementService(client, mockConfiguration, mockPublicApiUriGenerator);
     }
-
+    
     @Test
     @PactVerification({"direct-debit-connector"})
-    @Pacts(pacts = {"publicapi-direct-debit-connector-create-agreement-without-reference"})
-    public void shouldCreateAMandateSuccessfullyWithoutReference() {
-        Account account = new Account("9ddfcc27-acf5-43f9-92d5-52247540714b", TokenPaymentType.DIRECT_DEBIT);
-        MandateConnectorRequest mandateConnectorRequest = new MandateConnectorRequest(
-                "https://example.com/return",
-                null
-        );
-        Response connectorResponse = agreementService.createMandate(account, mandateConnectorRequest);
-        MandateConnectorResponse mandateConnectorResponse = connectorResponse.readEntity(MandateConnectorResponse.class);
-
-        assertThat(mandateConnectorResponse.getMandateId(), is(MANDATE_ID));
-        assertThat(mandateConnectorResponse.getMandateReference(), is(MANDATE_REFERENCE));
-        assertThat(mandateConnectorResponse.getServiceReference(), is(nullValue()));
-        assertThat(mandateConnectorResponse.getCreatedDate(), is("2016-01-01T12:00:00.000Z"));
-        assertThat(mandateConnectorResponse.getReturnUrl(), is("https://example.com/return"));
-        assertThat(mandateConnectorResponse.getState(), is(new MandateState("created", false)));
-        assertThat(mandateConnectorResponse.getLinks().get(0), is(new PaymentConnectorResponseLink(
-                "self",
-                "http://localhost:1234/v1/api/accounts/9ddfcc27-acf5-43f9-92d5-52247540714b/mandates/" + MANDATE_ID,
-                "GET",
-                null,
-                null
-        )));
-        assertThat(mandateConnectorResponse.getLinks().get(1), is(new PaymentConnectorResponseLink(
-                "next_url",
-                "http://frontend_direct_debit/secure/token_1234567asdf",
-                "GET",
-                null,
-                null
-        )));
-        assertThat(mandateConnectorResponse.getLinks().get(2), is(new PaymentConnectorResponseLink(
-                "next_url_post",
-                "http://frontend_direct_debit/secure/",
-                "POST",
-                "application/x-www-form-urlencoded",
-                Collections.singletonMap("chargeTokenId", "token_1234567asdf")
-        )));
-    }
-
-    @Test
-    @PactVerification({"direct-debit-connector"})
-    @Pacts(pacts = {"publicapi-direct-debit-connector-create-agreement-with-reference"})
-    public void shouldCreateAMandateSuccessfullyWithReference() {
+    @Pacts(pacts = {"publicapi-direct-debit-connector-create-mandate"})
+    public void shouldCreateAMandateSuccessfully() {
         Account account = new Account("7959d395-e720-4081-9e8a-a534cf76460a", TokenPaymentType.DIRECT_DEBIT);
         MandateConnectorRequest mandateConnectorRequest = new MandateConnectorRequest(
                 "https://example.com/return",
-                SERVICE_REFERENCE
+                SERVICE_REFERENCE,
+                "raindrops on roses and whiskers on kittens"
         );
-        Response connectorResponse = agreementService.createMandate(account, mandateConnectorRequest);
-        MandateConnectorResponse mandateConnectorResponse = connectorResponse.readEntity(MandateConnectorResponse.class);
+        MandateConnectorResponse mandate = agreementService.createMandate(account, mandateConnectorRequest);
 
-        assertThat(mandateConnectorResponse.getMandateId(), is(MANDATE_ID));
-        assertThat(mandateConnectorResponse.getMandateReference(), is(MANDATE_REFERENCE));
-        assertThat(mandateConnectorResponse.getServiceReference(), is(SERVICE_REFERENCE));
-        assertThat(mandateConnectorResponse.getCreatedDate(), is("2016-01-01T12:00:00.000Z"));
-        assertThat(mandateConnectorResponse.getReturnUrl(), is("https://example.com/return"));
-        assertThat(mandateConnectorResponse.getState(), is(new MandateState("created", false)));
-        assertThat(mandateConnectorResponse.getLinks().get(0), is(new PaymentConnectorResponseLink(
+        assertThat(mandate.getMandateId(), is(MANDATE_ID));
+        assertThat(mandate.getMandateReference(), is(MANDATE_REFERENCE));
+        assertThat(mandate.getServiceReference(), is(SERVICE_REFERENCE));
+        assertThat(mandate.getDescription(), is("raindrops on roses and whiskers on kittens"));
+        assertThat(mandate.getCreatedDate(), is("2016-01-01T12:00:00.000Z"));
+        assertThat(mandate.getReturnUrl(), is("https://example.com/return"));
+        assertThat(mandate.getState(), is(new MandateState("created", false)));
+        assertThat(mandate.getLinks().get(0), is(new PaymentConnectorResponseLink(
                 "self",
                 "http://localhost:1234/v1/api/accounts/7959d395-e720-4081-9e8a-a534cf76460a/mandates/" + MANDATE_ID,
                 "GET",
                 null,
                 null
         )));
-        assertThat(mandateConnectorResponse.getLinks().get(1), is(new PaymentConnectorResponseLink(
+        assertThat(mandate.getLinks().get(1), is(new PaymentConnectorResponseLink(
                 "next_url",
                 "http://frontend_direct_debit/secure/token_1234567asdf",
                 "GET",
                 null,
                 null
         )));
-        assertThat(mandateConnectorResponse.getLinks().get(2), is(new PaymentConnectorResponseLink(
+        assertThat(mandate.getLinks().get(2), is(new PaymentConnectorResponseLink(
                 "next_url_post",
                 "http://frontend_direct_debit/secure/",
                 "POST",
@@ -137,7 +96,7 @@ public class AgreementServiceTest {
 
     @Test
     @PactVerification({"direct-debit-connector"})
-    @Pacts(pacts = {"publicapi-direct-debit-connector-get-agreement"})
+    @Pacts(pacts = {"publicapi-direct-debit-connector-get-mandate"})
     public void shouldGetAMandateSuccessfully_withReference() {
         Account account = new Account("9ddfcc27-acf5-43f9-92d5-52247540714c", TokenPaymentType.DIRECT_DEBIT);
         Response connectorResponse = agreementService.getMandate(account, MANDATE_ID);

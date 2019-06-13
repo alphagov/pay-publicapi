@@ -7,7 +7,7 @@
   },
   "interactions": [
     {
-      "description": "Create a mandate request with service reference",
+      "description": "Create a mandate",
       "providerStates": [
         {
           "name": "a gateway account with external id exists",
@@ -21,7 +21,8 @@
         "path": "/v1/api/accounts/7959d395-e720-4081-9e8a-a534cf76460a/mandates",
         "body": {
           "return_url": "https://example.com/return",
-          "service_reference": "test_service_reference"
+          "service_reference": "test_service_reference",
+          "description": "raindrops on roses and whiskers on kittens"
         }
       },
       "response": {
@@ -34,6 +35,7 @@
           "mandate_id": "test_mandate_id_xyz",
           "mandate_reference": "test_mandate_reference",
           "service_reference": "test_service_reference",
+          "description": "raindrops on roses and whiskers on kittens",
           "return_url": "https://example.com/return",
           "created_date": "2016-01-01T12:00:00.000Z",
           "state": {
@@ -88,6 +90,13 @@
               ]
             },
             "$.service_reference": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.description": {
               "matchers": [
                 {
                   "match": "type"
