@@ -14,15 +14,18 @@ import java.util.StringJoiner;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.RETURN_URL_FIELD_NAME;
 
 @ApiModel(value = "CreatePaymentRequest", description = "The Payment Request Payload")
-public class CreateDirectDebitPaymentRequest extends CreatePaymentRequest{
+public class CreateDirectDebitPaymentRequest extends CreatePaymentRequest {
 
     public static final int AGREEMENT_ID_MAX_LENGTH = 26;
     public static final String AGREEMENT_ID_FIELD_NAME = "agreement_id";
 
     @Size(max = AGREEMENT_ID_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
-    @JsonProperty(value = AGREEMENT_ID_FIELD_NAME)
-    private final String agreementId;
-
+    @JsonProperty("mandate_id")
+    private String agreementId;
+    
+    public CreateDirectDebitPaymentRequest() {
+        //To enable Jackson serialisation we need a default constructor
+    }
 
     public CreateDirectDebitPaymentRequest(CreatePaymentRequestBuilder createPaymentRequestBuilder) {
         super(createPaymentRequestBuilder);

@@ -1,51 +1,44 @@
 package uk.gov.pay.api.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
-import java.util.Optional;
+import uk.gov.pay.api.model.directdebit.agreement.DirectDebitPayment;
 
 
 @JsonInclude(value = JsonInclude.Include.NON_EMPTY)
 @ApiModel(value = "Payment", discriminator = "paymentType", subTypes = {
-        CardPayment.class, DirectDebitPayment.class })
+        CardPayment.class, DirectDebitPayment.class})
 public abstract class Payment {
     public static final String LINKS_JSON_ATTRIBUTE = "_links";
 
     @JsonProperty("payment_id")
-    protected final String paymentId;
+    protected String paymentId;
 
     @JsonProperty("payment_provider")
-    protected final String paymentProvider;
+    protected String paymentProvider;
 
-    protected final long amount;
-    protected final PaymentState state;
-    protected final String description;
+    protected long amount;
+    protected PaymentState state;
+    protected String description;
+    protected String reference;
 
-    @JsonProperty("return_url")
-    protected final String returnUrl;
-    protected final String reference;
-    protected final String email;
 
     @JsonProperty("created_date")
-    protected final String createdDate;
+    protected String createdDate;
+    
+    protected Payment() {
+        //To enable Jackson serialisation we need a default constructor
+    }
 
-    //Used by Swagger to document the right model in the PaymentsResource
-    @JsonIgnore
-    protected String paymentType;
-
-    public Payment(String chargeId, long amount, PaymentState state, String returnUrl, String description,
-                   String reference, String email, String paymentProvider, String createdDate) {
+    public Payment(String chargeId, long amount, PaymentState state, String description,
+                   String reference, String paymentProvider, String createdDate) {
         this.paymentId = chargeId;
         this.amount = amount;
         this.state = state;
-        this.returnUrl = returnUrl;
         this.description = description;
         this.reference = reference;
-        this.email = email;
         this.paymentProvider = paymentProvider;
         this.createdDate = createdDate;
     }
@@ -70,11 +63,6 @@ public abstract class Payment {
         return state;
     }
 
-    @ApiModelProperty(example = "http://your.service.domain/your-reference")
-    public Optional<String> getReturnUrl() {
-        return Optional.ofNullable(returnUrl);
-    }
-
     @ApiModelProperty(example = "Your Service Description")
     public String getDescription() {
         return description;
@@ -83,11 +71,6 @@ public abstract class Payment {
     @ApiModelProperty(example = "your-reference")
     public String getReference() {
         return reference;
-    }
-
-    @ApiModelProperty(example = "your email")
-    public Optional<String> getEmail() {
-        return Optional.ofNullable(email);
     }
 
     @ApiModelProperty(example = "worldpay")
