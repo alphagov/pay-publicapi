@@ -7,10 +7,10 @@
   },
   "interactions": [
     {
-      "description": "search transactions",
+      "description": "search payments",
       "providerStates": [
         {
-          "name": "three transaction records exist",
+          "name": "three payment records exist",
           "params": {
             "gateway_account_id": "2po9ycynwq8yxdgg2qwq9e9qpyrtre",
             "agreement_id": "jkdjsvd8f78ffkwfek2q"
