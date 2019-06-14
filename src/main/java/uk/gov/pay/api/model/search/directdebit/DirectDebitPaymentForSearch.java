@@ -3,13 +3,13 @@ package uk.gov.pay.api.model.search.directdebit;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.pay.api.model.search.links.DDTransactionLinksForSearch;
+import uk.gov.pay.api.model.search.links.DDPaymentLinksForSearch;
 
 import java.net.URI;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DirectDebitTransactionForSearch {
+public class DirectDebitPaymentForSearch {
 
     private Long amount;
     @JsonProperty("transaction_id")
@@ -24,13 +24,13 @@ public class DirectDebitTransactionForSearch {
     @JsonProperty("agreement_id")
     private String agreementId;
     @JsonProperty("links")
-    private DDTransactionLinksForSearch links = new DDTransactionLinksForSearch();
+    private DDPaymentLinksForSearch links = new DDPaymentLinksForSearch();
     
     
     
-    private DirectDebitTransactionForSearch(Long amount, String transactionId, DirectDebitPaymentState state, String description,
-                                            String reference, String email, String name, String createdDate, URI selfLink,
-                                            String agreementId) {
+    private DirectDebitPaymentForSearch(Long amount, String transactionId, DirectDebitPaymentState state, String description,
+                                        String reference, String email, String name, String createdDate, URI selfLink,
+                                        String agreementId) {
         this.amount = amount;
         this.transactionId = transactionId;
         this.state = state;
@@ -61,10 +61,10 @@ public class DirectDebitTransactionForSearch {
 
     public String getAgreementId() { return agreementId; }
 
-    public DDTransactionLinksForSearch getLinks() { return links; }
+    public DDPaymentLinksForSearch getLinks() { return links; }
     
-    public static DirectDebitTransactionForSearch valueOf(DirectDebitTransactionFromResponse forSearch, URI selfLink) {
-        return new DirectDebitTransactionForSearch(
+    public static DirectDebitPaymentForSearch valueOf(DirectDebitPaymentFromResponse forSearch, URI selfLink) {
+        return new DirectDebitPaymentForSearch(
                 forSearch.getAmount(),
                 forSearch.getTransactionId(),
                 forSearch.getState(),

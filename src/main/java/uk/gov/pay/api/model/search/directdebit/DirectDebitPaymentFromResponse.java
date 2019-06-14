@@ -10,7 +10,7 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DirectDebitTransactionFromResponse {
+public class DirectDebitPaymentFromResponse {
     private Long amount;
     @JsonProperty("transaction_id")
     private String transactionId;
