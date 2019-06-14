@@ -18,6 +18,9 @@ public class PublicApiConfig extends Configuration {
 
     @NotNull
     private String connectorDDUrl;
+    
+    @NotNull
+    private String ledgerUrl;
 
     @NotNull
     private String publicAuthUrl;
@@ -58,6 +61,10 @@ public class PublicApiConfig extends Configuration {
     }
     public String getConnectorDDUrl() {
         return connectorDDUrl;
+    }
+    
+    public String getLedgerUrl() {
+        return ledgerUrl;
     }
 
     public String getPublicAuthUrl() {
