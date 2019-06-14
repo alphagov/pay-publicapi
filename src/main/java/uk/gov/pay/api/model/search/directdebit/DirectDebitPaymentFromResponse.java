@@ -13,7 +13,7 @@ import java.util.List;
 public class DirectDebitPaymentFromResponse {
     private Long amount;
     @JsonProperty("transaction_id")
-    private String transactionId;
+    private String paymentId;
     private DirectDebitPaymentState state;
     private String description;
     private String reference;
@@ -28,7 +28,7 @@ public class DirectDebitPaymentFromResponse {
 
     public Long getAmount() { return amount; }
 
-    public String getTransactionId() { return transactionId; }
+    public String getPaymentId() { return paymentId; }
 
     public DirectDebitPaymentState getState() { return state; }
 

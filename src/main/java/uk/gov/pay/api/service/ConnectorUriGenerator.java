@@ -3,9 +3,6 @@ package uk.gov.pay.api.service;
 import com.google.common.collect.Maps;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.model.CreateCardPaymentRequest;
-import uk.gov.pay.api.model.CreatePaymentRequest;
-import uk.gov.pay.api.model.TokenPaymentType;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
@@ -54,7 +51,7 @@ public class ConnectorUriGenerator {
         return buildConnectorUri(account, path);
     }
 
-    public String directDebitTransactionsURI(Account account, Map<String, String> queryParams) {
+    public String directDebitPaymentsURI(Account account, Map<String, String> queryParams) {
         String path = String.format("/v1/api/accounts/%s/transactions/view", account.getAccountId());
         return buildConnectorUri(account, path, queryParams);
     }

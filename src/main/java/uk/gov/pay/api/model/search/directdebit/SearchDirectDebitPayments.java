@@ -51,7 +51,7 @@ public class SearchDirectDebitPayments extends SearchPaymentsBase {
     @Override
     public Response getSearchResponse(Account account, Map<String, String> queryParams) {
         validateSupportedSearchParams(queryParams);
-        String url = connectorUriGenerator.directDebitTransactionsURI(account, queryParams);
+        String url = connectorUriGenerator.directDebitPaymentsURI(account, queryParams);
         Response connectorResponse = client
                 .target(url)
                 .request()
@@ -74,16 +74,16 @@ public class SearchDirectDebitPayments extends SearchPaymentsBase {
             JsonNode responseJson = directDebitResponse.readEntity(JsonNode.class);
             TypeReference<DirectDebitSearchResponse> typeRef = new TypeReference<DirectDebitSearchResponse>() {};
             DirectDebitSearchResponse searchResponse = objectMapper.readValue(responseJson.traverse(), typeRef);
-            List<DirectDebitPaymentForSearch> transactionFromResponse =
+            List<DirectDebitPaymentForSearch> paymentFromResponse =
                     searchResponse
                             .getPayments()
                             .stream()
-                            .map(transaction -> DirectDebitPaymentForSearch.valueOf(
-                                    transaction,
-                                    paymentUriGenerator.getPaymentURI(baseUrl, transaction.getTransactionId())
+                            .map(payment -> DirectDebitPaymentForSearch.valueOf(
+                                    payment,
+                                    paymentUriGenerator.getPaymentURI(baseUrl, payment.getPaymentId())
                             )).collect(Collectors.toList());
             HalRepresentation.HalRepresentationBuilder halRepresentation = HalRepresentation.builder()
-                    .addProperty("results", transactionFromResponse);
+                    .addProperty("results", paymentFromResponse);
             return Response.ok().entity(decoratePagination(halRepresentation, searchResponse, PAYMENT_PATH).build().toString()).build();
         } catch (IOException | ProcessingException ex) {
             throw new SearchPaymentsException(ex);

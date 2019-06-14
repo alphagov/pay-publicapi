@@ -46,8 +46,8 @@ public class DirectDebitEventService {
                 agreementLink = publicApiUriGenerator.getAgreementURI(event.getMandateExternalId()).toString();
             }
 
-            if (event.getTransactionExternalId() != null) {
-                paymentLink = publicApiUriGenerator.getPaymentURI(event.getTransactionExternalId()).toString();
+            if (event.getPaymentExternalId() != null) {
+                paymentLink = publicApiUriGenerator.getPaymentURI(event.getPaymentExternalId()).toString();
             }
 
             event.setLinks(new DirectDebitEvent.Links(agreementLink, paymentLink));

@@ -13,7 +13,7 @@ public class DirectDebitPaymentForSearch {
 
     private Long amount;
     @JsonProperty("transaction_id")
-    private String transactionId;
+    private String paymentId;
     private DirectDebitPaymentState state;
     private String description;
     private String reference;
@@ -28,11 +28,11 @@ public class DirectDebitPaymentForSearch {
     
     
     
-    private DirectDebitPaymentForSearch(Long amount, String transactionId, DirectDebitPaymentState state, String description,
+    private DirectDebitPaymentForSearch(Long amount, String paymentId, DirectDebitPaymentState state, String description,
                                         String reference, String email, String name, String createdDate, URI selfLink,
                                         String agreementId) {
         this.amount = amount;
-        this.transactionId = transactionId;
+        this.paymentId = paymentId;
         this.state = state;
         this.description = description;
         this.reference = reference;
@@ -45,7 +45,7 @@ public class DirectDebitPaymentForSearch {
 
     public Long getAmount() { return amount; }
 
-    public String getTransactionId() { return transactionId; }
+    public String getPaymentId() { return paymentId; }
 
     public DirectDebitPaymentState getState() { return state; }
 
@@ -66,7 +66,7 @@ public class DirectDebitPaymentForSearch {
     public static DirectDebitPaymentForSearch valueOf(DirectDebitPaymentFromResponse forSearch, URI selfLink) {
         return new DirectDebitPaymentForSearch(
                 forSearch.getAmount(),
-                forSearch.getTransactionId(),
+                forSearch.getPaymentId(),
                 forSearch.getState(),
                 forSearch.getDescription(),
                 forSearch.getReference(),
