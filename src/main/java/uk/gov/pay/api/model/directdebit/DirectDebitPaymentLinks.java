@@ -46,12 +46,12 @@ public class DirectDebitPaymentLinks {
         }
 
         public DirectDebitPaymentLinksBuilder withEvents(URI events) {
-            this.events = new Link(events.toString(), GET);;
+            this.events = new Link(events.toString(), GET);
             return this;
         }
 
         public DirectDebitPaymentLinksBuilder withMandate(URI mandate) {
-            this.mandate = new Link(mandate.toString(), GET);;
+            this.mandate = new Link(mandate.toString(), GET);
             return this;
         }
 

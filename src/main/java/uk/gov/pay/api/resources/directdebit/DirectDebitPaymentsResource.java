@@ -21,8 +21,8 @@ import javax.ws.rs.core.Response;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.http.HttpStatus.SC_CREATED;
 
-@Path("v1/directdebit/payments/")
-@Api(value = "v1/directdebit/payments/")
+@Path("/v1/directdebit/payments/")
+@Api(value = "/v1/directdebit/payments/")
 @Produces({"application/json"})
 public class DirectDebitPaymentsResource {
 

@@ -618,22 +618,30 @@
         "line1" : {
           "type" : "string",
           "example" : "address line 1",
-          "readOnly" : true
+          "readOnly" : true,
+          "minLength" : 0,
+          "maxLength" : 255
         },
         "line2" : {
           "type" : "string",
           "example" : "address line 2",
-          "readOnly" : true
+          "readOnly" : true,
+          "minLength" : 0,
+          "maxLength" : 255
         },
         "postcode" : {
           "type" : "string",
           "example" : "AB1 2CD",
-          "readOnly" : true
+          "readOnly" : true,
+          "minLength" : 0,
+          "maxLength" : 25
         },
         "city" : {
           "type" : "string",
           "example" : "address city",
-          "readOnly" : true
+          "readOnly" : true,
+          "minLength" : 0,
+          "maxLength" : 255
         },
         "country" : {
           "type" : "string",
@@ -680,20 +688,22 @@
     },
     "CreatePaymentRequest" : {
       "type" : "object",
-      "required" : [ "amount", "description", "reference", "return_url" ],
+      "required" : [ "amount", "description", "reference" ],
       "properties" : {
         "amount" : {
           "type" : "integer",
           "format" : "int32",
           "example" : 12000,
           "description" : "amount in pence",
-          "minimum" : 1,
+          "readOnly" : true,
+          "minimum" : 0,
           "maximum" : 10000000
         },
         "reference" : {
           "type" : "string",
           "example" : "12345",
           "description" : "payment reference",
+          "readOnly" : true,
           "minLength" : 0,
           "maxLength" : 255
         },
@@ -701,46 +711,22 @@
           "type" : "string",
           "example" : "New passport application",
           "description" : "payment description",
-          "minLength" : 0,
-          "maxLength" : 255
-        },
-        "return_url" : {
-          "type" : "string",
-          "example" : "https://service-name.gov.uk/transactions/12345",
-          "description" : "service return url",
           "readOnly" : true,
           "minLength" : 0,
-          "maxLength" : 2000
+          "maxLength" : 255
         },
         "language" : {
           "type" : "string",
           "example" : "en",
           "description" : "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages",
           "readOnly" : true,
-          "enum" : [ "en", "cy" ]
-        },
-        "delayed_capture" : {
-          "type" : "boolean",
-          "example" : false,
-          "description" : "delayed capture flag",
-          "readOnly" : true
-        },
-        "metadata" : {
-          "type" : "object",
-          "additionalProperties" : {
-            "type" : "string"
-          }
+          "enum" : [ "ENGLISH", "WELSH" ]
         },
         "email" : {
           "type" : "string",
           "example" : "Joe.Bogs@example.org",
           "description" : "email",
           "readOnly" : true
-        },
-        "prefilled_cardholder_details" : {
-          "description" : "prefilled_cardholder_details",
-          "readOnly" : true,
-          "$ref" : "#/definitions/PrefilledCardholderDetails"
         }
       },
       "description" : "The Payment Request Payload"
@@ -853,10 +839,6 @@
           "type" : "string",
           "example" : "your-reference"
         },
-        "email" : {
-          "type" : "string",
-          "example" : "your email"
-        },
         "language" : {
           "type" : "string",
           "example" : "en",
@@ -868,6 +850,10 @@
             "type" : "string"
           }
         },
+        "email" : {
+          "type" : "string",
+          "example" : "your email"
+        },
         "payment_id" : {
           "type" : "string",
           "example" : "hu20sqlact5260q2nanm0q8u93",
@@ -876,11 +862,6 @@
         "payment_provider" : {
           "type" : "string",
           "example" : "worldpay",
-          "readOnly" : true
-        },
-        "return_url" : {
-          "type" : "string",
-          "example" : "http://your.service.domain/your-reference",
           "readOnly" : true
         },
         "created_date" : {
@@ -935,6 +916,11 @@
         "provider_id" : {
           "type" : "string",
           "example" : "reference-from-payment-gateway",
+          "readOnly" : true
+        },
+        "return_url" : {
+          "type" : "string",
+          "example" : "http://your.service.domain/your-reference",
           "readOnly" : true
         },
         "_links" : {
@@ -983,10 +969,6 @@
           "type" : "string",
           "example" : "your-reference"
         },
-        "email" : {
-          "type" : "string",
-          "example" : "your email"
-        },
         "language" : {
           "type" : "string",
           "example" : "en",
@@ -998,6 +980,10 @@
             "type" : "string"
           }
         },
+        "email" : {
+          "type" : "string",
+          "example" : "your email"
+        },
         "payment_id" : {
           "type" : "string",
           "example" : "hu20sqlact5260q2nanm0q8u93",
@@ -1006,11 +992,6 @@
         "payment_provider" : {
           "type" : "string",
           "example" : "worldpay",
-          "readOnly" : true
-        },
-        "return_url" : {
-          "type" : "string",
-          "example" : "http://your.service.domain/your-reference",
           "readOnly" : true
         },
         "created_date" : {
@@ -1065,6 +1046,11 @@
         "provider_id" : {
           "type" : "string",
           "example" : "reference-from-payment-gateway",
+          "readOnly" : true
+        },
+        "return_url" : {
+          "type" : "string",
+          "example" : "http://your.service.domain/your-reference",
           "readOnly" : true
         },
         "_links" : {
@@ -1345,21 +1331,6 @@
         }
       },
       "description" : "A POST link related to a payment"
-    },
-    "PrefilledCardholderDetails" : {
-      "type" : "object",
-      "properties" : {
-        "cardholder_name" : {
-          "type" : "string",
-          "example" : "J. Bogs",
-          "description" : "prefilled cardholder name"
-        },
-        "billing_address" : {
-          "description" : "prefilled billing address",
-          "readOnly" : true,
-          "$ref" : "#/definitions/Address"
-        }
-      }
     },
     "Refund" : {
       "type" : "object",

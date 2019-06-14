@@ -32,7 +32,7 @@ public class CreateDirectDebitPaymentsService {
 
     public DirectDebitPayment create(Account account, CreateDirectDebitPaymentRequest directDebitPaymentRequest) {
         var directDebitConnectorCreatePaymentRequest = aDirectDebitConnectorCreatePaymentRequest()
-                .withAgreementId(directDebitPaymentRequest.getAgreementId())
+                .withMandateId(directDebitPaymentRequest.getMandateId())
                 .withAmount(directDebitPaymentRequest.getAmount())
                 .withDescription(directDebitPaymentRequest.getDescription())
                 .withReference(directDebitPaymentRequest.getReference())
@@ -59,6 +59,7 @@ public class CreateDirectDebitPaymentsService {
                 .withCreatedDate(connectorResponse.getCreatedDate())
                 .withSelfLink(publicApiUriGenerator.getDirectDebitPaymentURI(connectorResponse.getPaymentExternalId()))
                 .withEventsLink(publicApiUriGenerator.getDirectDebitPaymentEventsURI(connectorResponse.getPaymentExternalId()))
+                // TODO - enable mandate link when dd-connector returns mandate id
 //                .withMandateLink(publicApiUriGenerator.getDirectDebitMandateURI(connectorResponse.getMandateExternalId()))
                 .build();
     }

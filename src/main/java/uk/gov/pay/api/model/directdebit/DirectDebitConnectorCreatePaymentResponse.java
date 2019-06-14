@@ -3,15 +3,11 @@ package uk.gov.pay.api.model.directdebit;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.pay.api.model.PaymentState;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 public class DirectDebitConnectorCreatePaymentResponse {
-    @JsonProperty("links")
-    private List<Map<String, Object>> dataLinks;
-
     @JsonProperty("charge_id")
     private String paymentExternalId;
 
@@ -41,10 +37,6 @@ public class DirectDebitConnectorCreatePaymentResponse {
         return paymentProvider;
     }
 
-    public List<Map<String, Object>> getDataLinks() {
-        return dataLinks;
-    }
-
     public String getPaymentExternalId() {
         return paymentExternalId;
     }
@@ -61,14 +53,6 @@ public class DirectDebitConnectorCreatePaymentResponse {
         return reference;
     }
 
-    public URI getLink(String rel) {
-        return dataLinks.stream()
-                .filter(map -> rel.equals(map.get("rel")))
-                .findFirst()
-                .map(link -> (URI) link.get("href"))
-                .get();
-    }
-
     public String getCreatedDate() {
         return createdDate;
     }
@@ -78,25 +62,11 @@ public class DirectDebitConnectorCreatePaymentResponse {
     }
 
     @Override
-    public int hashCode() {
-        int result = dataLinks.hashCode();
-        result = 31 * result + paymentExternalId.hashCode();
-        result = 31 * result + amount.hashCode();
-        result = 31 * result + paymentProvider.hashCode();
-        result = 31 * result + description.hashCode();
-        result = 31 * result + reference.hashCode();
-        result = 31 * result + createdDate.hashCode();
-        result = 31 * result + state.hashCode();
-        return result;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DirectDebitConnectorCreatePaymentResponse that = (DirectDebitConnectorCreatePaymentResponse) o;
-        return Objects.equals(dataLinks, that.dataLinks) &&
-                Objects.equals(paymentExternalId, that.paymentExternalId) &&
+        return Objects.equals(paymentExternalId, that.paymentExternalId) &&
                 Objects.equals(amount, that.amount) &&
                 Objects.equals(paymentProvider, that.paymentProvider) &&
                 Objects.equals(description, that.description) &&
@@ -106,15 +76,19 @@ public class DirectDebitConnectorCreatePaymentResponse {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(paymentExternalId, amount, paymentProvider, description, reference, createdDate, state);
+    }
+
+    @Override
     public String toString() {
-        return "CollectPaymentResponse{" +
-                "dataLinks=" + dataLinks +
-                ", paymentExternalId='" + paymentExternalId + '\'' +
-                ", state='" + state + '\'' +
+        return "DirectDebitConnectorCreatePaymentResponse{" +
+                "paymentExternalId='" + paymentExternalId + '\'' +
                 ", amount=" + amount +
-                ", paymentProvider=" + paymentProvider +
+                ", paymentProvider='" + paymentProvider + '\'' +
                 ", reference='" + reference + '\'' +
-                ", createdDate=" + createdDate +
+                ", createdDate='" + createdDate + '\'' +
+                ", state=" + state +
                 '}';
     }
 
@@ -133,11 +107,6 @@ public class DirectDebitConnectorCreatePaymentResponse {
 
         public static DirectDebitConnectorCreatePaymentResponseBuilder aDirectDebitConnectorCreatePaymentResponse() {
             return new DirectDebitConnectorCreatePaymentResponseBuilder();
-        }
-
-        public DirectDebitConnectorCreatePaymentResponseBuilder withDataLinks(List<Map<String, Object>> dataLinks) {
-            this.dataLinks = dataLinks;
-            return this;
         }
 
         public DirectDebitConnectorCreatePaymentResponseBuilder withPaymentExternalId(String paymentExternalId) {
@@ -179,7 +148,6 @@ public class DirectDebitConnectorCreatePaymentResponse {
             DirectDebitConnectorCreatePaymentResponse directDebitConnectorCreatePaymentResponse = new DirectDebitConnectorCreatePaymentResponse();
             directDebitConnectorCreatePaymentResponse.createdDate = this.createdDate;
             directDebitConnectorCreatePaymentResponse.state = this.state;
-            directDebitConnectorCreatePaymentResponse.dataLinks = this.dataLinks;
             directDebitConnectorCreatePaymentResponse.amount = this.amount;
             directDebitConnectorCreatePaymentResponse.paymentExternalId = this.paymentExternalId;
             directDebitConnectorCreatePaymentResponse.description = this.description;

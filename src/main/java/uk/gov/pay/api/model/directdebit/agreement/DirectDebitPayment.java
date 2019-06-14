@@ -19,7 +19,7 @@ public class DirectDebitPayment extends Payment {
 
     @JsonProperty("_links")
     private DirectDebitPaymentLinks links;
-    
+
     @Deprecated
     public DirectDebitPayment(String chargeId, long amount, PaymentState state, String description,
                               String reference, String paymentProvider, String createdDate) {
@@ -50,10 +50,11 @@ public class DirectDebitPayment extends Payment {
         this.links = aDirectDebitPaymentLinks()
                 .withSelf(builder.selfLink)
                 .withEvents(builder.eventsLink)
+                // TODO - enable mandate link when dd-connector returns mandate id
 //                .withMandate(builder.mandateLink)
                 .build();
     }
-    
+
     @Override
     public String toString() {
         // Some services put PII in the description, so don’t include it in the stringification
@@ -121,7 +122,7 @@ public class DirectDebitPayment extends Payment {
             this.createdDate = createdDate;
             return this;
         }
-        
+
         public DirectDebitPaymentBuilder withSelfLink(URI selfLink) {
             this.selfLink = selfLink;
             return this;

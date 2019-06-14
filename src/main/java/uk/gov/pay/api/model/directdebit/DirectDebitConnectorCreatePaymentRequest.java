@@ -6,13 +6,13 @@ public class DirectDebitConnectorCreatePaymentRequest {
     public final int amount;
     public final String reference;
     public final String description;
-    public final String agreementId;
+    public final String mandateId;
 
     private DirectDebitConnectorCreatePaymentRequest(DirectDebitConnectorCreatePaymentRequestBuilder builder) {
         this.amount = builder.amount;
         this.reference = builder.reference;
         this.description = builder.description;
-        this.agreementId = builder.agreementId;
+        this.mandateId = builder.mandateId;
     }
 
     @JsonProperty("amount")
@@ -31,15 +31,15 @@ public class DirectDebitConnectorCreatePaymentRequest {
     }
 
     @JsonProperty("agreement_id")
-    public String getAgreementId() {
-        return agreementId;
+    public String getMandateId() {
+        return mandateId;
     }
 
     public static final class DirectDebitConnectorCreatePaymentRequestBuilder {
         public int amount;
         public String reference;
         public String description;
-        public String agreementId;
+        public String mandateId;
 
         private DirectDebitConnectorCreatePaymentRequestBuilder() {
         }
@@ -63,8 +63,8 @@ public class DirectDebitConnectorCreatePaymentRequest {
             return this;
         }
 
-        public DirectDebitConnectorCreatePaymentRequestBuilder withAgreementId(String agreementId) {
-            this.agreementId = agreementId;
+        public DirectDebitConnectorCreatePaymentRequestBuilder withMandateId(String mandateId) {
+            this.mandateId = mandateId;
             return this;
         }
 

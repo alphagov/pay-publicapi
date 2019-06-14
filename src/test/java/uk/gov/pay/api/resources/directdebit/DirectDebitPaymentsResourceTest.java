@@ -146,6 +146,7 @@ public class DirectDebitPaymentsResourceTest {
                 .body("_links.events.method", is("GET"))
                 .body("_links.self.href", is(paymentLocationFor(paymentId)))
                 .body("_links.self.method", is("GET"));
+        // TODO - enable mandate link when dd-connector returns mandate id
 //                .body("_links.mandate.href", is(mandateLocationFor(mandateId)))
 //                .body("_links.mandate.method", is("GET"));
     }
