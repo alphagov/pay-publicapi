@@ -19,11 +19,11 @@ public class DirectDebitSearchResponse implements SearchPagination {
     @JsonProperty("page")
     private int page;
     @JsonProperty("results")
-    private List<DirectDebitTransactionFromResponse> payments;
+    private List<DirectDebitPaymentFromResponse> payments;
     @JsonProperty("_links")
     private SearchNavigationLinks links = new SearchNavigationLinks();
 
-    public List<DirectDebitTransactionFromResponse> getPayments() {
+    public List<DirectDebitPaymentFromResponse> getPayments() {
         return payments;
     }
 

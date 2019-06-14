@@ -10,10 +10,10 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DirectDebitTransactionFromResponse {
+public class DirectDebitPaymentFromResponse {
     private Long amount;
-    @JsonProperty("transaction_id")
-    private String transactionId;
+    @JsonProperty("payment_id")
+    private String paymentId;
     private DirectDebitPaymentState state;
     private String description;
     private String reference;
@@ -28,7 +28,7 @@ public class DirectDebitTransactionFromResponse {
 
     public Long getAmount() { return amount; }
 
-    public String getTransactionId() { return transactionId; }
+    public String getPaymentId() { return paymentId; }
 
     public DirectDebitPaymentState getState() { return state; }
 

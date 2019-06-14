@@ -7,10 +7,10 @@
   },
   "interactions": [
     {
-      "description": "search transactions",
+      "description": "search payments",
       "providerStates": [
         {
-          "name": "three transaction records exist",
+          "name": "three payment records exist",
           "params": {
             "gateway_account_id": "2po9ycynwq8yxdgg2qwq9e9qpyrtre",
             "agreement_id": "jkdjsvd8f78ffkwfek2q"
@@ -19,7 +19,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/v1/api/accounts/2po9ycynwq8yxdgg2qwq9e9qpyrtre/transactions/view",
+        "path": "/v1/api/accounts/2po9ycynwq8yxdgg2qwq9e9qpyrtre/payments/view",
         "query": {
           "agreement_id": [
             "jkdjsvd8f78ffkwfek2q"
@@ -38,7 +38,7 @@
           "results": [
             {
               "amount": 1234,
-              "transaction_id": "askd87sfnsadn489nfd8ddnv",
+              "payment_id": "askd87sfnsadn489nfd8ddnv",
               "name": "J. Citizen",
               "email": "j.citizen@mail.fake",
               "state": {
@@ -59,7 +59,7 @@
             },
             {
               "amount": 1245,
-              "transaction_id": "askd87sfnsadn489nfd8ddnvprq",
+              "payment_id": "askd87sfnsadn489nfd8ddnvprq",
               "name": "J. Citizen",
               "email": "j.citizen@mail.fake",
               "state": {
@@ -80,7 +80,7 @@
             },
             {
               "amount": 1256,
-              "transaction_id": "askd87sfnsadn489nfd8ddt64e",
+              "payment_id": "askd87sfnsadn489nfd8ddt64e",
               "name": "J. Citizen",
               "email": "j.citizen@mail.fake",
               "state": {
@@ -102,13 +102,13 @@
           ],
           "_links": {
             "self": {
-              "href": "http://localhost:1234/v1/api/accounts/2po9ycynwq8yxdgg2qwq9e9qpyrtre/transaction/view?agreement_id=jkdjsvd8f78ffkwfek2q&page=1&display_size=500"
+              "href": "http://localhost:1234/v1/api/accounts/2po9ycynwq8yxdgg2qwq9e9qpyrtre/payment/view?agreement_id=jkdjsvd8f78ffkwfek2q&page=1&display_size=500"
             },
             "last_page": {
-              "href": "http://localhost:1234/v1/api/accounts/2po9ycynwq8yxdgg2qwq9e9qpyrtre/transaction/view?agreement_id=jkdjsvd8f78ffkwfek2q&page=1&display_size=500"
+              "href": "http://localhost:1234/v1/api/accounts/2po9ycynwq8yxdgg2qwq9e9qpyrtre/payment/view?agreement_id=jkdjsvd8f78ffkwfek2q&page=1&display_size=500"
             },
             "first_page": {
-              "href": "http://localhost:1234/v1/api/accounts/2po9ycynwq8yxdgg2qwq9e9qpyrtre/transaction/view?agreement_id=jkdjsvd8f78ffkwfek2q&page=1&display_size=500"
+              "href": "http://localhost:1234/v1/api/accounts/2po9ycynwq8yxdgg2qwq9e9qpyrtre/payment/view?agreement_id=jkdjsvd8f78ffkwfek2q&page=1&display_size=500"
             }
           }
         },
@@ -117,7 +117,7 @@
             "Location": {
               "matchers": [
                 {
-                  "regex": "http:\/\/.*\/v1\/api\/accounts\/2po9ycynwq8yxdgg2qwq9e9qpyrtre\/transactions\/view*"
+                  "regex": "http:\/\/.*\/v1\/api\/accounts\/2po9ycynwq8yxdgg2qwq9e9qpyrtre\/payments\/view*"
                 }
               ]
             }
@@ -165,7 +165,7 @@
                 }
               ]
             },
-            "$.results[*].transaction_id": {
+            "$.results[*].payment_id": {
               "matchers": [
                 {
                   "regex": "[a-z0-9]*"
@@ -245,21 +245,21 @@
             "$._links.self": {
               "matchers": [
                 {
-                  "regex": "http:\/\/.*\/v1\/api\/accounts\/2po9ycynwq8yxdgg2qwq9e9qpyrtre\/transactions\/view.*"
+                  "regex": "http:\/\/.*\/v1\/api\/accounts\/2po9ycynwq8yxdgg2qwq9e9qpyrtre\/payments\/view.*"
                 }
               ]
             },
             "$._links.first_page": {
               "matchers": [
                 {
-                  "regex": "http:\/\/.*\/v1\/api\/accounts\/2po9ycynwq8yxdgg2qwq9e9qpyrtre\/transactions\/view.*"
+                  "regex": "http:\/\/.*\/v1\/api\/accounts\/2po9ycynwq8yxdgg2qwq9e9qpyrtre\/payments\/view.*"
                 }
               ]
             },
             "$._links.last_page": {
               "matchers": [
                 {
-                  "regex": "http:\/\/.*\/v1\/api\/accounts\/2po9ycynwq8yxdgg2qwq9e9qpyrtre\/transactions\/view.*"
+                  "regex": "http:\/\/.*\/v1\/api\/accounts\/2po9ycynwq8yxdgg2qwq9e9qpyrtre\/payments\/view.*"
                 }
               ]
             }
