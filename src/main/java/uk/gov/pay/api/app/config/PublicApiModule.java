@@ -1,5 +1,6 @@
 package uk.gov.pay.api.app.config;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -59,6 +60,7 @@ public class PublicApiModule extends AbstractModule {
 
         objectMapper.configure(DeserializationFeature.ACCEPT_FLOAT_AS_INT, false);
         objectMapper.registerModule(publicApiDeserializationModule);
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         return objectMapper;
     }

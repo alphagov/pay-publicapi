@@ -1,5 +1,6 @@
 package uk.gov.pay.api.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +14,6 @@ import uk.gov.pay.api.model.directdebit.agreement.GetAgreementResponse;
 import uk.gov.pay.api.model.directdebit.agreement.MandateConnectorRequest;
 import uk.gov.pay.api.model.directdebit.agreement.MandateConnectorResponse;
 import uk.gov.pay.api.model.links.directdebit.AgreementLinks;
-import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
@@ -23,8 +23,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import static java.lang.String.format;
-import static javax.ws.rs.client.Entity.json;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class AgreementService {
 
@@ -74,36 +72,17 @@ public class AgreementService {
         Response response = client.target(getDDConnectorUrl(format("/v1/api/accounts/%s/mandates", account.getName())))
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
-                .post(buildMandateConnectorRequestPayload(mandateConnectorRequest));
-        
-        if (response.getStatus() == HttpStatus.SC_CREATED) 
+                .post(Entity.entity(mandateConnectorRequest, MediaType.APPLICATION_JSON));
+
+        if (response.getStatus() == HttpStatus.SC_CREATED)
             return response.readEntity(MandateConnectorResponse.class);
 
         throw new CreateAgreementException(response);
     }
 
     Response getMandate(Account account, String mandateExternalId) {
-        return client
-                .target(getDDConnectorUrl(format("/v1/api/accounts/%s/mandates/%s",
-                        account.getName(),
-                        mandateExternalId)))
-                .request()
-                .accept(MediaType.APPLICATION_JSON)
-                .get();
-    }
-
-    private Entity buildMandateConnectorRequestPayload(MandateConnectorRequest requestPayload) {
-        JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
-                .add(MandateConnectorRequest.RETURN_URL_FIELD_NAME, requestPayload.getReturnUrl());
-
-        if (isNotBlank(requestPayload.getServiceReference())) {
-            jsonStringBuilder.add(MandateConnectorRequest.SERVICE_REFERENCE_FIELD_NAME, requestPayload.getServiceReference());
-        }
-        
-        if (isNotBlank(requestPayload.getDescription()))
-            jsonStringBuilder.add(MandateConnectorRequest.DESCRIPTION_FIELD_NAME, requestPayload.getDescription());
-
-        return json(jsonStringBuilder.build());
+        String url = getDDConnectorUrl(format("/v1/api/accounts/%s/mandates/%s", account.getName(), mandateExternalId));
+        return client.target(url).request().accept(MediaType.APPLICATION_JSON).get();
     }
 
     private boolean isFound(Response connectorResponse) {
@@ -111,11 +90,6 @@ public class AgreementService {
     }
     
     private String getDDConnectorUrl(String urlPath) {
-        UriBuilder builder = UriBuilder
-                .fromPath(connectorDDUrl)
-                .path(urlPath);
-
-        return builder.toString();
+        return UriBuilder.fromPath(connectorDDUrl).path(urlPath).toString();
     }
-
 }

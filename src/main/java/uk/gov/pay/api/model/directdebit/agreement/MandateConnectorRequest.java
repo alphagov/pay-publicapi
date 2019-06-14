@@ -1,12 +1,16 @@
 package uk.gov.pay.api.model.directdebit.agreement;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class MandateConnectorRequest {
 
-    public static final String RETURN_URL_FIELD_NAME = "return_url";
-    public static final String SERVICE_REFERENCE_FIELD_NAME = "service_reference";
-    public static final String DESCRIPTION_FIELD_NAME = "description";
-
-    private final String returnUrl, serviceReference, description;
+    @JsonProperty("return_url")
+    private final String returnUrl;
+    
+    @JsonProperty("service_reference")
+    private final String serviceReference;
+    
+    private final String description;
 
     public MandateConnectorRequest(String returnUrl, String serviceReference, String description) {
         this.returnUrl = returnUrl;

@@ -17,10 +17,6 @@ public class JsonStringBuilder {
 
     private boolean prettyPrint;
 
-    public static String jsonString(String key, Object value) {
-        return new JsonStringBuilder().add(key, value).build();
-    }
-
     public JsonStringBuilder() {
         map = new LinkedHashMap<>();
         prettyPrint = true;
