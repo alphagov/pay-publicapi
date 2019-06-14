@@ -77,7 +77,7 @@ public class DirectDebitEvent {
         this.mandateExternalId = mandateExternalId;
     }
 
-    @JsonProperty("transaction_external_id")
+    @JsonProperty("payment_external_id")
     public void setPaymentExternalId(String paymentExternalId) {
         this.paymentExternalId = paymentExternalId;
     }

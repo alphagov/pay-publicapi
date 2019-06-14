@@ -109,7 +109,7 @@ public class DirectDebitEventsResponse {
 
             private String convertLink(String link) {
                 return link.replace("mandate_external_", "agreement_")
-                        .replace("transaction_external_", "payment_");
+                        .replace("payment_external_", "payment_");
             }
         }
     }

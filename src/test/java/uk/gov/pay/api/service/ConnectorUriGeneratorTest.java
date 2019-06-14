@@ -9,11 +9,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.model.CreateCardPaymentRequest;
-import uk.gov.pay.api.model.CreateDirectDebitPaymentRequest;
-import uk.gov.pay.api.model.CreatePaymentRequest;
-import uk.gov.pay.api.model.CreatePaymentRequestBuilder;
-import uk.gov.pay.api.model.TokenPaymentType;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -129,6 +124,6 @@ public class ConnectorUriGeneratorTest {
     @Test
     public void buildEventsURIFromAllParameters() throws UnsupportedEncodingException {
         String uri = connectorUriGenerator.eventsURI(cardAccount, Optional.of(ZonedDateTime.parse("2018-03-13T10:00:05.000Z")), Optional.of(ZonedDateTime.parse("2018-03-13T10:00:05Z")), 1, 300, "1", "2");
-        assertThat(URLDecoder.decode(uri, "UTF-8"), is("https://bla.test/v1/events?to_date=2018-03-13T10:00:05.000Z&from_date=2018-03-13T10:00:05.000Z&mandate_external_id=1&transaction_external_id=2&page=1&display_size=300"));
+        assertThat(URLDecoder.decode(uri, "UTF-8"), is("https://bla.test/v1/events?to_date=2018-03-13T10:00:05.000Z&from_date=2018-03-13T10:00:05.000Z&mandate_external_id=1&payment_external_id=2&page=1&display_size=300"));
     }
 }

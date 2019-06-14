@@ -12,7 +12,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DirectDebitPaymentFromResponse {
     private Long amount;
-    @JsonProperty("transaction_id")
+    @JsonProperty("payment_id")
     private String paymentId;
     private DirectDebitPaymentState state;
     private String description;

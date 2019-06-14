@@ -1173,7 +1173,7 @@ GET /v1/payments
 | `results[i].reference`                | Yes            | There reference issued by the government service for this payment |
 | `results[i].email`                    | Yes            | The email address of the user of this payment                     |
 | `results[i].name`                     | Yes            | The name of the user of this payment                              |
-| `results[i].transaction_id`           | Yes            | The transaction id associated to this payment                     |
+| `results[i].payment_id`               | Yes            | The payment ID associated with this payment                     |
 | `results[i].created_date`             | Yes            | The created date in ISO_8601 format (```yyyy-MM-ddTHH:mm:ssZ```)  |
 | `results[i].agreement_id`             | Yes            | The external id of the agreement this payment was made against    |
 | `results[i]._links.self`              | Yes            | Link to the payment                                               |

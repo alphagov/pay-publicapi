@@ -52,7 +52,7 @@ public class ConnectorUriGenerator {
     }
 
     public String directDebitPaymentsURI(Account account, Map<String, String> queryParams) {
-        String path = String.format("/v1/api/accounts/%s/transactions/view", account.getAccountId());
+        String path = String.format("/v1/api/accounts/%s/payments/view", account.getAccountId());
         return buildConnectorUri(account, path, queryParams);
     }
 
@@ -93,7 +93,7 @@ public class ConnectorUriGenerator {
             params.put("mandate_external_id", agreementId);
 
         if (paymentId != null)
-            params.put("transaction_external_id", paymentId);
+            params.put("payment_external_id", paymentId);
 
         params.put("page", Optional.ofNullable(page).orElse(1).toString());
         params.put("display_size", Optional.ofNullable(displaySize).orElse(500).toString());
