@@ -3,7 +3,6 @@ package uk.gov.pay.api.it;
 import au.com.dius.pact.consumer.PactVerification;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.pay.api.app.PublicApi;
@@ -24,7 +23,6 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
-@Ignore
 public class GetDirectDebitEventsIT {
 
     static final String API_KEY = ApiKeyGenerator.apiKeyValueOf("TEST_BEARER_TOKEN", "qwer9yuhgf");
