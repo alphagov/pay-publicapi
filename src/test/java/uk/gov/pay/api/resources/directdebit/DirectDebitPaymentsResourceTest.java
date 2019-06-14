@@ -129,7 +129,7 @@ public class DirectDebitPaymentsResourceTest {
                 .amount(500)
                 .description(descriptionText)
                 .reference(referenceText)
-                .agreementId("test")
+                .mandateId("test")
                 .build();
 
         postPaymentResponse(createDirectDebitPaymentRequest)

@@ -49,7 +49,7 @@ public class CreatePaymentRequestBuilder {
         return this;
     }
 
-    public CreatePaymentRequestBuilder agreementId(String agreementId) {
+    public CreatePaymentRequestBuilder mandateId(String agreementId) {
         this.agreementId = agreementId;
         return this;
     }
