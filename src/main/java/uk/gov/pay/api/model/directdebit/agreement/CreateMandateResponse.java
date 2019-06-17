@@ -18,7 +18,7 @@ public class CreateMandateResponse {
     private static final String DESCRIPTION_NAME = "description";
     private static final String PAYMENT_PROVIDER_NAME= "payment_provider";
 
-    private final String agreementId;
+    private final String mandateId;
     private final String providerId;
     private final String reference;
     private final String returnUrl;
@@ -28,7 +28,7 @@ public class CreateMandateResponse {
     private final String description;
     private final String paymentProvider;
 
-    private CreateMandateResponse(String agreementId,
+    private CreateMandateResponse(String mandateId,
                                   String providerId,
                                   String reference,
                                   String returnUrl,
@@ -36,7 +36,7 @@ public class CreateMandateResponse {
                                   MandateStatus state,
                                   AgreementLinks links,
                                   String description, String paymentProvider) {
-        this.agreementId = agreementId;
+        this.mandateId = mandateId;
         this.providerId = providerId;
         this.reference = reference;
         this.returnUrl = returnUrl;
@@ -63,7 +63,7 @@ public class CreateMandateResponse {
     @ApiModelProperty(value = "mandate id", required = true, example = "jhjcvaiqlediuhh23d89hd3")
     @JsonProperty(value = MANDATE_ID_FIELD_NAME)
     public String getMandateId() {
-        return agreementId;
+        return mandateId;
     }
 
     @ApiModelProperty(value = "provider id", required = true, example = "jhjcvaiqlediuhh23d89hd3")

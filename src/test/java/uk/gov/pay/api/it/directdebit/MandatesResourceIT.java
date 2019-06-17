@@ -102,13 +102,12 @@ public class MandatesResourceIT extends PaymentResourceITestBase {
                 .body("_links.next_url_post.href", is(directDebitFrontendSecureUrl()))
                 .body("_links.next_url_post.method", is("POST"))
                 .body("_links.next_url_post.type", is("application/x-www-form-urlencoded"))
-                .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
-                //TODOs
+                .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID));
+                //TODO
 //                .body("_links.events.href", is("http://publicapi.url/v1/directdebit/mandates/" + MANDATE_ID)) 
 //                .body("_links.events.method", is("GET"))
-//                .body("_links.events.href", is("http://publicapi.url/v1/directdebit/payments?mandate_id=" + MANDATE_ID))
-//                .body("_links.events.method", is("GET"))
-                ;
+//                .body("_links.payments.href", is("http://publicapi.url/v1/directdebit/payments?mandate_id=" + MANDATE_ID))
+//                .body("_links.payments.method", is("GET"));
     }
 
     @Test

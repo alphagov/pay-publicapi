@@ -69,11 +69,11 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
     }
 
     public void respondOk_whenCreateMandateRequest(CreateMandateRequestParams params) {
-        setupCreateAgreement(params.getGatewayAccountId(), aResponse()
+        setupCreateMandate(params.getGatewayAccountId(), aResponse()
                 .withStatus(CREATED_201)
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                 .withHeader(LOCATION, format("/v1/api/accounts/%s/mandates/%s", params.getGatewayAccountId(), params.getMandateId()))
-                .withBody(buildCreateAgreementResponse(
+                .withBody(buildCreateMandateResponse(
                         params.getMandateId(),
                         params.getProviderId(),
                         params.getServiceReference(),
@@ -112,26 +112,26 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
     }
 
     public void respondBadRequest_whenCreateAgreementRequest(String gatewayAccountId, String errorMsg) {
-        setupCreateAgreement(gatewayAccountId, withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg, GENERIC));
+        setupCreateMandate(gatewayAccountId, withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg, GENERIC));
     }
 
     public void respondWithMandateTypeInvalid_whenCreateAgreementRequest(String gatewayAccountId, String errorMsg) {
-        setupCreateAgreement(gatewayAccountId, withStatusAndErrorMessage(PRECONDITION_FAILED_412, errorMsg, INVALID_MANDATE_TYPE));
+        setupCreateMandate(gatewayAccountId, withStatusAndErrorMessage(PRECONDITION_FAILED_412, errorMsg, INVALID_MANDATE_TYPE));
     }
 
     public void respondWithGCAccountNotLinked_whenCreateAgreementRequest(String gatewayAccountId, String errorMsg) {
-        setupCreateAgreement(gatewayAccountId, withStatusAndErrorMessage(FORBIDDEN_403, errorMsg, GO_CARDLESS_ACCOUNT_NOT_LINKED));
+        setupCreateMandate(gatewayAccountId, withStatusAndErrorMessage(FORBIDDEN_403, errorMsg, GO_CARDLESS_ACCOUNT_NOT_LINKED));
     }
 
 
-    private String buildCreateAgreementResponse(String mandateId,
-                                                String mandateReference,
-                                                String serviceReference,
-                                                String returnUrl,
-                                                String createdDate,
-                                                MandateState state,
-                                                String description,
-                                                ImmutableMap<?, ?>... links) {
+    private String buildCreateMandateResponse(String mandateId,
+                                              String mandateReference,
+                                              String serviceReference,
+                                              String returnUrl,
+                                              String createdDate,
+                                              MandateState state,
+                                              String description,
+                                              ImmutableMap<?, ?>... links) {
         JsonStringBuilder builder = new JsonStringBuilder()
                 .add("mandate_id", mandateId)
                 .add("mandate_reference", mandateReference)
@@ -186,7 +186,7 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
         return "http://frontend_direct_debit/secure/";
     }
 
-    private void setupCreateAgreement(String gatewayAccountId, ResponseDefinitionBuilder response) {
+    private void setupCreateMandate(String gatewayAccountId, ResponseDefinitionBuilder response) {
         wireMockClassRule.stubFor(post(urlPathEqualTo(format("/v1/api/accounts/%s/mandates", gatewayAccountId)))
                 .withHeader(CONTENT_TYPE, matching(APPLICATION_JSON)).willReturn(response));
     }
