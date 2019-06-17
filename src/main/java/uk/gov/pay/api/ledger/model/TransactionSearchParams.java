@@ -10,6 +10,7 @@ import static uk.gov.pay.api.common.SearchConstants.DISPLAY_SIZE;
 import static uk.gov.pay.api.common.SearchConstants.EMAIL_KEY;
 import static uk.gov.pay.api.common.SearchConstants.FIRST_DIGITS_CARD_NUMBER_KEY;
 import static uk.gov.pay.api.common.SearchConstants.FROM_DATE_KEY;
+import static uk.gov.pay.api.common.SearchConstants.GATEWAY_ACCOUNT_ID;
 import static uk.gov.pay.api.common.SearchConstants.LAST_DIGITS_CARD_NUMBER_KEY;
 import static uk.gov.pay.api.common.SearchConstants.PAGE;
 import static uk.gov.pay.api.common.SearchConstants.REFERENCE_KEY;
@@ -17,7 +18,8 @@ import static uk.gov.pay.api.common.SearchConstants.STATE_KEY;
 import static uk.gov.pay.api.common.SearchConstants.TO_DATE_KEY;
 
 public class TransactionSearchParams {
-    
+
+    private String accountId;
     @QueryParam("reference")
     private String reference;
     @QueryParam("email")
@@ -40,6 +42,10 @@ public class TransactionSearchParams {
     private String firstDigitsCardNumber;
     @QueryParam("last_digits_card_number")
     private String lastDigitsCardNumber;
+
+    public void setAccountId(String accountId) {
+        this.accountId = accountId;
+    }
 
     public String getReference() {
         return reference;
@@ -87,6 +93,7 @@ public class TransactionSearchParams {
 
     public Map<String, String> getQueryMap() {
         Map<String, String> queryParams = new HashMap<>();
+        queryParams.put(GATEWAY_ACCOUNT_ID, accountId);
         queryParams.put(REFERENCE_KEY, reference);
         queryParams.put(EMAIL_KEY, email);
         queryParams.put(STATE_KEY, state);
@@ -98,7 +105,7 @@ public class TransactionSearchParams {
         queryParams.put(TO_DATE_KEY, toDate);
         queryParams.put(PAGE, pageNumber);
         queryParams.put(DISPLAY_SIZE, displaySize);
-        
+
         return queryParams;
     }
 }

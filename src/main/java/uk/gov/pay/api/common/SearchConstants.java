@@ -2,6 +2,7 @@ package uk.gov.pay.api.common;
 
 public class SearchConstants {
 
+    public static final String GATEWAY_ACCOUNT_ID = "account_id";
     public static final String REFERENCE_KEY = "reference";
     public static final String EMAIL_KEY = "email";
     public static final String STATE_KEY = "state";

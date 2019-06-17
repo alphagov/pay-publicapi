@@ -3,7 +3,6 @@ package uk.gov.pay.api.ledger.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.links.SearchNavigationLinks;
 import uk.gov.pay.api.model.search.SearchPagination;
 import uk.gov.pay.api.model.search.card.PaymentForSearchResult;

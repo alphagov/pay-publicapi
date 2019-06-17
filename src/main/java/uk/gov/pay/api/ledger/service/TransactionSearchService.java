@@ -29,8 +29,8 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.http.HttpStatus.SC_OK;
@@ -66,15 +66,17 @@ public class TransactionSearchService {
         this.paymentApiUriGenerator = paymentApiUriGenerator;
         this.baseUrl = configuration.getBaseUrl();
     }
-    
+
     public TransactionSearchResults doSearch(Account account, TransactionSearchParams searchParams) {
         validateSearchParameters(null, searchParams.getState(), searchParams.getReference(),
                 searchParams.getEmail(), searchParams.getCardBrand(), searchParams.getFromDate(),
                 searchParams.getToDate(), searchParams.getPageNumber(), searchParams.getDisplaySize(),
                 null, searchParams.getFirstDigitsCardNumber(), searchParams.getLastDigitsCardNumber());
+
         validateSupportedSearchParams(searchParams.getQueryMap());
-        
-        String url = ledgerUriGenerator.transactionsURIWithParams(account, searchParams.getQueryMap());
+
+        searchParams.setAccountId(account.getAccountId());
+        String url = ledgerUriGenerator.transactionsURIWithParams(searchParams.getQueryMap());
         Response ledgerResponse = client
                 .target(url)
                 .request()
@@ -94,12 +96,12 @@ public class TransactionSearchService {
         } catch (ProcessingException ex) {
             throw new SearchTransactionsException(ex);
         }
-        
+
         List<PaymentForSearchResult> chargeFromResponses = response.getPayments()
                 .stream()
                 .map(this::getPaymentForSearchResult)
-                .collect(Collectors.toList());
-        
+                .collect(toList());
+
         return new TransactionSearchResults(
                 response.getTotal(),
                 response.getCount(),
@@ -124,11 +126,11 @@ public class TransactionSearchService {
 
         try {
             return new SearchNavigationLinks()
-                .withSelfLink(transformIntoPublicUri(baseUrl, links.getSelf(), path))
-                .withFirstLink(transformIntoPublicUri(baseUrl, links.getFirstPage(), path))
-                .withLastLink(transformIntoPublicUri(baseUrl, links.getLastPage(), path))
-                .withPrevLink(transformIntoPublicUri(baseUrl, links.getPrevPage(), path))
-                .withNextLink(transformIntoPublicUri(baseUrl, links.getNextPage(), path));
+                    .withSelfLink(transformIntoPublicUri(baseUrl, links.getSelf(), path))
+                    .withFirstLink(transformIntoPublicUri(baseUrl, links.getFirstPage(), path))
+                    .withLastLink(transformIntoPublicUri(baseUrl, links.getLastPage(), path))
+                    .withPrevLink(transformIntoPublicUri(baseUrl, links.getPrevPage(), path))
+                    .withNextLink(transformIntoPublicUri(baseUrl, links.getNextPage(), path));
         } catch (URISyntaxException ex) {
             throw new SearchPaymentsException(ex);
         }
@@ -141,6 +143,7 @@ public class TransactionSearchService {
         return UriBuilder.fromUri(baseUrl)
                 .path(path)
                 .replaceQuery(new URI(link.getHref()).getQuery())
+                .replaceQueryParam("account_id",(Object[]) null)
                 .build()
                 .toString();
     }

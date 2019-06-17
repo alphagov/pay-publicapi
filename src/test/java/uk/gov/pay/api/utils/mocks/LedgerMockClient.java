@@ -21,15 +21,15 @@ public class LedgerMockClient  {
         this.ledgerMock = ledgerMock;
     }
 
-    public void respondOk_whenSearchCharges(String accountId, String expectedResponse) {
-        whenSearchTransactions(accountId, aResponse()
+    public void respondOk_whenSearchCharges(String expectedResponse) {
+        whenSearchTransactions(aResponse()
                 .withStatus(OK_200)
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                 .withBody(expectedResponse));
     }
 
-    public void whenSearchTransactions(String gatewayAccountId, ResponseDefinitionBuilder response) {
-        ledgerMock.stubFor(get(urlPathEqualTo(format("/v1/api/accounts/%s/transactions", gatewayAccountId)))
+    public void whenSearchTransactions(ResponseDefinitionBuilder response) {
+        ledgerMock.stubFor(get(urlPathEqualTo(format("/v1/transaction")))
                 .withHeader(ACCEPT, matching(APPLICATION_JSON)).willReturn(response));
     }
 }

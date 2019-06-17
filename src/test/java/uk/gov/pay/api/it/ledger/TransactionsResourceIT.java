@@ -76,9 +76,9 @@ public class TransactionsResourceIT {
         CardDetails cardDetails = new CardDetails(null, null, "J. Doe",
                 null, billingAddress, "");
         PaymentNavigationLinksFixture fixture = new PaymentNavigationLinksFixture();
-        fixture.withSelfLink("https://localhost:9300/v1/api/accounts/1/charges?reference=reference&page=1&display_size=500");
-        fixture.withFirstLink("https://localhost:9300/v1/api/accounts/1/charges?reference=reference&page=1&display_size=500");
-        fixture.withLastLink("https://localhost:9300/v1/api/accounts/1/charges?reference=reference&page=1&display_size=500");
+        fixture.withSelfLink("https://ledger/v1/transaction?account_id=1&reference=reference&page=1&display_size=500");
+        fixture.withFirstLink("https://ledger/v1/transaction?account_id=1&reference=reference&page=1&display_size=500");
+        fixture.withLastLink("https://ledger/v1/transaction?account_id=1&reference=reference&page=1&display_size=500");
         String transactions = aPaginatedTransactionSearchResult()
                 .withCount(2)
                 .withPage(1)
@@ -92,7 +92,7 @@ public class TransactionsResourceIT {
                         .withEmail("j.doe@example.org")
                         .getResults())
                 .build();
-        ledgerMockClient.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, transactions);
+        ledgerMockClient.respondOk_whenSearchCharges(transactions);
 
         searchTransactions(ImmutableMap.of("reference", "reference"))
                 .statusCode(200)
@@ -125,9 +125,9 @@ public class TransactionsResourceIT {
                 .body("results[0].card_details.billing_address.postcode", is("AB1 CD2"))
                 .body("results[0].card_details.billing_address.country", is("GB"))
                 .body("results[0].card_details.card_brand", is(emptyString()))
-                .body("_links.self.href", is(expectedChargesLocationFor("?reference=reference&page=1&display_size=500")))
-                .body("_links.first_page.href", is(expectedChargesLocationFor("?reference=reference&page=1&display_size=500")))
-                .body("_links.last_page.href", is(expectedChargesLocationFor("?reference=reference&page=1&display_size=500")));
+                .body("_links.self.href", is(expectedChargesLocationFor("?reference=reference&display_size=500&page=1")))
+                .body("_links.first_page.href", is(expectedChargesLocationFor("?reference=reference&display_size=500&page=1")))
+                .body("_links.last_page.href", is(expectedChargesLocationFor("?reference=reference&display_size=500&page=1")));
     }
 
     private ValidatableResponse searchTransactions(Map<String, String> queryParams) {
