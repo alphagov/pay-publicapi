@@ -143,9 +143,9 @@ public class PaymentsResourceAgreementIdValidationIT extends PaymentResourceITes
 
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(3))
-                .assertThat("$.field", is("agreement_id"))
+                .assertThat("$.field", is("mandate_id"))
                 .assertThat("$.code", is("P0102"))
-                .assertThat("$.description", is("Invalid attribute value: agreement_id. Must be less than or equal to 26 characters length"));
+                .assertThat("$.description", is("Invalid attribute value: mandate_id. Must be less than or equal to 26 characters length"));
     }
 
     @Test

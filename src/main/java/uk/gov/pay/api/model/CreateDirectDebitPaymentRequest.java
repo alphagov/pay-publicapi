@@ -14,19 +14,23 @@ import java.util.StringJoiner;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.RETURN_URL_FIELD_NAME;
 
 @ApiModel(value = "CreatePaymentRequest", description = "The Payment Request Payload")
-public class CreateDirectDebitPaymentRequest extends CreatePaymentRequest{
+public class CreateDirectDebitPaymentRequest extends CreatePaymentRequest {
 
     public static final int AGREEMENT_ID_MAX_LENGTH = 26;
+    // TODO - exists for backwards compatibility, remove when payment endpoints are completely split out
     public static final String AGREEMENT_ID_FIELD_NAME = "agreement_id";
 
     @Size(max = AGREEMENT_ID_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
-    @JsonProperty(value = AGREEMENT_ID_FIELD_NAME)
-    private final String agreementId;
-
+    @JsonProperty("mandate_id")
+    private String mandateId;
+    
+    public CreateDirectDebitPaymentRequest() {
+        //To enable Jackson serialisation we need a default constructor
+    }
 
     public CreateDirectDebitPaymentRequest(CreatePaymentRequestBuilder createPaymentRequestBuilder) {
         super(createPaymentRequestBuilder);
-        this.agreementId = createPaymentRequestBuilder.getAgreementId();
+        this.mandateId = createPaymentRequestBuilder.getMandateId();
     }
 
     @Override
@@ -36,8 +40,8 @@ public class CreateDirectDebitPaymentRequest extends CreatePaymentRequest{
     }
 
     @ApiModelProperty(value = "ID of the agreement being used to collect the payment", required = false, example = "33890b55-b9ea-4e2f-90fd-77ae0e9009e2")
-    public String getAgreementId() {
-        return agreementId;
+    public String getMandateId() {
+        return mandateId;
     }
 
     @Override
@@ -46,7 +50,7 @@ public class CreateDirectDebitPaymentRequest extends CreatePaymentRequest{
                 .add("amount", this.getAmount())
                 .add("reference", this.getReference())
                 .add("description", this.getDescription())
-                .add("agreement_id", agreementId);
+                .add("agreement_id", mandateId);
         getLanguage().ifPresent(language -> request.add("language", language.toString()));
         getEmail().ifPresent(email -> request.add("email", email));
 
@@ -69,7 +73,7 @@ public class CreateDirectDebitPaymentRequest extends CreatePaymentRequest{
         StringJoiner joiner = new StringJoiner(", ", "{", "}");
         joiner.add("amount: ").add(String.valueOf(super.getAmount()));
         joiner.add("reference: ").add(super.getReference());
-        joiner.add("agreement_id: ").add(agreementId);
+        joiner.add("mandate_id: ").add(mandateId);
         super.getLanguage().ifPresent(value -> joiner.add("language: ").add(value.toString()));
         return joiner.toString();
     }

@@ -29,20 +29,29 @@ public abstract class CreatePaymentRequest {
 
     // Even though the minimum is 0, this is only allowed for accounts this is enabled for and is a hidden feature
     // so the validation error message will always state that the minimum is 1 for consistency.
+    @JsonProperty("amount")
     @Min(value = AMOUNT_MIN_VALUE, message = "Must be greater than or equal to 1")
     @Max(value = AMOUNT_MAX_VALUE, message = "Must be less than or equal to {value}")
-    private final int amount;
+    private int amount;
 
+    @JsonProperty("reference")
     @Size(max = REFERENCE_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
-    private final String reference;
+    private String reference;
 
+    @JsonProperty("description")
     @Size(max = DESCRIPTION_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
-    private final String description;
+    private String description;
 
-    private final SupportedLanguage language;
+    @JsonProperty("language")
+    private SupportedLanguage language;
 
+    @JsonProperty("email")
     @Length(max = EMAIL_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
-    private final String email;
+    private String email;
+
+    public CreatePaymentRequest() {
+        //To enable Jackson serialisation we need a default constructor
+    }
 
     public CreatePaymentRequest(CreatePaymentRequestBuilder createPaymentRequestBuilder) {
         this.amount = createPaymentRequestBuilder.getAmount();
