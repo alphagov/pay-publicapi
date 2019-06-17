@@ -6,8 +6,8 @@ import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.PaymentProvider;
 import uk.gov.pay.api.model.links.directdebit.AgreementLinks;
 
-@ApiModel(value = "CreateAgreementResponse", description = "The Agreement Payload to create a new Agreement")
-public class CreateAgreementResponse {
+@ApiModel(value = "CreateMandateResponse", description = "The Agreement Payload to create a new Agreement")
+public class CreateMandateResponse {
 
     private static final String MANDATE_ID_FIELD_NAME = "mandate_id";
     private static final String PROVIDER_ID_FIELD_NAME = "provider_id";
@@ -24,19 +24,19 @@ public class CreateAgreementResponse {
     private final String reference;
     private final String returnUrl;
     private final String createdDate;
-    private final AgreementStatus state;
+    private final MandateStatus state;
     private final AgreementLinks links;
     private final String description;
     private final String paymentProvider = PaymentProvider.GOCARDLESS.getName();
 
-    private CreateAgreementResponse(String agreementId,
-                                    String providerId,
-                                    String reference,
-                                    String returnUrl,
-                                    String createdDate,
-                                    AgreementStatus state,
-                                    AgreementLinks links, 
-                                    String description) {
+    private CreateMandateResponse(String agreementId,
+                                  String providerId,
+                                  String reference,
+                                  String returnUrl,
+                                  String createdDate,
+                                  MandateStatus state,
+                                  AgreementLinks links,
+                                  String description) {
         this.agreementId = agreementId;
         this.providerId = providerId;
         this.reference = reference;
@@ -47,14 +47,14 @@ public class CreateAgreementResponse {
         this.description = description;
     }
 
-    public static CreateAgreementResponse from(MandateConnectorResponse mandate, AgreementLinks links) {
-        return new CreateAgreementResponse(
+    public static CreateMandateResponse from(MandateConnectorResponse mandate, AgreementLinks links) {
+        return new CreateMandateResponse(
                 mandate.getMandateId(),
                 mandate.getMandateReference(),
                 mandate.getServiceReference(),
                 mandate.getReturnUrl(),
                 mandate.getCreatedDate(),
-                AgreementStatus.valueOf(mandate.getState().getStatus().toUpperCase()),
+                MandateStatus.valueOf(mandate.getState().getStatus().toUpperCase()),
                 links, 
                 mandate.getDescription());
     }
@@ -91,7 +91,7 @@ public class CreateAgreementResponse {
 
     @ApiModelProperty(value = "agreement state", required = true, example = "CREATED")
     @JsonProperty(value = STATE_FIELD_NAME)
-    public AgreementStatus getState() {
+    public MandateStatus getState() {
         return state;
     }
 

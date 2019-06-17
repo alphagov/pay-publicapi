@@ -7,7 +7,7 @@ import junitparams.converters.Nullable;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
-import uk.gov.pay.api.model.directdebit.agreement.AgreementStatus;
+import uk.gov.pay.api.model.directdebit.agreement.MandateStatus;
 import uk.gov.pay.api.model.directdebit.agreement.MandateState;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
@@ -30,7 +30,7 @@ import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_
 import static uk.gov.pay.commons.testing.matchers.HamcrestMatchers.optionalMatcher;
 
 @RunWith(JUnitParamsRunner.class)
-public class AgreementsResourceIT extends PaymentResourceITestBase {
+public class MandatesResourceIT extends PaymentResourceITestBase {
 
     private ConnectorDDMockClient connectorDDMockClient = new ConnectorDDMockClient(connectorDDMock);
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
@@ -94,7 +94,7 @@ public class AgreementsResourceIT extends PaymentResourceITestBase {
                 .body("return_url", is(RETURN_URL))
                 .body("created_date", is(CREATED_DATE))
                 .body("payment_provider", is("gocardless"))
-                .body("state.status", is(AgreementStatus.CREATED.getStatus()))
+                .body("state.status", is(MandateStatus.CREATED.getStatus()))
                 .body("_links.self.href", is(mandateLocationFor(MANDATE_ID)))
                 .body("_links.self.method", is("GET"))
                 .body("_links.next_url.href", is(directDebitFrontendSecureUrl() + CHARGE_TOKEN_ID))
@@ -217,7 +217,7 @@ public class AgreementsResourceIT extends PaymentResourceITestBase {
                 .body("provider_id", is(MANDATE_REFERENCE))
                 .body("reference", is(SERVICE_REFERENCE))
                 .body("return_url", is(RETURN_URL))
-                .body("state.status", is(AgreementStatus.CREATED.getStatus()))
+                .body("state.status", is(MandateStatus.CREATED.getStatus()))
                 .body("_links.self.href", is(mandateLocationFor(MANDATE_ID)))
                 .body("_links.self.method", is("GET"))
                 .body("_links.next_url.href", is(directDebitFrontendSecureUrl() + CHARGE_TOKEN_ID))

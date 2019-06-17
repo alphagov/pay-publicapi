@@ -14,7 +14,7 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.directdebit.agreement.AgreementError;
 import uk.gov.pay.api.model.directdebit.agreement.CreateAgreementRequest;
-import uk.gov.pay.api.model.directdebit.agreement.CreateAgreementResponse;
+import uk.gov.pay.api.model.directdebit.agreement.CreateMandateResponse;
 import uk.gov.pay.api.model.directdebit.agreement.GetAgreementResponse;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
 import uk.gov.pay.api.service.AgreementService;
@@ -35,16 +35,16 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Path("/")
 @Api(value = "/", description = "Public Api Endpoints for an agreements")
 @Produces({"application/json"})
-public class AgreementsResource {
+public class MandatesResource {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AgreementsResource.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MandatesResource.class);
 
     private final String baseUrl;
     private final AgreementService agreementService;
 
 
     @Inject
-    public AgreementsResource(PublicApiConfig configuration, AgreementService agreementService) {
+    public MandatesResource(PublicApiConfig configuration, AgreementService agreementService) {
         this.baseUrl = configuration.getBaseUrl();
         this.agreementService = agreementService;
     }
@@ -83,7 +83,7 @@ public class AgreementsResource {
             code = 201,
             nickname = "newAgreement")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Created", response = CreateAgreementResponse.class),
+            @ApiResponse(code = 201, message = "Created", response = CreateMandateResponse.class),
             @ApiResponse(code = 400, message = "Bad request", response = PaymentError.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
@@ -91,11 +91,11 @@ public class AgreementsResource {
     public Response createNewAgreement(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                        @ApiParam(value = "requestPayload", required = true) CreateAgreementRequest createAgreementRequest) {
         LOGGER.info("Agreement create request - [ {} ]", createAgreementRequest);
-        CreateAgreementResponse createAgreementResponse = agreementService.create(account, createAgreementRequest);
+        CreateMandateResponse createMandateResponse = agreementService.create(account, createAgreementRequest);
         URI agreementUri = UriBuilder.fromUri(baseUrl)
                 .path("/v1/agreements/{agreementId}")
-                .build(createAgreementResponse.getMandateId());
-        LOGGER.info("Agreement returned (created): [ {} ]", createAgreementResponse);
-        return Response.created(agreementUri).entity(createAgreementResponse).build();
+                .build(createMandateResponse.getMandateId());
+        LOGGER.info("Agreement returned (created): [ {} ]", createMandateResponse);
+        return Response.created(agreementUri).entity(createMandateResponse).build();
     }
 }

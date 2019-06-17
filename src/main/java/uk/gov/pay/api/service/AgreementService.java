@@ -1,6 +1,5 @@
 package uk.gov.pay.api.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +8,7 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateAgreementException;
 import uk.gov.pay.api.exception.GetAgreementException;
 import uk.gov.pay.api.model.directdebit.agreement.CreateAgreementRequest;
-import uk.gov.pay.api.model.directdebit.agreement.CreateAgreementResponse;
+import uk.gov.pay.api.model.directdebit.agreement.CreateMandateResponse;
 import uk.gov.pay.api.model.directdebit.agreement.GetAgreementResponse;
 import uk.gov.pay.api.model.directdebit.agreement.MandateConnectorRequest;
 import uk.gov.pay.api.model.directdebit.agreement.MandateConnectorResponse;
@@ -41,12 +40,12 @@ public class AgreementService {
         this.publicApiUriGenerator = publicApiUriGenerator;
     }
 
-    public CreateAgreementResponse create(Account account, CreateAgreementRequest createAgreementRequest) {
+    public CreateMandateResponse create(Account account, CreateAgreementRequest createAgreementRequest) {
         MandateConnectorResponse mandate = createMandate(account, MandateConnectorRequest.from(createAgreementRequest));
         AgreementLinks agreementLinks = createLinksFromMandateResponse(mandate);
-        CreateAgreementResponse createAgreementResponse = CreateAgreementResponse.from(mandate, agreementLinks);
-        LOGGER.info("Agreement returned (created): [ {} ]", createAgreementResponse);
-        return createAgreementResponse;
+        CreateMandateResponse createMandateResponse = CreateMandateResponse.from(mandate, agreementLinks);
+        LOGGER.info("Agreement returned (created): [ {} ]", createMandateResponse);
+        return createMandateResponse;
     }
 
     public GetAgreementResponse get(Account account, String agreementId) {

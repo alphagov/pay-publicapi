@@ -22,17 +22,7 @@ public class MandateState {
     @JsonProperty("code")
     private String code;
 
-    public static MandateState createMandateState(JsonNode node) {
-        return new MandateState(
-                node.get("status").asText(),
-                node.get("finished").asBoolean(),
-                node.has("message") ? node.get("message").asText() : null,
-                node.has("code") ? node.get("code").asText() : null
-        );
-    }
-
-    public MandateState() {
-    }
+    public MandateState() {}
 
     public MandateState(String status, boolean finished) {
         this(status, finished, null, null);

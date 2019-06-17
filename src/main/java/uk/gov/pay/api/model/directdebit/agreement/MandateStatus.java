@@ -3,12 +3,12 @@ package uk.gov.pay.api.model.directdebit.agreement;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-public enum AgreementStatus {
+public enum MandateStatus {
     CREATED("created");
     
     private String status;
 
-    AgreementStatus(String status) {
+    MandateStatus(String status) {
         this.status = status;
     }
 
