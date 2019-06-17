@@ -23,6 +23,13 @@ public class DirectDebitConnectorCreatePaymentResponse {
     @JsonProperty
     private String reference;
 
+    public String getMandateId() {
+        return mandateId;
+    }
+
+    @JsonProperty("mandate_id")
+    private String mandateId;
+
     @JsonProperty("created_date")
     private String createdDate;
 
@@ -96,6 +103,7 @@ public class DirectDebitConnectorCreatePaymentResponse {
         private List<Map<String, Object>> dataLinks;
         private String paymentExternalId;
         private Long amount;
+        private String mandateId;
         private String paymentProvider;
         private String description;
         private String reference;
@@ -143,6 +151,11 @@ public class DirectDebitConnectorCreatePaymentResponse {
             this.state = state;
             return this;
         }
+        
+        public DirectDebitConnectorCreatePaymentResponseBuilder withMandateId(String mandateId) {
+            this.mandateId = mandateId;
+            return this;
+        }
 
         public DirectDebitConnectorCreatePaymentResponse build() {
             DirectDebitConnectorCreatePaymentResponse directDebitConnectorCreatePaymentResponse = new DirectDebitConnectorCreatePaymentResponse();
@@ -153,6 +166,7 @@ public class DirectDebitConnectorCreatePaymentResponse {
             directDebitConnectorCreatePaymentResponse.description = this.description;
             directDebitConnectorCreatePaymentResponse.reference = this.reference;
             directDebitConnectorCreatePaymentResponse.paymentProvider = this.paymentProvider;
+            directDebitConnectorCreatePaymentResponse.mandateId = this.mandateId;
             return directDebitConnectorCreatePaymentResponse;
         }
     }

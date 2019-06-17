@@ -108,6 +108,7 @@ public class DirectDebitPaymentsResourceTest {
         final String referenceText = "a reference";
         final String descriptionText = "a description";
         final String paymentProviderText = "a payment provider";
+        final String mandateIdText = "amandateid";
         final String status = "created";
         final boolean finished = false;
 
@@ -117,6 +118,7 @@ public class DirectDebitPaymentsResourceTest {
                 .withPaymentProvider(paymentProviderText)
                 .withCreatedDate(createdDate)
                 .withDescription(descriptionText)
+                .withMandateId(mandateIdText)
                 .withState(new PaymentState(status, finished))
                 .withReference(referenceText)
                 .build();
@@ -129,7 +131,7 @@ public class DirectDebitPaymentsResourceTest {
                 .amount(500)
                 .description(descriptionText)
                 .reference(referenceText)
-                .mandateId("test")
+                .mandateId(mandateIdText)
                 .build();
 
         postPaymentResponse(createDirectDebitPaymentRequest)
@@ -145,9 +147,8 @@ public class DirectDebitPaymentsResourceTest {
                 .body("_links.events.href", is(paymentEventsLocationFor(paymentId)))
                 .body("_links.events.method", is("GET"))
                 .body("_links.self.href", is(paymentLocationFor(paymentId)))
-                .body("_links.self.method", is("GET"));
-        // TODO - enable mandate link when dd-connector returns mandate id
-//                .body("_links.mandate.href", is(mandateLocationFor(mandateId)))
-//                .body("_links.mandate.method", is("GET"));
+                .body("_links.self.method", is("GET"))
+                .body("_links.mandate.href", is(mandateLocationFor(mandateIdText)))
+                .body("_links.mandate.method", is("GET"));
     }
 }

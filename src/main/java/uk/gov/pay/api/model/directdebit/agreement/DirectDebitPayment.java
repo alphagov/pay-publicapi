@@ -19,6 +19,9 @@ public class DirectDebitPayment extends Payment {
 
     @JsonProperty("_links")
     private DirectDebitPaymentLinks links;
+    
+    @JsonProperty("mandate_id")
+    private String mandateId;
 
     @Deprecated
     public DirectDebitPayment(String chargeId, long amount, PaymentState state, String description,
@@ -51,7 +54,7 @@ public class DirectDebitPayment extends Payment {
                 .withSelf(builder.selfLink)
                 .withEvents(builder.eventsLink)
                 // TODO - enable mandate link when dd-connector returns mandate id
-//                .withMandate(builder.mandateLink)
+                .withMandate(builder.mandateLink)
                 .build();
     }
 
