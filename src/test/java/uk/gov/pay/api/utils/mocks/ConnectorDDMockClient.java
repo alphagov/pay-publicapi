@@ -137,6 +137,7 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                 .add("mandate_reference", mandateReference)
                 .add("service_reference", serviceReference)
                 .add("return_url", returnUrl)
+                .add("payment_provider", "gocardless")
                 .add("created_date", createdDate)
                 .add("state", state)
                 .add("links", asList(links));

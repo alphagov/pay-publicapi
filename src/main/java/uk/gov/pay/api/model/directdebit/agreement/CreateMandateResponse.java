@@ -3,7 +3,6 @@ package uk.gov.pay.api.model.directdebit.agreement;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import uk.gov.pay.api.model.PaymentProvider;
 import uk.gov.pay.api.model.links.directdebit.AgreementLinks;
 
 @ApiModel(value = "CreateMandateResponse", description = "The Agreement Payload to create a new Agreement")
@@ -27,7 +26,7 @@ public class CreateMandateResponse {
     private final MandateStatus state;
     private final AgreementLinks links;
     private final String description;
-    private final String paymentProvider = PaymentProvider.GOCARDLESS.getName();
+    private final String paymentProvider;
 
     private CreateMandateResponse(String agreementId,
                                   String providerId,
@@ -36,7 +35,7 @@ public class CreateMandateResponse {
                                   String createdDate,
                                   MandateStatus state,
                                   AgreementLinks links,
-                                  String description) {
+                                  String description, String paymentProvider) {
         this.agreementId = agreementId;
         this.providerId = providerId;
         this.reference = reference;
@@ -45,6 +44,7 @@ public class CreateMandateResponse {
         this.state = state;
         this.links = links;
         this.description = description;
+        this.paymentProvider = paymentProvider;
     }
 
     public static CreateMandateResponse from(MandateConnectorResponse mandate, AgreementLinks links) {
@@ -56,7 +56,8 @@ public class CreateMandateResponse {
                 mandate.getCreatedDate(),
                 MandateStatus.valueOf(mandate.getState().getStatus().toUpperCase()),
                 links, 
-                mandate.getDescription());
+                mandate.getDescription(), 
+                mandate.getPaymentProvider());
     }
 
     @ApiModelProperty(value = "mandate id", required = true, example = "jhjcvaiqlediuhh23d89hd3")
