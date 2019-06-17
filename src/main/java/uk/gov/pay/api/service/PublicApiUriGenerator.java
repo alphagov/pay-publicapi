@@ -57,6 +57,24 @@ public class PublicApiUriGenerator {
                 .path("/v1/payments/{paymentId}/capture")
                 .build(chargeId);
     }
+    
+    public URI getDirectDebitPaymentURI(String paymentId) {
+        return UriBuilder.fromUri(baseUrl)
+                .path("/v1/directdebit/payments/{paymentId}")
+                .build(paymentId);
+    }
+
+    public URI getDirectDebitPaymentEventsURI(String paymentId) {
+        return UriBuilder.fromUri(baseUrl)
+                .path("/v1/directdebit/payments/{paymentId}/events")
+                .build(paymentId);
+    }
+
+    public URI getDirectDebitMandateURI(String mandateId) {
+        return UriBuilder.fromUri(baseUrl)
+                .path("/v1/directdebit/mandates/{mandateId}")
+                .build(mandateId);
+    }
 
     public String convertHostToPublicAPI(String link) {
         URI originalUri = UriBuilder.fromUri(link).build();

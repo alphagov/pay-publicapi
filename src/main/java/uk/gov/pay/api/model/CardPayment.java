@@ -1,5 +1,6 @@
 package uk.gov.pay.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -55,12 +56,21 @@ public class CardPayment extends Payment {
     @ApiModelProperty(name = "metadata", dataType = "Map[String,String]")
     private final ExternalMetadata metadata;
 
+    @JsonProperty("return_url")
+    protected String returnUrl;
+    protected String email;
+
+    //Used by Swagger to document the right model in the PaymentsResource
+    @JsonIgnore
+    protected String paymentType;
+
+
     public CardPayment(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                        String reference, String email, String paymentProvider, String createdDate,
                        RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
                        SupportedLanguage language, boolean delayedCapture, Long corporateCardSurcharge, Long totalAmount,
                        String providerId, ExternalMetadata metadata, Long fee, Long netAmount) {
-        super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate);
+        super(chargeId, amount, state, description, reference, paymentProvider, createdDate);
         this.refundSummary = refundSummary;
         this.settlementSummary = settlementSummary;
         this.cardDetails = cardDetails;
@@ -73,6 +83,8 @@ public class CardPayment extends Payment {
         this.totalAmount = totalAmount;
         this.fee = fee;
         this.netAmount = netAmount;
+        this.email = email;
+        this.returnUrl = returnUrl;
     }
 
     /**
@@ -139,6 +151,16 @@ public class CardPayment extends Payment {
 
     public String getProviderId() {
         return providerId;
+    }
+
+    @ApiModelProperty(example = "http://your.service.domain/your-reference")
+    public Optional<String> getReturnUrl() {
+        return Optional.ofNullable(returnUrl);
+    }
+
+    @ApiModelProperty(example = "your email")
+    public Optional<String> getEmail() {
+        return Optional.ofNullable(email);
     }
 
     @Override

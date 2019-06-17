@@ -77,7 +77,7 @@ class RequestJsonParser {
             throw new BadRequestException(aPaymentError(CREATE_PAYMENT_INDETERMINABLE_TYPE));
         
         if (paymentRequest.has(AGREEMENT_ID_FIELD_NAME))
-            builder.agreementId(validateAndGetAgreementId(paymentRequest));
+            builder.mandateId(validateAndGetAgreementId(paymentRequest));
         else
             builder.returnUrl(validateAndGetReturnUrl(paymentRequest));
         

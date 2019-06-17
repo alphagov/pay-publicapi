@@ -92,7 +92,7 @@ public class RequestJsonParserTest {
         assertThat(createPaymentRequest.getAmount(), is(1000));
         assertThat(createPaymentRequest.getReference(), is("Some reference"));
         assertThat(createPaymentRequest.getDescription(), is("Some description"));
-        assertThat(createPaymentRequest.getAgreementId(), is("abcdef1234567890abcedf1234"));
+        assertThat(createPaymentRequest.getMandateId(), is("abcdef1234567890abcedf1234"));
     }
 
     @Test

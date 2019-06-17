@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.ChargeFromResponse;
-import uk.gov.pay.api.model.DirectDebitPayment;
+import uk.gov.pay.api.model.directdebit.agreement.DirectDebitPayment;
 import uk.gov.pay.api.model.Payment;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.PaymentState;
@@ -19,7 +19,6 @@ import uk.gov.pay.commons.model.charge.ExternalMetadata;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
 
 import static uk.gov.pay.api.model.Payment.LINKS_JSON_ATTRIBUTE;
 
@@ -64,10 +63,10 @@ public class PaymentWithAllLinks {
         }
     }
 
-    private PaymentWithAllLinks(String chargeId, long amount, PaymentState state, String returnUrl, String description,
-                                String reference, String email, String paymentProvider, String createdDate, List<PaymentConnectorResponseLink> paymentConnectorResponseLinks,
+    private PaymentWithAllLinks(String chargeId, long amount, PaymentState state, String description,
+                                String reference, String paymentProvider, String createdDate, List<PaymentConnectorResponseLink> paymentConnectorResponseLinks,
                                 URI selfLink) {
-        this.payment = new DirectDebitPayment(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate);
+        this.payment = new DirectDebitPayment(chargeId, amount, state, description, reference, paymentProvider, createdDate);
         this.links.addSelf(selfLink.toString());
         this.links.addKnownLinksValueOf(paymentConnectorResponseLinks);
     }
@@ -78,10 +77,8 @@ public class PaymentWithAllLinks {
                 paymentConnector.getChargeId(),
                 paymentConnector.getAmount(),
                 paymentConnector.getState(),
-                paymentConnector.getReturnUrl(),
                 paymentConnector.getDescription(),
                 paymentConnector.getReference(),
-                paymentConnector.getEmail(),
                 paymentConnector.getPaymentProvider(),
                 paymentConnector.getCreatedDate(),
                 paymentConnector.getLinks(),

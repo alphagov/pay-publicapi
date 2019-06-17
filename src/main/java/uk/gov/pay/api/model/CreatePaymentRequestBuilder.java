@@ -22,7 +22,7 @@ public class CreatePaymentRequestBuilder {
     private PrefilledCardholderDetails prefilledCardholderDetails;
 
     public CreatePaymentRequest build() {
-        return this.getAgreementId() == null ? new CreateCardPaymentRequest(this) : new CreateDirectDebitPaymentRequest(this);
+        return this.getMandateId() == null ? new CreateCardPaymentRequest(this) : new CreateDirectDebitPaymentRequest(this);
     }
 
     public static CreatePaymentRequestBuilder builder() {
@@ -49,7 +49,7 @@ public class CreatePaymentRequestBuilder {
         return this;
     }
 
-    public CreatePaymentRequestBuilder agreementId(String agreementId) {
+    public CreatePaymentRequestBuilder mandateId(String agreementId) {
         this.agreementId = agreementId;
         return this;
     }
@@ -139,7 +139,7 @@ public class CreatePaymentRequestBuilder {
         return description;
     }
 
-    public String getAgreementId() {
+    public String getMandateId() {
         return agreementId;
     }
 

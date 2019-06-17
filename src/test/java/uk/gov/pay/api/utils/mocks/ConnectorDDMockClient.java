@@ -1,10 +1,13 @@
 package uk.gov.pay.api.utils.mocks;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
 import uk.gov.pay.api.model.PaymentState;
+import uk.gov.pay.api.model.directdebit.DirectDebitConnectorCreatePaymentResponse;
 import uk.gov.pay.api.model.directdebit.agreement.MandateState;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.commons.model.ErrorIdentifier;
@@ -51,7 +54,19 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                         .withBody(chargeResponseBody));
     }
-
+    
+    public void respondWithPaymentCreated(DirectDebitConnectorCreatePaymentResponse response,
+                                          String gatewayAccountId) throws JsonProcessingException {
+        var body = new ObjectMapper().writeValueAsString(response);
+        var responseEnclosed = new ResponseDefinitionBuilder()
+                .withStatus(201)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                .withBody(body);
+        wireMockClassRule
+                .stubFor(post(urlPathEqualTo(format("/v1/api/accounts/%s/charges/collect", gatewayAccountId)))
+                .willReturn(responseEnclosed));
+    }
+    
     public void respondOk_whenCreateAgreementRequest(String mandateId,
                                                      String providerId,
                                                      String serviceReference,
