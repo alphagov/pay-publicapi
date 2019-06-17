@@ -3,7 +3,7 @@ package uk.gov.pay.api.model;
 import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.commons.model.charge.ExternalMetadata;
 
-public class CreatePaymentRequestBuilder {
+public class CreateCardPaymentRequestBuilder {
     private ExternalMetadata metadata;
     private int amount;
     private String returnUrl;
@@ -21,85 +21,85 @@ public class CreatePaymentRequestBuilder {
     private String country;
     private PrefilledCardholderDetails prefilledCardholderDetails;
 
-    public CreatePaymentRequest build() {
-        return this.getMandateId() == null ? new CreateCardPaymentRequest(this) : new CreateDirectDebitPaymentRequest(this);
+    public CreateCardPaymentRequest build() {
+        return new CreateCardPaymentRequest(this);
     }
 
-    public static CreatePaymentRequestBuilder builder() {
-        return new CreatePaymentRequestBuilder();
+    public static CreateCardPaymentRequestBuilder builder() {
+        return new CreateCardPaymentRequestBuilder();
     }
 
-    public CreatePaymentRequestBuilder amount(int amount) {
+    public CreateCardPaymentRequestBuilder amount(int amount) {
         this.amount = amount;
         return this;
     }
 
-    public CreatePaymentRequestBuilder returnUrl(String returnUrl) {
+    public CreateCardPaymentRequestBuilder returnUrl(String returnUrl) {
         this.returnUrl = returnUrl;
         return this;
     }
 
-    public CreatePaymentRequestBuilder reference(String reference) {
+    public CreateCardPaymentRequestBuilder reference(String reference) {
         this.reference = reference;
         return this;
     }
 
-    public CreatePaymentRequestBuilder description(String description) {
+    public CreateCardPaymentRequestBuilder description(String description) {
         this.description = description;
         return this;
     }
 
-    public CreatePaymentRequestBuilder mandateId(String agreementId) {
+    public CreateCardPaymentRequestBuilder mandateId(String agreementId) {
         this.agreementId = agreementId;
         return this;
     }
 
-    public CreatePaymentRequestBuilder language(SupportedLanguage language) {
+    public CreateCardPaymentRequestBuilder language(SupportedLanguage language) {
         this.language = language;
         return this;
     }
 
-    public CreatePaymentRequestBuilder delayedCapture(Boolean delayedCapture) {
+    public CreateCardPaymentRequestBuilder delayedCapture(Boolean delayedCapture) {
         this.delayedCapture = delayedCapture;
         return this;
     }
 
-    public CreatePaymentRequestBuilder metadata(ExternalMetadata metadata) {
+    public CreateCardPaymentRequestBuilder metadata(ExternalMetadata metadata) {
         this.metadata = metadata;
         return this;
     }
 
-    public CreatePaymentRequestBuilder email(String email) {
+    public CreateCardPaymentRequestBuilder email(String email) {
         this.email = email;
         return this;
     }
 
-    public CreatePaymentRequestBuilder cardholderName(String cardHolderName) {
+    public CreateCardPaymentRequestBuilder cardholderName(String cardHolderName) {
         this.cardholderName = cardHolderName;
         return this;
     }
 
-    public CreatePaymentRequestBuilder addressLine1(String addressLine1) {
+    public CreateCardPaymentRequestBuilder addressLine1(String addressLine1) {
         this.addressLine1 = addressLine1;
         return this;
     }
 
-    public CreatePaymentRequestBuilder addressLine2(String addressLine2) {
+    public CreateCardPaymentRequestBuilder addressLine2(String addressLine2) {
         this.addressLine2 = addressLine2;
         return this;
     }
 
-    public CreatePaymentRequestBuilder city(String city) {
+    public CreateCardPaymentRequestBuilder city(String city) {
         this.city = city;
         return this;
     }
 
-    public CreatePaymentRequestBuilder postcode(String postcode) {
+    public CreateCardPaymentRequestBuilder postcode(String postcode) {
         this.postcode = postcode;
         return this;
     }
 
-    public CreatePaymentRequestBuilder country(String country) {
+    public CreateCardPaymentRequestBuilder country(String country) {
         this.country = country;
         return this;
     }

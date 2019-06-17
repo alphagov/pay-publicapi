@@ -9,8 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetails;
-import uk.gov.pay.api.model.CreatePaymentRequest;
-import uk.gov.pay.api.model.CreatePaymentRequestBuilder;
+import uk.gov.pay.api.model.CreateCardPaymentRequestBuilder;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.SettlementSummary;
@@ -83,7 +82,7 @@ public class PaymentsResourceCreatePaymentTest {
     @Test
     public void createNewPayment_withCardPayment_invokesCreatePaymentService() {
         final Account account = new Account("foo", TokenPaymentType.CARD);
-        final CreatePaymentRequest createPaymentRequest = CreatePaymentRequestBuilder.builder()
+        final var createPaymentRequest = CreateCardPaymentRequestBuilder.builder()
                 .amount(100)
                 .returnUrl("https://somewhere.test")
                 .reference("my_ref")

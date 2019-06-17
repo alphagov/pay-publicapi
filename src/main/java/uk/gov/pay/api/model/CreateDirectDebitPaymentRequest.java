@@ -3,65 +3,62 @@ package uk.gov.pay.api.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.exception.BadRequestException;
-import uk.gov.pay.api.utils.JsonStringBuilder;
+import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import java.util.StringJoiner;
 
-import static uk.gov.pay.api.model.CreateCardPaymentRequest.RETURN_URL_FIELD_NAME;
+@ApiModel(description = "The Direct Debit Payment Request Payload")
+public class CreateDirectDebitPaymentRequest {
 
-@ApiModel(value = "CreatePaymentRequest", description = "The Payment Request Payload")
-public class CreateDirectDebitPaymentRequest extends CreatePaymentRequest {
-
+    public static final int REFERENCE_MAX_LENGTH = 255;
+    public static final int AMOUNT_MAX_VALUE = 10000000;
+    public static final int AMOUNT_MIN_VALUE = 1;
+    public static final int DESCRIPTION_MAX_LENGTH = 255;
     public static final int AGREEMENT_ID_MAX_LENGTH = 26;
-    // TODO - exists for backwards compatibility, remove when payment endpoints are completely split out
-    public static final String AGREEMENT_ID_FIELD_NAME = "agreement_id";
 
-    @Size(max = AGREEMENT_ID_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
+    @JsonProperty("amount")
+    @Min(value = AMOUNT_MIN_VALUE, message = "Must be greater than or equal to {value}")
+    @Max(value = AMOUNT_MAX_VALUE, message = "Must be less than or equal to {value}")
+    private int amount;
+
+    @JsonProperty("reference")
+    @Size(max = REFERENCE_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
+    private String reference;
+
+    @JsonProperty("description")
+    @Size(max = DESCRIPTION_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
+    private String description;
+
     @JsonProperty("mandate_id")
+    @Size(max = AGREEMENT_ID_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
+    @NotBlank
     private String mandateId;
     
     public CreateDirectDebitPaymentRequest() {
         //To enable Jackson serialisation we need a default constructor
     }
-
-    public CreateDirectDebitPaymentRequest(CreatePaymentRequestBuilder createPaymentRequestBuilder) {
-        super(createPaymentRequestBuilder);
-        this.mandateId = createPaymentRequestBuilder.getMandateId();
+    
+    @ApiModelProperty(value = "amount in pence", required = true, allowableValues = "range[1, 10000000]", example = "12000")
+    public int getAmount() {
+        return amount;
     }
 
-    @Override
-    @Min(value = 1, message = "Must be greater than or equal to 1")
-    public int getAmount() {
-        return super.getAmount();
+    @ApiModelProperty(value = "payment reference", required = true, example = "12345")
+    public String getReference() {
+        return reference;
+    }
+
+    @ApiModelProperty(value = "payment description", required = true, example = "New passport application")
+    public String getDescription() {
+        return description;
     }
 
     @ApiModelProperty(value = "ID of the agreement being used to collect the payment", required = false, example = "33890b55-b9ea-4e2f-90fd-77ae0e9009e2")
     public String getMandateId() {
         return mandateId;
-    }
-
-    @Override
-    public String toConnectorPayload() {
-        JsonStringBuilder request = new JsonStringBuilder()
-                .add("amount", this.getAmount())
-                .add("reference", this.getReference())
-                .add("description", this.getDescription())
-                .add("agreement_id", mandateId);
-        getLanguage().ifPresent(language -> request.add("language", language.toString()));
-        getEmail().ifPresent(email -> request.add("email", email));
-
-        return request.build();
-    }
-
-    @Override
-    public void validateRequestType(Account account) {
-        if (account.getPaymentType() != TokenPaymentType.DIRECT_DEBIT) {
-            throw new BadRequestException(PaymentError.aPaymentError(RETURN_URL_FIELD_NAME, PaymentError.Code.CREATE_PAYMENT_MISSING_FIELD_ERROR));
-        }
     }
 
     /**
@@ -71,10 +68,9 @@ public class CreateDirectDebitPaymentRequest extends CreatePaymentRequest {
     public String toString() {
         // Some services put PII in the description, so don’t include it in the stringification
         StringJoiner joiner = new StringJoiner(", ", "{", "}");
-        joiner.add("amount: ").add(String.valueOf(super.getAmount()));
-        joiner.add("reference: ").add(super.getReference());
+        joiner.add("amount: ").add(String.valueOf(amount));
+        joiner.add("reference: ").add(reference);
         joiner.add("mandate_id: ").add(mandateId);
-        super.getLanguage().ifPresent(value -> joiner.add("language: ").add(value.toString()));
         return joiner.toString();
     }
 }

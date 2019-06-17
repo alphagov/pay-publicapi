@@ -3,22 +3,32 @@ package uk.gov.pay.api.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.exception.BadRequestException;
+import org.hibernate.validator.constraints.Length;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.api.validation.ValidReturnUrl;
+import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.commons.model.charge.ExternalMetadata;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import java.util.Optional;
 import java.util.StringJoiner;
 
-import static uk.gov.pay.api.model.CreateDirectDebitPaymentRequest.AGREEMENT_ID_FIELD_NAME;
+@ApiModel(description = "The Payment Request Payload")
+public class CreateCardPaymentRequest {
 
-@ApiModel(value = "CreatePaymentRequest", description = "The Payment Request Payload")
-public class CreateCardPaymentRequest extends CreatePaymentRequest {
-
+    public static final int EMAIL_MAX_LENGTH = 254;
+    public static final String AMOUNT_FIELD_NAME = "amount";
+    public static final String REFERENCE_FIELD_NAME = "reference";
+    public static final String DESCRIPTION_FIELD_NAME = "description";
+    public static final String LANGUAGE_FIELD_NAME = "language";
+    public static final String EMAIL_FIELD_NAME = "email";
+    public static final int REFERENCE_MAX_LENGTH = 255;
+    public static final int AMOUNT_MAX_VALUE = 10000000;
+    public static final int AMOUNT_MIN_VALUE = 0;
+    public static final int DESCRIPTION_MAX_LENGTH = 255;
     public static final String RETURN_URL_FIELD_NAME = "return_url";
     public static final int URL_MAX_LENGTH = 2000;
     public static final String PREFILLED_CARDHOLDER_DETAILS_FIELD_NAME = "prefilled_cardholder_details";
@@ -34,6 +44,28 @@ public class CreateCardPaymentRequest extends CreatePaymentRequest {
     private static final String PREFILLED_CARDHOLDER_DETAILS = "prefilled_cardholder_details";
     private static final String BILLING_ADDRESS = "billing_address";
 
+    // Even though the minimum is 0, this is only allowed for accounts this is enabled for and is a hidden feature
+    // so the validation error message will always state that the minimum is 1 for consistency.
+    @JsonProperty("amount")
+    @Min(value = AMOUNT_MIN_VALUE, message = "Must be greater than or equal to 1")
+    @Max(value = AMOUNT_MAX_VALUE, message = "Must be less than or equal to {value}")
+    private int amount;
+
+    @JsonProperty("reference")
+    @Size(max = REFERENCE_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
+    private String reference;
+
+    @JsonProperty("description")
+    @Size(max = DESCRIPTION_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
+    private String description;
+
+    @JsonProperty("language")
+    private SupportedLanguage language;
+
+    @JsonProperty("email")
+    @Length(max = EMAIL_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
+    private String email;
+    
     @ValidReturnUrl
     @Size(max = URL_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
     @JsonProperty("return_url")
@@ -45,15 +77,46 @@ public class CreateCardPaymentRequest extends CreatePaymentRequest {
 
     @Valid
     private final PrefilledCardholderDetails prefilledCardholderDetails;
-
-    public CreateCardPaymentRequest(CreatePaymentRequestBuilder createPaymentRequestBuilder) {
-        super(createPaymentRequestBuilder);
-        this.prefilledCardholderDetails = createPaymentRequestBuilder.getPrefilledCardholderDetails();
-        this.delayedCapture = createPaymentRequestBuilder.getDelayedCapture();
-        this.returnUrl = createPaymentRequestBuilder.getReturnUrl();
-        this.metadata = createPaymentRequestBuilder.getMetadata();
+    
+    public CreateCardPaymentRequest(CreateCardPaymentRequestBuilder builder) {
+        this.amount = builder.getAmount();
+        this.reference = builder.getReference();
+        this.description = builder.getDescription();
+        this.language = builder.getLanguage();
+        this.email = builder.getEmail();
+        this.returnUrl = builder.getReturnUrl();
+        this.delayedCapture = builder.getDelayedCapture();
+        this.metadata = builder.getMetadata();
+        this.prefilledCardholderDetails = builder.getPrefilledCardholderDetails();
     }
 
+    @ApiModelProperty(value = "amount in pence", required = true, allowableValues = "range[1, 10000000]", example = "12000")
+    public int getAmount() {
+        return amount;
+    }
+
+    @ApiModelProperty(value = "payment reference", required = true, example = "12345")
+    public String getReference() {
+        return reference;
+    }
+
+    @ApiModelProperty(value = "payment description", required = true, example = "New passport application")
+    public String getDescription() {
+        return description;
+    }
+
+    @ApiModelProperty(value = "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages", required = false, example = "en")
+    @JsonProperty(LANGUAGE_FIELD_NAME)
+    public Optional<SupportedLanguage> getLanguage() {
+        return Optional.ofNullable(language);
+    }
+
+    @ApiModelProperty(value = "email", required = false, example = "Joe.Bogs@example.org")
+    @JsonProperty(EMAIL_FIELD_NAME)
+    public Optional<String> getEmail() {
+        return Optional.ofNullable(email);
+    }
+    
     @ApiModelProperty(value = "service return url", required = true, example = "https://service-name.gov.uk/transactions/12345")
     public String getReturnUrl() {
         return returnUrl;
@@ -76,7 +139,6 @@ public class CreateCardPaymentRequest extends CreatePaymentRequest {
         return Optional.ofNullable(metadata);
     }
 
-    @Override
     public String toConnectorPayload() {
         JsonStringBuilder request = new JsonStringBuilder()
                 .add("amount", this.getAmount())
@@ -102,13 +164,6 @@ public class CreateCardPaymentRequest extends CreatePaymentRequest {
         return request.build();
     }
 
-    @Override
-    public void validateRequestType(Account account) {
-        if (account.getPaymentType() != TokenPaymentType.CARD) {
-            throw new BadRequestException(PaymentError.aPaymentError(AGREEMENT_ID_FIELD_NAME, PaymentError.Code.CREATE_PAYMENT_MISSING_FIELD_ERROR));
-        }
-    }
-
     /**
      * This looks JSONesque but is not identical to the received request
      */
@@ -116,10 +171,10 @@ public class CreateCardPaymentRequest extends CreatePaymentRequest {
     public String toString() {
         // Some services put PII in the description, so don’t include it in the stringification
         StringJoiner joiner = new StringJoiner(", ", "{", "}");
-        joiner.add("amount: ").add(String.valueOf(super.getAmount()));
-        joiner.add("reference: ").add(super.getReference());
+        joiner.add("amount: ").add(String.valueOf(getAmount()));
+        joiner.add("reference: ").add(getReference());
         joiner.add("return_url: ").add(returnUrl);
-        super.getLanguage().ifPresent(value -> joiner.add("language: ").add(value.toString()));
+        getLanguage().ifPresent(value -> joiner.add("language: ").add(value.toString()));
         getDelayedCapture().ifPresent(value -> joiner.add("delayed_capture: ").add(value.toString()));
         getMetadata().ifPresent(value -> joiner.add("metadata: ").add(value.toString()));
         return joiner.toString();

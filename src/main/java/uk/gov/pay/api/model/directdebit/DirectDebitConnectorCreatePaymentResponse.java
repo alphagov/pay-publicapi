@@ -1,5 +1,6 @@
 package uk.gov.pay.api.model.directdebit;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.pay.api.model.PaymentState;
 
@@ -7,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DirectDebitConnectorCreatePaymentResponse {
     @JsonProperty("charge_id")
     private String paymentExternalId;
