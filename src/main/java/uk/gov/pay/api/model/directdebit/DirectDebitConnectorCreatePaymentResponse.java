@@ -10,7 +10,7 @@ import java.util.Objects;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DirectDebitConnectorCreatePaymentResponse {
-    @JsonProperty("charge_id")
+    @JsonProperty("payment_id")
     private String paymentExternalId;
 
     @JsonProperty
