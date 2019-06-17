@@ -1240,14 +1240,14 @@ Content-Length: 44
 | `P0402`            | Requested page not found                         |
 | `P0498`            | Connector response was unrecognised to PublicAPI |
 
-## POST /v1/agreements
+## POST /v1/directdebit/mandates
 
-This endpoint creates a new agreement.
+This endpoint creates a new mandate.
 
 ### Request example
 
 ```
-POST /v1/agreements
+POST /v1/directdebit/mandates
 Authorization: Bearer BEARER_TOKEN
 Content-Type: application/json
 ```

@@ -74,7 +74,7 @@ public class AgreementsResource {
     
     @POST
     @Timed
-    @Path("/v1/agreements")
+    @Path("/v1/directdebit/mandates")
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     @ApiOperation(
@@ -94,7 +94,7 @@ public class AgreementsResource {
         CreateAgreementResponse createAgreementResponse = agreementService.create(account, createAgreementRequest);
         URI agreementUri = UriBuilder.fromUri(baseUrl)
                 .path("/v1/agreements/{agreementId}")
-                .build(createAgreementResponse.getAgreementId());
+                .build(createAgreementResponse.getMandateId());
         LOGGER.info("Agreement returned (created): [ {} ]", createAgreementResponse);
         return Response.created(agreementUri).entity(createAgreementResponse).build();
     }
