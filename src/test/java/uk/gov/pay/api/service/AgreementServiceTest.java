@@ -72,6 +72,7 @@ public class AgreementServiceTest {
         assertThat(mandate.getCreatedDate(), is("2016-01-01T12:00:00.000Z"));
         assertThat(mandate.getReturnUrl(), is("https://example.com/return"));
         assertThat(mandate.getState(), is(new MandateState("created", false)));
+        assertThat(mandate.getPaymentProvider(), is("sandbox"));
         assertThat(mandate.getLinks().get(0), is(new PaymentConnectorResponseLink(
                 "self",
                 "http://localhost:1234/v1/api/accounts/7959d395-e720-4081-9e8a-a534cf76460a/mandates/" + MANDATE_ID,
