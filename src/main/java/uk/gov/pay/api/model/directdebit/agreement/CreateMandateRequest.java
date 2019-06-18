@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.Length;
+import uk.gov.pay.api.validation.ValidReturnUrl;
 
 import javax.validation.constraints.NotNull;
 
@@ -15,6 +16,8 @@ import javax.validation.constraints.NotNull;
 public class CreateMandateRequest {
 
     @NotNull
+    @ValidReturnUrl
+    @Length(max = 2000, message = "Must be less than or equal to {max} characters length")
     @JsonProperty(value = "return_url")
     private String returnUrl;
 

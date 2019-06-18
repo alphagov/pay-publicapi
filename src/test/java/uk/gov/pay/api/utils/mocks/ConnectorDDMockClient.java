@@ -119,11 +119,11 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
         setupCreateMandate(gatewayAccountId, withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg, GENERIC));
     }
 
-    public void respondWithMandateTypeInvalid_whenCreateAgreementRequest(String gatewayAccountId, String errorMsg) {
+    public void respondWithMandateTypeInvalid_whenCreateMandateRequest(String gatewayAccountId, String errorMsg) {
         setupCreateMandate(gatewayAccountId, withStatusAndErrorMessage(PRECONDITION_FAILED_412, errorMsg, INVALID_MANDATE_TYPE));
     }
 
-    public void respondWithGCAccountNotLinked_whenCreateAgreementRequest(String gatewayAccountId, String errorMsg) {
+    public void respondWithGCAccountNotLinked_whenCreateMandateRequest(String gatewayAccountId, String errorMsg) {
         setupCreateMandate(gatewayAccountId, withStatusAndErrorMessage(FORBIDDEN_403, errorMsg, GO_CARDLESS_ACCOUNT_NOT_LINKED));
     }
 
