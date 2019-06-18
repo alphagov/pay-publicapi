@@ -13,9 +13,9 @@ import uk.gov.pay.api.filter.ratelimit.LocalRateLimiter;
 import uk.gov.pay.api.filter.ratelimit.RateLimiter;
 import uk.gov.pay.api.filter.ratelimit.RedisRateLimiter;
 import uk.gov.pay.api.json.CreatePaymentRefundRequestDeserializer;
-import uk.gov.pay.api.json.CreatePaymentRequestDeserializer;
+import uk.gov.pay.api.json.CreateCardPaymentRequestDeserializer;
+import uk.gov.pay.api.model.CreateCardPaymentRequest;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
-import uk.gov.pay.api.model.CreatePaymentRequest;
 import uk.gov.pay.api.validation.PaymentRefundRequestValidator;
 import uk.gov.pay.api.validation.URLValidator;
 
@@ -51,11 +51,11 @@ public class PublicApiModule extends AbstractModule {
     public ObjectMapper provideObjectMapper() {
         ObjectMapper objectMapper = environment.getObjectMapper();
 
-        CreatePaymentRequestDeserializer paymentRequestDeserializer = new CreatePaymentRequestDeserializer();
+        CreateCardPaymentRequestDeserializer cardPaymentRequestDeserializer = new CreateCardPaymentRequestDeserializer();
         CreatePaymentRefundRequestDeserializer paymentRefundRequestDeserializer = new CreatePaymentRefundRequestDeserializer(new PaymentRefundRequestValidator());
 
         SimpleModule publicApiDeserializationModule = new SimpleModule("publicApiDeserializationModule");
-        publicApiDeserializationModule.addDeserializer(CreatePaymentRequest.class, paymentRequestDeserializer);
+        publicApiDeserializationModule.addDeserializer(CreateCardPaymentRequest.class, cardPaymentRequestDeserializer);
         publicApiDeserializationModule.addDeserializer(CreatePaymentRefundRequest.class, paymentRefundRequestDeserializer);
 
         objectMapper.configure(DeserializationFeature.ACCEPT_FLOAT_AS_INT, false);

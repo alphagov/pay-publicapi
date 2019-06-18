@@ -36,7 +36,6 @@ public class ConnectorUriGeneratorTest {
     public void setUp() {
         connectorUriGenerator = new ConnectorUriGenerator(mockPublicApiConfig);
         when(mockPublicApiConfig.getConnectorUrl()).thenReturn("https://bla.test");
-        when(mockPublicApiConfig.getConnectorDDUrl()).thenReturn("https://dd-bla.test");
     }
 
     @Test
@@ -52,14 +51,6 @@ public class ConnectorUriGeneratorTest {
                 "param2", "value2"
         ));
         assertThat(uri, is("https://bla.test/v1/api/accounts/accountId/refunds?param1=value1&param2=value2"));
-    }
-
-    @Test
-    public void shouldGenerateTheRightChargeURIForDirectDebitConnector() {
-        Account account = new Account("accountId", DIRECT_DEBIT);
-        
-        String uri = connectorUriGenerator.chargesURI(account);
-        assertThat(uri, is("https://dd-bla.test/v1/api/accounts/accountId/charges/collect"));
     }
 
     @Test

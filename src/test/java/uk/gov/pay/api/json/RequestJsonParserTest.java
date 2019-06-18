@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CreateCardPaymentRequest;
-import uk.gov.pay.api.model.CreateDirectDebitPaymentRequest;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.PrefilledCardholderDetails;
 import uk.gov.pay.commons.model.SupportedLanguage;
@@ -72,27 +71,6 @@ public class RequestJsonParserTest {
         assertThat(createPaymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(createPaymentRequest.getLanguage(), is(Optional.of(SupportedLanguage.ENGLISH)));
         assertThat(createPaymentRequest.getDelayedCapture(), is(Optional.of(true)));
-    }
-
-    @Test
-    public void parsePaymentRequest_withAgreementId_shouldParseSuccessfully() throws Exception {
-        // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"agreement_id\": \"abcdef1234567890abcedf1234\"\n" +
-                "}";
-
-        JsonNode jsonNode = objectMapper.readTree(payload);
-
-        CreateDirectDebitPaymentRequest createPaymentRequest = (CreateDirectDebitPaymentRequest) parsePaymentRequest(jsonNode);
-
-        assertThat(createPaymentRequest, is(notNullValue()));
-        assertThat(createPaymentRequest.getAmount(), is(1000));
-        assertThat(createPaymentRequest.getReference(), is("Some reference"));
-        assertThat(createPaymentRequest.getDescription(), is("Some description"));
-        assertThat(createPaymentRequest.getMandateId(), is("abcdef1234567890abcedf1234"));
     }
 
     @Test
@@ -204,7 +182,7 @@ public class RequestJsonParserTest {
                 "  \"amount\": 1000,\n" +
                 "  \"reference\": null,\n" +
                 "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": 1234\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
         JsonNode jsonNode = objectMapper.readTree(payload);
@@ -221,7 +199,7 @@ public class RequestJsonParserTest {
                 "  \"amount\": 1000,\n" +
                 "  \"reference\": \"Some reference\",\n" +
                 "  \"description\": null,\n" +
-                "  \"return_url\": 1234\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
         JsonNode jsonNode = objectMapper.readTree(payload);
@@ -238,7 +216,7 @@ public class RequestJsonParserTest {
                 "  \"amount\": 1000,\n" +
                 "  \"reference\": \"Some reference\",\n" +
                 "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": 1234,\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
                 "  \"language\": null\n" +
                 "}";
 
@@ -324,7 +302,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_withNoAgreementId_whenReturnUrlIsMissing() throws Exception {
+    public void parsePaymentRequest_whenReturnUrlIsMissing() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -334,7 +312,7 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing either return_url or agreement_id attribute"));
+        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: return_url"));
 
         parsePaymentRequest(jsonNode);
     }

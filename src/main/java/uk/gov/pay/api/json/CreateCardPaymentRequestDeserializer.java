@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import uk.gov.pay.api.exception.BadRequestException;
-import uk.gov.pay.api.model.CreatePaymentRequest;
+import uk.gov.pay.api.model.CreateCardPaymentRequest;
 
 import java.io.IOException;
 
@@ -13,14 +13,14 @@ import static uk.gov.pay.api.json.RequestJsonParser.parsePaymentRequest;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_PARSING_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 
-public class CreatePaymentRequestDeserializer extends StdDeserializer<CreatePaymentRequest> {
+public class CreateCardPaymentRequestDeserializer extends StdDeserializer<CreateCardPaymentRequest> {
 
-    public CreatePaymentRequestDeserializer() {
-        super(CreatePaymentRequest.class);
+    public CreateCardPaymentRequestDeserializer() {
+        super(CreateCardPaymentRequest.class);
     }
 
     @Override
-    public CreatePaymentRequest deserialize(JsonParser parser, DeserializationContext context) {
+    public CreateCardPaymentRequest deserialize(JsonParser parser, DeserializationContext context) {
         try {
             JsonNode json = parser.readValueAsTree();
             return parsePaymentRequest(json);

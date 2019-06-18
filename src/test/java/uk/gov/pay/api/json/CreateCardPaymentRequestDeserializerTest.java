@@ -14,7 +14,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CreateCardPaymentRequest;
-import uk.gov.pay.api.model.CreateDirectDebitPaymentRequest;
 import uk.gov.pay.api.model.PrefilledCardholderDetails;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
@@ -27,7 +26,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.pay.api.matcher.BadRequestExceptionMatcher.aBadRequestExceptionWithError;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CreatePaymentRequestDeserializerTest {
+public class CreateCardPaymentRequestDeserializerTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -36,11 +35,11 @@ public class CreatePaymentRequestDeserializerTest {
     private DeserializationContext ctx;
 
     private JsonFactory jsonFactory = new JsonFactory(new ObjectMapper());
-    private CreatePaymentRequestDeserializer deserializer;
+    private CreateCardPaymentRequestDeserializer deserializer;
 
     @Before
     public void setup() {
-        deserializer = new CreatePaymentRequestDeserializer();
+        deserializer = new CreateCardPaymentRequestDeserializer();
     }
 
     @Test
@@ -146,24 +145,6 @@ public class CreatePaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldDeserializeARequestWithAnAgreementIdSuccessfully() throws Exception {
-        // language=JSON
-        String validJson = "{\n" +
-                "  \"agreement_id\": \"abc123\",\n" +
-                "  \"amount\": 27432,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\"\n" +
-                "}";
-
-        CreateDirectDebitPaymentRequest paymentRequest = (CreateDirectDebitPaymentRequest) deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
-
-        assertThat(paymentRequest.getAmount(), is(27432));
-        assertThat(paymentRequest.getReference(), is("Some reference"));
-        assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getMandateId(), is("abc123"));
-    }
-
-    @Test
     public void deserialize_shouldThrowBadRequestException_whenJsonIsNotWellFormed() throws Exception {
         String invalidJson = "{" +
                 "  \"amount\" : " +
@@ -246,7 +227,7 @@ public class CreatePaymentRequestDeserializerTest {
                 "  \"description\": \"Some description\"\n" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing either return_url or agreement_id attribute"));
+        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: return_url"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }
@@ -350,36 +331,6 @@ public class CreatePaymentRequestDeserializerTest {
                 "}";
 
         expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: description. Must be a valid string format"));
-
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
-    }
-
-    @Test
-    public void deserialize_shouldThrowValidationException_AsAgreementIdIsMissing_whenAgreementIdIsNullValue() throws Exception {
-        // language=JSON
-        String json = "{\n" +
-                "  \"amount\": 666,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"agreement_id\": null\n" +
-                "}";
-
-        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: agreement_id"));
-
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
-    }
-
-    @Test
-    public void deserialize_shouldThrowValidationException_whenAgreementIdIsNotAString() throws Exception {
-        // language=JSON
-        String json = "{\n" +
-                "  \"amount\": 666,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"agreement_id\": 1234\n" +
-                "}";
-
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: agreement_id. Must be a valid agreement ID"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }

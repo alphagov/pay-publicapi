@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CaptureChargeException;
 import uk.gov.pay.api.exception.GetEventsException;
-import uk.gov.pay.api.model.CreatePaymentRequest;
+import uk.gov.pay.api.model.CreateCardPaymentRequest;
 import uk.gov.pay.api.model.CreatePaymentResult;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.PaymentEvents;
@@ -242,12 +242,10 @@ public class PaymentsResource {
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response createNewPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                                     @ApiParam(value = "requestPayload", required = true) @Valid CreatePaymentRequest createPaymentRequest) {
-        logger.info("Payment create request parsed to {}", createPaymentRequest);
+                                     @ApiParam(value = "requestPayload", required = true) @Valid CreateCardPaymentRequest createCardPaymentRequest) {
+        logger.info("Payment create request parsed to {}", createCardPaymentRequest);
 
-        createPaymentRequest.validateRequestType(account);
-
-        PaymentWithAllLinks createdPayment = createPaymentService.create(account, createPaymentRequest);
+        PaymentWithAllLinks createdPayment = createPaymentService.create(account, createCardPaymentRequest);
 
         Response response = Response
                 .created(publicApiUriGenerator.getPaymentURI(createdPayment.getPayment().getPaymentId()))

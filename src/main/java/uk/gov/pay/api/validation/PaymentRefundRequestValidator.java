@@ -6,8 +6,8 @@ import uk.gov.pay.api.model.PaymentError;
 
 import static java.lang.String.format;
 import static uk.gov.pay.api.model.CreatePaymentRefundRequest.REFUND_MIN_VALUE;
-import static uk.gov.pay.api.model.CreatePaymentRequest.AMOUNT_FIELD_NAME;
-import static uk.gov.pay.api.model.CreatePaymentRequest.AMOUNT_MAX_VALUE;
+import static uk.gov.pay.api.model.CreateCardPaymentRequest.AMOUNT_FIELD_NAME;
+import static uk.gov.pay.api.model.CreateCardPaymentRequest.AMOUNT_MAX_VALUE;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_REFUND_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 

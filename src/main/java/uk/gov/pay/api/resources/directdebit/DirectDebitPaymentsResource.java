@@ -2,12 +2,18 @@ package uk.gov.pay.api.resources.directdebit;
 
 import com.codahale.metrics.annotation.Timed;
 import io.dropwizard.auth.Auth;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.CreateDirectDebitPaymentRequest;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.directdebit.agreement.DirectDebitPayment;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
+import uk.gov.pay.api.service.PublicApiUriGenerator;
 import uk.gov.pay.api.service.directdebit.CreateDirectDebitPaymentsService;
 
 import javax.inject.Inject;
@@ -19,7 +25,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.apache.http.HttpStatus.SC_CREATED;
 
 @Path("/v1/directdebit/payments/")
 @Api(value = "/v1/directdebit/payments/")
@@ -27,10 +32,13 @@ import static org.apache.http.HttpStatus.SC_CREATED;
 public class DirectDebitPaymentsResource {
 
     private final CreateDirectDebitPaymentsService createDirectDebitPaymentsService;
+    private final PublicApiUriGenerator publicApiUriGenerator;
 
     @Inject
-    public DirectDebitPaymentsResource(CreateDirectDebitPaymentsService createDirectDebitPaymentsService) {
+    public DirectDebitPaymentsResource(CreateDirectDebitPaymentsService createDirectDebitPaymentsService,
+                                       PublicApiUriGenerator publicApiUriGenerator) {
         this.createDirectDebitPaymentsService = createDirectDebitPaymentsService;
+        this.publicApiUriGenerator = publicApiUriGenerator;
     }
 
     @POST
@@ -55,6 +63,8 @@ public class DirectDebitPaymentsResource {
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response createPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                   @Valid CreateDirectDebitPaymentRequest request) {
-        return Response.status(SC_CREATED).entity(createDirectDebitPaymentsService.create(account, request)).build();
+        DirectDebitPayment payment = createDirectDebitPaymentsService.create(account, request);
+        return Response.created(publicApiUriGenerator.getDirectDebitPaymentURI(payment.getPaymentId()))
+                .entity(payment).build();
     }
 }
