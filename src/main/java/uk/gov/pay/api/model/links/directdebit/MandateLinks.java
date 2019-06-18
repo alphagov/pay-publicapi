@@ -27,7 +27,7 @@ public class MandateLinks {
 
     @JsonProperty(NEXT_URL_POST)
     private PostLink nextUrlPost;
-    
+
     @JsonProperty(PAYMENTS)
     private Link payments;
 
@@ -51,30 +51,55 @@ public class MandateLinks {
         return payments;
     }
 
-    public void addKnownLinksValueOf(List<PaymentConnectorResponseLink> chargeLinks) {
-        addNextUrlIfPresent(chargeLinks);
-        addNextUrlPostIfPresent(chargeLinks);
+    private MandateLinks() {
     }
 
-    private void addNextUrlPostIfPresent(List<PaymentConnectorResponseLink> chargeLinks) {
-        chargeLinks.stream()
-                .filter(link -> NEXT_URL_POST.equals(link.getRel()))
-                .findFirst()
-                .ifPresent(chargeLink -> this.nextUrlPost = new PostLink(chargeLink.getHref(), chargeLink.getMethod(), chargeLink.getType(), chargeLink.getParams()));
-    }
+    public static final class MandateLinksBuilder {
+        private Link self;
+        private Link nextUrl;
+        private PostLink nextUrlPost;
+        private Link payments;
 
-    private void addNextUrlIfPresent(List<PaymentConnectorResponseLink> chargeLinks) {
-        chargeLinks.stream()
-                .filter(link -> NEXT_URL.equals(link.getRel()))
-                .findFirst()
-                .ifPresent(chargeLink -> this.nextUrl = new Link(chargeLink.getHref(), chargeLink.getMethod()));
-    }
+        private MandateLinksBuilder() {
+        }
 
-    public void addSelf(String href) {
-        this.self = new Link(href, GET);
-    }
+        public static MandateLinksBuilder aMandateLinks() {
+            return new MandateLinksBuilder();
+        }
 
-    public void addPayments(String href) {
-        this.payments = new Link(href, GET);
+        public MandateLinksBuilder withSelf(String selfLink) {
+            this.self = new Link(selfLink, GET);
+            return this;
+        }
+
+        public MandateLinksBuilder withNextUrl(List<PaymentConnectorResponseLink> chargeLinks) {
+            chargeLinks.stream()
+                    .filter(link -> NEXT_URL.equals(link.getRel()))
+                    .findFirst()
+                    .ifPresent(chargeLink -> this.nextUrl = new Link(chargeLink.getHref(), chargeLink.getMethod()));
+            return this;
+        }
+
+        public MandateLinksBuilder withNextUrlPost(List<PaymentConnectorResponseLink> chargeLinks) {
+            chargeLinks.stream()
+                    .filter(link -> NEXT_URL_POST.equals(link.getRel()))
+                    .findFirst()
+                    .ifPresent(chargeLink -> this.nextUrlPost = new PostLink(chargeLink.getHref(), chargeLink.getMethod(), chargeLink.getType(), chargeLink.getParams()));
+            return this;
+        }
+
+        public MandateLinksBuilder withPayments(String paymentsLink) {
+            this.payments = new Link(paymentsLink, GET);
+            return this;
+        }
+
+        public MandateLinks build() {
+            MandateLinks mandateLinks = new MandateLinks();
+            mandateLinks.nextUrl = this.nextUrl;
+            mandateLinks.self = this.self;
+            mandateLinks.nextUrlPost = this.nextUrlPost;
+            mandateLinks.payments = this.payments;
+            return mandateLinks;
+        }
     }
 }

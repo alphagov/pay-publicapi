@@ -22,6 +22,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import static java.lang.String.format;
+import static uk.gov.pay.api.model.links.directdebit.MandateLinks.MandateLinksBuilder.aMandateLinks;
 
 public class AgreementService {
 
@@ -61,10 +62,12 @@ public class AgreementService {
     }
 
     private MandateLinks createLinksFromMandateResponse(MandateConnectorResponse mandate) {
-        MandateLinks mandateLinks = new MandateLinks();
-        mandateLinks.addSelf(publicApiUriGenerator.getMandateURI(mandate.getMandateId()).toString());
-        mandateLinks.addKnownLinksValueOf(mandate.getLinks());
-        mandateLinks.addPayments(publicApiUriGenerator.getMandatePaymentsURI(mandate.getMandateId()).toString());
+        MandateLinks mandateLinks = aMandateLinks()
+                .withSelf(publicApiUriGenerator.getMandateURI(mandate.getMandateId()).toString())
+                .withPayments(publicApiUriGenerator.getMandatePaymentsURI(mandate.getMandateId()).toString())
+                .withNextUrl(mandate.getLinks())
+                .withNextUrlPost(mandate.getLinks())
+                .build();
         return mandateLinks;
     }
 
