@@ -32,7 +32,7 @@ public class DirectDebitPaymentIT {
 
     private static final int AMOUNT = 100;
     private static final String CHARGE_ID = "ch_ab2341da231434l";
-    private static final PaymentState CREATED = new PaymentState("created", false, null, null);
+    private static final PaymentState CREATED = new PaymentState("created", false, null, null, null);
     private static final String AGREEMENT_ID = "test_mandate_id_xyz";
     private static final String REFERENCE = "a reference";
     private static final String DESCRIPTION = "a description";

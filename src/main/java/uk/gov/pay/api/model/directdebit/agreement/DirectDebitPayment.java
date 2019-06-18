@@ -50,8 +50,7 @@ public class DirectDebitPayment extends Payment {
         this.links = aDirectDebitPaymentLinks()
                 .withSelf(builder.selfLink)
                 .withEvents(builder.eventsLink)
-                // TODO - enable mandate link when dd-connector returns mandate id
-//                .withMandate(builder.mandateLink)
+                .withMandate(builder.mandateLink)
                 .build();
     }
 

@@ -47,7 +47,7 @@ abstract public class ResourcesFilterITestBase {
     static final String PAYMENTS_PATH = "/v1/payments/";
     static final int AMOUNT = 9999999;
     static final String CHARGE_ID = "ch_ab2341da231434l";
-    static final PaymentState CREATED = new PaymentState("created", false, null, null);
+    static final PaymentState CREATED = new PaymentState("created", false, null, null, null);
     static final String RETURN_URL = "https://somewhere.gov.uk/rainbow/1";
     static final String REFERENCE = "Some reference";
     static final String DESCRIPTION = "Some description";

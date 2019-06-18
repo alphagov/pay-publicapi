@@ -3,8 +3,6 @@ package uk.gov.pay.api.model.directdebit;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.pay.api.model.PaymentState;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class DirectDebitConnectorCreatePaymentResponse {
@@ -26,6 +24,9 @@ public class DirectDebitConnectorCreatePaymentResponse {
     @JsonProperty("created_date")
     private String createdDate;
 
+    @JsonProperty("mandate_id")
+    private String mandateId;
+    
     @JsonProperty
     private PaymentState state;
 
@@ -55,6 +56,10 @@ public class DirectDebitConnectorCreatePaymentResponse {
 
     public String getCreatedDate() {
         return createdDate;
+    }
+    
+    public String getMandateId() {
+        return mandateId;
     }
 
     public PaymentState getState() {
@@ -93,13 +98,13 @@ public class DirectDebitConnectorCreatePaymentResponse {
     }
 
     public static final class DirectDebitConnectorCreatePaymentResponseBuilder {
-        private List<Map<String, Object>> dataLinks;
         private String paymentExternalId;
         private Long amount;
         private String paymentProvider;
         private String description;
         private String reference;
         private String createdDate;
+        private String mandateId;
         private PaymentState state;
 
         private DirectDebitConnectorCreatePaymentResponseBuilder() {
@@ -143,7 +148,12 @@ public class DirectDebitConnectorCreatePaymentResponse {
             this.state = state;
             return this;
         }
-
+        
+        public DirectDebitConnectorCreatePaymentResponseBuilder withMandateId(String mandateId) {
+            this.mandateId = mandateId;
+            return this;
+        }
+ 
         public DirectDebitConnectorCreatePaymentResponse build() {
             DirectDebitConnectorCreatePaymentResponse directDebitConnectorCreatePaymentResponse = new DirectDebitConnectorCreatePaymentResponse();
             directDebitConnectorCreatePaymentResponse.createdDate = this.createdDate;
@@ -153,6 +163,7 @@ public class DirectDebitConnectorCreatePaymentResponse {
             directDebitConnectorCreatePaymentResponse.description = this.description;
             directDebitConnectorCreatePaymentResponse.reference = this.reference;
             directDebitConnectorCreatePaymentResponse.paymentProvider = this.paymentProvider;
+            directDebitConnectorCreatePaymentResponse.mandateId = this.mandateId;
             return directDebitConnectorCreatePaymentResponse;
         }
     }

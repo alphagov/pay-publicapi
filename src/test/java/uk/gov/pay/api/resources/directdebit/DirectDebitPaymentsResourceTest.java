@@ -109,6 +109,7 @@ public class DirectDebitPaymentsResourceTest {
         final String descriptionText = "a description";
         final String paymentProviderText = "a payment provider";
         final String status = "created";
+        final String manddateIdText = "mandateid";
         final boolean finished = false;
 
         DirectDebitConnectorCreatePaymentResponse connectorResponse = aDirectDebitConnectorCreatePaymentResponse()
@@ -119,6 +120,7 @@ public class DirectDebitPaymentsResourceTest {
                 .withDescription(descriptionText)
                 .withState(new PaymentState(status, finished))
                 .withReference(referenceText)
+                .withMandateId(manddateIdText)
                 .build();
 
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, account.getAccountId());
@@ -129,7 +131,7 @@ public class DirectDebitPaymentsResourceTest {
                 .amount(500)
                 .description(descriptionText)
                 .reference(referenceText)
-                .mandateId("test")
+                .mandateId(manddateIdText)
                 .build();
 
         postPaymentResponse(createDirectDebitPaymentRequest)
@@ -145,9 +147,8 @@ public class DirectDebitPaymentsResourceTest {
                 .body("_links.events.href", is(paymentEventsLocationFor(paymentId)))
                 .body("_links.events.method", is("GET"))
                 .body("_links.self.href", is(paymentLocationFor(paymentId)))
-                .body("_links.self.method", is("GET"));
-        // TODO - enable mandate link when dd-connector returns mandate id
-//                .body("_links.mandate.href", is(mandateLocationFor(mandateId)))
-//                .body("_links.mandate.method", is("GET"));
+                .body("_links.self.method", is("GET"))
+                .body("_links.mandate.href", is(mandateLocationFor(manddateIdText)))
+                .body("_links.mandate.method", is("GET"));
     }
 }
