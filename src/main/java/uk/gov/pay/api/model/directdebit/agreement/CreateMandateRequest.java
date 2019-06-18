@@ -6,9 +6,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.pay.api.validation.ValidReturnUrl;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -22,7 +24,8 @@ public class CreateMandateRequest {
     private String returnUrl;
 
     @NotNull
-    @Length(min = 1, max = 255, message = "Must have a size between {min} and {max}")
+    @NotBlank
+    @Size(max = 255, message = "Must be less than or equal to {max} characters length")
     @JsonProperty(value = "reference")
     private String reference;
     

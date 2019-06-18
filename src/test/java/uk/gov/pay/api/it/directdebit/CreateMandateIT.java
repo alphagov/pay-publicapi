@@ -104,10 +104,14 @@ public class CreateMandateIT extends PaymentResourceITestBase {
     @Test
     @Parameters({
             "null, null, Missing mandatory attribute: reference, reference, P0101",
-            "null, , Invalid attribute value: reference. Must have a size between 1 and 255, reference, P0102",
+            "null, , Missing mandatory attribute: reference, reference, P0101",
+            "null, test reference more than 255 chars test reference more than 255 chars test reference more than 255 " +
+                    "chars test reference more than 255 chars test reference more than 255 chars test reference more " +
+                    "than 255 chars test reference more than 255 chars test reference more than 255 chars, " +
+                    "Invalid attribute value: reference. Must be less than or equal to 255 characters length, reference, P0102",
             " , test reference, Invalid attribute value: description. Must have a size between 1 and 255, description, P0102",
     })
-    public void createMandateValidationFailures(@Nullable String description,
+    public void referenceAndDescriptionValidationFailures(@Nullable String description,
                                                 @Nullable String serviceReference,
                                                 String expectedErrorMessage,
                                                 String field,
