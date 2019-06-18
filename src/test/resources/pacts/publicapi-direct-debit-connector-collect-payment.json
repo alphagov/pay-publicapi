@@ -40,7 +40,6 @@
           "payment_provider": "SANDBOX",
           "description": "a description",
           "mandate_id": "a mandate id",
-          "provider_id": "a provider id",
           "state": {
             "status": "created",
             "finished": false

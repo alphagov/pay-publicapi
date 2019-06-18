@@ -28,7 +28,10 @@ public class DirectDebitConnectorCreatePaymentResponse {
 
     @JsonProperty("mandate_id")
     private String mandateId;
-    
+
+    @JsonProperty("provider_id")
+    private String providerId;
+
     @JsonProperty
     private PaymentState state;
 
@@ -59,9 +62,13 @@ public class DirectDebitConnectorCreatePaymentResponse {
     public String getCreatedDate() {
         return createdDate;
     }
-    
+
     public String getMandateId() {
         return mandateId;
+    }
+
+    public String getProviderId() {
+        return providerId;
     }
 
     public PaymentState getState() {
@@ -79,12 +86,14 @@ public class DirectDebitConnectorCreatePaymentResponse {
                 Objects.equals(description, that.description) &&
                 Objects.equals(reference, that.reference) &&
                 Objects.equals(createdDate, that.createdDate) &&
+                Objects.equals(providerId, that.providerId) &&
                 Objects.equals(state, that.state);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(paymentExternalId, amount, paymentProvider, description, reference, createdDate, state);
+        return Objects.hash(paymentExternalId, amount, paymentProvider, description, reference, createdDate, 
+                providerId, state);
     }
 
     @Override
@@ -96,6 +105,8 @@ public class DirectDebitConnectorCreatePaymentResponse {
                 ", reference='" + reference + '\'' +
                 ", createdDate='" + createdDate + '\'' +
                 ", state=" + state +
+                ", provider_id=" + providerId +
+                ", mandate_id=" + mandateId +
                 '}';
     }
 
@@ -107,6 +118,7 @@ public class DirectDebitConnectorCreatePaymentResponse {
         private String reference;
         private String createdDate;
         private String mandateId;
+        private String providerId;
         private PaymentState state;
 
         private DirectDebitConnectorCreatePaymentResponseBuilder() {
@@ -155,6 +167,11 @@ public class DirectDebitConnectorCreatePaymentResponse {
             this.mandateId = mandateId;
             return this;
         }
+        
+        public DirectDebitConnectorCreatePaymentResponseBuilder withProviderId(String providerId) {
+            this.providerId = providerId;
+            return this;
+        }
  
         public DirectDebitConnectorCreatePaymentResponse build() {
             DirectDebitConnectorCreatePaymentResponse directDebitConnectorCreatePaymentResponse = new DirectDebitConnectorCreatePaymentResponse();
@@ -166,6 +183,7 @@ public class DirectDebitConnectorCreatePaymentResponse {
             directDebitConnectorCreatePaymentResponse.reference = this.reference;
             directDebitConnectorCreatePaymentResponse.paymentProvider = this.paymentProvider;
             directDebitConnectorCreatePaymentResponse.mandateId = this.mandateId;
+            directDebitConnectorCreatePaymentResponse.providerId = this.providerId;
             return directDebitConnectorCreatePaymentResponse;
         }
     }
