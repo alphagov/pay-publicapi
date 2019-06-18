@@ -43,7 +43,7 @@ public class DirectDebitEventService {
             String paymentLink = null;
 
             if (event.getMandateExternalId() != null) {
-                agreementLink = publicApiUriGenerator.getAgreementURI(event.getMandateExternalId()).toString();
+                agreementLink = publicApiUriGenerator.getMandateURI(event.getMandateExternalId()).toString();
             }
 
             if (event.getPaymentExternalId() != null) {
