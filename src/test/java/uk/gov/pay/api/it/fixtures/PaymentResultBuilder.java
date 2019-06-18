@@ -197,8 +197,8 @@ public abstract class PaymentResultBuilder {
         payment.payment_provider = paymentProvider == null ? DEFAULT_PAYMENT_PROVIDER : paymentProvider;
         payment.language = SupportedLanguage.ENGLISH.toString();
         payment.delayed_capture = delayedCapture == null ? false : delayedCapture;
+        payment.card_details.card_brand = cardDetails == null ? DEFAULT_CARD_BRAND_LABEL : cardDetails.card_brand;
         payment.card_details = cardDetails == null ? new CardDetails() : cardDetails;
-        payment.card_details.card_brand = DEFAULT_CARD_BRAND_LABEL;
         payment.refund_summary = refundSummary == null ? 
                 new RefundSummary("available", 100, 300) : refundSummary;
         payment.settlement_summary =  settlementSummary == null ? 
