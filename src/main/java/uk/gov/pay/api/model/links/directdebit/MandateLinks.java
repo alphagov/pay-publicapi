@@ -11,12 +11,13 @@ import java.util.List;
 
 import static javax.ws.rs.HttpMethod.GET;
 
-@ApiModel(value = "AgreementLinks", description = "self and next links of an Agreement")
-public class AgreementLinks {
+@ApiModel(value = "MandateLinks", description = "self and next links of an Agreement")
+public class MandateLinks {
 
     private static final String SELF = "self";
     private static final String NEXT_URL = "next_url";
     private static final String NEXT_URL_POST = "next_url_post";
+    private static final String PAYMENTS = "payments";
 
     @JsonProperty(SELF)
     private Link self;
@@ -26,6 +27,9 @@ public class AgreementLinks {
 
     @JsonProperty(NEXT_URL_POST)
     private PostLink nextUrlPost;
+    
+    @JsonProperty(PAYMENTS)
+    private Link payments;
 
     @ApiModelProperty(value = SELF, dataType = "uk.gov.pay.api.model.links.Link")
     public Link getSelf() {
@@ -40,6 +44,11 @@ public class AgreementLinks {
     @ApiModelProperty(value = NEXT_URL_POST, dataType = "uk.gov.pay.api.model.links.PostLink")
     public PostLink getNextUrlPost() {
         return nextUrlPost;
+    }
+
+    @ApiModelProperty(value = PAYMENTS, dataType = "uk.gov.pay.api.model.links.Link")
+    public Link getPayments() {
+        return payments;
     }
 
     public void addKnownLinksValueOf(List<PaymentConnectorResponseLink> chargeLinks) {
@@ -63,5 +72,9 @@ public class AgreementLinks {
 
     public void addSelf(String href) {
         this.self = new Link(href, GET);
+    }
+
+    public void addPayments(String href) {
+        this.payments = new Link(href, GET);
     }
 }

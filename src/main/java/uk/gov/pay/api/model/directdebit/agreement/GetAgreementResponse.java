@@ -3,9 +3,9 @@ package uk.gov.pay.api.model.directdebit.agreement;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import uk.gov.pay.api.model.links.directdebit.AgreementLinks;
+import uk.gov.pay.api.model.links.directdebit.MandateLinks;
 
-@ApiModel(value = "CreateMandateResponse", description = "The Agreement Payload to create a new Agreement")
+@ApiModel(value = "GetMandateResponse")
 public class GetAgreementResponse {
 
     private static final String AGREEMENT_ID_FIELD_NAME = "agreement_id";
@@ -20,14 +20,14 @@ public class GetAgreementResponse {
     private String reference;
     private String returnUrl;
     private MandateStatus state;
-    private AgreementLinks links;
+    private MandateLinks links;
 
     private GetAgreementResponse(String agreementId,
                                  String providerId,
                                  String reference,
                                  String returnUrl,
                                  MandateStatus state,
-                                 AgreementLinks links) {
+                                 MandateLinks links) {
         this.agreementId = agreementId;
         this.providerId = providerId;
         this.reference = reference;
@@ -36,7 +36,7 @@ public class GetAgreementResponse {
         this.links = links;
     }
 
-    public static GetAgreementResponse from(MandateConnectorResponse mandate, AgreementLinks links) {
+    public static GetAgreementResponse from(MandateConnectorResponse mandate, MandateLinks links) {
         return new GetAgreementResponse(
                 mandate.getMandateId(),
                 mandate.getMandateReference(),
@@ -70,7 +70,7 @@ public class GetAgreementResponse {
 
     @ApiModelProperty(value = "links", required = true)
     @JsonProperty(value = LINKS_FIELD_NAME)
-    public AgreementLinks getLinks() {
+    public MandateLinks getLinks() {
         return links;
     }
 

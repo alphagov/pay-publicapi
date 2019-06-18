@@ -12,7 +12,7 @@ import uk.gov.pay.api.model.directdebit.agreement.CreateMandateResponse;
 import uk.gov.pay.api.model.directdebit.agreement.GetAgreementResponse;
 import uk.gov.pay.api.model.directdebit.agreement.MandateConnectorRequest;
 import uk.gov.pay.api.model.directdebit.agreement.MandateConnectorResponse;
-import uk.gov.pay.api.model.links.directdebit.AgreementLinks;
+import uk.gov.pay.api.model.links.directdebit.MandateLinks;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
@@ -42,8 +42,8 @@ public class AgreementService {
 
     public CreateMandateResponse create(Account account, CreateAgreementRequest createAgreementRequest) {
         MandateConnectorResponse mandate = createMandate(account, MandateConnectorRequest.from(createAgreementRequest));
-        AgreementLinks agreementLinks = createLinksFromMandateResponse(mandate);
-        CreateMandateResponse createMandateResponse = CreateMandateResponse.from(mandate, agreementLinks);
+        MandateLinks mandateLinks = createLinksFromMandateResponse(mandate);
+        CreateMandateResponse createMandateResponse = CreateMandateResponse.from(mandate, mandateLinks);
         LOGGER.info("Agreement returned (created): [ {} ]", createMandateResponse);
         return createMandateResponse;
     }
@@ -52,19 +52,20 @@ public class AgreementService {
         Response connectorResponse = getMandate(account, agreementId);
         if (isFound(connectorResponse)) {
             MandateConnectorResponse mandate = connectorResponse.readEntity(MandateConnectorResponse.class);
-            AgreementLinks agreementLinks = createLinksFromMandateResponse(mandate);
-            GetAgreementResponse createAgreementResponse = GetAgreementResponse.from(mandate, agreementLinks);
+            MandateLinks mandateLinks = createLinksFromMandateResponse(mandate);
+            GetAgreementResponse createAgreementResponse = GetAgreementResponse.from(mandate, mandateLinks);
             LOGGER.info("Agreement returned (get): [ {} ]", createAgreementResponse);
             return createAgreementResponse;
         }
         throw new GetAgreementException(connectorResponse);
     }
 
-    private AgreementLinks createLinksFromMandateResponse(MandateConnectorResponse mandate) {
-        AgreementLinks agreementLinks = new AgreementLinks();
-        agreementLinks.addSelf(publicApiUriGenerator.getAgreementURI(mandate.getMandateId()).toString());
-        agreementLinks.addKnownLinksValueOf(mandate.getLinks());
-        return agreementLinks;
+    private MandateLinks createLinksFromMandateResponse(MandateConnectorResponse mandate) {
+        MandateLinks mandateLinks = new MandateLinks();
+        mandateLinks.addSelf(publicApiUriGenerator.getMandateURI(mandate.getMandateId()).toString());
+        mandateLinks.addKnownLinksValueOf(mandate.getLinks());
+        mandateLinks.addPayments(publicApiUriGenerator.getMandatePaymentsURI(mandate.getMandateId()).toString());
+        return mandateLinks;
     }
 
     MandateConnectorResponse createMandate(Account account, MandateConnectorRequest mandateConnectorRequest) {

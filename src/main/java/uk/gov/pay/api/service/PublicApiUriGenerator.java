@@ -46,7 +46,7 @@ public class PublicApiUriGenerator {
                 .build(chargeId);
     }
     
-    public URI getAgreementURI(String agreementId) {
+    public URI getMandateURI(String agreementId) {
         return UriBuilder.fromUri(baseUrl)
                 .path("/v1/agreements/{agreementId}")
                 .build(agreementId);
@@ -70,12 +70,6 @@ public class PublicApiUriGenerator {
                 .build(paymentId);
     }
 
-    public URI getDirectDebitMandateURI(String mandateId) {
-        return UriBuilder.fromUri(baseUrl)
-                .path("/v1/directdebit/mandates/{mandateId}")
-                .build(mandateId);
-    }
-
     public String convertHostToPublicAPI(String link) {
         URI originalUri = UriBuilder.fromUri(link).build();
         URI newUri = UriBuilder.fromUri(baseUrl)
@@ -91,4 +85,10 @@ public class PublicApiUriGenerator {
         }
     }
 
+    public URI getMandatePaymentsURI(String mandateId) {
+        return UriBuilder.fromUri(baseUrl)
+                .path("/v1/directdebit/payments")
+                .queryParam("mandate_id", mandateId)
+                .build(mandateId);
+    }
 }

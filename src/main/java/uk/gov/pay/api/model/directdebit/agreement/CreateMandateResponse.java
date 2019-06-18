@@ -3,7 +3,7 @@ package uk.gov.pay.api.model.directdebit.agreement;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import uk.gov.pay.api.model.links.directdebit.AgreementLinks;
+import uk.gov.pay.api.model.links.directdebit.MandateLinks;
 
 @ApiModel(value = "CreateMandateResponse", description = "The Agreement Payload to create a new Agreement")
 public class CreateMandateResponse {
@@ -24,7 +24,7 @@ public class CreateMandateResponse {
     private final String returnUrl;
     private final String createdDate;
     private final MandateStatus state;
-    private final AgreementLinks links;
+    private final MandateLinks links;
     private final String description;
     private final String paymentProvider;
 
@@ -34,7 +34,7 @@ public class CreateMandateResponse {
                                   String returnUrl,
                                   String createdDate,
                                   MandateStatus state,
-                                  AgreementLinks links,
+                                  MandateLinks links,
                                   String description, String paymentProvider) {
         this.mandateId = mandateId;
         this.providerId = providerId;
@@ -47,7 +47,7 @@ public class CreateMandateResponse {
         this.paymentProvider = paymentProvider;
     }
 
-    public static CreateMandateResponse from(MandateConnectorResponse mandate, AgreementLinks links) {
+    public static CreateMandateResponse from(MandateConnectorResponse mandate, MandateLinks links) {
         return new CreateMandateResponse(
                 mandate.getMandateId(),
                 mandate.getMandateReference(),
@@ -98,7 +98,7 @@ public class CreateMandateResponse {
 
     @ApiModelProperty(value = "links", required = true)
     @JsonProperty(value = LINKS_FIELD_NAME)
-    public AgreementLinks getLinks() {
+    public MandateLinks getLinks() {
         return links;
     }
 
