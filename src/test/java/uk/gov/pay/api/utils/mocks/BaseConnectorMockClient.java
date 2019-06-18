@@ -1,5 +1,6 @@
 package uk.gov.pay.api.utils.mocks;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.google.common.collect.ImmutableMap;
@@ -27,6 +28,7 @@ public abstract class BaseConnectorMockClient {
     static String CONNECTOR_MOCK_MANDATE_PATH = CONNECTOR_MOCK_MANDATES_PATH + "/%s";
     
     WireMockClassRule wireMockClassRule;
+    ObjectMapper objectMapper = new ObjectMapper();
 
     BaseConnectorMockClient(WireMockClassRule wireMockClassRule) {
         this.wireMockClassRule = wireMockClassRule;

@@ -13,13 +13,14 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.directdebit.agreement.AgreementError;
-import uk.gov.pay.api.model.directdebit.agreement.CreateAgreementRequest;
+import uk.gov.pay.api.model.directdebit.agreement.CreateMandateRequest;
 import uk.gov.pay.api.model.directdebit.agreement.CreateMandateResponse;
 import uk.gov.pay.api.model.directdebit.agreement.GetAgreementResponse;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
 import uk.gov.pay.api.service.AgreementService;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -89,9 +90,9 @@ public class MandatesResource {
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response createNewAgreement(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                                       @ApiParam(value = "requestPayload", required = true) CreateAgreementRequest createAgreementRequest) {
-        LOGGER.info("Agreement create request - [ {} ]", createAgreementRequest);
-        CreateMandateResponse createMandateResponse = agreementService.create(account, createAgreementRequest);
+                                       @ApiParam(value = "requestPayload", required = true) @Valid CreateMandateRequest createMandateRequest) {
+        LOGGER.info("Agreement create request - [ {} ]", createMandateRequest);
+        CreateMandateResponse createMandateResponse = agreementService.create(account, createMandateRequest);
         URI agreementUri = UriBuilder.fromUri(baseUrl)
                 .path("/v1/agreements/{agreementId}")
                 .build(createMandateResponse.getMandateId());

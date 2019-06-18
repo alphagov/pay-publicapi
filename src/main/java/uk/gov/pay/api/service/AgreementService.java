@@ -7,7 +7,7 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateAgreementException;
 import uk.gov.pay.api.exception.GetAgreementException;
-import uk.gov.pay.api.model.directdebit.agreement.CreateAgreementRequest;
+import uk.gov.pay.api.model.directdebit.agreement.CreateMandateRequest;
 import uk.gov.pay.api.model.directdebit.agreement.CreateMandateResponse;
 import uk.gov.pay.api.model.directdebit.agreement.GetAgreementResponse;
 import uk.gov.pay.api.model.directdebit.agreement.MandateConnectorRequest;
@@ -41,8 +41,8 @@ public class AgreementService {
         this.publicApiUriGenerator = publicApiUriGenerator;
     }
 
-    public CreateMandateResponse create(Account account, CreateAgreementRequest createAgreementRequest) {
-        MandateConnectorResponse mandate = createMandate(account, MandateConnectorRequest.from(createAgreementRequest));
+    public CreateMandateResponse create(Account account, CreateMandateRequest createMandateRequest) {
+        MandateConnectorResponse mandate = createMandate(account, MandateConnectorRequest.from(createMandateRequest));
         MandateLinks mandateLinks = createLinksFromMandateResponse(mandate);
         CreateMandateResponse createMandateResponse = CreateMandateResponse.from(mandate, mandateLinks);
         LOGGER.info("Agreement returned (created): [ {} ]", createMandateResponse);

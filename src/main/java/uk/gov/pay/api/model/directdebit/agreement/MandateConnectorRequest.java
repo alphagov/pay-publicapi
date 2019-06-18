@@ -18,8 +18,8 @@ public class MandateConnectorRequest {
         this.description = description;
     }
 
-    public static MandateConnectorRequest from(CreateAgreementRequest request) {
-        return new MandateConnectorRequest(request.getReturnUrl(), request.getReference(), "raindrops on roses and whiskers on kittens");
+    public static MandateConnectorRequest from(CreateMandateRequest request) {
+        return new MandateConnectorRequest(request.getReturnUrl(), request.getReference(), request.getDescription());
     }
 
     public String getReturnUrl() {
