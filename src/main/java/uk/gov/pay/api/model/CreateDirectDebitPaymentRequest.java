@@ -26,6 +26,7 @@ public class CreateDirectDebitPaymentRequest {
 
     @JsonProperty("reference")
     @Size(max = REFERENCE_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
+    @NotBlank
     private String reference;
 
     @JsonProperty("description")
