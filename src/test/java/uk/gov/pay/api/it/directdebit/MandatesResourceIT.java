@@ -48,15 +48,36 @@ public class MandatesResourceIT extends PaymentResourceITestBase {
 
     @Test
     @Parameters({
-            "null, test-service-ref, Field [return_url] cannot be null",
-            " , test-service-ref, Field [return_url] must have a size between 1 and 255",
-            "http://example, null, Field [service_reference] cannot be null",
-            "http://example, , Field [service_reference] must have a size between 1 and 255"
+            "null, test-service-ref, Missing mandatory attribute: return_url, return_url, P0101",
+//            " , test-service-ref, Invalid attribute value: return_url. Must have a size between 1 and 255, return_url, P0102",
+            "http://example, null, Missing mandatory attribute: reference, reference, P0101",
+//            "http://example, , Invalid attribute value: reference. Must have a size between 1 and 255, service_reference, P0102",
+//            "invalidUrl, test-service-ref, Invalid attribute value: return_url. Must be a valid URL format, return_url, P0102"
     })
     public void createMandateValidationFailures(@Nullable String returnUrl,
                                                 @Nullable String serviceReference,
-                                                String expectedErrorMessage) throws Exception {
-        //TODO
+                                                String expectedErrorMessage,
+                                                String field,
+                                                String errorCode) {
+        
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
+
+        Map<String, String> payload = new HashMap<>();
+        Optional.ofNullable(returnUrl).ifPresent(x -> payload.put("return_url", x));
+        Optional.ofNullable(serviceReference).ifPresent(x -> payload.put("reference", x));
+
+        given().port(app.getLocalPort())
+                .body(payload)
+                .accept(JSON)
+                .contentType(JSON)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
+                .post("/v1/directdebit/mandates")
+                .then().log().body()
+                .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
+                .body("size()", is(3))
+                .body("field", is(field))
+                .body("code", is(errorCode))
+                .body("description", is(expectedErrorMessage));
     }
     
     @Test

@@ -6,14 +6,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotNull;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ApiModel(value = "CreateMandateRequest", description = "The Payload to create a new Agreement")
 public class CreateMandateRequest {
 
+    @NotNull
     @JsonProperty(value = "return_url")
     private String returnUrl;
-    
+
+    @NotNull
     @JsonProperty(value = "reference")
     private String reference;
     
