@@ -2,6 +2,7 @@ package uk.gov.pay.api.model.directdebit;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import uk.gov.pay.api.model.DirectDebitPaymentState;
 import uk.gov.pay.api.model.PaymentState;
 
 import java.util.Objects;
@@ -33,7 +34,7 @@ public class DirectDebitConnectorCreatePaymentResponse {
     private String providerId;
 
     @JsonProperty
-    private PaymentState state;
+    private DirectDebitPaymentState state;
 
     public DirectDebitConnectorCreatePaymentResponse() {
         // for Jackson
@@ -119,7 +120,7 @@ public class DirectDebitConnectorCreatePaymentResponse {
         private String createdDate;
         private String mandateId;
         private String providerId;
-        private PaymentState state;
+        private DirectDebitPaymentState state;
 
         private DirectDebitConnectorCreatePaymentResponseBuilder() {
         }
@@ -158,7 +159,7 @@ public class DirectDebitConnectorCreatePaymentResponse {
             return this;
         }
 
-        public DirectDebitConnectorCreatePaymentResponseBuilder withState(PaymentState state) {
+        public DirectDebitConnectorCreatePaymentResponseBuilder withState(DirectDebitPaymentState state) {
             this.state = state;
             return this;
         }

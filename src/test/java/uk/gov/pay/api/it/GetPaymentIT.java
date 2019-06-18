@@ -47,9 +47,9 @@ public class GetPaymentIT extends PaymentResourceITestBase {
     private static final Long NET_AMOUNT = 9999994l;
     private static final String CHARGE_ID = "ch_ab2341da231434l";
     private static final String CHARGE_TOKEN_ID = "token_1234567asdf";
-    private static final PaymentState CREATED = new PaymentState("created", false, null, null, null);
-    private static final PaymentState CAPTURED = new PaymentState("captured", false, null, null, null);
-    public static final PaymentState AWAITING_CAPTURE_REQUEST = new PaymentState("submitted", false, null, null, null);
+    private static final PaymentState CREATED = new PaymentState("created", false, null, null);
+    private static final PaymentState CAPTURED = new PaymentState("captured", false, null, null);
+    public static final PaymentState AWAITING_CAPTURE_REQUEST = new PaymentState("submitted", false, null, null);
     private static final RefundSummary REFUND_SUMMARY = new RefundSummary("pending", 100L, 50L);
     private static final String PAYMENT_PROVIDER = "Sandbox";
     private static final String CARD_BRAND_LABEL = "Mastercard";
@@ -291,7 +291,7 @@ public class GetPaymentIT extends PaymentResourceITestBase {
                 aCreateOrGetChargeResponseFromConnector()
                         .withAmount(AMOUNT)
                         .withChargeId(CHARGE_ID)
-                        .withState(new PaymentState("success", true, null, null, null))
+                        .withState(new PaymentState("success", true, null, null))
                         .withReturnUrl(RETURN_URL)
                         .withDescription(DESCRIPTION)
                         .withReference(REFERENCE)

@@ -9,12 +9,16 @@ import io.dropwizard.testing.junit.DropwizardAppRule;
 import io.restassured.response.ValidatableResponse;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.core.Is;
-import org.junit.*;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.it.rule.RedisDockerRule;
-import uk.gov.pay.api.model.PaymentState;
+import uk.gov.pay.api.model.DirectDebitPaymentState;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.directdebit.DirectDebitConnectorCreatePaymentResponse;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
@@ -52,6 +56,7 @@ public class DirectDebitPaymentsResourceTest {
     private static final String PROVIDER_ID = "aproviderid";
     private static final String PAYMENT_PROVIDER = "a payment provider";
     private static final String MANDATE_ID = "mandate-123";
+    private static final String DETAILS_FIELD = "details";
 
     private static final int CONNECTOR_DD_PORT = findFreePort();
     private static final int PUBLIC_AUTH_PORT = findFreePort();
@@ -107,7 +112,7 @@ public class DirectDebitPaymentsResourceTest {
                 .withDescription(DESCRIPTION)
                 .withMandateId(MANDATE_ID)
                 .withProviderId(PROVIDER_ID)
-                .withState(new PaymentState(status, finished))
+                .withState(new DirectDebitPaymentState(status, finished, DETAILS_FIELD))
                 .withReference(REFERENCE)
                 .build();
         

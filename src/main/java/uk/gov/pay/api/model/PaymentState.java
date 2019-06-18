@@ -25,16 +25,13 @@ public class PaymentState {
     @JsonProperty("code")
     private String code;
     
-    @JsonProperty("details")
-    private String details;
 
     public static PaymentState createPaymentState(JsonNode node) {
         return new PaymentState(
                 node.get("status").asText(),
                 node.get("finished").asBoolean(),
                 node.has("message") ? node.get("message").asText() : null,
-                node.has("code") ? node.get("code").asText() : null,
-                node.has("details") ? node.get("details").asText() : null
+                node.has("code") ? node.get("code").asText() : null
         );
     }
 
@@ -42,15 +39,14 @@ public class PaymentState {
     }
 
     public PaymentState(String status, boolean finished) {
-        this(status, finished, null, null, null);
+        this(status, finished, null, null);
     }
 
-    public PaymentState(String status, boolean finished, String message, String code, String details) {
+    public PaymentState(String status, boolean finished, String message, String code) {
         this.status = status;
         this.finished = finished;
         this.message = message;
         this.code = code;
-        this.details = details;
     }
 
     @ApiModelProperty(value = "Current progress of the payment in its lifecycle", example = "created")
@@ -72,12 +68,7 @@ public class PaymentState {
     public String getCode() {
         return code;
     }
-
-    @ApiModelProperty(value = "Further information on the state", example = "The payment has been created")
-    public String getDetails() {
-        return details;
-    }
-
+    
     @Override
     public String toString() {
         return "PaymentState{" +
@@ -85,7 +76,6 @@ public class PaymentState {
                 ", finished='" + finished + '\'' +
                 ", message=" + message +
                 ", code=" + code +
-                ", details=" + details +
                 '}';
     }
 
@@ -97,12 +87,11 @@ public class PaymentState {
         return finished == that.finished &&
                 Objects.equals(status, that.status) &&
                 Objects.equals(message, that.message) &&
-                Objects.equals(code, that.code) &&
-                Objects.equals(details, that.details);
+                Objects.equals(code, that.code);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(status, finished, message, code, details);
+        return Objects.hash(status, finished, message, code);
     }
 }
