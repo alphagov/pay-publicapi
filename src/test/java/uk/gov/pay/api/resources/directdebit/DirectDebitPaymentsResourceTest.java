@@ -200,9 +200,8 @@ public class DirectDebitPaymentsResourceTest {
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(3))
                 .assertThat("$.field", Is.is("mandate_id"))
-                // TODO: make this return a P0101 error
-                .assertThat("$.code", Is.is("P0102"));
-//                .assertThat("$.description", Is.is("Missing mandatory attribute: mandate_id"));
+                .assertThat("$.code", Is.is("P0101"))
+                .assertThat("$.description", Is.is("Missing mandatory attribute: mandate_id"));
     }
     
     @Test
@@ -223,9 +222,8 @@ public class DirectDebitPaymentsResourceTest {
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(3))
                 .assertThat("$.field", Is.is("mandate_id"))
-                // TODO: make this return a P0101 error
-                .assertThat("$.code", Is.is("P0102"));
-//                .assertThat("$.description", Is.is("Missing mandatory attribute: mandate_id"));
+                .assertThat("$.code", Is.is("P0101"))
+                .assertThat("$.description", Is.is("Missing mandatory attribute: mandate_id"));
     }
     
     @Test
@@ -247,9 +245,8 @@ public class DirectDebitPaymentsResourceTest {
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(3))
                 .assertThat("$.field", Is.is("mandate_id"))
-                // TODO: make this return a P0101 error
-                .assertThat("$.code", Is.is("P0102"));
-//                .assertThat("$.description", Is.is("Missing mandatory attribute: mandate_id"));
+                .assertThat("$.code", Is.is("P0101"))
+                .assertThat("$.description", Is.is("Missing mandatory attribute: mandate_id"));
     }
     
     @Test
