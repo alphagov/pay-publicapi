@@ -30,7 +30,7 @@ public class DirectDebitConnectorCreatePaymentRequest {
         return description;
     }
 
-    @JsonProperty("agreement_id")
+    @JsonProperty("mandate_id")
     public String getMandateId() {
         return mandateId;
     }

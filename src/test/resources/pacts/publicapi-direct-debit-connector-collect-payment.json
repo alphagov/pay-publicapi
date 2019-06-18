@@ -24,7 +24,7 @@
           "amount": 100,
           "reference": "a reference",
           "description": "a description",
-          "agreement_id": "test_mandate_id_xyz"
+          "mandate_id": "test_mandate_id_xyz"
         }
       },
       "response": {
@@ -34,7 +34,7 @@
           "Location": "/v1/api/accounts/GATEWAY_ACCOUNT_ID/charges/ch_ab2341da231434l"
         },
         "body": {
-          "charge_id": "ch_ab2341da231434l",
+          "payment_id": "ch_ab2341da231434l",
           "amount": 100,
           "reference": "a reference",
           "payment_provider": "SANDBOX",
@@ -70,7 +70,7 @@
                 }
               ]
             },
-            "$.charge_id": {
+            "$.payment_id": {
               "matchers": [
                 {
                   "match": "type"
