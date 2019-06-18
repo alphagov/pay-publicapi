@@ -4,9 +4,11 @@ import com.google.gson.Gson;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import junitparams.converters.Nullable;
+import org.apache.http.HttpStatus;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
+import uk.gov.pay.api.model.directdebit.agreement.MandateConnectorRequest;
 import uk.gov.pay.api.model.directdebit.agreement.MandateState;
 import uk.gov.pay.api.model.directdebit.agreement.MandateStatus;
 import uk.gov.pay.api.utils.DateTimeUtils;
@@ -59,7 +61,8 @@ public class MandatesResourceIT extends PaymentResourceITestBase {
     
     @Test
     @Parameters({"I'ma need space I'ma I'ma need space (N-A-S-A)", "null"})
-    public void createMandate(@Nullable String description) {
+    public void createMandate(@Nullable String description) throws Exception{
+        
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
         
         connectorDDMockClient.respondOk_whenCreateMandateRequest(aCreateMandateRequestParams()
@@ -75,7 +78,7 @@ public class MandatesResourceIT extends PaymentResourceITestBase {
 
         Map<String, String> payload = new HashMap<>();
         payload.put("return_url", RETURN_URL);
-        payload.put("reference", "test service reference");
+        payload.put("reference", SERVICE_REFERENCE);
         Optional.ofNullable(description).ifPresent(x -> payload.put("description", x));
         
         given().port(app.getLocalPort())
@@ -108,6 +111,9 @@ public class MandatesResourceIT extends PaymentResourceITestBase {
                 .body("_links.payments.method", is("GET"))
                 .body("_links.events.href", is(format("http://publicapi.url/v1/directdebit/mandates/%s/events", MANDATE_ID))) 
                 .body("_links.events.method", is("GET"));
+        
+        connectorDDMockClient.verifyCreateMandateConnectorRequest(
+                new MandateConnectorRequest(RETURN_URL, SERVICE_REFERENCE, description), GATEWAY_ACCOUNT_ID);
     }
 
     @Test

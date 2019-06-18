@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.directdebit.DirectDebitConnectorCreatePaymentResponse;
+import uk.gov.pay.api.model.directdebit.agreement.MandateConnectorRequest;
 import uk.gov.pay.api.model.directdebit.agreement.MandateState;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.commons.model.ErrorIdentifier;
@@ -17,9 +18,12 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.matching;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -203,5 +207,11 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                 .withBody(new GsonBuilder().create().toJson(Map.of(
                         "message", List.of(errorMsg),
                         "error_identifier", errorIdentifier.toString())));
+    }
+
+    public void verifyCreateMandateConnectorRequest(MandateConnectorRequest mandateConnectorRequest, String gatewayAccountId) throws JsonProcessingException {
+        wireMockClassRule.verify(1,
+                postRequestedFor(urlEqualTo(format("/v1/api/accounts/%s/mandates", gatewayAccountId)))
+                        .withRequestBody(equalToJson(objectMapper.writeValueAsString(mandateConnectorRequest), true, true)));
     }
 }
