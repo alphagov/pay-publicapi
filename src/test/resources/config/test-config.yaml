@@ -19,6 +19,7 @@ baseUrl: http://publicapi.url/
 connectorUrl: http://connector_card.url/
 connectorDDUrl: http://connector_direct_debit.url/
 publicAuthUrl: http://publicauth.url/v1/auth
+ledgerUrl: http://ledger.url/
 
 graphiteHost: ${METRICS_HOST:-localhost}
 graphitePort: ${METRICS_PORT:-8092}

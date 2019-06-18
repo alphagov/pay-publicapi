@@ -19,6 +19,7 @@ baseUrl: ${PUBLICAPI_BASE}
 connectorUrl: ${CONNECTOR_URL}
 connectorDDUrl: ${CONNECTOR_DD_URL}
 publicAuthUrl: ${PUBLIC_AUTH_URL}
+ledgerUrl: ${LEDGER_URL}
 
 graphiteHost: ${METRICS_HOST:-localhost}
 graphitePort: ${METRICS_PORT:-8092}
