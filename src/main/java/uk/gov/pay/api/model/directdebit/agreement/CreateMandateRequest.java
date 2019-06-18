@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
 
@@ -18,10 +19,12 @@ public class CreateMandateRequest {
     private String returnUrl;
 
     @NotNull
+    @Length(min = 1, max = 255, message = "Must have a size between {min} and {max}")
     @JsonProperty(value = "reference")
     private String reference;
     
     @JsonProperty(value = "description")
+    @Length(min = 1, max = 255, message = "Must have a size between {min} and {max}")
     private String description;
 
     @ApiModelProperty(value = "mandate description")
