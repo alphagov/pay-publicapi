@@ -67,6 +67,7 @@ public class AgreementService {
                 .withPayments(publicApiUriGenerator.getMandatePaymentsURI(mandate.getMandateId()).toString())
                 .withNextUrl(mandate.getLinks())
                 .withNextUrlPost(mandate.getLinks())
+                .withEvents(publicApiUriGenerator.getMandateEventsURI(mandate.getMandateId()))
                 .build();
         return mandateLinks;
     }

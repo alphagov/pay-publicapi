@@ -7,6 +7,7 @@ import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.links.Link;
 import uk.gov.pay.api.model.links.PostLink;
 
+import java.net.URI;
 import java.util.List;
 
 import static javax.ws.rs.HttpMethod.GET;
@@ -18,18 +19,22 @@ public class MandateLinks {
     private static final String NEXT_URL = "next_url";
     private static final String NEXT_URL_POST = "next_url_post";
     private static final String PAYMENTS = "payments";
+    private static final String EVENTS = "events";
 
     @JsonProperty(SELF)
-    private Link self;
+    private final Link self;
 
     @JsonProperty(NEXT_URL)
-    private Link nextUrl;
+    private final Link nextUrl;
 
     @JsonProperty(NEXT_URL_POST)
-    private PostLink nextUrlPost;
+    private final PostLink nextUrlPost;
 
     @JsonProperty(PAYMENTS)
-    private Link payments;
+    private final Link payments;
+    
+    @JsonProperty(EVENTS)
+    private final Link events;
 
     @ApiModelProperty(value = SELF, dataType = "uk.gov.pay.api.model.links.Link")
     public Link getSelf() {
@@ -51,7 +56,17 @@ public class MandateLinks {
         return payments;
     }
 
-    private MandateLinks() {
+    @ApiModelProperty(value = EVENTS, dataType = "uk.gov.pay.api.model.links.Link")
+    public Link getEvents() {
+        return events;
+    }
+
+    private MandateLinks(Link self, Link nextUrl, PostLink nextUrlPost, Link payments, Link events) {
+        this.self = self;
+        this.nextUrl = nextUrl;
+        this.nextUrlPost = nextUrlPost;
+        this.payments = payments;
+        this.events = events;
     }
 
     public static final class MandateLinksBuilder {
@@ -59,6 +74,7 @@ public class MandateLinks {
         private Link nextUrl;
         private PostLink nextUrlPost;
         private Link payments;
+        private Link events;
 
         private MandateLinksBuilder() {
         }
@@ -93,12 +109,13 @@ public class MandateLinks {
             return this;
         }
 
+        public MandateLinksBuilder withEvents(URI eventsLink) {
+            this.events = new Link(eventsLink.toString(), GET);
+            return this;
+        }
+
         public MandateLinks build() {
-            MandateLinks mandateLinks = new MandateLinks();
-            mandateLinks.nextUrl = this.nextUrl;
-            mandateLinks.self = this.self;
-            mandateLinks.nextUrlPost = this.nextUrlPost;
-            mandateLinks.payments = this.payments;
+            MandateLinks mandateLinks = new MandateLinks(self, nextUrl, nextUrlPost, payments, events);
             return mandateLinks;
         }
     }
