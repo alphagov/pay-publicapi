@@ -8,6 +8,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 
+import static java.lang.String.format;
+
 public class PublicApiUriGenerator {
 
     private final String baseUrl;
@@ -90,5 +92,9 @@ public class PublicApiUriGenerator {
                 .path("/v1/directdebit/payments")
                 .queryParam("mandate_id", mandateId)
                 .build(mandateId);
+    }
+
+    public URI getMandateEventsURI(String mandateId) {
+        return UriBuilder.fromUri(baseUrl).path(format("/v1/directdebit/mandates/%s/events", mandateId)).build();
     }
 }

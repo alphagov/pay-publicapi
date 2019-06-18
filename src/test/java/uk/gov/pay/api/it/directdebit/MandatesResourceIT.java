@@ -7,8 +7,8 @@ import junitparams.converters.Nullable;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
-import uk.gov.pay.api.model.directdebit.agreement.MandateStatus;
 import uk.gov.pay.api.model.directdebit.agreement.MandateState;
+import uk.gov.pay.api.model.directdebit.agreement.MandateStatus;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorDDMockClient;
@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
+import static java.lang.String.format;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
@@ -83,7 +84,7 @@ public class MandatesResourceIT extends PaymentResourceITestBase {
                 .contentType(JSON)
                 .header(AUTHORIZATION, "Bearer " + API_KEY)
                 .post("/v1/directdebit/mandates")
-                .then().log().body()
+                .then()
                 .statusCode(201)
                 .contentType(JSON)
                 .header(HttpHeaders.LOCATION, is("http://publicapi.url/v1/agreements/mandateId"))
@@ -104,10 +105,9 @@ public class MandatesResourceIT extends PaymentResourceITestBase {
                 .body("_links.next_url_post.type", is("application/x-www-form-urlencoded"))
                 .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
                 .body("_links.payments.href", is("http://publicapi.url/v1/directdebit/payments?mandate_id=" + MANDATE_ID))
-                .body("_links.payments.method", is("GET"));
-                //TODO events url not defined yet
-//                .body("_links.events.href", is("http://publicapi.url/v1/directdebit/mandates/" + MANDATE_ID)) 
-//                .body("_links.events.method", is("GET"))
+                .body("_links.payments.method", is("GET"))
+                .body("_links.events.href", is(format("http://publicapi.url/v1/directdebit/mandates/%s/events", MANDATE_ID))) 
+                .body("_links.events.method", is("GET"));
     }
 
     @Test
