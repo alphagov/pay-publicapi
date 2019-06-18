@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.links.directdebit.AgreementLinks;
 
-@ApiModel(value = "CreateAgreementResponse", description = "The Agreement Payload to create a new Agreement")
+@ApiModel(value = "CreateMandateResponse", description = "The Agreement Payload to create a new Agreement")
 public class GetAgreementResponse {
 
     private static final String AGREEMENT_ID_FIELD_NAME = "agreement_id";
@@ -19,14 +19,14 @@ public class GetAgreementResponse {
     private String providerId;
     private String reference;
     private String returnUrl;
-    private AgreementStatus state;
+    private MandateStatus state;
     private AgreementLinks links;
 
     private GetAgreementResponse(String agreementId,
                                  String providerId,
                                  String reference,
                                  String returnUrl,
-                                 AgreementStatus state,
+                                 MandateStatus state,
                                  AgreementLinks links) {
         this.agreementId = agreementId;
         this.providerId = providerId;
@@ -42,7 +42,7 @@ public class GetAgreementResponse {
                 mandate.getMandateReference(),
                 mandate.getServiceReference(),
                 mandate.getReturnUrl(),
-                AgreementStatus.valueOf(mandate.getState().getStatus().toUpperCase()),
+                MandateStatus.valueOf(mandate.getState().getStatus().toUpperCase()),
                 links);
     }
 
@@ -64,7 +64,7 @@ public class GetAgreementResponse {
 
     @ApiModelProperty(value = "agreement state", required = true, example = "CREATED")
     @JsonProperty(value = STATE_FIELD_NAME)
-    public AgreementStatus getState() {
+    public MandateStatus getState() {
         return state;
     }
 

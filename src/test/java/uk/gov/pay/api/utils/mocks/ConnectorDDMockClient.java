@@ -14,6 +14,7 @@ import uk.gov.pay.commons.model.ErrorIdentifier;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -50,11 +51,11 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                 validGetLink(nextUrl(chargeId), "next_url"),
                 validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", Map.of("chargeTokenId", chargeTokenId)));
         whenGetCharge(gatewayAccountId, chargeId, aResponse()
-                        .withStatus(OK_200)
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withBody(chargeResponseBody));
+                .withStatus(OK_200)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                .withBody(chargeResponseBody));
     }
-    
+
     public void respondWithPaymentCreated(DirectDebitConnectorCreatePaymentResponse response,
                                           String gatewayAccountId) throws JsonProcessingException {
         var body = new ObjectMapper().writeValueAsString(response);
@@ -64,33 +65,27 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                 .withBody(body);
         wireMockClassRule
                 .stubFor(post(urlPathEqualTo(format("/v1/api/accounts/%s/charges/collect", gatewayAccountId)))
-                .willReturn(responseEnclosed));
+                        .willReturn(responseEnclosed));
     }
-    
-    public void respondOk_whenCreateAgreementRequest(String mandateId,
-                                                     String providerId,
-                                                     String serviceReference,
-                                                     String returnUrl,
-                                                     String createdDate,
-                                                     MandateState state,
-                                                     String gatewayAccountId,
-                                                     String chargeTokenId) {
-        setupCreateAgreement(gatewayAccountId, aResponse()
-                        .withStatus(CREATED_201)
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withHeader(LOCATION, format("/v1/api/accounts/%s/mandates/%s", gatewayAccountId, mandateId))
-                        .withBody(buildCreateAgreementResponse(
-                                mandateId,
-                                providerId,
-                                serviceReference,
-                                returnUrl,
-                                createdDate,
-                                state,
-                                validGetLink(mandateLocation(gatewayAccountId, mandateId), "self"),
-                                validGetLink(nextUrl(chargeTokenId), "next_url"),
-                                validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", Map.of("chargeTokenId", chargeTokenId)
+
+    public void respondOk_whenCreateMandateRequest(CreateMandateRequestParams params) {
+        setupCreateMandate(params.getGatewayAccountId(), aResponse()
+                .withStatus(CREATED_201)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                .withHeader(LOCATION, format("/v1/api/accounts/%s/mandates/%s", params.getGatewayAccountId(), params.getMandateId()))
+                .withBody(buildCreateMandateResponse(
+                        params.getMandateId(),
+                        params.getProviderId(),
+                        params.getServiceReference(),
+                        params.getReturnUrl(),
+                        params.getCreatedDate(),
+                        params.getState(),
+                        params.getDescription(),
+                        validGetLink(mandateLocation(params.getGatewayAccountId(), params.getMandateId()), "self"),
+                        validGetLink(nextUrl(params.getChargeTokenId()), "next_url"),
+                        validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", Map.of("chargeTokenId", params.getChargeTokenId())
                         )))
-                );
+        );
     }
 
     public void respondOk_whenGetAgreementRequest(String mandateId,
@@ -101,50 +96,55 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                                                   String gatewayAccountId,
                                                   String chargeTokenId) {
         setupGetAgreement(mandateId, gatewayAccountId, aResponse()
-                        .withStatus(200)
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withBody(buildGetAgreementResponse(
-                                mandateId,
-                                mandateReference,
-                                serviceReference,
-                                returnUrl,
-                                state,
-                                validGetLink(mandateLocation(gatewayAccountId, mandateId), "self"),
-                                validGetLink(nextUrl(chargeTokenId), "next_url"),
-                                validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", Map.of("chargeTokenId", chargeTokenId)
+                .withStatus(200)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                .withBody(buildGetAgreementResponse(
+                        mandateId,
+                        mandateReference,
+                        serviceReference,
+                        returnUrl,
+                        state,
+                        validGetLink(mandateLocation(gatewayAccountId, mandateId), "self"),
+                        validGetLink(nextUrl(chargeTokenId), "next_url"),
+                        validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", Map.of("chargeTokenId", chargeTokenId)
                         )))
-                );
+        );
     }
 
     public void respondBadRequest_whenCreateAgreementRequest(String gatewayAccountId, String errorMsg) {
-        setupCreateAgreement(gatewayAccountId, withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg, GENERIC));
+        setupCreateMandate(gatewayAccountId, withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg, GENERIC));
     }
 
     public void respondWithMandateTypeInvalid_whenCreateAgreementRequest(String gatewayAccountId, String errorMsg) {
-        setupCreateAgreement(gatewayAccountId, withStatusAndErrorMessage(PRECONDITION_FAILED_412, errorMsg, INVALID_MANDATE_TYPE));
+        setupCreateMandate(gatewayAccountId, withStatusAndErrorMessage(PRECONDITION_FAILED_412, errorMsg, INVALID_MANDATE_TYPE));
     }
 
     public void respondWithGCAccountNotLinked_whenCreateAgreementRequest(String gatewayAccountId, String errorMsg) {
-        setupCreateAgreement(gatewayAccountId, withStatusAndErrorMessage(FORBIDDEN_403, errorMsg, GO_CARDLESS_ACCOUNT_NOT_LINKED));
+        setupCreateMandate(gatewayAccountId, withStatusAndErrorMessage(FORBIDDEN_403, errorMsg, GO_CARDLESS_ACCOUNT_NOT_LINKED));
     }
 
 
-    private String buildCreateAgreementResponse(String mandateId,
-                                                String mandateReference,
-                                                String serviceReference,
-                                                String returnUrl,
-                                                String createdDate,
-                                                MandateState state,
-                                                ImmutableMap<?, ?>... links) {
-        return new JsonStringBuilder()
+    private String buildCreateMandateResponse(String mandateId,
+                                              String mandateReference,
+                                              String serviceReference,
+                                              String returnUrl,
+                                              String createdDate,
+                                              MandateState state,
+                                              String description,
+                                              ImmutableMap<?, ?>... links) {
+        JsonStringBuilder builder = new JsonStringBuilder()
                 .add("mandate_id", mandateId)
                 .add("mandate_reference", mandateReference)
                 .add("service_reference", serviceReference)
                 .add("return_url", returnUrl)
+                .add("payment_provider", "gocardless")
                 .add("created_date", createdDate)
                 .add("state", state)
-                .add("links", asList(links))
-                .build();
+                .add("links", asList(links));
+
+        Optional.ofNullable(description).ifPresent(x -> builder.add("description", description));
+        
+        return builder.build();
     }
 
     private String buildGetAgreementResponse(String mandateId,
@@ -186,16 +186,16 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
         return "http://frontend_direct_debit/secure/";
     }
 
-    private void setupCreateAgreement(String gatewayAccountId, ResponseDefinitionBuilder response) {
+    private void setupCreateMandate(String gatewayAccountId, ResponseDefinitionBuilder response) {
         wireMockClassRule.stubFor(post(urlPathEqualTo(format("/v1/api/accounts/%s/mandates", gatewayAccountId)))
                 .withHeader(CONTENT_TYPE, matching(APPLICATION_JSON)).willReturn(response));
     }
-    
+
     private void setupGetAgreement(String mandateId, String gatewayAccountId, ResponseDefinitionBuilder response) {
         wireMockClassRule.stubFor(get(urlPathEqualTo(format("/v1/api/accounts/%s/mandates/%s", gatewayAccountId, mandateId)))
                 .willReturn(response));
     }
-    
+
     private ResponseDefinitionBuilder withStatusAndErrorMessage(int statusCode, String errorMsg, ErrorIdentifier errorIdentifier) {
         return aResponse()
                 .withStatus(statusCode)

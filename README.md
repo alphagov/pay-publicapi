@@ -74,7 +74,7 @@ The [API Specification](docs/api_specification.md) provides more detail on the p
 |[`/v1/payments/{paymentId}/refunds`](docs/api_specification.md#post-v1paymentspaymentidrefunds)| POST |  creates a new refund for the payment     |
 |[`/v1/payments/{paymentId}/refunds/{refundId}`](docs/api_specification.md#get-v1paymentspaymentidrefundsrefundid)| GET | returns a refund by ID   |
 |[`/v1/refunds`](docs/api_specification.md#get-v1refunds)  | GET    |  search/filter refunds           |
-|[`/v1/agreements`](docs/api_specification.md#post-v1agreements) | POST | create and agreement |
+|[`/v1/directdebit/mandates`](docs/api_specification.md#post-v1directdebitmandates) | POST | create a mandate|
 ------------------------------------------------------------------------------------------------
 
 ## Dependencies
