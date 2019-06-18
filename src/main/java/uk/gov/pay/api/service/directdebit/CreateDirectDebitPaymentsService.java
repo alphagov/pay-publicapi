@@ -59,8 +59,7 @@ public class CreateDirectDebitPaymentsService {
                 .withCreatedDate(connectorResponse.getCreatedDate())
                 .withSelfLink(publicApiUriGenerator.getDirectDebitPaymentURI(connectorResponse.getPaymentExternalId()))
                 .withEventsLink(publicApiUriGenerator.getDirectDebitPaymentEventsURI(connectorResponse.getPaymentExternalId()))
-                // TODO - enable mandate link when dd-connector returns mandate id
-//                .withMandateLink(publicApiUriGenerator.getDirectDebitMandateURI(connectorResponse.getMandateExternalId()))
+                .withMandateLink(publicApiUriGenerator.getDirectDebitMandateURI(connectorResponse.getMandateId()))
                 .build();
     }
 }

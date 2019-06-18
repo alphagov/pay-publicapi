@@ -142,7 +142,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         var responseFromConnector = aCreateOrGetChargeResponseFromConnector()
                 .withAmount(requestParams.getAmount())
                 .withChargeId("chargeId")
-                .withState(new PaymentState("created", false, null, null))
+                .withState(new PaymentState("created", false, null, null, null))
                 .withReturnUrl(requestParams.getReturnUrl())
                 .withDescription(requestParams.getDescription())
                 .withReference(requestParams.getReference())
