@@ -1,0 +1,133 @@
+{
+  "consumer": {
+    "name": "publicapi"
+  },
+  "provider": {
+    "name": "direct-debit-connector"
+  },
+  "interactions": [
+    {
+      "providerStates": [
+        {
+          "name": "a gateway account with external id and a mandate with external id exist",
+          "params": {
+            "gateway_account_id": "GATEWAY_ACCOUNT_ID",
+            "mandate_id": "test_mandate_id_xyz"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "path": "/v1/api/accounts/GATEWAY_ACCOUNT_ID/charges/collect",
+        "body": {
+          "amount": 100,
+          "reference": "a reference",
+          "mandate_id": "test_mandate_id_xyz"
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Content-Type": "application/json",
+          "Location": "/v1/api/accounts/GATEWAY_ACCOUNT_ID/charges/ch_ab2341da231434l"
+        },
+        "body": {
+          "payment_id": "ch_ab2341da231434l",
+          "amount": 100,
+          "reference": "a reference",
+          "payment_provider": "SANDBOX",
+          "mandate_id": "a mandate id",
+          "state": {
+            "status": "created",
+            "finished": false
+          },
+          "created_date": "2010-12-31T22:59:59.132Z",
+          "links": [
+            {
+              "href": "http://localhost:1234/v1/api/accounts/GATEWAY_ACCOUNT_ID/charges/ch_ab2341da231434l",
+              "method": "GET",
+              "rel": "self"
+            }
+          ]
+        },
+        "matchingRules": {
+          "header": {
+            "Location": {
+              "matchers": [
+                {
+                  "regex": "http:\/\/.*\/v1\/api\/accounts\/GATEWAY_ACCOUNT_ID\/charges\/[a-z0-9]*"
+                }
+              ]
+            }
+          },
+          "body": {
+            "$.links[0].href": {
+              "matchers": [
+                {
+                  "regex": "http:\/\/.*\/v1\/api\/accounts\/GATEWAY_ACCOUNT_ID\/charges\/[a-z0-9]*"
+                }
+              ]
+            },
+            "$.payment_id": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.created_date": {
+              "matchers": [
+                {
+                  "match": "date",
+                  "date": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.payment_provider": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.mandate_id": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.provider_id": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.state.status": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pact-specification": {
+      "version": "3.0.0"
+    },
+    "pact-jvm": {
+      "version": "3.5.16"
+    }
+  }
+}

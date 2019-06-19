@@ -83,6 +83,33 @@ public class DirectDebitPaymentIT {
                 .body("_links.self.method", is("GET"));
     }
 
+    @Test
+    @PactVerification({"direct-debit-connector", "publicauth"})
+    @Pacts(pacts = {"publicapi-direct-debit-connector-collect-payment-no-description"})
+    @Pacts(pacts = {"publicapi-publicauth"}, publish = false)
+    public void createPaymentNoDescription() {
+
+        String publicApiBaseUrl = app.getConfiguration().getBaseUrl();
+        String payload = new JsonStringBuilder()
+                .add("amount", AMOUNT)
+                .add("reference", REFERENCE)
+                .add("mandate_id", MANDATE_ID)
+                .build();
+
+        postPaymentResponse(API_KEY, payload)
+                .statusCode(201)
+                .contentType(JSON)
+                .header(HttpHeaders.LOCATION, is(directDebitPaymentLocationFor(publicApiBaseUrl, CHARGE_ID)))
+                .body("payment_id", is(CHARGE_ID))
+                .body("amount", is(AMOUNT))
+                .body("reference", is(REFERENCE))
+                .body("state.status", is(CREATED.getStatus()))
+                .body("created_date", is(CREATED_DATE))
+                .body("_links.self.href", is(directDebitPaymentLocationFor(publicApiBaseUrl, CHARGE_ID)))
+                .body("_links.self.method", is("GET"));
+    }
+
+
     private ValidatableResponse postPaymentResponse(String bearerToken, String payload) {
         return given().port(app.getLocalPort())
                 .body(payload)
