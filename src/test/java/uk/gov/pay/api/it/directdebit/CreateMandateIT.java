@@ -5,6 +5,7 @@ import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import junitparams.converters.Nullable;
 import org.apache.http.HttpStatus;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
@@ -28,16 +29,17 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 import static uk.gov.pay.api.utils.Urls.directDebitFrontendSecureUrl;
+import static uk.gov.pay.api.utils.Urls.mandateLocationFor;
 import static uk.gov.pay.api.utils.mocks.CreateMandateRequestParams.CreateMandateRequestParamsBuilder.aCreateMandateRequestParams;
 import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 import static uk.gov.pay.commons.testing.matchers.HamcrestMatchers.optionalMatcher;
 
 @RunWith(JUnitParamsRunner.class)
-public class MandatesResourceIT extends PaymentResourceITestBase {
+public class CreateMandateIT extends PaymentResourceITestBase {
 
     private ConnectorDDMockClient connectorDDMockClient = new ConnectorDDMockClient(connectorDDMock);
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
-    
+
     private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
     private static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(TIMESTAMP);
     private static final String CHARGE_TOKEN_ID = "token_1234567asdf";
@@ -46,25 +48,98 @@ public class MandatesResourceIT extends PaymentResourceITestBase {
     private static final String SERVICE_REFERENCE = "test_service_reference";
     private static final String RETURN_URL = "https://service-name.gov.uk/transactions/12345";
 
+    private static String createMandatePayload = new Gson().toJson(Map.of(
+            "return_url", RETURN_URL, 
+            "reference", "test service reference"));
+
+    @Before
+    public void setup() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
+    }
+
     @Test
-    @Parameters({
-            "null, test-service-ref, Field [return_url] cannot be null",
-            " , test-service-ref, Field [return_url] must have a size between 1 and 255",
-            "http://example, null, Field [service_reference] cannot be null",
-            "http://example, , Field [service_reference] must have a size between 1 and 255"
-    })
-    public void createMandateValidationFailures(@Nullable String returnUrl,
-                                                @Nullable String serviceReference,
-                                                String expectedErrorMessage) throws Exception {
-        //TODO
+    public void returnUrlLengthValidationFailure() {
+        String returnUrl = "https://example.com?something=" + "aVeryLongString12345".repeat(100);
+
+        given().port(app.getLocalPort())
+                .body(Map.of("return_url", returnUrl, "reference", "test reference"))
+                .accept(JSON)
+                .contentType(JSON)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
+                .post("/v1/directdebit/mandates")
+                .then()
+                .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
+                .body("size()", is(3))
+                .body("field", is("return_url"))
+                .body("code", is("P0102"))
+                .body("description", is("Invalid attribute value: return_url. Must be less than or equal to 2000 characters length"));
     }
     
     @Test
+    @Parameters({
+            "null, Missing mandatory attribute: return_url, P0101",
+            "invalidUrl, Invalid attribute value: return_url. Must be a valid URL format, P0102",
+            "http://notsecure.com, Invalid attribute value: return_url. Must be a valid URL format, P0102"
+    })
+    public void returnUrlValidationFailures(@Nullable String returnUrl, String expectedErrorMessage, String errorCode) {
+
+        Map<String, String> payload = new HashMap<>();
+        payload.put("reference", "test reference");
+        Optional.ofNullable(returnUrl).ifPresent(x -> payload.put("return_url", x));
+
+        given().port(app.getLocalPort())
+                .body(payload)
+                .accept(JSON)
+                .contentType(JSON)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
+                .post("/v1/directdebit/mandates")
+                .then().log().body()
+                .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
+                .body("size()", is(3))
+                .body("field", is("return_url"))
+                .body("code", is(errorCode))
+                .body("description", is(expectedErrorMessage));
+    }
+
+    @Test
+    @Parameters({
+            "null, null, Missing mandatory attribute: reference, reference, P0101",
+            "null, , Missing mandatory attribute: reference, reference, P0101",
+            "null, test reference more than 255 chars test reference more than 255 chars test reference more than 255 " +
+                    "chars test reference more than 255 chars test reference more than 255 chars test reference more " +
+                    "than 255 chars test reference more than 255 chars test reference more than 255 chars, " +
+                    "Invalid attribute value: reference. Must be less than or equal to 255 characters length, reference, P0102",
+            " , test reference, Invalid attribute value: description. Must have a size between 1 and 255, description, P0102",
+    })
+    public void referenceAndDescriptionValidationFailures(@Nullable String description,
+                                                @Nullable String serviceReference,
+                                                String expectedErrorMessage,
+                                                String field,
+                                                String errorCode) {
+        
+        Map<String, String> payload = new HashMap<>();
+        payload.put("return_url", "https://example.com");
+        Optional.ofNullable(serviceReference).ifPresent(x -> payload.put("reference", x));
+        Optional.ofNullable(description).ifPresent(x -> payload.put("description", x));
+
+        given().port(app.getLocalPort())
+                .body(payload)
+                .accept(JSON)
+                .contentType(JSON)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
+                .post("/v1/directdebit/mandates")
+                .then().log().body()
+                .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
+                .body("size()", is(3))
+                .body("field", is(field))
+                .body("code", is(errorCode))
+                .body("description", is(expectedErrorMessage));
+    }
+
+    @Test
     @Parameters({"I'ma need space I'ma I'ma need space (N-A-S-A)", "null"})
-    public void createMandate(@Nullable String description) throws Exception{
-        
-        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
-        
+    public void createSuccessfully(@Nullable String description) throws Exception {
+
         connectorDDMockClient.respondOk_whenCreateMandateRequest(aCreateMandateRequestParams()
                 .withMandateId(MANDATE_ID)
                 .withProviderId(MANDATE_REFERENCE)
@@ -80,7 +155,7 @@ public class MandatesResourceIT extends PaymentResourceITestBase {
         payload.put("return_url", RETURN_URL);
         payload.put("reference", SERVICE_REFERENCE);
         Optional.ofNullable(description).ifPresent(x -> payload.put("description", x));
-        
+
         given().port(app.getLocalPort())
                 .body(payload)
                 .accept(JSON)
@@ -109,25 +184,22 @@ public class MandatesResourceIT extends PaymentResourceITestBase {
                 .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
                 .body("_links.payments.href", is("http://publicapi.url/v1/directdebit/payments?mandate_id=" + MANDATE_ID))
                 .body("_links.payments.method", is("GET"))
-                .body("_links.events.href", is(format("http://publicapi.url/v1/directdebit/mandates/%s/events", MANDATE_ID))) 
+                .body("_links.events.href", is(format("http://publicapi.url/v1/directdebit/mandates/%s/events", MANDATE_ID)))
                 .body("_links.events.method", is("GET"));
-        
+
         connectorDDMockClient.verifyCreateMandateConnectorRequest(
                 new MandateConnectorRequest(RETURN_URL, SERVICE_REFERENCE, description), GATEWAY_ACCOUNT_ID);
     }
 
     @Test
-    public void createPayment_respondsWith500_whenConnectorResponseIsAnUnrecognisedError() {
+    public void respondWith500_whenConnectorResponseIsAnUnrecognisedError() {
 
         String errorMessage = "something went wrong";
 
-        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
-
         connectorDDMockClient.respondBadRequest_whenCreateAgreementRequest(GATEWAY_ACCOUNT_ID, errorMessage);
 
-        String payload = createMandatePayload("https://service-name.gov.uk/transactions/12345");
         given().port(app.getLocalPort())
-                .body(payload)
+                .body(createMandatePayload)
                 .accept(JSON)
                 .contentType(JSON)
                 .header(AUTHORIZATION, "Bearer " + API_KEY)
@@ -141,20 +213,14 @@ public class MandatesResourceIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPayment_respondsWith500_whenConnectorResponseIsAgreementTypeInvalid() {
+    public void respondWith500_whenConnectorResponseIsAgreementTypeInvalid() {
 
         String errorMessage = "something went wrong";
+        
+        connectorDDMockClient.respondWithMandateTypeInvalid_whenCreateMandateRequest(GATEWAY_ACCOUNT_ID, errorMessage);
 
-        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
-
-        connectorDDMockClient.respondWithMandateTypeInvalid_whenCreateAgreementRequest(
-                GATEWAY_ACCOUNT_ID,
-                errorMessage
-        );
-
-        String payload = createMandatePayload("https://service-name.gov.uk/transactions/12345");
         given().port(app.getLocalPort())
-                .body(payload)
+                .body(createMandatePayload)
                 .accept(JSON)
                 .contentType(JSON)
                 .header(AUTHORIZATION, "Bearer " + API_KEY)
@@ -169,20 +235,14 @@ public class MandatesResourceIT extends PaymentResourceITestBase {
 
 
     @Test
-    public void createPayment_respondsWith500_whenConnectorResponseIsGCAccountNotLinked() {
+    public void respondWith500_whenConnectorResponseIsGCAccountNotLinked() {
 
         String errorMessage = "something went wrong";
 
-        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
+        connectorDDMockClient.respondWithGCAccountNotLinked_whenCreateMandateRequest(GATEWAY_ACCOUNT_ID, errorMessage);
 
-        connectorDDMockClient.respondWithGCAccountNotLinked_whenCreateAgreementRequest(
-                GATEWAY_ACCOUNT_ID,
-                errorMessage
-        );
-
-        String payload = createMandatePayload("https://service-name.gov.uk/transactions/12345");
         given().port(app.getLocalPort())
-                .body(payload)
+                .body(createMandatePayload)
                 .accept(JSON)
                 .contentType(JSON)
                 .header(AUTHORIZATION, "Bearer " + API_KEY)
@@ -193,52 +253,5 @@ public class MandatesResourceIT extends PaymentResourceITestBase {
                 .body("code", is("P0199"))
                 .body("description", is("There is an error with this account. Please contact support"))
                 .extract().body().asString();
-    }
-    
-    @Test
-    public void shouldGetADirectDebitAgreement_withReference() {
-
-        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
-
-        connectorDDMockClient.respondOk_whenGetAgreementRequest(
-                MANDATE_ID,
-                MANDATE_REFERENCE,
-                SERVICE_REFERENCE,
-                RETURN_URL,
-                new MandateState("created", false),
-                GATEWAY_ACCOUNT_ID,
-                CHARGE_TOKEN_ID
-        );
-
-        given().port(app.getLocalPort())
-                .accept(JSON)
-                .contentType(JSON)
-                .header(AUTHORIZATION, "Bearer " + API_KEY)
-                .get("/v1/agreements/" + MANDATE_ID)
-                .then()
-                .statusCode(200)
-                .contentType(JSON)
-                .body("agreement_id", is(MANDATE_ID))
-                .body("provider_id", is(MANDATE_REFERENCE))
-                .body("reference", is(SERVICE_REFERENCE))
-                .body("return_url", is(RETURN_URL))
-                .body("state.status", is(MandateStatus.CREATED.getStatus()))
-                .body("_links.self.href", is(mandateLocationFor(MANDATE_ID)))
-                .body("_links.self.method", is("GET"))
-                .body("_links.next_url.href", is(directDebitFrontendSecureUrl() + CHARGE_TOKEN_ID))
-                .body("_links.next_url.method", is("GET"))
-                .body("_links.next_url_post.href", is(directDebitFrontendSecureUrl()))
-                .body("_links.next_url_post.method", is("POST"))
-                .body("_links.next_url_post.type", is("application/x-www-form-urlencoded"))
-                .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
-                .extract().body().asString();
-    }
-
-    private String mandateLocationFor(String mandateId) {
-        return "http://publicapi.url/v1/agreements/" + mandateId; //TODO change this for PP-5299
-    }
-
-    private static String createMandatePayload(String returnUrl) {
-        return new Gson().toJson(Map.of("return_url", returnUrl, "reference", "test service reference"));
     }
 }
