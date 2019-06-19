@@ -139,44 +139,7 @@ Content-Type: application/json
 }
 ```
 
-  
-In case of a direct debit payment:
-
-```
-HTTP/1.1 201 Created
-Location: https://publicapi.example.com/v1/payments/ab2341da231434
-Content-Type: application/json
-
-{
-    "_links": {
-        "self" :{
-            "href": "https://publicapi.example.com/v1/payments/ab2341da231434",
-            "method": "GET" 
-        },
-        "next_url" : {
-            "href": "https://frontend.example.com/charge/1?chargeTokenId=82347",
-            "method": "GET" 
-        },
-        "next_url_post" : {
-            "params" : {
-                "chargeTokenId" : "82347"
-            },
-            "type" : "application/x-www-form-urlencoded",
-            "href": "https://frontend.example.com/charge/1?chargeTokenId=82347",
-            "method": "POST" 
-        }
-    },
-    "payment_id": "ab2341da231434",
-    "amount": 50000,
-    "description": "Payment description",
-    "status": "CREATED",
-    "return_url": "https://service.example.com/some-reference-to-this-payment",
-    "reference": "some-reference-to-this-payment",
-    "payment_provider": "Sandbox",
-    "created_date": "2016-01-15T16:30:56Z",
-}
-```
-#### Response fields description
+  #### Response fields description
 
 | Field                  | Description                               |
 | ---------------------- | ----------------------------------------- |
@@ -282,6 +245,89 @@ Content-Length: 34
 | `P0102`            | An attribute in the JSON body has a validation error              |
 
 ------------------------------------------------------------------------------------------------
+## POST /v1/directdebit/payments
+
+### Create Payment Request
+
+```
+POST /v1/directdebit/payments
+Authorization: Bearer BEARER_TOKEN
+Content-Type: application/json
+
+
+{
+ "amount": 2000,
+ "reference": "123",
+ "description": "a description",
+ "mandate_id": "s5e0n81t9o8h7fo34dtncj7qf3"
+}
+```
+
+#### Request description
+
+BEARER_TOKEN: A valid bearer token for the account to associate the payment with.
+
+| Field                    | required | Description                                                  |
+| ------------------------ |:--------:| -------------------------------------------------------------|
+| `amount`                 | Yes      | Amount to pay in pence                                       |
+| `reference`              | Yes      | Payment description                                          |
+| `mandate_id`             | Yes      | The ID of the mandate the payment is using                   |
+| `description`            | No       | Further optional information to be included on the payment   |
+
+### Payment Created Response
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "amount": 1000,
+  "state": {
+    "status": "pending",
+    "finished": false,
+    "details"?: "payment_submitted"
+  },
+  "mandate_id": "aaaa1111",
+  "description"?: "a description",
+  "reference": "ABCDE",
+  "payment_id": "f6q0m125b42cjcndf2joslahen",
+  "payment_provider": "gocardless",
+  "provider_id": "AAAA1111",
+  "created_date": "1995-10-27T10:21:01.499Z",
+  "_links": {
+    "self": {
+      "href": "https://publicapi.payments.service.gov.uk/v1/directdebit/payments/f6q0m125b42cjcndf2joslahen",
+      "method": "GET"
+    },
+    "mandate": {
+      "href": "https://publicapi.payments.service.gov.uk/v1/directdebit/mandates/f6q0m125b42cjcndf2joslahen",
+      "method": "GET"
+    },
+    "events": {
+      "href": "https://publicapi.payments.service.gov.uk/v1/directdebit/payments/f6q0m125b42cjcndf2joslahen/events",
+      "method": "GET"
+    }
+  }
+}
+```
+#### Response error fields description
+
+| Field              | Description                                                               |
+| ------------------ | --------------------------------------------------------------------------|
+| `field`            | Field related to the error (Only for validation or missing fields errors) |
+| `code`             | The error reference. Format: P01XX                                        |
+| `description`      | The error description                                                     |
+
+#### Response error codes
+
+| Code               | Description                                                       |
+| ------------------ | ------------------------------------------------------------------|
+| `P0199`            | Auth token was correct but the account wasn't found in Connector  |
+| `P0198`            | Connector response was unrecognised to PublicAPI                  |
+| `P0100`            | Body sent by the client can't be processed (is not a valid JSON)  |
+| `P0101`            | An mandatory attribute in the JSON body is missing, null or empty |
+| `P0102`            | An attribute in the JSON body has a validation error              |
+
+------------------------------------------------------------------------------------------------
 
 ## GET /v1/payments/{paymentId}
 
@@ -367,41 +413,6 @@ Content-Type: application/json
         "captured_date": "2016-01-15",
         "capture_submit_time": "2016-01-15T16:30:56Z" 
     }
-}
-```
-
-In case of a direct debit payment:
-
-```
-HTTP/1.1 200 OK
-Content-Type: application/json
-
-{
-    "_links": {
-        "self" :{
-            "href": "https://publicapi.example.com/v1/payments/ab2341da231434",
-            "method": "GET" 
-        },
-        "next_url" : {
-            "href": "https://frontend.example.com/secure/ab2341da231434",
-            "method": "GET" 
-        },
-        "next_url_post" : {
-            "params" : {},
-            "type" : "",
-            "href": "https://frontend.example.com/secure/ab2341da231434",
-            "method": "POST" 
-        }
-    },
-    "payment_id": "ab2341da231434",
-    "amount": 50000,
-    "description": "Payment description",
-    "status": "CREATED",
-    "return_url": "https://service.example.com/some-reference-to-this-payment",
-    "reference" : "some-reference-to-this-payment",
-    "email": "mail@example.com",
-    "payment_provider": "Sandbox",
-    "created_date": "2016-01-15T16:30:56Z"
 }
 ```
 
