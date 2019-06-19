@@ -3,7 +3,6 @@ package uk.gov.pay.api.resources.directdebit;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.jayway.jsonassert.JsonAssert;
 import com.spotify.docker.client.exceptions.DockerException;
 import io.dropwizard.testing.junit.DropwizardAppRule;
@@ -19,7 +18,7 @@ import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.it.rule.RedisDockerRule;
-import uk.gov.pay.api.model.PaymentState;
+import uk.gov.pay.api.model.DirectDebitPaymentState;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.directdebit.DirectDebitConnectorCreatePaymentResponse;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
@@ -54,8 +53,10 @@ public class DirectDebitPaymentsResourceTest {
     private static final String DESCRIPTION = "a description";
     private static final String CREATED_DATE = "2018-01-01T11:12:13Z";
     private static final String PAYMENT_ID = "abc123";
+    private static final String PROVIDER_ID = "aproviderid";
     private static final String PAYMENT_PROVIDER = "a payment provider";
     private static final String MANDATE_ID = "mandate-123";
+    private static final String DETAILS_FIELD = "details";
 
     private static final int CONNECTOR_DD_PORT = findFreePort();
     private static final int PUBLIC_AUTH_PORT = findFreePort();
@@ -109,7 +110,9 @@ public class DirectDebitPaymentsResourceTest {
                 .withPaymentProvider(PAYMENT_PROVIDER)
                 .withCreatedDate(CREATED_DATE)
                 .withDescription(DESCRIPTION)
-                .withState(new PaymentState(status, finished))
+                .withMandateId(MANDATE_ID)
+                .withProviderId(PROVIDER_ID)
+                .withState(new DirectDebitPaymentState(status, finished, DETAILS_FIELD))
                 .withReference(REFERENCE)
                 .build();
         
@@ -134,10 +137,9 @@ public class DirectDebitPaymentsResourceTest {
                 .body("_links.events.href", is(paymentEventsLocationFor(PAYMENT_ID)))
                 .body("_links.events.method", is("GET"))
                 .body("_links.self.href", is(paymentLocationFor(PAYMENT_ID)))
-                .body("_links.self.method", is("GET"));
-        // TODO - enable mandate link when dd-connector returns mandate id
-//                .body("_links.mandate.href", is(mandateLocationFor(mandateId)))
-//                .body("_links.mandate.method", is("GET"));
+                .body("_links.self.method", is("GET"))
+                .body("_links.mandate.href", is(mandateLocationFor(MANDATE_ID)))
+                .body("_links.mandate.method", is("GET"));
     }
 
     @Test

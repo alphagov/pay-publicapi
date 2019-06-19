@@ -24,6 +24,7 @@ public class PaymentState {
 
     @JsonProperty("code")
     private String code;
+    
 
     public static PaymentState createPaymentState(JsonNode node) {
         return new PaymentState(
@@ -67,7 +68,7 @@ public class PaymentState {
     public String getCode() {
         return code;
     }
-
+    
     @Override
     public String toString() {
         return "PaymentState{" +

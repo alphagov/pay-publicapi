@@ -39,6 +39,7 @@
           "reference": "a reference",
           "payment_provider": "SANDBOX",
           "description": "a description",
+          "mandate_id": "a mandate id",
           "state": {
             "status": "created",
             "finished": false
@@ -96,6 +97,22 @@
               "combine": "AND"
             },
             "$.payment_provider": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.mandate_id": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.provider_id": {
               "matchers": [
                 {
                   "match": "type"
