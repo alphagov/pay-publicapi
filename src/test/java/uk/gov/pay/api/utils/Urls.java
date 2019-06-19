@@ -10,6 +10,10 @@ public class Urls {
         return publicApiBaseUrl + "v1/payments/" + chargeId;
     }
 
+    public static String mandateLocationFor(String mandateId) {
+        return "http://publicapi.url/v1/agreements/" + mandateId; //TODO change this for PP-5299
+    }
+
     public static String directDebitPaymentLocationFor(String publicApiBaseUrl, String chargeId) {
         return publicApiBaseUrl + "v1/directdebit/payments/" + chargeId;
     }
