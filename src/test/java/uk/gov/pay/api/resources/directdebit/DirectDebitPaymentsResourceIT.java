@@ -137,6 +137,16 @@ public class DirectDebitPaymentsResourceIT extends DirectDebitResourceITBase {
                         .withErrorField("amount")
                         .build(),
                 someParameters()
+                        .withAmount("NaN")
+                        .withErrorMessage("Invalid attribute value: amount. Must be a valid numeric format")
+                        .withErrorField("amount")
+                        .build(),
+                someParameters()
+                        .withAmount(false)
+                        .withErrorMessage("Invalid attribute value: amount. Must be a valid numeric format")
+                        .withErrorField("amount")
+                        .build(),
+                someParameters()
                         .withReference(null)
                         .withErrorMessage("Missing mandatory attribute: reference")
                         .withErrorField("reference")
@@ -161,10 +171,30 @@ public class DirectDebitPaymentsResourceIT extends DirectDebitResourceITBase {
                         .withErrorCode("P0102")
                         .build(),
                 someParameters()
+                        .withReference(123)
+                        .withErrorMessage("Invalid attribute value: reference. Must be of type String")
+                        .withErrorField("reference")
+                        .build(),
+                someParameters()
+                        .withReference(false)
+                        .withErrorMessage("Invalid attribute value: reference. Must be of type String")
+                        .withErrorField("reference")
+                        .build(),
+                someParameters()
                         .withDescription(RandomStringUtils.randomAlphanumeric(256))
                         .withErrorMessage("Invalid attribute value: description. Must be less than or equal to 255 characters length")
                         .withErrorField("description")
                         .withErrorCode("P0102")
+                        .build(),
+                someParameters()
+                        .withDescription(123)
+                        .withErrorMessage("Invalid attribute value: description. Must be of type String")
+                        .withErrorField("description")
+                        .build(),
+                someParameters()
+                        .withDescription(false)
+                        .withErrorMessage("Invalid attribute value: description. Must be of type String")
+                        .withErrorField("description")
                         .build(),
                 someParameters()
                         .withMandateId(null)
@@ -190,14 +220,24 @@ public class DirectDebitPaymentsResourceIT extends DirectDebitResourceITBase {
                         .withErrorField("mandate_id")
                         .withErrorCode("P0102")
                         .build(),
+                someParameters()
+                        .withMandateId(123)
+                        .withErrorMessage("Invalid attribute value: mandate_id. Must be of type String")
+                        .withErrorField("mandate_id")
+                        .build(),
+                someParameters()
+                        .withMandateId(false)
+                        .withErrorMessage("Invalid attribute value: mandate_id. Must be of type String")
+                        .withErrorField("mandate_id")
+                        .build(),
         };
     }
     
     public static class CreatePaymentRequestValidationParameters {
-        public Long amount;
-        public String reference;
-        public String description;
-        public String mandateId;
+        public Object amount;
+        public Object reference;
+        public Object description;
+        public Object mandateId;
         public String expectedErrorCode;
         public String expectedErrorField;
         public String expectedErrorMessage;
@@ -221,11 +261,24 @@ public class DirectDebitPaymentsResourceIT extends DirectDebitResourceITBase {
             return payload;
         }
 
+        @Override
+        public String toString() {
+            return "CreatePaymentRequestValidationParameters{" +
+                    "amount=" + amount +
+                    ", reference=" + reference +
+                    ", description=" + description +
+                    ", mandateId=" + mandateId +
+                    ", expectedErrorCode='" + expectedErrorCode + '\'' +
+                    ", expectedErrorField='" + expectedErrorField + '\'' +
+                    ", expectedErrorMessage='" + expectedErrorMessage + '\'' +
+                    '}';
+        }
+
         static class  CreatePaymentRequestValidationParametersBuilder {
-            public Long amount = AMOUNT;
-            public String reference = REFERENCE;
-            public String description = DESCRIPTION;
-            public String mandateId = MANDATE_ID;
+            public Object amount = AMOUNT;
+            public Object reference = REFERENCE;
+            public Object description = DESCRIPTION;
+            public Object mandateId = MANDATE_ID;
             public String expectedErrorCode = "P0102";
             public String expectedErrorField;
             public String expectedErrorMessage;
@@ -234,22 +287,22 @@ public class DirectDebitPaymentsResourceIT extends DirectDebitResourceITBase {
                 return new CreatePaymentRequestValidationParametersBuilder();
             }
 
-            CreatePaymentRequestValidationParametersBuilder withAmount(Long amount) {
+            CreatePaymentRequestValidationParametersBuilder withAmount(Object amount) {
                 this.amount = amount;
                 return this;
             }
 
-            CreatePaymentRequestValidationParametersBuilder withReference(String reference) {
+            CreatePaymentRequestValidationParametersBuilder withReference(Object reference) {
                 this.reference = reference;
                 return this;
             }
 
-            CreatePaymentRequestValidationParametersBuilder withDescription(String description) {
+            CreatePaymentRequestValidationParametersBuilder withDescription(Object description) {
                 this.description = description;
                 return this;
             }
 
-            CreatePaymentRequestValidationParametersBuilder withMandateId(String mandateId) {
+            CreatePaymentRequestValidationParametersBuilder withMandateId(Object mandateId) {
                 this.mandateId = mandateId;
                 return this;
             }
