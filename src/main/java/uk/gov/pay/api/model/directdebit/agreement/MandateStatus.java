@@ -4,7 +4,13 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum MandateStatus {
-    CREATED("created");
+    CREATED("created"),
+    STARTED("started"),
+    PENDING("pending"),
+    SUBMITTED("submitted"),
+    ACTIVE("active"),
+    INACTIVE("inactive"),
+    CANCELLED("cancelled");
     
     private String status;
 
