@@ -17,6 +17,12 @@ import static uk.gov.pay.api.model.directdebit.DirectDebitPaymentLinks.DirectDeb
 @ApiModel(value = "DirectDebitPayment")
 public class DirectDebitPayment extends Payment {
 
+    @JsonProperty("mandate_id")
+    private String mandateId;
+    
+    @JsonProperty("provider_id")
+    private String providerId;
+    
     @JsonProperty("_links")
     private DirectDebitPaymentLinks links;
 
@@ -47,6 +53,8 @@ public class DirectDebitPayment extends Payment {
         this.reference = builder.reference;
         this.paymentProvider = builder.paymentProvider;
         this.createdDate = builder.createdDate;
+        this.mandateId = builder.mandateId;
+        this.providerId = builder.providerId;
         this.links = aDirectDebitPaymentLinks()
                 .withSelf(builder.selfLink)
                 .withEvents(builder.eventsLink)
@@ -75,6 +83,8 @@ public class DirectDebitPayment extends Payment {
         protected String description;
         protected String reference;
         protected String createdDate;
+        protected String mandateId;
+        protected String providerId;
         protected URI selfLink;
         protected URI eventsLink;
         protected URI mandateLink;
@@ -119,6 +129,16 @@ public class DirectDebitPayment extends Payment {
 
         public DirectDebitPaymentBuilder withCreatedDate(String createdDate) {
             this.createdDate = createdDate;
+            return this;
+        }
+        
+        public DirectDebitPaymentBuilder withMandateId(String mandateId) {
+            this.mandateId = mandateId;
+            return this;
+        }
+        
+        public DirectDebitPaymentBuilder withProviderId(String providerId) {
+            this.providerId = providerId;
             return this;
         }
 
