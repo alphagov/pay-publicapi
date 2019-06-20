@@ -1,5 +1,6 @@
 package uk.gov.pay.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -11,13 +12,14 @@ import javax.validation.constraints.Size;
 import java.util.StringJoiner;
 
 @ApiModel(description = "The Direct Debit Payment Request Payload")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateDirectDebitPaymentRequest {
 
     public static final int REFERENCE_MAX_LENGTH = 255;
     public static final int AMOUNT_MAX_VALUE = 10000000;
     public static final int AMOUNT_MIN_VALUE = 1;
     public static final int DESCRIPTION_MAX_LENGTH = 255;
-    public static final int AGREEMENT_ID_MAX_LENGTH = 26;
+    public static final int MANDATE_ID_MAX_LENGTH = 26;
 
     @JsonProperty("amount")
     @Min(value = AMOUNT_MIN_VALUE, message = "Must be greater than or equal to {value}")
@@ -34,7 +36,7 @@ public class CreateDirectDebitPaymentRequest {
     private String description;
 
     @JsonProperty("mandate_id")
-    @Size(max = AGREEMENT_ID_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
+    @Size(max = MANDATE_ID_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
     @NotBlank
     private String mandateId;
     
