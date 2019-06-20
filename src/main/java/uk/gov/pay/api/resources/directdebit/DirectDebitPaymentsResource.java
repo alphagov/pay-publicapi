@@ -11,7 +11,7 @@ import io.swagger.annotations.Authorization;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.CreateDirectDebitPaymentRequest;
 import uk.gov.pay.api.model.PaymentError;
-import uk.gov.pay.api.model.directdebit.agreement.DirectDebitPayment;
+import uk.gov.pay.api.model.directdebit.mandates.DirectDebitPayment;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
 import uk.gov.pay.api.service.directdebit.CreateDirectDebitPaymentsService;

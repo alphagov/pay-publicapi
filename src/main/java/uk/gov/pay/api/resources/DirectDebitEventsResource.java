@@ -60,7 +60,7 @@ public class DirectDebitEventsResource {
             @ApiParam(value = "Defaults to a maximum of 500", hidden = false)
             @QueryParam("display_size") Integer displaySize,
             @QueryParam("page") Integer page,
-            @ApiParam(value = "ID of associated agreement", hidden = false)
+            @ApiParam(value = "ID of associated mandate", hidden = false)
             @QueryParam("agreement_id") String agreementId,
             @ApiParam(value = "ID of associated payment", hidden = false)
             @QueryParam("payment_id") String paymentId

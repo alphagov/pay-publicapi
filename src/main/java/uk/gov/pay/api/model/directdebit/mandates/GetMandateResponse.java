@@ -1,4 +1,4 @@
-package uk.gov.pay.api.model.directdebit.agreement;
+package uk.gov.pay.api.model.directdebit.mandates;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.links.directdebit.MandateLinks;
 
 @ApiModel(value = "GetMandateResponse")
-public class GetAgreementResponse {
+public class GetMandateResponse {
 
     private static final String AGREEMENT_ID_FIELD_NAME = "agreement_id";
     private static final String RETURN_URL_FIELD_NAME = "return_url";
@@ -22,12 +22,12 @@ public class GetAgreementResponse {
     private MandateStatus state;
     private MandateLinks links;
 
-    private GetAgreementResponse(String agreementId,
-                                 String providerId,
-                                 String reference,
-                                 String returnUrl,
-                                 MandateStatus state,
-                                 MandateLinks links) {
+    private GetMandateResponse(String agreementId,
+                               String providerId,
+                               String reference,
+                               String returnUrl,
+                               MandateStatus state,
+                               MandateLinks links) {
         this.agreementId = agreementId;
         this.providerId = providerId;
         this.reference = reference;
@@ -36,8 +36,8 @@ public class GetAgreementResponse {
         this.links = links;
     }
 
-    public static GetAgreementResponse from(MandateConnectorResponse mandate, MandateLinks links) {
-        return new GetAgreementResponse(
+    public static GetMandateResponse from(MandateConnectorResponse mandate, MandateLinks links) {
+        return new GetMandateResponse(
                 mandate.getMandateId(),
                 mandate.getMandateReference(),
                 mandate.getServiceReference(),
@@ -46,7 +46,7 @@ public class GetAgreementResponse {
                 links);
     }
 
-    @ApiModelProperty(value = "agreement id", required = true, example = "jhjcvaiqlediuhh23d89hd3")
+    @ApiModelProperty(value = "mandate id", required = true, example = "jhjcvaiqlediuhh23d89hd3")
     @JsonProperty(value = AGREEMENT_ID_FIELD_NAME)
     public String getAgreementId() {
         return this.agreementId;
@@ -62,7 +62,7 @@ public class GetAgreementResponse {
         return returnUrl;
     }
 
-    @ApiModelProperty(value = "agreement state", required = true, example = "CREATED")
+    @ApiModelProperty(value = "mandate state", required = true, example = "CREATED")
     @JsonProperty(value = STATE_FIELD_NAME)
     public MandateStatus getState() {
         return state;

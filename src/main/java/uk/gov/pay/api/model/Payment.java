@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import uk.gov.pay.api.model.directdebit.agreement.DirectDebitPayment;
+import uk.gov.pay.api.model.directdebit.mandates.DirectDebitPayment;
 
 
 @JsonInclude(value = JsonInclude.Include.NON_EMPTY)

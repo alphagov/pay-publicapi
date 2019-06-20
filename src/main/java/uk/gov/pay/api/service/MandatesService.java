@@ -5,13 +5,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.exception.CreateAgreementException;
-import uk.gov.pay.api.exception.GetAgreementException;
-import uk.gov.pay.api.model.directdebit.agreement.CreateMandateRequest;
-import uk.gov.pay.api.model.directdebit.agreement.CreateMandateResponse;
-import uk.gov.pay.api.model.directdebit.agreement.GetAgreementResponse;
-import uk.gov.pay.api.model.directdebit.agreement.MandateConnectorRequest;
-import uk.gov.pay.api.model.directdebit.agreement.MandateConnectorResponse;
+import uk.gov.pay.api.exception.CreateMandateException;
+import uk.gov.pay.api.exception.GetMandateException;
+import uk.gov.pay.api.model.directdebit.mandates.CreateMandateRequest;
+import uk.gov.pay.api.model.directdebit.mandates.CreateMandateResponse;
+import uk.gov.pay.api.model.directdebit.mandates.GetMandateResponse;
+import uk.gov.pay.api.model.directdebit.mandates.MandateConnectorRequest;
+import uk.gov.pay.api.model.directdebit.mandates.MandateConnectorResponse;
 import uk.gov.pay.api.model.links.directdebit.MandateLinks;
 
 import javax.inject.Inject;
@@ -24,18 +24,18 @@ import javax.ws.rs.core.UriBuilder;
 import static java.lang.String.format;
 import static uk.gov.pay.api.model.links.directdebit.MandateLinks.MandateLinksBuilder.aMandateLinks;
 
-public class AgreementService {
+public class MandatesService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AgreementService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MandatesService.class);
 
     private final String connectorDDUrl;
     private final Client client;
     private final PublicApiUriGenerator publicApiUriGenerator;
 
     @Inject
-    public AgreementService(Client client,
-                            PublicApiConfig configuration,
-                            PublicApiUriGenerator publicApiUriGenerator) {
+    public MandatesService(Client client,
+                           PublicApiConfig configuration,
+                           PublicApiUriGenerator publicApiUriGenerator) {
         this.connectorDDUrl = configuration.getConnectorDDUrl();
         this.client = client;
         this.publicApiUriGenerator = publicApiUriGenerator;
@@ -45,31 +45,30 @@ public class AgreementService {
         MandateConnectorResponse mandate = createMandate(account, MandateConnectorRequest.from(createMandateRequest));
         MandateLinks mandateLinks = createLinksFromMandateResponse(mandate);
         CreateMandateResponse createMandateResponse = CreateMandateResponse.from(mandate, mandateLinks);
-        LOGGER.info("Agreement returned (created): [ {} ]", createMandateResponse);
+        LOGGER.info("Mandate returned (created): [ {} ]", createMandateResponse);
         return createMandateResponse;
     }
 
-    public GetAgreementResponse get(Account account, String agreementId) {
-        Response connectorResponse = getMandate(account, agreementId);
+    public GetMandateResponse get(Account account, String mandateId) {
+        Response connectorResponse = getMandate(account, mandateId);
         if (isFound(connectorResponse)) {
             MandateConnectorResponse mandate = connectorResponse.readEntity(MandateConnectorResponse.class);
             MandateLinks mandateLinks = createLinksFromMandateResponse(mandate);
-            GetAgreementResponse createAgreementResponse = GetAgreementResponse.from(mandate, mandateLinks);
-            LOGGER.info("Agreement returned (get): [ {} ]", createAgreementResponse);
-            return createAgreementResponse;
+            GetMandateResponse getMandateResponse = GetMandateResponse.from(mandate, mandateLinks);
+            LOGGER.info("Mandate returned (get): [ {} ]", getMandateResponse);
+            return getMandateResponse;
         }
-        throw new GetAgreementException(connectorResponse);
+        throw new GetMandateException(connectorResponse);
     }
 
     private MandateLinks createLinksFromMandateResponse(MandateConnectorResponse mandate) {
-        MandateLinks mandateLinks = aMandateLinks()
+        return aMandateLinks()
                 .withSelf(publicApiUriGenerator.getMandateURI(mandate.getMandateId()).toString())
                 .withPayments(publicApiUriGenerator.getMandatePaymentsURI(mandate.getMandateId()).toString())
                 .withNextUrl(mandate.getLinks())
                 .withNextUrlPost(mandate.getLinks())
                 .withEvents(publicApiUriGenerator.getMandateEventsURI(mandate.getMandateId()))
                 .build();
-        return mandateLinks;
     }
 
     MandateConnectorResponse createMandate(Account account, MandateConnectorRequest mandateConnectorRequest) {
@@ -81,7 +80,7 @@ public class AgreementService {
         if (response.getStatus() == HttpStatus.SC_CREATED)
             return response.readEntity(MandateConnectorResponse.class);
 
-        throw new CreateAgreementException(response);
+        throw new CreateMandateException(response);
     }
 
     Response getMandate(Account account, String mandateExternalId) {

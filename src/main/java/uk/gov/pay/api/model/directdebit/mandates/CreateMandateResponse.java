@@ -1,4 +1,4 @@
-package uk.gov.pay.api.model.directdebit.agreement;
+package uk.gov.pay.api.model.directdebit.mandates;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
@@ -72,7 +72,7 @@ public class CreateMandateResponse {
         return providerId;
     }
 
-    @ApiModelProperty(value = "agreement reference", example = "test_service_reference")
+    @ApiModelProperty(value = "mandate reference", example = "test_service_reference")
     @JsonProperty(value = REFERENCE_FIELD_NAME)
     public String getReference() {
         return reference;
@@ -84,13 +84,13 @@ public class CreateMandateResponse {
         return returnUrl;
     }
 
-    @ApiModelProperty(value = "agreement created date", required = true)
+    @ApiModelProperty(value = "mandate created date", required = true)
     @JsonProperty(CREATED_DATE_FIELD_NAME)
     public String getCreatedDate() {
         return createdDate;
     }
 
-    @ApiModelProperty(value = "agreement state", required = true, example = "CREATED")
+    @ApiModelProperty(value = "mandate state", required = true, example = "CREATED")
     @JsonProperty(value = STATE_FIELD_NAME)
     public MandateStatus getState() {
         return state;

@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.ChargeFromResponse;
-import uk.gov.pay.api.model.directdebit.agreement.DirectDebitPayment;
+import uk.gov.pay.api.model.directdebit.mandates.DirectDebitPayment;
 import uk.gov.pay.api.model.Payment;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.PaymentState;

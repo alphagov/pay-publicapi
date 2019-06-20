@@ -1,7 +1,6 @@
 package uk.gov.pay.api.service;
 
 import au.com.dius.pact.consumer.PactVerification;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -14,9 +13,9 @@ import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.TokenPaymentType;
-import uk.gov.pay.api.model.directdebit.agreement.MandateConnectorRequest;
-import uk.gov.pay.api.model.directdebit.agreement.MandateConnectorResponse;
-import uk.gov.pay.api.model.directdebit.agreement.MandateState;
+import uk.gov.pay.api.model.directdebit.mandates.MandateConnectorRequest;
+import uk.gov.pay.api.model.directdebit.mandates.MandateConnectorResponse;
+import uk.gov.pay.api.model.directdebit.mandates.MandateState;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
@@ -29,13 +28,13 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AgreementServiceTest {
+public class MandatesServiceTest {
 
     private static final String MANDATE_ID = "test_mandate_id_xyz";
     private static final String MANDATE_REFERENCE = "test_mandate_reference";
     private static final String SERVICE_REFERENCE = "test_service_reference";
 
-    private AgreementService agreementService;
+    private MandatesService mandatesService;
 
     @Rule
     public PactProviderRule ddConnectorRule = new PactProviderRule("direct-debit-connector", this);
@@ -50,7 +49,7 @@ public class AgreementServiceTest {
         // We will actually send real requests here, which will be intercepted by pact
         when(mockConfiguration.getConnectorDDUrl()).thenReturn(ddConnectorRule.getUrl());
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
-        agreementService = new AgreementService(client, mockConfiguration, mockPublicApiUriGenerator);
+        mandatesService = new MandatesService(client, mockConfiguration, mockPublicApiUriGenerator);
     }
     
     @Test
@@ -63,7 +62,7 @@ public class AgreementServiceTest {
                 SERVICE_REFERENCE,
                 "raindrops on roses and whiskers on kittens"
         );
-        MandateConnectorResponse mandate = agreementService.createMandate(account, mandateConnectorRequest);
+        MandateConnectorResponse mandate = mandatesService.createMandate(account, mandateConnectorRequest);
 
         assertThat(mandate.getMandateId(), is(MANDATE_ID));
         assertThat(mandate.getMandateReference(), is(MANDATE_REFERENCE));
@@ -101,7 +100,7 @@ public class AgreementServiceTest {
     @Pacts(pacts = {"publicapi-direct-debit-connector-get-mandate"})
     public void shouldGetAMandateSuccessfully_withReference() {
         Account account = new Account("9ddfcc27-acf5-43f9-92d5-52247540714c", TokenPaymentType.DIRECT_DEBIT);
-        Response connectorResponse = agreementService.getMandate(account, MANDATE_ID);
+        Response connectorResponse = mandatesService.getMandate(account, MANDATE_ID);
         MandateConnectorResponse mandateConnectorResponse = connectorResponse.readEntity(MandateConnectorResponse.class);
 
         assertThat(mandateConnectorResponse.getMandateId(), is(MANDATE_ID));

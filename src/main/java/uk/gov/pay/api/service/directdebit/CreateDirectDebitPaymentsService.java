@@ -4,7 +4,7 @@ import org.apache.http.HttpStatus;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateChargeException;
 import uk.gov.pay.api.model.CreateDirectDebitPaymentRequest;
-import uk.gov.pay.api.model.directdebit.agreement.DirectDebitPayment;
+import uk.gov.pay.api.model.directdebit.mandates.DirectDebitPayment;
 import uk.gov.pay.api.model.directdebit.DirectDebitConnectorCreatePaymentResponse;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
 
@@ -14,7 +14,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static uk.gov.pay.api.model.directdebit.agreement.DirectDebitPayment.DirectDebitPaymentBuilder.aDirectDebitPayment;
+import static uk.gov.pay.api.model.directdebit.mandates.DirectDebitPayment.DirectDebitPaymentBuilder.aDirectDebitPayment;
 import static uk.gov.pay.api.model.directdebit.DirectDebitConnectorCreatePaymentRequest.DirectDebitConnectorCreatePaymentRequestBuilder.aDirectDebitConnectorCreatePaymentRequest;
 
 public class CreateDirectDebitPaymentsService {
