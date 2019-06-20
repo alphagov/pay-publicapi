@@ -13,7 +13,7 @@ import static org.apache.commons.lang3.StringUtils.join;
 import static org.eclipse.jetty.util.StringUtil.isBlank;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.EMAIL_MAX_LENGTH;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.REFERENCE_MAX_LENGTH;
-import static uk.gov.pay.api.model.CreateDirectDebitPaymentRequest.AGREEMENT_ID_MAX_LENGTH;
+import static uk.gov.pay.api.model.CreateDirectDebitPaymentRequest.MANDATE_ID_MAX_LENGTH;
 import static uk.gov.pay.api.model.PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
@@ -69,7 +69,7 @@ public class PaymentSearchValidator {
     }
 
     private static void validateAgreement(String agreement, List<String> validationErrors) {
-        if (!isValid(agreement, AGREEMENT_ID_MAX_LENGTH)){
+        if (!isValid(agreement, MANDATE_ID_MAX_LENGTH)){
             validationErrors.add("agreement_id");
         }
     }
