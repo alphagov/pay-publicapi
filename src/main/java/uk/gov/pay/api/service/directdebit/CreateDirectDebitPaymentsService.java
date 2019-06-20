@@ -57,6 +57,8 @@ public class CreateDirectDebitPaymentsService {
                 .withPaymentProvider(connectorResponse.getPaymentProvider())
                 .withState(connectorResponse.getState())
                 .withCreatedDate(connectorResponse.getCreatedDate())
+                .withMandateId(connectorResponse.getMandateId())
+                .withProviderId(connectorResponse.getProviderId())
                 .withSelfLink(publicApiUriGenerator.getDirectDebitPaymentURI(connectorResponse.getPaymentExternalId()))
                 .withEventsLink(publicApiUriGenerator.getDirectDebitPaymentEventsURI(connectorResponse.getPaymentExternalId()))
                 .withMandateLink(publicApiUriGenerator.getDirectDebitMandateURI(connectorResponse.getMandateId()))
