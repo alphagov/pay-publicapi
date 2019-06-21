@@ -10,10 +10,12 @@
       "description": "Get a mandate",
       "providerStates": [
         {
-          "name": "a gateway account with external id and a mandate with external id exist",
+          "name": "a gateway account with external id and a confirmed mandate exists",
           "params": {
             "gateway_account_id": "9ddfcc27-acf5-43f9-92d5-52247540714c",
-            "mandate_id": "test_mandate_id_xyz"
+            "mandate_id": "test_mandate_id_xyz",
+            "bank_mandate_reference": "410104",
+            "unique_identifier": "MD1234"
           }
         }
       ],
@@ -28,7 +30,7 @@
         },
         "body": {
           "mandate_id": "test_mandate_id_xyz",
-          "mandate_reference": "test_mandate_reference",
+          "mandate_reference": "410104",
           "service_reference": "test_service_reference",
           "return_url": "https://example.com/return",
           "state": {
@@ -59,20 +61,6 @@
         },
         "matchingRules": {
           "body": {
-            "$.mandate_id": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ]
-            },
-            "$.mandate_reference": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ]
-            },
             "$.service_reference": {
               "matchers": [
                 {

@@ -65,7 +65,7 @@ public class MandatesServiceTest {
         MandateConnectorResponse mandate = mandatesService.createMandate(account, mandateConnectorRequest);
 
         assertThat(mandate.getMandateId(), is(MANDATE_ID));
-        assertThat(mandate.getMandateReference(), is(MANDATE_REFERENCE));
+        assertThat(mandate.getMandateReference(), is(MANDATE_REFERENCE)); //TODO make null as mandate ref is present only after confirming a mandate, not on creation
         assertThat(mandate.getServiceReference(), is(SERVICE_REFERENCE));
         assertThat(mandate.getDescription(), is("raindrops on roses and whiskers on kittens"));
         assertThat(mandate.getCreatedDate(), is("2016-01-01T12:00:00.000Z"));
@@ -104,7 +104,8 @@ public class MandatesServiceTest {
         MandateConnectorResponse mandateConnectorResponse = connectorResponse.readEntity(MandateConnectorResponse.class);
 
         assertThat(mandateConnectorResponse.getMandateId(), is(MANDATE_ID));
-        assertThat(mandateConnectorResponse.getMandateReference(), is(MANDATE_REFERENCE));
+        assertThat(mandateConnectorResponse.getMandateReference(), is("410104"));
+//        assertThat(mandateConnectorResponse.getProviderId(), is("MD1234")); TODO add this
         assertThat(mandateConnectorResponse.getServiceReference(), is(SERVICE_REFERENCE));
         assertThat(mandateConnectorResponse.getReturnUrl(), is("https://example.com/return"));
         assertThat(mandateConnectorResponse.getState(), is(new MandateState("created", false)));
