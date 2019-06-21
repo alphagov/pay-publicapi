@@ -13,7 +13,7 @@
           "name": "three payment records exist",
           "params": {
             "gateway_account_id": "2po9ycynwq8yxdgg2qwq9e9qpyrtre",
-            "agreement_id": "jkdjsvd8f78ffkwfek2q"
+            "mandate_id": "jkdjsvd8f78ffkwfek2q"
           }
         }
       ],
@@ -21,7 +21,7 @@
         "method": "GET",
         "path": "/v1/api/accounts/2po9ycynwq8yxdgg2qwq9e9qpyrtre/payments/view",
         "query": {
-          "agreement_id": [
+          "mandate_id": [
             "jkdjsvd8f78ffkwfek2q"
           ]
         }

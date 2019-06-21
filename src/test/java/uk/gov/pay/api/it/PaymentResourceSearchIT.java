@@ -582,19 +582,6 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_withMandateId_whenCardPayment_shouldReturnABadRequestResponse() throws Exception {
-        InputStream body = searchPayments(
-                ImmutableMap.of("agreement_id", "my_agreement"))
-                .statusCode(400)
-                .contentType(JSON).extract()
-                .body().asInputStream();
-        JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0401"))
-                .assertThat("$.description", is("Invalid parameters: agreement_id. See Public API documentation for the correct data formats"));
-    }
-
-    @Test
     public void searchPayments_ShouldIncludeCaptureLink_whenReturnedFromConnector() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         String submittedState = "submitted";

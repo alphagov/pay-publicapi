@@ -44,7 +44,7 @@ public class PaymentSearchValidator {
                                                 String toDate,
                                                 String pageNumber,
                                                 String displaySize,
-                                                String agreementId,
+                                                String mandate_id,
                                                 String firstDigitsCardNumber,
                                                 String lastDigitsCardNumber) {
         List<String> validationErrors = new LinkedList<>();
@@ -57,7 +57,7 @@ public class PaymentSearchValidator {
             validateToDate(toDate, validationErrors);
             validatePageIfNotNull(pageNumber, validationErrors);
             validateDisplaySizeIfNotNull(displaySize, validationErrors);
-            validateAgreement(agreementId, validationErrors);
+            validateMandateId(mandate_id, validationErrors);
             validateFirstDigitsCardNumber(firstDigitsCardNumber, validationErrors);
             validateLastDigitsCardNumber(lastDigitsCardNumber, validationErrors);
         } catch (Exception e) {
@@ -68,9 +68,9 @@ public class PaymentSearchValidator {
         }
     }
 
-    private static void validateAgreement(String agreement, List<String> validationErrors) {
-        if (!isValid(agreement, MANDATE_ID_MAX_LENGTH)){
-            validationErrors.add("agreement_id");
+    private static void validateMandateId(String mandate_id, List<String> validationErrors) {
+        if (!isValid(mandate_id, MANDATE_ID_MAX_LENGTH)){
+            validationErrors.add("mandate_id");
         }
     }
 

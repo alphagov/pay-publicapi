@@ -1,9 +1,6 @@
 package uk.gov.pay.api.model.search.card;
 
 import black.door.hate.HalRepresentation;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,11 +11,11 @@ import uk.gov.pay.api.model.search.SearchPaymentsBase;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.PaymentUriGenerator;
 
+import javax.inject.Inject;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,12 +40,12 @@ public class SearchCardPayments extends SearchPaymentsBase {
     private static final String PAYMENTS_PATH = "/v1/payments";
     private static final Logger logger = LoggerFactory.getLogger(SearchCardPayments.class);
 
+    @Inject
     public SearchCardPayments(Client client,
                               PublicApiConfig configuration,
                               ConnectorUriGenerator connectorUriGenerator,
-                              PaymentUriGenerator paymentUriGenerator,
-                              ObjectMapper objectMapper) {
-        super(client, configuration, connectorUriGenerator, paymentUriGenerator, objectMapper);
+                              PaymentUriGenerator paymentUriGenerator) {
+        super(client, configuration, connectorUriGenerator, paymentUriGenerator);
     }
 
     @Override

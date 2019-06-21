@@ -1,7 +1,6 @@
 package uk.gov.pay.api.model.search;
 
 import black.door.hate.HalRepresentation;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.exception.SearchPaymentsException;
 import uk.gov.pay.api.model.links.Link;
@@ -21,15 +20,12 @@ public abstract class SearchBase {
 
     protected final ConnectorUriGenerator connectorUriGenerator;
     protected final Client client;
-    protected final ObjectMapper objectMapper;
     protected final String baseUrl;
 
     public SearchBase(Client client,
                       PublicApiConfig configuration,
-                      ConnectorUriGenerator connectorUriGenerator,
-                      ObjectMapper objectMapper) {
+                      ConnectorUriGenerator connectorUriGenerator) {
         this.client = client;
-        this.objectMapper = objectMapper;
         this.connectorUriGenerator = connectorUriGenerator;
         this.baseUrl = configuration.getBaseUrl();
     }
