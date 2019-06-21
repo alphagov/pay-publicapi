@@ -11,7 +11,7 @@ public class Urls {
     }
 
     public static String mandateLocationFor(String mandateId) {
-        return "http://publicapi.url/v1/agreements/" + mandateId; //TODO change this for PP-5299
+        return "http://publicapi.url/v1/directdebit/mandates/" + mandateId;
     }
 
     public static String directDebitPaymentLocationFor(String publicApiBaseUrl, String chargeId) {

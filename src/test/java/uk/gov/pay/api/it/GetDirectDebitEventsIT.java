@@ -71,7 +71,7 @@ public class GetDirectDebitEventsIT {
                 .body("results[0].event_type", is("CHARGE"))
                 .body("results[0].agreement_id", is("1"))
                 .body("results[0].payment_id", is("4"))
-                .body("results[0]._links.agreement", is(app.getConfiguration().getBaseUrl() + "v1/agreements/1"))
+                .body("results[0]._links.agreement", is(app.getConfiguration().getBaseUrl() + "v1/directdebit/mandates/1"))
                 .body("results[0]._links.payment", is(app.getConfiguration().getBaseUrl() + "v1/payments/4"))
                 .body("_links.next_page", is(blankOrNullString()))
                 .body("_links.prev_page", is(blankOrNullString()))

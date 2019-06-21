@@ -48,10 +48,10 @@ public class PublicApiUriGenerator {
                 .build(chargeId);
     }
     
-    public URI getMandateURI(String agreementId) {
+    public URI getMandateURI(String mandateId) {
         return UriBuilder.fromUri(baseUrl)
-                .path("/v1/agreements/{agreementId}")
-                .build(agreementId);
+                .path("/v1/directdebit/mandates/{mandateId}")
+                .build(mandateId);
     }
     
     public URI getPaymentCaptureURI(String chargeId) {

@@ -93,10 +93,10 @@ public class MandatesResource {
                                        @ApiParam(value = "requestPayload", required = true) @Valid CreateMandateRequest createMandateRequest) {
         LOGGER.info("Mandate create request - [ {} ]", createMandateRequest);
         CreateMandateResponse createMandateResponse = mandateService.create(account, createMandateRequest);
-        URI agreementUri = UriBuilder.fromUri(baseUrl)
-                .path("/v1/agreements/{agreementId}")
+        URI mandateUri = UriBuilder.fromUri(baseUrl)
+                .path("/v1/directdebit/mandates/{mandateId}")
                 .build(createMandateResponse.getMandateId());
         LOGGER.info("Mandate returned (created): [ {} ]", createMandateResponse);
-        return Response.created(agreementUri).entity(createMandateResponse).build();
+        return Response.created(mandateUri).entity(createMandateResponse).build();
     }
 }
