@@ -4,7 +4,6 @@ import uk.gov.pay.api.model.directdebit.mandates.MandateState;
 
 public class CreateMandateRequestParams {
     private final String mandateId;
-    private final String providerId;
     private final String serviceReference;
     private final String returnUrl;
     private final String createdDate;
@@ -13,11 +12,10 @@ public class CreateMandateRequestParams {
     private final String chargeTokenId;
     private final String description;
     
-    private CreateMandateRequestParams(String mandateId, String providerId, String serviceReference, String returnUrl, 
+    private CreateMandateRequestParams(String mandateId, String serviceReference, String returnUrl, 
                                        String createdDate, MandateState state, String gatewayAccountId, 
                                        String chargeTokenId, String description) {
         this.mandateId = mandateId;
-        this.providerId = providerId;
         this.serviceReference = serviceReference;
         this.returnUrl = returnUrl;
         this.createdDate = createdDate;
@@ -29,10 +27,6 @@ public class CreateMandateRequestParams {
 
     public String getMandateId() {
         return mandateId;
-    }
-
-    public String getProviderId() {
-        return providerId;
     }
 
     public String getServiceReference() {
@@ -65,7 +59,6 @@ public class CreateMandateRequestParams {
 
     public static final class CreateMandateRequestParamsBuilder {
         private String mandateId;
-        private String providerId;
         private String serviceReference;
         private String returnUrl;
         private String createdDate;
@@ -83,11 +76,6 @@ public class CreateMandateRequestParams {
 
         public CreateMandateRequestParamsBuilder withMandateId(String mandateId) {
             this.mandateId = mandateId;
-            return this;
-        }
-
-        public CreateMandateRequestParamsBuilder withProviderId(String providerId) {
-            this.providerId = providerId;
             return this;
         }
 
@@ -127,7 +115,7 @@ public class CreateMandateRequestParams {
         }
 
         public CreateMandateRequestParams build() {
-            return new CreateMandateRequestParams(mandateId, providerId, serviceReference, returnUrl, createdDate, state, gatewayAccountId, chargeTokenId, description);
+            return new CreateMandateRequestParams(mandateId, serviceReference, returnUrl, createdDate, state, gatewayAccountId, chargeTokenId, description);
         }
     }
 }

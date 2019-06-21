@@ -77,7 +77,6 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                 .withHeader(LOCATION, format("/v1/api/accounts/%s/mandates/%s", params.getGatewayAccountId(), params.getMandateId()))
                 .withBody(buildCreateMandateResponse(
                         params.getMandateId(),
-                        params.getProviderId(),
                         params.getServiceReference(),
                         params.getReturnUrl(),
                         params.getCreatedDate(),
@@ -109,7 +108,6 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
 
 
     private String buildCreateMandateResponse(String mandateId,
-                                              String mandateReference,
                                               String serviceReference,
                                               String returnUrl,
                                               String createdDate,
@@ -118,7 +116,6 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                                               ImmutableMap<?, ?>... links) {
         JsonStringBuilder builder = new JsonStringBuilder()
                 .add("mandate_id", mandateId)
-                .add("mandate_reference", mandateReference)
                 .add("service_reference", serviceReference)
                 .add("return_url", returnUrl)
                 .add("payment_provider", "gocardless")

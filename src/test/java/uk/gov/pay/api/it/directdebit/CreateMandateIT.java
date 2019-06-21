@@ -24,6 +24,7 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static java.lang.String.format;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 import static uk.gov.pay.api.utils.Urls.directDebitFrontendSecureUrl;
@@ -40,7 +41,6 @@ public class CreateMandateIT extends DirectDebitResourceITBase {
     private static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(TIMESTAMP);
     private static final String CHARGE_TOKEN_ID = "token_1234567asdf";
     private static final String MANDATE_ID = "mandateId";
-    private static final String MANDATE_REFERENCE = "test_mandate_reference";
     private static final String SERVICE_REFERENCE = "test_service_reference";
     private static final String RETURN_URL = "https://service-name.gov.uk/transactions/12345";
 
@@ -138,7 +138,6 @@ public class CreateMandateIT extends DirectDebitResourceITBase {
 
         connectorDDMockClient.respondOk_whenCreateMandateRequest(aCreateMandateRequestParams()
                 .withMandateId(MANDATE_ID)
-                .withProviderId(MANDATE_REFERENCE)
                 .withServiceReference(SERVICE_REFERENCE)
                 .withReturnUrl(RETURN_URL)
                 .withCreatedDate(CREATED_DATE)
@@ -165,7 +164,7 @@ public class CreateMandateIT extends DirectDebitResourceITBase {
                 .body("mandate_id", is(MANDATE_ID))
                 .body("reference", is(SERVICE_REFERENCE))
                 .body("description", optionalMatcher(description))
-                .body("provider_id", is(MANDATE_REFERENCE))
+                .body("provider_id", is(nullValue()))
                 .body("return_url", is(RETURN_URL))
                 .body("created_date", is(CREATED_DATE))
                 .body("payment_provider", is("gocardless"))
