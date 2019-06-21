@@ -1,4 +1,4 @@
-package uk.gov.pay.api.model.directdebit.agreement;
+package uk.gov.pay.api.model.directdebit.mandates;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
@@ -14,12 +14,12 @@ public class AgreementError {
 
     public enum Code {
 
-        CREATE_AGREEMENT_ACCOUNT_ERROR("P0199", "There is an error with this account. Please contact support"),
-        CREATE_AGREEMENT_CONNECTOR_ERROR("P0198", "Downstream system error"),
-        CREATE_AGREEMENT_TYPE_ERROR("P0197", "It is not possible to create an agreement of this type"),
+        CREATE_MANDATE_ACCOUNT_ERROR("P0199", "There is an error with this account. Please contact support"),
+        CREATE_MANDATE_CONNECTOR_ERROR("P0198", "Downstream system error"),
+        CREATE_MANDATE_TYPE_ERROR("P0197", "It is not possible to create a mandate of this type"),
         
-        GET_AGREEMENT_NOT_FOUND_ERROR("P0200", "Not found"),
-        GET_AGREEMENT_CONNECTOR_ERROR("P0298", "Downstream system error"),
+        GET_MANDATE_NOT_FOUND_ERROR("P0200", "Not found"),
+        GET_MANDATE_CONNECTOR_ERROR("P0298", "Downstream system error"),
 
         TOO_MANY_REQUESTS_ERROR("P0900", "Too many requests"),
         REQUEST_DENIED_ERROR("P0920", "Request blocked by security rules. Please consult API documentation for more information.");

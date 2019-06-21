@@ -8,8 +8,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.directdebit.DirectDebitConnectorCreatePaymentResponse;
-import uk.gov.pay.api.model.directdebit.agreement.MandateConnectorRequest;
-import uk.gov.pay.api.model.directdebit.agreement.MandateState;
+import uk.gov.pay.api.model.directdebit.mandates.MandateConnectorRequest;
+import uk.gov.pay.api.model.directdebit.mandates.MandateState;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.commons.model.ErrorIdentifier;
 

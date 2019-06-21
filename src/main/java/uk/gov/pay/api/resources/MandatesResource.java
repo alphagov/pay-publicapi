@@ -12,12 +12,12 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.PaymentError;
-import uk.gov.pay.api.model.directdebit.agreement.AgreementError;
-import uk.gov.pay.api.model.directdebit.agreement.CreateMandateRequest;
-import uk.gov.pay.api.model.directdebit.agreement.CreateMandateResponse;
-import uk.gov.pay.api.model.directdebit.agreement.GetAgreementResponse;
+import uk.gov.pay.api.model.directdebit.mandates.AgreementError;
+import uk.gov.pay.api.model.directdebit.mandates.CreateMandateRequest;
+import uk.gov.pay.api.model.directdebit.mandates.CreateMandateResponse;
+import uk.gov.pay.api.model.directdebit.mandates.GetMandateResponse;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
-import uk.gov.pay.api.service.AgreementService;
+import uk.gov.pay.api.service.MandatesService;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -41,36 +41,36 @@ public class MandatesResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(MandatesResource.class);
 
     private final String baseUrl;
-    private final AgreementService agreementService;
+    private final MandatesService mandateService;
 
 
     @Inject
-    public MandatesResource(PublicApiConfig configuration, AgreementService agreementService) {
+    public MandatesResource(PublicApiConfig configuration, MandatesService mandateService) {
         this.baseUrl = configuration.getBaseUrl();
-        this.agreementService = agreementService;
+        this.mandateService = mandateService;
     }
 
     @GET
     @Timed
-    @Path("/v1/agreements/{agreementId}")
+    @Path("/v1/directdebit/mandates/{mandateId}")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Find agreement by ID",
+            value = "Find mandate by ID",
             notes = "Return information about the payment " +
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = GetAgreementResponse.class),
+            @ApiResponse(code = 200, message = "OK", response = GetMandateResponse.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found", response = AgreementError.class),
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = AgreementError.class)})
     public Response getPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-            @PathParam("agreementId") String agreementId) {
-        LOGGER.info("Agreement get request - [ {} ]", agreementId);
-        GetAgreementResponse getAgreementResponse = agreementService.get(account, agreementId);
-        LOGGER.info("Agreement returned (created): [ {} ]", getAgreementResponse);
-        return Response.ok().entity(getAgreementResponse).build();
+            @PathParam("mandateId") String mandateId) {
+        LOGGER.info("Mandate get request - [ {} ]", mandateId);
+        GetMandateResponse getMandateResponse = mandateService.get(account, mandateId);
+        LOGGER.info("Mandate returned (created): [ {} ]", getMandateResponse);
+        return Response.ok().entity(getMandateResponse).build();
     }
     
     @POST
@@ -79,8 +79,8 @@ public class MandatesResource {
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Create a new agreement",
-            notes = "Create a new agreement",
+            value = "Create a new mandates",
+            notes = "Create a new mandates",
             code = 201,
             nickname = "newAgreement")
     @ApiResponses(value = {
@@ -91,12 +91,12 @@ public class MandatesResource {
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response createNewAgreement(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                        @ApiParam(value = "requestPayload", required = true) @Valid CreateMandateRequest createMandateRequest) {
-        LOGGER.info("Agreement create request - [ {} ]", createMandateRequest);
-        CreateMandateResponse createMandateResponse = agreementService.create(account, createMandateRequest);
+        LOGGER.info("Mandate create request - [ {} ]", createMandateRequest);
+        CreateMandateResponse createMandateResponse = mandateService.create(account, createMandateRequest);
         URI agreementUri = UriBuilder.fromUri(baseUrl)
                 .path("/v1/agreements/{agreementId}")
                 .build(createMandateResponse.getMandateId());
-        LOGGER.info("Agreement returned (created): [ {} ]", createMandateResponse);
+        LOGGER.info("Mandate returned (created): [ {} ]", createMandateResponse);
         return Response.created(agreementUri).entity(createMandateResponse).build();
     }
 }

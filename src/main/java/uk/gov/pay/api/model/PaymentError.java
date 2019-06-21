@@ -20,7 +20,7 @@ public class PaymentError {
         CREATE_PAYMENT_MISSING_FIELD_ERROR("P0101", "Missing mandatory attribute: %s"),
         CREATE_PAYMENT_VALIDATION_ERROR("P0102", "Invalid attribute value: %s. %s"),
 
-        CREATE_PAYMENT_AGREEMENT_TYPE_ERROR("P0140", "Can't collect payment from this type of agreement"),
+        CREATE_PAYMENT_AGREEMENT_TYPE_ERROR("P0140", "Can't collect payment from this type of mandates"),
 
         GET_PAYMENT_NOT_FOUND_ERROR("P0200", "Not found"),
         GET_PAYMENT_CONNECTOR_ERROR("P0298", "Downstream system error"),

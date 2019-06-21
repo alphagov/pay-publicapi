@@ -2,13 +2,10 @@ package uk.gov.pay.api.it.directdebit;
 
 import org.junit.Test;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
-import uk.gov.pay.api.model.directdebit.agreement.MandateState;
-import uk.gov.pay.api.model.directdebit.agreement.MandateStatus;
-import uk.gov.pay.api.utils.DateTimeUtils;
+import uk.gov.pay.api.model.directdebit.mandates.MandateState;
+import uk.gov.pay.api.model.directdebit.mandates.MandateStatus;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorDDMockClient;
-
-import java.time.ZonedDateTime;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
@@ -23,7 +20,6 @@ public class GetMandateIT extends PaymentResourceITestBase {
     private ConnectorDDMockClient connectorDDMockClient = new ConnectorDDMockClient(connectorDDMock);
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
 
-    private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
     private static final String CHARGE_TOKEN_ID = "token_1234567asdf";
     private static final String MANDATE_ID = "mandateId";
     private static final String MANDATE_REFERENCE = "test_mandate_reference";
@@ -49,7 +45,7 @@ public class GetMandateIT extends PaymentResourceITestBase {
                 .accept(JSON)
                 .contentType(JSON)
                 .header(AUTHORIZATION, "Bearer " + API_KEY)
-                .get("/v1/agreements/" + MANDATE_ID)
+                .get("/v1/directdebit/mandates/" + MANDATE_ID)
                 .then()
                 .statusCode(200)
                 .contentType(JSON)

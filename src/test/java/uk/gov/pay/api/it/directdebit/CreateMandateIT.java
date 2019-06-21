@@ -8,14 +8,11 @@ import org.apache.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import uk.gov.pay.api.it.PaymentResourceITestBase;
-import uk.gov.pay.api.model.directdebit.agreement.MandateConnectorRequest;
-import uk.gov.pay.api.model.directdebit.agreement.MandateState;
-import uk.gov.pay.api.model.directdebit.agreement.MandateStatus;
+import uk.gov.pay.api.model.directdebit.mandates.MandateConnectorRequest;
+import uk.gov.pay.api.model.directdebit.mandates.MandateState;
+import uk.gov.pay.api.model.directdebit.mandates.MandateStatus;
 import uk.gov.pay.api.resources.directdebit.DirectDebitResourceITBase;
 import uk.gov.pay.api.utils.DateTimeUtils;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
-import uk.gov.pay.api.utils.mocks.ConnectorDDMockClient;
 
 import javax.ws.rs.core.HttpHeaders;
 import java.time.ZonedDateTime;
@@ -228,7 +225,7 @@ public class CreateMandateIT extends DirectDebitResourceITBase {
                 .statusCode(500)
                 .contentType(JSON)
                 .body("code", is("P0197"))
-                .body("description", is("It is not possible to create an agreement of this type"))
+                .body("description", is("It is not possible to create a mandate of this type"))
                 .extract().body().asString();
     }
 

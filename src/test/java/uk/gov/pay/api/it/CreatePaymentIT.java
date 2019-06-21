@@ -384,7 +384,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(2))
                 .assertThat("$.code", is("P0140"))
-                .assertThat("$.description", is("Can't collect payment from this type of agreement"));
+                .assertThat("$.description", is("Can't collect payment from this type of mandates"));
 
         connectorMockClient.verifyCreateChargeConnectorRequest(gatewayAccountId, SUCCESS_PAYLOAD);
     }

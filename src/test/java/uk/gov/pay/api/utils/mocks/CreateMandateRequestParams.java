@@ -1,6 +1,6 @@
 package uk.gov.pay.api.utils.mocks;
 
-import uk.gov.pay.api.model.directdebit.agreement.MandateState;
+import uk.gov.pay.api.model.directdebit.mandates.MandateState;
 
 public class CreateMandateRequestParams {
     private final String mandateId;
