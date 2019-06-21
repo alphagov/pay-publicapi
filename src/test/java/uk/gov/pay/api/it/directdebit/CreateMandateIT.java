@@ -161,7 +161,7 @@ public class CreateMandateIT extends DirectDebitResourceITBase {
                 .then()
                 .statusCode(201)
                 .contentType(JSON)
-                .header(HttpHeaders.LOCATION, is("http://publicapi.url/v1/agreements/mandateId"))
+                .header(HttpHeaders.LOCATION, is("http://publicapi.url/v1/directdebit/mandates/" + MANDATE_ID))
                 .body("mandate_id", is(MANDATE_ID))
                 .body("reference", is(SERVICE_REFERENCE))
                 .body("description", optionalMatcher(description))
