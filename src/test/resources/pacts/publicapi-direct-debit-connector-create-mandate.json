@@ -33,7 +33,6 @@
         },
         "body": {
           "mandate_id": "test_mandate_id_xyz",
-          "mandate_reference": "test_mandate_reference",
           "service_reference": "test_service_reference",
           "description": "raindrops on roses and whiskers on kittens",
           "return_url": "https://example.com/return",

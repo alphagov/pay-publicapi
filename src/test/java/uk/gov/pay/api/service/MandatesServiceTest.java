@@ -23,6 +23,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
 import java.util.Collections;
 
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
@@ -31,7 +32,6 @@ import static org.mockito.Mockito.when;
 public class MandatesServiceTest {
 
     private static final String MANDATE_ID = "test_mandate_id_xyz";
-    private static final String MANDATE_REFERENCE = "test_mandate_reference";
     private static final String SERVICE_REFERENCE = "test_service_reference";
 
     private MandatesService mandatesService;
@@ -65,7 +65,7 @@ public class MandatesServiceTest {
         MandateConnectorResponse mandate = mandatesService.createMandate(account, mandateConnectorRequest);
 
         assertThat(mandate.getMandateId(), is(MANDATE_ID));
-        assertThat(mandate.getMandateReference(), is(MANDATE_REFERENCE)); //TODO make null as mandate ref is present only after confirming a mandate, not on creation
+        assertThat(mandate.getMandateReference(), is(nullValue()));
         assertThat(mandate.getServiceReference(), is(SERVICE_REFERENCE));
         assertThat(mandate.getDescription(), is("raindrops on roses and whiskers on kittens"));
         assertThat(mandate.getCreatedDate(), is("2016-01-01T12:00:00.000Z"));

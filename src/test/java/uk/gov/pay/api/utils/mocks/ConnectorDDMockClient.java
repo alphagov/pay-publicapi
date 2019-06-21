@@ -34,10 +34,8 @@ import static org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
 import static org.eclipse.jetty.http.HttpStatus.CREATED_201;
 import static org.eclipse.jetty.http.HttpStatus.FORBIDDEN_403;
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
-import static org.eclipse.jetty.http.HttpStatus.PRECONDITION_FAILED_412;
 import static uk.gov.pay.commons.model.ErrorIdentifier.GENERIC;
 import static uk.gov.pay.commons.model.ErrorIdentifier.GO_CARDLESS_ACCOUNT_NOT_LINKED;
-import static uk.gov.pay.commons.model.ErrorIdentifier.INVALID_MANDATE_TYPE;
 
 public class ConnectorDDMockClient extends BaseConnectorMockClient {
 
@@ -92,35 +90,25 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
         );
     }
 
-    public void respondOk_whenGetAgreementRequest(String mandateId,
-                                                  String mandateReference,
-                                                  String serviceReference,
-                                                  String returnUrl,
-                                                  MandateState state,
-                                                  String gatewayAccountId,
-                                                  String chargeTokenId) {
-        setupGetAgreement(mandateId, gatewayAccountId, aResponse()
+    public void respondOk_whenGetAgreementRequest(DDConnectorResponseToGetMandateParams params) {
+        setupGetAgreement(params.getMandateId(), params.getGatewayAccountId(), aResponse()
                 .withStatus(200)
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                 .withBody(buildGetAgreementResponse(
-                        mandateId,
-                        mandateReference,
-                        serviceReference,
-                        returnUrl,
-                        state,
-                        validGetLink(mandateLocation(gatewayAccountId, mandateId), "self"),
-                        validGetLink(nextUrl(chargeTokenId), "next_url"),
-                        validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", Map.of("chargeTokenId", chargeTokenId)
+                        params.getMandateId(),
+                        params.getMandateReference(),
+                        params.getServiceReference(),
+                        params.getReturnUrl(),
+                        params.getState(),
+                        validGetLink(mandateLocation(params.getGatewayAccountId(), params.getMandateId()), "self"),
+                        validGetLink(nextUrl(params.getChargeTokenId()), "next_url"),
+                        validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", Map.of("chargeTokenId", params.getChargeTokenId())
                         )))
         );
     }
 
     public void respondBadRequest_whenCreateAgreementRequest(String gatewayAccountId, String errorMsg) {
         setupCreateMandate(gatewayAccountId, withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg, GENERIC));
-    }
-
-    public void respondWithMandateTypeInvalid_whenCreateMandateRequest(String gatewayAccountId, String errorMsg) {
-        setupCreateMandate(gatewayAccountId, withStatusAndErrorMessage(PRECONDITION_FAILED_412, errorMsg, INVALID_MANDATE_TYPE));
     }
 
     public void respondWithGCAccountNotLinked_whenCreateMandateRequest(String gatewayAccountId, String errorMsg) {

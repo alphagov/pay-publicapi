@@ -6,6 +6,7 @@ import uk.gov.pay.api.model.directdebit.mandates.MandateState;
 import uk.gov.pay.api.model.directdebit.mandates.MandateStatus;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorDDMockClient;
+import uk.gov.pay.api.utils.mocks.DDConnectorResponseToGetMandateParams;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
@@ -14,6 +15,7 @@ import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 import static uk.gov.pay.api.utils.Urls.directDebitFrontendSecureUrl;
 import static uk.gov.pay.api.utils.Urls.mandateLocationFor;
+import static uk.gov.pay.api.utils.mocks.DDConnectorResponseToGetMandateParams.DDConnectorResponseToGetMandateParamsBuilder.aDDConnectorResponseToGetMandateParams;
 
 public class GetMandateIT extends PaymentResourceITestBase {
 
@@ -32,16 +34,17 @@ public class GetMandateIT extends PaymentResourceITestBase {
 
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
 
-        connectorDDMockClient.respondOk_whenGetAgreementRequest(
-                MANDATE_ID,
-                MANDATE_REFERENCE,
-                SERVICE_REFERENCE,
-                RETURN_URL,
-                new MandateState("created", false),
-                GATEWAY_ACCOUNT_ID,
-                CHARGE_TOKEN_ID
-//                ,PROVIDER_ID TODO add this
-        ); //TODO use builders
+        DDConnectorResponseToGetMandateParams params = aDDConnectorResponseToGetMandateParams()
+                .withMandateId(MANDATE_ID)
+                .withMandateReference(MANDATE_REFERENCE)
+                .withServiceReference(SERVICE_REFERENCE)
+                .withReturnUrl(RETURN_URL)
+                .withState(new MandateState("created", false))
+                .withGatewayAccountId(GATEWAY_ACCOUNT_ID)
+                .withChargeTokenId(CHARGE_TOKEN_ID)
+                .build();
+
+        connectorDDMockClient.respondOk_whenGetAgreementRequest(params);
 
         given().port(app.getLocalPort())
                 .accept(JSON)
