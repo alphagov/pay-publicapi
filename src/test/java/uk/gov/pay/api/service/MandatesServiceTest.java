@@ -98,14 +98,14 @@ public class MandatesServiceTest {
     @Test
     @PactVerification({"direct-debit-connector"})
     @Pacts(pacts = {"publicapi-direct-debit-connector-get-mandate"})
-    public void shouldGetAMandateSuccessfully_withReference() {
+    public void shouldGetAMandateSuccessfully() {
         Account account = new Account("9ddfcc27-acf5-43f9-92d5-52247540714c", TokenPaymentType.DIRECT_DEBIT);
         Response connectorResponse = mandatesService.getMandate(account, MANDATE_ID);
         MandateConnectorResponse mandateConnectorResponse = connectorResponse.readEntity(MandateConnectorResponse.class);
 
         assertThat(mandateConnectorResponse.getMandateId(), is(MANDATE_ID));
         assertThat(mandateConnectorResponse.getMandateReference(), is("410104"));
-//        assertThat(mandateConnectorResponse.getProviderId(), is("MD1234")); TODO add this
+        assertThat(mandateConnectorResponse.getProviderId(), is("MD1234"));
         assertThat(mandateConnectorResponse.getServiceReference(), is(SERVICE_REFERENCE));
         assertThat(mandateConnectorResponse.getReturnUrl(), is("https://example.com/return"));
         assertThat(mandateConnectorResponse.getState(), is(new MandateState("created", false)));

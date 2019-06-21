@@ -91,20 +91,12 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
     }
 
     public void respondOk_whenGetAgreementRequest(DDConnectorResponseToGetMandateParams params) {
-        setupGetAgreement(params.getMandateId(), params.getGatewayAccountId(), aResponse()
-                .withStatus(200)
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                .withBody(buildGetAgreementResponse(
-                        params.getMandateId(),
-                        params.getMandateReference(),
-                        params.getServiceReference(),
-                        params.getReturnUrl(),
-                        params.getState(),
-                        validGetLink(mandateLocation(params.getGatewayAccountId(), params.getMandateId()), "self"),
-                        validGetLink(nextUrl(params.getChargeTokenId()), "next_url"),
-                        validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", Map.of("chargeTokenId", params.getChargeTokenId())
-                        )))
-        );
+        setupGetAgreement(params.getMandateId(), 
+                params.getGatewayAccountId(), 
+                aResponse()
+                        .withStatus(200)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withBody(buildGetMandateResponse(params)));
     }
 
     public void respondBadRequest_whenCreateAgreementRequest(String gatewayAccountId, String errorMsg) {
@@ -139,20 +131,18 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
         return builder.build();
     }
 
-    private String buildGetAgreementResponse(String mandateId,
-                                             String mandateReference,
-                                             String serviceReference,
-                                             String returnUrl,
-                                             MandateState state,
-                                             ImmutableMap<?, ?>... links) {
-        return new JsonStringBuilder()
-                .add("mandate_id", mandateId)
-                .add("mandate_reference", mandateReference)
-                .add("return_url", returnUrl)
-                .add("service_reference", serviceReference)
-                .add("state", state)
-                .add("links", asList(links))
-                .build();
+    private String buildGetMandateResponse(DDConnectorResponseToGetMandateParams params) {
+        var links = List.of(validGetLink(mandateLocation(params.getGatewayAccountId(), params.getMandateId()), "self"),
+                validGetLink(nextUrl(params.getChargeTokenId()), "next_url"),
+                validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", Map.of("chargeTokenId", params.getChargeTokenId())));
+
+        return gson.toJson(Map.of("mandate_id", params.getMandateId(), 
+                "mandate_reference", params.getMandateReference(), 
+                "return_url", params.getReturnUrl(), 
+                "service_reference", params.getServiceReference(), 
+                "state", params.getState(), 
+                "provider_id", params.getProviderId(), 
+                "links", links));
     }
 
     private String buildPaymentRequestResponse(long amount, String chargeId, PaymentState state, String returnUrl, String description,

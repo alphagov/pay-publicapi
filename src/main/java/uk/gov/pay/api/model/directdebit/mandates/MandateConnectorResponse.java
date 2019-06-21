@@ -19,6 +19,7 @@ public class MandateConnectorResponse {
     private MandateState state;
     private List<PaymentConnectorResponseLink> links = new ArrayList<>();
     private String description;
+    private String providerId;
 
     @JsonProperty(value = "payment_provider")
     public String getPaymentProvider() {
@@ -61,5 +62,10 @@ public class MandateConnectorResponse {
     @JsonProperty(value = "description")
     public String getDescription() {
         return description;
+    }
+
+    @JsonProperty(value = "provider_id")
+    public String getProviderId() {
+        return providerId;
     }
 }

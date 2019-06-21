@@ -35,7 +35,7 @@ public class GetMandateResponse {
     public static GetMandateResponse from(MandateConnectorResponse mandate, MandateLinks links) {
         return new GetMandateResponse(
                 mandate.getMandateId(),
-                null,
+                mandate.getProviderId(),
                 mandate.getServiceReference(),
                 mandate.getReturnUrl(),
                 mandate.getMandateReference(),

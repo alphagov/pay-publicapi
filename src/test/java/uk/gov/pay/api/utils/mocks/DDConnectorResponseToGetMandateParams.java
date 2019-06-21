@@ -1,6 +1,7 @@
 package uk.gov.pay.api.utils.mocks;
 
 import uk.gov.pay.api.model.directdebit.mandates.MandateState;
+import uk.gov.pay.api.utils.ChargeEventBuilder;
 
 public class DDConnectorResponseToGetMandateParams {
 
@@ -11,14 +12,16 @@ public class DDConnectorResponseToGetMandateParams {
     private final MandateState state;
     private final String gatewayAccountId;
     private final String chargeTokenId;
+    private final String providerId;
 
-    private DDConnectorResponseToGetMandateParams(String mandateId, 
-                                                  String mandateReference, 
-                                                  String serviceReference, 
-                                                  String returnUrl, 
-                                                  MandateState state, 
-                                                  String gatewayAccountId, 
-                                                  String chargeTokenId) {
+    private DDConnectorResponseToGetMandateParams(String mandateId,
+                                                  String mandateReference,
+                                                  String serviceReference,
+                                                  String returnUrl,
+                                                  MandateState state,
+                                                  String gatewayAccountId,
+                                                  String chargeTokenId, 
+                                                  String providerId) {
         this.mandateId = mandateId;
         this.mandateReference = mandateReference;
         this.serviceReference = serviceReference;
@@ -26,6 +29,7 @@ public class DDConnectorResponseToGetMandateParams {
         this.state = state;
         this.gatewayAccountId = gatewayAccountId;
         this.chargeTokenId = chargeTokenId;
+        this.providerId = providerId;
     }
 
     public String getMandateId() {
@@ -56,6 +60,10 @@ public class DDConnectorResponseToGetMandateParams {
         return chargeTokenId;
     }
 
+    public String getProviderId() {
+        return providerId;
+    }
+
     public static final class DDConnectorResponseToGetMandateParamsBuilder {
         private String mandateId;
         private String mandateReference;
@@ -64,6 +72,7 @@ public class DDConnectorResponseToGetMandateParams {
         private MandateState state;
         private String gatewayAccountId;
         private String chargeTokenId;
+        private String providerId;
 
         private DDConnectorResponseToGetMandateParamsBuilder() {
         }
@@ -106,9 +115,14 @@ public class DDConnectorResponseToGetMandateParams {
             this.chargeTokenId = chargeTokenId;
             return this;
         }
+        
+        public DDConnectorResponseToGetMandateParamsBuilder withProviderId(String providerId) {
+            this.providerId = providerId;
+            return this;
+        }
 
         public DDConnectorResponseToGetMandateParams build() {
-            return new DDConnectorResponseToGetMandateParams(mandateId, mandateReference, serviceReference, returnUrl, state, gatewayAccountId, chargeTokenId);
+            return new DDConnectorResponseToGetMandateParams(mandateId, mandateReference, serviceReference, returnUrl, state, gatewayAccountId, chargeTokenId, providerId);
         }
     }
 }

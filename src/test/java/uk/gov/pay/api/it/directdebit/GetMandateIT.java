@@ -42,6 +42,7 @@ public class GetMandateIT extends PaymentResourceITestBase {
                 .withState(new MandateState("created", false))
                 .withGatewayAccountId(GATEWAY_ACCOUNT_ID)
                 .withChargeTokenId(CHARGE_TOKEN_ID)
+                .withProviderId(PROVIDER_ID)
                 .build();
 
         connectorDDMockClient.respondOk_whenGetAgreementRequest(params);
@@ -56,7 +57,7 @@ public class GetMandateIT extends PaymentResourceITestBase {
                 .contentType(JSON)
                 .body("agreement_id", is(MANDATE_ID))
                 .body("bank_statement_reference", is(MANDATE_REFERENCE))
-//                .body("provider_id", is(PROVIDER_ID)) TODO add this
+                .body("provider_id", is(PROVIDER_ID))
                 .body("reference", is(SERVICE_REFERENCE))
                 .body("return_url", is(RETURN_URL))
                 .body("state.status", is(MandateStatus.CREATED.getStatus()))
