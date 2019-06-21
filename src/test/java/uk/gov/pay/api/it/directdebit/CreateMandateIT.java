@@ -208,27 +208,6 @@ public class CreateMandateIT extends DirectDebitResourceITBase {
                 .extract().body().asString();
     }
 
-    @Test
-    public void respondWith500_whenConnectorResponseIsAgreementTypeInvalid() {
-
-        String errorMessage = "something went wrong";
-        
-        connectorDDMockClient.respondWithMandateTypeInvalid_whenCreateMandateRequest(GATEWAY_ACCOUNT_ID, errorMessage);
-
-        given().port(app.getLocalPort())
-                .body(createMandatePayload)
-                .accept(JSON)
-                .contentType(JSON)
-                .header(AUTHORIZATION, "Bearer " + API_KEY)
-                .post("/v1/directdebit/mandates")
-                .then()
-                .statusCode(500)
-                .contentType(JSON)
-                .body("code", is("P0197"))
-                .body("description", is("It is not possible to create a mandate of this type"))
-                .extract().body().asString();
-    }
-
 
     @Test
     public void respondWith500_whenConnectorResponseIsGCAccountNotLinked() {
