@@ -25,9 +25,10 @@ public class GetMandateIT extends PaymentResourceITestBase {
     private static final String MANDATE_REFERENCE = "test_mandate_reference";
     private static final String SERVICE_REFERENCE = "test_service_reference";
     private static final String RETURN_URL = "https://service-name.gov.uk/transactions/12345";
+    private static final String PROVIDER_ID = "MD1234";
 
     @Test
-    public void getMandateWithReference() {
+    public void getMandate() {
 
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
 
@@ -39,7 +40,8 @@ public class GetMandateIT extends PaymentResourceITestBase {
                 new MandateState("created", false),
                 GATEWAY_ACCOUNT_ID,
                 CHARGE_TOKEN_ID
-        );
+//                ,PROVIDER_ID TODO add this
+        ); //TODO use builders
 
         given().port(app.getLocalPort())
                 .accept(JSON)
@@ -50,7 +52,8 @@ public class GetMandateIT extends PaymentResourceITestBase {
                 .statusCode(200)
                 .contentType(JSON)
                 .body("agreement_id", is(MANDATE_ID))
-                .body("provider_id", is(MANDATE_REFERENCE))
+                .body("bank_statement_reference", is(MANDATE_REFERENCE))
+//                .body("provider_id", is(PROVIDER_ID)) TODO add this
                 .body("reference", is(SERVICE_REFERENCE))
                 .body("return_url", is(RETURN_URL))
                 .body("state.status", is(MandateStatus.CREATED.getStatus()))
@@ -61,7 +64,6 @@ public class GetMandateIT extends PaymentResourceITestBase {
                 .body("_links.next_url_post.href", is(directDebitFrontendSecureUrl()))
                 .body("_links.next_url_post.method", is("POST"))
                 .body("_links.next_url_post.type", is("application/x-www-form-urlencoded"))
-                .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
-                .extract().body().asString();
+                .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID));
     }
 }
