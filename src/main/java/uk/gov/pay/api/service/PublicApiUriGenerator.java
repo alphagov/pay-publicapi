@@ -4,9 +4,9 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 import static java.lang.String.format;
 
@@ -84,13 +84,7 @@ public class PublicApiUriGenerator {
                 .path(originalUri.getPath())
                 .replaceQuery(originalUri.getQuery())
                 .build();
-        try {
-            return URLDecoder.decode(newUri.toString(), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            // This shouldn't be reached. This is only thrown if 'character encoding needs to be consulted, but
-            // named character encoding is not supported' within the .decode() method above. This is using UTF-8 which does exist.
-            throw new RuntimeException(e.getMessage());
-        }
+        return URLDecoder.decode(newUri.toString(), StandardCharsets.UTF_8);
     }
 
     public URI getMandatePaymentsURI(String mandateId) {

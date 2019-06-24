@@ -5,12 +5,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import uk.gov.pay.api.model.Payment;
 import uk.gov.pay.api.model.PaymentState;
+import uk.gov.pay.api.model.directdebit.DirectDebitConnectorPaymentResponse;
 import uk.gov.pay.api.model.directdebit.DirectDebitPaymentLinks;
+import uk.gov.pay.api.service.PublicApiUriGenerator;
 
 import java.net.URI;
 import java.util.Objects;
 
 import static uk.gov.pay.api.model.directdebit.DirectDebitPaymentLinks.DirectDebitPaymentLinksBuilder.aDirectDebitPaymentLinks;
+import static uk.gov.pay.api.model.directdebit.mandates.DirectDebitPayment.DirectDebitPaymentBuilder.aDirectDebitPayment;
 
 
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
@@ -73,6 +76,24 @@ public class DirectDebitPayment extends Payment {
                 ", reference='" + reference + '\'' +
                 ", createdDate='" + createdDate + '\'' +
                 '}';
+    }
+
+    public static DirectDebitPayment from(DirectDebitConnectorPaymentResponse paymentResponse, 
+                                          PublicApiUriGenerator generator) {
+        return aDirectDebitPayment()
+                .withAmount(paymentResponse.getAmount())
+                .withCreatedDate(paymentResponse.getCreatedDate())
+                .withDescription(paymentResponse.getDescription())
+                .withPaymentId(paymentResponse.getPaymentExternalId())
+                .withMandateId(paymentResponse.getMandateId())
+                .withPaymentProvider(paymentResponse.getPaymentProvider())
+                .withReference(paymentResponse.getReference())
+                .withState(paymentResponse.getState())
+                .withProviderId(paymentResponse.getProviderId())
+                .withSelfLink(generator.getDirectDebitPaymentURI(paymentResponse.getPaymentExternalId()))
+                .withMandateLink(generator.getMandateURI(paymentResponse.getMandateId()))
+                .withEventsLink(generator.getDirectDebitPaymentEventsURI(paymentResponse.getPaymentExternalId()))
+                .build();
     }
 
     public static final class DirectDebitPaymentBuilder {

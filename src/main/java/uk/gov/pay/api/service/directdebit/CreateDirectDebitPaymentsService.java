@@ -4,8 +4,8 @@ import org.apache.http.HttpStatus;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateChargeException;
 import uk.gov.pay.api.model.CreateDirectDebitPaymentRequest;
+import uk.gov.pay.api.model.directdebit.DirectDebitConnectorPaymentResponse;
 import uk.gov.pay.api.model.directdebit.mandates.DirectDebitPayment;
-import uk.gov.pay.api.model.directdebit.DirectDebitConnectorCreatePaymentResponse;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
 
 import javax.inject.Inject;
@@ -14,7 +14,6 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static uk.gov.pay.api.model.directdebit.mandates.DirectDebitPayment.DirectDebitPaymentBuilder.aDirectDebitPayment;
 import static uk.gov.pay.api.model.directdebit.DirectDebitConnectorCreatePaymentRequest.DirectDebitConnectorCreatePaymentRequestBuilder.aDirectDebitConnectorCreatePaymentRequest;
 
 public class CreateDirectDebitPaymentsService {
@@ -48,20 +47,8 @@ public class CreateDirectDebitPaymentsService {
             throw new CreateChargeException(response);
         }
         var connectorResponse = response
-                .readEntity(DirectDebitConnectorCreatePaymentResponse.class);
+                .readEntity(DirectDebitConnectorPaymentResponse.class);
         
-        return aDirectDebitPayment().withAmount(connectorResponse.getAmount())
-                .withReference(connectorResponse.getReference())
-                .withDescription(connectorResponse.getDescription())
-                .withPaymentId(connectorResponse.getPaymentExternalId())
-                .withPaymentProvider(connectorResponse.getPaymentProvider())
-                .withState(connectorResponse.getState())
-                .withCreatedDate(connectorResponse.getCreatedDate())
-                .withMandateId(connectorResponse.getMandateId())
-                .withProviderId(connectorResponse.getProviderId())
-                .withSelfLink(publicApiUriGenerator.getDirectDebitPaymentURI(connectorResponse.getPaymentExternalId()))
-                .withEventsLink(publicApiUriGenerator.getDirectDebitPaymentEventsURI(connectorResponse.getPaymentExternalId()))
-                .withMandateLink(publicApiUriGenerator.getDirectDebitMandateURI(connectorResponse.getMandateId()))
-                .build();
+        return DirectDebitPayment.from(connectorResponse, publicApiUriGenerator);
     }
 }

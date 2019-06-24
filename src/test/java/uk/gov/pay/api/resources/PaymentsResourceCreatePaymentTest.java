@@ -19,6 +19,7 @@ import uk.gov.pay.api.service.CancelPaymentService;
 import uk.gov.pay.api.service.CapturePaymentService;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.CreatePaymentService;
+import uk.gov.pay.api.service.GetDirectDebitPaymentService;
 import uk.gov.pay.api.service.GetPaymentService;
 import uk.gov.pay.api.service.PaymentSearchService;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
@@ -63,6 +64,10 @@ public class PaymentsResourceCreatePaymentTest {
     
     @Mock
     private CancelPaymentService cancelPaymentService;
+
+
+    @Mock
+    private GetDirectDebitPaymentService getDirectDebitPaymentService;
 
     private final String paymentUri = "https://my.link/v1/payments/abc123";
 
