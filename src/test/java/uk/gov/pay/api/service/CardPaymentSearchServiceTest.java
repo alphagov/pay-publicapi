@@ -1,7 +1,6 @@
 package uk.gov.pay.api.service;
 
 import au.com.dius.pact.consumer.PactVerification;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonassert.JsonAssert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -14,9 +13,11 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.TokenPaymentType;
+import uk.gov.pay.api.model.search.card.SearchCardPayments;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
+import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
 
 import static com.jayway.jsonassert.JsonAssert.collectionWithSize;
@@ -42,12 +43,14 @@ public class CardPaymentSearchServiceTest {
 
         when(configuration.getBaseUrl()).thenReturn("http://publicapi.test.localhost/");
 
-        paymentSearchService = new PaymentSearchService(
-                RestClientFactory.buildClient(new RestClientConfig(false)),
+        Client client = RestClientFactory.buildClient(new RestClientConfig(false));
+        ConnectorUriGenerator connectorUriGenerator = new ConnectorUriGenerator(configuration);
+        SearchCardPayments searchCardPayments = new SearchCardPayments(client,
                 configuration,
-                new ConnectorUriGenerator(configuration),
-                new PaymentUriGenerator(),
-                new ObjectMapper());
+                connectorUriGenerator,
+                new PaymentUriGenerator()
+        );
+        paymentSearchService = new PaymentSearchService(searchCardPayments);
     }
     
     @Test

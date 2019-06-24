@@ -25,16 +25,16 @@ public class ConnectorUriGenerator {
     }
 
     String chargesURI(Account account) {
-        return buildConnectorUri(account, format("/v1/api/accounts/%s/charges", account.getAccountId()));
+        return buildConnectorUri(format("/v1/api/accounts/%s/charges", account.getAccountId()));
     }
 
     public String chargesURIWithParams(Account account, Map<String, String> queryParams) {
-        return buildConnectorUri(account, format("/v1/api/accounts/%s/charges", account.getAccountId()), queryParams);
+        return buildConnectorUri(format("/v1/api/accounts/%s/charges", account.getAccountId()), queryParams);
     }
 
     public String refundsURIWithParams(Account account, Map<String, String> queryParams) {
         String path = format("/v1/api/accounts/%s/refunds", account.getAccountId());
-        return buildConnectorUri(account, path, queryParams);
+        return buildConnectorUri(path, queryParams);
     }
 
     String chargeURI(Account account, String chargeId) {
@@ -47,34 +47,9 @@ public class ConnectorUriGenerator {
         return buildConnectorUri(account, path);
     }
 
-    public String directDebitPaymentsURI(Account account, Map<String, String> queryParams) {
-        String path = String.format("/v1/api/accounts/%s/payments/view", account.getAccountId());
-        return buildConnectorUri(account, path, queryParams);
-    }
-
-    private String buildConnectorUri(Account account, String path) {
-        return buildConnectorUri(account, path, Collections.emptyMap());
-    }
-
-    private String buildConnectorUri(Account account, String path, Map<String, String> params) {
-        UriBuilder builder = UriBuilder.fromPath(connectorBaseUrlForAccount(account)).path(path);
-        params.entrySet().stream()
-                .filter(k -> k.getValue() != null)
-                .forEach(k -> builder.queryParam(k.getKey(), k.getValue()));
-        return builder.toString();
-    }
-
-    private String connectorBaseUrlForAccount(Account account) {
-        return isDirectDebitAccount(account) ? configuration.getConnectorDDUrl() : configuration.getConnectorUrl();
-    }
-
-    private boolean isDirectDebitAccount(Account account) {
-        return account.getPaymentType().equals(DIRECT_DEBIT);
-    }
-
     String cancelURI(Account account, String paymentId) {
         String path = format("/v1/api/accounts/%s/charges/%s/cancel", account.getAccountId(), paymentId);
-        return buildConnectorUri(account, path, Maps.newHashMap());
+        return buildConnectorUri(path, Maps.newHashMap());
     }
 
     public String eventsURI(Account account, Optional<ZonedDateTime> toDate, Optional<ZonedDateTime> fromDate, Integer page, Integer displaySize, String agreementId, String paymentId) {
@@ -99,6 +74,42 @@ public class ConnectorUriGenerator {
 
     String captureURI(Account account, String chargeId) {
         String path = format("/v1/api/accounts/%s/charges/%s/capture", account.getAccountId(), chargeId);
-        return buildConnectorUri(account, path);
+        return buildConnectorUri(path);
+    }
+
+    // TODO: remove when direct debit endpoints entirely split out
+    @Deprecated
+    private String buildConnectorUri(Account account, String path) {
+        return buildConnectorUri(account, path, Collections.emptyMap());
+    }
+
+    // TODO: remove when direct debit endpoints entirely split out
+    @Deprecated
+    private String buildConnectorUri(Account account, String path, Map<String, String> params) {
+        UriBuilder builder = UriBuilder.fromPath(connectorBaseUrlForAccount(account)).path(path);
+        params.entrySet().stream()
+                .filter(k -> k.getValue() != null)
+                .forEach(k -> builder.queryParam(k.getKey(), k.getValue()));
+        return builder.toString();
+    }
+
+    private String buildConnectorUri(String path) {
+        return buildConnectorUri(path, Collections.emptyMap());
+    }
+
+    private String buildConnectorUri(String path, Map<String, String> params) {
+        UriBuilder builder = UriBuilder.fromPath(configuration.getConnectorUrl()).path(path);
+        params.entrySet().stream()
+                .filter(k -> k.getValue() != null)
+                .forEach(k -> builder.queryParam(k.getKey(), k.getValue()));
+        return builder.toString();
+    }
+
+    private String connectorBaseUrlForAccount(Account account) {
+        return isDirectDebitAccount(account) ? configuration.getConnectorDDUrl() : configuration.getConnectorUrl();
+    }
+
+    private boolean isDirectDebitAccount(Account account) {
+        return account.getPaymentType().equals(DIRECT_DEBIT);
     }
 }

@@ -1,7 +1,6 @@
 package uk.gov.pay.api.service;
 
 import au.com.dius.pact.consumer.PactVerification;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonassert.JsonAssert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -14,9 +13,9 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.exception.BadRefundsRequestException;
 import uk.gov.pay.api.exception.RefundsValidationException;
 import uk.gov.pay.api.model.TokenPaymentType;
+import uk.gov.pay.api.model.search.card.SearchRefunds;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
@@ -29,7 +28,6 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.when;
-import static uk.gov.pay.api.matcher.BadRefundsRequestExceptionMatcher.aBadRefundsRequestExceptionWithError;
 import static uk.gov.pay.api.matcher.RefundValidationExceptionMatcher.aValidationExceptionContaining;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -52,11 +50,12 @@ public class SearchRefundsServiceTest {
         when(mockConfiguration.getConnectorUrl()).thenReturn(connectorRule.getUrl());
         when(mockConfiguration.getBaseUrl()).thenReturn("http://publicapi.test.localhost/");
 
-        ConnectorUriGenerator uriGenerator = new ConnectorUriGenerator(mockConfiguration);
-        PublicApiUriGenerator publicApiUriGenerator = new PublicApiUriGenerator(mockConfiguration);
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
-        ObjectMapper objectMapper = new ObjectMapper();
-        searchRefundsService = new SearchRefundsService(client, mockConfiguration, uriGenerator, objectMapper, publicApiUriGenerator);
+        SearchRefunds searchRefunds = new SearchRefunds(client,
+                mockConfiguration,
+                new ConnectorUriGenerator(mockConfiguration),
+                new PublicApiUriGenerator(mockConfiguration));
+        searchRefundsService = new SearchRefundsService(searchRefunds);
     }
 
     @Test
@@ -150,19 +149,6 @@ public class SearchRefundsServiceTest {
                 .assertThat("$.results[1]._links.self.href", is(format("http://publicapi.test.localhost/v1/payments/%s/refunds/%s", extChargeId, refundId2)))
                 .assertThat("$.results[1]._links.payment.href", is(format("http://publicapi.test.localhost/v1/payments/%s", extChargeId)))
                 .assertThat("$._links.self.href", is("http://publicapi.test.localhost/v1/refunds?from_date=2016-01-25T13%3A22%3A55Z&to_date=2016-01-25T13%3A24%3A55Z&page=1&display_size=500"));
-    }
-
-    @Test
-    public void getSearchResponse_shouldThrowBadRefundsRequestExceptionWhenAccountIsDD() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.DIRECT_DEBIT);
-
-        expectedException.expect(BadRefundsRequestException.class);
-        expectedException.expect(
-                aBadRefundsRequestExceptionWithError(
-                        "P1102",
-                        "Searching all refunds are not currently supported for direct debit accounts."));
-        RefundsParams params = new RefundsParams(null, null, null, null);
-        searchRefundsService.getAllRefunds(account, params);
     }
 
     @Test

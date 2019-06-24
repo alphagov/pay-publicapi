@@ -68,7 +68,7 @@ public class PaymentSearchValidatorTest {
 
     @Test
     public void validateParams_shouldGiveAnErrorValidation_forAllParams() {
-        expectedException.expect(aValidationExceptionContaining("P0401", "Invalid parameters: state, reference, email, from_date, to_date, page, display_size, agreement_id. See Public API documentation for the correct data formats"));
+        expectedException.expect(aValidationExceptionContaining("P0401", "Invalid parameters: state, reference, email, from_date, to_date, page, display_size, mandate_id. See Public API documentation for the correct data formats"));
         PaymentSearchValidator.validateSearchParameters(account,"invalid", randomAlphanumeric(500), UNSUCCESSFUL_TEST_EMAIL, 
                 "", "2016-01-25T13-23:55Z", "2016-01-25T13-23:55Z", 
                 "-1", "-1", INVALID_LENGTH_AGREEMENT, "424242", "4242");
@@ -124,7 +124,7 @@ public class PaymentSearchValidatorTest {
     
     @Test
     public void validateParams_shouldGiveAnError_forTooLongMandate() {
-        expectedException.expect(aValidationExceptionContaining("P0401", "Invalid parameters: agreement_id. See Public API documentation for the correct data formats"));
+        expectedException.expect(aValidationExceptionContaining("P0401", "Invalid parameters: mandate_id. See Public API documentation for the correct data formats"));
         PaymentSearchValidator.validateSearchParameters(account,"", "", "", 
                 "", "", "", 
                 "","", INVALID_LENGTH_AGREEMENT, "424242", "4242");

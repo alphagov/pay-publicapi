@@ -1,6 +1,5 @@
 package uk.gov.pay.api.model.search;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.BadRequestException;
@@ -19,9 +18,8 @@ public abstract class SearchPaymentsBase extends SearchBase {
     public SearchPaymentsBase(Client client,
                               PublicApiConfig configuration,
                               ConnectorUriGenerator connectorUriGenerator,
-                              PaymentUriGenerator paymentUriGenerator,
-                              ObjectMapper objectMapper) {
-        super(client, configuration, connectorUriGenerator, objectMapper);
+                              PaymentUriGenerator paymentUriGenerator) {
+        super(client, configuration, connectorUriGenerator);
         this.paymentUriGenerator = paymentUriGenerator;
     }
 

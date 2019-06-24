@@ -1,7 +1,6 @@
 package uk.gov.pay.api.model.search.card;
 
 import black.door.hate.HalRepresentation;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,11 +13,11 @@ import uk.gov.pay.api.model.search.SearchBase;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
 
+import javax.inject.Inject;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,11 +36,12 @@ public class SearchRefunds extends SearchBase {
     private static final String REFUNDS_PATH = "/v1/refunds";
     private final PublicApiUriGenerator publicApiUriGenerator;
 
+    @Inject
     public SearchRefunds(Client client,
                          PublicApiConfig configuration,
                          ConnectorUriGenerator uriGenerator,
-                         ObjectMapper objectMapper, PublicApiUriGenerator publicApiUriGenerator) {
-        super(client, configuration, uriGenerator, objectMapper);
+                         PublicApiUriGenerator publicApiUriGenerator) {
+        super(client, configuration, uriGenerator);
         this.publicApiUriGenerator = publicApiUriGenerator;
     }
 
@@ -63,8 +63,7 @@ public class SearchRefunds extends SearchBase {
 
     private Response processResponse(Response connectorResponse) {
         try {
-            String response = connectorResponse.readEntity(String.class);
-            SearchRefundsResponse searchResponse = objectMapper.readValue(response, SearchRefundsResponse.class);
+            SearchRefundsResponse searchResponse = connectorResponse.readEntity(SearchRefundsResponse.class);
             List<RefundForSearchRefundsResult> results = searchResponse.getRefunds()
                     .stream()
                     .map(refund -> RefundForSearchRefundsResult.valueOf(refund,
@@ -78,7 +77,7 @@ public class SearchRefunds extends SearchBase {
             return Response.ok().entity(
                     decoratePagination(halRepresentation, searchResponse, REFUNDS_PATH).build().toString())
                     .build();
-        } catch (IOException | ProcessingException ex) {
+        } catch (ProcessingException ex) {
             throw new SearchRefundsException(ex);
         }
     }
