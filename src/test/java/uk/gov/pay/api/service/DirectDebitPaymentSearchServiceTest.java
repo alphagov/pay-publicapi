@@ -14,7 +14,7 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.TokenPaymentType;
-import uk.gov.pay.api.model.search.directdebit.SearchDirectDebitPayments;
+import uk.gov.pay.api.model.search.PaginationDecorator;
 import uk.gov.pay.api.service.directdebit.DirectDebitConnectorUriGenerator;
 import uk.gov.pay.api.service.directdebit.DirectDebitPaymentSearchService;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
@@ -46,13 +46,11 @@ public class DirectDebitPaymentSearchServiceTest {
 
         when(configuration.getBaseUrl()).thenReturn("http://publicapi.test.localhost/");
 
-        SearchDirectDebitPayments searchDirectDebitPayments = new SearchDirectDebitPayments(
+        directDebitPaymentSearchService = new DirectDebitPaymentSearchService(
                 RestClientFactory.buildClient(new RestClientConfig(false)),
-                configuration,
-                new ConnectorUriGenerator(configuration),
                 new DirectDebitConnectorUriGenerator(configuration),
-                new PaymentUriGenerator());
-        directDebitPaymentSearchService = new DirectDebitPaymentSearchService(searchDirectDebitPayments);
+                new PublicApiUriGenerator(configuration),
+                new PaginationDecorator(configuration));
     }
 
     @Test

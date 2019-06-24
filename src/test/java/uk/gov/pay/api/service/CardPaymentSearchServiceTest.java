@@ -13,7 +13,7 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.TokenPaymentType;
-import uk.gov.pay.api.model.search.card.SearchCardPayments;
+import uk.gov.pay.api.model.search.PaginationDecorator;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
@@ -45,12 +45,10 @@ public class CardPaymentSearchServiceTest {
 
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
         ConnectorUriGenerator connectorUriGenerator = new ConnectorUriGenerator(configuration);
-        SearchCardPayments searchCardPayments = new SearchCardPayments(client,
-                configuration,
+        paymentSearchService = new PaymentSearchService(client,
                 connectorUriGenerator,
-                new PaymentUriGenerator()
-        );
-        paymentSearchService = new PaymentSearchService(searchCardPayments);
+                new PublicApiUriGenerator(configuration),
+                new PaginationDecorator(configuration));
     }
     
     @Test
