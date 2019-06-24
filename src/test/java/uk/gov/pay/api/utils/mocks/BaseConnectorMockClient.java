@@ -4,11 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import java.util.Map;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
@@ -17,7 +17,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static java.lang.String.format;
 import static javax.ws.rs.HttpMethod.GET;
 import static javax.ws.rs.HttpMethod.POST;
-import static uk.gov.pay.api.utils.mocks.CreateChargeRequestParams.CreateChargeRequestParamsBuilder.aCreateChargeRequestParams;
 
 public abstract class BaseConnectorMockClient {
 
@@ -28,6 +27,7 @@ public abstract class BaseConnectorMockClient {
     static String CONNECTOR_MOCK_MANDATE_PATH = CONNECTOR_MOCK_MANDATES_PATH + "/%s";
     
     WireMockClassRule wireMockClassRule;
+    Gson gson = new Gson();
     ObjectMapper objectMapper = new ObjectMapper();
 
     BaseConnectorMockClient(WireMockClassRule wireMockClassRule) {
