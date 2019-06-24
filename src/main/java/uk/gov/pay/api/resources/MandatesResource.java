@@ -14,8 +14,7 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.directdebit.mandates.AgreementError;
 import uk.gov.pay.api.model.directdebit.mandates.CreateMandateRequest;
-import uk.gov.pay.api.model.directdebit.mandates.CreateMandateResponse;
-import uk.gov.pay.api.model.directdebit.mandates.GetMandateResponse;
+import uk.gov.pay.api.model.directdebit.mandates.MandateResponse;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
 import uk.gov.pay.api.service.MandatesService;
 
@@ -60,7 +59,7 @@ public class MandatesResource {
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = GetMandateResponse.class),
+            @ApiResponse(code = 200, message = "OK", response = MandateResponse.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found", response = AgreementError.class),
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
@@ -68,7 +67,7 @@ public class MandatesResource {
     public Response getPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
             @PathParam("mandateId") String mandateId) {
         LOGGER.info("Mandate get request - [ {} ]", mandateId);
-        GetMandateResponse getMandateResponse = mandateService.get(account, mandateId);
+        MandateResponse getMandateResponse = mandateService.get(account, mandateId);
         LOGGER.info("Mandate returned (created): [ {} ]", getMandateResponse);
         return Response.ok().entity(getMandateResponse).build();
     }
@@ -84,7 +83,7 @@ public class MandatesResource {
             code = 201,
             nickname = "newAgreement")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Created", response = CreateMandateResponse.class),
+            @ApiResponse(code = 201, message = "Created", response = MandateResponse.class),
             @ApiResponse(code = 400, message = "Bad request", response = PaymentError.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
@@ -92,7 +91,7 @@ public class MandatesResource {
     public Response createNewAgreement(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                        @ApiParam(value = "requestPayload", required = true) @Valid CreateMandateRequest createMandateRequest) {
         LOGGER.info("Mandate create request - [ {} ]", createMandateRequest);
-        CreateMandateResponse createMandateResponse = mandateService.create(account, createMandateRequest);
+        MandateResponse createMandateResponse = mandateService.create(account, createMandateRequest);
         URI mandateUri = UriBuilder.fromUri(baseUrl)
                 .path("/v1/directdebit/mandates/{mandateId}")
                 .build(createMandateResponse.getMandateId());

@@ -8,10 +8,9 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateMandateException;
 import uk.gov.pay.api.exception.GetMandateException;
 import uk.gov.pay.api.model.directdebit.mandates.CreateMandateRequest;
-import uk.gov.pay.api.model.directdebit.mandates.CreateMandateResponse;
-import uk.gov.pay.api.model.directdebit.mandates.GetMandateResponse;
 import uk.gov.pay.api.model.directdebit.mandates.MandateConnectorRequest;
 import uk.gov.pay.api.model.directdebit.mandates.MandateConnectorResponse;
+import uk.gov.pay.api.model.directdebit.mandates.MandateResponse;
 import uk.gov.pay.api.model.links.directdebit.MandateLinks;
 
 import javax.inject.Inject;
@@ -41,20 +40,20 @@ public class MandatesService {
         this.publicApiUriGenerator = publicApiUriGenerator;
     }
 
-    public CreateMandateResponse create(Account account, CreateMandateRequest createMandateRequest) {
+    public MandateResponse create(Account account, CreateMandateRequest createMandateRequest) {
         MandateConnectorResponse mandate = createMandate(account, MandateConnectorRequest.from(createMandateRequest));
         MandateLinks mandateLinks = createLinksFromMandateResponse(mandate);
-        CreateMandateResponse createMandateResponse = CreateMandateResponse.from(mandate, mandateLinks);
+        MandateResponse createMandateResponse = new MandateResponse(mandate, mandateLinks);
         LOGGER.info("Mandate returned (created): [ {} ]", createMandateResponse);
         return createMandateResponse;
     }
 
-    public GetMandateResponse get(Account account, String mandateId) {
+    public MandateResponse get(Account account, String mandateId) {
         Response connectorResponse = getMandate(account, mandateId);
         if (isFound(connectorResponse)) {
             MandateConnectorResponse mandate = connectorResponse.readEntity(MandateConnectorResponse.class);
             MandateLinks mandateLinks = createLinksFromMandateResponse(mandate);
-            GetMandateResponse getMandateResponse = GetMandateResponse.from(mandate, mandateLinks);
+            MandateResponse getMandateResponse = new MandateResponse(mandate, mandateLinks);
             LOGGER.info("Mandate returned (get): [ {} ]", getMandateResponse);
             return getMandateResponse;
         }

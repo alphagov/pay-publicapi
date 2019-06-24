@@ -55,7 +55,7 @@ public class GetMandateIT extends PaymentResourceITestBase {
                 .then()
                 .statusCode(200)
                 .contentType(JSON)
-                .body("agreement_id", is(MANDATE_ID))
+                .body("mandate_id", is(MANDATE_ID))
                 .body("bank_statement_reference", is(MANDATE_REFERENCE))
                 .body("provider_id", is(PROVIDER_ID))
                 .body("reference", is(SERVICE_REFERENCE))
