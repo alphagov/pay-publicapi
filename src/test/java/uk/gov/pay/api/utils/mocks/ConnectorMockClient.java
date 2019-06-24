@@ -50,7 +50,6 @@ import static uk.gov.pay.api.it.GetPaymentIT.AWAITING_CAPTURE_REQUEST;
 import static uk.gov.pay.api.it.fixtures.PaymentSingleResultBuilder.aSuccessfulSinglePayment;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 import static uk.gov.pay.commons.model.ErrorIdentifier.GENERIC;
-import static uk.gov.pay.commons.model.ErrorIdentifier.INVALID_MANDATE_TYPE;
 import static uk.gov.pay.commons.model.ErrorIdentifier.REFUND_AMOUNT_AVAILABLE_MISMATCH;
 import static uk.gov.pay.commons.model.ErrorIdentifier.REFUND_NOT_AVAILABLE;
 import static uk.gov.pay.commons.model.ErrorIdentifier.ZERO_AMOUNT_NOT_ALLOWED;
@@ -213,10 +212,6 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     public void respondBadRequest_whenCreateCharge(String gatewayAccountId, String errorMsg) {
         mockCreateCharge(gatewayAccountId, withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg, GENERIC));
-    }
-
-    public void respondMandateTypeInvalid_whenCreateCharge(String gatewayAccountId, String errorMsg) {
-        mockCreateCharge(gatewayAccountId, withStatusAndErrorMessage(PRECONDITION_FAILED_412, errorMsg, INVALID_MANDATE_TYPE));
     }
 
     public void respondPreconditionFailed_whenCreateRefund(String gatewayAccountId, String errorMsg, String chargeId) {
