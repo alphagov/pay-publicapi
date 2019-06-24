@@ -58,7 +58,7 @@ public class DirectDebitPaymentSearchService {
         // TODO: do validation in resource
         validateSearchParameters(account, state, reference, null, null, fromDate, toDate, pageNumber,
                 displaySize, mandateId, null, null);
-        
+
         Map<String, String> queryParams = new LinkedHashMap<>();
         queryParams.put(REFERENCE_KEY, reference);
         queryParams.put(STATE_KEY, state);
@@ -78,7 +78,7 @@ public class DirectDebitPaymentSearchService {
                 .request()
                 .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
                 .get();
-        LOGGER.info("response from dd connector for payment search: {}", connectorResponse);
+
         if (connectorResponse.getStatus() == SC_OK) {
             return processResponse(connectorResponse);
         }
@@ -86,21 +86,23 @@ public class DirectDebitPaymentSearchService {
     }
 
     private Response processResponse(Response directDebitResponse) {
+        DirectDebitSearchResponse response;
         try {
-            DirectDebitSearchResponse response = directDebitResponse.readEntity(DirectDebitSearchResponse.class);
-            List<DirectDebitPaymentForSearch> paymentFromResponse =
-                    response
-                            .getPayments()
-                            .stream()
-                            .map(payment -> DirectDebitPaymentForSearch.valueOf(
-                                    payment,
-                                    publicApiUriGenerator.getPaymentURI(payment.getPaymentId())
-                            )).collect(Collectors.toList());
-            HalRepresentation.HalRepresentationBuilder halRepresentation = HalRepresentation.builder()
-                    .addProperty("results", paymentFromResponse);
-            return Response.ok().entity(paginationDecorator.decoratePagination(halRepresentation, response, PAYMENT_PATH).build().toString()).build();
+            response = directDebitResponse.readEntity(DirectDebitSearchResponse.class);
         } catch (ProcessingException ex) {
             throw new SearchPaymentsException(ex);
         }
+
+        List<DirectDebitPaymentForSearch> paymentFromResponse =
+                response
+                        .getPayments()
+                        .stream()
+                        .map(payment -> DirectDebitPaymentForSearch.valueOf(
+                                payment,
+                                publicApiUriGenerator.getPaymentURI(payment.getPaymentId())
+                        )).collect(Collectors.toList());
+        HalRepresentation.HalRepresentationBuilder halRepresentation = HalRepresentation.builder()
+                .addProperty("results", paymentFromResponse);
+        return Response.ok().entity(paginationDecorator.decoratePagination(halRepresentation, response, PAYMENT_PATH).build().toString()).build();
     }
 }

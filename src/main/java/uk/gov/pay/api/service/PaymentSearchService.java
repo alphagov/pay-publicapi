@@ -91,7 +91,7 @@ public class PaymentSearchService {
                 .request()
                 .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
                 .get();
-        LOGGER.info("response from connector for transaction search: {}", connectorResponse);
+
         if (connectorResponse.getStatus() == SC_OK) {
             return processResponse(connectorResponse);
         }

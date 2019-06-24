@@ -75,7 +75,7 @@ public class SearchRefundsService {
                 .request()
                 .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
                 .get();
-        LOGGER.info("response from connector for refunds search: {}", connectorResponse);
+
         if (connectorResponse.getStatus() == SC_OK) {
             return processResponse(connectorResponse);
         }
@@ -83,23 +83,25 @@ public class SearchRefundsService {
     }
 
     private Response processResponse(Response connectorResponse) {
+        SearchRefundsResponse searchResponse;
         try {
-            SearchRefundsResponse searchResponse = connectorResponse.readEntity(SearchRefundsResponse.class);
-            List<RefundForSearchRefundsResult> results = searchResponse.getRefunds()
-                    .stream()
-                    .map(refund -> RefundForSearchRefundsResult.valueOf(refund,
-                            publicApiUriGenerator.getPaymentURI(refund.getChargeId()),
-                            publicApiUriGenerator.getRefundsURI(refund.getChargeId(), refund.getRefundId())))
-                    .collect(Collectors.toList());
-
-            HalRepresentation.HalRepresentationBuilder halRepresentation = HalRepresentation
-                    .builder()
-                    .addProperty("results", results);
-            return Response.ok().entity(
-                    paginationDecorator.decoratePagination(halRepresentation, searchResponse, REFUNDS_PATH).build().toString())
-                    .build();
+            searchResponse = connectorResponse.readEntity(SearchRefundsResponse.class);
         } catch (ProcessingException ex) {
             throw new SearchRefundsException(ex);
         }
+
+        List<RefundForSearchRefundsResult> results = searchResponse.getRefunds()
+                .stream()
+                .map(refund -> RefundForSearchRefundsResult.valueOf(refund,
+                        publicApiUriGenerator.getPaymentURI(refund.getChargeId()),
+                        publicApiUriGenerator.getRefundsURI(refund.getChargeId(), refund.getRefundId())))
+                .collect(Collectors.toList());
+
+        HalRepresentation.HalRepresentationBuilder halRepresentation = HalRepresentation
+                .builder()
+                .addProperty("results", results);
+        return Response.ok().entity(
+                paginationDecorator.decoratePagination(halRepresentation, searchResponse, REFUNDS_PATH).build().toString())
+                .build();
     }
 }
