@@ -368,28 +368,6 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPayment_responseWith500_whenInvalidDirectDebitAgreementType() throws Exception {
-        String gatewayAccountId = "1234567";
-        String errorMessage = "something went wrong";
-
-        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, gatewayAccountId);
-
-        connectorMockClient.respondMandateTypeInvalid_whenCreateCharge(gatewayAccountId, errorMessage);
-
-        InputStream body = postPaymentResponse(SUCCESS_PAYLOAD)
-                .statusCode(500)
-                .contentType(JSON).extract()
-                .body().asInputStream();
-
-        JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0140"))
-                .assertThat("$.description", is("Can't collect payment from this type of mandates"));
-
-        connectorMockClient.verifyCreateChargeConnectorRequest(gatewayAccountId, SUCCESS_PAYLOAD);
-    }
-
-    @Test
     public void createPayment_responseWith500_whenTokenForGatewayAccountIsValidButConnectorResponseIsNotFound() {
         String notFoundGatewayAccountId = "9876545";
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, notFoundGatewayAccountId);

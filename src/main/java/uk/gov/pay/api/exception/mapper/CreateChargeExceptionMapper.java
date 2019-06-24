@@ -13,7 +13,6 @@ import javax.ws.rs.ext.ExceptionMapper;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_ACCOUNT_ERROR;
-import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_AGREEMENT_TYPE_ERROR;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_CONNECTOR_ERROR;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
@@ -30,8 +29,6 @@ public class CreateChargeExceptionMapper implements ExceptionMapper<CreateCharge
 
         if (exception.getErrorStatus() == NOT_FOUND.getStatusCode()) {
             paymentError = aPaymentError(CREATE_PAYMENT_ACCOUNT_ERROR);
-        } else if (exception.getErrorIdentifier() == ErrorIdentifier.INVALID_MANDATE_TYPE) {
-            paymentError = aPaymentError(CREATE_PAYMENT_AGREEMENT_TYPE_ERROR);
         } else if (exception.getErrorIdentifier() == ErrorIdentifier.ZERO_AMOUNT_NOT_ALLOWED) {
             statusCode = HttpStatus.UNPROCESSABLE_ENTITY_422;
             paymentError = aPaymentError("amount", CREATE_PAYMENT_VALIDATION_ERROR,
