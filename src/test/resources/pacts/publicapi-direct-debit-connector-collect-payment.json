@@ -31,7 +31,6 @@
         "status": 201,
         "headers": {
           "Content-Type": "application/json",
-          "Location": "/v1/api/accounts/GATEWAY_ACCOUNT_ID/charges/ch_ab2341da231434l"
         },
         "body": {
           "payment_id": "ch_ab2341da231434l",
@@ -55,13 +54,6 @@
         },
         "matchingRules": {
           "header": {
-            "Location": {
-              "matchers": [
-                {
-                  "regex": "http:\/\/.*\/v1\/api\/accounts\/GATEWAY_ACCOUNT_ID\/charges\/[a-z0-9]*"
-                }
-              ]
-            }
           },
           "body": {
             "$.links[0].href": {

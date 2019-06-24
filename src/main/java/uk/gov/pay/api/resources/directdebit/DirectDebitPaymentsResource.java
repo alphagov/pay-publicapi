@@ -16,6 +16,7 @@ import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.directdebit.mandates.DirectDebitPayment;
 import uk.gov.pay.api.model.search.directdebit.DirectDebitSearchResponse;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
+import uk.gov.pay.api.service.GetDirectDebitPaymentService;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
 import uk.gov.pay.api.service.directdebit.CreateDirectDebitPaymentsService;
 import uk.gov.pay.api.service.directdebit.DirectDebitPaymentSearchService;
@@ -23,8 +24,10 @@ import uk.gov.pay.api.service.directdebit.DirectDebitPaymentSearchService;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
@@ -44,14 +47,17 @@ public class DirectDebitPaymentsResource {
     private final CreateDirectDebitPaymentsService createDirectDebitPaymentsService;
     private final DirectDebitPaymentSearchService directDebitPaymentSearchService;
     private final PublicApiUriGenerator publicApiUriGenerator;
+    private final GetDirectDebitPaymentService getDirectDebitPaymentService;
+
 
     @Inject
     public DirectDebitPaymentsResource(CreateDirectDebitPaymentsService createDirectDebitPaymentsService,
                                        DirectDebitPaymentSearchService directDebitPaymentSearchService,
-                                       PublicApiUriGenerator publicApiUriGenerator) {
+                                       PublicApiUriGenerator publicApiUriGenerator, GetDirectDebitPaymentService getDirectDebitPaymentService) {
         this.createDirectDebitPaymentsService = createDirectDebitPaymentsService;
         this.directDebitPaymentSearchService = directDebitPaymentSearchService;
         this.publicApiUriGenerator = publicApiUriGenerator;
+        this.getDirectDebitPaymentService = getDirectDebitPaymentService;
     }
 
     @POST
@@ -118,5 +124,28 @@ public class DirectDebitPaymentsResource {
                 toDate,
                 pageNumber,
                 displaySize);
+    }
+
+    @GET
+    @Timed
+    @Path("{paymentId}")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Find direct debit payment by ID",
+            notes = "Return information about the direct debit payment " +
+                    "The Authorisation token needs to be specified in the 'authorization' header " +
+                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
+            code = 200,
+            authorizations = {@Authorization("Authorization")})
+    public Response getDirectDebitPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
+                                          @PathParam("paymentId")
+                                          @ApiParam(name = "paymentId",
+                                                  value = "Payment identifier",
+                                                  example = "hu20sqlact5260q2nanm0q8u93")
+                                                  String paymentId) {
+
+        LOGGER.info("Direct Debit Payment request - paymentId={}", paymentId);
+        DirectDebitPayment payment = getDirectDebitPaymentService.getDirectDebitPayment(account, paymentId);
+        return Response.ok(payment).build();
     }
 }

@@ -7,7 +7,7 @@ import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
 import uk.gov.pay.api.model.PaymentState;
-import uk.gov.pay.api.model.directdebit.DirectDebitConnectorCreatePaymentResponse;
+import uk.gov.pay.api.model.directdebit.DirectDebitConnectorPaymentResponse;
 import uk.gov.pay.api.model.directdebit.mandates.MandateConnectorRequest;
 import uk.gov.pay.api.model.directdebit.mandates.MandateState;
 import uk.gov.pay.api.utils.JsonStringBuilder;
@@ -58,7 +58,7 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                 .withBody(chargeResponseBody));
     }
 
-    public void respondWithPaymentCreated(DirectDebitConnectorCreatePaymentResponse response,
+    public void respondWithPaymentCreated(DirectDebitConnectorPaymentResponse response,
                                           String gatewayAccountId) throws JsonProcessingException {
         var body = new ObjectMapper().writeValueAsString(response);
         var responseEnclosed = new ResponseDefinitionBuilder()

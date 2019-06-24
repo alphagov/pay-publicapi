@@ -8,7 +8,7 @@ import uk.gov.pay.api.model.PaymentState;
 import java.util.Objects;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DirectDebitConnectorCreatePaymentResponse {
+public class DirectDebitConnectorPaymentResponse {
     @JsonProperty("payment_id")
     private String paymentExternalId;
 
@@ -36,7 +36,7 @@ public class DirectDebitConnectorCreatePaymentResponse {
     @JsonProperty
     private DirectDebitPaymentState state;
 
-    public DirectDebitConnectorCreatePaymentResponse() {
+    public DirectDebitConnectorPaymentResponse() {
         // for Jackson
     }
 
@@ -80,7 +80,7 @@ public class DirectDebitConnectorCreatePaymentResponse {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DirectDebitConnectorCreatePaymentResponse that = (DirectDebitConnectorCreatePaymentResponse) o;
+        DirectDebitConnectorPaymentResponse that = (DirectDebitConnectorPaymentResponse) o;
         return Objects.equals(paymentExternalId, that.paymentExternalId) &&
                 Objects.equals(amount, that.amount) &&
                 Objects.equals(paymentProvider, that.paymentProvider) &&
@@ -99,7 +99,7 @@ public class DirectDebitConnectorCreatePaymentResponse {
 
     @Override
     public String toString() {
-        return "DirectDebitConnectorCreatePaymentResponse{" +
+        return "DirectDebitConnectorPaymentResponse{" +
                 "paymentExternalId='" + paymentExternalId + '\'' +
                 ", amount=" + amount +
                 ", paymentProvider='" + paymentProvider + '\'' +
@@ -174,8 +174,8 @@ public class DirectDebitConnectorCreatePaymentResponse {
             return this;
         }
  
-        public DirectDebitConnectorCreatePaymentResponse build() {
-            DirectDebitConnectorCreatePaymentResponse directDebitConnectorCreatePaymentResponse = new DirectDebitConnectorCreatePaymentResponse();
+        public DirectDebitConnectorPaymentResponse build() {
+            DirectDebitConnectorPaymentResponse directDebitConnectorCreatePaymentResponse = new DirectDebitConnectorPaymentResponse();
             directDebitConnectorCreatePaymentResponse.createdDate = this.createdDate;
             directDebitConnectorCreatePaymentResponse.state = this.state;
             directDebitConnectorCreatePaymentResponse.amount = this.amount;

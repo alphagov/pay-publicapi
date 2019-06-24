@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.DirectDebitPaymentState;
 import uk.gov.pay.api.model.TokenPaymentType;
-import uk.gov.pay.api.model.directdebit.DirectDebitConnectorCreatePaymentResponse;
+import uk.gov.pay.api.model.directdebit.DirectDebitConnectorPaymentResponse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +19,7 @@ import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static uk.gov.pay.api.model.directdebit.DirectDebitConnectorCreatePaymentResponse.DirectDebitConnectorCreatePaymentResponseBuilder.aDirectDebitConnectorCreatePaymentResponse;
+import static uk.gov.pay.api.model.directdebit.DirectDebitConnectorPaymentResponse.DirectDebitConnectorCreatePaymentResponseBuilder.aDirectDebitConnectorCreatePaymentResponse;
 import static uk.gov.pay.api.resources.directdebit.DirectDebitPaymentsResourceIT.CreatePaymentRequestValidationParameters.CreatePaymentRequestValidationParametersBuilder.someParameters;
 
 @RunWith(JUnitParamsRunner.class)
@@ -41,7 +41,7 @@ public class DirectDebitPaymentsResourceIT extends DirectDebitResourceITBase {
         final String status = "created";
         final boolean finished = false;
 
-        DirectDebitConnectorCreatePaymentResponse connectorResponse = aDirectDebitConnectorCreatePaymentResponse()
+        DirectDebitConnectorPaymentResponse connectorResponse = aDirectDebitConnectorCreatePaymentResponse()
                 .withPaymentExternalId(PAYMENT_ID)
                 .withAmount(AMOUNT)
                 .withPaymentProvider(PAYMENT_PROVIDER)
@@ -87,7 +87,7 @@ public class DirectDebitPaymentsResourceIT extends DirectDebitResourceITBase {
         final String status = "created";
         final boolean finished = false;
 
-        DirectDebitConnectorCreatePaymentResponse connectorResponse = aDirectDebitConnectorCreatePaymentResponse()
+        DirectDebitConnectorPaymentResponse connectorResponse = aDirectDebitConnectorCreatePaymentResponse()
                 .withPaymentExternalId(PAYMENT_ID)
                 .withAmount(AMOUNT)
                 .withPaymentProvider(PAYMENT_PROVIDER)
