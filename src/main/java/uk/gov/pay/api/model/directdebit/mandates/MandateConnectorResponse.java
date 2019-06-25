@@ -27,7 +27,7 @@ public class MandateConnectorResponse {
         return payer;
     }
 
-    @JsonProperty(value = "payment_provider")
+    @JsonProperty("payment_provider")
     public String getPaymentProvider() {
         return paymentProvider;
     }
@@ -37,40 +37,40 @@ public class MandateConnectorResponse {
         return mandateId;
     }
 
-    @JsonProperty(value = "mandate_reference")
+    @JsonProperty("mandate_reference")
     public String getMandateReference() { return mandateReference; }
 
-    @JsonProperty(value = "service_reference")
+    @JsonProperty("service_reference")
     public String getServiceReference() {
         return serviceReference;
     }
 
-    @JsonProperty(value = "return_url")
+    @JsonProperty("return_url")
     public String getReturnUrl() {
         return returnUrl;
     }
 
-    @JsonProperty(value = "created_date")
+    @JsonProperty("created_date")
     public String getCreatedDate() {
         return createdDate;
     }
 
-    @JsonProperty(value = "state")
+    @JsonProperty("state")
     public MandateState getState() {
         return state;
     }
 
-    @JsonProperty(value = "links")
+    @JsonProperty("links")
     public List<PaymentConnectorResponseLink> getLinks() {
         return links;
     }
 
-    @JsonProperty(value = "description")
+    @JsonProperty("description")
     public String getDescription() {
         return description;
     }
 
-    @JsonProperty(value = "provider_id")
+    @JsonProperty("provider_id")
     public String getProviderId() {
         return providerId;
     }
