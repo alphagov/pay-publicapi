@@ -94,7 +94,7 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
         );
     }
 
-    public void respondOk_whenGetAgreementRequest(DDConnectorResponseToGetMandateParams params) {
+    public void respondOk_whenGetMandateRequest(DDConnectorResponseToGetMandateParams params) {
         setupGetAgreement(params.getMandateId(), 
                 params.getGatewayAccountId(), 
                 aResponse()
@@ -151,6 +151,7 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                 "state", params.getState(), 
                 "provider_id", params.getProviderId(), 
                 "created_date", params.getCreatedDate(),
+                "payer", params.getPayer(),
                 "links", links));
     }
 

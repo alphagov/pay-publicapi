@@ -20,51 +20,57 @@ public class MandateConnectorResponse {
     private List<PaymentConnectorResponseLink> links = new ArrayList<>();
     private String description;
     private String providerId;
+    private Payer payer;
 
-    @JsonProperty(value = "payment_provider")
+    @JsonProperty("payer")
+    public Payer getPayer() {
+        return payer;
+    }
+
+    @JsonProperty("payment_provider")
     public String getPaymentProvider() {
         return paymentProvider;
     }
 
-    @JsonProperty(value = "mandate_id")
+    @JsonProperty("mandate_id")
     public String getMandateId() {
         return mandateId;
     }
 
-    @JsonProperty(value = "mandate_reference")
+    @JsonProperty("mandate_reference")
     public String getMandateReference() { return mandateReference; }
 
-    @JsonProperty(value = "service_reference")
+    @JsonProperty("service_reference")
     public String getServiceReference() {
         return serviceReference;
     }
 
-    @JsonProperty(value = "return_url")
+    @JsonProperty("return_url")
     public String getReturnUrl() {
         return returnUrl;
     }
 
-    @JsonProperty(value = "created_date")
+    @JsonProperty("created_date")
     public String getCreatedDate() {
         return createdDate;
     }
 
-    @JsonProperty(value = "state")
+    @JsonProperty("state")
     public MandateState getState() {
         return state;
     }
 
-    @JsonProperty(value = "links")
+    @JsonProperty("links")
     public List<PaymentConnectorResponseLink> getLinks() {
         return links;
     }
 
-    @JsonProperty(value = "description")
+    @JsonProperty("description")
     public String getDescription() {
         return description;
     }
 
-    @JsonProperty(value = "provider_id")
+    @JsonProperty("provider_id")
     public String getProviderId() {
         return providerId;
     }

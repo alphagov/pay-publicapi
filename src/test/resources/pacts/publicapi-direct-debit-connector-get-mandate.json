@@ -40,6 +40,10 @@
             "finished": false,
             "details": "example details"
           },
+          "payer": {
+            "name": "Jack",
+            "email": "i.died@titanic.com"
+          },
           "links": [
             {
               "href": "http://localhost:1234/v1/api/accounts/9ddfcc27-acf5-43f9-92d5-52247540714c/mandates/test_mandate_id_xyz",
@@ -101,6 +105,20 @@
               ]
             },
             "$.state.details": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.payer.name": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.payer.email": {
               "matchers": [
                 {
                   "match": "type"
