@@ -1,6 +1,7 @@
 package uk.gov.pay.api.utils.mocks;
 
 import uk.gov.pay.api.model.directdebit.mandates.MandateState;
+import uk.gov.pay.api.model.directdebit.mandates.Payer;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
 
 public class DDConnectorResponseToGetMandateParams {
@@ -14,6 +15,7 @@ public class DDConnectorResponseToGetMandateParams {
     private final String chargeTokenId;
     private final String providerId;
     private final String createdDate;
+    private Payer payer;
 
     private DDConnectorResponseToGetMandateParams(String mandateId,
                                                   String mandateReference,
@@ -22,8 +24,9 @@ public class DDConnectorResponseToGetMandateParams {
                                                   MandateState state,
                                                   String gatewayAccountId,
                                                   String chargeTokenId,
-                                                  String providerId, 
-                                                  String createdDate) {
+                                                  String providerId,
+                                                  String createdDate, 
+                                                  Payer payer) {
         this.mandateId = mandateId;
         this.mandateReference = mandateReference;
         this.serviceReference = serviceReference;
@@ -33,10 +36,15 @@ public class DDConnectorResponseToGetMandateParams {
         this.chargeTokenId = chargeTokenId;
         this.providerId = providerId;
         this.createdDate = createdDate;
+        this.payer = payer;
     }
 
     public String getCreatedDate() {
         return createdDate;
+    }
+
+    public Payer getPayer() {
+        return payer;
     }
 
     public String getMandateId() {
@@ -81,6 +89,7 @@ public class DDConnectorResponseToGetMandateParams {
         private String chargeTokenId;
         private String providerId;
         private String createdDate;
+        private Payer payer;
 
         private DDConnectorResponseToGetMandateParamsBuilder() {
         }
@@ -131,11 +140,16 @@ public class DDConnectorResponseToGetMandateParams {
 
         public DDConnectorResponseToGetMandateParams build() {
             return new DDConnectorResponseToGetMandateParams(mandateId, mandateReference, serviceReference, returnUrl, 
-                    state, gatewayAccountId, chargeTokenId, providerId, createdDate);
+                    state, gatewayAccountId, chargeTokenId, providerId, createdDate, payer);
         }
 
         public DDConnectorResponseToGetMandateParamsBuilder withCreatedDate(String createdDate) {
             this.createdDate = createdDate;
+            return this;
+        }
+
+        public DDConnectorResponseToGetMandateParamsBuilder withPayer(Payer payer) {
+            this.payer = payer;
             return this;
         }
     }

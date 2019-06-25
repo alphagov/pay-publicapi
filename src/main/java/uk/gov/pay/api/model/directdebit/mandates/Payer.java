@@ -10,6 +10,14 @@ public class Payer {
     @JsonProperty("email")
     private String email;
 
+    public Payer() {
+    }
+
+    public Payer(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
+
     public String getName() {
         return name;
     }

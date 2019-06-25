@@ -1,9 +1,11 @@
 package uk.gov.pay.api.model.directdebit.mandates;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.links.directdebit.MandateLinks;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MandateResponse {
 
     private final String mandateId;
@@ -16,6 +18,7 @@ public class MandateResponse {
     private final String createdDate;
     private final String description;
     private final String paymentProvider;
+    private final Payer payer;
 
     public MandateResponse(MandateConnectorResponse mandate, MandateLinks links) {
         this.mandateId = mandate.getMandateId();
@@ -28,6 +31,13 @@ public class MandateResponse {
         this.description = mandate.getDescription();
         this.paymentProvider = mandate.getPaymentProvider();
         this.links = links;
+        this.payer = mandate.getPayer();
+    }
+
+    @ApiModelProperty(value = "payer")
+    @JsonProperty(value = "payer")
+    public Payer getPayer() {
+        return payer;
     }
 
     @ApiModelProperty(value = "description")

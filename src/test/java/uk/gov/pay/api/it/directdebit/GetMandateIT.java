@@ -3,7 +3,7 @@ package uk.gov.pay.api.it.directdebit;
 import org.junit.Test;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
 import uk.gov.pay.api.model.directdebit.mandates.MandateState;
-import uk.gov.pay.api.model.directdebit.mandates.MandateStatus;
+import uk.gov.pay.api.model.directdebit.mandates.Payer;
 import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorDDMockClient;
@@ -50,16 +50,17 @@ public class GetMandateIT extends PaymentResourceITestBase {
                 .withChargeTokenId(CHARGE_TOKEN_ID)
                 .withProviderId(PROVIDER_ID)
                 .withCreatedDate(CREATED_DATE)
+                .withPayer(new Payer("Jack", "i.died@titanic.com"))
                 .build();
 
-        connectorDDMockClient.respondOk_whenGetAgreementRequest(params);
+        connectorDDMockClient.respondOk_whenGetMandateRequest(params);
 
         given().port(app.getLocalPort())
                 .accept(JSON)
                 .contentType(JSON)
                 .header(AUTHORIZATION, "Bearer " + API_KEY)
                 .get("/v1/directdebit/mandates/" + MANDATE_ID)
-                .then().log().body()
+                .then()
                 .statusCode(200)
                 .contentType(JSON)
                 .body("mandate_id", is(MANDATE_ID))
@@ -70,6 +71,8 @@ public class GetMandateIT extends PaymentResourceITestBase {
                 .body("state.status", is("created"))
                 .body("state.details", is("example details"))
                 .body("created_date", is(CREATED_DATE))
+                .body("payer.name", is("Jack"))
+                .body("payer.email", is("i.died@titanic.com"))
                 .body("_links.self.href", is(mandateLocationFor(MANDATE_ID)))
                 .body("_links.self.method", is("GET"))
                 .body("_links.next_url.href", is(directDebitFrontendSecureUrl() + CHARGE_TOKEN_ID))
