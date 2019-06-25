@@ -21,17 +21,25 @@ public class MandateState {
     @JsonProperty("code")
     private String code;
 
-    public MandateState() {}
+    @JsonProperty("details")
+    private String details;
 
-    public MandateState(String status, boolean finished) {
-        this(status, finished, null, null);
+    public MandateState() {}
+    
+    public MandateState(String status, boolean finished, String details) {
+        this(status, finished, null, null, details);
     }
 
-    public MandateState(String status, boolean finished, String message, String code) {
+    public MandateState(String status, boolean finished, String message, String code, String details) {
         this.status = status;
         this.finished = finished;
         this.message = message;
         this.code = code;
+        this.details = details;
+    }
+
+    public MandateState(String status, boolean finished) {
+        this(status, finished, null, null, null);
     }
 
     public String getStatus() {
@@ -50,6 +58,10 @@ public class MandateState {
         return code;
     }
 
+    public String getDetails() {
+        return details;
+    }
+
     @Override
     public String toString() {
         return "MandateState{" +
@@ -57,6 +69,7 @@ public class MandateState {
                 ", finished='" + finished + '\'' +
                 ", message=" + message +
                 ", code=" + code +
+                ", details=" + details+
                 '}';
     }
 
@@ -67,12 +80,13 @@ public class MandateState {
         MandateState that = (MandateState) o;
         return finished == that.finished &&
                 Objects.equals(status, that.status) &&
+                Objects.equals(details, that.details) &&
                 Objects.equals(message, that.message) &&
                 Objects.equals(code, that.code);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(status, finished, message, code);
+        return Objects.hash(status, finished, message, code, details);
     }
 }

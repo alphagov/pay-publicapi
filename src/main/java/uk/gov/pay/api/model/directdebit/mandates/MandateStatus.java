@@ -1,24 +1,23 @@
 package uk.gov.pay.api.model.directdebit.mandates;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-@JsonFormat(shape = JsonFormat.Shape.OBJECT)
-public enum MandateStatus {
-    CREATED("created"),
-    STARTED("started"),
-    PENDING("pending"),
-    SUBMITTED("submitted"),
-    ACTIVE("active"),
-    INACTIVE("inactive"),
-    CANCELLED("cancelled");
-    
-    private String status;
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class MandateStatus {
 
-    MandateStatus(String status) {
+    @JsonProperty("status")
+    private final String status;
+
+    @JsonProperty("details")
+    private final String details;
+
+    private MandateStatus(String status, String details) {
         this.status = status;
+        this.details = details;
     }
 
-    public String getStatus() {
-        return status;
+    public static MandateStatus valueOf(MandateState state) {
+        return new MandateStatus(state.getStatus(), state.getDetails());
     }
 }

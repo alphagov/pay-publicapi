@@ -139,6 +139,7 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                 "service_reference", params.getServiceReference(), 
                 "state", params.getState(), 
                 "provider_id", params.getProviderId(), 
+                "created_date", params.getCreatedDate(),
                 "links", links));
     }
 

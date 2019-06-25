@@ -4,9 +4,12 @@ import org.junit.Test;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
 import uk.gov.pay.api.model.directdebit.mandates.MandateState;
 import uk.gov.pay.api.model.directdebit.mandates.MandateStatus;
+import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorDDMockClient;
 import uk.gov.pay.api.utils.mocks.DDConnectorResponseToGetMandateParams;
+
+import java.time.ZonedDateTime;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
@@ -16,6 +19,7 @@ import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 import static uk.gov.pay.api.utils.Urls.directDebitFrontendSecureUrl;
 import static uk.gov.pay.api.utils.Urls.mandateLocationFor;
 import static uk.gov.pay.api.utils.mocks.DDConnectorResponseToGetMandateParams.DDConnectorResponseToGetMandateParamsBuilder.aDDConnectorResponseToGetMandateParams;
+import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public class GetMandateIT extends PaymentResourceITestBase {
 
@@ -28,6 +32,8 @@ public class GetMandateIT extends PaymentResourceITestBase {
     private static final String SERVICE_REFERENCE = "test_service_reference";
     private static final String RETURN_URL = "https://service-name.gov.uk/transactions/12345";
     private static final String PROVIDER_ID = "MD1234";
+    private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
+    private static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(TIMESTAMP);
 
     @Test
     public void getMandate() {
@@ -39,10 +45,11 @@ public class GetMandateIT extends PaymentResourceITestBase {
                 .withMandateReference(MANDATE_REFERENCE)
                 .withServiceReference(SERVICE_REFERENCE)
                 .withReturnUrl(RETURN_URL)
-                .withState(new MandateState("created", false))
+                .withState(new MandateState("created", false, "example details"))
                 .withGatewayAccountId(GATEWAY_ACCOUNT_ID)
                 .withChargeTokenId(CHARGE_TOKEN_ID)
                 .withProviderId(PROVIDER_ID)
+                .withCreatedDate(CREATED_DATE)
                 .build();
 
         connectorDDMockClient.respondOk_whenGetAgreementRequest(params);
@@ -52,7 +59,7 @@ public class GetMandateIT extends PaymentResourceITestBase {
                 .contentType(JSON)
                 .header(AUTHORIZATION, "Bearer " + API_KEY)
                 .get("/v1/directdebit/mandates/" + MANDATE_ID)
-                .then()
+                .then().log().body()
                 .statusCode(200)
                 .contentType(JSON)
                 .body("mandate_id", is(MANDATE_ID))
@@ -60,7 +67,9 @@ public class GetMandateIT extends PaymentResourceITestBase {
                 .body("provider_id", is(PROVIDER_ID))
                 .body("reference", is(SERVICE_REFERENCE))
                 .body("return_url", is(RETURN_URL))
-                .body("state.status", is(MandateStatus.CREATED.getStatus()))
+                .body("state.status", is("created"))
+                .body("state.details", is("example details"))
+                .body("created_date", is(CREATED_DATE))
                 .body("_links.self.href", is(mandateLocationFor(MANDATE_ID)))
                 .body("_links.self.method", is("GET"))
                 .body("_links.next_url.href", is(directDebitFrontendSecureUrl() + CHARGE_TOKEN_ID))

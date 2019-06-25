@@ -22,7 +22,7 @@ public class MandateResponse {
         this.providerId = mandate.getProviderId();
         this.reference = mandate.getServiceReference();
         this.returnUrl = mandate.getReturnUrl();
-        this.state = MandateStatus.valueOf(mandate.getState().getStatus().toUpperCase());
+        this.state = MandateStatus.valueOf(mandate.getState());
         this.mandateReference = mandate.getMandateReference();
         this.createdDate = mandate.getCreatedDate();
         this.description = mandate.getDescription();

@@ -10,7 +10,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import uk.gov.pay.api.model.directdebit.mandates.MandateConnectorRequest;
 import uk.gov.pay.api.model.directdebit.mandates.MandateState;
-import uk.gov.pay.api.model.directdebit.mandates.MandateStatus;
 import uk.gov.pay.api.resources.directdebit.DirectDebitResourceITBase;
 import uk.gov.pay.api.utils.DateTimeUtils;
 
@@ -168,7 +167,7 @@ public class CreateMandateIT extends DirectDebitResourceITBase {
                 .body("return_url", is(RETURN_URL))
                 .body("created_date", is(CREATED_DATE))
                 .body("payment_provider", is("gocardless"))
-                .body("state.status", is(MandateStatus.CREATED.getStatus()))
+                .body("state.status", is("created"))
                 .body("_links.self.href", is(mandateLocationFor(MANDATE_ID)))
                 .body("_links.self.method", is("GET"))
                 .body("_links.next_url.href", is(directDebitFrontendSecureUrl() + CHARGE_TOKEN_ID))
