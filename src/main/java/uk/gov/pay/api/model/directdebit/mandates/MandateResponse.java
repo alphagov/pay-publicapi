@@ -1,52 +1,57 @@
 package uk.gov.pay.api.model.directdebit.mandates;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.links.directdebit.MandateLinks;
 
-@ApiModel(value = "GetMandateResponse")
-public class GetMandateResponse {
-    
-    private final String agreementId;
+public class MandateResponse {
+
+    private final String mandateId;
     private final String providerId;
     private final String reference;
     private final String returnUrl;
-    private final String mandateReference;
     private final MandateStatus state;
     private final MandateLinks links;
+    private final String mandateReference;
+    private final String createdDate;
+    private final String description;
+    private final String paymentProvider;
 
-    private GetMandateResponse(String agreementId,
-                               String providerId,
-                               String reference,
-                               String returnUrl,
-                               String mandateReference, 
-                               MandateStatus state,
-                               MandateLinks links) {
-        this.agreementId = agreementId;
-        this.providerId = providerId;
-        this.reference = reference;
-        this.returnUrl = returnUrl;
-        this.mandateReference = mandateReference;
-        this.state = state;
+    public MandateResponse(MandateConnectorResponse mandate, MandateLinks links) {
+        this.mandateId = mandate.getMandateId();
+        this.providerId = mandate.getProviderId();
+        this.reference = mandate.getServiceReference();
+        this.returnUrl = mandate.getReturnUrl();
+        this.state = MandateStatus.valueOf(mandate.getState().getStatus().toUpperCase());
+        this.mandateReference = mandate.getMandateReference();
+        this.createdDate = mandate.getCreatedDate();
+        this.description = mandate.getDescription();
+        this.paymentProvider = mandate.getPaymentProvider();
         this.links = links;
     }
 
-    public static GetMandateResponse from(MandateConnectorResponse mandate, MandateLinks links) {
-        return new GetMandateResponse(
-                mandate.getMandateId(),
-                mandate.getProviderId(),
-                mandate.getServiceReference(),
-                mandate.getReturnUrl(),
-                mandate.getMandateReference(),
-                MandateStatus.valueOf(mandate.getState().getStatus().toUpperCase()),
-                links);
+    @ApiModelProperty(value = "description")
+    @JsonProperty(value = "description")
+    public String getDescription() {
+        return description;
+    }
+
+    @ApiModelProperty(value = "payment_provider")
+    @JsonProperty(value = "payment_provider")
+    public String getPaymentProvider() {
+        return paymentProvider;
+    }
+    
+    @ApiModelProperty(value = "mandate created date", required = true)
+    @JsonProperty("created_date")
+    public String getCreatedDate() {
+        return createdDate;
     }
 
     @ApiModelProperty(value = "mandate id", required = true, example = "jhjcvaiqlediuhh23d89hd3")
-    @JsonProperty(value = "agreement_id")
-    public String getAgreementId() {
-        return this.agreementId;
+    @JsonProperty(value = "mandate_id")
+    public String getMandateId() {
+        return this.mandateId;
     }
 
     @ApiModelProperty(value = "provider id", required = true, example = "jhjcvaiqlediuhh23d89hd3")
@@ -65,7 +70,7 @@ public class GetMandateResponse {
         return state;
     }
 
-    @ApiModelProperty(value = "links", required = true)
+    @ApiModelProperty(value = "links", required = true) 
     @JsonProperty(value = "_links")
     public MandateLinks getLinks() {
         return links;
