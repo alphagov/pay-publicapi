@@ -42,7 +42,6 @@ public class MandatesResource {
     private final String baseUrl;
     private final MandatesService mandateService;
 
-
     @Inject
     public MandatesResource(PublicApiConfig configuration, MandatesService mandateService) {
         this.baseUrl = configuration.getBaseUrl();
