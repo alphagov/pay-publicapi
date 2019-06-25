@@ -5,6 +5,7 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.SearchPaymentsException;
 import uk.gov.pay.api.model.directdebit.mandates.DirectDebitPayment;
 import uk.gov.pay.api.model.search.PaginationDecorator;
+import uk.gov.pay.api.model.search.directdebit.DirectDebitSearchPaymentsParams;
 import uk.gov.pay.api.model.search.directdebit.DirectDebitSearchResponse;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
 
@@ -20,7 +21,6 @@ import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.http.HttpStatus.SC_OK;
-import static uk.gov.pay.api.validation.PaymentSearchValidator.validateSearchParameters;
 
 public class DirectDebitPaymentSearchService {
 
@@ -49,21 +49,19 @@ public class DirectDebitPaymentSearchService {
         this.directDebitConnectorUriGenerator = directDebitConnectorUriGenerator;
         this.publicApiUriGenerator = publicApiUriGenerator;
     }
-
-    public Response doSearch(Account account, String reference, String state, String mandateId, String fromDate,
-                             String toDate, String pageNumber, String displaySize) {
-        // TODO: do validation in resource
-        validateSearchParameters(account, state, reference, null, null, fromDate, toDate, pageNumber,
-                displaySize, mandateId, null, null);
-
+    
+    public Response doSearch(Account account, DirectDebitSearchPaymentsParams searchPaymentsParams) {
         Map<String, String> queryParams = new LinkedHashMap<>();
-        queryParams.put(REFERENCE_KEY, reference);
-        queryParams.put(STATE_KEY, state);
-        queryParams.put(MANDATE_ID_KEY, mandateId);
-        queryParams.put(FROM_DATE_KEY, fromDate);
-        queryParams.put(TO_DATE_KEY, toDate);
-        queryParams.put(PAGE, pageNumber);
-        queryParams.put(DISPLAY_SIZE, displaySize);
+        queryParams.put(REFERENCE_KEY, searchPaymentsParams.getReference());
+        queryParams.put(STATE_KEY, searchPaymentsParams.getState());
+        queryParams.put(MANDATE_ID_KEY, searchPaymentsParams.getMandateId());
+        queryParams.put(FROM_DATE_KEY, searchPaymentsParams.getFromDate());
+        queryParams.put(TO_DATE_KEY, searchPaymentsParams.getToDate());
+        
+        searchPaymentsParams.getPage()
+                .ifPresent(pageNumber -> queryParams.put(PAGE, String.valueOf(pageNumber)));
+        searchPaymentsParams.getDisplaySize()
+                .ifPresent(displaySize -> queryParams.put(DISPLAY_SIZE, String.valueOf(displaySize)));
 
         return getSearchResponse(account, queryParams);
     }

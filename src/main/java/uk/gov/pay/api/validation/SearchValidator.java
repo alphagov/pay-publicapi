@@ -20,13 +20,13 @@ class SearchValidator {
     }
 
     static void validateToDate(String toDate, List<String> validationErrors) {
-        if (!DateValidator.validate(toDate)) {
+        if (!DateValidator.isValid(toDate)) {
             validationErrors.add("to_date");
         }
     }
 
     static void validateFromDate(String fromDate, List<String> validationErrors) {
-        if (!DateValidator.validate(fromDate)) {
+        if (!DateValidator.isValid(fromDate)) {
             validationErrors.add("from_date");
         }
     }
