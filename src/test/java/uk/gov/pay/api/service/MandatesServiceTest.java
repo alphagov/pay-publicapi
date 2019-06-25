@@ -108,7 +108,8 @@ public class MandatesServiceTest {
         assertThat(mandateConnectorResponse.getProviderId(), is("MD1234"));
         assertThat(mandateConnectorResponse.getServiceReference(), is(SERVICE_REFERENCE));
         assertThat(mandateConnectorResponse.getReturnUrl(), is("https://example.com/return"));
-        assertThat(mandateConnectorResponse.getState(), is(new MandateState("created", false)));
+        assertThat(mandateConnectorResponse.getState(), is(new MandateState("created", false, "example details")));
+        assertThat(mandateConnectorResponse.getCreatedDate(), is("2016-01-01T12:00:00Z"));
         assertThat(mandateConnectorResponse.getLinks().get(0), is(new PaymentConnectorResponseLink(
                 "self",
                 "http://localhost:1234/v1/api/accounts/9ddfcc27-acf5-43f9-92d5-52247540714c/mandates/" + MANDATE_ID,

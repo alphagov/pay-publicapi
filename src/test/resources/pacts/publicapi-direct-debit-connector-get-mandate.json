@@ -34,9 +34,11 @@
           "provider_id": "MD1234",
           "service_reference": "test_service_reference",
           "return_url": "https://example.com/return",
+          "created_date": "2016-01-01T12:00:00Z",
           "state": {
             "status": "created",
-            "finished": false
+            "finished": false,
+            "details": "example details"
           },
           "links": [
             {
@@ -92,6 +94,13 @@
               ]
             },
             "$.state.finished": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.state.details": {
               "matchers": [
                 {
                   "match": "type"
