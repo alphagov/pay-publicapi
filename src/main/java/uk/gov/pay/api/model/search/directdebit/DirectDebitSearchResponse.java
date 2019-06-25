@@ -3,6 +3,7 @@ package uk.gov.pay.api.model.search.directdebit;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import uk.gov.pay.api.model.directdebit.DirectDebitConnectorPaymentResponse;
 import uk.gov.pay.api.model.links.SearchNavigationLinks;
 import uk.gov.pay.api.model.search.SearchPagination;
 
@@ -19,11 +20,11 @@ public class DirectDebitSearchResponse implements SearchPagination {
     @JsonProperty("page")
     private int page;
     @JsonProperty("results")
-    private List<DirectDebitPaymentFromResponse> payments;
+    private List<DirectDebitConnectorPaymentResponse> payments;
     @JsonProperty("_links")
     private SearchNavigationLinks links = new SearchNavigationLinks();
 
-    public List<DirectDebitPaymentFromResponse> getPayments() {
+    public List<DirectDebitConnectorPaymentResponse> getPayments() {
         return payments;
     }
 

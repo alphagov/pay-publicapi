@@ -125,7 +125,7 @@ public class DirectDebitConnectorPaymentResponse {
         private DirectDebitConnectorCreatePaymentResponseBuilder() {
         }
 
-        public static DirectDebitConnectorCreatePaymentResponseBuilder aDirectDebitConnectorCreatePaymentResponse() {
+        public static DirectDebitConnectorCreatePaymentResponseBuilder aDirectDebitConnectorPaymentResponse() {
             return new DirectDebitConnectorCreatePaymentResponseBuilder();
         }
 

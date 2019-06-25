@@ -23,8 +23,6 @@ public abstract class BaseConnectorMockClient {
     static String CONNECTOR_MOCK_ACCOUNTS_PATH = "/v1/api/accounts/%s";
     static String CONNECTOR_MOCK_CHARGES_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/charges";
     static String CONNECTOR_MOCK_CHARGE_PATH = CONNECTOR_MOCK_CHARGES_PATH + "/%s";
-    static String CONNECTOR_MOCK_MANDATES_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/mandates";
-    static String CONNECTOR_MOCK_MANDATE_PATH = CONNECTOR_MOCK_MANDATES_PATH + "/%s";
     
     WireMockClassRule wireMockClassRule;
     Gson gson = new Gson();
@@ -52,10 +50,6 @@ public abstract class BaseConnectorMockClient {
 
     String chargeLocation(String accountId, String chargeId) {
         return format(CONNECTOR_MOCK_CHARGE_PATH, accountId, chargeId);
-    }
-
-    String mandateLocation(String accountId, String mandateId) {
-        return format(CONNECTOR_MOCK_MANDATE_PATH, accountId, mandateId);
     }
 
     abstract String nextUrlPost();
