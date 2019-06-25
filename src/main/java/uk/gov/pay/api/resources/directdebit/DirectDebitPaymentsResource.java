@@ -87,6 +87,18 @@ public class DirectDebitPaymentsResource {
                 .entity(payment).build();
     }
 
+
+    @GET
+    @Timed
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Search Direct Debit payments",
+            notes = "Search Direct Debit payments by reference, state, mandate and 'from' and 'to' date. " +
+                    "The Authorisation token needs to be specified in the 'authorization' header " +
+                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
+            responseContainer = "List",
+            code = 200,
+            authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = DirectDebitSearchResponse.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),

@@ -19,11 +19,11 @@ import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static uk.gov.pay.api.model.directdebit.DirectDebitConnectorPaymentResponse.DirectDebitConnectorCreatePaymentResponseBuilder.aDirectDebitConnectorCreatePaymentResponse;
-import static uk.gov.pay.api.resources.directdebit.DirectDebitPaymentsResourceIT.CreatePaymentRequestValidationParameters.CreatePaymentRequestValidationParametersBuilder.someParameters;
+import static uk.gov.pay.api.model.directdebit.DirectDebitConnectorPaymentResponse.DirectDebitConnectorCreatePaymentResponseBuilder.aDirectDebitConnectorPaymentResponse;
+import static uk.gov.pay.api.resources.directdebit.DirectDebitPaymentsResourceCreatePaymentIT.CreatePaymentRequestValidationParameters.CreatePaymentRequestValidationParametersBuilder.someParameters;
 
 @RunWith(JUnitParamsRunner.class)
-public class DirectDebitPaymentsResourceIT extends DirectDebitResourceITBase {
+public class DirectDebitPaymentsResourceCreatePaymentIT extends DirectDebitResourceITBase {
     
     private static final long AMOUNT = 100;
     private static final String REFERENCE = "a reference";
@@ -41,7 +41,7 @@ public class DirectDebitPaymentsResourceIT extends DirectDebitResourceITBase {
         final String status = "created";
         final boolean finished = false;
 
-        DirectDebitConnectorPaymentResponse connectorResponse = aDirectDebitConnectorCreatePaymentResponse()
+        DirectDebitConnectorPaymentResponse connectorResponse = aDirectDebitConnectorPaymentResponse()
                 .withPaymentExternalId(PAYMENT_ID)
                 .withAmount(AMOUNT)
                 .withPaymentProvider(PAYMENT_PROVIDER)
@@ -87,7 +87,7 @@ public class DirectDebitPaymentsResourceIT extends DirectDebitResourceITBase {
         final String status = "created";
         final boolean finished = false;
 
-        DirectDebitConnectorPaymentResponse connectorResponse = aDirectDebitConnectorCreatePaymentResponse()
+        DirectDebitConnectorPaymentResponse connectorResponse = aDirectDebitConnectorPaymentResponse()
                 .withPaymentExternalId(PAYMENT_ID)
                 .withAmount(AMOUNT)
                 .withPaymentProvider(PAYMENT_PROVIDER)
@@ -235,7 +235,7 @@ public class DirectDebitPaymentsResourceIT extends DirectDebitResourceITBase {
         };
     }
     
-    public static class CreatePaymentRequestValidationParameters {
+    static class CreatePaymentRequestValidationParameters {
         public Object amount;
         public Object reference;
         public Object description;
@@ -276,7 +276,7 @@ public class DirectDebitPaymentsResourceIT extends DirectDebitResourceITBase {
                     '}';
         }
 
-        static class  CreatePaymentRequestValidationParametersBuilder {
+        static class CreatePaymentRequestValidationParametersBuilder {
             public Object amount = AMOUNT;
             public Object reference = REFERENCE;
             public Object description = DESCRIPTION;

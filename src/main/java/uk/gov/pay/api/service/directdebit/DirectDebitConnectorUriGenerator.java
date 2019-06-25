@@ -37,15 +37,11 @@ public class DirectDebitConnectorUriGenerator {
     }
 
     private String buildConnectorUri(Account account, String path, Map<String, String> params) {
-        UriBuilder builder = UriBuilder.fromPath(connectorBaseUrlForAccount(account)).path(path);
+        UriBuilder builder = UriBuilder.fromPath(configuration.getConnectorDDUrl()).path(path);
         params.entrySet().stream()
                 .filter(k -> k.getValue() != null)
                 .forEach(k -> builder.queryParam(k.getKey(), k.getValue()));
         return builder.toString();
-    }
-
-    private String connectorBaseUrlForAccount(Account account) {
-        return configuration.getConnectorDDUrl();
     }
 
 }
