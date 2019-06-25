@@ -13,6 +13,7 @@ public class DDConnectorResponseToGetMandateParams {
     private final String gatewayAccountId;
     private final String chargeTokenId;
     private final String providerId;
+    private final String createdDate;
 
     private DDConnectorResponseToGetMandateParams(String mandateId,
                                                   String mandateReference,
@@ -20,8 +21,9 @@ public class DDConnectorResponseToGetMandateParams {
                                                   String returnUrl,
                                                   MandateState state,
                                                   String gatewayAccountId,
-                                                  String chargeTokenId, 
-                                                  String providerId) {
+                                                  String chargeTokenId,
+                                                  String providerId, 
+                                                  String createdDate) {
         this.mandateId = mandateId;
         this.mandateReference = mandateReference;
         this.serviceReference = serviceReference;
@@ -30,6 +32,11 @@ public class DDConnectorResponseToGetMandateParams {
         this.gatewayAccountId = gatewayAccountId;
         this.chargeTokenId = chargeTokenId;
         this.providerId = providerId;
+        this.createdDate = createdDate;
+    }
+
+    public String getCreatedDate() {
+        return createdDate;
     }
 
     public String getMandateId() {
@@ -73,6 +80,7 @@ public class DDConnectorResponseToGetMandateParams {
         private String gatewayAccountId;
         private String chargeTokenId;
         private String providerId;
+        private String createdDate;
 
         private DDConnectorResponseToGetMandateParamsBuilder() {
         }
@@ -122,7 +130,13 @@ public class DDConnectorResponseToGetMandateParams {
         }
 
         public DDConnectorResponseToGetMandateParams build() {
-            return new DDConnectorResponseToGetMandateParams(mandateId, mandateReference, serviceReference, returnUrl, state, gatewayAccountId, chargeTokenId, providerId);
+            return new DDConnectorResponseToGetMandateParams(mandateId, mandateReference, serviceReference, returnUrl, 
+                    state, gatewayAccountId, chargeTokenId, providerId, createdDate);
+        }
+
+        public DDConnectorResponseToGetMandateParamsBuilder withCreatedDate(String createdDate) {
+            this.createdDate = createdDate;
+            return this;
         }
     }
 }

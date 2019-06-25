@@ -58,6 +58,10 @@ public class MandateState {
         return code;
     }
 
+    public String getDetails() {
+        return details;
+    }
+
     @Override
     public String toString() {
         return "MandateState{" +
