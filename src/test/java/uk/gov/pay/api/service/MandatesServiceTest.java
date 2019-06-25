@@ -110,6 +110,8 @@ public class MandatesServiceTest {
         assertThat(mandateConnectorResponse.getReturnUrl(), is("https://example.com/return"));
         assertThat(mandateConnectorResponse.getState(), is(new MandateState("created", false, "example details")));
         assertThat(mandateConnectorResponse.getCreatedDate(), is("2016-01-01T12:00:00Z"));
+        assertThat(mandateConnectorResponse.getPayer().getEmail(), is("i.died@titanic.com"));
+        assertThat(mandateConnectorResponse.getPayer().getName(), is("Jack"));
         assertThat(mandateConnectorResponse.getLinks().get(0), is(new PaymentConnectorResponseLink(
                 "self",
                 "http://localhost:1234/v1/api/accounts/9ddfcc27-acf5-43f9-92d5-52247540714c/mandates/" + MANDATE_ID,

@@ -20,13 +20,19 @@ public class MandateConnectorResponse {
     private List<PaymentConnectorResponseLink> links = new ArrayList<>();
     private String description;
     private String providerId;
+    private Payer payer;
+
+    @JsonProperty("payer")
+    public Payer getPayer() {
+        return payer;
+    }
 
     @JsonProperty(value = "payment_provider")
     public String getPaymentProvider() {
         return paymentProvider;
     }
 
-    @JsonProperty(value = "mandate_id")
+    @JsonProperty("mandate_id")
     public String getMandateId() {
         return mandateId;
     }
