@@ -30,7 +30,7 @@
       "response": {
         "status": 201,
         "headers": {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         "body": {
           "payment_id": "ch_ab2341da231434l",
@@ -43,26 +43,12 @@
             "status": "created",
             "finished": false
           },
-          "created_date": "2010-12-31T22:59:59.132Z",
-          "links": [
-            {
-              "href": "http://localhost:1234/v1/api/accounts/GATEWAY_ACCOUNT_ID/charges/ch_ab2341da231434l",
-              "method": "GET",
-              "rel": "self"
-            }
-          ]
+          "created_date": "2010-12-31T22:59:59.132Z"
         },
         "matchingRules": {
           "header": {
           },
           "body": {
-            "$.links[0].href": {
-              "matchers": [
-                {
-                  "regex": "http:\/\/.*\/v1\/api\/accounts\/GATEWAY_ACCOUNT_ID\/charges\/[a-z0-9]*"
-                }
-              ]
-            },
             "$.payment_id": {
               "matchers": [
                 {
@@ -87,6 +73,13 @@
                 }
               ],
               "combine": "AND"
+            },
+            "$.reference": {
+              "matchers" : [
+                {
+                  "match": "type"
+                }
+              ]
             },
             "$.payment_provider": {
               "matchers": [
