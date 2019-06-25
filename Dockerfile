@@ -9,7 +9,7 @@ ENV LANG C.UTF-8
 
 RUN echo networkaddress.cache.ttl=$DNS_TTL >> "$JAVA_HOME/conf/security/java.security"
 
-RUN ["apk", "add", "--no-cache", "bash"]
+RUN ["apk", "add", "--no-cache", "bash", "tini"]
 
 ENV PORT 8080
 ENV ADMIN_PORT 8081
@@ -23,4 +23,6 @@ ADD docker-startup.sh /app/docker-startup.sh
 ADD target/*.yaml /app/
 ADD target/pay-*-allinone.jar /app/
 
-CMD bash ./docker-startup.sh
+ENTRYPOINT ["tini", "-e", "143", "--"]
+
+CMD ["bash", "./docker-startup.sh"]
