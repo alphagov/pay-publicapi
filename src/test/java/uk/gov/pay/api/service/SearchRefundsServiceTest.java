@@ -15,7 +15,7 @@ import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.RefundsValidationException;
 import uk.gov.pay.api.model.TokenPaymentType;
-import uk.gov.pay.api.model.search.card.SearchRefunds;
+import uk.gov.pay.api.model.search.PaginationDecorator;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
@@ -51,11 +51,10 @@ public class SearchRefundsServiceTest {
         when(mockConfiguration.getBaseUrl()).thenReturn("http://publicapi.test.localhost/");
 
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
-        SearchRefunds searchRefunds = new SearchRefunds(client,
-                mockConfiguration,
+        searchRefundsService = new SearchRefundsService(client,
                 new ConnectorUriGenerator(mockConfiguration),
-                new PublicApiUriGenerator(mockConfiguration));
-        searchRefundsService = new SearchRefundsService(searchRefunds);
+                new PublicApiUriGenerator(mockConfiguration),
+                new PaginationDecorator(mockConfiguration));
     }
 
     @Test
