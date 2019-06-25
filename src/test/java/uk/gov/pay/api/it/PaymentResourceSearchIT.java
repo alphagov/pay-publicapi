@@ -5,7 +5,6 @@ import com.jayway.jsonassert.JsonAssert;
 import io.restassured.response.ValidatableResponse;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Test;
@@ -472,11 +471,11 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
                 .body("total", is(40))
                 .body("count", is(10))
                 .body("page", is(2))
-                .body("_links.next_page.href", Matchers.is(expectedChargesLocationFor("?query=next&from_date=2016-01-01T23%3A59%3A59Z")))
-                .body("_links.prev_page.href", Matchers.is(expectedChargesLocationFor("?query=prev&from_date=2016-01-01T23%3A59%3A59Z")))
-                .body("_links.first_page.href", Matchers.is(expectedChargesLocationFor("?query=first&from_date=2016-01-01T23%3A59%3A59Z")))
-                .body("_links.last_page.href", Matchers.is(Matchers.is(expectedChargesLocationFor("?query=last&from_date=2016-01-01T23%3A59%3A59Z"))))
-                .body("_links.self.href", Matchers.is(Matchers.is(expectedChargesLocationFor("?query=self&from_date=2016-01-01T23%3A59%3A59Z"))));
+                .body("_links.next_page.href", is(expectedChargesLocationFor("?query=next&from_date=2016-01-01T23%3A59%3A59Z")))
+                .body("_links.prev_page.href", is(expectedChargesLocationFor("?query=prev&from_date=2016-01-01T23%3A59%3A59Z")))
+                .body("_links.first_page.href", is(expectedChargesLocationFor("?query=first&from_date=2016-01-01T23%3A59%3A59Z")))
+                .body("_links.last_page.href", is(expectedChargesLocationFor("?query=last&from_date=2016-01-01T23%3A59%3A59Z")))
+                .body("_links.self.href", is(expectedChargesLocationFor("?query=self&from_date=2016-01-01T23%3A59%3A59Z")));
 
         List<Map<String, Object>> results = response.extract().body().jsonPath().getList("results");
         assertThat(results, matchesField("reference", TEST_REFERENCE));

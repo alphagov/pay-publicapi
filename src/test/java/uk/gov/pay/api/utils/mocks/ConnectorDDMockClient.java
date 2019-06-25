@@ -27,6 +27,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static javax.ws.rs.core.HttpHeaders.ACCEPT;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.HttpHeaders.LOCATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -39,6 +40,10 @@ import static uk.gov.pay.commons.model.ErrorIdentifier.GO_CARDLESS_ACCOUNT_NOT_L
 
 public class ConnectorDDMockClient extends BaseConnectorMockClient {
 
+    private static final String SEARCH_PAYMENTS_PATH = "/v1/api/accounts/%s/payments/view";
+    static String CONNECTOR_MOCK_MANDATES_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/mandates";
+    static String CONNECTOR_MOCK_MANDATE_PATH = CONNECTOR_MOCK_MANDATES_PATH + "/%s";
+    
     public ConnectorDDMockClient(WireMockClassRule wireMockClassRule) {
         super(wireMockClassRule);
     }
@@ -105,7 +110,13 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
     public void respondWithGCAccountNotLinked_whenCreateMandateRequest(String gatewayAccountId, String errorMsg) {
         setupCreateMandate(gatewayAccountId, withStatusAndErrorMessage(FORBIDDEN_403, errorMsg, GO_CARDLESS_ACCOUNT_NOT_LINKED));
     }
-
+    
+    public void respondOk_whenSearchPayments(String gatewayAccountId, String response) {
+        whenSearchPayments(gatewayAccountId, aResponse()
+                .withStatus(OK_200)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                .withBody(response));
+    }
 
     private String buildCreateMandateResponse(String mandateId,
                                               String serviceReference,
@@ -190,5 +201,14 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
         wireMockClassRule.verify(1,
                 postRequestedFor(urlEqualTo(format("/v1/api/accounts/%s/mandates", gatewayAccountId)))
                         .withRequestBody(equalToJson(objectMapper.writeValueAsString(mandateConnectorRequest), true, true)));
+    }
+
+    private void whenSearchPayments(String gatewayAccountId, ResponseDefinitionBuilder response) {
+        wireMockClassRule.stubFor(get(urlPathEqualTo(format(SEARCH_PAYMENTS_PATH, gatewayAccountId)))
+                .withHeader(ACCEPT, matching(APPLICATION_JSON)).willReturn(response));
+    }
+
+    private String mandateLocation(String accountId, String mandateId) {
+        return format(CONNECTOR_MOCK_MANDATE_PATH, accountId, mandateId);
     }
 }

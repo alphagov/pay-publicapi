@@ -1,12 +1,10 @@
 package uk.gov.pay.api.service.directdebit;
 
 import black.door.hate.HalRepresentation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.SearchPaymentsException;
+import uk.gov.pay.api.model.directdebit.mandates.DirectDebitPayment;
 import uk.gov.pay.api.model.search.PaginationDecorator;
-import uk.gov.pay.api.model.search.directdebit.DirectDebitPaymentForSearch;
 import uk.gov.pay.api.model.search.directdebit.DirectDebitSearchResponse;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
 
@@ -26,16 +24,15 @@ import static uk.gov.pay.api.validation.PaymentSearchValidator.validateSearchPar
 
 public class DirectDebitPaymentSearchService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DirectDebitPaymentSearchService.class);
     private static final String PAYMENT_PATH = "v1/directdebit/payments";
 
-    public static final String REFERENCE_KEY = "reference";
-    public static final String STATE_KEY = "state";
-    public static final String MANDATE_ID_KEY = "mandate_id";
-    public static final String FROM_DATE_KEY = "from_date";
-    public static final String TO_DATE_KEY = "to_date";
-    public static final String PAGE = "page";
-    public static final String DISPLAY_SIZE = "display_size";
+    private static final String REFERENCE_KEY = "reference";
+    private static final String STATE_KEY = "state";
+    private static final String MANDATE_ID_KEY = "mandate_id";
+    private static final String FROM_DATE_KEY = "from_date";
+    private static final String TO_DATE_KEY = "to_date";
+    private static final String PAGE = "page";
+    private static final String DISPLAY_SIZE = "display_size";
 
     private final DirectDebitConnectorUriGenerator directDebitConnectorUriGenerator;
     private final Client client;
@@ -93,14 +90,11 @@ public class DirectDebitPaymentSearchService {
             throw new SearchPaymentsException(ex);
         }
 
-        List<DirectDebitPaymentForSearch> paymentFromResponse =
-                response
-                        .getPayments()
+        List<DirectDebitPayment> paymentFromResponse =
+                response.getPayments()
                         .stream()
-                        .map(payment -> DirectDebitPaymentForSearch.valueOf(
-                                payment,
-                                publicApiUriGenerator.getPaymentURI(payment.getPaymentId())
-                        )).collect(Collectors.toList());
+                        .map(payment -> DirectDebitPayment.from(payment, publicApiUriGenerator))
+                        .collect(Collectors.toList());
         HalRepresentation.HalRepresentationBuilder halRepresentation = HalRepresentation.builder()
                 .addProperty("results", paymentFromResponse);
         return Response.ok().entity(paginationDecorator.decoratePagination(halRepresentation, response, PAYMENT_PATH).build().toString()).build();
