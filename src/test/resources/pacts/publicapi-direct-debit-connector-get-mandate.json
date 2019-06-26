@@ -43,28 +43,7 @@
           "payer": {
             "name": "Jack",
             "email": "i.died@titanic.com"
-          },
-          "links": [
-            {
-              "href": "http://localhost:1234/v1/api/accounts/9ddfcc27-acf5-43f9-92d5-52247540714c/mandates/test_mandate_id_xyz",
-              "rel": "self",
-              "method": "GET"
-            },
-            {
-              "href": "http://frontend_direct_debit/secure/token_1234567asdf",
-              "rel": "next_url",
-              "method": "GET"
-            },
-            {
-              "href": "http://frontend_direct_debit/secure/",
-              "rel": "next_url_post",
-              "type": "application/x-www-form-urlencoded",
-              "params": {
-                "chargeTokenId": "token_1234567asdf"
-              },
-              "method": "POST"
-            }
-          ]
+          }
         },
         "matchingRules": {
           "body": {
@@ -122,34 +101,6 @@
               "matchers": [
                 {
                   "match": "type"
-                }
-              ]
-            },
-            "$.links[0].href": {
-              "matchers": [
-                {
-                  "regex": "http:\/\/.*\/v1\/api\/accounts\/9ddfcc27-acf5-43f9-92d5-52247540714c\/mandates\/test_mandate_id_xyz"
-                }
-              ]
-            },
-            "$.links[1].href": {
-              "matchers": [
-                {
-                  "regex": "http:\/\/.*\/secure\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
-                }
-              ]
-            },
-            "$.links[2].href": {
-              "matchers": [
-                {
-                  "regex": "http:\/\/.*\/secure"
-                }
-              ]
-            },
-            "$.links[2].params.chargeTokenId": {
-              "matchers": [
-                {
-                  "regex": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
                 }
               ]
             }
