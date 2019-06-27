@@ -3,12 +3,17 @@ package uk.gov.pay.api.resources.directdebit;
 import com.google.common.collect.ImmutableMap;
 import io.restassured.response.ValidatableResponse;
 import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import uk.gov.pay.api.it.fixtures.PaymentNavigationLinksFixture;
 import uk.gov.pay.api.it.fixtures.TestDirectDebitPaymentSearchResult;
+import uk.gov.pay.api.utils.DateTimeUtils;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +24,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.it.fixtures.PaginatedPaymentSearchResultFixture.aPaginatedPaymentSearchResult;
 import static uk.gov.pay.api.it.fixtures.TestDirectDebitPaymentSearchResult.TestDirectDebitPaymentSearchResultBuilder.aTestDirectDebitPaymentSearchResult;
+import static uk.gov.pay.api.resources.directdebit.DirectDebitPaymentsResourceSearchIT.SearchDirectDebitPaymentsValidationParameters.CreatePaymentRequestValidationParametersBuilder.someParameters;
 
 @RunWith(JUnitParamsRunner.class)
 public class DirectDebitPaymentsResourceSearchIT extends DirectDebitResourceITBase {
@@ -111,6 +117,62 @@ public class DirectDebitPaymentsResourceSearchIT extends DirectDebitResourceITBa
                 .body("results.size()", equalTo(3));
     }
 
+    @Test
+    @Parameters(method = "parametersForValidation")
+    public void validationFailures(SearchDirectDebitPaymentsValidationParameters parameters) {
+        given().port(app.getLocalPort())
+                .accept(JSON)
+                .contentType(JSON)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
+                .get(SEARCH_PATH + parameters.queryString)
+                .then()
+                .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
+                .body("size()", is(3))
+                .body("field", is(parameters.expectedErrorField))
+                .body("code", is(parameters.expectedErrorCode))
+                .body("description", is(parameters.expectedErrorMessage));
+    }
+    
+    private SearchDirectDebitPaymentsValidationParameters[] parametersForValidation() {
+        return new SearchDirectDebitPaymentsValidationParameters[] {
+                someParameters()
+                        .withQueryString("?reference=" + RandomStringUtils.random(256))
+                        .withErrorField("reference")
+                        .withErrorMessage("Invalid attribute value: reference. Must be less than or equal to 255 characters length")
+                        .build(),
+                someParameters()
+                        .withQueryString("?state=fake_state")
+                        .withErrorField("state")
+                        .withErrorMessage("Invalid attribute value: state. Must be one of pending, success, failed, cancelled or expired")
+                        .build(),
+                someParameters()
+                        .withQueryString("?from_date=not_a_date")
+                        .withErrorField("from_date")
+                        .withErrorMessage("Invalid attribute value: from_date. Must be a valid date")
+                        .build(),
+                someParameters()
+                        .withQueryString("?to_date=not_a_date")
+                        .withErrorField("to_date")
+                        .withErrorMessage("Invalid attribute value: to_date. Must be a valid date")
+                        .build(),
+                someParameters()
+                        .withQueryString("?page=0")
+                        .withErrorField("page")
+                        .withErrorMessage("Invalid attribute value: page. Must be greater than or equal to 1")
+                        .build(),
+                someParameters()
+                        .withQueryString("?display_size=0")
+                        .withErrorField("display_size")
+                        .withErrorMessage("Invalid attribute value: display_size. Must be greater than or equal to 1")
+                        .build(),
+                someParameters()
+                        .withQueryString("?display_size=501")
+                        .withErrorField("display_size")
+                        .withErrorMessage("Invalid attribute value: display_size. Must be less than or equal to 500")
+                        .build(),
+        };
+    }
+
     private String expectedPaginationLink(String queryParams) {
         return "http://publicapi.url" + SEARCH_PATH + queryParams;
     }
@@ -123,5 +185,64 @@ public class DirectDebitPaymentsResourceSearchIT extends DirectDebitResourceITBa
                 .queryParams(queryParams)
                 .get(SEARCH_PATH)
                 .then();
+    }
+    
+    static class SearchDirectDebitPaymentsValidationParameters {
+        String queryString;
+        String expectedErrorCode;
+        String expectedErrorField;
+        String expectedErrorMessage;
+
+        private SearchDirectDebitPaymentsValidationParameters(CreatePaymentRequestValidationParametersBuilder builder) {
+            this.queryString = builder.queryString;
+            this.expectedErrorCode = builder.expectedErrorCode;
+            this.expectedErrorField = builder.expectedErrorField;
+            this.expectedErrorMessage = builder.expectedErrorMessage;
+        }
+
+        @Override
+        public String toString() {
+            return "SearchDirectDebitPaymentsValidationParameters{" +
+                    "queryString='" + queryString + '\'' +
+                    ", expectedErrorCode='" + expectedErrorCode + '\'' +
+                    ", expectedErrorField='" + expectedErrorField + '\'' +
+                    ", expectedErrorMessage='" + expectedErrorMessage + '\'' +
+                    '}';
+        }
+
+        static class CreatePaymentRequestValidationParametersBuilder {
+            public String queryString;
+            public String expectedErrorCode = "P0102";
+            public String expectedErrorField;
+            public String expectedErrorMessage;
+
+            static CreatePaymentRequestValidationParametersBuilder someParameters() {
+                return new CreatePaymentRequestValidationParametersBuilder();
+            }
+
+            CreatePaymentRequestValidationParametersBuilder withQueryString(String queryString) {
+                this.queryString = queryString;
+                return this;
+            }
+
+            CreatePaymentRequestValidationParametersBuilder withErrorCode(String errorCode) {
+                this.expectedErrorCode= errorCode;
+                return this;
+            }
+
+            CreatePaymentRequestValidationParametersBuilder withErrorField(String errorField) {
+                this.expectedErrorField= errorField;
+                return this;
+            }
+
+            CreatePaymentRequestValidationParametersBuilder withErrorMessage(String errorMessage) {
+                this.expectedErrorMessage= errorMessage;
+                return this;
+            }
+
+            SearchDirectDebitPaymentsValidationParameters build() {
+                return new SearchDirectDebitPaymentsValidationParameters(this);
+            }
+        }
     }
 }

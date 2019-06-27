@@ -28,6 +28,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
+import static uk.gov.pay.api.model.search.directdebit.DirectDebitSearchPaymentsParams.DirectDebitSearchPaymentsParamsBuilder.aDirectDebitSearchPaymentsParams;
 
 @RunWith(MockitoJUnitRunner.class)
 @Ignore
@@ -38,6 +39,7 @@ public class DirectDebitPaymentSearchServiceTest {
 
     @Mock
     private PublicApiConfig configuration;
+    
     private DirectDebitPaymentSearchService directDebitPaymentSearchService;
 
     @Before
@@ -59,15 +61,14 @@ public class DirectDebitPaymentSearchServiceTest {
     public void doSearchShouldReturnADirectDebitSearchResponseWithThreePayments() {
         Account account = new Account("2po9ycynwq8yxdgg2qwq9e9qpyrtre", TokenPaymentType.DIRECT_DEBIT);
         String mandateId = "jkdjsvd8f78ffkwfek2q";
+        
+        var searchParams =  aDirectDebitSearchPaymentsParams()
+                .withMandateId(mandateId)
+                .build();
         Response response = directDebitPaymentSearchService.doSearch(
                 account,
-                null,
-                null,
-                mandateId,
-                null,
-                null,
-                null,
-                null);
+                searchParams);
+        
         JsonAssert.with(response.getEntity().toString())
                 .assertThat("count", is(3))
                 .assertThat("total", is(3))

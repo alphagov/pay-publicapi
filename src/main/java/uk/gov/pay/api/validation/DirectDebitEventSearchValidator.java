@@ -45,6 +45,6 @@ public class DirectDebitEventSearchValidator {
     }
 
     private static boolean validateDate(String value) {
-        return DateValidator.validate(value);
+        return DateValidator.isValid(value);
     }
 }
