@@ -19,7 +19,7 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/v1/api/accounts/2po9ycynwq8yxdgg2qwq9e9qpyrtre/payments/view",
+        "path": "/v1/api/accounts/2po9ycynwq8yxdgg2qwq9e9qpyrtre/payments",
         "query": {
           "mandate_id": [
             "jkdjsvd8f78ffkwfek2q"
@@ -38,77 +38,59 @@
           "results": [
             {
               "amount": 1234,
-              "payment_id": "askd87sfnsadn489nfd8ddnv",
-              "name": "J. Citizen",
-              "email": "j.citizen@mail.fake",
               "state": {
                 "status": "success",
-                "finished": "true"
+                "finished": "true",
+                "details": "example details"
               },
+              "mandate_id": "jkdjsvd8f78ffkwfek2q",
               "description": "A payment made for crossing the bridge the first time",
               "reference": "MBK1969Qw",
-              "created_date": "2018-06-09T02:48:56Z",
-              "agreement_id": "jkdjsvd8f78ffkwfek2q",
-              "links": [
-                {
-                  "rel": "self",
-                  "method": "GET",
-                  "href": "http://localhost:1234/v1/api/accounts/2po9ycynwq8yxdgg2qwq9e9qpyrtre/charges/askd87sfnsadn489nfd8ddnvdk"
-                }
-              ]
+              "payment_id": "askd87sfnsadn489nfd8ddnv",
+              "payment_provider": "gocardless",
+              "provider_id": "MD1",
+              "created_date": "2018-06-09T02:48:56Z"
             },
             {
               "amount": 1245,
-              "payment_id": "askd87sfnsadn489nfd8ddnvprq",
-              "name": "J. Citizen",
-              "email": "j.citizen@mail.fake",
               "state": {
                 "status": "pending",
-                "finished": "false"
+                "finished": "false",
+                "details": "example details"
               },
+              "mandate_id": "jkdjsvd8f78ffkwfek2q",
               "description": "A payment made for crossing the bridge the second time",
               "reference": "MBK1969Qw",
-              "created_date": "2018-06-11T19:40:56Z",
-              "agreement_id": "jkdjsvd8f78ffkwfek2q",
-              "links": [
-                {
-                  "rel": "self",
-                  "method": "GET",
-                  "href": "http://localhost:1234/v1/api/accounts/2po9ycynwq8yxdgg2qwq9e9qpyrtre/charges/askd87sfnsadn489nfd8ddnvprq"
-                }
-              ]
+              "payment_id": "askd87sf3sadn489nfd8ddnv5rq",
+              "payment_provider": "gocardless",
+              "provider_id": "MD2",
+              "created_date": "2018-06-11T19:40:56Z"
             },
             {
               "amount": 1256,
-              "payment_id": "askd87sfnsadn489nfd8ddt64e",
-              "name": "J. Citizen",
-              "email": "j.citizen@mail.fake",
               "state": {
                 "status": "cancelled",
-                "finished": "true"
+                "finished": "true",
+                "details": "example details"
               },
+              "mandate_id": "jkdjsvd8f78ffkwfek2q",
               "description": "A payment made for crossing the bridge the third time",
               "reference": "MBK1969Qw",
-              "created_date": "2018-06-19T10:40:56Z",
-              "agreement_id": "jkdjsvd8f78ffkwfek2q",
-              "links": [
-                {
-                  "rel": "self",
-                  "method": "GET",
-                  "href": "http://localhost:1234/v1/api/accounts/2po9ycynwq8yxdgg2qwq9e9qpyrtre/charges/askd87sfnsadn489nfd8ddt64e"
-                }
-              ]
+              "payment_id": "bsbsbsbsbsbsbsbs",
+              "payment_provider": "gocardless",
+              "provider_id": "MD3",
+              "created_date": "2018-06-19T10:40:56Z"
             }
           ],
           "_links": {
             "self": {
-              "href": "http://localhost:1234/v1/api/accounts/2po9ycynwq8yxdgg2qwq9e9qpyrtre/payment/view?agreement_id=jkdjsvd8f78ffkwfek2q&page=1&display_size=500"
+              "href": "http://localhost:1234/v1/api/accounts/2po9ycynwq8yxdgg2qwq9e9qpyrtre/payment?mandate_id=jkdjsvd8f78ffkwfek2q&page=1&display_size=500"
             },
             "last_page": {
-              "href": "http://localhost:1234/v1/api/accounts/2po9ycynwq8yxdgg2qwq9e9qpyrtre/payment/view?agreement_id=jkdjsvd8f78ffkwfek2q&page=1&display_size=500"
+              "href": "http://localhost:1234/v1/api/accounts/2po9ycynwq8yxdgg2qwq9e9qpyrtre/payment?mandate_id=jkdjsvd8f78ffkwfek2q&page=1&display_size=500"
             },
             "first_page": {
-              "href": "http://localhost:1234/v1/api/accounts/2po9ycynwq8yxdgg2qwq9e9qpyrtre/payment/view?agreement_id=jkdjsvd8f78ffkwfek2q&page=1&display_size=500"
+              "href": "http://localhost:1234/v1/api/accounts/2po9ycynwq8yxdgg2qwq9e9qpyrtre/payment?mandate_id=jkdjsvd8f78ffkwfek2q&page=1&display_size=500"
             }
           }
         },
@@ -117,7 +99,7 @@
             "Location": {
               "matchers": [
                 {
-                  "regex": "http:\/\/.*\/v1\/api\/accounts\/2po9ycynwq8yxdgg2qwq9e9qpyrtre\/payments\/view*"
+                  "regex": "http:\/\/.*\/v1\/api\/accounts\/2po9ycynwq8yxdgg2qwq9e9qpyrtre\/payments*"
                 }
               ]
             }
@@ -144,20 +126,6 @@
                 }
               ]
             },
-            "$.results[*].name": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ]
-            },
-            "$.results[*].email": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ]
-            },
             "$.results[*].amount": {
               "matchers": [
                 {
@@ -172,7 +140,21 @@
                 }
               ]
             },
+            "$.results[*].provider_id": {
+              "matchers": [
+                {
+                  "regex": "[a-z0-9]*"
+                }
+              ]
+            },
             "$.results[*].state.status": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.results[*].state.details": {
               "matchers": [
                 {
                   "match": "type"
@@ -189,6 +171,13 @@
                 {
                   "match": "include",
                   "value": "false"
+                }
+              ]
+            },
+            "$.results[*].payment_provider": {
+              "matchers": [
+                {
+                  "match": "type"
                 }
               ]
             },
@@ -214,28 +203,7 @@
                 }
               ]
             },
-            "$.results[*].agreement_id": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ]
-            },
-            "$.results[*].links[0].href": {
-              "matchers": [
-                {
-                  "regex": "http:\/\/.*\/v1\/api\/accounts\/2po9ycynwq8yxdgg2qwq9e9qpyrtre\/charges\/[a-z0-9]*"
-                }
-              ]
-            },
-            "$.results[*].links[0].rel": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ]
-            },
-            "$.results[*].links[0].method": {
+            "$.results[*].mandate_id": {
               "matchers": [
                 {
                   "match": "type"

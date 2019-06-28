@@ -58,7 +58,10 @@ public class CardPayment extends Payment {
 
     @JsonProperty("return_url")
     protected String returnUrl;
+    
     protected String email;
+
+    protected PaymentState state;
 
     //Used by Swagger to document the right model in the PaymentsResource
     @JsonIgnore
@@ -70,7 +73,8 @@ public class CardPayment extends Payment {
                        RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
                        SupportedLanguage language, boolean delayedCapture, Long corporateCardSurcharge, Long totalAmount,
                        String providerId, ExternalMetadata metadata, Long fee, Long netAmount) {
-        super(chargeId, amount, state, description, reference, paymentProvider, createdDate);
+        super(chargeId, amount, description, reference, paymentProvider, createdDate);
+        this.state = state;
         this.refundSummary = refundSummary;
         this.settlementSummary = settlementSummary;
         this.cardDetails = cardDetails;
@@ -161,6 +165,11 @@ public class CardPayment extends Payment {
     @ApiModelProperty(example = "your email")
     public Optional<String> getEmail() {
         return Optional.ofNullable(email);
+    }
+
+    @ApiModelProperty(dataType = "uk.gov.pay.api.model.PaymentState")
+    public PaymentState getState() {
+        return state;
     }
 
     @Override
