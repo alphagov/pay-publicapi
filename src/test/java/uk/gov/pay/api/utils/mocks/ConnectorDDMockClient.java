@@ -6,7 +6,7 @@ import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
-import uk.gov.pay.api.model.PaymentState;
+import uk.gov.pay.api.model.DirectDebitPaymentState;
 import uk.gov.pay.api.model.directdebit.DirectDebitConnectorPaymentResponse;
 import uk.gov.pay.api.model.directdebit.mandates.MandateConnectorRequest;
 import uk.gov.pay.api.model.directdebit.mandates.MandateState;
@@ -40,7 +40,7 @@ import static uk.gov.pay.commons.model.ErrorIdentifier.GO_CARDLESS_ACCOUNT_NOT_L
 
 public class ConnectorDDMockClient extends BaseConnectorMockClient {
 
-    private static final String SEARCH_PAYMENTS_PATH = "/v1/api/accounts/%s/payments/view";
+    private static final String SEARCH_PAYMENTS_PATH = "/v1/api/accounts/%s/payments";
     static String CONNECTOR_MOCK_MANDATES_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/mandates";
     static String CONNECTOR_MOCK_MANDATE_PATH = CONNECTOR_MOCK_MANDATES_PATH + "/%s";
     
@@ -48,16 +48,16 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
         super(wireMockClassRule);
     }
 
-    public void respondWithChargeFound(
-            long amount, String gatewayAccountId, String chargeId, PaymentState state, String returnUrl,
-            String description, String reference, String email, String paymentProvider, String createdDate,
+    public void respondWithChargeFound( //TODO use builders
+            String mandateId, long amount, String gatewayAccountId, String paymentId, DirectDebitPaymentState state, String returnUrl,
+            String description, String reference, String paymentProvider, String createdDate,
             String chargeTokenId) {
-        String chargeResponseBody = buildPaymentRequestResponse(amount, chargeId, state, returnUrl,
-                description, reference, email, paymentProvider, createdDate,
-                validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"),
-                validGetLink(nextUrl(chargeId), "next_url"),
+        String chargeResponseBody = buildPaymentRequestResponse(mandateId, amount, paymentId, state, returnUrl,
+                description, reference, paymentProvider, createdDate,
+                validGetLink(chargeLocation(gatewayAccountId, paymentId), "self"),
+                validGetLink(nextUrl(paymentId), "next_url"),
                 validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", Map.of("chargeTokenId", chargeTokenId)));
-        whenGetCharge(gatewayAccountId, chargeId, aResponse()
+        whenGetCharge(gatewayAccountId, paymentId, aResponse()
                 .withStatus(OK_200)
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                 .withBody(chargeResponseBody));
@@ -155,14 +155,14 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                 "links", links));
     }
 
-    private String buildPaymentRequestResponse(long amount, String chargeId, PaymentState state, String returnUrl, String description,
-                                               String reference, String email, String paymentProvider,
+    private String buildPaymentRequestResponse(String mandateId, long amount, String chargeId, DirectDebitPaymentState state, String returnUrl, String description,
+                                               String reference, String paymentProvider,
                                                String createdDate, ImmutableMap<?, ?>... links) {
         JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
-                .add("charge_id", chargeId)
+                .add("payment_id", chargeId)
+                .add("mandate_id", mandateId)
                 .add("amount", amount)
                 .add("reference", reference)
-                .add("email", email)
                 .add("description", description)
                 .add("state", state)
                 .add("return_url", returnUrl)

@@ -11,9 +11,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import uk.gov.pay.api.it.fixtures.PaymentNavigationLinksFixture;
 import uk.gov.pay.api.it.fixtures.TestDirectDebitPaymentSearchResult;
-import uk.gov.pay.api.utils.DateTimeUtils;
+import uk.gov.pay.api.model.DirectDebitPaymentState;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -24,13 +23,46 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.it.fixtures.PaginatedPaymentSearchResultFixture.aPaginatedPaymentSearchResult;
 import static uk.gov.pay.api.it.fixtures.TestDirectDebitPaymentSearchResult.TestDirectDebitPaymentSearchResultBuilder.aTestDirectDebitPaymentSearchResult;
-import static uk.gov.pay.api.resources.directdebit.DirectDebitPaymentsResourceSearchIT.SearchDirectDebitPaymentsValidationParameters.CreatePaymentRequestValidationParametersBuilder.someParameters;
+import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
+import static uk.gov.pay.api.resources.directdebit.DirectDebitPaymentsResourceGetIT.SearchDirectDebitPaymentsValidationParameters.CreatePaymentRequestValidationParametersBuilder.someParameters;
 
 @RunWith(JUnitParamsRunner.class)
-public class DirectDebitPaymentsResourceSearchIT extends DirectDebitResourceITBase {
+public class DirectDebitPaymentsResourceGetIT extends DirectDebitResourceITBase {
 
-    protected static final String SEARCH_PATH = "/v1/directdebit/payments";
+    private static final String GET_PATH = "/v1/directdebit/payments";
 
+    @Test
+    public void getPayment_ReturnsDirectDebitPayment() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
+
+        connectorDDMockClient.respondWithChargeFound("mandate2000", 1000, GATEWAY_ACCOUNT_ID, "ch_ab2341da231434l", new DirectDebitPaymentState("created", false, "example details"), "http://example.com",
+                "a description", "a reference", "gocardless", "2018-06-11T19:40:56Z", "token_1234567asdf");
+
+        given().port(app.getLocalPort())
+                .accept(JSON)
+                .contentType(JSON)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
+                .get("/v1/directdebit/payments/ch_ab2341da231434l")
+                .then()
+                .statusCode(200)
+                .contentType(JSON)
+                .body("payment_id", is("ch_ab2341da231434l"))
+                .body("reference", is("a reference"))
+                .body("description", is("a description"))
+                .body("amount", is(1000))
+                .body("state.status", is("created"))
+                .body("state.finished", is(false))
+                .body("state.details", is("example details"))
+                .body("payment_provider", is("gocardless"))
+                .body("created_date", is("2018-06-11T19:40:56Z"))
+                .body("_links.self.href", is(paymentLocationFor("ch_ab2341da231434l")))
+                .body("_links.self.method", is("GET"))
+                .body("_links.events.href", is(paymentEventsLocationFor("ch_ab2341da231434l")))
+                .body("_links.events.method", is("GET"))
+                .body("_links.mandate.href", is(mandateLocationFor("mandate2000")))
+                .body("_links.mandate.method", is("GET"));
+    }
+    
     @Test
     public void searchPayments_success() {
         PaymentNavigationLinksFixture links = new PaymentNavigationLinksFixture()
@@ -124,7 +156,7 @@ public class DirectDebitPaymentsResourceSearchIT extends DirectDebitResourceITBa
                 .accept(JSON)
                 .contentType(JSON)
                 .header(AUTHORIZATION, "Bearer " + API_KEY)
-                .get(SEARCH_PATH + parameters.queryString)
+                .get(GET_PATH + parameters.queryString)
                 .then()
                 .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
                 .body("size()", is(3))
@@ -174,7 +206,7 @@ public class DirectDebitPaymentsResourceSearchIT extends DirectDebitResourceITBa
     }
 
     private String expectedPaginationLink(String queryParams) {
-        return "http://publicapi.url" + SEARCH_PATH + queryParams;
+        return "http://publicapi.url" + GET_PATH + queryParams;
     }
 
     private ValidatableResponse searchPayments(Map<String, String> queryParams) {
@@ -183,7 +215,7 @@ public class DirectDebitPaymentsResourceSearchIT extends DirectDebitResourceITBa
                 .contentType(JSON)
                 .header(AUTHORIZATION, "Bearer " + API_KEY)
                 .queryParams(queryParams)
-                .get(SEARCH_PATH)
+                .get(GET_PATH)
                 .then();
     }
     
