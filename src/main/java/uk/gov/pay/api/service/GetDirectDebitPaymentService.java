@@ -7,6 +7,7 @@ import uk.gov.pay.api.model.directdebit.mandates.DirectDebitPayment;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import static org.apache.http.HttpStatus.SC_OK;
@@ -28,6 +29,7 @@ public class GetDirectDebitPaymentService {
         Response connectorResponse = client
                 .target(connectorUriGenerator.chargeURI(account, paymentId))
                 .request()
+                .accept(MediaType.APPLICATION_JSON)
                 .get();
         if (connectorResponse.getStatus() != SC_OK) {
             throw new GetChargeException(connectorResponse);
