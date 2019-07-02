@@ -143,7 +143,7 @@
             "$.results[*].provider_id": {
               "matchers": [
                 {
-                  "regex": "[a-z0-9]*"
+                  "match": "type"
                 }
               ]
             },
@@ -213,21 +213,21 @@
             "$._links.self": {
               "matchers": [
                 {
-                  "regex": "http:\/\/.*\/v1\/api\/accounts\/2po9ycynwq8yxdgg2qwq9e9qpyrtre\/payments\/view.*"
+                  "regex": "http:\/\/.*\/v1\/api\/accounts\/2po9ycynwq8yxdgg2qwq9e9qpyrtre\/payments\\?mandate_id=jkdjsvd8f78ffkwfek2q&page=1&display_size=500"
                 }
               ]
             },
             "$._links.first_page": {
               "matchers": [
                 {
-                  "regex": "http:\/\/.*\/v1\/api\/accounts\/2po9ycynwq8yxdgg2qwq9e9qpyrtre\/payments\/view.*"
+                  "regex": "http:\/\/.*\/v1\/api\/accounts\/2po9ycynwq8yxdgg2qwq9e9qpyrtre\/payments\\?mandate_id=jkdjsvd8f78ffkwfek2q&page=1&display_size=500"
                 }
               ]
             },
             "$._links.last_page": {
               "matchers": [
                 {
-                  "regex": "http:\/\/.*\/v1\/api\/accounts\/2po9ycynwq8yxdgg2qwq9e9qpyrtre\/payments\/view.*"
+                  "regex": "http:\/\/.*\/v1\/api\/accounts\/2po9ycynwq8yxdgg2qwq9e9qpyrtre\/payments\\?mandate_id=jkdjsvd8f78ffkwfek2q&page=1&display_size=500"
                 }
               ]
             }
