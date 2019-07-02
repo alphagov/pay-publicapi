@@ -17,7 +17,7 @@
         <jackson.version>2.9.9</jackson.version>
         <logback.version>1.2.3</logback.version>
         <docker-client.version>8.16.0</docker-client.version>
-        <pay-java-commons.version>1.0.20190626120127</pay-java-commons.version>
+        <pay-java-commons.version>1.0.20190702102623</pay-java-commons.version>
         <pact.version>3.6.10</pact.version>
         <PACT_BROKER_URL/>
         <PACT_BROKER_USERNAME/>
