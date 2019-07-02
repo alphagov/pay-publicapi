@@ -39,6 +39,18 @@ public class DirectDebitPayment extends Payment {
         super(chargeId, amount, description, reference, paymentProvider, createdDate);
     }
 
+    public String getMandateId() {
+        return mandateId;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public DirectDebitPaymentState getState() {
+        return state;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
