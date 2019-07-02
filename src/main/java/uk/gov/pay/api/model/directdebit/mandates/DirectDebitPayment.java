@@ -3,6 +3,7 @@ package uk.gov.pay.api.model.directdebit.mandates;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
+import uk.gov.pay.api.model.DirectDebitPaymentState;
 import uk.gov.pay.api.model.Payment;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.directdebit.DirectDebitConnectorPaymentResponse;
@@ -29,10 +30,25 @@ public class DirectDebitPayment extends Payment {
     @JsonProperty("_links")
     private DirectDebitPaymentLinks links;
 
+    @JsonProperty("state")
+    private DirectDebitPaymentState state;
+
     @Deprecated
     public DirectDebitPayment(String chargeId, long amount, PaymentState state, String description,
                               String reference, String paymentProvider, String createdDate) {
-        super(chargeId, amount, state, description, reference, paymentProvider, createdDate);
+        super(chargeId, amount, description, reference, paymentProvider, createdDate);
+    }
+
+    public String getMandateId() {
+        return mandateId;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public DirectDebitPaymentState getState() {
+        return state;
     }
 
     @Override
@@ -100,7 +116,7 @@ public class DirectDebitPayment extends Payment {
         protected String paymentId;
         protected String paymentProvider;
         protected long amount;
-        protected PaymentState state;
+        protected DirectDebitPaymentState state;
         protected String description;
         protected String reference;
         protected String createdDate;
@@ -132,7 +148,7 @@ public class DirectDebitPayment extends Payment {
             return this;
         }
 
-        public DirectDebitPaymentBuilder withState(PaymentState state) {
+        public DirectDebitPaymentBuilder withState(DirectDebitPaymentState state) {
             this.state = state;
             return this;
         }

@@ -38,7 +38,7 @@ public class ConnectorUriGenerator {
     }
 
     String chargeURI(Account account, String chargeId) {
-        String path = format("/v1/api/accounts/%s/charges/%s", account.getAccountId(), chargeId);
+        String path = format("/v1/api/accounts/%s/charges/%s", account.getAccountId(), chargeId); //TODO rename to /payments instead /charges
         return buildConnectorUri(account, path);
     }
 

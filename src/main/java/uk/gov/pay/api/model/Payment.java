@@ -20,7 +20,6 @@ public abstract class Payment {
     protected String paymentProvider;
 
     protected long amount;
-    protected PaymentState state;
     protected String description;
     protected String reference;
 
@@ -32,11 +31,14 @@ public abstract class Payment {
         //To enable Jackson serialisation we need a default constructor
     }
 
-    public Payment(String chargeId, long amount, PaymentState state, String description,
-                   String reference, String paymentProvider, String createdDate) {
+    public Payment(String chargeId, 
+                   long amount, 
+                   String description, 
+                   String reference, 
+                   String paymentProvider, 
+                   String createdDate) {
         this.paymentId = chargeId;
         this.amount = amount;
-        this.state = state;
         this.description = description;
         this.reference = reference;
         this.paymentProvider = paymentProvider;
@@ -56,11 +58,6 @@ public abstract class Payment {
     @ApiModelProperty(example = "1200")
     public long getAmount() {
         return amount;
-    }
-
-    @ApiModelProperty(dataType = "uk.gov.pay.api.model.PaymentState")
-    public PaymentState getState() {
-        return state;
     }
 
     @ApiModelProperty(example = "Your Service Description")

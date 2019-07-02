@@ -3,42 +3,38 @@ package uk.gov.pay.api.model.directdebit;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.pay.api.model.DirectDebitPaymentState;
-import uk.gov.pay.api.model.PaymentState;
 
 import java.util.Objects;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DirectDebitConnectorPaymentResponse {
-    @JsonProperty("payment_id")
-    private String paymentExternalId;
-
     @JsonProperty
     private Long amount;
-
-    @JsonProperty("payment_provider")
-    private String paymentProvider;
-
+    
+    @JsonProperty
+    private DirectDebitPaymentState state;
+    
+    @JsonProperty("mandate_id")
+    private String mandateId;
+    
     @JsonProperty
     private String description;
 
     @JsonProperty
     private String reference;
+    
+    @JsonProperty("payment_id")
+    private String paymentExternalId;
+
+    @JsonProperty("payment_provider")
+    private String paymentProvider;
+
 
     @JsonProperty("created_date")
     private String createdDate;
 
-    @JsonProperty("mandate_id")
-    private String mandateId;
-
     @JsonProperty("provider_id")
     private String providerId;
-
-    @JsonProperty
-    private DirectDebitPaymentState state;
-
-    public DirectDebitConnectorPaymentResponse() {
-        // for Jackson
-    }
 
     public String getPaymentProvider() {
         return paymentProvider;
@@ -72,7 +68,7 @@ public class DirectDebitConnectorPaymentResponse {
         return providerId;
     }
 
-    public PaymentState getState() {
+    public DirectDebitPaymentState getState() {
         return state;
     }
 
@@ -108,6 +104,7 @@ public class DirectDebitConnectorPaymentResponse {
                 ", state=" + state +
                 ", provider_id=" + providerId +
                 ", mandate_id=" + mandateId +
+                ", description=" + description+
                 '}';
     }
 

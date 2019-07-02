@@ -31,8 +31,6 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
-import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
-import static uk.gov.pay.api.utils.Urls.directDebitFrontendSecureUrl;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
@@ -219,37 +217,7 @@ public class GetPaymentIT extends PaymentResourceITestBase {
                 .body("containsKey('corporate_card_surcharge')", is(false))
                 .body("containsKey('total_amount')", is(false));
     }
-
-    @Test
-    public void getPayment_ReturnsDirectDebitPayment() {
-        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
-
-        connectorDDMockClient.respondWithChargeFound(AMOUNT, GATEWAY_ACCOUNT_ID, CHARGE_ID, CREATED, RETURN_URL,
-                DESCRIPTION, REFERENCE, EMAIL, PAYMENT_PROVIDER, CREATED_DATE, CHARGE_TOKEN_ID);
-
-        getPaymentResponse(API_KEY, CHARGE_ID)
-                .statusCode(200)
-                .contentType(JSON)
-                .body("payment_id", is(CHARGE_ID))
-                .body("reference", is(REFERENCE))
-                .body("description", is(DESCRIPTION))
-                .body("amount", is(AMOUNT))
-                .body("state.status", is(CREATED.getStatus()))
-                .body("payment_provider", is(PAYMENT_PROVIDER))
-                .body("created_date", is(CREATED_DATE))
-                .body("_links.self.href", is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)))
-                .body("_links.self.method", is("GET"))
-                .body("_links.next_url.href", is(directDebitFrontendSecureUrl() + CHARGE_ID))
-                .body("_links.next_url.method", is("GET"))
-                .body("_links.next_url_post.href", is(directDebitFrontendSecureUrl()))
-                .body("_links.next_url_post.method", is("POST"))
-                .body("_links.next_url_post.type", is("application/x-www-form-urlencoded"))
-                .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
-                .body("_links.cancel", is(nullValue()))
-                .body("_links.events", is(nullValue()))
-                .body("_links.refunds", is(nullValue()));
-    }
-
+    
     @Test
     public void getPayment_DoesNotReturnCardDigits_IfNotPresentInCardDetails() {
         CardDetails cardDetails = new CardDetails(null, null, "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL);

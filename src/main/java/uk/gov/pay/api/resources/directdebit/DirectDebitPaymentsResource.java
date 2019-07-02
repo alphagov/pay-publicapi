@@ -112,10 +112,7 @@ public class DirectDebitPaymentsResource {
                                    @Context UriInfo uriInfo) {
 
         LOGGER.info("Payments search request - {}", searchPaymentsParams);
-
-        return directDebitPaymentSearchService.doSearch(
-                account,
-                searchPaymentsParams);
+        return directDebitPaymentSearchService.doSearch(account, searchPaymentsParams);
     }
 
     @GET

@@ -41,7 +41,7 @@
           "payment_id": "f6q0m125b42cjcndf2joslahen",
           "payment_provider": "gocardless",
           "provider_id": "AAAA1111",
-          "created_date": "1995-10-27T10:21:01.499Z",
+          "created_date": "1995-10-27T10:21:01.499Z"
         },
         "matchingRules": {
           "body": {

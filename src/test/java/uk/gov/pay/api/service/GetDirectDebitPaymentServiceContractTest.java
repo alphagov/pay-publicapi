@@ -11,6 +11,7 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.model.DirectDebitPaymentState;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.directdebit.mandates.DirectDebitPayment;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
@@ -19,7 +20,6 @@ import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
-import static uk.gov.pay.api.model.DirectDebitPaymentState.DirectDebitPaymentStateBuilder.aDirectDebitPaymentState;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GetDirectDebitPaymentServiceContractTest {
@@ -55,14 +55,11 @@ public class GetDirectDebitPaymentServiceContractTest {
         assertThat(payment.getCreatedDate(), is("1995-10-27T10:21:01.499Z"));
         assertThat(payment.getDescription(), is("a description"));
         assertThat(payment.getPaymentId(), is("f6q0m125b42cjcndf2joslahen"));
+        assertThat(payment.getMandateId(), is("aaaa1111"));
         assertThat(payment.getPaymentProvider(), is("gocardless"));
         assertThat(payment.getReference(), is("ABCDE"));
-        assertThat(payment.getState(), is(aDirectDebitPaymentState()
-                .withFinished(false)
-                .withStatus("pending")
-                //TODO: Add after events work completed
-                //.withDetails("cause_details_from_gocardless")
-                .build()));
+        assertThat(payment.getProviderId(), is("AAAA1111"));
+        assertThat(payment.getState(), is(new DirectDebitPaymentState("pending", false, null)));
     }
 
 }
