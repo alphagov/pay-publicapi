@@ -80,6 +80,11 @@ public class ConnectorResponseErrorException extends RuntimeException {
         private String reason;
 
         private Object message;
+        
+        // Needed for Jackson deserialization from Responses
+        public ConnectorErrorResponse() {
+            
+        }
 
         public ConnectorErrorResponse(ErrorIdentifier errorIdentifier, String reason, Object message) {
             this.errorIdentifier = errorIdentifier;
