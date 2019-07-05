@@ -4,10 +4,10 @@ import org.junit.Test;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
 import uk.gov.pay.api.model.directdebit.mandates.MandateState;
 import uk.gov.pay.api.model.directdebit.mandates.Payer;
-import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorDDMockClient;
 import uk.gov.pay.api.utils.mocks.DDConnectorResponseToGetMandateParams;
+import uk.gov.pay.commons.validation.DateTimeUtils;
 
 import java.time.ZonedDateTime;
 

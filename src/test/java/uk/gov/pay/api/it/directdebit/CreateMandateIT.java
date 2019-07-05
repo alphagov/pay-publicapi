@@ -11,7 +11,7 @@ import org.junit.runner.RunWith;
 import uk.gov.pay.api.model.directdebit.mandates.MandateConnectorRequest;
 import uk.gov.pay.api.model.directdebit.mandates.MandateState;
 import uk.gov.pay.api.resources.directdebit.DirectDebitResourceITBase;
-import uk.gov.pay.api.utils.DateTimeUtils;
+import uk.gov.pay.commons.validation.DateTimeUtils;
 
 import javax.ws.rs.core.HttpHeaders;
 import java.time.ZonedDateTime;
@@ -34,7 +34,6 @@ import static uk.gov.pay.commons.testing.matchers.HamcrestMatchers.optionalMatch
 
 @RunWith(JUnitParamsRunner.class)
 public class CreateMandateIT extends DirectDebitResourceITBase {
-    
 
     private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
     private static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(TIMESTAMP);
