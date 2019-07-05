@@ -76,10 +76,16 @@ public class ConnectorResponseErrorException extends RuntimeException {
 
         @JsonProperty("error_identifier")
         private ErrorIdentifier errorIdentifier;
-        
+
         private String reason;
-        
+
         private Object message;
+
+        public ConnectorErrorResponse(ErrorIdentifier errorIdentifier, String reason, Object message) {
+            this.errorIdentifier = errorIdentifier;
+            this.reason = reason;
+            this.message = message;
+        }
 
         public ErrorIdentifier getErrorIdentifier() {
             return errorIdentifier;
