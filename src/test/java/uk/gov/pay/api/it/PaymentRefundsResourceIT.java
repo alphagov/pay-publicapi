@@ -8,10 +8,10 @@ import uk.gov.pay.api.it.fixtures.PaymentRefundJsonFixture;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.RefundSummary;
-import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 import uk.gov.pay.commons.model.SupportedLanguage;
+import uk.gov.pay.commons.validation.DateTimeUtils;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;

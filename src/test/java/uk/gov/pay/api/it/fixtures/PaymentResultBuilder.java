@@ -1,7 +1,7 @@
 package uk.gov.pay.api.it.fixtures;
 
-import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.commons.model.SupportedLanguage;
+import uk.gov.pay.commons.validation.DateTimeUtils;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;

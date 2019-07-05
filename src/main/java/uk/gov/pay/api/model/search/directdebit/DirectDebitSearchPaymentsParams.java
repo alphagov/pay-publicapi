@@ -1,7 +1,7 @@
 package uk.gov.pay.api.model.search.directdebit;
 
 import io.swagger.annotations.ApiParam;
-import uk.gov.pay.api.validation.ValidDate;
+import uk.gov.pay.commons.validation.ValidDate;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;

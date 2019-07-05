@@ -1,9 +1,10 @@
 package uk.gov.pay.api.validation;
 
+import uk.gov.pay.commons.validation.DateValidator;
+
 import java.util.List;
 
 import static org.eclipse.jetty.util.StringUtil.isNotBlank;
-
 
 class SearchValidator {
 

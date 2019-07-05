@@ -18,9 +18,9 @@ import uk.gov.pay.api.it.rule.RedisDockerRule;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
-import uk.gov.pay.api.utils.DateTimeUtils;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
+import uk.gov.pay.commons.validation.DateTimeUtils;
 
 import java.time.ZonedDateTime;
 import java.util.List;
