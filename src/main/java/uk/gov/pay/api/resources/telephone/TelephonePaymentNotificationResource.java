@@ -1,4 +1,4 @@
-package uk.gov.pay.api.resources;
+package uk.gov.pay.api.resources.telephone;
 
 import com.codahale.metrics.annotation.Timed;
 import io.swagger.annotations.Api;
@@ -14,9 +14,9 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/")
 @Api(value = "/", description = "Public Api Endpoints to receive Telephone Payments")
-public class PaymentNotificationResource {
+public class TelephonePaymentNotificationResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(PaymentNotificationResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(TelephonePaymentNotificationResource.class);
     
     @POST
     @Timed
