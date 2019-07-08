@@ -1,10 +1,9 @@
-package uk.gov.pay.api.resources;
+package uk.gov.pay.api.resources.telephone;
 
 
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.ClassRule;
 import org.junit.Test;
-import uk.gov.pay.api.resources.telephone.TelephonePaymentNotificationResource;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
@@ -21,7 +20,7 @@ public class TelephonePaymentNotificationResourceTest {
     
     
     @Test
-    public void returnsOK() {
+    public void returnsHTTPStatusOf200() {
         Response response = telephonePaymentNotificationResource.target("/v1/payment_notification").request().post(Entity.json(null));
         assertThat(response.getStatus(), is(200));
     }

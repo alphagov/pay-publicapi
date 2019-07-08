@@ -13,6 +13,12 @@ public class Supplemental {
     public Supplemental() {
     }
 
+    public Supplemental(String errorCode, String errorMessage) {
+        // For testing deserialization
+        this.errorCode = errorCode;
+        this.errorMessage = errorMessage;
+    }
+
     public String getErrorCode() {
         return errorCode;
     }

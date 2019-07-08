@@ -2,7 +2,7 @@ package uk.gov.pay.api.model.telephone;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class TelephonePaymentNotification {
+public class CreateTelephonePayment {
     
     @JsonProperty("amount")
     private long amount;
@@ -18,6 +18,9 @@ public class TelephonePaymentNotification {
 
     @JsonProperty("authorised_date")
     private String authorisedDate;
+    
+    @JsonProperty("processor_id")
+    private String processorId;
 
     @JsonProperty("provider_id")
     private String providerId;
@@ -49,8 +52,28 @@ public class TelephonePaymentNotification {
     @JsonProperty("telephone_number")
     private String telephoneNumber;
 
-    public TelephonePaymentNotification() {
+    public CreateTelephonePayment() {
         // To enable Jackson serialisation we need a default constructor
+    }
+
+    public CreateTelephonePayment(long amount, String reference, String description, String createdDate, String authorisedDate, String processorId, String providerId, String authCode, PaymentOutcome paymentOutcome, String cardType, String nameOnCard, String emailAddress, String cardExpiry, String lastFourDigits, String firstSixDigits, String telephoneNumber) {
+        // For testing deserialization
+        this.amount = amount;
+        this.reference = reference;
+        this.description = description;
+        this.createdDate = createdDate;
+        this.authorisedDate = authorisedDate;
+        this.processorId = processorId;
+        this.providerId = providerId;
+        this.authCode = authCode;
+        this.paymentOutcome = paymentOutcome;
+        this.cardType = cardType;
+        this.nameOnCard = nameOnCard;
+        this.emailAddress = emailAddress;
+        this.cardExpiry = cardExpiry;
+        this.lastFourDigits = lastFourDigits;
+        this.firstSixDigits = firstSixDigits;
+        this.telephoneNumber = telephoneNumber;
     }
 
     public long getAmount() {

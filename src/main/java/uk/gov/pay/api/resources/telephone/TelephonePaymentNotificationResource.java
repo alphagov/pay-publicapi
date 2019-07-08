@@ -4,6 +4,7 @@ import com.codahale.metrics.annotation.Timed;
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.api.model.telephone.CreateTelephonePayment;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -22,7 +23,7 @@ public class TelephonePaymentNotificationResource {
     @Timed
     @Path("/v1/payment_notification")
     @Consumes(APPLICATION_JSON)
-    public Response newPayment() {
+    public Response newPayment(CreateTelephonePayment createTelephonePayment) {
         return Response.status(200).build();
     }
 }

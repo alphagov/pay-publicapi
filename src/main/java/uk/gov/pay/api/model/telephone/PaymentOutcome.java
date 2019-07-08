@@ -14,7 +14,13 @@ public class PaymentOutcome {
     private Supplemental supplemental;
 
     public PaymentOutcome() {
-        //
+    }
+
+    public PaymentOutcome(String status, String code, Supplemental supplemental) {
+        // For testing deserialization
+        this.status = status;
+        this.code = code;
+        this.supplemental = supplemental;
     }
 
     public String getStatus() {
