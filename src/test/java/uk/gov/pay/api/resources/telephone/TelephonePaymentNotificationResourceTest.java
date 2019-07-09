@@ -20,9 +20,9 @@ public class TelephonePaymentNotificationResourceTest {
     
     
     @Test
-    public void returnsHTTPStatusOf200() {
+    public void returnsHTTPStatusOf201() {
         Response response = telephonePaymentNotificationResource.target("/v1/payment_notification").request().post(Entity.json(null));
-        assertThat(response.getStatus(), is(200));
+        assertThat(response.getStatus(), is(201));
     }
     
     

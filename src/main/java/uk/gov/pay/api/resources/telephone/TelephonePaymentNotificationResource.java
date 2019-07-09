@@ -24,6 +24,6 @@ public class TelephonePaymentNotificationResource {
     @Path("/v1/payment_notification")
     @Consumes(APPLICATION_JSON)
     public Response newPayment(CreateTelephonePayment createTelephonePayment) {
-        return Response.status(200).build();
+        return Response.status(201).build();
     }
 }

@@ -2,15 +2,31 @@ package uk.gov.pay.api.model.telephone;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 public class CreateTelephonePayment {
+
+    public static final int REFERENCE_MAX_LENGTH = 255;
+    public static final int AMOUNT_MAX_VALUE = 10000000;
+    public static final int AMOUNT_MIN_VALUE = 0;
+    public static final int DESCRIPTION_MAX_LENGTH = 255;
+    public static final int LAST_FOUR_DIGITS = 4;
+    public static final int FIRST_SIX_DIGITS = 6;
     
     @JsonProperty("amount")
-    private long amount;
+    @Min(value = AMOUNT_MIN_VALUE, message = "Must be greater than or equal to 1")
+    @Max(value = AMOUNT_MAX_VALUE, message = "Must be less than or equal to {value}")
+    private int amount;
     
     @JsonProperty("reference")
+    @Size(max = REFERENCE_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
     private String reference;
 
     @JsonProperty("description")
+    @Size(max = DESCRIPTION_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
     private String description;
 
     @JsonProperty("created_date")
@@ -20,9 +36,11 @@ public class CreateTelephonePayment {
     private String authorisedDate;
     
     @JsonProperty("processor_id")
+    @NotNull
     private String processorId;
 
     @JsonProperty("provider_id")
+    @NotNull
     private String providerId;
 
     @JsonProperty("auth_code")
@@ -32,6 +50,7 @@ public class CreateTelephonePayment {
     private PaymentOutcome paymentOutcome;
 
     @JsonProperty("card_type")
+    // Required
     private String cardType;
 
     @JsonProperty("name_on_card")
@@ -41,12 +60,17 @@ public class CreateTelephonePayment {
     private String emailAddress;
 
     @JsonProperty("card_expiry")
+    // Required
     private String cardExpiry;
 
     @JsonProperty("last_four_digits")
+    @Min(value = LAST_FOUR_DIGITS, message = "Must contain exactly {value} digits")
+    @Max(value = LAST_FOUR_DIGITS, message = "Must contain exactly {value} digits")
     private String lastFourDigits;
 
     @JsonProperty("first_six_digits")
+    @Min(value = FIRST_SIX_DIGITS, message = "Must contain exactly {value} digits")
+    @Max(value = FIRST_SIX_DIGITS, message = "Must contain exactly {value} digits")
     private String firstSixDigits;
 
     @JsonProperty("telephone_number")
@@ -56,7 +80,7 @@ public class CreateTelephonePayment {
         // To enable Jackson serialisation we need a default constructor
     }
 
-    public CreateTelephonePayment(long amount, String reference, String description, String createdDate, String authorisedDate, String processorId, String providerId, String authCode, PaymentOutcome paymentOutcome, String cardType, String nameOnCard, String emailAddress, String cardExpiry, String lastFourDigits, String firstSixDigits, String telephoneNumber) {
+    public CreateTelephonePayment(int amount, String reference, String description, String createdDate, String authorisedDate, String processorId, String providerId, String authCode, PaymentOutcome paymentOutcome, String cardType, String nameOnCard, String emailAddress, String cardExpiry, String lastFourDigits, String firstSixDigits, String telephoneNumber) {
         // For testing deserialization
         this.amount = amount;
         this.reference = reference;
@@ -76,7 +100,7 @@ public class CreateTelephonePayment {
         this.telephoneNumber = telephoneNumber;
     }
 
-    public long getAmount() {
+    public int getAmount() {
         return amount;
     }
 
