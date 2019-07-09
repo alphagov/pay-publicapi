@@ -11,6 +11,8 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.exception.GetChargeException;
+import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.TokenPaymentType;
@@ -36,11 +38,15 @@ public class GetPaymentServiceTest {
 
     private static final String ACCOUNT_ID = "123456";
     private static final String CHARGE_ID = "ch_123abc456def";
+    private static final String CHARGE_ID_NON_EXISTENT_IN_CONNECTOR = "ch_123abc456xyz";
 
     private GetPaymentService getPaymentService;
 
     @Rule
     public PactProviderRule connectorRule = new PactProviderRule("connector", this);
+
+    @Rule
+    public PactProviderRule ledgerRule = new PactProviderRule("ledger", this);
 
     @Mock
     private PublicApiConfig mockConfiguration;
@@ -48,13 +54,15 @@ public class GetPaymentServiceTest {
     @Before
     public void setup() {
         when(mockConfiguration.getConnectorUrl()).thenReturn(connectorRule.getUrl());
-
+        when(mockConfiguration.getLedgerUrl()).thenReturn(ledgerRule.getUrl());
+        when(mockConfiguration.getUseLedgerForGetPayment()).thenReturn(true);
         when(mockConfiguration.getBaseUrl()).thenReturn("http://publicapi.test.localhost/");
 
         PublicApiUriGenerator publicApiUriGenerator = new PublicApiUriGenerator(mockConfiguration);
         ConnectorUriGenerator connectorUriGenerator = new ConnectorUriGenerator(mockConfiguration);
+        LedgerUriGenerator ledgerUriGenerator = new LedgerUriGenerator(mockConfiguration);
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
-        getPaymentService = new GetPaymentService(client, publicApiUriGenerator, connectorUriGenerator);
+        getPaymentService = new GetPaymentService(client, publicApiUriGenerator, connectorUriGenerator, ledgerUriGenerator, mockConfiguration);
     }
 
     @Test
@@ -67,7 +75,7 @@ public class GetPaymentServiceTest {
         assertThat(payment.getMetadata(), is(notNullValue()));
         assertThat(payment.getMetadata().getMetadata().isEmpty(), is(false));
     }
-    
+
     @Test
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-get-payment-with-gateway-transaction-id"})
@@ -116,7 +124,7 @@ public class GetPaymentServiceTest {
 
     @Test
     @PactVerification({"connector"})
-    @Pacts(pacts = {"publicapi-connector-get-payment-with-corporate-surcharge"}) 
+    @Pacts(pacts = {"publicapi-connector-get-payment-with-corporate-surcharge"})
     public void testGetPaymentWithCorporateCardSurcharge() {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
 
@@ -133,7 +141,7 @@ public class GetPaymentServiceTest {
     public void testGetPaymentWithChargeInAwaitingCaptureRequest() {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
         PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID);
-        assertThat(paymentResponse.getLinks().getCapture().getHref(), 
+        assertThat(paymentResponse.getLinks().getCapture().getHref(),
                 containsString("v1/payments/" + CHARGE_ID + "/capture"));
         assertThat(paymentResponse.getLinks().getCapture().getMethod(), is("POST"));
         assertThat(paymentResponse.getLinks().getNextUrl(), is(nullValue()));
@@ -150,6 +158,114 @@ public class GetPaymentServiceTest {
         CardPayment payment = (CardPayment) paymentResponse.getPayment();
 
         assertThat(payment.getPaymentId(), is(CHARGE_ID));
+        assertThat(payment.getPaymentProvider(), is("sandbox"));
+        assertThat(payment.getAmount(), is(100L));
+        assertThat(payment.getFee().get(), is(5L));
+        assertThat(payment.getNetAmount().get(), is(95L));
+    }
+
+    @Test(expected = GetChargeException.class)
+    @PactVerification({"connector", "ledger"})
+    @Pacts(pacts = {"publicapi-connector-get-payment-does-not-exist", "publicapi-ledger-get-payment-does-not-exist"})
+    public void testGetPaymentThatDoesNotExist() {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+
+        getPaymentService.getPayment(account, CHARGE_ID_NON_EXISTENT_IN_CONNECTOR);
+    }
+
+    @Test
+    @PactVerification({"connector", "ledger"})
+    @Pacts(pacts = {"publicapi-connector-get-payment-does-not-exist", "publicapi-ledger-get-payment-with-metadata"})
+    public void testGetPaymentWithMetadataFromLedger() {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID_NON_EXISTENT_IN_CONNECTOR);
+        CardPayment payment = (CardPayment) paymentResponse.getPayment();
+        assertThat(payment.getMetadata(), is(notNullValue()));
+        assertThat(payment.getMetadata().getMetadata().isEmpty(), is(false));
+    }
+
+    @Test
+    @PactVerification({"connector", "ledger"})
+    @Pacts(pacts = {"publicapi-connector-get-payment-does-not-exist", "publicapi-ledger-get-payment-with-gateway-transaction-id"})
+    public void providerIdIsAvailableWhenPaymentIsSubmitted_Ledger() {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID_NON_EXISTENT_IN_CONNECTOR);
+        CardPayment payment = (CardPayment) paymentResponse.getPayment();
+        assertThat(payment.getProviderId(), is("gateway-tx-123456"));
+    }
+
+    @Test
+    @PactVerification({"connector", "ledger"})
+    @Pacts(pacts = {"publicapi-connector-get-payment-does-not-exist", "publicapi-ledger-get-payment-with-delayed-capture-true"})
+    public void testGetPaymentFromLedger() {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+
+        PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID_NON_EXISTENT_IN_CONNECTOR);
+        CardPayment payment = (CardPayment) paymentResponse.getPayment();
+
+        assertThat(payment.getAmount(), is(100L));
+        assertThat(payment.getState(), is(new PaymentState("created", false)));
+        assertThat(payment.getDescription(), is("Test description"));
+        assertThat(payment.getReference(), is("aReference"));
+        assertThat(payment.getLanguage(), is(SupportedLanguage.ENGLISH));
+        assertThat(payment.getPaymentId(), is(CHARGE_ID_NON_EXISTENT_IN_CONNECTOR));
+        assertThat(payment.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(payment.getPaymentProvider(), is("sandbox"));
+        assertThat(payment.getCreatedDate(), is("2018-09-07T13:12:02.121Z"));
+        assertThat(payment.getDelayedCapture(), is(true));
+        assertThat(payment.getCorporateCardSurcharge(), is(Optional.empty()));
+        assertThat(payment.getTotalAmount(), is(Optional.empty()));
+        assertThat(paymentResponse.getLinks().getSelf().getHref(), containsString("v1/payments/" + CHARGE_ID_NON_EXISTENT_IN_CONNECTOR));
+        assertThat(paymentResponse.getLinks().getSelf().getMethod(), is("GET"));
+        assertThat(paymentResponse.getLinks().getRefunds().getHref(), containsString("v1/payments/" + CHARGE_ID_NON_EXISTENT_IN_CONNECTOR + "/refunds"));
+        assertThat(paymentResponse.getLinks().getRefunds().getMethod(), is("GET"));
+        assertThat(paymentResponse.getLinks().getNextUrl().getHref(), containsString("secure/ae749781-6562-4e0e-8f56-32d9639079dc"));
+        assertThat(paymentResponse.getLinks().getNextUrl().getMethod(), is("GET"));
+        assertThat(paymentResponse.getLinks().getNextUrlPost(), is(new PostLink(
+                "https://card_frontend/secure",
+                "POST",
+                "application/x-www-form-urlencoded",
+                Collections.singletonMap("chargeTokenId", "ae749781-6562-4e0e-8f56-32d9639079dc")
+        )));
+        assertThat(paymentResponse.getLinks().getCapture(), is(nullValue()));
+    }
+
+    @Test
+    @PactVerification({"connector", "ledger"})
+    @Pacts(pacts = {"publicapi-connector-get-payment-does-not-exist", "publicapi-ledger-get-payment-with-corporate-surcharge"})
+    public void testGetPaymentWithCorporateCardSurchargeFromLedger() {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+
+        PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID_NON_EXISTENT_IN_CONNECTOR);
+        CardPayment payment = (CardPayment) paymentResponse.getPayment();
+        assertThat(payment.getCorporateCardSurcharge().get(), is(250L));
+        assertThat(payment.getTotalAmount().get(), is(2250L));
+        assertThat(paymentResponse.getLinks().getCapture(), is(nullValue()));
+    }
+
+    @Test
+    @PactVerification({"connector", "ledger"})
+    @Pacts(pacts = {"publicapi-connector-get-payment-does-not-exist", "publicapi-ledger-get-payment-with-awaiting-capture-request-state"})
+    public void testGetPaymentWithChargeInAwaitingCaptureRequestFromLedger() {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID_NON_EXISTENT_IN_CONNECTOR);
+        assertThat(paymentResponse.getLinks().getCapture().getHref(),
+                containsString("v1/payments/" + CHARGE_ID_NON_EXISTENT_IN_CONNECTOR + "/capture"));
+        assertThat(paymentResponse.getLinks().getCapture().getMethod(), is("POST"));
+        assertThat(paymentResponse.getLinks().getNextUrl(), is(nullValue()));
+        assertThat(paymentResponse.getLinks().getNextUrlPost(), is(nullValue()));
+    }
+
+    @Test
+    @PactVerification({"connector", "ledger"})
+    @Pacts(pacts = {"publicapi-connector-get-payment-does-not-exist", "publicapi-ledger-get-payment-with-fee-and-net-amount"})
+    public void testGetPaymentWithFeeAndNetAmountFromLedger() {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+
+        PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID_NON_EXISTENT_IN_CONNECTOR);
+        CardPayment payment = (CardPayment) paymentResponse.getPayment();
+
+        assertThat(payment.getPaymentId(), is(CHARGE_ID_NON_EXISTENT_IN_CONNECTOR));
         assertThat(payment.getPaymentProvider(), is("sandbox"));
         assertThat(payment.getAmount(), is(100L));
         assertThat(payment.getFee().get(), is(5L));

@@ -1,0 +1,36 @@
+{
+  "consumer": {
+    "name": "publicapi"
+  },
+  "provider": {
+    "name": "ledger"
+  },
+  "interactions": [
+    {
+      "description": "get a charge that does not exist",
+      "providerStates": [
+        {
+          "name": "a transaction does not exist",
+          "params": {
+            "charge_id": "ch_123abc456xyz"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/v1/transaction/ch_123abc456xyz"
+      },
+      "response": {
+        "status": 404
+      }
+    }
+  ],
+  "metadata": {
+    "pact-specification": {
+      "version": "3.0.0"
+    },
+    "pact-jvm": {
+      "version": "3.5.16"
+    }
+  }
+}

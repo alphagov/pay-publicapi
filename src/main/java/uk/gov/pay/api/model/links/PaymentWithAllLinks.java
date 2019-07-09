@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.CardPayment;
+import uk.gov.pay.api.model.Charge;
 import uk.gov.pay.api.model.ChargeFromResponse;
 import uk.gov.pay.api.model.directdebit.mandates.DirectDebitPayment;
 import uk.gov.pay.api.model.Payment;
@@ -71,7 +72,7 @@ public class PaymentWithAllLinks {
         this.links.addKnownLinksValueOf(paymentConnectorResponseLinks);
     }
 
-    public static PaymentWithAllLinks valueOf(ChargeFromResponse paymentConnector,
+    public static PaymentWithAllLinks valueOf(Charge paymentConnector,
                                               URI selfLink) {
         return new PaymentWithAllLinks(
                 paymentConnector.getChargeId(),
@@ -86,7 +87,7 @@ public class PaymentWithAllLinks {
         );
     }
 
-    public static PaymentWithAllLinks valueOf(ChargeFromResponse paymentConnector,
+    public static PaymentWithAllLinks valueOf(Charge paymentConnector,
                                               URI selfLink,
                                               URI paymentEventsUri,
                                               URI paymentCancelUri,
@@ -123,7 +124,7 @@ public class PaymentWithAllLinks {
 
     public static PaymentWithAllLinks getPaymentWithLinks(
             TokenPaymentType paymentType,
-            ChargeFromResponse paymentConnector,
+            Charge paymentConnector,
             URI selfLink,
             URI paymentEventsUri,
             URI paymentCancelUri,

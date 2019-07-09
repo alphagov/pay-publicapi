@@ -18,7 +18,7 @@ public class PublicApiConfig extends Configuration {
 
     @NotNull
     private String connectorDDUrl;
-    
+
     @NotNull
     private String ledgerUrl;
 
@@ -37,7 +37,7 @@ public class PublicApiConfig extends Configuration {
 
     @NotNull
     private CacheBuilderSpec authenticationCachePolicy;
-    
+
     @Valid
     @NotNull
     @JsonProperty("jerseyClientConfig")
@@ -46,11 +46,14 @@ public class PublicApiConfig extends Configuration {
     @NotNull
     @JsonProperty
     private JedisFactory redis;
-    
+
     @Valid
     @NotNull
     @JsonProperty("rateLimiter")
     private RateLimiterConfig rateLimiterConfig;
+
+    @NotNull
+    private Boolean useLedgerForGetPayment;
 
     public String getBaseUrl() {
         return baseUrl;
@@ -62,7 +65,7 @@ public class PublicApiConfig extends Configuration {
     public String getConnectorDDUrl() {
         return connectorDDUrl;
     }
-    
+
     public String getLedgerUrl() {
         return ledgerUrl;
     }
@@ -98,4 +101,8 @@ public class PublicApiConfig extends Configuration {
     public CacheBuilderSpec getAuthenticationCachePolicy() { return authenticationCachePolicy; }
 
     public JedisFactory getJedisFactory() { return redis;  }
+
+    public Boolean getUseLedgerForGetPayment() {
+        return useLedgerForGetPayment;
+    }
 }

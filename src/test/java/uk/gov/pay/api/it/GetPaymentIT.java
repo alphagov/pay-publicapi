@@ -12,6 +12,7 @@ import uk.gov.pay.api.utils.ChargeEventBuilder;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorDDMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
+import uk.gov.pay.api.utils.mocks.LedgerMockClient;
 import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.commons.validation.DateTimeUtils;
 
@@ -64,7 +65,7 @@ public class GetPaymentIT extends PaymentResourceITestBase {
 
     private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
-    private ConnectorDDMockClient connectorDDMockClient = new ConnectorDDMockClient(connectorDDMock);
+    private LedgerMockClient ledgerMockClient = new LedgerMockClient(ledgerMock);
 
     @Test
     public void getPaymentWithMetadata() {
@@ -217,7 +218,7 @@ public class GetPaymentIT extends PaymentResourceITestBase {
                 .body("containsKey('corporate_card_surcharge')", is(false))
                 .body("containsKey('total_amount')", is(false));
     }
-    
+
     @Test
     public void getPayment_DoesNotReturnCardDigits_IfNotPresentInCardDetails() {
         CardDetails cardDetails = new CardDetails(null, null, "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL);
@@ -356,11 +357,12 @@ public class GetPaymentIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPayment_returns404_whenConnectorRespondsWith404() throws IOException {
+    public void getPayment_returns404_whenConnectorAndLedgerRespondsWith404() throws IOException {
         String paymentId = "ds2af2afd3df112";
         String errorMessage = "backend-error-message";
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMockClient.respondChargeNotFound(GATEWAY_ACCOUNT_ID, paymentId, errorMessage);
+        ledgerMockClient.respondTransactionNotFound(paymentId, errorMessage);
 
         InputStream body = getPaymentResponse(API_KEY, paymentId)
                 .statusCode(404)

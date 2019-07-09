@@ -45,8 +45,9 @@ public abstract class PaymentResourceITestBase {
     private static final int CONNECTOR_PORT = findFreePort();
     private static final int CONNECTOR_DD_PORT = findFreePort();
     private static final int PUBLIC_AUTH_PORT = findFreePort();
+    private static final int LEDGER_PORT = findFreePort();
     private static final Gson GSON = new GsonBuilder().create();
-    
+
     @ClassRule
     public static WireMockClassRule connectorMock = new WireMockClassRule(CONNECTOR_PORT);
 
@@ -55,7 +56,10 @@ public abstract class PaymentResourceITestBase {
 
     @ClassRule
     public static WireMockClassRule publicAuthMock = new WireMockClassRule(PUBLIC_AUTH_PORT);
-    
+
+    @ClassRule
+    public static WireMockClassRule ledgerMock = new WireMockClassRule(LEDGER_PORT);
+
     @Rule
     public DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
             PublicApi.class,
@@ -63,6 +67,7 @@ public abstract class PaymentResourceITestBase {
             config("connectorUrl", "http://localhost:" + CONNECTOR_PORT),
             config("connectorDDUrl", "http://localhost:" + CONNECTOR_DD_PORT),
             config("publicAuthUrl", "http://localhost:" + PUBLIC_AUTH_PORT + "/v1/auth"),
+            config("ledgerUrl", "http://localhost:" + LEDGER_PORT),
             config("redis.endpoint", redisDockerRule.getRedisUrl())
     );
 
@@ -79,7 +84,7 @@ public abstract class PaymentResourceITestBase {
     String frontendUrlFor(TokenPaymentType paymentType) {
         return "http://frontend_" + paymentType.toString().toLowerCase() + "/charge/";
     }
-    
+
     String paymentEventsLocationFor(String chargeId) {
         return paymentLocationFor(configuration.getBaseUrl(), chargeId) + "/events";
     }
@@ -105,7 +110,7 @@ public abstract class PaymentResourceITestBase {
                 .post(PAYMENTS_PATH)
                 .then();
     }
-    
+
     protected static String toJson(Map map) {
         return GSON.toJson(map);
     }
