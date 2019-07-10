@@ -28,8 +28,8 @@
         "body": {
           "amount": 2000,
           "state": {
-            "finished": true,
-            "status": "success"
+            "finished": false,
+            "status": "created"
           },
           "description": "Test description",
           "reference": "aReference",
@@ -39,6 +39,11 @@
               "rel": "self",
               "method": "GET",
               "href": "https://ledger/v1/transaction/ch_123abc456xyz"
+            },
+            {
+              "rel": "refunds",
+              "method": "GET",
+              "href": "https://ledger/v1/transaction/ch_123abc456xyz/refunds"
             }
           ],
           "charge_id": "ch_123abc456xyz",
@@ -54,8 +59,8 @@
             "amount_submitted": 0
           },
           "settlement_summary": {
-            "capture_submit_time": null,
-            "captured_date": null
+            "capture_submit_time": "2018-10-16T10:46:03.121Z",
+            "captured_date": "2018-10-16"
           },
           "delayed_capture": false
         },
@@ -74,11 +79,24 @@
                 }
               ]
             },
+            "$.links[1].href": {
+              "matchers": [
+                {
+                  "regex": "http.*:\/\/.*\/v1\/transaction\/ch_123abc456xyz\/refunds"
+                }
+              ]
+            },
             "$.return_url": {
               "matchers": [{"match": "type"}]
             },
             "$.created_date": {
               "matchers": [{ "date": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" }]
+            },
+            "$.settlement_summary.capture_submit_time": {
+              "matchers": [{ "date": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" }]
+            },
+            "$.settlement_summary.captured_date": {
+              "matchers": [{ "date": "yyyy-MM-dd" }]
             },
             "$.refund_summary.amount_available": {
               "matchers": [{"match": "type"}]

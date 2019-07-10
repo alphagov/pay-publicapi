@@ -33,8 +33,8 @@
           },
           "amount": 100,
           "state": {
-            "finished": true,
-            "status": "success"
+            "finished": false,
+            "status": "created"
           },
           "description": "Test description",
           "reference": "aReference",
@@ -44,6 +44,11 @@
               "rel": "self",
               "method": "GET",
               "href": "https://ledger/v1/transaction/ch_123abc456xyz"
+            },
+            {
+              "rel": "refunds",
+              "method": "GET",
+              "href": "https://ledger/v1/transaction/ch_123abc456xyz/refunds"
             }
           ],
           "charge_id": "ch_123abc456xyz",
@@ -74,6 +79,13 @@
               "matchers": [
                 {
                   "regex": "http.*:\/\/.*\/v1\/transaction\/ch_123abc456xyz"
+                }
+              ]
+            },
+            "$.links[1].href": {
+              "matchers": [
+                {
+                  "regex": "http.*:\/\/.*\/v1\/transaction\/ch_123abc456xyz\/refunds"
                 }
               ]
             },

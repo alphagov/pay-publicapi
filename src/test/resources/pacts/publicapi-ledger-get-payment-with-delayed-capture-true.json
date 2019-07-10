@@ -41,18 +41,9 @@
               "href": "https://ledger/v1/transaction/ch_123abc456xyz"
             },
             {
-              "rel": "next_url",
+              "rel": "refunds",
               "method": "GET",
-              "href": "https://card_frontend/secure/ae749781-6562-4e0e-8f56-32d9639079dc"
-            },
-            {
-              "rel": "next_url_post",
-              "method": "POST",
-              "href": "https://card_frontend/secure",
-              "type": "application/x-www-form-urlencoded",
-              "params": {
-                "chargeTokenId": "ae749781-6562-4e0e-8f56-32d9639079dc"
-              }
+              "href": "https://ledger/v1/transaction/ch_123abc456xyz/refunds"
             }
           ],
           "charge_id": "ch_123abc456xyz",
@@ -86,9 +77,11 @@
                 }
               ]
             },
-            "$.links[3].params.chargeTokenId": {
+            "$.links[1].href": {
               "matchers": [
-                {"match": "type"}
+                {
+                  "regex": "http.*:\/\/.*\/v1\/transaction\/ch_123abc456xyz\/refunds"
+                }
               ]
             },
             "$.return_url": {
