@@ -8,7 +8,7 @@ import uk.gov.pay.api.utils.PublicAuthMockClient;
 import java.util.Map;
 
 
-public class CreateTelepehonePaymentLastFourCardDigitsValidation extends TelephonePaymentResourceITBase {
+public class CreateTelepehonePaymentCardExpiryValidation extends TelephonePaymentResourceITBase {
 
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
 
@@ -18,14 +18,14 @@ public class CreateTelepehonePaymentLastFourCardDigitsValidation extends Telepho
     }
 
     @Test
-    public void respondWith422_whenThreeDigitsProvidedOnly() {
+    public void respondWith422_whenMonthIs00() {
         String payload = toJson(Map.of("amount", 100,
                 "reference", "Some reference",
                 "description","hi",
                 "processor_id", "1PROC",
                 "provider_id", "1PROV",
                 "card_type", "visa",
-                "card_expiry", "01/99",
+                "card_expiry", "00/99",
                 "last_four_digits", "123",
                 "first_six_digits", "123456"));
 
@@ -33,14 +33,14 @@ public class CreateTelepehonePaymentLastFourCardDigitsValidation extends Telepho
     }
 
     @Test
-    public void respondWith422_whenFiveDigitsProvidedOnly() {
+    public void respondWith422_whenMonthIsInvalid() {
         String payload = toJson(Map.of("amount", 100,
                 "reference", "Some reference",
                 "description","hi",
                 "processor_id", "1PROC",
                 "provider_id", "1PROV",
                 "card_type", "visa",
-                "card_expiry", "01/99",
+                "card_expiry", "99/99",
                 "last_four_digits", "12345",
                 "first_six_digits", "123456"));
 
@@ -56,8 +56,8 @@ public class CreateTelepehonePaymentLastFourCardDigitsValidation extends Telepho
                 "  \"processor_id\" : \"1PROC\"," +
                 "  \"provider_id\" : \"1PROV\"," +
                 "  \"card_type\" : \"visa\"," +
-                "  \"card_expiry\" : \"01/99\"," +
-                "  \"last_four_digits\" : null," +
+                "  \"card_expiry\" : null," +
+                "  \"last_four_digits\" : \"1234\"," +
                 "  \"first_six_digits\" : \"123456\"" +
                 "}";
 

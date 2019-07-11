@@ -78,19 +78,4 @@ public class CreateTelepehonePaymentFirstSixCardDigitsValidation extends Telepho
 
         postPaymentResponse(payload).statusCode(422);
     }
-
-    @Test
-    public void respondWith422_whenBooleanProvided() {
-        String payload = toJson(Map.of("amount", 100,
-                "reference", "Some reference",
-                "description","hi",
-                "processor_id", "1PROC",
-                "provider_id", "1PROV",
-                "card_type", "visa",
-                "card_expiry", "01/99",
-                "last_four_digits", "1234",
-                "first_six_digits", true));
-
-        postPaymentResponse(payload).statusCode(422);
-    }
 }
