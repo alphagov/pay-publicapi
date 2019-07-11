@@ -5,6 +5,7 @@ import io.dropwizard.validation.OneOf;
 import uk.gov.pay.api.validation.ValidCardExpiryDate;
 import uk.gov.pay.api.validation.ValidCardFirstSixDigits;
 import uk.gov.pay.api.validation.ValidCardLastFourDigits;
+import uk.gov.pay.api.validation.ValidCardType;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -53,7 +54,7 @@ public class CreateTelephonePayment {
     private PaymentOutcome paymentOutcome;
 
     @JsonProperty("card_type")
-    @OneOf(value = {"master-card", "visa", "maestro", "diners-club", "american-express"})
+    @ValidCardType
     private String cardType;
 
     @JsonProperty("name_on_card")
