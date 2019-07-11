@@ -19,6 +19,10 @@ public class CardTypeValidator implements ConstraintValidator<ValidCardExpiryDat
     
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
+
+        if (value == null) {
+            return false;
+        }
         
         return CARD_TYPES.contains(value) ? true : false;
         
