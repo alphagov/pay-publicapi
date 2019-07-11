@@ -1,10 +1,15 @@
 package uk.gov.pay.api.model.telephone;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.dropwizard.validation.OneOf;
+import uk.gov.pay.api.validation.ValidCardExpiryDate;
+import uk.gov.pay.api.validation.ValidCardFirstSixDigits;
+import uk.gov.pay.api.validation.ValidCardLastFourDigits;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 public class CreateTelephonePayment {
@@ -13,8 +18,6 @@ public class CreateTelephonePayment {
     public static final int AMOUNT_MAX_VALUE = 10000000;
     public static final int AMOUNT_MIN_VALUE = 0;
     public static final int DESCRIPTION_MAX_LENGTH = 255;
-    public static final int LAST_FOUR_DIGITS = 4;
-    public static final int FIRST_SIX_DIGITS = 6;
     
     @JsonProperty("amount")
     @Min(value = AMOUNT_MIN_VALUE, message = "Must be greater than or equal to 1")
@@ -50,7 +53,7 @@ public class CreateTelephonePayment {
     private PaymentOutcome paymentOutcome;
 
     @JsonProperty("card_type")
-    // Required
+    @OneOf(value = {"master-card", "visa", "maestro", "diners-club", "american-express"})
     private String cardType;
 
     @JsonProperty("name_on_card")
@@ -60,17 +63,15 @@ public class CreateTelephonePayment {
     private String emailAddress;
 
     @JsonProperty("card_expiry")
-    // Required
+    @ValidCardExpiryDate
     private String cardExpiry;
 
     @JsonProperty("last_four_digits")
-    @Min(value = LAST_FOUR_DIGITS, message = "Must contain exactly {value} digits")
-    @Max(value = LAST_FOUR_DIGITS, message = "Must contain exactly {value} digits")
+    @ValidCardLastFourDigits
     private String lastFourDigits;
 
     @JsonProperty("first_six_digits")
-    @Min(value = FIRST_SIX_DIGITS, message = "Must contain exactly {value} digits")
-    @Max(value = FIRST_SIX_DIGITS, message = "Must contain exactly {value} digits")
+    @ValidCardFirstSixDigits
     private String firstSixDigits;
 
     @JsonProperty("telephone_number")
