@@ -26,7 +26,7 @@ public class CreateTelepehonePaymentCardExpiryValidation extends TelephonePaymen
                 "provider_id", "1PROV",
                 "card_type", "visa",
                 "card_expiry", "00/99",
-                "last_four_digits", "123",
+                "last_four_digits", "1234",
                 "first_six_digits", "123456"));
 
         postPaymentResponse(payload).statusCode(422);
@@ -41,7 +41,7 @@ public class CreateTelepehonePaymentCardExpiryValidation extends TelephonePaymen
                 "provider_id", "1PROV",
                 "card_type", "visa",
                 "card_expiry", "99/99",
-                "last_four_digits", "12345",
+                "last_four_digits", "1234",
                 "first_six_digits", "123456"));
 
         postPaymentResponse(payload).statusCode(422);
