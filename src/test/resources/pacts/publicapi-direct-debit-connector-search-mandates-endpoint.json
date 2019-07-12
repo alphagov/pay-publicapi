@@ -31,35 +31,7 @@
       "request": {
         "method": "GET",
         "path": "/v1/api/accounts/123456/mandates",
-        "query": {
-          "email": [
-            "rory@example.com"
-          ],
-          "name" : [
-            "a name"
-          ],
-          "state" : [
-            "pending"
-          ],
-          "bank_statement_reference" : [
-            "a bstatement ref"
-          ],
-          "reference" : [
-            "a reference"
-          ],
-          "from_date": [
-            "2018-07-11T12:30:48.317Z"
-          ],
-          "to_date": [
-            "2020-07-11T12:30:48.317Z"
-          ],
-          "page" : [
-            "1"
-          ],
-          "display_size" : [
-            "1"
-          ]
-        }
+        "query": "email=rory@example.com&name=a%20name&state=pending&bank_statement_reference=a%20bstatement%20ref&reference=a%20reference&from_date=2018-07-11T12:30:48.317Z&to_date=2020-07-11T12:30:48.317Z&page=1&display_size=1"
       },
       "response": {
         "status": 200,
@@ -113,20 +85,6 @@
               "matchers": [
                 {
                   "regex": "https:.*\/mandates\/.*"
-                }
-              ]
-            },
-            "$.results[*].links[1].href": {
-              "matchers": [
-                {
-                  "regex": "https:.*mandates.*\/events"
-                }
-              ]
-            },
-            "$.results[*].links[2].href": {
-              "matchers": [
-                {
-                  "regex": "https:.*mandates.*\/payments?mandate_id.*"
                 }
               ]
             },
