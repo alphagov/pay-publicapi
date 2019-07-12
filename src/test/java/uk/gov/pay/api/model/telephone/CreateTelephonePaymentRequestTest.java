@@ -8,7 +8,7 @@ import static io.dropwizard.testing.FixtureHelpers.fixture;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 
-public class CreateTelephonePaymentTest {
+public class CreateTelephonePaymentRequestTest {
     
     private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
     
@@ -16,7 +16,7 @@ public class CreateTelephonePaymentTest {
     public void correctlyDeserializesFromJSON() throws Exception {
         final Supplemental supplemental = new Supplemental("ECKOH01234", "textual message describing error code");
         final PaymentOutcome paymentOutcome = new PaymentOutcome("success", "P0010", supplemental);
-        final CreateTelephonePayment createTelephonePayment = new CreateTelephonePayment(
+        final CreateTelephonePaymentRequest createTelephonePaymentRequest = new CreateTelephonePaymentRequest(
                 12000, 
                 "MRPC12345",
                 "New passport application",
@@ -34,10 +34,10 @@ public class CreateTelephonePaymentTest {
                 "654321",
                 "+447700900796");
         
-        CreateTelephonePayment deserializedCreateTelephonePayment = MAPPER.readValue(fixture("fixtures/CreateTelephonePayment.json"), CreateTelephonePayment.class);
+        CreateTelephonePaymentRequest deserializedCreateTelephonePaymentRequest = MAPPER.readValue(fixture("fixtures/CreateTelephonePayment.json"), CreateTelephonePaymentRequest.class);
         
 
-        assertThat(createTelephonePayment).isEqualToComparingFieldByFieldRecursively(deserializedCreateTelephonePayment);
+        assertThat(createTelephonePaymentRequest).isEqualToComparingFieldByFieldRecursively(deserializedCreateTelephonePaymentRequest);
     }
     
     

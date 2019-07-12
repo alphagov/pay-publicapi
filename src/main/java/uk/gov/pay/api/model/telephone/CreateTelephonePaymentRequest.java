@@ -1,7 +1,6 @@
 package uk.gov.pay.api.model.telephone;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.dropwizard.validation.OneOf;
 import uk.gov.pay.api.validation.ValidCardExpiryDate;
 import uk.gov.pay.api.validation.ValidCardFirstSixDigits;
 import uk.gov.pay.api.validation.ValidCardLastFourDigits;
@@ -9,12 +8,10 @@ import uk.gov.pay.api.validation.ValidCardType;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-public class CreateTelephonePayment {
+public class CreateTelephonePaymentRequest {
 
     public static final int REFERENCE_MAX_LENGTH = 255;
     public static final int AMOUNT_MAX_VALUE = 10000000;
@@ -79,11 +76,11 @@ public class CreateTelephonePayment {
     @JsonProperty("telephone_number")
     private String telephoneNumber;
 
-    public CreateTelephonePayment() {
+    public CreateTelephonePaymentRequest() {
         // To enable Jackson serialisation we need a default constructor
     }
 
-    public CreateTelephonePayment(int amount, String reference, String description, String createdDate, String authorisedDate, String processorId, String providerId, String authCode, PaymentOutcome paymentOutcome, String cardType, String nameOnCard, String emailAddress, String cardExpiry, String lastFourDigits, String firstSixDigits, String telephoneNumber) {
+    public CreateTelephonePaymentRequest(int amount, String reference, String description, String createdDate, String authorisedDate, String processorId, String providerId, String authCode, PaymentOutcome paymentOutcome, String cardType, String nameOnCard, String emailAddress, String cardExpiry, String lastFourDigits, String firstSixDigits, String telephoneNumber) {
         // For testing deserialization
         this.amount = amount;
         this.reference = reference;
