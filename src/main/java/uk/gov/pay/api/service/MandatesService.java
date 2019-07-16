@@ -51,12 +51,16 @@ public class MandatesService {
         Response connectorResponse = getMandate(account, mandateId);
         if (isFound(connectorResponse)) {
             MandateConnectorResponse mandate = connectorResponse.readEntity(MandateConnectorResponse.class);
-            MandateLinks mandateLinks = createLinksFromMandateResponse(mandate);
-            MandateResponse getMandateResponse = new MandateResponse(mandate, mandateLinks);
+            MandateResponse getMandateResponse = createMandateResponseFromMandateConnectorResponse(mandate);
             LOGGER.info("Mandate returned (get): [ {} ]", getMandateResponse);
             return getMandateResponse;
         }
         throw new GetMandateException(connectorResponse);
+    }
+
+    public MandateResponse createMandateResponseFromMandateConnectorResponse(MandateConnectorResponse mandate) {
+        MandateLinks mandateLinks = createLinksFromMandateResponse(mandate);
+        return new MandateResponse(mandate, mandateLinks);
     }
 
     private MandateLinks createLinksFromMandateResponse(MandateConnectorResponse mandate) {

@@ -1,26 +1,50 @@
 package uk.gov.pay.api.service.directdebit;
 
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.model.directdebit.mandates.MandateResponse;
 import uk.gov.pay.api.model.search.directdebit.DirectDebitSearchMandatesParams;
 import uk.gov.pay.api.model.search.directdebit.SearchMandateConnectorResponse;
+import uk.gov.pay.api.model.search.directdebit.SearchMandateResponse;
+import uk.gov.pay.api.service.MandatesService;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static uk.gov.pay.api.model.search.directdebit.SearchMandateResponse.SearchMandateResponseBuilder.aSearchMandateResponse;
 
 public class DirectDebitMandateSearchService {
 
     private final Client client;
     private final DirectDebitConnectorUriGenerator directDebitConnectorUriGenerator;
+    private final MandatesService mandatesService;
     
     
     @Inject
-    public DirectDebitMandateSearchService(Client client, DirectDebitConnectorUriGenerator directDebitConnectorUriGenerator) {
+    public DirectDebitMandateSearchService(Client client, DirectDebitConnectorUriGenerator directDebitConnectorUriGenerator, MandatesService mandatesService) {
         this.client = client;
         this.directDebitConnectorUriGenerator = directDebitConnectorUriGenerator;
+        this.mandatesService = mandatesService;
+    }
+    
+    public SearchMandateResponse search(Account account, DirectDebitSearchMandatesParams params) {
+        SearchMandateConnectorResponse connectorResponse = getMandatesFromDDConnector(account, params);
+
+        var mandateResponse = connectorResponse.getMandates().stream()
+                .map(mandatesService::createMandateResponseFromMandateConnectorResponse)
+                .collect(Collectors.toUnmodifiableList());
+
+        return aSearchMandateResponse()
+                .withCount(connectorResponse.getCount())
+                .withTotal(connectorResponse.getTotal())
+                .withPage(connectorResponse.getPage())
+                .withLinks(connectorResponse.getLinks())
+                .withMandates(mandateResponse)
+                .build();
     }
     
     SearchMandateConnectorResponse getMandatesFromDDConnector(Account account, DirectDebitSearchMandatesParams params) {

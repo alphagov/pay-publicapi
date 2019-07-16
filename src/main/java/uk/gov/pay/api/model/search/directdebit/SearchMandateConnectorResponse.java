@@ -25,4 +25,16 @@ public class SearchMandateConnectorResponse {
     public List<MandateConnectorResponse> getMandates() {
         return mandates;
     }
+
+    public int getTotal() {
+        return total;
+    }
+
+    public int getPage() {
+        return page;
+    }
+
+    public SearchNavigationLinks getLinks() {
+        return links;
+    }
 }
