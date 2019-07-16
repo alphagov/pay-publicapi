@@ -6,7 +6,7 @@ import uk.gov.pay.api.model.links.SearchNavigationLinks;
 
 import java.util.List;
 
-public class DirectDebitSearchMandateResponse {
+public class SearchMandateConnectorResponse {
     @JsonProperty("total")
     private int total;
     @JsonProperty("count")
@@ -18,7 +18,11 @@ public class DirectDebitSearchMandateResponse {
     @JsonProperty("_links")
     private SearchNavigationLinks links = new SearchNavigationLinks();
 
-    DirectDebitSearchMandateResponse() {
-        
+    public int getCount() {
+        return count;
+    }
+
+    public List<MandateConnectorResponse> getMandates() {
+        return mandates;
     }
 }

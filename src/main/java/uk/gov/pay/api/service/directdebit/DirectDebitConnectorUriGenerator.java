@@ -23,12 +23,12 @@ public class DirectDebitConnectorUriGenerator {
         return buildConnectorUri(account, format(chargePath, account.getAccountId()));
     }
 
-    public String chargesURIWithParams(Account account, Map<String, String> queryParams) {
-        return buildConnectorUri(account, format("/v1/api/accounts/%s/charges", account.getAccountId()), queryParams);
+    public String singleMandateURI(Account account, String externalMandateId) {
+        return mandatesURI(account) + "/" + externalMandateId;
     }
     
-    public String mandatesURIWithParams(Account account, Map<String, String> queryParams) {
-        return buildConnectorUri(account, format("/v1/api/accounts/%s/mandates", account.getAccountId()), queryParams);
+    public String mandatesURI(Account account) {
+        return buildConnectorUri(account, format("/v1/api/accounts/%s/mandates", account.getAccountId()));
     }
 
     public String directDebitPaymentsURI(Account account, Map<String, String> queryParams) {

@@ -16,6 +16,7 @@ import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.directdebit.mandates.MandateConnectorRequest;
 import uk.gov.pay.api.model.directdebit.mandates.MandateConnectorResponse;
 import uk.gov.pay.api.model.directdebit.mandates.MandateState;
+import uk.gov.pay.api.service.directdebit.DirectDebitConnectorUriGenerator;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
@@ -41,6 +42,7 @@ public class MandatesServiceTest {
 
     @Mock
     private PublicApiConfig mockConfiguration;
+    
     @Mock
     private PublicApiUriGenerator mockPublicApiUriGenerator;
 
@@ -49,7 +51,7 @@ public class MandatesServiceTest {
         // We will actually send real requests here, which will be intercepted by pact
         when(mockConfiguration.getConnectorDDUrl()).thenReturn(ddConnectorRule.getUrl());
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
-        mandatesService = new MandatesService(client, mockConfiguration, mockPublicApiUriGenerator);
+        mandatesService = new MandatesService(client, mockPublicApiUriGenerator, new DirectDebitConnectorUriGenerator(mockConfiguration));
     }
     
     @Test

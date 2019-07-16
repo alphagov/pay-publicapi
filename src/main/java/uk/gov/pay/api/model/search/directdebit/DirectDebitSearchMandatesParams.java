@@ -88,21 +88,21 @@ public class DirectDebitSearchMandatesParams {
     }
 
     public Map<String, String> paramsAsMap() {
-        Map<String, String> returnableMap = new HashMap<>();
+        var params = new HashMap<String, String>();
 
-        returnableMap.put("display_size", String.valueOf(this.getDisplaySize()));
-        returnableMap.put("page", String.valueOf(this.getPage()));
+        params.put("display_size", String.valueOf(this.getDisplaySize()));
+        params.put("page", String.valueOf(this.getPage()));
 
         this.getBankStatementReference().ifPresent(bankStatementReference ->
-                returnableMap.put("bank_statement_reference", bankStatementReference));
-        this.getEmail().ifPresent(email -> returnableMap.put("email", email));
-        this.getName().ifPresent(name -> returnableMap.put("name", name));
-        this.getFromDate().ifPresent(fromDate -> returnableMap.put("from_date", String.valueOf(fromDate)));
-        this.getToDate().ifPresent(toDate -> returnableMap.put("to_date", String.valueOf(toDate)));
-        this.getReference().ifPresent(reference -> returnableMap.put("reference", reference));
-        this.getState().ifPresent(state -> returnableMap.put("state", state));
+                params.put("bank_statement_reference", bankStatementReference));
+        this.getEmail().ifPresent(email -> params.put("email", email));
+        this.getName().ifPresent(name -> params.put("name", name));
+        this.getFromDate().ifPresent(fromDate -> params.put("from_date", String.valueOf(fromDate)));
+        this.getToDate().ifPresent(toDate -> params.put("to_date", String.valueOf(toDate)));
+        this.getReference().ifPresent(reference -> params.put("reference", reference));
+        this.getState().ifPresent(state -> params.put("state", state));
 
-        return Collections.unmodifiableMap(returnableMap);
+        return Collections.unmodifiableMap(params);
     }
 
     public static final class DirectDebitSearchMandatesParamsBuilder {
@@ -113,8 +113,8 @@ public class DirectDebitSearchMandatesParams {
         private String name;
         private ZonedDateTime fromDate;
         private ZonedDateTime toDate;
-        private int page;
-        private int displaySize;
+        private int page = 1;
+        private int displaySize = 500;
 
         private DirectDebitSearchMandatesParamsBuilder() {
         }
