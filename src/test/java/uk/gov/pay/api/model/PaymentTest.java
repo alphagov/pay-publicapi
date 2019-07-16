@@ -47,7 +47,8 @@ public class PaymentTest {
                 "  }\n" +
                 "}", ChargeFromResponse.class);
 
-        PaymentWithAllLinks payment = PaymentWithAllLinks.valueOf(paymentFromConnector, selfUri, eventsUri, cancelUri, refundsUri, captureUri);
+        PaymentWithAllLinks payment = PaymentWithAllLinks.valueOf(Charge.from(paymentFromConnector), selfUri, eventsUri,
+                cancelUri, refundsUri, captureUri);
 
         assertThat(payment.toString(), not(containsString("user@example.com")));
         assertThat(payment.toString(), not(containsString("last_digits_card_number")));
