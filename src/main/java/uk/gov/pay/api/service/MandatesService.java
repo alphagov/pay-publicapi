@@ -12,32 +12,31 @@ import uk.gov.pay.api.model.directdebit.mandates.MandateConnectorRequest;
 import uk.gov.pay.api.model.directdebit.mandates.MandateConnectorResponse;
 import uk.gov.pay.api.model.directdebit.mandates.MandateResponse;
 import uk.gov.pay.api.model.links.directdebit.MandateLinks;
+import uk.gov.pay.api.service.directdebit.DirectDebitConnectorUriGenerator;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 
-import static java.lang.String.format;
 import static uk.gov.pay.api.model.links.directdebit.MandateLinks.MandateLinksBuilder.aMandateLinks;
 
 public class MandatesService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MandatesService.class);
 
-    private final String connectorDDUrl;
     private final Client client;
     private final PublicApiUriGenerator publicApiUriGenerator;
+    private final DirectDebitConnectorUriGenerator directDebitConnectorUriGenerator;
 
     @Inject
     public MandatesService(Client client,
-                           PublicApiConfig configuration,
-                           PublicApiUriGenerator publicApiUriGenerator) {
-        this.connectorDDUrl = configuration.getConnectorDDUrl();
+                           PublicApiUriGenerator publicApiUriGenerator,
+                           DirectDebitConnectorUriGenerator directDebitConnectorUriGenerator) {
         this.client = client;
         this.publicApiUriGenerator = publicApiUriGenerator;
+        this.directDebitConnectorUriGenerator = directDebitConnectorUriGenerator;
     }
 
     public MandateResponse create(Account account, CreateMandateRequest createMandateRequest) {
@@ -71,7 +70,7 @@ public class MandatesService {
     }
 
     MandateConnectorResponse createMandate(Account account, MandateConnectorRequest mandateConnectorRequest) {
-        Response response = client.target(getDDConnectorUrl(format("/v1/api/accounts/%s/mandates", account.getName())))
+        Response response = client.target(directDebitConnectorUriGenerator.mandatesURI(account))
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(mandateConnectorRequest, MediaType.APPLICATION_JSON));
@@ -83,15 +82,11 @@ public class MandatesService {
     }
 
     Response getMandate(Account account, String mandateExternalId) {
-        String url = getDDConnectorUrl(format("/v1/api/accounts/%s/mandates/%s", account.getName(), mandateExternalId));
+        String url = directDebitConnectorUriGenerator.singleMandateURI(account, mandateExternalId);
         return client.target(url).request().accept(MediaType.APPLICATION_JSON).get();
     }
 
     private boolean isFound(Response connectorResponse) {
         return connectorResponse.getStatus() == HttpStatus.SC_OK;
-    }
-    
-    private String getDDConnectorUrl(String urlPath) {
-        return UriBuilder.fromPath(connectorDDUrl).path(urlPath).toString();
     }
 }
