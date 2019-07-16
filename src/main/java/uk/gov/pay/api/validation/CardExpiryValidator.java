@@ -15,7 +15,7 @@ public class CardExpiryValidator implements ConstraintValidator<ValidCardExpiryD
             return false;
         }
         
-        return pattern.matcher(value).matches() ? true : false;
+        return pattern.matcher(value).matches();
         
     }
 }

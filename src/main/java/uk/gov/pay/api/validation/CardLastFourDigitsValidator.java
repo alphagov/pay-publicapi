@@ -15,7 +15,7 @@ public class CardLastFourDigitsValidator implements ConstraintValidator<ValidCar
             return false;
         }
 
-        return pattern.matcher(value).matches() ? true : false;
+        return pattern.matcher(value).matches();
 
     }
 }
