@@ -15,15 +15,12 @@ import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.directdebit.mandates.MandateState;
 import uk.gov.pay.api.model.search.directdebit.SearchMandateConnectorResponse;
-import uk.gov.pay.api.model.search.directdebit.SearchMandateResponse;
-import uk.gov.pay.api.service.MandatesService;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
 import javax.ws.rs.client.Client;
 
-import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
@@ -52,26 +49,6 @@ public class DirectDebitMandateSearchServiceTest {
         var directDebitConnectorUriGenerator = new DirectDebitConnectorUriGenerator(configuration);
         var publicApiUriGenerator = new PublicApiUriGenerator(configuration);
         searchService = new DirectDebitMandateSearchService(client, directDebitConnectorUriGenerator, publicApiUriGenerator);
-    }
-
-    @Test
-    @PactVerification({"direct-debit-connector"})
-    @Pacts(pacts = {"publicapi-direct-debit-connector-search-mandates"})
-    public void shouldSearchSuccessfully() {
-        Account account = new Account("9ddfcc27-acf5-43f9-92d5-52247540714c", TokenPaymentType.DIRECT_DEBIT);
-        String expectedBankStatementReference = "410104";
-
-        var searchParams = aDirectDebitSearchMandatesParams()
-                .withBankStatementReference(expectedBankStatementReference)
-                .build();
-
-        SearchMandateResponse searchResponse = searchService.search(account, searchParams);
-
-        assertThat(searchResponse.getCount(), is(1));
-        assertThat(searchResponse.getTotal(), is(1));
-        assertThat(searchResponse.getPage(), is(1));
-        
-        assertThat(searchResponse.getMandates().size(), is(1));
     }
 
     @Test

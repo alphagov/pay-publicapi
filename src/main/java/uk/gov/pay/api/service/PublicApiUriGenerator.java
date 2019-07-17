@@ -7,6 +7,7 @@ import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 import static java.lang.String.format;
 
@@ -47,7 +48,14 @@ public class PublicApiUriGenerator {
                 .path("/v1/payments/{paymentId}/refunds")
                 .build(chargeId);
     }
-    
+
+    public URI getSearchMandatesURIWithQueryOf(String query) {
+        return UriBuilder.fromUri(baseUrl)
+                .replaceQuery(query)
+                .path("/v1/directdebit/mandates")
+                .build();
+    }
+
     public URI getMandateURI(String mandateId) {
         return UriBuilder.fromUri(baseUrl)
                 .path("/v1/directdebit/mandates/{mandateId}")

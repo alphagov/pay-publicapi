@@ -39,6 +39,8 @@ public class DirectDebitSearchMandatesParams {
     @QueryParam("display_size")
     private int displaySize;
 
+    public DirectDebitSearchMandatesParams() { };
+
     private DirectDebitSearchMandatesParams(DirectDebitSearchMandatesParamsBuilder builder) {
         this.reference = builder.reference;
         this.state = builder.state;

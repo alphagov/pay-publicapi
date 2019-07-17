@@ -76,7 +76,7 @@ public class SearchMandateResponse {
         }
 
         public SearchMandateResponseBuilder withMandates(List<MandateResponse> mandates) {
-            this.mandates = mandates;
+            this.mandates = List.copyOf(mandates);
             return this;
         }
 

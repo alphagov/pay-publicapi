@@ -130,7 +130,7 @@
           "description" : "requestPayload",
           "required" : true,
           "schema" : {
-            "$ref" : "#/definitions/CreateCardPaymentRequest"
+            "$ref" : "#/definitions/CreatePaymentRequest"
           }
         } ],
         "responses" : {
@@ -686,9 +686,9 @@
       },
       "description" : "A structure representing the payment card"
     },
-    "CreateCardPaymentRequest" : {
+    "CreatePaymentRequest" : {
       "type" : "object",
-      "required" : [ "amount", "description", "reference", "return_url" ],
+      "required" : [ "amount", "description", "reference" ],
       "properties" : {
         "amount" : {
           "type" : "integer",
@@ -727,29 +727,6 @@
           "example" : "Joe.Bogs@example.org",
           "description" : "email",
           "readOnly" : true
-        },
-        "return_url" : {
-          "type" : "string",
-          "example" : "https://service-name.gov.uk/transactions/12345",
-          "description" : "service return url",
-          "readOnly" : true,
-          "minLength" : 0,
-          "maxLength" : 2000
-        },
-        "delayed_capture" : {
-          "type" : "boolean",
-          "example" : false,
-          "description" : "delayed capture flag",
-          "readOnly" : true
-        },
-        "metadata" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/ExternalMetadata"
-        },
-        "prefilled_cardholder_details" : {
-          "description" : "prefilled_cardholder_details",
-          "readOnly" : true,
-          "$ref" : "#/definitions/PrefilledCardholderDetails"
         }
       },
       "description" : "The Payment Request Payload"
@@ -843,17 +820,6 @@
       },
       "description" : "An error response"
     },
-    "ExternalMetadata" : {
-      "type" : "object",
-      "properties" : {
-        "metadata" : {
-          "type" : "object",
-          "additionalProperties" : {
-            "type" : "object"
-          }
-        }
-      }
-    },
     "GetPaymentResult" : {
       "type" : "object",
       "properties" : {
@@ -861,6 +827,9 @@
           "type" : "integer",
           "format" : "int64",
           "example" : 1200
+        },
+        "state" : {
+          "$ref" : "#/definitions/PaymentState"
         },
         "description" : {
           "type" : "string",
@@ -884,9 +853,6 @@
         "email" : {
           "type" : "string",
           "example" : "your email"
-        },
-        "state" : {
-          "$ref" : "#/definitions/PaymentState"
         },
         "payment_id" : {
           "type" : "string",
@@ -992,6 +958,9 @@
           "format" : "int64",
           "example" : 1200
         },
+        "state" : {
+          "$ref" : "#/definitions/PaymentState"
+        },
         "description" : {
           "type" : "string",
           "example" : "Your Service Description"
@@ -1014,9 +983,6 @@
         "email" : {
           "type" : "string",
           "example" : "your email"
-        },
-        "state" : {
-          "$ref" : "#/definitions/PaymentState"
         },
         "payment_id" : {
           "type" : "string",
@@ -1365,23 +1331,6 @@
         }
       },
       "description" : "A POST link related to a payment"
-    },
-    "PrefilledCardholderDetails" : {
-      "type" : "object",
-      "properties" : {
-        "cardholder_name" : {
-          "type" : "string",
-          "example" : "J. Bogs",
-          "description" : "prefilled cardholder name",
-          "minLength" : 0,
-          "maxLength" : 255
-        },
-        "billing_address" : {
-          "description" : "prefilled billing address",
-          "readOnly" : true,
-          "$ref" : "#/definitions/Address"
-        }
-      }
     },
     "Refund" : {
       "type" : "object",

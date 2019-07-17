@@ -4,12 +4,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
+import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
 import uk.gov.pay.api.model.DirectDebitPaymentState;
 import uk.gov.pay.api.model.directdebit.DirectDebitConnectorPaymentResponse;
 import uk.gov.pay.api.model.directdebit.mandates.MandateConnectorRequest;
 import uk.gov.pay.api.model.directdebit.mandates.MandateState;
+import uk.gov.pay.api.model.search.directdebit.DirectDebitSearchMandatesParams;
+import uk.gov.pay.api.model.search.directdebit.SearchMandateConnectorResponse;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.commons.model.ErrorIdentifier;
 
@@ -101,6 +104,17 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                         .withStatus(200)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                         .withBody(buildGetMandateResponse(params)));
+    }
+    
+    public void respondOk_whenSearchMandatesRequest(Map<String, StringValuePattern> searchParams, SearchMandateConnectorResponse response, String gatewayAccountId) throws JsonProcessingException {
+        String responseAsJson = new ObjectMapper().writeValueAsString(response);
+        wireMockClassRule.stubFor(get(urlPathEqualTo(format(CONNECTOR_MOCK_MANDATES_PATH, gatewayAccountId)))
+                .withHeader(ACCEPT, matching(APPLICATION_JSON))
+                .withQueryParams(searchParams)
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withBody(responseAsJson)));
     }
 
     public void respondBadRequest_whenCreateAgreementRequest(String gatewayAccountId, String errorMsg) {

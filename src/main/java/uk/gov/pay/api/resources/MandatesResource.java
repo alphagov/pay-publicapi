@@ -15,11 +15,15 @@ import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.directdebit.mandates.AgreementError;
 import uk.gov.pay.api.model.directdebit.mandates.CreateMandateRequest;
 import uk.gov.pay.api.model.directdebit.mandates.MandateResponse;
+import uk.gov.pay.api.model.search.directdebit.DirectDebitSearchMandatesParams;
+import uk.gov.pay.api.model.search.directdebit.SearchMandateResponse;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
 import uk.gov.pay.api.service.MandatesService;
+import uk.gov.pay.api.service.directdebit.DirectDebitMandateSearchService;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -41,11 +45,13 @@ public class MandatesResource {
 
     private final String baseUrl;
     private final MandatesService mandateService;
+    private final DirectDebitMandateSearchService mandateSearchService;
 
     @Inject
-    public MandatesResource(PublicApiConfig configuration, MandatesService mandateService) {
+    public MandatesResource(PublicApiConfig configuration, MandatesService mandateService, DirectDebitMandateSearchService mandateSearchService) {
         this.baseUrl = configuration.getBaseUrl();
         this.mandateService = mandateService;
+        this.mandateSearchService = mandateSearchService;
     }
 
     @GET
@@ -54,7 +60,7 @@ public class MandatesResource {
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Find mandate by ID",
-            notes = "Return information about the payment " +
+            notes = "Return information about the mandate " +
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'")
     @ApiResponses(value = {
@@ -63,12 +69,36 @@ public class MandatesResource {
             @ApiResponse(code = 404, message = "Not found", response = AgreementError.class),
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = AgreementError.class)})
-    public Response getPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-            @PathParam("mandateId") String mandateId) {
+    public Response getMandate(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
+                               @PathParam("mandateId") String mandateId) {
         LOGGER.info("Mandate get request - [ {} ]", mandateId);
         MandateResponse getMandateResponse = mandateService.get(account, mandateId);
-        LOGGER.info("Mandate returned (created): [ {} ]", getMandateResponse);
+        LOGGER.info("Mandate returned: [ {} ]", getMandateResponse);
         return Response.ok().entity(getMandateResponse).build();
+    }
+
+    @GET
+    @Timed
+    @Path("/v1/directdebit/mandates/")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(
+            value = "Search mandates",
+            notes = "Searches for mandates with the parameters provided " +
+                    "The Authorisation token needs to be specified in the 'authorization' header " +
+                    "as 'authorization: Bearer YOUR_API_KEY_HERE'")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = MandateResponse.class),
+            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
+            @ApiResponse(code = 404, message = "Not found", response = AgreementError.class),
+            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
+            @ApiResponse(code = 500, message = "Downstream system error", response = AgreementError.class)})
+    public Response searchMandates(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
+                                   @Valid @BeanParam DirectDebitSearchMandatesParams mandateSearchParams) {
+        LOGGER.info("Mandate search request - [ {} ]", mandateSearchParams.toString());
+        SearchMandateResponse searchMandatesResponse = mandateSearchService.search(account, mandateSearchParams);
+        
+        LOGGER.info("Mandate search returned: [ {} ]", searchMandatesResponse);
+        return Response.ok().entity(searchMandatesResponse).build();
     }
     
     @POST
