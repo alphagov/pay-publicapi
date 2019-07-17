@@ -38,7 +38,6 @@
           "state": {
             "status": "created",
             "finished": false,
-            "details": "example details"
           },
           "payer": {
             "name": "Jack",
@@ -84,13 +83,6 @@
               ]
             },
             "$.state.finished": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ]
-            },
-            "$.state.details": {
               "matchers": [
                 {
                   "match": "type"
