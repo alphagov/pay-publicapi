@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.links.directdebit.MandateLinks;
+import uk.gov.pay.api.service.PublicApiUriGenerator;
+
+import static uk.gov.pay.api.model.links.directdebit.MandateLinks.MandateLinksBuilder.aMandateLinks;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MandateResponse {
@@ -20,7 +23,15 @@ public class MandateResponse {
     private final String paymentProvider;
     private final Payer payer;
 
-    public MandateResponse(MandateConnectorResponse mandate, MandateLinks links) {
+    public MandateResponse(MandateConnectorResponse mandate, PublicApiUriGenerator publicApiUriGenerator) {
+        var mandateLinks = aMandateLinks()
+                .withSelf(publicApiUriGenerator.getMandateURI(mandate.getMandateId()).toString())
+                .withPayments(publicApiUriGenerator.getMandatePaymentsURI(mandate.getMandateId()).toString())
+                .withNextUrl(mandate.getLinks())
+                .withNextUrlPost(mandate.getLinks())
+                .withEvents(publicApiUriGenerator.getMandateEventsURI(mandate.getMandateId()))
+                .build();
+        
         this.mandateId = mandate.getMandateId();
         this.providerId = mandate.getProviderId();
         this.reference = mandate.getServiceReference();
@@ -30,7 +41,7 @@ public class MandateResponse {
         this.createdDate = mandate.getCreatedDate();
         this.description = mandate.getDescription();
         this.paymentProvider = mandate.getPaymentProvider();
-        this.links = links;
+        this.links = mandateLinks;
         this.payer = mandate.getPayer();
     }
 
@@ -95,4 +106,5 @@ public class MandateResponse {
     public String getMandateReference() {
         return mandateReference;
     }
+
 }

@@ -23,8 +23,6 @@ import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
 import javax.ws.rs.client.Client;
 
-import java.util.Collections;
-
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -42,9 +40,7 @@ public class DirectDebitMandateSearchServiceTest {
 
     @Mock
     private PublicApiConfig configuration;
-    
-    MandatesService mandatesService;
-    
+
     DirectDebitMandateSearchService searchService;
     
     @Before
@@ -54,9 +50,8 @@ public class DirectDebitMandateSearchServiceTest {
 
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
         var directDebitConnectorUriGenerator = new DirectDebitConnectorUriGenerator(configuration);
-        var publicapiUriGenerator = new PublicApiUriGenerator(configuration);
-        mandatesService = new MandatesService(client, publicapiUriGenerator, directDebitConnectorUriGenerator);
-        searchService = new DirectDebitMandateSearchService(client, directDebitConnectorUriGenerator, mandatesService);
+        var publicApiUriGenerator = new PublicApiUriGenerator(configuration);
+        searchService = new DirectDebitMandateSearchService(client, directDebitConnectorUriGenerator, publicApiUriGenerator);
     }
 
     @Test
@@ -77,8 +72,6 @@ public class DirectDebitMandateSearchServiceTest {
         assertThat(searchResponse.getPage(), is(1));
         
         assertThat(searchResponse.getMandates().size(), is(1));
-        
-        
     }
 
     @Test

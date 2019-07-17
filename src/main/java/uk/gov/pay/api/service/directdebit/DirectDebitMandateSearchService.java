@@ -5,12 +5,11 @@ import uk.gov.pay.api.model.directdebit.mandates.MandateResponse;
 import uk.gov.pay.api.model.search.directdebit.DirectDebitSearchMandatesParams;
 import uk.gov.pay.api.model.search.directdebit.SearchMandateConnectorResponse;
 import uk.gov.pay.api.model.search.directdebit.SearchMandateResponse;
-import uk.gov.pay.api.service.MandatesService;
+import uk.gov.pay.api.service.PublicApiUriGenerator;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -21,21 +20,21 @@ public class DirectDebitMandateSearchService {
 
     private final Client client;
     private final DirectDebitConnectorUriGenerator directDebitConnectorUriGenerator;
-    private final MandatesService mandatesService;
+    private final PublicApiUriGenerator publicApiUriGenerator;
     
     
     @Inject
-    public DirectDebitMandateSearchService(Client client, DirectDebitConnectorUriGenerator directDebitConnectorUriGenerator, MandatesService mandatesService) {
+    public DirectDebitMandateSearchService(Client client, DirectDebitConnectorUriGenerator directDebitConnectorUriGenerator, PublicApiUriGenerator publicApiUriGenerator) {
         this.client = client;
         this.directDebitConnectorUriGenerator = directDebitConnectorUriGenerator;
-        this.mandatesService = mandatesService;
+        this.publicApiUriGenerator = publicApiUriGenerator;
     }
     
     public SearchMandateResponse search(Account account, DirectDebitSearchMandatesParams params) {
         SearchMandateConnectorResponse connectorResponse = getMandatesFromDDConnector(account, params);
 
         var mandateResponse = connectorResponse.getMandates().stream()
-                .map(mandatesService::createMandateResponseFromMandateConnectorResponse)
+                .map(connMandate -> new MandateResponse(connMandate, publicApiUriGenerator))
                 .collect(Collectors.toUnmodifiableList());
 
         return aSearchMandateResponse()
