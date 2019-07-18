@@ -6,7 +6,7 @@ import uk.gov.pay.api.model.links.SearchNavigationLinks;
 
 import java.util.List;
 
-public class SearchMandateConnectorResponse {
+public class MandateSearchConnectorResponse {
     @JsonProperty("total")
     private int total;
     @JsonProperty("count")
@@ -78,14 +78,14 @@ public class SearchMandateConnectorResponse {
             return this;
         }
 
-        public SearchMandateConnectorResponse build() {
-            SearchMandateConnectorResponse searchMandateConnectorResponse = new SearchMandateConnectorResponse();
-            searchMandateConnectorResponse.mandates = this.mandates;
-            searchMandateConnectorResponse.links = this.links;
-            searchMandateConnectorResponse.total = this.total;
-            searchMandateConnectorResponse.page = this.page;
-            searchMandateConnectorResponse.count = this.count;
-            return searchMandateConnectorResponse;
+        public MandateSearchConnectorResponse build() {
+            MandateSearchConnectorResponse mandateSearchConnectorResponse = new MandateSearchConnectorResponse();
+            mandateSearchConnectorResponse.mandates = this.mandates;
+            mandateSearchConnectorResponse.links = this.links;
+            mandateSearchConnectorResponse.total = this.total;
+            mandateSearchConnectorResponse.page = this.page;
+            mandateSearchConnectorResponse.count = this.count;
+            return mandateSearchConnectorResponse;
         }
     }
 }

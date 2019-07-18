@@ -14,7 +14,7 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.directdebit.mandates.MandateState;
-import uk.gov.pay.api.model.search.directdebit.SearchMandateConnectorResponse;
+import uk.gov.pay.api.model.search.directdebit.MandateSearchConnectorResponse;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
@@ -69,7 +69,7 @@ public class DirectDebitMandateSearchServiceTest {
                 .withBankStatementReference(expectedBankStatementReference)
                 .build();
 
-        SearchMandateConnectorResponse searchResponse = searchService.getMandatesFromDDConnector(account, searchParams);
+        MandateSearchConnectorResponse searchResponse = searchService.getMandatesFromDDConnector(account, searchParams);
 
         var mandateConnectorResponse = searchResponse.getMandates().get(0);
 

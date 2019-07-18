@@ -1,6 +1,5 @@
 package uk.gov.pay.api.model.search.directdebit;
 
-import org.hamcrest.collection.IsMapContaining;
 import org.junit.Test;
 
 import java.time.ZonedDateTime;
@@ -8,14 +7,15 @@ import java.time.ZonedDateTime;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static uk.gov.pay.api.model.search.directdebit.DirectDebitSearchMandatesParams.DirectDebitSearchMandatesParamsBuilder.aDirectDebitSearchMandatesParams;
+import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public class DirectDebitSearchMandatesParamsTest {
 
     @Test
     public void shouldCreateMapWithAllValues() {
 
-        final var yesterday = ZonedDateTime.now().minusDays(1);
-        final var tomorrow = ZonedDateTime.now().plusDays(1);
+        final var yesterday = ISO_INSTANT_MILLISECOND_PRECISION.format(ZonedDateTime.now().minusDays(1));
+        final var tomorrow = ISO_INSTANT_MILLISECOND_PRECISION.format(ZonedDateTime.now().plusDays(1));
 
         var params = aDirectDebitSearchMandatesParams()
                 .withBankStatementReference("a bank statement reference")

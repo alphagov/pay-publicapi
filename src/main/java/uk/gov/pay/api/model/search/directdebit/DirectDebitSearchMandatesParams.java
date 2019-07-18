@@ -1,5 +1,10 @@
 package uk.gov.pay.api.model.search.directdebit;
 
+import uk.gov.pay.commons.validation.ValidDate;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.QueryParam;
 import java.time.ZonedDateTime;
@@ -14,6 +19,7 @@ public class DirectDebitSearchMandatesParams {
     private String reference;
 
     @QueryParam("state")
+    @Pattern(regexp = "created|started|pending|submitted|active|inactive|cancelled", message = "state is not a valid mandate external state")
     private String state;
 
     @QueryParam("bank_statement_reference")
@@ -26,17 +32,22 @@ public class DirectDebitSearchMandatesParams {
     private String name;
 
     @QueryParam("from_date")
-    private ZonedDateTime fromDate;
+    @ValidDate()
+    private String fromDate;
 
     @QueryParam("to_date")
-    private ZonedDateTime toDate;
+    @ValidDate()
+    private String toDate;
 
-    @DefaultValue("1")
     @QueryParam("page")
+    @DefaultValue("1")
+    @Min(value = 1, message = "Must be greater than or equal to {value}")
     private int page;
 
-    @DefaultValue("500")
     @QueryParam("display_size")
+    @DefaultValue("500")
+    @Min(value = 1, message = "Must be greater than or equal to {value}")
+    @Max(value = 500, message = "Must be less than or equal to {value}")
     private int displaySize;
 
     public DirectDebitSearchMandatesParams() { };
@@ -73,11 +84,11 @@ public class DirectDebitSearchMandatesParams {
         return Optional.ofNullable(name);
     }
 
-    public Optional<ZonedDateTime> getFromDate() {
+    public Optional<String> getFromDate() {
         return Optional.ofNullable(fromDate);
     }
 
-    public Optional<ZonedDateTime> getToDate() {
+    public Optional<String> getToDate() {
         return Optional.ofNullable(toDate);
     }
 
@@ -113,8 +124,8 @@ public class DirectDebitSearchMandatesParams {
         private String bankStatementReference;
         private String email;
         private String name;
-        private ZonedDateTime fromDate;
-        private ZonedDateTime toDate;
+        private String fromDate;
+        private String toDate;
         private int page = 1;
         private int displaySize = 500;
 
@@ -150,12 +161,12 @@ public class DirectDebitSearchMandatesParams {
             return this;
         }
 
-        public DirectDebitSearchMandatesParamsBuilder withFromDate(ZonedDateTime fromDate) {
+        public DirectDebitSearchMandatesParamsBuilder withFromDate(String fromDate) {
             this.fromDate = fromDate;
             return this;
         }
 
-        public DirectDebitSearchMandatesParamsBuilder withToDate(ZonedDateTime toDate) {
+        public DirectDebitSearchMandatesParamsBuilder withToDate(String toDate) {
             this.toDate = toDate;
             return this;
         }
