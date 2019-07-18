@@ -7,7 +7,7 @@
   },
   "interactions": [
     {
-      "description": "get a charge request with awaiting charge request state",
+      "description": "get one charge in awaiting capture request status",
       "providerStates": [
         {
           "name": "a charge with delayed capture true and awaiting capture request status exists",
@@ -30,7 +30,7 @@
           "amount": 100,
           "state": {
             "finished": false,
-            "status": "submitted"
+            "status": "capturable"
           },
           "description": "Test description",
           "reference": "aReference",
@@ -72,6 +72,9 @@
           "body": {
             "$.reference": {
               "matchers": [{"match": "type"}]
+            },
+            "$.state.status": {
+              "matchers": [{"match": "regex", "regex": "submitted|capturable"}]
             },
             "$.description": {
               "matchers": [{"match": "type"}]
