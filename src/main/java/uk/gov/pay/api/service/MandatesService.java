@@ -41,8 +41,7 @@ public class MandatesService {
 
     public MandateResponse create(Account account, CreateMandateRequest createMandateRequest) {
         MandateConnectorResponse mandate = createMandate(account, MandateConnectorRequest.from(createMandateRequest));
-        MandateLinks mandateLinks = createLinksFromMandateResponse(mandate);
-        MandateResponse createMandateResponse = new MandateResponse(mandate, mandateLinks);
+        MandateResponse createMandateResponse = new MandateResponse(mandate, publicApiUriGenerator);
         LOGGER.info("Mandate returned (created): [ {} ]", createMandateResponse);
         return createMandateResponse;
     }
@@ -51,22 +50,11 @@ public class MandatesService {
         Response connectorResponse = getMandate(account, mandateId);
         if (isFound(connectorResponse)) {
             MandateConnectorResponse mandate = connectorResponse.readEntity(MandateConnectorResponse.class);
-            MandateLinks mandateLinks = createLinksFromMandateResponse(mandate);
-            MandateResponse getMandateResponse = new MandateResponse(mandate, mandateLinks);
+            MandateResponse getMandateResponse = new MandateResponse(mandate, publicApiUriGenerator);
             LOGGER.info("Mandate returned (get): [ {} ]", getMandateResponse);
             return getMandateResponse;
         }
         throw new GetMandateException(connectorResponse);
-    }
-
-    private MandateLinks createLinksFromMandateResponse(MandateConnectorResponse mandate) {
-        return aMandateLinks()
-                .withSelf(publicApiUriGenerator.getMandateURI(mandate.getMandateId()).toString())
-                .withPayments(publicApiUriGenerator.getMandatePaymentsURI(mandate.getMandateId()).toString())
-                .withNextUrl(mandate.getLinks())
-                .withNextUrlPost(mandate.getLinks())
-                .withEvents(publicApiUriGenerator.getMandateEventsURI(mandate.getMandateId()))
-                .build();
     }
 
     MandateConnectorResponse createMandate(Account account, MandateConnectorRequest mandateConnectorRequest) {
