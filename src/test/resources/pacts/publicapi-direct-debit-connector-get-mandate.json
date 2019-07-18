@@ -37,7 +37,7 @@
           "created_date": "2016-01-01T12:00:00Z",
           "state": {
             "status": "created",
-            "finished": false,
+            "finished": false
           },
           "payer": {
             "name": "Jack",
