@@ -2,6 +2,7 @@ package uk.gov.pay.api.it.directdebit;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
+import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
@@ -44,17 +45,103 @@ public class MandateResourceSearchMandateIT extends PaymentResourceITestBase {
     private static final String PAYER_EMAIL = "payer@example.com";
     public static final String DD_CONNECTOR_BASE_SEARCH_URL = "https://connector/v1/api/accounts/%s/mandates?page=1&display_size=500";
 
-    @Test
-    public void searchMandate() throws JsonProcessingException {
-
+    @Before
+    public void setup() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
+    }
 
+    @Test
+    public void shouldReturnErrorForInvalidPageNumber() {
+        given().port(app.getLocalPort())
+                .accept(JSON)
+                .contentType(JSON)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
+                .queryParam("page", -1)
+                .get("/v1/directdebit/mandates/")
+                .then()
+                .body("field", is("page"))
+                .body("code", is("P0102"))
+                .body("description", is("Invalid attribute value: page. Must be greater than or equal to 1"));
+    }
+
+    @Test
+    public void shouldReturnErrorForInvalidFromDate() {
+        given().port(app.getLocalPort())
+                .accept(JSON)
+                .contentType(JSON)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
+                .queryParam("from_date", "this isn't a date")
+                .get("/v1/directdebit/mandates/")
+                .then()
+                .body("field", is("from_date"))
+                .body("code", is("P0102"))
+                .body("description", is("Invalid attribute value: from_date. Must be a valid date"));
+    }
+
+    @Test
+    public void shouldReturnErrorForInvalidToDate() {
+        given().port(app.getLocalPort())
+                .accept(JSON)
+                .contentType(JSON)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
+                .queryParam("to_date", "this isn't a date")
+                .get("/v1/directdebit/mandates/")
+                .then()
+                .body("field", is("to_date"))
+                .body("code", is("P0102"))
+                .body("description", is("Invalid attribute value: to_date. Must be a valid date"));
+    }
+
+    @Test
+    public void shouldReturnErrorForDisplaySizeTooGreat() {
+        given().port(app.getLocalPort())
+                .accept(JSON)
+                .contentType(JSON)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
+                .queryParam("display_size", 501)
+                .get("/v1/directdebit/mandates/")
+                .then()
+                .body("field", is("display_size"))
+                .body("code", is("P0102"))
+                .body("description", is("Invalid attribute value: display_size. Must be less than or equal to 500"));
+    }
+
+    @Test
+    public void shouldReturnErrorForDisplaySizeTooSmall() {
+        given().port(app.getLocalPort())
+                .accept(JSON)
+                .contentType(JSON)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
+                .queryParam("display_size", 0)
+                .get("/v1/directdebit/mandates/")
+                .then()
+                .body("field", is("display_size"))
+                .body("code", is("P0102"))
+                .body("description", is("Invalid attribute value: display_size. Must be greater than or equal to 1"));
+    }
+
+    @Test
+    public void shouldReturnErroForInvalidMandateState() {
+        given().port(app.getLocalPort())
+                .accept(JSON)
+                .contentType(JSON)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
+                .queryParam("state", "doesn't exist")
+                .get("/v1/directdebit/mandates/")
+                .then()
+                .body("field", is("state"))
+                .body("code", is("P0102"))
+                .body("description", is("Invalid attribute value: state. state is not a valid mandate external state"));
+    }
+
+    @Test
+    public void shouldSuccessfullySearchMandate() throws JsonProcessingException {
         var searchNavigationLinksFromConnector = new SearchNavigationLinks()
                 .withFirstLink(DD_CONNECTOR_BASE_SEARCH_URL + "&firstLink")
                 .withLastLink(DD_CONNECTOR_BASE_SEARCH_URL + "&lastLink")
                 .withNextLink(DD_CONNECTOR_BASE_SEARCH_URL + "&nextLink")
                 .withSelfLink(DD_CONNECTOR_BASE_SEARCH_URL + "&selfLink");
-        
+
         var selfLink = new PaymentConnectorResponseLink("self", "https://connector", "GET", null, null);
 
         MandateConnectorResponse mandate = aMandateConnectorResponse()
@@ -77,10 +164,16 @@ public class MandateResourceSearchMandateIT extends PaymentResourceITestBase {
                 .withLinks(searchNavigationLinksFromConnector)
                 .build();
 
+        String toDate = ISO_INSTANT_MILLISECOND_PRECISION.format(ZonedDateTime.now());
+        String fromDate = ISO_INSTANT_MILLISECOND_PRECISION.format(ZonedDateTime.now().minusDays(1));
+
         Map<String, StringValuePattern>  searchParams = Map.of(
                 "reference", equalTo(SERVICE_REFERENCE),
                 "page", equalTo("1"),
-                "display_size", equalTo("500")
+                "display_size", equalTo("500"),
+                "state", equalTo("created"),
+                "to_date", equalTo(toDate),
+                "from_date", equalTo(fromDate)
         );
 
         connectorDDMockClient.respondOk_whenSearchMandatesRequest(searchParams, connectorResponse, GATEWAY_ACCOUNT_ID);
@@ -90,6 +183,9 @@ public class MandateResourceSearchMandateIT extends PaymentResourceITestBase {
                 .contentType(JSON)
                 .header(AUTHORIZATION, "Bearer " + API_KEY)
                 .queryParam("reference", SERVICE_REFERENCE)
+                .queryParam("state", "created")
+                .queryParam("to_date", toDate)
+                .queryParam("from_date", fromDate)
                 .get("/v1/directdebit/mandates/")
                 .then()
                 .statusCode(200)
