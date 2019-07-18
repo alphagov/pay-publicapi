@@ -23,6 +23,10 @@ public class TelephonePaymentNotificationResource {
 
     private static final Logger logger = LoggerFactory.getLogger(TelephonePaymentNotificationResource.class);
     
+    public TelephonePaymentNotificationResource(){
+        
+    }
+    
     @POST
     @Timed
     @Path("/v1/payment_notification")

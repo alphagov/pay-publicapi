@@ -7,7 +7,6 @@ import uk.gov.pay.api.utils.PublicAuthMockClient;
 
 import java.util.Map;
 
-
 public class CreateTelepehonePaymentCardExpiryValidation extends TelephonePaymentResourceITBase {
 
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
