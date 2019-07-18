@@ -20,7 +20,6 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -33,7 +32,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.pay.commons.testing.port.PortFactory.findFreePort;
 
-public class FirstSixCardDigitsValidationTest {
+public class LastFourCardDigitsValidationResourceTest {
 
     protected static final String API_KEY = ApiKeyGenerator.apiKeyValueOf("TEST_BEARER_TOKEN", "qwer9yuhgf");
     private static final int PUBLIC_AUTH_PORT = findFreePort();
@@ -74,7 +73,7 @@ public class FirstSixCardDigitsValidationTest {
     }
 
     @Test
-    public void respondWith422_whenFiveDigitsProvidedOnly() {
+    public void respondWith422_whenThreeDigitsProvidedOnly() {
         String payload = toJson(Map.of("amount", 100,
                 "reference", "Some reference",
                 "description","hi",
@@ -83,14 +82,14 @@ public class FirstSixCardDigitsValidationTest {
                 "card_type", "visa",
                 "card_expiry", "01/99",
                 "last_four_digits", "123",
-                "first_six_digits", "12345"));
+                "first_six_digits", "123456"));
 
         Response response = sendPayload(payload);
         assertThat(response.getStatus(), is(422));
     }
 
     @Test
-    public void respondWith422_whenSevenDigitsProvidedOnly() {
+    public void respondWith422_whenFiveDigitsProvidedOnly() {
         String payload = toJson(Map.of("amount", 100,
                 "reference", "Some reference",
                 "description","hi",
@@ -99,12 +98,12 @@ public class FirstSixCardDigitsValidationTest {
                 "card_type", "visa",
                 "card_expiry", "01/99",
                 "last_four_digits", "12345",
-                "first_six_digits", "1234567"));
+                "first_six_digits", "123456"));
 
         Response response = sendPayload(payload);
         assertThat(response.getStatus(), is(422));
     }
-    
+
     @Test
     public void respondWith422_whenNullProvided() {
         String payload = "{" +
@@ -115,10 +114,12 @@ public class FirstSixCardDigitsValidationTest {
                 "  \"provider_id\" : \"1PROV\"," +
                 "  \"card_type\" : \"visa\"," +
                 "  \"card_expiry\" : \"01/99\"," +
-                "  \"last_four_digits\" : \"1234\"," +
-                "  \"first_six_digits\" : null" +
+                "  \"last_four_digits\" : null," +
+                "  \"first_six_digits\" : \"123456\"" +
                 "}";
+        
         Response response = sendPayload(payload);
         assertThat(response.getStatus(), is(422));
     }
+    
 }

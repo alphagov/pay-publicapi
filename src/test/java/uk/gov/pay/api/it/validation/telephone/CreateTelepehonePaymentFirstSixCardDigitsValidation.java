@@ -41,7 +41,7 @@ public class CreateTelepehonePaymentFirstSixCardDigitsValidation extends Telepho
                 "provider_id", "1PROV",
                 "card_type", "visa",
                 "card_expiry", "01/99",
-                "last_four_digits", "12345",
+                "last_four_digits", "1234",
                 "first_six_digits", "1234567"));
 
         postPaymentResponse(payload).statusCode(422);
