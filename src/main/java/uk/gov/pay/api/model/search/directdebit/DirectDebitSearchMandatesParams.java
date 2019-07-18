@@ -1,5 +1,6 @@
 package uk.gov.pay.api.model.search.directdebit;
 
+import io.swagger.annotations.ApiParam;
 import uk.gov.pay.commons.validation.ValidDate;
 
 import javax.validation.constraints.Max;
@@ -7,7 +8,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.QueryParam;
-import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,11 +31,13 @@ public class DirectDebitSearchMandatesParams {
     @QueryParam("name")
     private String name;
 
+    @ApiParam(value = "From date of mandates to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z")
     @QueryParam("from_date")
     @ValidDate()
     private String fromDate;
 
     @QueryParam("to_date")
+    @ApiParam(value = "To date of mandates to be searched (this date is exclusive). Example=2015-08-13T12:35:00Z")
     @ValidDate()
     private String toDate;
 

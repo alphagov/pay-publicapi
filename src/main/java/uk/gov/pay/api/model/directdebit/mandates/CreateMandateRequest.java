@@ -13,7 +13,7 @@ import javax.validation.constraints.Size;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@ApiModel(value = "CreateMandateRequest", description = "The Payload to create a new Agreement")
+@ApiModel(description = "The Payload to create a new Mandate")
 public class CreateMandateRequest {
 
     @NotNull

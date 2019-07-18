@@ -63,35 +63,35 @@ public class MandateResponse {
         return paymentProvider;
     }
     
-    @ApiModelProperty(value = "mandate created date", required = true)
+    @ApiModelProperty(value = "mandate created date")
     @JsonProperty("created_date")
     public String getCreatedDate() {
         return createdDate;
     }
 
-    @ApiModelProperty(value = "mandate id", required = true, example = "jhjcvaiqlediuhh23d89hd3")
+    @ApiModelProperty(value = "mandate id", example = "jhjcvaiqlediuhh23d89hd3")
     @JsonProperty(value = "mandate_id")
     public String getMandateId() {
         return this.mandateId;
     }
 
-    @ApiModelProperty(value = "provider id", required = true, example = "jhjcvaiqlediuhh23d89hd3")
+    @ApiModelProperty(value = "provider id", example = "jhjcvaiqlediuhh23d89hd3")
     @JsonProperty(value = "provider_id")
     public String getProviderId() { return providerId; }
 
-    @ApiModelProperty(value = "service return url", required = true, example = "https://service-name.gov.uk/transactions/12345")
+    @ApiModelProperty(value = "service return url", example = "https://service-name.gov.uk/transactions/12345")
     @JsonProperty("return_url")
     public String getReturnUrl() {
         return returnUrl;
     }
 
-    @ApiModelProperty(value = "mandate state", required = true, example = "CREATED")
+    @ApiModelProperty(value = "mandate state", example = "CREATED")
     @JsonProperty(value = "state")
     public MandateStatus getState() {
         return state;
     }
 
-    @ApiModelProperty(value = "links", required = true) 
+    @ApiModelProperty(value = "links") 
     @JsonProperty(value = "_links")
     public MandateLinks getLinks() {
         return links;
@@ -101,7 +101,7 @@ public class MandateResponse {
     @JsonProperty(value = "reference")
     public String getReference() { return reference; }
 
-    @ApiModelProperty(value = "bank reference")
+    @ApiModelProperty(value = "This value comes from GoCardless when a mandate has been created.")
     @JsonProperty(value = "bank_statement_reference")
     public String getMandateReference() {
         return mandateReference;

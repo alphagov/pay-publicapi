@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.PaymentError;
-import uk.gov.pay.api.model.directdebit.mandates.AgreementError;
+import uk.gov.pay.api.model.directdebit.mandates.MandateError;
 import uk.gov.pay.api.model.directdebit.mandates.CreateMandateRequest;
 import uk.gov.pay.api.model.directdebit.mandates.MandateResponse;
 import uk.gov.pay.api.model.search.directdebit.DirectDebitSearchMandatesParams;
@@ -37,7 +37,7 @@ import java.net.URI;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/")
-@Api(value = "/", description = "Public Api Endpoints for an agreements")
+@Api(value = "/")
 @Produces({"application/json"})
 public class MandatesResource {
 
@@ -60,15 +60,15 @@ public class MandatesResource {
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Find mandate by ID",
-            notes = "Return information about the mandate " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'")
+            notes = "Return information about the mandate. " +
+                    "The Authorisation token needs to be specified in the 'Authorization' header " +
+                    "as 'Authorization: Bearer YOUR_API_KEY_HERE'")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = MandateResponse.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 404, message = "Not found", response = AgreementError.class),
+            @ApiResponse(code = 404, message = "Not found", response = MandateError.class),
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = AgreementError.class)})
+            @ApiResponse(code = 500, message = "Downstream system error", response = MandateError.class)})
     public Response getMandate(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                @PathParam("mandateId") String mandateId) {
         LOGGER.info("Mandate get request - [ {} ]", mandateId);
@@ -83,15 +83,16 @@ public class MandatesResource {
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Search mandates",
-            notes = "Searches for mandates with the parameters provided " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'")
+            notes = "Searches for mandates with the parameters provided. " +
+                    "The Authorisation token needs to be specified in the 'Authorization' header " +
+                    "as 'Authorization: Bearer YOUR_API_KEY_HERE'")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = MandateResponse.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 404, message = "Not found", response = AgreementError.class),
+            @ApiResponse(code = 404, message = "Not found", response = MandateError.class),
+            @ApiResponse(code = 422, message = "Invalid parameters: from_date, to_date, state, page, display_size. See Public API documentation for the correct data formats", response = PaymentError.class),
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = AgreementError.class)})
+            @ApiResponse(code = 500, message = "Downstream system error", response = MandateError.class)})
     public Response searchMandates(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                    @Valid @BeanParam DirectDebitSearchMandatesParams mandateSearchParams) {
         LOGGER.info("Mandate search request - [ {} ]", mandateSearchParams.toString());
@@ -107,18 +108,19 @@ public class MandatesResource {
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Create a new mandates",
-            notes = "Create a new mandates",
-            code = 201,
-            nickname = "newAgreement")
+            value = "Create a new mandate",
+            notes = "Create a new mandate for the account associated to the Authorisation token. " +
+                    "The Authorisation token needs to be specified in the 'Authorization' header " +
+                    "as 'Authorization: Bearer YOUR_API_KEY_HERE'",
+            code = 201)
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Created", response = MandateResponse.class),
             @ApiResponse(code = 400, message = "Bad request", response = PaymentError.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
-    public Response createNewAgreement(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                                       @ApiParam(value = "requestPayload", required = true) @Valid CreateMandateRequest createMandateRequest) {
+    public Response createMandate(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
+                                  @ApiParam(value = "requestPayload", required = true) @Valid CreateMandateRequest createMandateRequest) {
         LOGGER.info("Mandate create request - [ {} ]", createMandateRequest);
         MandateResponse createMandateResponse = mandateService.create(account, createMandateRequest);
         URI mandateUri = UriBuilder.fromUri(baseUrl)

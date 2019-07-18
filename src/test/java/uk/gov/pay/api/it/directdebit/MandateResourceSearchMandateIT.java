@@ -2,6 +2,7 @@ package uk.gov.pay.api.it.directdebit;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
+import org.apache.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
@@ -59,6 +60,7 @@ public class MandateResourceSearchMandateIT extends PaymentResourceITestBase {
                 .queryParam("page", -1)
                 .get("/v1/directdebit/mandates/")
                 .then()
+                .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
                 .body("field", is("page"))
                 .body("code", is("P0102"))
                 .body("description", is("Invalid attribute value: page. Must be greater than or equal to 1"));
@@ -73,6 +75,7 @@ public class MandateResourceSearchMandateIT extends PaymentResourceITestBase {
                 .queryParam("from_date", "this isn't a date")
                 .get("/v1/directdebit/mandates/")
                 .then()
+                .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
                 .body("field", is("from_date"))
                 .body("code", is("P0102"))
                 .body("description", is("Invalid attribute value: from_date. Must be a valid date"));
@@ -87,6 +90,7 @@ public class MandateResourceSearchMandateIT extends PaymentResourceITestBase {
                 .queryParam("to_date", "this isn't a date")
                 .get("/v1/directdebit/mandates/")
                 .then()
+                .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
                 .body("field", is("to_date"))
                 .body("code", is("P0102"))
                 .body("description", is("Invalid attribute value: to_date. Must be a valid date"));
@@ -101,6 +105,7 @@ public class MandateResourceSearchMandateIT extends PaymentResourceITestBase {
                 .queryParam("display_size", 501)
                 .get("/v1/directdebit/mandates/")
                 .then()
+                .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
                 .body("field", is("display_size"))
                 .body("code", is("P0102"))
                 .body("description", is("Invalid attribute value: display_size. Must be less than or equal to 500"));
@@ -115,6 +120,7 @@ public class MandateResourceSearchMandateIT extends PaymentResourceITestBase {
                 .queryParam("display_size", 0)
                 .get("/v1/directdebit/mandates/")
                 .then()
+                .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
                 .body("field", is("display_size"))
                 .body("code", is("P0102"))
                 .body("description", is("Invalid attribute value: display_size. Must be greater than or equal to 1"));
@@ -129,6 +135,7 @@ public class MandateResourceSearchMandateIT extends PaymentResourceITestBase {
                 .queryParam("state", "doesn't exist")
                 .get("/v1/directdebit/mandates/")
                 .then()
+                .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
                 .body("field", is("state"))
                 .body("code", is("P0102"))
                 .body("description", is("Invalid attribute value: state. state is not a valid mandate external state"));

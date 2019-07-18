@@ -479,10 +479,8 @@
                                 <location>uk.gov.pay.api.resources.PaymentRefundsResource</location>
                                 <location>uk.gov.pay.api.resources.PaymentsResource</location>
                                 <location>uk.gov.pay.api.resources.SearchRefundsResource</location>
+                                <location>uk.gov.pay.api.resources.MandatesResource</location>
                             </locations>
-                            <apiModelPropertyAccessExclusions>
-                                <apiModelPropertyAccessExclusion>agreementId</apiModelPropertyAccessExclusion>
-                            </apiModelPropertyAccessExclusions>
                             <schemes>
                                 <scheme>https</scheme>
                             </schemes>

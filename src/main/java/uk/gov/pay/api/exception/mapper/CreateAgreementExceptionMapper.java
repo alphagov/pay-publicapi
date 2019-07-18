@@ -5,13 +5,13 @@ import javax.ws.rs.ext.ExceptionMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.exception.CreateMandateException;
-import uk.gov.pay.api.model.directdebit.mandates.AgreementError;
-import uk.gov.pay.api.model.directdebit.mandates.AgreementError.Code;
+import uk.gov.pay.api.model.directdebit.mandates.MandateError;
+import uk.gov.pay.api.model.directdebit.mandates.MandateError.Code;
 import uk.gov.pay.commons.model.ErrorIdentifier;
 
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static uk.gov.pay.api.model.directdebit.mandates.AgreementError.anAgreementError;
+import static uk.gov.pay.api.model.directdebit.mandates.MandateError.aMandateError;
 
 public class CreateAgreementExceptionMapper implements ExceptionMapper<CreateMandateException> {
 
@@ -19,22 +19,22 @@ public class CreateAgreementExceptionMapper implements ExceptionMapper<CreateMan
     
     @Override
     public Response toResponse(CreateMandateException exception) {
-        AgreementError agreementError;
+        MandateError mandateError;
         if (exception.getErrorStatus() == NOT_FOUND.getStatusCode()) {
-            agreementError = anAgreementError(AgreementError.Code.CREATE_MANDATE_ACCOUNT_ERROR);
+            mandateError = MandateError.aMandateError(MandateError.Code.CREATE_MANDATE_ACCOUNT_ERROR);
         } else if (exception.getErrorIdentifier() == ErrorIdentifier.GO_CARDLESS_ACCOUNT_NOT_LINKED) {
-            agreementError = anAgreementError(Code.CREATE_MANDATE_ACCOUNT_ERROR);
+            mandateError = MandateError.aMandateError(Code.CREATE_MANDATE_ACCOUNT_ERROR);
         }
         else {
-            agreementError = anAgreementError(AgreementError.Code.CREATE_MANDATE_CONNECTOR_ERROR);
+            mandateError = MandateError.aMandateError(MandateError.Code.CREATE_MANDATE_CONNECTOR_ERROR);
         }
 
         LOGGER.error("Direct Debit connector invalid response was {}.\n Returning http status {} with error body {}",
-                exception.getMessage(), INTERNAL_SERVER_ERROR, agreementError);
+                exception.getMessage(), INTERNAL_SERVER_ERROR, mandateError);
 
         return Response
                 .status(INTERNAL_SERVER_ERROR)
-                .entity(agreementError)
+                .entity(mandateError)
                 .build();
     }
 }

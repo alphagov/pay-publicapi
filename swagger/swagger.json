@@ -11,6 +11,193 @@
   } ],
   "schemes" : [ "https" ],
   "paths" : {
+    "/v1/directdebit/mandates" : {
+      "get" : {
+        "summary" : "Search mandates",
+        "description" : "Searches for mandates with the parameters provided. The Authorisation token needs to be specified in the 'Authorization' header as 'Authorization: Bearer YOUR_API_KEY_HERE'",
+        "operationId" : "searchMandates",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "reference",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "state",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "pattern" : "created|started|pending|submitted|active|inactive|cancelled"
+        }, {
+          "name" : "bank_statement_reference",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "email",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "name",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "from_date",
+          "in" : "query",
+          "description" : "From date of mandates to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "to_date",
+          "in" : "query",
+          "description" : "To date of mandates to be searched (this date is exclusive). Example=2015-08-13T12:35:00Z",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "required" : false,
+          "type" : "integer",
+          "default" : 1,
+          "minimum" : 1,
+          "format" : "int32"
+        }, {
+          "name" : "display_size",
+          "in" : "query",
+          "required" : false,
+          "type" : "integer",
+          "default" : 500,
+          "maximum" : 500,
+          "minimum" : 1,
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/MandateResponse"
+            }
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "404" : {
+            "description" : "Not found",
+            "schema" : {
+              "$ref" : "#/definitions/MandateError"
+            }
+          },
+          "422" : {
+            "description" : "Invalid parameters: from_date, to_date, state, page, display_size. See Public API documentation for the correct data formats",
+            "schema" : {
+              "$ref" : "#/definitions/PaymentError"
+            }
+          },
+          "429" : {
+            "description" : "Too many requests",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorResponse"
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "schema" : {
+              "$ref" : "#/definitions/MandateError"
+            }
+          }
+        }
+      },
+      "post" : {
+        "summary" : "Create a new mandate",
+        "description" : "Create a new mandate for the account associated to the Authorisation token. The Authorisation token needs to be specified in the 'Authorization' header as 'Authorization: Bearer YOUR_API_KEY_HERE'",
+        "operationId" : "createMandate",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "requestPayload",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/CreateMandateRequest"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "schema" : {
+              "$ref" : "#/definitions/MandateResponse"
+            }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "schema" : {
+              "$ref" : "#/definitions/PaymentError"
+            }
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "429" : {
+            "description" : "Too many requests",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorResponse"
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "schema" : {
+              "$ref" : "#/definitions/PaymentError"
+            }
+          }
+        }
+      }
+    },
+    "/v1/directdebit/mandates/{mandateId}" : {
+      "get" : {
+        "summary" : "Find mandate by ID",
+        "description" : "Return information about the mandate. The Authorisation token needs to be specified in the 'Authorization' header as 'Authorization: Bearer YOUR_API_KEY_HERE'",
+        "operationId" : "getMandate",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "mandateId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/MandateResponse"
+            }
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "404" : {
+            "description" : "Not found",
+            "schema" : {
+              "$ref" : "#/definitions/MandateError"
+            }
+          },
+          "429" : {
+            "description" : "Too many requests",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorResponse"
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "schema" : {
+              "$ref" : "#/definitions/MandateError"
+            }
+          }
+        }
+      }
+    },
     "/v1/payments" : {
       "get" : {
         "summary" : "Search payments",
@@ -130,7 +317,7 @@
           "description" : "requestPayload",
           "required" : true,
           "schema" : {
-            "$ref" : "#/definitions/CreatePaymentRequest"
+            "$ref" : "#/definitions/CreateCardPaymentRequest"
           }
         } ],
         "responses" : {
@@ -686,9 +873,9 @@
       },
       "description" : "A structure representing the payment card"
     },
-    "CreatePaymentRequest" : {
+    "CreateCardPaymentRequest" : {
       "type" : "object",
-      "required" : [ "amount", "description", "reference" ],
+      "required" : [ "amount", "description", "reference", "return_url" ],
       "properties" : {
         "amount" : {
           "type" : "integer",
@@ -727,9 +914,62 @@
           "example" : "Joe.Bogs@example.org",
           "description" : "email",
           "readOnly" : true
+        },
+        "return_url" : {
+          "type" : "string",
+          "example" : "https://service-name.gov.uk/transactions/12345",
+          "description" : "service return url",
+          "readOnly" : true,
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "delayed_capture" : {
+          "type" : "boolean",
+          "example" : false,
+          "description" : "delayed capture flag",
+          "readOnly" : true
+        },
+        "metadata" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/ExternalMetadata"
+        },
+        "prefilled_cardholder_details" : {
+          "description" : "prefilled_cardholder_details",
+          "readOnly" : true,
+          "$ref" : "#/definitions/PrefilledCardholderDetails"
         }
       },
       "description" : "The Payment Request Payload"
+    },
+    "CreateMandateRequest" : {
+      "type" : "object",
+      "required" : [ "reference", "return_url" ],
+      "properties" : {
+        "return_url" : {
+          "type" : "string",
+          "example" : "https://service-name.gov.uk/transactions/12345",
+          "description" : "mandate return url",
+          "readOnly" : true,
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "reference" : {
+          "type" : "string",
+          "example" : "test_service_reference",
+          "description" : "mandate reference",
+          "readOnly" : true,
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string",
+          "description" : "mandate description",
+          "readOnly" : true,
+          "minLength" : 1,
+          "maxLength" : 255
+        }
+      },
+      "description" : "The Payload to create a new Mandate"
     },
     "CreatePaymentResult" : {
       "type" : "object",
@@ -820,6 +1060,17 @@
       },
       "description" : "An error response"
     },
+    "ExternalMetadata" : {
+      "type" : "object",
+      "properties" : {
+        "metadata" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object"
+          }
+        }
+      }
+    },
     "GetPaymentResult" : {
       "type" : "object",
       "properties" : {
@@ -827,9 +1078,6 @@
           "type" : "integer",
           "format" : "int64",
           "example" : 1200
-        },
-        "state" : {
-          "$ref" : "#/definitions/PaymentState"
         },
         "description" : {
           "type" : "string",
@@ -853,6 +1101,9 @@
         "email" : {
           "type" : "string",
           "example" : "your email"
+        },
+        "state" : {
+          "$ref" : "#/definitions/PaymentState"
         },
         "payment_id" : {
           "type" : "string",
@@ -950,6 +1201,144 @@
       },
       "description" : "A link related to a payment"
     },
+    "MandateError" : {
+      "type" : "object",
+      "properties" : {
+        "field" : {
+          "type" : "string",
+          "example" : "return_url"
+        },
+        "code" : {
+          "type" : "string",
+          "example" : "P0102"
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "Invalid attribute value: return_url. Must be a valid url."
+        }
+      },
+      "description" : "A Mandate Error response"
+    },
+    "MandateLinks" : {
+      "type" : "object",
+      "properties" : {
+        "self" : {
+          "description" : "self",
+          "readOnly" : true,
+          "$ref" : "#/definitions/Link"
+        },
+        "next_url" : {
+          "description" : "next_url",
+          "readOnly" : true,
+          "$ref" : "#/definitions/Link"
+        },
+        "next_url_post" : {
+          "description" : "next_url_post",
+          "readOnly" : true,
+          "$ref" : "#/definitions/PostLink"
+        },
+        "payments" : {
+          "description" : "payments",
+          "readOnly" : true,
+          "$ref" : "#/definitions/Link"
+        },
+        "events" : {
+          "description" : "events",
+          "readOnly" : true,
+          "$ref" : "#/definitions/Link"
+        }
+      },
+      "description" : "payment, events, self and next links of a Mandate"
+    },
+    "MandateResponse" : {
+      "type" : "object",
+      "properties" : {
+        "mandate_id" : {
+          "type" : "string",
+          "example" : "jhjcvaiqlediuhh23d89hd3",
+          "description" : "mandate id",
+          "readOnly" : true
+        },
+        "provider_id" : {
+          "type" : "string",
+          "example" : "jhjcvaiqlediuhh23d89hd3",
+          "description" : "provider id",
+          "readOnly" : true
+        },
+        "reference" : {
+          "type" : "string",
+          "example" : "jhjcvaiqlediuhh23d89hd3",
+          "description" : "service reference",
+          "readOnly" : true
+        },
+        "return_url" : {
+          "type" : "string",
+          "example" : "https://service-name.gov.uk/transactions/12345",
+          "description" : "service return url",
+          "readOnly" : true
+        },
+        "state" : {
+          "example" : "CREATED",
+          "description" : "mandate state",
+          "readOnly" : true,
+          "$ref" : "#/definitions/MandateStatus"
+        },
+        "_links" : {
+          "description" : "links",
+          "readOnly" : true,
+          "$ref" : "#/definitions/MandateLinks"
+        },
+        "bank_statement_reference" : {
+          "type" : "string",
+          "description" : "This value comes from GoCardless when a mandate has been created.",
+          "readOnly" : true
+        },
+        "created_date" : {
+          "type" : "string",
+          "description" : "mandate created date",
+          "readOnly" : true
+        },
+        "description" : {
+          "type" : "string",
+          "description" : "description",
+          "readOnly" : true
+        },
+        "payment_provider" : {
+          "type" : "string",
+          "description" : "payment_provider",
+          "readOnly" : true
+        },
+        "payer" : {
+          "description" : "payer",
+          "readOnly" : true,
+          "$ref" : "#/definitions/Payer"
+        }
+      }
+    },
+    "MandateStatus" : {
+      "type" : "object",
+      "properties" : {
+        "status" : {
+          "type" : "string"
+        },
+        "details" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Payer" : {
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "email" : {
+          "type" : "string",
+          "readOnly" : true
+        }
+      }
+    },
     "PaymentDetailForSearch" : {
       "type" : "object",
       "properties" : {
@@ -957,9 +1346,6 @@
           "type" : "integer",
           "format" : "int64",
           "example" : 1200
-        },
-        "state" : {
-          "$ref" : "#/definitions/PaymentState"
         },
         "description" : {
           "type" : "string",
@@ -983,6 +1369,9 @@
         "email" : {
           "type" : "string",
           "example" : "your email"
+        },
+        "state" : {
+          "$ref" : "#/definitions/PaymentState"
         },
         "payment_id" : {
           "type" : "string",
@@ -1331,6 +1720,23 @@
         }
       },
       "description" : "A POST link related to a payment"
+    },
+    "PrefilledCardholderDetails" : {
+      "type" : "object",
+      "properties" : {
+        "cardholder_name" : {
+          "type" : "string",
+          "example" : "J. Bogs",
+          "description" : "prefilled cardholder name",
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "billing_address" : {
+          "description" : "prefilled billing address",
+          "readOnly" : true,
+          "$ref" : "#/definitions/Address"
+        }
+      }
     },
     "Refund" : {
       "type" : "object",
