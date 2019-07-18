@@ -9,10 +9,9 @@ import uk.gov.pay.api.model.directdebit.mandates.MandateConnectorResponse;
 import uk.gov.pay.api.model.directdebit.mandates.MandateState;
 import uk.gov.pay.api.model.directdebit.mandates.Payer;
 import uk.gov.pay.api.model.links.SearchNavigationLinks;
-import uk.gov.pay.api.model.search.directdebit.SearchMandateConnectorResponse;
+import uk.gov.pay.api.model.search.directdebit.MandateSearchConnectorResponse;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorDDMockClient;
-import uk.gov.pay.commons.validation.DateTimeUtils;
 
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -26,7 +25,7 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 import static uk.gov.pay.api.model.directdebit.mandates.MandateConnectorResponse.MandateConnectorResponseBuilder.aMandateConnectorResponse;
-import static uk.gov.pay.api.model.search.directdebit.SearchMandateConnectorResponse.SearchMandateConnectorResponseBuilder.aSearchMandateConnectorResponse;
+import static uk.gov.pay.api.model.search.directdebit.MandateSearchConnectorResponse.SearchMandateConnectorResponseBuilder.aSearchMandateConnectorResponse;
 import static uk.gov.pay.api.utils.Urls.mandateLocationFor;
 import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
@@ -70,7 +69,7 @@ public class MandateResourceSearchMandateIT extends PaymentResourceITestBase {
                 .withLinks(Collections.singletonList(selfLink))
                 .build();
 
-        SearchMandateConnectorResponse connectorResponse = aSearchMandateConnectorResponse()
+        MandateSearchConnectorResponse connectorResponse = aSearchMandateConnectorResponse()
                 .withCount(1)
                 .withPage(1)
                 .withTotal(1)

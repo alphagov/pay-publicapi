@@ -6,7 +6,7 @@ import uk.gov.pay.api.exception.SearchMandatesException;
 import uk.gov.pay.api.model.directdebit.mandates.MandateResponse;
 import uk.gov.pay.api.model.links.SearchNavigationLinks;
 import uk.gov.pay.api.model.search.directdebit.DirectDebitSearchMandatesParams;
-import uk.gov.pay.api.model.search.directdebit.SearchMandateConnectorResponse;
+import uk.gov.pay.api.model.search.directdebit.MandateSearchConnectorResponse;
 import uk.gov.pay.api.model.search.directdebit.SearchMandateResponse;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
 
@@ -36,7 +36,7 @@ public class DirectDebitMandateSearchService {
     }
     
     public SearchMandateResponse search(Account account, DirectDebitSearchMandatesParams params) {
-        SearchMandateConnectorResponse connectorResponse = getMandatesFromDDConnector(account, params);
+        MandateSearchConnectorResponse connectorResponse = getMandatesFromDDConnector(account, params);
 
         var mandateResponse = connectorResponse.getMandates().stream()
                 .map(connMandate -> new MandateResponse(connMandate, publicApiUriGenerator))
@@ -51,7 +51,7 @@ public class DirectDebitMandateSearchService {
                 .build();
     }
     
-    SearchMandateConnectorResponse getMandatesFromDDConnector(Account account, DirectDebitSearchMandatesParams params) {
+    MandateSearchConnectorResponse getMandatesFromDDConnector(Account account, DirectDebitSearchMandatesParams params) {
         WebTarget webTargetWithoutQuery = client.target(directDebitConnectorUriGenerator.mandatesURI(account));
         WebTarget webTargetWithQuery = addQueryParams(params.paramsAsMap(), webTargetWithoutQuery);
 
@@ -64,7 +64,7 @@ public class DirectDebitMandateSearchService {
             throw new SearchMandatesException(response);
         }
 
-        return response.readEntity(SearchMandateConnectorResponse.class);
+        return response.readEntity(MandateSearchConnectorResponse.class);
     }
 
     private WebTarget addQueryParams(Map<String, String> params, WebTarget originalWebTarget) {
