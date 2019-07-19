@@ -87,7 +87,7 @@ public class MandatesResource {
                     "The Authorisation token needs to be specified in the 'Authorization' header " +
                     "as 'Authorization: Bearer YOUR_API_KEY_HERE'")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = MandateResponse.class),
+            @ApiResponse(code = 200, message = "OK", response = SearchMandateResponse.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found", response = MandateError.class),
             @ApiResponse(code = 422, message = "Invalid parameters: from_date, to_date, state, page, display_size. See Public API documentation for the correct data formats", response = PaymentError.class),
