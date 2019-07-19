@@ -8,16 +8,16 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <dropwizard.version>1.3.12</dropwizard.version>
+        <dropwizard.version>1.3.13</dropwizard.version>
         <guice.version>4.2.2</guice.version>
         <guava.version>28.0-jre</guava.version>
-        <wiremock.version>2.23.2</wiremock.version>
+        <wiremock.version>2.24.0</wiremock.version>
         <swagger.jersey2.version>1.5.22</swagger.jersey2.version>
         <hamcrest.version>2.1</hamcrest.version>
         <jackson.version>2.9.9</jackson.version>
         <logback.version>1.2.3</logback.version>
         <docker-client.version>8.16.0</docker-client.version>
-        <pay-java-commons.version>1.0.20190705094644</pay-java-commons.version>
+        <pay-java-commons.version>1.0.20190716132611</pay-java-commons.version>
         <pact.version>3.6.11</pact.version>
         <PACT_BROKER_URL/>
         <PACT_BROKER_USERNAME/>
