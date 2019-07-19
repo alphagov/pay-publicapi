@@ -18,11 +18,10 @@ public class DirectDebitSearchPaymentsParams {
     
     @QueryParam("reference")
     @ApiParam(value = "Your payment reference to search")
-    @Size(max = REFERENCE_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
+    @Size(min = 1, max = REFERENCE_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
     private String reference;
     
     @QueryParam("state")
-    @ApiParam(value = "State of payments to be searched. Example=success", allowableValues = "pending,success,failed,cancelled,expired")
     @Pattern(regexp = "pending|success|failed|cancelled|expired",
             flags = Pattern.Flag.CASE_INSENSITIVE,
             message = "Must be one of pending, success, failed, cancelled or expired")
@@ -30,14 +29,16 @@ public class DirectDebitSearchPaymentsParams {
     
     @QueryParam("mandate_id")
     @ApiParam(value = "The GOV.UK Pay identifier for the mandate")
-    @Size(max = MANDATE_ID_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
+    @Size(min = 1, max = MANDATE_ID_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
     private String mandateId;
     
     @QueryParam("from_date")
+    @ApiParam(value = "From date of direct debit payments to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z")
     @ValidDate
     private String fromDate;
     
     @QueryParam("to_date")
+    @ApiParam(value = "To date of direct debit payments to be searched (this date is exclusive). Example=2015-08-13T12:35:00Z")
     @ValidDate
     private String toDate;
     
