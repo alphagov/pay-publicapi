@@ -8,9 +8,9 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static com.google.common.collect.ObjectArrays.concat;
 import static java.lang.String.format;
 
-@ApiModel(value = "AgreementError", description = "An Agreement Error response")
+@ApiModel(value = "MandateError", description = "A Mandate Error response")
 @JsonInclude(NON_NULL)
-public class AgreementError {
+public class MandateError {
 
     public enum Code {
 
@@ -45,20 +45,20 @@ public class AgreementError {
     private final Code code;
     private final String description;
 
-    public static AgreementError anAgreementError(Code code, Object... parameters) {
-        return new AgreementError(code, parameters);
+    public static MandateError aMandateError(Code code, Object... parameters) {
+        return new MandateError(code, parameters);
     }
 
-    public static AgreementError anAgreementError(String fieldName, Code code, Object... parameters) {
-        return new AgreementError(fieldName, code, parameters);
+    public static MandateError aMandateError(String fieldName, Code code, Object... parameters) {
+        return new MandateError(fieldName, code, parameters);
     }
 
-    private AgreementError(Code code, Object... parameters) {
+    private MandateError(Code code, Object... parameters) {
         this.code = code;
         this.description = format(code.getFormat(), parameters);
     }
 
-    private AgreementError(String fieldName, Code code, Object... parameters) {
+    private MandateError(String fieldName, Code code, Object... parameters) {
         this.field = fieldName;
         this.code = code;
         this.description = format(code.getFormat(), concat(fieldName, parameters));
@@ -81,7 +81,7 @@ public class AgreementError {
 
     @Override
     public String toString() {
-        return "AgreementError{" +
+        return "MandateError{" +
                 "field=" + field +
                 ", code=" + code.value() +
                 ", name=" + code +

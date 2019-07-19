@@ -12,7 +12,7 @@ import java.util.List;
 
 import static javax.ws.rs.HttpMethod.GET;
 
-@ApiModel(value = "MandateLinks", description = "self and next links of an Agreement")
+@ApiModel(value = "MandateLinks", description = "payment, events, self and next links of a Mandate")
 public class MandateLinks {
 
     private static final String SELF = "self";
