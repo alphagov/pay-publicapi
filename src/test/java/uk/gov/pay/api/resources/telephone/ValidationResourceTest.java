@@ -1,4 +1,4 @@
-package uk.gov.pay.api.it.validation.telephone;
+package uk.gov.pay.api.resources.telephone;
 
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import io.dropwizard.auth.AuthDynamicFeature;
