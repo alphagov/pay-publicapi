@@ -77,7 +77,7 @@
           "200" : {
             "description" : "OK",
             "schema" : {
-              "$ref" : "#/definitions/MandateResponse"
+              "$ref" : "#/definitions/SearchMandateResponse"
             }
           },
           "401" : {
@@ -1901,6 +1901,37 @@
         }
       },
       "description" : "A structure representing the refunds availability"
+    },
+    "SearchMandateResponse" : {
+      "type" : "object",
+      "properties" : {
+        "total" : {
+          "type" : "integer",
+          "format" : "int32",
+          "readOnly" : true
+        },
+        "count" : {
+          "type" : "integer",
+          "format" : "int32",
+          "readOnly" : true
+        },
+        "page" : {
+          "type" : "integer",
+          "format" : "int32",
+          "readOnly" : true
+        },
+        "results" : {
+          "type" : "array",
+          "readOnly" : true,
+          "items" : {
+            "$ref" : "#/definitions/MandateResponse"
+          }
+        },
+        "_links" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/SearchNavigationLinks"
+        }
+      }
     },
     "SearchNavigationLinks" : {
       "type" : "object",
