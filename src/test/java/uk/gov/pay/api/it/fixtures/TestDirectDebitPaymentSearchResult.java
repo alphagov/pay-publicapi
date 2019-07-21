@@ -56,7 +56,7 @@ public class TestDirectDebitPaymentSearchResult {
     public static final class TestDirectDebitPaymentSearchResultBuilder {
         private Long amount = 100L;
         private String paymentId = "a-payment-id";
-        private DirectDebitPaymentState state = new DirectDebitPaymentState("pending", false, null);
+        private DirectDebitPaymentState state = new DirectDebitPaymentState("pending", false, "payment_state_details");
         private String description = "a-description";
         private String reference = "a-reference";
         private String createdDate = "2019-01-01T23:59:59Z";
