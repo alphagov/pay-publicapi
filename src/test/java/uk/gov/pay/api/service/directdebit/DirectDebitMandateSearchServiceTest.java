@@ -78,7 +78,7 @@ public class DirectDebitMandateSearchServiceTest {
         assertThat(mandateConnectorResponse.getProviderId(), is("MD1234"));
         assertThat(mandateConnectorResponse.getServiceReference(), is(SERVICE_REFERENCE));
         assertThat(mandateConnectorResponse.getReturnUrl(), is("https://example.com/return"));
-        assertThat(mandateConnectorResponse.getState(), is(new MandateState("created", false, null)));
+        assertThat(mandateConnectorResponse.getState(), is(new MandateState("created", false, "mandate_state_details")));
         assertThat(mandateConnectorResponse.getCreatedDate(), is("2016-01-01T12:00:00Z"));
         assertThat(mandateConnectorResponse.getPayer().getEmail(), is("payer@example.com"));
         assertThat(mandateConnectorResponse.getPayer().getName(), is("payer"));

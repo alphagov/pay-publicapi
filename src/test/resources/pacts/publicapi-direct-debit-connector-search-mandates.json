@@ -54,6 +54,7 @@
               "created_date": "2016-01-01T12:00:00Z",
               "state": {
                 "status": "created",
+                "details": "mandate_state_details",
                 "finished": false
               },
               "payer": {
@@ -165,6 +166,13 @@
               ]
             },
             "$.results[*].state.status": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.results[*].state.details": {
               "matchers": [
                 {
                   "match": "type"
