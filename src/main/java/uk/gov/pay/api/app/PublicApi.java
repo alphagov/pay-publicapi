@@ -47,6 +47,7 @@ import uk.gov.pay.api.resources.MandatesResource;
 import uk.gov.pay.api.ledger.resource.TransactionsResource;
 import uk.gov.pay.api.resources.DirectDebitEventsResource;
 import uk.gov.pay.api.resources.HealthCheckResource;
+import uk.gov.pay.api.resources.telephone.TelephonePaymentNotificationResource;
 import uk.gov.pay.api.resources.PaymentRefundsResource;
 import uk.gov.pay.api.resources.PaymentsResource;
 import uk.gov.pay.api.resources.RequestDeniedResource;
@@ -99,6 +100,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         environment.jersey().register(injector.getInstance(SearchRefundsResource.class));
         environment.jersey().register(injector.getInstance(DirectDebitPaymentsResource.class));
         environment.jersey().register(injector.getInstance(TransactionsResource.class));
+        environment.jersey().register(injector.getInstance(TelephonePaymentNotificationResource.class));
         environment.jersey().register(new InjectingValidationFeature(injector));
 
         environment.servlets().addFilter("AuthorizationValidationFilter", injector.getInstance(AuthorizationValidationFilter.class))

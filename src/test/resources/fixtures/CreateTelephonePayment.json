@@ -1,0 +1,25 @@
+{
+  "amount": 12000,
+  "reference": "MRPC12345",
+  "description": "New passport application",
+  "created_date": "2018-02-21T16:04:25Z",
+  "authorised_date": "2018-02-21T16:05:33Z",
+  "processor_id": "183f2j8923j8",
+  "provider_id": "17498-8412u9-1273891239",
+  "auth_code": "666",
+  "payment_outcome": {
+    "status": "success",
+    "code": "P0010",
+    "supplemental": {
+      "error_code": "ECKOH01234",
+      "error_message": "textual message describing error code"
+    }
+  },
+  "card_type": "master-card",
+  "name_on_card": "Jane Doe",
+  "email_address": "jane_doe@example.com",
+  "card_expiry": "02/19",
+  "last_four_digits": "1234",
+  "first_six_digits": "654321",
+  "telephone_number": "+447700900796"
+}
