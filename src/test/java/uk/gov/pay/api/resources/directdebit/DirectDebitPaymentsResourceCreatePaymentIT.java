@@ -33,7 +33,6 @@ public class DirectDebitPaymentsResourceCreatePaymentIT extends DirectDebitResou
     private static final String PROVIDER_ID = "aproviderid";
     private static final String PAYMENT_PROVIDER = "a payment provider";
     private static final String MANDATE_ID = "mandate-123";
-    private static final String DETAILS_FIELD = "details";
 
     @Test
     public void createPayment_success() throws JsonProcessingException {
@@ -49,7 +48,7 @@ public class DirectDebitPaymentsResourceCreatePaymentIT extends DirectDebitResou
                 .withDescription(DESCRIPTION)
                 .withMandateId(MANDATE_ID)
                 .withProviderId(PROVIDER_ID)
-                .withState(new DirectDebitPaymentState(status, finished, DETAILS_FIELD))
+                .withState(new DirectDebitPaymentState(status, finished, null))
                 .withReference(REFERENCE)
                 .build();
 

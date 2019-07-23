@@ -97,7 +97,7 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
     }
 
     public void respondOk_whenGetMandateRequest(DDConnectorResponseToGetMandateParams params) {
-        setupGetAgreement(params.getMandateId(), 
+        setupGetMandate(params.getMandateId(), 
                 params.getGatewayAccountId(), 
                 aResponse()
                         .withStatus(200)
@@ -196,7 +196,7 @@ public class ConnectorDDMockClient extends BaseConnectorMockClient {
                 .withHeader(CONTENT_TYPE, matching(APPLICATION_JSON)).willReturn(response));
     }
 
-    private void setupGetAgreement(String mandateId, String gatewayAccountId, ResponseDefinitionBuilder response) {
+    private void setupGetMandate(String mandateId, String gatewayAccountId, ResponseDefinitionBuilder response) {
         wireMockClassRule.stubFor(get(urlPathEqualTo(format("/v1/api/accounts/%s/mandates/%s", gatewayAccountId, mandateId)))
                 .willReturn(response));
     }
