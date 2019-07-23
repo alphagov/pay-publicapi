@@ -59,7 +59,7 @@ public class GetDirectDebitPaymentServiceContractTest {
         assertThat(payment.getPaymentProvider(), is("gocardless"));
         assertThat(payment.getReference(), is("ABCDE"));
         assertThat(payment.getProviderId(), is("AAAA1111"));
-        assertThat(payment.getState(), is(new DirectDebitPaymentState("pending", false, null)));
+        assertThat(payment.getState(), is(new DirectDebitPaymentState("pending", false, "payment_state_details")));
     }
 
 }

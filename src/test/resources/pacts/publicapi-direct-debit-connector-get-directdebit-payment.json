@@ -33,6 +33,7 @@
           "amount": 1000,
           "state": {
             "status": "pending",
+            "details": "payment_state_details",
             "finished": false
           },
           "mandate_id": "aaaa1111",

@@ -40,7 +40,8 @@
               "amount": 1234,
               "state": {
                 "status": "success",
-                "finished": "true",
+                "details": "mandate_state_details",
+                "finished": "true"
               },
               "mandate_id": "jkdjsvd8f78ffkwfek2q",
               "description": "A payment made for crossing the bridge the first time",
@@ -54,7 +55,8 @@
               "amount": 1245,
               "state": {
                 "status": "pending",
-                "finished": "false",
+                "details": "payment_state_details",
+                "finished": "false"
               },
               "mandate_id": "jkdjsvd8f78ffkwfek2q",
               "description": "A payment made for crossing the bridge the second time",
@@ -68,7 +70,8 @@
               "amount": 1256,
               "state": {
                 "status": "cancelled",
-                "finished": "true",
+                "details": "payment_state_details",
+                "finished": "true"
               },
               "mandate_id": "jkdjsvd8f78ffkwfek2q",
               "description": "A payment made for crossing the bridge the third time",
@@ -145,6 +148,13 @@
               ]
             },
             "$.results[*].state.status": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.results[*].state.details": {
               "matchers": [
                 {
                   "match": "type"
