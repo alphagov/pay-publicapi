@@ -52,6 +52,9 @@ public class TelephonePaymentResponse {
     @JsonProperty("telephone_number")
     private String telephoneNumber;
 
+    @JsonProperty("payment_id")
+    private String paymentId;
+
     @JsonProperty("state")
     private State state;
 
@@ -59,7 +62,7 @@ public class TelephonePaymentResponse {
         // For Jackson
     }
 
-    public TelephonePaymentResponse(int amount, String reference, String description, String createdDate, String authorisedDate, String processorId, String providerId, String authCode, PaymentOutcome paymentOutcome, String cardType, String nameOnCard, String emailAddress, String cardExpiry, String lastFourDigits, String firstSixDigits, String telephoneNumber, State state) {
+    public TelephonePaymentResponse(int amount, String reference, String description, String createdDate, String authorisedDate, String processorId, String providerId, String authCode, PaymentOutcome paymentOutcome, String cardType, String nameOnCard, String emailAddress, String cardExpiry, String lastFourDigits, String firstSixDigits, String telephoneNumber, String paymentId, State state) {
         // For testing serialization
         this.amount = amount;
         this.reference = reference;
@@ -77,6 +80,7 @@ public class TelephonePaymentResponse {
         this.lastFourDigits = lastFourDigits;
         this.firstSixDigits = firstSixDigits;
         this.telephoneNumber = telephoneNumber;
+        this.paymentId = paymentId;
         this.state = state;
     }
 

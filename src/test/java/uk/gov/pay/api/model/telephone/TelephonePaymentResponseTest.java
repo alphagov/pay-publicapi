@@ -5,19 +5,21 @@ import io.dropwizard.jackson.Jackson;
 import org.junit.Test;
 
 import static io.dropwizard.testing.FixtureHelpers.fixture;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
-
-public class CreateTelephonePaymentRequestTest {
+public class TelephonePaymentResponseTest {
     
     private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
     
     @Test
-    public void correctlyDeserializesFromJSON() throws Exception {
+    public void serializesToJSON() throws Exception {
+        
         final Supplemental supplemental = new Supplemental("ECKOH01234", "textual message describing error code");
         final PaymentOutcome paymentOutcome = new PaymentOutcome("success", "P0010", supplemental);
-        final CreateTelephonePaymentRequest createTelephonePaymentRequest = new CreateTelephonePaymentRequest(
-                12000, 
+        final State state = new State("success", true, "Hello, world!", "P0010");
+        final TelephonePaymentResponse createTelephonePaymentResponse = new TelephonePaymentResponse(
+                12000,
                 "MRPC12345",
                 "New passport application",
                 "2018-02-21T16:04:25Z",
@@ -32,11 +34,17 @@ public class CreateTelephonePaymentRequestTest {
                 "02/19",
                 "1234",
                 "654321",
-                "+447700900796");
-        
-        CreateTelephonePaymentRequest deserializedCreateTelephonePaymentRequest = MAPPER.readValue(fixture("fixtures/CreateTelephonePayment.json"), CreateTelephonePaymentRequest.class);
-        
+                "+447700900796",
+                "hu20sqlact5260q2nanm0q8u93",
+                state
+        );
 
-        assertThat(createTelephonePaymentRequest).isEqualToComparingFieldByFieldRecursively(deserializedCreateTelephonePaymentRequest);
+        final String expected = MAPPER.writeValueAsString(
+                MAPPER.readValue(fixture("fixtures/TelephonePaymentResponse.json"), TelephonePaymentResponse.class)
+        );
+        
+        final String actual = MAPPER.writeValueAsString(createTelephonePaymentResponse);
+        
+        assertThat(actual, equalTo(expected));
     }
 }
