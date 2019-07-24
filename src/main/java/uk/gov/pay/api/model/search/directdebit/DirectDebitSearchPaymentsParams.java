@@ -3,6 +3,7 @@ package uk.gov.pay.api.model.search.directdebit;
 import io.swagger.annotations.ApiParam;
 import uk.gov.pay.commons.validation.ValidDate;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
@@ -22,6 +23,7 @@ public class DirectDebitSearchPaymentsParams {
     private String reference;
     
     @QueryParam("state")
+    @ApiParam(value = "State of payments to be searched. Example=success")
     @Pattern(regexp = "pending|success|failed|cancelled|expired",
             flags = Pattern.Flag.CASE_INSENSITIVE,
             message = "Must be one of pending, success, failed, cancelled or expired")
@@ -48,6 +50,7 @@ public class DirectDebitSearchPaymentsParams {
     private Integer page;
     
     @QueryParam("display_size")
+    @ApiParam(value = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)")
     @Min(value = 1, message = "Must be greater than or equal to {value}")
     @Max(value = 500, message = "Must be less than or equal to {value}")
     private Integer displaySize;

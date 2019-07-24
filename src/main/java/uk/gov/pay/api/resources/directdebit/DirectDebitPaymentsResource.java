@@ -131,7 +131,7 @@ public class DirectDebitPaymentsResource {
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response getDirectDebitPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                                          @PathParam("paymentId") String paymentId) {
+                                          @PathParam("paymentId") @ApiParam(value = "Payment identifier") String paymentId) {
 
         LOGGER.info("Direct Debit Payment request - paymentId={}", paymentId);
         DirectDebitPayment payment = getDirectDebitPaymentService.getDirectDebitPayment(account, paymentId);

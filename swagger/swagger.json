@@ -215,6 +215,7 @@
         }, {
           "name" : "state",
           "in" : "query",
+          "description" : "State of payments to be searched. Example=success",
           "required" : false,
           "type" : "string",
           "pattern" : "pending|success|failed|cancelled|expired"
@@ -249,6 +250,7 @@
         }, {
           "name" : "display_size",
           "in" : "query",
+          "description" : "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)",
           "required" : false,
           "type" : "integer",
           "maximum" : 500,
@@ -343,6 +345,7 @@
         "parameters" : [ {
           "name" : "paymentId",
           "in" : "path",
+          "description" : "Payment identifier",
           "required" : true,
           "type" : "string"
         } ],
