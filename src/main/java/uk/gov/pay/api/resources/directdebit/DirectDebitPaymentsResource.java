@@ -14,6 +14,8 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.CreateDirectDebitPaymentRequest;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.directdebit.mandates.DirectDebitPayment;
+import uk.gov.pay.api.model.directdebit.mandates.MandateError;
+import uk.gov.pay.api.model.directdebit.mandates.MandateResponse;
 import uk.gov.pay.api.model.search.directdebit.DirectDebitSearchPaymentsParams;
 import uk.gov.pay.api.model.search.directdebit.DirectDebitSearchResponse;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
@@ -38,7 +40,6 @@ import javax.ws.rs.core.UriInfo;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/v1/directdebit/payments/")
-@Api(value = "/v1/directdebit/payments/")
 @Produces({"application/json"})
 public class DirectDebitPaymentsResource {
 
@@ -70,14 +71,12 @@ public class DirectDebitPaymentsResource {
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             code = 201,
-            nickname = "newDirectDebitPayment",
             authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Created", response = DirectDebitPayment.class),
             @ApiResponse(code = 400, message = "Bad request", response = PaymentError.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 422, message = "Invalid attribute value: description. Must be less than or equal " +
-                    "to 255 characters length", response = PaymentError.class),
+            @ApiResponse(code = 422, message = "Invalid parameters: amount, reference, description, mandate id. See Public API documentation for the correct data formats", response = PaymentError.class),
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response createPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
@@ -93,9 +92,9 @@ public class DirectDebitPaymentsResource {
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Search Direct Debit payments",
-            notes = "Search Direct Debit payments by reference, state, mandate and 'from' and 'to' date. " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
+            notes = "Search Direct Debit payments by reference, state, mandate id, and 'from' and 'to' dates. " +
+                    "The Authorisation token needs to be specified in the 'Authorization' header " +
+                    "as 'Authorization: Bearer YOUR_API_KEY_HERE'",
             responseContainer = "List",
             code = 200,
             authorizations = {@Authorization("Authorization")})
@@ -120,17 +119,19 @@ public class DirectDebitPaymentsResource {
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             value = "Find direct debit payment by ID",
-            notes = "Return information about the direct debit payment " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
+            notes = "Return information about the direct debit payment. " +
+                    "The Authorisation token needs to be specified in the 'Authorization' header " +
+                    "as 'Authorization: Bearer YOUR_API_KEY_HERE'",
             code = 200,
             authorizations = {@Authorization("Authorization")})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = DirectDebitPayment.class),
+            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
+            @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
+            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
+            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response getDirectDebitPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                                          @PathParam("paymentId")
-                                          @ApiParam(name = "paymentId",
-                                                  value = "Payment identifier",
-                                                  example = "hu20sqlact5260q2nanm0q8u93")
-                                                  String paymentId) {
+                                          @PathParam("paymentId") @ApiParam(value = "Payment identifier") String paymentId) {
 
         LOGGER.info("Direct Debit Payment request - paymentId={}", paymentId);
         DirectDebitPayment payment = getDirectDebitPaymentService.getDirectDebitPayment(account, paymentId);

@@ -198,6 +198,191 @@
         }
       }
     },
+    "/v1/directdebit/payments" : {
+      "get" : {
+        "summary" : "Search Direct Debit payments",
+        "description" : "Search Direct Debit payments by reference, state, mandate id, and 'from' and 'to' dates. The Authorisation token needs to be specified in the 'Authorization' header as 'Authorization: Bearer YOUR_API_KEY_HERE'",
+        "operationId" : "searchPayments",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "reference",
+          "in" : "query",
+          "description" : "Your payment reference to search",
+          "required" : false,
+          "type" : "string",
+          "maxLength" : 255,
+          "minLength" : 1
+        }, {
+          "name" : "state",
+          "in" : "query",
+          "description" : "State of payments to be searched. Example=success",
+          "required" : false,
+          "type" : "string",
+          "pattern" : "pending|success|failed|cancelled|expired"
+        }, {
+          "name" : "mandate_id",
+          "in" : "query",
+          "description" : "The GOV.UK Pay identifier for the mandate",
+          "required" : false,
+          "type" : "string",
+          "maxLength" : 26,
+          "minLength" : 1
+        }, {
+          "name" : "from_date",
+          "in" : "query",
+          "description" : "From date of direct debit payments to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "to_date",
+          "in" : "query",
+          "description" : "To date of direct debit payments to be searched (this date is exclusive). Example=2015-08-13T12:35:00Z",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page number requested for the search, should be a positive integer (optional, defaults to 1)",
+          "required" : false,
+          "type" : "integer",
+          "minimum" : 1,
+          "format" : "int32"
+        }, {
+          "name" : "display_size",
+          "in" : "query",
+          "description" : "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)",
+          "required" : false,
+          "type" : "integer",
+          "maximum" : 500,
+          "minimum" : 1,
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/DirectDebitSearchResponse"
+            }
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "422" : {
+            "description" : "Invalid parameter. See Public API documentation for the correct data formats",
+            "schema" : {
+              "$ref" : "#/definitions/PaymentError"
+            }
+          },
+          "429" : {
+            "description" : "Too many requests",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorResponse"
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "schema" : {
+              "$ref" : "#/definitions/PaymentError"
+            }
+          }
+        },
+        "security" : [ {
+          "Authorization" : [ ]
+        } ]
+      },
+      "post" : {
+        "summary" : "Create new Direct Debit payment",
+        "description" : "Create a new Direct Debit payment for the account associated to the Authorisation token. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "operationId" : "createPayment",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "schema" : {
+              "$ref" : "#/definitions/DirectDebitPayment"
+            }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "schema" : {
+              "$ref" : "#/definitions/PaymentError"
+            }
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "422" : {
+            "description" : "Invalid parameters: amount, reference, description, mandate id. See Public API documentation for the correct data formats",
+            "schema" : {
+              "$ref" : "#/definitions/PaymentError"
+            }
+          },
+          "429" : {
+            "description" : "Too many requests",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorResponse"
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "schema" : {
+              "$ref" : "#/definitions/PaymentError"
+            }
+          }
+        },
+        "security" : [ {
+          "Authorization" : [ ]
+        } ]
+      }
+    },
+    "/v1/directdebit/payments/{paymentId}" : {
+      "get" : {
+        "summary" : "Find direct debit payment by ID",
+        "description" : "Return information about the direct debit payment. The Authorisation token needs to be specified in the 'Authorization' header as 'Authorization: Bearer YOUR_API_KEY_HERE'",
+        "operationId" : "getDirectDebitPayment",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "paymentId",
+          "in" : "path",
+          "description" : "Payment identifier",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "schema" : {
+              "$ref" : "#/definitions/DirectDebitPayment"
+            }
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "404" : {
+            "description" : "Not found",
+            "schema" : {
+              "$ref" : "#/definitions/PaymentError"
+            }
+          },
+          "429" : {
+            "description" : "Too many requests",
+            "schema" : {
+              "$ref" : "#/definitions/ErrorResponse"
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "schema" : {
+              "$ref" : "#/definitions/PaymentError"
+            }
+          }
+        },
+        "security" : [ {
+          "Authorization" : [ ]
+        } ]
+      }
+    },
     "/v1/payments" : {
       "get" : {
         "summary" : "Search payments",
@@ -1032,6 +1217,156 @@
         },
         "settlement_summary" : {
           "$ref" : "#/definitions/SettlementSummary"
+        }
+      }
+    },
+    "DirectDebitConnectorPaymentResponse" : {
+      "type" : "object",
+      "properties" : {
+        "amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "readOnly" : true
+        },
+        "state" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/DirectDebitPaymentState"
+        },
+        "description" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "reference" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "mandate_id" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "payment_id" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "payment_provider" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "created_date" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "provider_id" : {
+          "type" : "string",
+          "readOnly" : true
+        }
+      }
+    },
+    "DirectDebitPayment" : {
+      "type" : "object",
+      "properties" : {
+        "amount" : {
+          "type" : "integer",
+          "format" : "int64",
+          "example" : 1200
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "Your Service Description"
+        },
+        "reference" : {
+          "type" : "string",
+          "example" : "your-reference"
+        },
+        "payment_id" : {
+          "type" : "string",
+          "example" : "hu20sqlact5260q2nanm0q8u93",
+          "readOnly" : true
+        },
+        "payment_provider" : {
+          "type" : "string",
+          "example" : "worldpay",
+          "readOnly" : true
+        },
+        "created_date" : {
+          "type" : "string",
+          "example" : "2016-01-21T17:15:000Z",
+          "readOnly" : true
+        },
+        "mandate_id" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "provider_id" : {
+          "type" : "string",
+          "readOnly" : true
+        },
+        "_links" : {
+          "$ref" : "#/definitions/DirectDebitPaymentLinks"
+        },
+        "state" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/DirectDebitPaymentState"
+        }
+      }
+    },
+    "DirectDebitPaymentLinks" : {
+      "type" : "object",
+      "properties" : {
+        "self" : {
+          "$ref" : "#/definitions/Link"
+        },
+        "events" : {
+          "$ref" : "#/definitions/Link"
+        },
+        "mandate" : {
+          "$ref" : "#/definitions/Link"
+        }
+      },
+      "description" : "links for payment"
+    },
+    "DirectDebitPaymentState" : {
+      "type" : "object",
+      "properties" : {
+        "details" : {
+          "type" : "string"
+        },
+        "status" : {
+          "type" : "string"
+        },
+        "finished" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "DirectDebitSearchResponse" : {
+      "type" : "object",
+      "properties" : {
+        "total" : {
+          "type" : "integer",
+          "format" : "int32",
+          "readOnly" : true
+        },
+        "count" : {
+          "type" : "integer",
+          "format" : "int32",
+          "readOnly" : true
+        },
+        "page" : {
+          "type" : "integer",
+          "format" : "int32",
+          "readOnly" : true
+        },
+        "results" : {
+          "type" : "array",
+          "readOnly" : true,
+          "items" : {
+            "$ref" : "#/definitions/DirectDebitConnectorPaymentResponse"
+          }
+        },
+        "_links" : {
+          "readOnly" : true,
+          "$ref" : "#/definitions/SearchNavigationLinks"
         }
       }
     },

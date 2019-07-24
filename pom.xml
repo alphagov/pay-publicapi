@@ -480,6 +480,7 @@
                                 <location>uk.gov.pay.api.resources.PaymentsResource</location>
                                 <location>uk.gov.pay.api.resources.SearchRefundsResource</location>
                                 <location>uk.gov.pay.api.resources.MandatesResource</location>
+                                <location>uk.gov.pay.api.resources.directdebit.DirectDebitPaymentsResource</location>
                             </locations>
                             <schemes>
                                 <scheme>https</scheme>
