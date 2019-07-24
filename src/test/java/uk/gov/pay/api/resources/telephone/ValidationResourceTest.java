@@ -12,6 +12,7 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.auth.AccountAuthenticator;
 import uk.gov.pay.api.exception.mapper.ViolationExceptionMapper;
 import uk.gov.pay.api.resources.telephone.TelephonePaymentNotificationResource;
+import uk.gov.pay.api.service.telephone.CreateTelephonePaymentService;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
 
 import javax.ws.rs.client.Client;
@@ -56,7 +57,7 @@ public class ValidationResourceTest {
                         .buildAuthFilter()))
                 .addProvider(new AuthValueFactoryProvider.Binder<>(Account.class))
                 .addProvider(ViolationExceptionMapper.class)
-                .addResource(new TelephonePaymentNotificationResource())
+                .addResource(new TelephonePaymentNotificationResource(new CreateTelephonePaymentService()))
                 .build();
     }
 
