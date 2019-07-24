@@ -120,6 +120,10 @@ public class CreateTelephonePaymentRequest {
         return authorisedDate;
     }
 
+    public String getProcessorId() {
+        return processorId;
+    }
+
     public String getProviderId() {
         return providerId;
     }

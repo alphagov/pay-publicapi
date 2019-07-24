@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
+import uk.gov.pay.api.model.telephone.TelephonePaymentResponse;
+import uk.gov.pay.api.service.telephone.CreateTelephonePaymentService;
 
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -33,6 +35,7 @@ public class TelephonePaymentNotificationResource {
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     public Response newPayment(@Auth Account account, @Valid CreateTelephonePaymentRequest createTelephonePaymentRequest) {
+        
         return Response.status(201).build();
     }
 }
