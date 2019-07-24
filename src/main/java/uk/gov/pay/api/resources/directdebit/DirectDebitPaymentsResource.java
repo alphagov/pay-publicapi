@@ -66,6 +66,7 @@ public class DirectDebitPaymentsResource {
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     @ApiOperation(
+            nickname = "createDirectDebitPayment",
             value = "Create new Direct Debit payment",
             notes = "Create a new Direct Debit payment for the account associated to the Authorisation token. " +
                     "The Authorisation token needs to be specified in the 'authorization' header " +
@@ -91,6 +92,7 @@ public class DirectDebitPaymentsResource {
     @Timed
     @Produces(APPLICATION_JSON)
     @ApiOperation(
+            nickname = "searchDirectDebitPayments",
             value = "Search Direct Debit payments",
             notes = "Search Direct Debit payments by reference, state, mandate id, and 'from' and 'to' dates. " +
                     "The Authorisation token needs to be specified in the 'Authorization' header " +
@@ -118,6 +120,7 @@ public class DirectDebitPaymentsResource {
     @Path("{paymentId}")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
+            nickname = "getDirectDebitPayment",
             value = "Find direct debit payment by ID",
             notes = "Return information about the direct debit payment. " +
                     "The Authorisation token needs to be specified in the 'Authorization' header " +
@@ -130,8 +133,8 @@ public class DirectDebitPaymentsResource {
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
-    public Response getDirectDebitPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                                          @PathParam("paymentId") @ApiParam(value = "Payment identifier") String paymentId) {
+    public Response getPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
+                               @PathParam("paymentId") @ApiParam(value = "Payment identifier") String paymentId) {
 
         LOGGER.info("Direct Debit Payment request - paymentId={}", paymentId);
         DirectDebitPayment payment = getDirectDebitPaymentService.getDirectDebitPayment(account, paymentId);
