@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
@@ -62,7 +63,8 @@ public class MandatesResource {
             value = "Find mandate by ID",
             notes = "Return information about the mandate. " +
                     "The Authorisation token needs to be specified in the 'Authorization' header " +
-                    "as 'Authorization: Bearer YOUR_API_KEY_HERE'")
+                    "as 'Authorization: Bearer YOUR_API_KEY_HERE'",
+            authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = MandateResponse.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
@@ -85,7 +87,8 @@ public class MandatesResource {
             value = "Search mandates",
             notes = "Searches for mandates with the parameters provided. " +
                     "The Authorisation token needs to be specified in the 'Authorization' header " +
-                    "as 'Authorization: Bearer YOUR_API_KEY_HERE'")
+                    "as 'Authorization: Bearer YOUR_API_KEY_HERE'",
+            authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "OK", response = SearchMandateResponse.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
@@ -112,7 +115,8 @@ public class MandatesResource {
             notes = "Create a new mandate for the account associated to the Authorisation token. " +
                     "The Authorisation token needs to be specified in the 'Authorization' header " +
                     "as 'Authorization: Bearer YOUR_API_KEY_HERE'",
-            code = 201)
+            code = 201,
+            authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Created", response = MandateResponse.class),
             @ApiResponse(code = 400, message = "Bad request", response = PaymentError.class),

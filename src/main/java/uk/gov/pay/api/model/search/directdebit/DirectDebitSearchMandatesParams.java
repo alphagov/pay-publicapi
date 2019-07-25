@@ -42,11 +42,13 @@ public class DirectDebitSearchMandatesParams {
     private String toDate;
 
     @QueryParam("page")
+    @ApiParam(value = "Page number requested for the search, should be a positive integer (optional, defaults to 1)")
     @DefaultValue("1")
     @Min(value = 1, message = "Must be greater than or equal to {value}")
     private int page;
 
     @QueryParam("display_size")
+    @ApiParam(value = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)")
     @DefaultValue("500")
     @Min(value = 1, message = "Must be greater than or equal to {value}")
     @Max(value = 500, message = "Must be less than or equal to {value}")
