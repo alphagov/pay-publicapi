@@ -1,7 +1,9 @@
 package uk.gov.pay.api.model.telephone;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import uk.gov.pay.api.validation.ValidPaymentOutcome;
 
+@ValidPaymentOutcome
 public class PaymentOutcome {
     
     @JsonProperty("status")

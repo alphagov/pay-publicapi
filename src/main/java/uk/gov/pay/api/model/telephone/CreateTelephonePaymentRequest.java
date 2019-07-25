@@ -5,7 +5,9 @@ import uk.gov.pay.api.validation.ValidCardExpiryDate;
 import uk.gov.pay.api.validation.ValidCardFirstSixDigits;
 import uk.gov.pay.api.validation.ValidCardLastFourDigits;
 import uk.gov.pay.api.validation.ValidCardType;
+import uk.gov.pay.api.validation.ValidPaymentOutcome;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -49,6 +51,8 @@ public class CreateTelephonePaymentRequest {
     private String authCode;
 
     @JsonProperty("payment_outcome")
+    @Valid
+    @NotNull
     private PaymentOutcome paymentOutcome;
 
     @JsonProperty("card_type")
@@ -131,7 +135,7 @@ public class CreateTelephonePaymentRequest {
     public String getAuthCode() {
         return authCode;
     }
-
+    
     public PaymentOutcome getPaymentOutcome() {
         return paymentOutcome;
     }
