@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dropwizard.jackson.Jackson;
 import org.junit.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.beans.SamePropertyValuesAs.samePropertyValuesAs;
+
 import static io.dropwizard.testing.FixtureHelpers.fixture;
-import static org.assertj.core.api.Java6Assertions.assertThat;
 
 
 public class CreateTelephonePaymentRequestTest {
@@ -36,7 +38,6 @@ public class CreateTelephonePaymentRequestTest {
         
         CreateTelephonePaymentRequest deserializedCreateTelephonePaymentRequest = MAPPER.readValue(fixture("fixtures/CreateTelephonePayment.json"), CreateTelephonePaymentRequest.class);
         
-
-        assertThat(createTelephonePaymentRequest).isEqualToComparingFieldByFieldRecursively(deserializedCreateTelephonePaymentRequest);
+        assertThat(createTelephonePaymentRequest, samePropertyValuesAs(deserializedCreateTelephonePaymentRequest));
     }
 }

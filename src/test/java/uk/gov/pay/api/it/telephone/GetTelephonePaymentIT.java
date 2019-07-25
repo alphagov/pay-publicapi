@@ -25,6 +25,7 @@ public class GetTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 "description","hi",
                 "processor_id", "1PROC",
                 "provider_id", "1PROV",
+                "payment_outcome", Map.of("status", "success"),
                 "card_type", "visa",
                 "card_expiry", "01/99",
                 "last_four_digits", "1234",

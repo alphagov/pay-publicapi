@@ -1,7 +1,10 @@
 package uk.gov.pay.api.model.telephone;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.pay.api.validation.ValidPaymentOutcome;
+
+import java.util.Optional;
 
 @ValidPaymentOutcome
 public class PaymentOutcome {
@@ -13,6 +16,7 @@ public class PaymentOutcome {
     private String code;
     
     @JsonProperty("supplemental")
+    @JsonInclude(JsonInclude.Include.NON_ABSENT)
     private Supplemental supplemental;
 
     public PaymentOutcome() {
@@ -32,8 +36,8 @@ public class PaymentOutcome {
     public String getCode() {
         return code;
     }
-
-    public Supplemental getSupplemental() {
-        return supplemental;
+    
+    public Optional<Supplemental> getSupplemental() {
+        return Optional.ofNullable(supplemental);
     }
 }

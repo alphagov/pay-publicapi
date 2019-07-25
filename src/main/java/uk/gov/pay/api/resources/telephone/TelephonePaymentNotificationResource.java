@@ -34,7 +34,6 @@ public class TelephonePaymentNotificationResource {
     }
     
     
-    
     @POST
     @Timed
     @Path("/v1/payment_notification")
