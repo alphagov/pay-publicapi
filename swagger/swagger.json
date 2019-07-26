@@ -1073,6 +1073,9 @@
       "type" : "object",
       "required" : [ "amount", "description", "reference", "return_url" ],
       "properties" : {
+        "currency" : {
+          "type" : "string"
+        },
         "amount" : {
           "type" : "integer",
           "format" : "int32",

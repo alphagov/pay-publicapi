@@ -34,6 +34,7 @@
         },
         "body": {
           "charge_id": "ch_ab2341da231434l",
+          "currency": "GBP",
           "amount": 100,
           "reference": "a reference",
           "description": "a description",
