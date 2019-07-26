@@ -124,12 +124,12 @@ public class DirectDebitPaymentsResourceCreatePaymentIT extends DirectDebitResou
         return new CreatePaymentRequestValidationParameters[]{
                 someParameters()
                         .withAmount(null)
-                        .withErrorMessage("Invalid attribute value: amount. Must be greater than or equal to 1")
+                        .withErrorMessage("Invalid attribute value: amount. Must be greater than or equal to 100")
                         .withErrorField("amount")
                         .build(),
                 someParameters()
                         .withAmount(0L)
-                        .withErrorMessage("Invalid attribute value: amount. Must be greater than or equal to 1")
+                        .withErrorMessage("Invalid attribute value: amount. Must be greater than or equal to 100")
                         .withErrorField("amount")
                         .build(),
                 someParameters()
