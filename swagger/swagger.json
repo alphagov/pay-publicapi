@@ -307,6 +307,15 @@
         "operationId" : "createDirectDebitPayment",
         "consumes" : [ "application/json" ],
         "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "requestPayload",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/CreateDirectDebitPaymentRequest"
+          }
+        } ],
         "responses" : {
           "201" : {
             "description" : "Created",
@@ -1136,6 +1145,46 @@
         }
       },
       "description" : "The Payment Request Payload"
+    },
+    "CreateDirectDebitPaymentRequest" : {
+      "type" : "object",
+      "required" : [ "amount", "description", "reference" ],
+      "properties" : {
+        "amount" : {
+          "type" : "integer",
+          "format" : "int32",
+          "example" : 12000,
+          "description" : "amount in pence",
+          "readOnly" : true,
+          "minimum" : 100,
+          "maximum" : 10000000
+        },
+        "reference" : {
+          "type" : "string",
+          "example" : "12345",
+          "description" : "payment reference",
+          "readOnly" : true,
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "description" : {
+          "type" : "string",
+          "example" : "New passport application",
+          "description" : "payment description",
+          "readOnly" : true,
+          "minLength" : 0,
+          "maxLength" : 255
+        },
+        "mandate_id" : {
+          "type" : "string",
+          "example" : "33890b55-b9ea-4e2f-90fd-77ae0e9009e2",
+          "description" : "ID of the mandates being used to collect the payment",
+          "readOnly" : true,
+          "minLength" : 0,
+          "maxLength" : 26
+        }
+      },
+      "description" : "The Direct Debit Payment Request Payload"
     },
     "CreateMandateRequest" : {
       "type" : "object",

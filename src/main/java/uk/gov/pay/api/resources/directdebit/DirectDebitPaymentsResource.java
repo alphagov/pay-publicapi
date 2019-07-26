@@ -81,7 +81,7 @@ public class DirectDebitPaymentsResource {
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response createPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                                  @Valid CreateDirectDebitPaymentRequest request) {
+                                  @ApiParam(value = "requestPayload", required = true) @Valid CreateDirectDebitPaymentRequest request) {
         DirectDebitPayment payment = createDirectDebitPaymentsService.create(account, request);
         return Response.created(publicApiUriGenerator.getDirectDebitPaymentURI(payment.getPaymentId()))
                 .entity(payment).build();

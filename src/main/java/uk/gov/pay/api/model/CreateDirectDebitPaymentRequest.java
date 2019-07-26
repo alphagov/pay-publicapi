@@ -17,7 +17,7 @@ public class CreateDirectDebitPaymentRequest {
 
     public static final int REFERENCE_MAX_LENGTH = 255;
     public static final int AMOUNT_MAX_VALUE = 10000000;
-    public static final int AMOUNT_MIN_VALUE = 1;
+    public static final int AMOUNT_MIN_VALUE = 100;
     public static final int DESCRIPTION_MAX_LENGTH = 255;
     public static final int MANDATE_ID_MAX_LENGTH = 26;
 
