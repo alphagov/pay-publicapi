@@ -24,7 +24,7 @@ public class CardTypeValidator implements ConstraintValidator<ValidCardExpiryDat
             return false;
         }
         
-        return CARD_TYPES.contains(value) ? true : false;
+        return CARD_TYPES.contains(value);
         
     }
 }
