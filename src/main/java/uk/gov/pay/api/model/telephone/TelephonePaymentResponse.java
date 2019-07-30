@@ -62,7 +62,24 @@ public class TelephonePaymentResponse {
         // For Jackson
     }
 
-    public TelephonePaymentResponse(int amount, String reference, String description, String createdDate, String authorisedDate, String processorId, String providerId, String authCode, PaymentOutcome paymentOutcome, String cardType, String nameOnCard, String emailAddress, String cardExpiry, String lastFourDigits, String firstSixDigits, String telephoneNumber, String paymentId, State state) {
+    public TelephonePaymentResponse(int amount, 
+                                    String reference, 
+                                    String description, 
+                                    String createdDate, 
+                                    String authorisedDate, 
+                                    String processorId, 
+                                    String providerId, 
+                                    String authCode, 
+                                    PaymentOutcome paymentOutcome, 
+                                    String cardType, 
+                                    String nameOnCard, 
+                                    String emailAddress, 
+                                    String cardExpiry, 
+                                    String lastFourDigits, 
+                                    String firstSixDigits, 
+                                    String telephoneNumber, 
+                                    String paymentId, 
+                                    State state) {
         // For testing serialization
         this.amount = amount;
         this.reference = reference;

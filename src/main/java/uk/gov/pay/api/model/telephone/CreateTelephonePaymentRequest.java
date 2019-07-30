@@ -1,6 +1,8 @@
 package uk.gov.pay.api.model.telephone;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import uk.gov.pay.api.validation.ValidCardExpiryDate;
 import uk.gov.pay.api.validation.ValidCardFirstSixDigits;
 import uk.gov.pay.api.validation.ValidCardLastFourDigits;
@@ -13,6 +15,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class CreateTelephonePaymentRequest {
 
     public static final int REFERENCE_MAX_LENGTH = 255;
@@ -20,64 +23,48 @@ public class CreateTelephonePaymentRequest {
     public static final int AMOUNT_MIN_VALUE = 0;
     public static final int DESCRIPTION_MAX_LENGTH = 255;
     
-    @JsonProperty("amount")
     @Min(value = AMOUNT_MIN_VALUE, message = "Must be greater than or equal to 1")
     @Max(value = AMOUNT_MAX_VALUE, message = "Must be less than or equal to {value}")
     private int amount;
     
-    @JsonProperty("reference")
     @Size(max = REFERENCE_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
     private String reference;
-
-    @JsonProperty("description")
+    
     @Size(max = DESCRIPTION_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
     private String description;
-
-    @JsonProperty("created_date")
+    
     private String createdDate;
-
-    @JsonProperty("authorised_date")
+    
     private String authorisedDate;
     
-    @JsonProperty("processor_id")
     @NotNull
     private String processorId;
-
-    @JsonProperty("provider_id")
+    
     @NotNull
     private String providerId;
-
-    @JsonProperty("auth_code")
+    
     private String authCode;
-
-    @JsonProperty("payment_outcome")
+    
     @Valid
     @NotNull
     private PaymentOutcome paymentOutcome;
-
-    @JsonProperty("card_type")
+    
     @ValidCardType
     private String cardType;
-
-    @JsonProperty("name_on_card")
+    
     private String nameOnCard;
-
-    @JsonProperty("email_address")
+    
     private String emailAddress;
-
-    @JsonProperty("card_expiry")
+    
     @ValidCardExpiryDate
     private String cardExpiry;
-
-    @JsonProperty("last_four_digits")
+    
     @ValidCardLastFourDigits
     private String lastFourDigits;
-
-    @JsonProperty("first_six_digits")
+    
     @ValidCardFirstSixDigits
     private String firstSixDigits;
-
-    @JsonProperty("telephone_number")
+    
     private String telephoneNumber;
 
     public CreateTelephonePaymentRequest() {

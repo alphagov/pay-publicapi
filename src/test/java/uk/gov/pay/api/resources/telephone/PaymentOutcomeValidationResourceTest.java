@@ -39,7 +39,7 @@ public class PaymentOutcomeValidationResourceTest extends ValidationResourceTest
                 "processor_id", "1PROC",
                 "provider_id", "1PROV",
                 "payment_outcome", Map.of(
-                        "status", "success"
+                        "status", "failed"
                 ),
                 "card_type", "visa",
                 "card_expiry", "00/99",
@@ -59,7 +59,7 @@ public class PaymentOutcomeValidationResourceTest extends ValidationResourceTest
                 "processor_id", "1PROC",
                 "provider_id", "1PROV",
                 "payment_outcome", Map.of(
-                        "status", "success", 
+                        "status", "failed", 
                         "code", "unknown_error"
                 ),
                 "card_type", "visa",

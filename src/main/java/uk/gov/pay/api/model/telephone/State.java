@@ -3,17 +3,13 @@ package uk.gov.pay.api.model.telephone;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class State {
-
-    @JsonProperty("status")
+    
     private String status;
-
-    @JsonProperty("finished")
+    
     private Boolean finished;
-
-    @JsonProperty("message")
+    
     private String message;
-
-    @JsonProperty("code")
+    
     private String code;
 
     public State() {

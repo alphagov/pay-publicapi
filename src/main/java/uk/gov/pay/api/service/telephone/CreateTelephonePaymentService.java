@@ -25,11 +25,11 @@ public class CreateTelephonePaymentService {
         State state = new State(
                 "Success",
                 true,
-                "Hello, world!",
+                "Created",
                 "P0010"
         );
         
-        TelephonePaymentResponse telephonePaymentResponse = new TelephonePaymentResponse(
+        return new TelephonePaymentResponse(
                 createTelephonePaymentRequest.getAmount(),
                 createTelephonePaymentRequest.getReference(),
                 createTelephonePaymentRequest.getDescription(),
@@ -49,7 +49,5 @@ public class CreateTelephonePaymentService {
                 "DUMMY API - RECORD NOT PERSISTED",
                 state
         );
-        
-        return telephonePaymentResponse;
     }
 }
