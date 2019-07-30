@@ -20,7 +20,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 public @interface ValidPaymentOutcome {
     
-    String message() default "Test";
+    String message() default "Must include a valid status and error code";
     
     Class<?>[] groups() default{};
     

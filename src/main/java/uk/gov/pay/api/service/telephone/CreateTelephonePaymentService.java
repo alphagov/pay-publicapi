@@ -10,20 +10,8 @@ public class CreateTelephonePaymentService {
     
     public TelephonePaymentResponse create(CreateTelephonePaymentRequest createTelephonePaymentRequest){
         
-        Supplemental supplemental = createTelephonePaymentRequest.getPaymentOutcome().getSupplemental()
-                .map(s -> new Supplemental(
-                        s.getErrorCode(),
-                        s.getErrorMessage()
-                )).orElse(null);
-        
-        PaymentOutcome paymentOutcome = new PaymentOutcome(
-                createTelephonePaymentRequest.getPaymentOutcome().getStatus(),
-                createTelephonePaymentRequest.getPaymentOutcome().getCode(),
-                supplemental
-        );
-        
         State state = new State(
-                "Success",
+                "success",
                 true,
                 "Created",
                 "P0010"
@@ -38,7 +26,7 @@ public class CreateTelephonePaymentService {
                 createTelephonePaymentRequest.getProcessorId(),
                 createTelephonePaymentRequest.getProviderId(),
                 createTelephonePaymentRequest.getAuthCode(),
-                paymentOutcome,
+                createTelephonePaymentRequest.getPaymentOutcome(),
                 createTelephonePaymentRequest.getCardType(),
                 createTelephonePaymentRequest.getNameOnCard(),
                 createTelephonePaymentRequest.getEmailAddress(),
