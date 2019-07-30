@@ -1,10 +1,13 @@
 package uk.gov.pay.api.ledger.service;
 
+import org.apache.commons.collections.map.HashedMap;
 import uk.gov.pay.api.app.config.PublicApiConfig;
+import uk.gov.pay.api.auth.Account;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -30,8 +33,8 @@ public class LedgerUriGenerator {
         return builder.toString();
     }
 
-    public String transactionURI(String paymentId) {
+    public String transactionURI(Account gatewayAccountId, String paymentId) {
         String path = format("/v1/transaction/%s", paymentId);
-        return buildLedgerUri(path, Collections.emptyMap());
+        return buildLedgerUri(path, Map.of("account_id", gatewayAccountId.getAccountId()));
     }
 }

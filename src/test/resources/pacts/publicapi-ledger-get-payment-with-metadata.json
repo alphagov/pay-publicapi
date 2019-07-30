@@ -12,6 +12,7 @@
         {
           "name": "a transaction with metadata exists",
           "params": {
+            "account_id": "123456",
             "charge_id": "ch_123abc456xyz",
             "metadata": "{\"ledger_code\":123, \"some_key\":\"key\"}"
           }
@@ -19,7 +20,10 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/v1/transaction/ch_123abc456xyz"
+        "path": "/v1/transaction/ch_123abc456xyz",
+        "query": {
+          "account_id": ["123456"]
+        }
       },
       "response": {
         "status": 200,

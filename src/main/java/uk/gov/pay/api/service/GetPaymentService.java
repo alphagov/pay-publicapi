@@ -49,7 +49,7 @@ public class GetPaymentService {
 
         if(response.getStatus() == SC_NOT_FOUND && config.getUseLedgerForGetPayment()) {
             response = client
-                    .target(ledgerUriGenerator.transactionURI(paymentId))
+                    .target(ledgerUriGenerator.transactionURI(account, paymentId))
                     .request()
                     .get();
 
