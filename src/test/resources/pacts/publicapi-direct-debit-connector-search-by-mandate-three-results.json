@@ -40,7 +40,6 @@
               "amount": 1234,
               "state": {
                 "status": "success",
-                "finished": "true",
                 "details": "example details"
               },
               "mandate_id": "jkdjsvd8f78ffkwfek2q",
@@ -55,7 +54,6 @@
               "amount": 1245,
               "state": {
                 "status": "pending",
-                "finished": "false",
                 "details": "example details"
               },
               "mandate_id": "jkdjsvd8f78ffkwfek2q",
@@ -70,7 +68,6 @@
               "amount": 1256,
               "state": {
                 "status": "cancelled",
-                "finished": "true",
                 "details": "example details"
               },
               "mandate_id": "jkdjsvd8f78ffkwfek2q",
@@ -158,19 +155,6 @@
               "matchers": [
                 {
                   "match": "type"
-                }
-              ]
-            },
-            "$.results[*].state.finished": {
-              "combine": "OR",
-              "matchers": [
-                {
-                  "match": "include",
-                  "value": "true"
-                },
-                {
-                  "match": "include",
-                  "value": "false"
                 }
               ]
             },

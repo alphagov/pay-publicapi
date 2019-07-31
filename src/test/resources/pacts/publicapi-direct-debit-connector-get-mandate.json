@@ -37,7 +37,6 @@
           "created_date": "2016-01-01T12:00:00Z",
           "state": {
             "status": "created",
-            "finished": false,
             "details": "example details"
           },
           "payer": {
@@ -77,13 +76,6 @@
               ]
             },
             "$.state.status": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ]
-            },
-            "$.state.finished": {
               "matchers": [
                 {
                   "match": "type"

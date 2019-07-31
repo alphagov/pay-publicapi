@@ -40,8 +40,7 @@
           "description": "a description",
           "mandate_id": "a mandate id",
           "state": {
-            "status": "created",
-            "finished": false
+            "status": "created"
           },
           "created_date": "2010-12-31T22:59:59.132Z"
         },
