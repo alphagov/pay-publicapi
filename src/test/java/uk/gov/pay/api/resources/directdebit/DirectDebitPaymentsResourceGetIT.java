@@ -36,7 +36,7 @@ public class DirectDebitPaymentsResourceGetIT extends DirectDebitResourceITBase 
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
 
         connectorDDMockClient.respondWithChargeFound("mandate2000", 1000, GATEWAY_ACCOUNT_ID, "ch_ab2341da231434l",
-                new DirectDebitPaymentState("created", false, "payment_state_details"), "http://example.com",
+                new DirectDebitPaymentState("created", "payment_state_details"), "http://example.com",
                 "a description", "a reference", "gocardless", "2018-06-11T19:40:56Z", "token_1234567asdf");
 
         given().port(app.getLocalPort())
@@ -52,7 +52,6 @@ public class DirectDebitPaymentsResourceGetIT extends DirectDebitResourceITBase 
                 .body("description", is("a description"))
                 .body("amount", is(1000))
                 .body("state.status", is("created"))
-                .body("state.finished", is(false))
                 .body("state.details", is("payment_state_details"))
                 .body("payment_provider", is("gocardless"))
                 .body("created_date", is("2018-06-11T19:40:56Z"))
@@ -108,7 +107,6 @@ public class DirectDebitPaymentsResourceGetIT extends DirectDebitResourceITBase 
                 .body("results[0].reference", Matchers.is(payments.get(0).getReference()))
                 .body("results[0].state.status", Matchers.is(payments.get(0).getState().getStatus()))
                 .body("results[0].state.details", Matchers.is(payments.get(0).getState().getDetails()))
-                .body("results[0].state.finished", Matchers.is(payments.get(0).getState().isFinished()))
                 .body("results[0].mandate_id", Matchers.is(payments.get(0).getMandate_id()))
                 .body("results[0].provider_id", Matchers.is(payments.get(0).getProvider_id()))
                 .body("results[0]._links.events.href", Matchers.is(paymentEventsLocationFor(payments.get(0).getPayment_id())))
