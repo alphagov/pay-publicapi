@@ -48,7 +48,7 @@ public class DirectDebitPaymentsResourceCreatePaymentIT extends DirectDebitResou
                 .withDescription(DESCRIPTION)
                 .withMandateId(MANDATE_ID)
                 .withProviderId(PROVIDER_ID)
-                .withState(new DirectDebitPaymentState(status, finished, null))
+                .withState(new DirectDebitPaymentState(status, null))
                 .withReference(REFERENCE)
                 .build();
 
@@ -69,7 +69,6 @@ public class DirectDebitPaymentsResourceCreatePaymentIT extends DirectDebitResou
                 .body("description", is(DESCRIPTION))
                 .body("reference", is(REFERENCE))
                 .body("state.status", is(status))
-                .body("state.finished", is(finished))
                 .body("mandate_id", is(MANDATE_ID))
                 .body("provider_id", is(PROVIDER_ID))
                 .body("_links.events.href", is(paymentEventsLocationFor(PAYMENT_ID)))
@@ -93,7 +92,7 @@ public class DirectDebitPaymentsResourceCreatePaymentIT extends DirectDebitResou
                 .withCreatedDate(CREATED_DATE)
                 .withMandateId(MANDATE_ID)
                 .withProviderId(PROVIDER_ID)
-                .withState(new DirectDebitPaymentState(status, finished, null))
+                .withState(new DirectDebitPaymentState(status, null))
                 .withReference(REFERENCE)
                 .build();
 
