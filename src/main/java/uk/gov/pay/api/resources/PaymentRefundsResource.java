@@ -51,7 +51,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.http.HttpStatus.SC_OK;
 
 @Path(PaymentRefundsResource.PAYMENT_REFUNDS_PATH)
-@Api(tags = "refunds", value = "/refunds", description = "Public Api Endpoints for Refunds")
+@Api(tags = "Refunds", value = "/refunds")
 @Produces({"application/json"})
 public class PaymentRefundsResource {
     private static final Logger logger = LoggerFactory.getLogger(PaymentRefundsResource.class);
@@ -87,7 +87,6 @@ public class PaymentRefundsResource {
     @Timed
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            tags = "refunds",
             response = RefundForSearchResult.class,
             value = "Get all refunds for a payment",
             notes = "Return refunds for a payment. " +
@@ -125,7 +124,6 @@ public class PaymentRefundsResource {
     @Path("/{refundId}")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            tags = "refunds",
             response = RefundResult.class,
             value = "Find payment refund by ID",
             notes = "Return payment refund information by Refund ID " +
@@ -164,7 +162,6 @@ public class PaymentRefundsResource {
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     @ApiOperation(
-            tags = "refunds",
             response = RefundResult.class,
             value = "Submit a refund for a payment",
             notes = "Return issued refund information. " +

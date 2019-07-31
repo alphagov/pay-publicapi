@@ -38,7 +38,7 @@ import java.net.URI;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/")
-@Api(value = "/")
+@Api(tags = "Direct Debit", value = "/v1/directdebit/mandates")
 @Produces({"application/json"})
 public class MandatesResource {
 

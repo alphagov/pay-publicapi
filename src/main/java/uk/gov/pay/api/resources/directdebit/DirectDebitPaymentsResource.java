@@ -40,6 +40,7 @@ import javax.ws.rs.core.UriInfo;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/v1/directdebit/payments/")
+@Api(tags = "Direct Debit", value = "/v1/directdebit/payments")
 @Produces({"application/json"})
 public class DirectDebitPaymentsResource {
 
