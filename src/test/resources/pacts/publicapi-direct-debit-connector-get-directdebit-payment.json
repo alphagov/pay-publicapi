@@ -33,8 +33,7 @@
           "amount": 1000,
           "state": {
             "status": "pending",
-            "details": "payment_state_details",
-            "finished": false
+            "details": "payment_state_details"
           },
           "mandate_id": "aaaa1111",
           "description": "a description",
@@ -54,13 +53,6 @@
               ]
             },
             "$.state.status": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ]
-            },
-            "$.state.finished": {
               "matchers": [
                 {
                   "match": "type"

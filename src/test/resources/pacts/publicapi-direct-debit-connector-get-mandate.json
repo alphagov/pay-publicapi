@@ -37,8 +37,7 @@
           "created_date": "2016-01-01T12:00:00Z",
           "state": {
             "status": "created",
-            "details": "mandate_state_details",
-            "finished": false
+            "details": "mandate_state_details"
           },
           "payer": {
             "name": "Jack",
@@ -77,13 +76,6 @@
               ]
             },
             "$.state.status": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ]
-            },
-            "$.state.finished": {
               "matchers": [
                 {
                   "match": "type"
