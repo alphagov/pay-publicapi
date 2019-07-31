@@ -88,6 +88,7 @@ public class PaymentRefundsResource {
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             response = RefundForSearchResult.class,
+            nickname = "Get all refunds for a payment",
             value = "Get all refunds for a payment",
             notes = "Return refunds for a payment. " +
                     "The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
@@ -125,6 +126,7 @@ public class PaymentRefundsResource {
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             response = RefundResult.class,
+            nickname = "Get a payment refund",
             value = "Find payment refund by ID",
             notes = "Return payment refund information by Refund ID " +
                     "The Authorisation token needs to be specified in the 'authorization' header " +
@@ -163,6 +165,7 @@ public class PaymentRefundsResource {
     @Consumes(APPLICATION_JSON)
     @ApiOperation(
             response = RefundResult.class,
+            nickname = "Submit a refund for a payment",
             value = "Submit a refund for a payment",
             notes = "Return issued refund information. " +
                     "The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",

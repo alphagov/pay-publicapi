@@ -60,6 +60,7 @@ public class MandatesResource {
     @Path("/v1/directdebit/mandates/{mandateId}")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
+            nickname = "Get a mandate",
             value = "Find mandate by ID",
             notes = "Return information about the mandate. " +
                     "The Authorisation token needs to be specified in the 'Authorization' header " +
@@ -84,6 +85,7 @@ public class MandatesResource {
     @Path("/v1/directdebit/mandates/")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
+            nickname = "Search mandates",
             value = "Search mandates",
             notes = "Searches for mandates with the parameters provided. " +
                     "The Authorisation token needs to be specified in the 'Authorization' header " +
@@ -111,6 +113,7 @@ public class MandatesResource {
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     @ApiOperation(
+            nickname = "Create a mandate",
             value = "Create a new mandate",
             notes = "Create a new mandate for the account associated to the Authorisation token. " +
                     "The Authorisation token needs to be specified in the 'Authorization' header " +
