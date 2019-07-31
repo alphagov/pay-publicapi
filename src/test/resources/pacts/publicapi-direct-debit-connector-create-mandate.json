@@ -39,8 +39,7 @@
           "created_date": "2016-01-01T12:00:00.000Z",
           "payment_provider": "sandbox",
           "state": {
-            "status": "created",
-            "finished": false
+            "status": "created"
           },
           "links": [
             {
@@ -119,13 +118,6 @@
               ]
             },
             "$.state.status": {
-              "matchers": [
-                {
-                  "match": "type"
-                }
-              ]
-            },
-            "$.state.finished": {
               "matchers": [
                 {
                   "match": "type"
