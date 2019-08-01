@@ -2,7 +2,6 @@ package uk.gov.pay.api.ledger.service;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
-import org.skife.jdbi.v2.sqlobject.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
@@ -12,7 +11,6 @@ import uk.gov.pay.api.exception.SearchPaymentsException;
 import uk.gov.pay.api.exception.SearchTransactionsException;
 import uk.gov.pay.api.ledger.model.TransactionSearchParams;
 import uk.gov.pay.api.ledger.model.TransactionSearchResults;
-import uk.gov.pay.api.model.ChargeFromResponse;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.TransactionResponse;
 import uk.gov.pay.api.model.links.Link;
@@ -89,7 +87,6 @@ public class TransactionSearchService {
             return processResponse(ledgerResponse);
         }
         throw new SearchTransactionsException(ledgerResponse);
-
     }
 
     private TransactionSearchResults processResponse(Response connectorResponse) {
@@ -115,14 +112,14 @@ public class TransactionSearchService {
         );
     }
 
-    private PaymentForSearchResult getPaymentForSearchResult(TransactionResponse charge) {
+    private PaymentForSearchResult getPaymentForSearchResult(TransactionResponse transactionResponse) {
         return PaymentForSearchResult.valueOf(
-                charge,
-                paymentApiUriGenerator.getPaymentURI(baseUrl, charge.getTransactionId()),
-                paymentApiUriGenerator.getPaymentEventsURI(baseUrl, charge.getTransactionId()),
-                paymentApiUriGenerator.getPaymentCancelURI(baseUrl, charge.getTransactionId()),
-                paymentApiUriGenerator.getPaymentRefundsURI(baseUrl, charge.getTransactionId()),
-                paymentApiUriGenerator.getPaymentCaptureURI(baseUrl, charge.getTransactionId()));
+                transactionResponse,
+                paymentApiUriGenerator.getPaymentURI(baseUrl, transactionResponse.getTransactionId()),
+                paymentApiUriGenerator.getPaymentEventsURI(baseUrl, transactionResponse.getTransactionId()),
+                paymentApiUriGenerator.getPaymentCancelURI(baseUrl, transactionResponse.getTransactionId()),
+                paymentApiUriGenerator.getPaymentRefundsURI(baseUrl, transactionResponse.getTransactionId()),
+                paymentApiUriGenerator.getPaymentCaptureURI(baseUrl, transactionResponse.getTransactionId()));
     }
 
     private SearchNavigationLinks transformLinks(SearchNavigationLinks links) {
