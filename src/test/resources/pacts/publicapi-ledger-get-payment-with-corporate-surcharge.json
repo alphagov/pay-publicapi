@@ -38,18 +38,6 @@
           "description": "Test description",
           "reference": "aReference",
           "language": "en",
-          "links": [
-            {
-              "rel": "self",
-              "method": "GET",
-              "href": "https://ledger/v1/transaction/ch_123abc456xyz"
-            },
-            {
-              "rel": "refunds",
-              "method": "GET",
-              "href": "https://ledger/v1/transaction/ch_123abc456xyz/refunds"
-            }
-          ],
           "transaction_id": "ch_123abc456xyz",
           "return_url": "https://somewhere.gov.uk/rainbow/1",
           "payment_provider": "sandbox",
@@ -76,21 +64,7 @@
             "$.description": {
               "matchers": [{"match": "type"}]
             },
-            "$.links[0].href": {
-              "matchers": [
-                {
-                  "regex": "http.*:\/\/.*\/v1\/transaction\/ch_123abc456xyz"
-                }
-              ]
-            },
-            "$.links[1].href": {
-              "matchers": [
-                {
-                  "regex": "http.*:\/\/.*\/v1\/transaction\/ch_123abc456xyz\/refunds"
-                }
-              ]
-            },
-            "$.return_url": {
+             "$.return_url": {
               "matchers": [{"match": "type"}]
             },
             "$.created_date": {
