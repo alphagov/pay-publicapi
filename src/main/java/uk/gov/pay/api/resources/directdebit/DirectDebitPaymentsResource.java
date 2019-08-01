@@ -67,7 +67,7 @@ public class DirectDebitPaymentsResource {
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            nickname = "Create a direct debit payment",
+            nickname = "Collect a Direct Debit payment",
             value = "Create new Direct Debit payment",
             notes = "Create a new Direct Debit payment for the account associated to the Authorisation token. " +
                     "The Authorisation token needs to be specified in the 'authorization' header " +
@@ -93,7 +93,7 @@ public class DirectDebitPaymentsResource {
     @Timed
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            nickname = "Search direct debit payments",
+            nickname = "Search Direct Debit payments",
             value = "Search Direct Debit payments",
             notes = "Search Direct Debit payments by reference, state, mandate id, and 'from' and 'to' dates. " +
                     "The Authorisation token needs to be specified in the 'Authorization' header " +
@@ -121,7 +121,7 @@ public class DirectDebitPaymentsResource {
     @Path("{paymentId}")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            nickname = "Get a direct debit payment",
+            nickname = "Get a Direct Debit payment",
             value = "Find direct debit payment by ID",
             notes = "Return information about the direct debit payment. " +
                     "The Authorisation token needs to be specified in the 'Authorization' header " +

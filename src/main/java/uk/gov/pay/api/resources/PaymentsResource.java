@@ -52,7 +52,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.http.HttpStatus.SC_OK;
 
 @Path("/")
-@Api(tags="Card Payments", value = "/")
+@Api(tags = "Card payments", value = "/")
 @Produces({"application/json"})
 public class PaymentsResource {
 

@@ -7,11 +7,11 @@
   },
   "host" : "publicapi.payments.service.gov.uk",
   "tags" : [ {
-    "name" : "Card Payments"
+    "name" : "Card payments"
   }, {
     "name" : "Direct Debit"
   }, {
-    "name" : "Refunds"
+    "name" : "Refunding payments"
   } ],
   "schemes" : [ "https" ],
   "paths" : {
@@ -221,7 +221,7 @@
         "tags" : [ "Direct Debit" ],
         "summary" : "Search Direct Debit payments",
         "description" : "Search Direct Debit payments by reference, state, mandate id, and 'from' and 'to' dates. The Authorisation token needs to be specified in the 'Authorization' header as 'Authorization: Bearer YOUR_API_KEY_HERE'",
-        "operationId" : "Search direct debit payments",
+        "operationId" : "Search Direct Debit payments",
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "reference",
@@ -313,7 +313,7 @@
         "tags" : [ "Direct Debit" ],
         "summary" : "Create new Direct Debit payment",
         "description" : "Create a new Direct Debit payment for the account associated to the Authorisation token. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
-        "operationId" : "Collect a direct debit payment",
+        "operationId" : "Collect a Direct Debit payment",
         "consumes" : [ "application/json" ],
         "produces" : [ "application/json" ],
         "parameters" : [ {
@@ -370,7 +370,7 @@
         "tags" : [ "Direct Debit" ],
         "summary" : "Find direct debit payment by ID",
         "description" : "Return information about the direct debit payment. The Authorisation token needs to be specified in the 'Authorization' header as 'Authorization: Bearer YOUR_API_KEY_HERE'",
-        "operationId" : "Get a direct debit payment",
+        "operationId" : "Get a Direct Debit payment",
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "paymentId",
@@ -415,7 +415,7 @@
     },
     "/v1/payments" : {
       "get" : {
-        "tags" : [ "Card Payments" ],
+        "tags" : [ "Card payments" ],
         "summary" : "Search payments",
         "description" : "Search payments by reference, state, 'from' and 'to' date. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "Search payments",
@@ -522,7 +522,7 @@
         } ]
       },
       "post" : {
-        "tags" : [ "Card Payments" ],
+        "tags" : [ "Card payments" ],
         "summary" : "Create new payment",
         "description" : "Create a new payment for the account associated to the Authorisation token. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "Create a payment",
@@ -579,7 +579,7 @@
     },
     "/v1/payments/{paymentId}" : {
       "get" : {
-        "tags" : [ "Card Payments" ],
+        "tags" : [ "Card payments" ],
         "summary" : "Find payment by ID",
         "description" : "Return information about the payment The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "Get a payment",
@@ -628,7 +628,7 @@
     },
     "/v1/payments/{paymentId}/cancel" : {
       "post" : {
-        "tags" : [ "Card Payments" ],
+        "tags" : [ "Card payments" ],
         "summary" : "Cancel payment",
         "description" : "Cancel a payment based on the provided payment ID and the Authorisation token. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be cancelled if it's in a state that isn't finished.",
         "operationId" : "Cancel a payment",
@@ -686,7 +686,7 @@
     },
     "/v1/payments/{paymentId}/capture" : {
       "post" : {
-        "tags" : [ "Card Payments" ],
+        "tags" : [ "Card payments" ],
         "summary" : "Capture payment",
         "description" : "Capture a payment based on the provided payment ID and the Authorisation token. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be captured if it's in 'submitted' state",
         "operationId" : "Capture a payment",
@@ -744,7 +744,7 @@
     },
     "/v1/payments/{paymentId}/events" : {
       "get" : {
-        "tags" : [ "Card Payments" ],
+        "tags" : [ "Card payments" ],
         "summary" : "Return payment events by ID",
         "description" : "Return payment events information about a certain payment The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "Get events for a payment",
@@ -793,7 +793,7 @@
     },
     "/v1/payments/{paymentId}/refunds" : {
       "get" : {
-        "tags" : [ "Refunds" ],
+        "tags" : [ "Refunding payments" ],
         "summary" : "Get all refunds for a payment",
         "description" : "Return refunds for a payment. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "Get all refunds for a payment",
@@ -838,7 +838,7 @@
         } ]
       },
       "post" : {
-        "tags" : [ "Refunds" ],
+        "tags" : [ "Refunding payments" ],
         "summary" : "Submit a refund for a payment",
         "description" : "Return issued refund information. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "Submit a refund for a payment",
@@ -901,7 +901,7 @@
     },
     "/v1/payments/{paymentId}/refunds/{refundId}" : {
       "get" : {
-        "tags" : [ "Refunds" ],
+        "tags" : [ "Refunding payments" ],
         "summary" : "Find payment refund by ID",
         "description" : "Return payment refund information by Refund ID The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "Get a payment refund",
@@ -953,7 +953,7 @@
     },
     "/v1/refunds" : {
       "get" : {
-        "tags" : [ "Refunds" ],
+        "tags" : [ "Refunding payments" ],
         "summary" : "Search refunds",
         "description" : "Search refunds by 'from' and 'to' date. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "Search refunds",

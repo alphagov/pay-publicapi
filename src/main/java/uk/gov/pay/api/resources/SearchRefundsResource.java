@@ -27,7 +27,7 @@ import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/")
-@Api(tags="Refunds", value = "/")
+@Api(tags = "Refunding payments", value = "/")
 @Produces({"application/json"})
 public class SearchRefundsResource {
 
