@@ -1376,9 +1376,6 @@
         "self" : {
           "$ref" : "#/definitions/Link"
         },
-        "events" : {
-          "$ref" : "#/definitions/Link"
-        },
         "mandate" : {
           "$ref" : "#/definitions/Link"
         }
@@ -1614,6 +1611,10 @@
     "MandateLinks" : {
       "type" : "object",
       "properties" : {
+        "events" : {
+          "description" : "events",
+          "$ref" : "#/definitions/Link"
+        },
         "self" : {
           "description" : "self",
           "readOnly" : true,
@@ -1631,11 +1632,6 @@
         },
         "payments" : {
           "description" : "payments",
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        },
-        "events" : {
-          "description" : "events",
           "readOnly" : true,
           "$ref" : "#/definitions/Link"
         }
