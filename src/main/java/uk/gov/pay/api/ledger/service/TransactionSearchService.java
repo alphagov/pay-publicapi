@@ -11,8 +11,8 @@ import uk.gov.pay.api.exception.SearchPaymentsException;
 import uk.gov.pay.api.exception.SearchTransactionsException;
 import uk.gov.pay.api.ledger.model.TransactionSearchParams;
 import uk.gov.pay.api.ledger.model.TransactionSearchResults;
-import uk.gov.pay.api.model.ChargeFromResponse;
 import uk.gov.pay.api.model.PaymentError;
+import uk.gov.pay.api.model.TransactionResponse;
 import uk.gov.pay.api.model.links.Link;
 import uk.gov.pay.api.model.links.SearchNavigationLinks;
 import uk.gov.pay.api.model.search.card.PaymentForSearchResult;
@@ -21,6 +21,7 @@ import uk.gov.pay.api.service.PaymentUriGenerator;
 
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
@@ -72,7 +73,6 @@ public class TransactionSearchService {
                 searchParams.getEmail(), searchParams.getCardBrand(), searchParams.getFromDate(),
                 searchParams.getToDate(), searchParams.getPageNumber(), searchParams.getDisplaySize(),
                 null, searchParams.getFirstDigitsCardNumber(), searchParams.getLastDigitsCardNumber());
-
         validateSupportedSearchParams(searchParams.getQueryMap());
 
         searchParams.setAccountId(account.getAccountId());
@@ -90,9 +90,10 @@ public class TransactionSearchService {
     }
 
     private TransactionSearchResults processResponse(Response connectorResponse) {
-        PaymentSearchResponse response;
+        PaymentSearchResponse<TransactionResponse> response;
         try {
-            response = connectorResponse.readEntity(PaymentSearchResponse.class);
+            response = connectorResponse.readEntity(new GenericType<PaymentSearchResponse<TransactionResponse>>() {
+            });
         } catch (ProcessingException ex) {
             throw new SearchTransactionsException(ex);
         }
@@ -111,14 +112,14 @@ public class TransactionSearchService {
         );
     }
 
-    private PaymentForSearchResult getPaymentForSearchResult(ChargeFromResponse charge) {
+    private PaymentForSearchResult getPaymentForSearchResult(TransactionResponse transactionResponse) {
         return PaymentForSearchResult.valueOf(
-                charge,
-                paymentApiUriGenerator.getPaymentURI(baseUrl, charge.getChargeId()),
-                paymentApiUriGenerator.getPaymentEventsURI(baseUrl, charge.getChargeId()),
-                paymentApiUriGenerator.getPaymentCancelURI(baseUrl, charge.getChargeId()),
-                paymentApiUriGenerator.getPaymentRefundsURI(baseUrl, charge.getChargeId()),
-                paymentApiUriGenerator.getPaymentCaptureURI(baseUrl, charge.getChargeId()));
+                transactionResponse,
+                paymentApiUriGenerator.getPaymentURI(baseUrl, transactionResponse.getTransactionId()),
+                paymentApiUriGenerator.getPaymentEventsURI(baseUrl, transactionResponse.getTransactionId()),
+                paymentApiUriGenerator.getPaymentCancelURI(baseUrl, transactionResponse.getTransactionId()),
+                paymentApiUriGenerator.getPaymentRefundsURI(baseUrl, transactionResponse.getTransactionId()),
+                paymentApiUriGenerator.getPaymentCaptureURI(baseUrl, transactionResponse.getTransactionId()));
     }
 
     private SearchNavigationLinks transformLinks(SearchNavigationLinks links) {
@@ -143,7 +144,7 @@ public class TransactionSearchService {
         return UriBuilder.fromUri(baseUrl)
                 .path(path)
                 .replaceQuery(new URI(link.getHref()).getQuery())
-                .replaceQueryParam("account_id",(Object[]) null)
+                .replaceQueryParam("account_id", (Object[]) null)
                 .build()
                 .toString();
     }

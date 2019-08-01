@@ -10,6 +10,7 @@ import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.SettlementSummary;
+import uk.gov.pay.api.model.TransactionResponse;
 import uk.gov.pay.api.model.links.PaymentLinksForSearch;
 import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.commons.model.charge.ExternalMetadata;
@@ -55,6 +56,43 @@ public class PaymentForSearchResult extends CardPayment {
 
         return new PaymentForSearchResult(
                 paymentResult.getChargeId(),
+                paymentResult.getAmount(),
+                paymentResult.getState(),
+                paymentResult.getReturnUrl(),
+                paymentResult.getDescription(),
+                paymentResult.getReference(),
+                paymentResult.getEmail(),
+                paymentResult.getPaymentProvider(),
+                paymentResult.getCreatedDate(),
+                paymentResult.getLanguage(),
+                paymentResult.getDelayedCapture(),
+                paymentResult.getRefundSummary(),
+                paymentResult.getSettlementSummary(),
+                paymentResult.getCardDetails(),
+                paymentResult.getLinks(),
+                selfLink,
+                paymentEventsLink,
+                paymentCancelLink,
+                paymentRefundsLink,
+                paymentCaptureUri,
+                paymentResult.getCorporateCardSurcharge(),
+                paymentResult.getTotalAmount(),
+                paymentResult.getGatewayTransactionId(),
+                paymentResult.getMetadata().orElse(null),
+                paymentResult.getFee(),
+                paymentResult.getNetAmount());
+    }
+
+    public static PaymentForSearchResult valueOf(
+            TransactionResponse paymentResult,
+            URI selfLink,
+            URI paymentEventsLink,
+            URI paymentCancelLink,
+            URI paymentRefundsLink,
+            URI paymentCaptureUri) {
+
+        return new PaymentForSearchResult(
+                paymentResult.getTransactionId(),
                 paymentResult.getAmount(),
                 paymentResult.getState(),
                 paymentResult.getReturnUrl(),

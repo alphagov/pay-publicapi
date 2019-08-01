@@ -7,7 +7,7 @@ import uk.gov.pay.api.model.search.SearchPagination;
 
 import java.util.List;
 
-public class PaymentSearchResponse implements SearchPagination {
+public class PaymentSearchResponse<T> implements SearchPagination {
 
     @JsonProperty("total")
     private int total;
@@ -19,12 +19,12 @@ public class PaymentSearchResponse implements SearchPagination {
     private int page;
 
     @JsonProperty("results")
-    private List<ChargeFromResponse> payments;
+    private List<T> payments;
 
     @JsonProperty("_links")
     private SearchNavigationLinks links = new SearchNavigationLinks();
 
-    public List<ChargeFromResponse> getPayments() {
+    public List<T> getPayments() {
         return payments;
     }
     @Override
