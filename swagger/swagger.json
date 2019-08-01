@@ -11,7 +11,7 @@
   }, {
     "name" : "Direct Debit"
   }, {
-    "name" : "Refunding payments"
+    "name" : "Refunding card payments"
   } ],
   "schemes" : [ "https" ],
   "paths" : {
@@ -793,7 +793,7 @@
     },
     "/v1/payments/{paymentId}/refunds" : {
       "get" : {
-        "tags" : [ "Refunding payments" ],
+        "tags" : [ "Refunding card payments" ],
         "summary" : "Get all refunds for a payment",
         "description" : "Return refunds for a payment. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "Get all refunds for a payment",
@@ -838,7 +838,7 @@
         } ]
       },
       "post" : {
-        "tags" : [ "Refunding payments" ],
+        "tags" : [ "Refunding card payments" ],
         "summary" : "Submit a refund for a payment",
         "description" : "Return issued refund information. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "Submit a refund for a payment",
@@ -901,7 +901,7 @@
     },
     "/v1/payments/{paymentId}/refunds/{refundId}" : {
       "get" : {
-        "tags" : [ "Refunding payments" ],
+        "tags" : [ "Refunding card payments" ],
         "summary" : "Find payment refund by ID",
         "description" : "Return payment refund information by Refund ID The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "Get a payment refund",
@@ -953,7 +953,7 @@
     },
     "/v1/refunds" : {
       "get" : {
-        "tags" : [ "Refunding payments" ],
+        "tags" : [ "Refunding card payments" ],
         "summary" : "Search refunds",
         "description" : "Search refunds by 'from' and 'to' date. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "Search refunds",

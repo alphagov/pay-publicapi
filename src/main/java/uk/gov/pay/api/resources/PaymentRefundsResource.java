@@ -51,7 +51,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.http.HttpStatus.SC_OK;
 
 @Path(PaymentRefundsResource.PAYMENT_REFUNDS_PATH)
-@Api(tags = "Refunding payments", value = "/refunds")
+@Api(tags = "Refunding card payments", value = "/refunds")
 @Produces({"application/json"})
 public class PaymentRefundsResource {
     private static final Logger logger = LoggerFactory.getLogger(PaymentRefundsResource.class);
