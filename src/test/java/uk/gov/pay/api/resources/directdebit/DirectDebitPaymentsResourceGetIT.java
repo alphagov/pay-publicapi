@@ -57,8 +57,6 @@ public class DirectDebitPaymentsResourceGetIT extends DirectDebitResourceITBase 
                 .body("created_date", is("2018-06-11T19:40:56Z"))
                 .body("_links.self.href", is(paymentLocationFor("ch_ab2341da231434l")))
                 .body("_links.self.method", is("GET"))
-                .body("_links.events.href", is(paymentEventsLocationFor("ch_ab2341da231434l")))
-                .body("_links.events.method", is("GET"))
                 .body("_links.mandate.href", is(mandateLocationFor("mandate2000")))
                 .body("_links.mandate.method", is("GET"));
     }
@@ -109,8 +107,6 @@ public class DirectDebitPaymentsResourceGetIT extends DirectDebitResourceITBase 
                 .body("results[0].state.details", Matchers.is(payments.get(0).getState().getDetails()))
                 .body("results[0].mandate_id", Matchers.is(payments.get(0).getMandate_id()))
                 .body("results[0].provider_id", Matchers.is(payments.get(0).getProvider_id()))
-                .body("results[0]._links.events.href", Matchers.is(paymentEventsLocationFor(payments.get(0).getPayment_id())))
-                .body("results[0]._links.events.method", Matchers.is("GET"))
                 .body("results[0]._links.self.href", Matchers.is(paymentLocationFor(payments.get(0).getPayment_id())))
                 .body("results[0]._links.self.method", Matchers.is("GET"))
                 .body("results[0]._links.mandate.href", Matchers.is(mandateLocationFor(payments.get(0).getMandate_id())))

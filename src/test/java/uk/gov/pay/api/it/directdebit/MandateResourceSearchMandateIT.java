@@ -22,7 +22,6 @@ import java.util.Map;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
-import static java.lang.String.format;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
@@ -213,8 +212,6 @@ public class MandateResourceSearchMandateIT extends PaymentResourceITestBase {
                 .body("results[0]._links.self.method", is("GET"))
                 .body("results[0]._links.payments.href", is("http://publicapi.url/v1/directdebit/payments?mandate_id=" + MANDATE_ID))
                 .body("results[0]._links.payments.method", is("GET"))
-                .body("results[0]._links.events.href", is(format("http://publicapi.url/v1/directdebit/mandates/%s/events", MANDATE_ID)))
-                .body("results[0]._links.events.method", is("GET"))
                 .body("_links.self.href", is("http://publicapi.url/v1/directdebit/mandates?page=1&display_size=500&selfLink"))
                 .body("_links.first_page.href", is("http://publicapi.url/v1/directdebit/mandates?page=1&display_size=500&firstLink"))
                 .body("_links.last_page.href", is("http://publicapi.url/v1/directdebit/mandates?page=1&display_size=500&lastLink"))
