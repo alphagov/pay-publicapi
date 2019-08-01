@@ -32,7 +32,9 @@ public class MandateLinks {
 
     @JsonProperty(PAYMENTS)
     private final Link payments;
-    
+
+    //Hidden because it is currently unused
+    @ApiModelProperty(hidden = true)
     @JsonProperty(EVENTS)
     private final Link events;
 
