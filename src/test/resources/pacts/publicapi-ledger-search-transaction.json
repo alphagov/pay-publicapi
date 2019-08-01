@@ -45,7 +45,7 @@
               "description": "Test description",
               "reference": "aReference",
               "language": "en",
-              "charge_id": "charge97837509646393e3C",
+              "transaction_id": "charge97837509646393e3C",
               "return_url": "https://example.org",
               "email": "someone@example.org",
               "payment_provider": "sandbox",
@@ -106,7 +106,7 @@
                 }
               ]
             },
-            "$.results[*].charge_id": {
+            "$.results[*].transaction_id": {
               "matchers": [
                 {
                   "match": "type"

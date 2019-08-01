@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.SearchPaymentsException;
+import uk.gov.pay.api.model.ChargeFromResponse;
 import uk.gov.pay.api.model.search.PaginationDecorator;
 import uk.gov.pay.api.model.search.card.PaymentForSearchResult;
 import uk.gov.pay.api.model.search.card.PaymentSearchResponse;
@@ -12,6 +13,7 @@ import uk.gov.pay.api.model.search.card.PaymentSearchResponse;
 import javax.inject.Inject;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import java.util.LinkedHashMap;
@@ -99,9 +101,9 @@ public class PaymentSearchService {
     }
 
     private Response processResponse(Response connectorResponse) {
-        PaymentSearchResponse response;
+        PaymentSearchResponse<ChargeFromResponse> response;
         try {
-            response = connectorResponse.readEntity(PaymentSearchResponse.class);
+            response = connectorResponse.readEntity(new GenericType<PaymentSearchResponse<ChargeFromResponse>>(){});
         } catch (ProcessingException ex) {
             throw new SearchPaymentsException(ex);
         }

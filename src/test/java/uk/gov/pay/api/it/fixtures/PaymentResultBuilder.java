@@ -106,8 +106,8 @@ public abstract class PaymentResultBuilder {
 
     protected static class TestPayment {
         public TestPaymentState state;
-        public String charge_id, description, reference, email, created_date, gateway_transaction_id, return_url, 
-                payment_provider, language;
+        public String charge_id, transaction_id, description, reference, email, created_date, gateway_transaction_id,
+                return_url, payment_provider, language;
         public long amount;
         public boolean delayed_capture;
         public RefundSummary refund_summary;
@@ -186,6 +186,7 @@ public abstract class PaymentResultBuilder {
         TestPayment payment = new TestPayment();
 
         payment.charge_id = chargeId;
+        payment.transaction_id = chargeId;
         payment.description = description;
         payment.reference = reference == null ? randomUUID().toString() : reference;
         payment.email = email;
