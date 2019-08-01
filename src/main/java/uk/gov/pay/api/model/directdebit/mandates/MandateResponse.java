@@ -29,7 +29,6 @@ public class MandateResponse {
                 .withPayments(publicApiUriGenerator.getMandatePaymentsURI(mandate.getMandateId()).toString())
                 .withNextUrl(mandate.getLinks())
                 .withNextUrlPost(mandate.getLinks())
-                .withEvents(publicApiUriGenerator.getMandateEventsURI(mandate.getMandateId()))
                 .build();
         
         this.mandateId = mandate.getMandateId();

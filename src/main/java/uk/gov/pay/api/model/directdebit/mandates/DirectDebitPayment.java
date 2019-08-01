@@ -76,7 +76,6 @@ public class DirectDebitPayment extends Payment {
         this.providerId = builder.providerId;
         this.links = aDirectDebitPaymentLinks()
                 .withSelf(builder.selfLink)
-                .withEvents(builder.eventsLink)
                 .withMandate(builder.mandateLink)
                 .build();
     }
