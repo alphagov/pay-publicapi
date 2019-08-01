@@ -55,7 +55,7 @@
               "href": "https://ledger/v1/transaction/ch_123abc456xyz/refunds"
             }
           ],
-          "charge_id": "ch_123abc456xyz",
+          "transaction_id": "ch_123abc456xyz",
           "return_url": "https://somewhere.gov.uk/rainbow/1",
           "payment_provider": "sandbox",
           "created_date": "2018-10-16T10:46:02.121Z",
