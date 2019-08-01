@@ -45,18 +45,6 @@
               "description": "Test description",
               "reference": "aReference",
               "language": "en",
-              "links": [
-                {
-                  "rel": "self",
-                  "method": "GET",
-                  "href": "http://ledger.service.backend/v1/transaction/charge8133029783750964639"
-                },
-                {
-                  "rel": "refunds",
-                  "method": "GET",
-                  "href": "http://ledger.service.backend/v1/transaction/charge8133029783750964639/refunds"
-                }
-              ],
               "charge_id": "charge97837509646393e3C",
               "return_url": "https://example.org",
               "email": "someone@example.org",
@@ -90,20 +78,6 @@
         },
         "matchingRules": {
           "body": {
-            "$.results[*].links[0].href": {
-              "matchers": [
-                {
-                  "regex": "http.*:\/\/.*\/v1\/transaction\/charge97837509646393e3C"
-                }
-              ]
-            },
-            "$.results[*].links[1].href": {
-              "matchers": [
-                {
-                  "regex": "http.*:\/\/.*\/v1\/transaction\/charge97837509646393e3C\/refunds"
-                }
-              ]
-            },
             "$._links.self.href": {
               "matchers": [
                 {
