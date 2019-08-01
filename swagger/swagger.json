@@ -1611,10 +1611,6 @@
     "MandateLinks" : {
       "type" : "object",
       "properties" : {
-        "events" : {
-          "description" : "events",
-          "$ref" : "#/definitions/Link"
-        },
         "self" : {
           "description" : "self",
           "readOnly" : true,

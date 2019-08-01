@@ -32,8 +32,7 @@ public class MandateLinks {
 
     @JsonProperty(PAYMENTS)
     private final Link payments;
-
-    //Hidden because it is currently unused
+    
     @ApiModelProperty(hidden = true)
     @JsonProperty(EVENTS)
     private final Link events;
@@ -58,7 +57,7 @@ public class MandateLinks {
         return payments;
     }
 
-    @ApiModelProperty(value = EVENTS, dataType = "uk.gov.pay.api.model.links.Link")
+    @ApiModelProperty(value = EVENTS, dataType = "uk.gov.pay.api.model.links.Link", hidden = true)
     public Link getEvents() {
         return events;
     }
