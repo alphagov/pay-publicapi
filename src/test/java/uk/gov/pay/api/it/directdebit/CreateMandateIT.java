@@ -21,7 +21,6 @@ import java.util.Optional;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
-import static java.lang.String.format;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
@@ -176,9 +175,7 @@ public class CreateMandateIT extends DirectDebitResourceITBase {
                 .body("_links.next_url_post.type", is("application/x-www-form-urlencoded"))
                 .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
                 .body("_links.payments.href", is("http://publicapi.url/v1/directdebit/payments?mandate_id=" + MANDATE_ID))
-                .body("_links.payments.method", is("GET"))
-                .body("_links.events.href", is(format("http://publicapi.url/v1/directdebit/mandates/%s/events", MANDATE_ID)))
-                .body("_links.events.method", is("GET"));
+                .body("_links.payments.method", is("GET"));
 
         connectorDDMockClient.verifyCreateMandateConnectorRequest(
                 new MandateConnectorRequest(RETURN_URL, SERVICE_REFERENCE, description), GATEWAY_ACCOUNT_ID);

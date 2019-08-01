@@ -1376,9 +1376,6 @@
         "self" : {
           "$ref" : "#/definitions/Link"
         },
-        "events" : {
-          "$ref" : "#/definitions/Link"
-        },
         "mandate" : {
           "$ref" : "#/definitions/Link"
         }
@@ -1631,11 +1628,6 @@
         },
         "payments" : {
           "description" : "payments",
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        },
-        "events" : {
-          "description" : "events",
           "readOnly" : true,
           "$ref" : "#/definitions/Link"
         }

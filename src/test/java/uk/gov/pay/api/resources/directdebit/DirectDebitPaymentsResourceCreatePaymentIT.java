@@ -71,8 +71,6 @@ public class DirectDebitPaymentsResourceCreatePaymentIT extends DirectDebitResou
                 .body("state.status", is(status))
                 .body("mandate_id", is(MANDATE_ID))
                 .body("provider_id", is(PROVIDER_ID))
-                .body("_links.events.href", is(paymentEventsLocationFor(PAYMENT_ID)))
-                .body("_links.events.method", is("GET"))
                 .body("_links.self.href", is(paymentLocationFor(PAYMENT_ID)))
                 .body("_links.self.method", is("GET"))
                 .body("_links.mandate.href", is(mandateLocationFor(MANDATE_ID)))
