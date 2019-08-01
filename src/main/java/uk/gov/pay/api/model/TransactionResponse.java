@@ -17,8 +17,8 @@ import java.util.Optional;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TransactionResponse {
 
-    @JsonProperty("charge_id")
-    private String chargeId;
+    @JsonProperty("transaction_id")
+    private String transactionId;
 
     @JsonProperty("return_url")
     private String returnUrl;
@@ -77,10 +77,6 @@ public class TransactionResponse {
 
     public Optional<ExternalMetadata> getMetadata() {
         return Optional.ofNullable(metadata);
-    }
-
-    public String getChargeId() {
-        return chargeId;
     }
 
     public Long getAmount() {
@@ -168,5 +164,9 @@ public class TransactionResponse {
 
     public String getGatewayTransactionId() {
         return gatewayTransactionId;
+    }
+
+    public String getTransactionId() {
+        return transactionId;
     }
 }

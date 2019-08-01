@@ -51,7 +51,7 @@
               "href": "https://ledger/v1/transaction/ch_123abc456xyz/refunds"
             }
           ],
-          "charge_id": "ch_123abc456xyz",
+          "transaction_id": "ch_123abc456xyz",
           "gateway_transaction_id": "gateway-tx-123456",
           "return_url": "https://somewhere.gov.uk/rainbow/1",
           "payment_provider": "sandbox",

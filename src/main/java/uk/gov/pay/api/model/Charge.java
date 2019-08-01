@@ -107,7 +107,7 @@ public class Charge {
 
     public static Charge from(TransactionResponse transactionResponse) {
         return new Charge(
-                transactionResponse.getChargeId(),
+                transactionResponse.getTransactionId(),
                 transactionResponse.getAmount(),
                 transactionResponse.getState(),
                 transactionResponse.getReturnUrl(),
