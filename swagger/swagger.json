@@ -27,7 +27,7 @@
           "in" : "query",
           "required" : false,
           "type" : "string",
-          "pattern" : "created|started|pending|submitted|active|inactive|cancelled"
+          "pattern" : "created|started|pending|active|inactive|cancelled|failed|abandoned|error"
         }, {
           "name" : "bank_statement_reference",
           "in" : "query",

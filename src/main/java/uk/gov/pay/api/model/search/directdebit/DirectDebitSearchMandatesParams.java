@@ -19,7 +19,8 @@ public class DirectDebitSearchMandatesParams {
     private String reference;
 
     @QueryParam("state")
-    @Pattern(regexp = "created|started|pending|submitted|active|inactive|cancelled", message = "state is not a valid mandate external state")
+    @Pattern(regexp = "created|started|pending|active|inactive|cancelled|failed|abandoned|error",
+            message = "Must be one of created, started, pending, active, inactive, cancelled, failed, abandoned or error")
     private String state;
 
     @QueryParam("bank_statement_reference")
