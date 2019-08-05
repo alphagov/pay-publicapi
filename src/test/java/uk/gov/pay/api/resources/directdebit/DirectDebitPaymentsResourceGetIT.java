@@ -171,7 +171,7 @@ public class DirectDebitPaymentsResourceGetIT extends DirectDebitResourceITBase 
                 someParameters()
                         .withQueryString("?state=fake_state")
                         .withErrorField("state")
-                        .withErrorMessage("Invalid attribute value: state. Must be one of pending, success, failed, cancelled or expired")
+                        .withErrorMessage("Invalid attribute value: state. Must be one of created, pending, success, failed, cancelled, paidout, indemnityclaim or error")
                         .build(),
                 someParameters()
                         .withQueryString("?from_date=not_a_date")

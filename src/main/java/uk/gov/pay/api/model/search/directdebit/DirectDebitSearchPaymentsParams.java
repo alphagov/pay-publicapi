@@ -24,9 +24,9 @@ public class DirectDebitSearchPaymentsParams {
     
     @QueryParam("state")
     @ApiParam(value = "State of payments to be searched. Example=success")
-    @Pattern(regexp = "pending|success|failed|cancelled|expired",
+    @Pattern(regexp = "created|pending|success|failed|cancelled|paidout|indemnityclaim|error",
             flags = Pattern.Flag.CASE_INSENSITIVE,
-            message = "Must be one of pending, success, failed, cancelled or expired")
+            message = "Must be one of created, pending, success, failed, cancelled, paidout, indemnityclaim or error")
     private String state;
     
     @QueryParam("mandate_id")

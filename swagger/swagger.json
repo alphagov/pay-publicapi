@@ -229,7 +229,7 @@
           "description" : "State of payments to be searched. Example=success",
           "required" : false,
           "type" : "string",
-          "pattern" : "pending|success|failed|cancelled|expired"
+          "pattern" : "created|pending|success|failed|cancelled|paidout|indemnityclaim|error"
         }, {
           "name" : "mandate_id",
           "in" : "query",
