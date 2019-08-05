@@ -34,12 +34,12 @@ public class DirectDebitSearchPaymentsParams {
     private String mandateId;
     
     @QueryParam("from_date")
-    @ApiParam(value = "From date of direct debit payments to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z")
+    @ApiParam(value = "From date of Direct Debit payments to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z")
     @ValidDate
     private String fromDate;
     
     @QueryParam("to_date")
-    @ApiParam(value = "To date of direct debit payments to be searched (this date is exclusive). Example=2015-08-13T12:35:00Z")
+    @ApiParam(value = "To date of Direct Debit payments to be searched (this date is exclusive). Example=2015-08-13T12:35:00Z")
     @ValidDate
     private String toDate;
     

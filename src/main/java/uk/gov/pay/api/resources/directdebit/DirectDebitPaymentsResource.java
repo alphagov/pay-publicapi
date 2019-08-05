@@ -122,8 +122,8 @@ public class DirectDebitPaymentsResource {
     @Produces(APPLICATION_JSON)
     @ApiOperation(
             nickname = "Get a Direct Debit payment",
-            value = "Find direct debit payment by ID",
-            notes = "Return information about the direct debit payment. " +
+            value = "Find Direct Debit payment by ID",
+            notes = "Return information about the Direct Debit payment. " +
                     "The Authorisation token needs to be specified in the 'Authorization' header " +
                     "as 'Authorization: Bearer YOUR_API_KEY_HERE'",
             code = 200,

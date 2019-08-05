@@ -1489,5 +1489,5 @@ Content-Length: 44
 | ------------------ | -------------------------------------------------|
 | `P1101`            | Request parameters have Validation errors        |
 | `P1100`            | Requested page not found                         |
-| `P1102`            | Refunds not supported for direct debit accounts  |
+| `P1102`            | Refunds not supported for Direct Debit accounts  |
 | `P1898`            | Connector response was unrecognised to PublicAPI |

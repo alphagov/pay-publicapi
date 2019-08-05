@@ -46,7 +46,7 @@ public class DirectDebitEventsResource {
     @Path("/v1/events")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            value = "Get direct debit events",
+            value = "Get Direct Debit events",
             notes = "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'")
     @ApiResponses(value = {

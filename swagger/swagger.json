@@ -249,13 +249,13 @@
         }, {
           "name" : "from_date",
           "in" : "query",
-          "description" : "From date of direct debit payments to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z",
+          "description" : "From date of Direct Debit payments to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z",
           "required" : false,
           "type" : "string"
         }, {
           "name" : "to_date",
           "in" : "query",
-          "description" : "To date of direct debit payments to be searched (this date is exclusive). Example=2015-08-13T12:35:00Z",
+          "description" : "To date of Direct Debit payments to be searched (this date is exclusive). Example=2015-08-13T12:35:00Z",
           "required" : false,
           "type" : "string"
         }, {
@@ -368,8 +368,8 @@
     "/v1/directdebit/payments/{paymentId}" : {
       "get" : {
         "tags" : [ "Direct Debit" ],
-        "summary" : "Find direct debit payment by ID",
-        "description" : "Return information about the direct debit payment. The Authorisation token needs to be specified in the 'Authorization' header as 'Authorization: Bearer YOUR_API_KEY_HERE'",
+        "summary" : "Find Direct Debit payment by ID",
+        "description" : "Return information about the Direct Debit payment. The Authorisation token needs to be specified in the 'Authorization' header as 'Authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "Get a Direct Debit payment",
         "produces" : [ "application/json" ],
         "parameters" : [ {
