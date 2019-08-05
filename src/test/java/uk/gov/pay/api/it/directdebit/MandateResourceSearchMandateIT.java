@@ -137,7 +137,7 @@ public class MandateResourceSearchMandateIT extends PaymentResourceITestBase {
                 .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
                 .body("field", is("state"))
                 .body("code", is("P0102"))
-                .body("description", is("Invalid attribute value: state. state is not a valid mandate external state"));
+                .body("description", is("Invalid attribute value: state. Must be one of created, started, pending, active, inactive, cancelled, failed, abandoned or error"));
     }
 
     @Test
