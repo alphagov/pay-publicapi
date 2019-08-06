@@ -13,20 +13,17 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.exception.GetChargeException;
 import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
-import uk.gov.pay.api.model.links.PostLink;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
 import javax.ws.rs.client.Client;
-import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.containsString;
@@ -60,7 +57,6 @@ public class GetPaymentServiceLedgerTest {
         connectorRule.resetAll();
         when(mockConfiguration.getConnectorUrl()).thenReturn("http://localhost:" + CONNECTOR_PORT);
         when(mockConfiguration.getLedgerUrl()).thenReturn(ledgerRule.getUrl());
-        when(mockConfiguration.getUseLedgerForGetPayment()).thenReturn(true);
         when(mockConfiguration.getBaseUrl()).thenReturn("http://publicapi.test.localhost/");
 
         ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorRule);
@@ -70,7 +66,9 @@ public class GetPaymentServiceLedgerTest {
         ConnectorUriGenerator connectorUriGenerator = new ConnectorUriGenerator(mockConfiguration);
         LedgerUriGenerator ledgerUriGenerator = new LedgerUriGenerator(mockConfiguration);
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
-        getPaymentService = new GetPaymentService(client, publicApiUriGenerator, connectorUriGenerator, ledgerUriGenerator, mockConfiguration);
+        getPaymentService = new GetPaymentService(publicApiUriGenerator,
+                new ConnectorService(client, connectorUriGenerator),
+                new LedgerService(client, ledgerUriGenerator));
     }
 
     @Test

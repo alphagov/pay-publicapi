@@ -35,6 +35,7 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -42,6 +43,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
@@ -105,15 +107,16 @@ public class PaymentsResource {
     public Response getPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                @PathParam("paymentId")
                                @ApiParam(name = "paymentId", value = "Payment identifier", example = "hu20sqlact5260q2nanm0q8u93")
-                                       String paymentId) {
+                                       String paymentId,
+                               @HeaderParam("X-Ledger") String strategyName) {
 
         logger.info("Payment request - paymentId={}", paymentId);
 
-        PaymentWithAllLinks payment = getPaymentService.getPayment(account, paymentId);
+        var strategy = new GetOnePaymentStrategy(strategyName, account, paymentId, getPaymentService);
+        PaymentWithAllLinks payment = strategy.validateAndExecute();
 
         logger.info("Payment returned - [ {} ]", payment);
         return Response.ok(payment).build();
-
     }
 
     @GET
