@@ -1931,6 +1931,7 @@
           "readOnly" : true
         },
         "_links" : {
+          "readOnly" : true,
           "$ref" : "#/definitions/PaymentLinksForEvents"
         }
       },

@@ -1,7 +1,6 @@
 package uk.gov.pay.api.resources;
 
 import com.codahale.metrics.annotation.Timed;
-import com.fasterxml.jackson.databind.JsonNode;
 import io.dropwizard.auth.Auth;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -14,19 +13,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CaptureChargeException;
-import uk.gov.pay.api.exception.GetEventsException;
 import uk.gov.pay.api.model.CreateCardPaymentRequest;
 import uk.gov.pay.api.model.CreatePaymentResult;
 import uk.gov.pay.api.model.PaymentError;
-import uk.gov.pay.api.model.PaymentEvents;
+import uk.gov.pay.api.model.PaymentEventsResponse;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.model.search.card.GetPaymentResult;
 import uk.gov.pay.api.model.search.card.PaymentSearchResults;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
 import uk.gov.pay.api.service.CancelPaymentService;
 import uk.gov.pay.api.service.CapturePaymentService;
-import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.CreatePaymentService;
+import uk.gov.pay.api.service.GetPaymentEventService;
 import uk.gov.pay.api.service.GetPaymentService;
 import uk.gov.pay.api.service.PaymentSearchService;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
@@ -41,15 +39,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.net.URI;
 
 import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.apache.http.HttpStatus.SC_OK;
 
 @Path("/")
 @Api(tags = "Card payments", value = "/")
@@ -58,32 +53,29 @@ public class PaymentsResource {
 
     private static final Logger logger = LoggerFactory.getLogger(PaymentsResource.class);
 
-    private final Client client;
     private final CreatePaymentService createPaymentService;
     private final PublicApiUriGenerator publicApiUriGenerator;
-    private final ConnectorUriGenerator connectorUriGenerator;
     private final PaymentSearchService paymentSearchService;
     private final GetPaymentService getPaymentService;
     private final CapturePaymentService capturePaymentService;
     private final CancelPaymentService cancelPaymentService;
+    private final GetPaymentEventService getPaymentEventService;
 
     @Inject
-    public PaymentsResource(Client client,
-                            CreatePaymentService createPaymentService,
+    public PaymentsResource(CreatePaymentService createPaymentService,
                             PaymentSearchService paymentSearchService,
                             PublicApiUriGenerator publicApiUriGenerator,
-                            ConnectorUriGenerator connectorUriGenerator,
                             GetPaymentService getPaymentService,
                             CapturePaymentService capturePaymentService,
-                            CancelPaymentService cancelPaymentService) {
-        this.client = client;
+                            CancelPaymentService cancelPaymentService,
+                            GetPaymentEventService getPaymentEventService) {
         this.createPaymentService = createPaymentService;
         this.publicApiUriGenerator = publicApiUriGenerator;
-        this.connectorUriGenerator = connectorUriGenerator;
         this.paymentSearchService = paymentSearchService;
         this.getPaymentService = getPaymentService;
         this.capturePaymentService = capturePaymentService;
         this.cancelPaymentService = cancelPaymentService;
+        this.getPaymentEventService = getPaymentEventService;
     }
 
     @GET
@@ -132,40 +124,21 @@ public class PaymentsResource {
             code = 200,
             authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = PaymentEvents.class),
+            @ApiResponse(code = 200, message = "OK", response = PaymentEventsResponse.class),
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
-    public Response getPaymentEvents(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
+    public PaymentEventsResponse getPaymentEvents(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                      @PathParam("paymentId")
                                      @ApiParam(name = "paymentId", value = "Payment identifier", example = "hu20sqlact5260q2nanm0q8u93")
                                              String paymentId) {
 
         logger.info("Payment events request - payment_id={}", paymentId);
+        PaymentEventsResponse response = getPaymentEventService.getPaymentEvent(account, paymentId);
+        logger.info("Payment events returned - [ {} ]", response);
 
-        Response connectorResponse = client
-                .target(connectorUriGenerator.chargeEventsURI(account, paymentId))
-                .request()
-                .get();
-
-        if (connectorResponse.getStatus() == SC_OK) {
-
-            JsonNode payload = connectorResponse.readEntity(JsonNode.class);
-            URI paymentEventsLink = publicApiUriGenerator.getPaymentEventsURI(payload.get("charge_id").asText());
-
-            URI paymentLink = publicApiUriGenerator.getPaymentURI(payload.get("charge_id").asText());
-
-            PaymentEvents response =
-                    PaymentEvents.createPaymentEventsResponse(payload, paymentLink.toString())
-                            .withSelfLink(paymentEventsLink.toString());
-
-            logger.info("Payment events returned - [ {} ]", response);
-
-            return Response.ok(response).build();
-        }
-
-        throw new GetEventsException(connectorResponse);
+        return response;
     }
 
     @GET
