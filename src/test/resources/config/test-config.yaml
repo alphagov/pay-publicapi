@@ -45,5 +45,3 @@ apiKeyHmacSecret: qwer9yuhgf
 
 # Caching authenticator.
 authenticationCachePolicy: expireAfterWrite=3s
-
-useLedgerForGetPayment: ${USE_LEDGER_FOR_GET_PAYMENT:-true}
