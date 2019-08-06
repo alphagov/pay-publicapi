@@ -11,7 +11,6 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.exception.GetChargeException;
 import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.PaymentState;
@@ -56,7 +55,9 @@ public class GetPaymentServiceTest {
         ConnectorUriGenerator connectorUriGenerator = new ConnectorUriGenerator(mockConfiguration);
         LedgerUriGenerator ledgerUriGenerator = new LedgerUriGenerator(mockConfiguration);
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
-        getPaymentService = new GetPaymentService(client, publicApiUriGenerator, connectorUriGenerator, ledgerUriGenerator, mockConfiguration);
+        getPaymentService = new GetPaymentService(publicApiUriGenerator,
+                new ConnectorService(client, connectorUriGenerator),
+                new LedgerService(client, ledgerUriGenerator));
     }
 
     @Test

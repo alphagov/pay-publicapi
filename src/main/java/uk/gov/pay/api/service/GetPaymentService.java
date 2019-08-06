@@ -1,65 +1,45 @@
 package uk.gov.pay.api.service;
 
-import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.GetChargeException;
-import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.Charge;
-import uk.gov.pay.api.model.ChargeFromResponse;
-import uk.gov.pay.api.model.TransactionResponse;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 
 import javax.inject.Inject;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.core.Response;
 import java.net.URI;
-
-import static org.apache.http.HttpStatus.SC_NOT_FOUND;
-import static org.apache.http.HttpStatus.SC_OK;
 
 public class GetPaymentService {
 
-    private final Client client;
     private final PublicApiUriGenerator publicApiUriGenerator;
-    private final ConnectorUriGenerator connectorUriGenerator;
-    private final LedgerUriGenerator ledgerUriGenerator;
-    private final PublicApiConfig config;
+    private final ConnectorService connectorService;
+    private final LedgerService ledgerService;
 
     @Inject
-    public GetPaymentService(Client client, PublicApiUriGenerator publicApiUriGenerator,
-                             ConnectorUriGenerator connectorUriGenerator, LedgerUriGenerator ledgerUriGenerator,
-                             PublicApiConfig config) {
-        this.client = client;
+    public GetPaymentService(PublicApiUriGenerator publicApiUriGenerator,
+                             ConnectorService connectorService, LedgerService ledgerService) {
         this.publicApiUriGenerator = publicApiUriGenerator;
-        this.connectorUriGenerator = connectorUriGenerator;
-        this.ledgerUriGenerator = ledgerUriGenerator;
-        this.config = config;
+        this.connectorService = connectorService;
+        this.ledgerService = ledgerService;
+    }
+
+    public PaymentWithAllLinks getConnectorCharge(Account account, String paymentId) {
+        Charge charge = connectorService.getCharge(account, paymentId);
+
+        return getPaymentWithAllLinks(account, charge);
+    }
+    
+    public PaymentWithAllLinks getLedgerTransaction(Account account, String paymentId) {
+        Charge charge = ledgerService.getTransaction(account, paymentId);
+        
+        return getPaymentWithAllLinks(account, charge);
     }
 
     public PaymentWithAllLinks getPayment(Account account, String paymentId) {
-        Response response = client
-                .target(connectorUriGenerator.chargeURI(account, paymentId))
-                .request()
-                .get();
-
-        if (response.getStatus() == SC_OK) {
-            ChargeFromResponse chargeFromResponse = response.readEntity(ChargeFromResponse.class);
-            return getPaymentWithAllLinks(account, Charge.from(chargeFromResponse));
+        try {
+            return getConnectorCharge(account, paymentId);
+        } catch (GetChargeException ex) {
+            return getLedgerTransaction(account, paymentId);
         }
-
-        if(response.getStatus() == SC_NOT_FOUND && config.getUseLedgerForGetPayment()) {
-            response = client
-                    .target(ledgerUriGenerator.transactionURI(account, paymentId))
-                    .request()
-                    .get();
-
-            if (response.getStatus() == SC_OK) {
-                TransactionResponse transactionResponse = response.readEntity(TransactionResponse.class);
-                return getPaymentWithAllLinks(account, Charge.from(transactionResponse));
-            }
-        }
-
-        throw new GetChargeException(response);
     }
 
     private PaymentWithAllLinks getPaymentWithAllLinks(Account account, Charge chargeFromResponse) {
