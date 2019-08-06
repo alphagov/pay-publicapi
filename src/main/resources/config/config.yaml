@@ -48,5 +48,3 @@ apiKeyHmacSecret: ${TOKEN_API_HMAC_SECRET}
 
 # Caching authenticator.
 authenticationCachePolicy: expireAfterWrite=1m
-
-useLedgerForGetPayment: ${USE_LEDGER_FOR_GET_PAYMENT:-false}

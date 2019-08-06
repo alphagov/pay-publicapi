@@ -52,9 +52,6 @@ public class PublicApiConfig extends Configuration {
     @JsonProperty("rateLimiter")
     private RateLimiterConfig rateLimiterConfig;
 
-    @NotNull
-    private Boolean useLedgerForGetPayment;
-
     public String getBaseUrl() {
         return baseUrl;
     }
@@ -101,8 +98,4 @@ public class PublicApiConfig extends Configuration {
     public CacheBuilderSpec getAuthenticationCachePolicy() { return authenticationCachePolicy; }
 
     public JedisFactory getJedisFactory() { return redis;  }
-
-    public Boolean getUseLedgerForGetPayment() {
-        return useLedgerForGetPayment;
-    }
 }
