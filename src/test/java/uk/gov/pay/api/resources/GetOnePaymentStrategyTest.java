@@ -34,9 +34,6 @@ public class GetOnePaymentStrategyTest {
     @Mock
     private GetPaymentService mockGetPaymentService;
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
     @Captor
     ArgumentCaptor<LoggingEvent> loggingEventArgumentCaptor;
 

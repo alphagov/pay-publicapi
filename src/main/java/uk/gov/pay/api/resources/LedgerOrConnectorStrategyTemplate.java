@@ -9,7 +9,6 @@ import java.util.List;
 
 public abstract class LedgerOrConnectorStrategyTemplate<T> {
 
-    private static final String HEADER_NAME = "X-Ledger";
     private static final Logger logger = LoggerFactory.getLogger(LedgerOrConnectorStrategyTemplate.class);
     private String strategy;
     private List<String> VALID_STRATEGIES = ImmutableList.of("ledger-only", "future-behaviour");
@@ -19,7 +18,7 @@ public abstract class LedgerOrConnectorStrategyTemplate<T> {
     }
 
     private void validate() {
-        if(strategy != null && !StringUtils.isEmpty(strategy) && !VALID_STRATEGIES.contains(strategy)) {
+        if(!StringUtils.isBlank(strategy) && !VALID_STRATEGIES.contains(strategy)) {
             logger.warn("Not valid strategy (valid values are \"ledger-only\", \"future-behaviour\" or empty); using the default strategy");
             strategy = null;
         }
