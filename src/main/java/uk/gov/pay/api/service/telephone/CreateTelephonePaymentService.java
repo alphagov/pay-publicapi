@@ -1,9 +1,7 @@
 package uk.gov.pay.api.service.telephone;
 
 import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
-import uk.gov.pay.api.model.telephone.PaymentOutcome;
 import uk.gov.pay.api.model.telephone.State;
-import uk.gov.pay.api.model.telephone.Supplemental;
 import uk.gov.pay.api.model.telephone.TelephonePaymentResponse;
 
 public class CreateTelephonePaymentService {
@@ -34,7 +32,7 @@ public class CreateTelephonePaymentService {
                 createTelephonePaymentRequest.getLastFourDigits(),
                 createTelephonePaymentRequest.getFirstSixDigits(),
                 createTelephonePaymentRequest.getTelephoneNumber(),
-                "DUMMY API - RECORD NOT PERSISTED",
+                "dummypaymentid123notpersisted",
                 state
         );
     }
