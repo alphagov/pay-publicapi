@@ -30,6 +30,9 @@ public class CardDetails {
 
     @JsonProperty("card_brand")
     private final String cardBrand;
+    
+    @JsonProperty("card_type")
+    private final String cardType = null;
 
     public CardDetails(@JsonProperty("last_digits_card_number") String lastDigitsCardNumber,
                        @JsonProperty("first_digits_card_number") String firstDigitsCardNumber,
@@ -72,5 +75,10 @@ public class CardDetails {
     @ApiModelProperty(example = "Visa")
     public String getCardBrand() {
         return cardBrand;
+    }
+
+    @ApiModelProperty(value = "The card type, `debit` or `credit` or `null` if not able to determine", allowableValues = "debit,credit,null", example = "debit")
+    public String getCardType() {
+        return cardType;
     }
 }

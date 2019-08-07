@@ -578,6 +578,11 @@
           "required" : true,
           "type" : "string",
           "x-example" : "hu20sqlact5260q2nanm0q8u93"
+        }, {
+          "name" : "X-Ledger",
+          "in" : "header",
+          "required" : false,
+          "type" : "string"
         } ],
         "responses" : {
           "200" : {
@@ -1074,6 +1079,13 @@
           "type" : "string",
           "example" : "Visa",
           "readOnly" : true
+        },
+        "card_type" : {
+          "type" : "string",
+          "example" : "debit",
+          "description" : "The card type, `debit` or `credit` or `null` if not able to determine",
+          "readOnly" : true,
+          "enum" : [ "debit", "credit", "null" ]
         }
       },
       "description" : "A structure representing the payment card"
