@@ -159,6 +159,7 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
                 .body("results[0].card_details.billing_address.postcode", is(CARD_DETAILS.getBillingAddress().get().getPostcode()))
                 .body("results[0].card_details.billing_address.country", is(CARD_DETAILS.getBillingAddress().get().getCountry()))
                 .body("results[0].card_details.card_brand", is(CARD_DETAILS.getCardBrand()))
+                .body("results[0].card_details", hasKey("card_type"))
                 .body("results[0].metadata", is(nullValue()))
                 .extract().asString();
 

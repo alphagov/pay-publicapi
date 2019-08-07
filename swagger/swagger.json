@@ -1074,6 +1074,13 @@
           "type" : "string",
           "example" : "Visa",
           "readOnly" : true
+        },
+        "card_type" : {
+          "type" : "string",
+          "example" : "debit",
+          "description" : "The card type, `debit` or `credit` or `null` if not able to determine",
+          "readOnly" : true,
+          "enum" : [ "debit", "credit", "null" ]
         }
       },
       "description" : "A structure representing the payment card"
