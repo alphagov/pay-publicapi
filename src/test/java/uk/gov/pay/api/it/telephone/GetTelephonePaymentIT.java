@@ -61,7 +61,7 @@ public class GetTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .body("last_four_digits", is("1234"))
                 .body("first_six_digits", is("123456"))
                 .body("telephone_number", is("+447700900796"))
-                .body("payment_id", is("DUMMY API - RECORD NOT PERSISTED"))
+                .body("payment_id", is("dummypaymentid123notpersisted"))
                 .body("state.status", is("success"))
                 .body("state.finished", is(true))
                 .body("state.message", is("Created"))
