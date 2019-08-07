@@ -27,7 +27,7 @@ import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/")
-@Api(value = "/", description = "Public Api Endpoint to get all Refunds")
+@Api(tags = "Refunding card payments", value = "/")
 @Produces({"application/json"})
 public class SearchRefundsResource {
 
@@ -45,7 +45,7 @@ public class SearchRefundsResource {
     @Path("/v1/refunds")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            tags = "refunds",
+            nickname = "Search refunds",
             value = "Search refunds",
             notes = "Search refunds by 'from' and 'to' date. " +
                     "The Authorisation token needs to be specified in the 'authorization' header " +

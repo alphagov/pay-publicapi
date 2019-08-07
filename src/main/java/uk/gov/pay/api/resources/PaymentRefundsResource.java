@@ -51,7 +51,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.http.HttpStatus.SC_OK;
 
 @Path(PaymentRefundsResource.PAYMENT_REFUNDS_PATH)
-@Api(tags = "refunds", value = "/refunds", description = "Public Api Endpoints for Refunds")
+@Api(tags = "Refunding card payments", value = "/refunds")
 @Produces({"application/json"})
 public class PaymentRefundsResource {
     private static final Logger logger = LoggerFactory.getLogger(PaymentRefundsResource.class);
@@ -87,8 +87,8 @@ public class PaymentRefundsResource {
     @Timed
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            tags = "refunds",
             response = RefundForSearchResult.class,
+            nickname = "Get all refunds for a payment",
             value = "Get all refunds for a payment",
             notes = "Return refunds for a payment. " +
                     "The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
@@ -125,8 +125,8 @@ public class PaymentRefundsResource {
     @Path("/{refundId}")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            tags = "refunds",
             response = RefundResult.class,
+            nickname = "Get a payment refund",
             value = "Find payment refund by ID",
             notes = "Return payment refund information by Refund ID " +
                     "The Authorisation token needs to be specified in the 'authorization' header " +
@@ -164,8 +164,8 @@ public class PaymentRefundsResource {
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)
     @ApiOperation(
-            tags = "refunds",
             response = RefundResult.class,
+            nickname = "Submit a refund for a payment",
             value = "Submit a refund for a payment",
             notes = "Return issued refund information. " +
                     "The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",

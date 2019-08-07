@@ -40,6 +40,7 @@ import javax.ws.rs.core.UriInfo;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/v1/directdebit/payments/")
+@Api(tags = "Direct Debit", value = "/v1/directdebit/payments")
 @Produces({"application/json"})
 public class DirectDebitPaymentsResource {
 
@@ -66,7 +67,7 @@ public class DirectDebitPaymentsResource {
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            nickname = "createDirectDebitPayment",
+            nickname = "Collect a Direct Debit payment",
             value = "Create new Direct Debit payment",
             notes = "Create a new Direct Debit payment for the account associated to the Authorisation token. " +
                     "The Authorisation token needs to be specified in the 'authorization' header " +
@@ -92,7 +93,7 @@ public class DirectDebitPaymentsResource {
     @Timed
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            nickname = "searchDirectDebitPayments",
+            nickname = "Search Direct Debit payments",
             value = "Search Direct Debit payments",
             notes = "Search Direct Debit payments by reference, state, mandate id, and 'from' and 'to' dates. " +
                     "The Authorisation token needs to be specified in the 'Authorization' header " +
@@ -120,9 +121,9 @@ public class DirectDebitPaymentsResource {
     @Path("{paymentId}")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
-            nickname = "getDirectDebitPayment",
-            value = "Find direct debit payment by ID",
-            notes = "Return information about the direct debit payment. " +
+            nickname = "Get a Direct Debit payment",
+            value = "Find Direct Debit payment by ID",
+            notes = "Return information about the Direct Debit payment. " +
                     "The Authorisation token needs to be specified in the 'Authorization' header " +
                     "as 'Authorization: Bearer YOUR_API_KEY_HERE'",
             code = 200,

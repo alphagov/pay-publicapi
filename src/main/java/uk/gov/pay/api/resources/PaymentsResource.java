@@ -52,7 +52,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.http.HttpStatus.SC_OK;
 
 @Path("/")
-@Api(value = "/", description = "Public Api Endpoints")
+@Api(tags = "Card payments", value = "/")
 @Produces({"application/json"})
 public class PaymentsResource {
 
@@ -91,6 +91,7 @@ public class PaymentsResource {
     @Path("/v1/payments/{paymentId}")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
+            nickname = "Get a payment",
             value = "Find payment by ID",
             notes = "Return information about the payment " +
                     "The Authorisation token needs to be specified in the 'authorization' header " +
@@ -123,6 +124,7 @@ public class PaymentsResource {
     @Path("/v1/payments/{paymentId}/events")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
+            nickname = "Get events for a payment",
             value = "Return payment events by ID",
             notes = "Return payment events information about a certain payment " +
                     "The Authorisation token needs to be specified in the 'authorization' header " +
@@ -171,6 +173,7 @@ public class PaymentsResource {
     @Path("/v1/payments")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
+            nickname = "Search payments",
             value = "Search payments",
             notes = "Search payments by reference, state, 'from' and 'to' date. " +
                     "The Authorisation token needs to be specified in the 'authorization' header " +
@@ -229,12 +232,12 @@ public class PaymentsResource {
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     @ApiOperation(
+            nickname = "Create a payment",
             value = "Create new payment",
             notes = "Create a new payment for the account associated to the Authorisation token. " +
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             code = 201,
-            nickname = "newPayment",
             authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Created", response = CreatePaymentResult.class),
@@ -263,6 +266,7 @@ public class PaymentsResource {
     @Path("/v1/payments/{paymentId}/cancel")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
+            nickname = "Cancel a payment",
             value = "Cancel payment",
             notes = "Cancel a payment based on the provided payment ID and the Authorisation token. " +
                     "The Authorisation token needs to be specified in the 'authorization' header " +
@@ -294,6 +298,7 @@ public class PaymentsResource {
     @Path("/v1/payments/{paymentId}/capture")
     @Produces(APPLICATION_JSON)
     @ApiOperation(
+            nickname = "Capture a payment",
             value = "Capture payment",
             notes = "Capture a payment based on the provided payment ID and the Authorisation token. " +
                     "The Authorisation token needs to be specified in the 'authorization' header " +
