@@ -578,11 +578,6 @@
           "required" : true,
           "type" : "string",
           "x-example" : "hu20sqlact5260q2nanm0q8u93"
-        }, {
-          "name" : "X-Ledger",
-          "in" : "header",
-          "required" : false,
-          "type" : "string"
         } ],
         "responses" : {
           "200" : {

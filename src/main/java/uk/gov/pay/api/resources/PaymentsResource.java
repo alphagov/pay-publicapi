@@ -43,7 +43,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
@@ -108,7 +107,7 @@ public class PaymentsResource {
                                @PathParam("paymentId")
                                @ApiParam(name = "paymentId", value = "Payment identifier", example = "hu20sqlact5260q2nanm0q8u93")
                                        String paymentId,
-                               @HeaderParam("X-Ledger") String strategyName) {
+                               @ApiParam(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
 
         logger.info("Payment request - paymentId={}", paymentId);
 
