@@ -4,13 +4,16 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.GetChargeException;
 import uk.gov.pay.api.exception.GetRefundsException;
+import uk.gov.pay.api.exception.GetEventsException;
 import uk.gov.pay.api.model.Charge;
 import uk.gov.pay.api.model.ChargeFromResponse;
 import uk.gov.pay.api.model.RefundsFromConnector;
 import uk.gov.pay.api.model.RefundsResponse;
+import uk.gov.pay.api.model.PaymentEvents;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import static org.apache.http.HttpStatus.SC_OK;
@@ -41,6 +44,22 @@ public class ConnectorService {
         }
 
         throw new GetChargeException(response);
+    }
+
+    public PaymentEvents getChargeEvents(Account account, String paymentId) {
+        Response connectorResponse = client
+                .target(connectorUriGenerator.chargeEventsURI(account, paymentId))
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get();
+
+        if (connectorResponse.getStatus() == SC_OK) {
+            PaymentEvents response = connectorResponse.readEntity(PaymentEvents.class);
+
+            return response;
+        }
+
+        throw new GetEventsException(connectorResponse);
     }
 
     public RefundsResponse getPaymentRefunds(Account account, String paymentId) {

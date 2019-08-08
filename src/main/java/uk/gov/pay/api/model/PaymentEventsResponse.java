@@ -17,7 +17,7 @@ public class PaymentEventsResponse {
     private final List<PaymentEventResponse> events;
 
     @JsonProperty("_links")
-    private PaymentLinksForEvents links = new PaymentLinksForEvents();
+    private PaymentLinksForEvents links;
 
     private PaymentEventsResponse(String paymentId, List<PaymentEventResponse> events, PaymentLinksForEvents links) {
         this.paymentId = paymentId;
@@ -32,6 +32,15 @@ public class PaymentEventsResponse {
         PaymentLinksForEvents paymentLinksForEvents = new PaymentLinksForEvents();
         paymentLinksForEvents.addSelf(eventsLink.toString());
         return new PaymentEventsResponse(paymentEvents.getChargeId(), events, paymentLinksForEvents);
+    }
+
+    public static PaymentEventsResponse from(TransactionEvents transactionEvents, URI paymentEventsLink, URI eventsLink) {
+        List<PaymentEventResponse> events = transactionEvents.getEvents().stream()
+                .map(paymentEvent -> PaymentEventResponse.from(paymentEvent, transactionEvents.getTransactionId(), paymentEventsLink.toString()))
+                .collect(Collectors.toList());
+        PaymentLinksForEvents paymentLinksForEvents = new PaymentLinksForEvents();
+        paymentLinksForEvents.addSelf(eventsLink.toString());
+        return new PaymentEventsResponse(transactionEvents.getTransactionId(), events, paymentLinksForEvents);
     }
 
     @ApiModelProperty(example = "hu20sqlact5260q2nanm0q8u93")

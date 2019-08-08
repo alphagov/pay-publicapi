@@ -1,46 +1,43 @@
 package uk.gov.pay.api.service;
 
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.exception.GetEventsException;
 import uk.gov.pay.api.model.PaymentEvents;
 import uk.gov.pay.api.model.PaymentEventsResponse;
+import uk.gov.pay.api.model.TransactionEvents;
 
 import javax.inject.Inject;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.net.URI;
-
-import static org.apache.http.HttpStatus.SC_OK;
 
 public class GetPaymentEventsService {
 
-    private final Client client;
-    private final ConnectorUriGenerator connectorUriGenerator;
     private final PublicApiUriGenerator publicApiUriGenerator;
+    private ConnectorService connectorService;
+    private LedgerService ledgerService;
 
     @Inject
-    public GetPaymentEventsService(Client client,
-                                   ConnectorUriGenerator connectorUriGenerator,
-                                   PublicApiUriGenerator publicApiUriGenerator) {
-        this.client = client;
-        this.connectorUriGenerator = connectorUriGenerator;
+    public GetPaymentEventsService(PublicApiUriGenerator publicApiUriGenerator,
+                                   ConnectorService connectorService,
+                                   LedgerService ledgerService) {
         this.publicApiUriGenerator = publicApiUriGenerator;
+        this.connectorService = connectorService;
+        this.ledgerService = ledgerService;
     }
 
-    public PaymentEventsResponse getPaymentEvent(Account account, String paymentId) {
-        Response connectorResponse = client
-                .target(connectorUriGenerator.chargeEventsURI(account, paymentId))
-                .request()
-                .accept(MediaType.APPLICATION_JSON)
-                .get();
-        if (connectorResponse.getStatus() == SC_OK) {
-            URI paymentEventsLink = publicApiUriGenerator.getPaymentEventsURI(paymentId);
-            URI paymentLink = publicApiUriGenerator.getPaymentURI(paymentId);
-            PaymentEvents response = connectorResponse.readEntity(PaymentEvents.class);
+    public PaymentEventsResponse getPaymentEventsFromConnector(Account account, String paymentId) {
+        PaymentEvents chargeEvents = connectorService.getChargeEvents(account, paymentId);
 
-            return PaymentEventsResponse.from(response, paymentLink, paymentEventsLink);
-        }
-        throw new GetEventsException(connectorResponse);
+        URI paymentEventsLink = publicApiUriGenerator.getPaymentEventsURI(paymentId);
+        URI paymentLink = publicApiUriGenerator.getPaymentURI(paymentId);
+
+        return PaymentEventsResponse.from(chargeEvents, paymentLink, paymentEventsLink);
+    }
+
+    public PaymentEventsResponse getPaymentEventsFromLedger(Account account, String paymentId) {
+        TransactionEvents transactionEvents = ledgerService.getTransactionEvents(account, paymentId);
+
+        URI paymentEventsLink = publicApiUriGenerator.getPaymentEventsURI(paymentId);
+        URI paymentLink = publicApiUriGenerator.getPaymentURI(paymentId);
+
+        return PaymentEventsResponse.from(transactionEvents, paymentLink, paymentEventsLink);
     }
 }

@@ -25,6 +25,10 @@ public class PaymentEventResponse {
         return new PaymentEventResponse(paymentId, paymentEvent.getState(), paymentEvent.getUpdated(), paymentLink);
     }
 
+    public static PaymentEventResponse from(TransactionEvent event, String paymentId, String paymentLink) {
+        return new PaymentEventResponse(paymentId, event.getState(), event.getTimestamp(), paymentLink);
+    }
+
     private PaymentEventResponse(String paymentId, PaymentState state, String updated, String paymentLink) {
         this.paymentId = paymentId;
         this.state = state;
