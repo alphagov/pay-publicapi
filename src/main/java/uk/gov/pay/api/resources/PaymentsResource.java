@@ -24,7 +24,7 @@ import uk.gov.pay.api.resources.error.ApiErrorResponse;
 import uk.gov.pay.api.service.CancelPaymentService;
 import uk.gov.pay.api.service.CapturePaymentService;
 import uk.gov.pay.api.service.CreatePaymentService;
-import uk.gov.pay.api.service.GetPaymentEventService;
+import uk.gov.pay.api.service.GetPaymentEventsService;
 import uk.gov.pay.api.service.GetPaymentService;
 import uk.gov.pay.api.service.PaymentSearchService;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
@@ -59,7 +59,7 @@ public class PaymentsResource {
     private final GetPaymentService getPaymentService;
     private final CapturePaymentService capturePaymentService;
     private final CancelPaymentService cancelPaymentService;
-    private final GetPaymentEventService getPaymentEventService;
+    private final GetPaymentEventsService getPaymentEventsService;
 
     @Inject
     public PaymentsResource(CreatePaymentService createPaymentService,
@@ -68,14 +68,14 @@ public class PaymentsResource {
                             GetPaymentService getPaymentService,
                             CapturePaymentService capturePaymentService,
                             CancelPaymentService cancelPaymentService,
-                            GetPaymentEventService getPaymentEventService) {
+                            GetPaymentEventsService getPaymentEventsService) {
         this.createPaymentService = createPaymentService;
         this.publicApiUriGenerator = publicApiUriGenerator;
         this.paymentSearchService = paymentSearchService;
         this.getPaymentService = getPaymentService;
         this.capturePaymentService = capturePaymentService;
         this.cancelPaymentService = cancelPaymentService;
-        this.getPaymentEventService = getPaymentEventService;
+        this.getPaymentEventsService = getPaymentEventsService;
     }
 
     @GET
@@ -135,7 +135,7 @@ public class PaymentsResource {
                                              String paymentId) {
 
         logger.info("Payment events request - payment_id={}", paymentId);
-        PaymentEventsResponse response = getPaymentEventService.getPaymentEvent(account, paymentId);
+        PaymentEventsResponse response = getPaymentEventsService.getPaymentEvent(account, paymentId);
         logger.info("Payment events returned - [ {} ]", response);
 
         return response;

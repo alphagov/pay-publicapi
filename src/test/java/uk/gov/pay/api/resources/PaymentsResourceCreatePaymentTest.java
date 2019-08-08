@@ -20,7 +20,7 @@ import uk.gov.pay.api.service.CapturePaymentService;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.CreatePaymentService;
 import uk.gov.pay.api.service.GetDirectDebitPaymentService;
-import uk.gov.pay.api.service.GetPaymentEventService;
+import uk.gov.pay.api.service.GetPaymentEventsService;
 import uk.gov.pay.api.service.GetPaymentService;
 import uk.gov.pay.api.service.PaymentSearchService;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
@@ -67,7 +67,7 @@ public class PaymentsResourceCreatePaymentTest {
     private CancelPaymentService cancelPaymentService;
 
     @Mock
-    private GetPaymentEventService getPaymentEventService;
+    private GetPaymentEventsService getPaymentEventsService;
 
 
     @Mock
@@ -83,7 +83,7 @@ public class PaymentsResourceCreatePaymentTest {
                 getPaymentService,
                 capturePaymentService,
                 cancelPaymentService,
-                getPaymentEventService);
+                getPaymentEventsService);
         when(publicApiUriGenerator.getPaymentURI(anyString())).thenReturn(URI.create(paymentUri));
     }
 

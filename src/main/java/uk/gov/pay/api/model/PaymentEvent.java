@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PaymentEvent {
-    @JsonProperty("charge_id")
-    private String chargeId;
 
     @JsonProperty("state")
     private PaymentState state;
@@ -15,10 +13,6 @@ public class PaymentEvent {
     private String updated;
 
     public PaymentEvent() {}
-
-    public String getChargeId() {
-        return chargeId;
-    }
 
     public PaymentState getState() {
         return state;
@@ -31,8 +25,7 @@ public class PaymentEvent {
     @Override
     public String toString() {
         return "PaymentEvent{" +
-                "chargeId='" + chargeId + '\'' +
-                ", state='" + state + '\'' +
+                "state='" + state + '\'' +
                 ", updated=" + updated +
                 "}";
     }

@@ -13,16 +13,16 @@ import java.net.URI;
 
 import static org.apache.http.HttpStatus.SC_OK;
 
-public class GetPaymentEventService {
+public class GetPaymentEventsService {
 
     private final Client client;
     private final ConnectorUriGenerator connectorUriGenerator;
     private final PublicApiUriGenerator publicApiUriGenerator;
 
     @Inject
-    public GetPaymentEventService(Client client,
-                                  ConnectorUriGenerator connectorUriGenerator,
-                                  PublicApiUriGenerator publicApiUriGenerator) {
+    public GetPaymentEventsService(Client client,
+                                   ConnectorUriGenerator connectorUriGenerator,
+                                   PublicApiUriGenerator publicApiUriGenerator) {
         this.client = client;
         this.connectorUriGenerator = connectorUriGenerator;
         this.publicApiUriGenerator = publicApiUriGenerator;

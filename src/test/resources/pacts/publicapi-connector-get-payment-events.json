@@ -121,7 +121,6 @@
                 }
               ]
             },
-            ,
             "$.events[1].state.code": {
               "matchers": [
                 {
