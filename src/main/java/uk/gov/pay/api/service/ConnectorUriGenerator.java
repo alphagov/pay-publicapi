@@ -77,6 +77,11 @@ public class ConnectorUriGenerator {
         return buildConnectorUri(path);
     }
 
+    String refundsForPaymentURI(String accountId, String chargeId) {
+        String path = format("/v1/api/accounts/%s/charges/%s/refunds", accountId, chargeId);
+        return buildConnectorUri(path);
+    }
+
     // TODO: remove when direct debit endpoints entirely split out
     @Deprecated
     private String buildConnectorUri(Account account, String path) {
