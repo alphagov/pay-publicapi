@@ -17,17 +17,16 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateRefundException;
 import uk.gov.pay.api.exception.GetRefundException;
-import uk.gov.pay.api.exception.GetRefundsException;
 import uk.gov.pay.api.model.ChargeFromResponse;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.RefundFromConnector;
 import uk.gov.pay.api.model.RefundResponse;
-import uk.gov.pay.api.model.RefundsFromConnector;
 import uk.gov.pay.api.model.RefundsResponse;
 import uk.gov.pay.api.model.search.card.RefundForSearchResult;
 import uk.gov.pay.api.model.search.card.RefundResult;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
+import uk.gov.pay.api.service.GetPaymentRefundsService;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -75,12 +74,15 @@ public class PaymentRefundsResource {
     private final String baseUrl;
     private final Client client;
     private final String connectorUrl;
+    private GetPaymentRefundsService getPaymentRefundsService;
 
     @Inject
-    public PaymentRefundsResource(Client client, PublicApiConfig configuration) {
+    public PaymentRefundsResource(Client client, PublicApiConfig configuration,
+                                  GetPaymentRefundsService getPaymentRefundsService) {
         this.client = client;
         this.baseUrl = configuration.getBaseUrl();
         this.connectorUrl = configuration.getConnectorUrl();
+        this.getPaymentRefundsService = getPaymentRefundsService;
     }
 
     @GET
@@ -101,23 +103,12 @@ public class PaymentRefundsResource {
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response getRefunds(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                               @PathParam(PATH_PAYMENT_KEY) String paymentId) {
+                                      @PathParam(PATH_PAYMENT_KEY) String paymentId) {
 
         logger.info("Get refunds for payment request - paymentId={}", paymentId);
-        Response connectorResponse = client
-                .target(getConnectorUrl(format(CONNECTOR_CHARGE_REFUNDS_RESOURCE, account.getAccountId(), paymentId)))
-                .request()
-                .get();
-
-        if (connectorResponse.getStatus() == SC_OK) {
-            RefundsFromConnector refundsFromConnector = connectorResponse.readEntity(RefundsFromConnector.class);
-            logger.debug("refund returned - [ {} ]", refundsFromConnector);
-            RefundsResponse refundsResponse = RefundsResponse.valueOf(refundsFromConnector, baseUrl);
-
-            return Response.ok(refundsResponse.serialize()).build();
-        }
-
-        throw new GetRefundsException(connectorResponse);
+        RefundsResponse refundsResponse = getPaymentRefundsService.getConnectorPaymentRefunds(account, paymentId);
+        logger.debug("refund returned - [ {} ]", refundsResponse);
+        return Response.ok(refundsResponse.serialize()).build();
     }
 
     @GET
