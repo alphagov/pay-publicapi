@@ -56,7 +56,7 @@ public class GetPaymentServiceTest {
         LedgerUriGenerator ledgerUriGenerator = new LedgerUriGenerator(mockConfiguration);
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
         getPaymentService = new GetPaymentService(publicApiUriGenerator,
-                new ConnectorService(client, connectorUriGenerator, mockConfiguration),
+                new ConnectorService(client, connectorUriGenerator),
                 new LedgerService(client, ledgerUriGenerator));
     }
 
