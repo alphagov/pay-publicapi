@@ -8,8 +8,11 @@ import uk.gov.pay.api.it.fixtures.PaymentRefundJsonFixture;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.RefundSummary;
+import uk.gov.pay.api.model.ledger.TransactionState;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
+import uk.gov.pay.api.utils.mocks.LedgerMockClient;
+import uk.gov.pay.api.utils.mocks.RefundTransactionFromLedgerFixture;
 import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.commons.validation.DateTimeUtils;
 
@@ -28,6 +31,7 @@ import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
+import static uk.gov.pay.api.utils.mocks.RefundTransactionFromLedgerFixture.RefundTransactionFromLedgerBuilder.aRefundTransactionFromLedgerFixture;
 import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
@@ -43,7 +47,8 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
 
     private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
-    
+    private LedgerMockClient ledgerMockClient = new LedgerMockClient(ledgerMock);
+
     @Test
     public void getRefundById_shouldGetValidResponse() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
@@ -122,6 +127,35 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
                 .body("_embedded.refunds[1]._links.size()", is(2))
                 .body("_embedded.refunds[1]._links.self.href", is(paymentRefundLocationFor(CHARGE_ID, "300")))
                 .body("_embedded.refunds[1]._links.payment.href", is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)));
+    }
+
+    @Test
+    public void getPaymentRefundsFromLedger_shouldGetValidResponse() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        String refundTransactionId = "refund-transaction-1";
+        RefundTransactionFromLedgerFixture refund1 = aRefundTransactionFromLedgerFixture()
+                .withAmount(1000L)
+                .withCreatedDate(CREATED_DATE)
+                .withState(new TransactionState("success", true))
+                .withTransactionId(refundTransactionId)
+                .build();
+
+        ledgerMockClient.respondWithGetAllRefunds(CHARGE_ID, refund1);
+
+        getPaymentRefundsResponse(API_KEY, CHARGE_ID, "ledger-only")
+                .statusCode(200)
+                .contentType(JSON)
+                .body("payment_id", is(CHARGE_ID))
+                .body("_links.self.href", is(paymentRefundsLocationFor(CHARGE_ID)))
+                .body("_links.payment.href", is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)))
+                .body("_embedded.refunds.size()", is(1))
+                .body("_embedded.refunds[0].refund_id", is(refundTransactionId))
+                .body("_embedded.refunds[0].created_date", is(CREATED_DATE))
+                .body("_embedded.refunds[0].amount", is(1000))
+                .body("_embedded.refunds[0].status", is("success"))
+                .body("_embedded.refunds[0]._links.size()", is(2))
+                .body("_embedded.refunds[0]._links.self.href", is(paymentRefundLocationFor(CHARGE_ID, refundTransactionId)))
+                .body("_embedded.refunds[0]._links.payment.href", is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)));
     }
 
     @Test
@@ -229,7 +263,12 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
     }
 
     private ValidatableResponse getPaymentRefundsResponse(String bearerToken, String paymentId) {
+        return getPaymentRefundsResponse(bearerToken, paymentId, "default");
+    }
+
+    private ValidatableResponse getPaymentRefundsResponse(String bearerToken, String paymentId, String strategy) {
         return given().port(app.getLocalPort())
+                .header("X-Ledger", strategy)
                 .header(AUTHORIZATION, "Bearer " + bearerToken)
                 .get(format("/v1/payments/%s/refunds", paymentId))
                 .then();
