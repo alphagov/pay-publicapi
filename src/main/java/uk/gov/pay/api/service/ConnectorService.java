@@ -51,9 +51,7 @@ public class ConnectorService {
                 .get();
 
         if (connectorResponse.getStatus() == SC_OK) {
-            PaymentEvents response = connectorResponse.readEntity(PaymentEvents.class);
-
-            return response;
+            return connectorResponse.readEntity(PaymentEvents.class);
         }
 
         throw new GetEventsException(connectorResponse);
