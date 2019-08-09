@@ -8,19 +8,13 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RefundTransactionFromLedger {
 
-    String gatewayAccountId;
     Long amount;
     String description;
     String reference;
     String createdDate;
     String refundedBy;
-    String transactionType;
     String transactionId;
     TransactionState state;
-
-    public String getGatewayAccountId() {
-        return gatewayAccountId;
-    }
 
     public Long getAmount() {
         return amount;
@@ -40,10 +34,6 @@ public class RefundTransactionFromLedger {
 
     public String getRefundedBy() {
         return refundedBy;
-    }
-
-    public String getTransactionType() {
-        return transactionType;
     }
 
     public String getTransactionId() {

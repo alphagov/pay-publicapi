@@ -60,7 +60,6 @@ public class LedgerMockClient {
                 .add("parent_transaction_id", transactionId)
                 .add("transactions", refunds);
 
-        System.out.println(jsonStringBuilder.build());
         ledgerMock.stubFor(get(urlPathEqualTo(format("/v1/transaction/%s/transaction", transactionId)))
                 .willReturn(aResponse()
                         .withStatus(OK_200)
