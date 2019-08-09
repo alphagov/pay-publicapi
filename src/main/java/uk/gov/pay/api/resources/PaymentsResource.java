@@ -130,15 +130,19 @@ public class PaymentsResource {
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public PaymentEventsResponse getPaymentEvents(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                                     @PathParam("paymentId")
-                                     @ApiParam(name = "paymentId", value = "Payment identifier", example = "hu20sqlact5260q2nanm0q8u93")
-                                             String paymentId) {
+                                                  @PathParam("paymentId")
+                                                  @ApiParam(name = "paymentId", value = "Payment identifier", example = "hu20sqlact5260q2nanm0q8u93")
+                                                          String paymentId,
+                                                  @ApiParam(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
 
         logger.info("Payment events request - payment_id={}", paymentId);
-        PaymentEventsResponse response = getPaymentEventsService.getPaymentEvent(account, paymentId);
-        logger.info("Payment events returned - [ {} ]", response);
 
-        return response;
+        var strategy = new GetPaymentEventsStrategy(strategyName, account, paymentId, getPaymentEventsService);
+        PaymentEventsResponse paymentEventsResponse = strategy.validateAndExecute();
+
+        logger.info("Payment events returned - [ {} ]", paymentEventsResponse);
+
+        return paymentEventsResponse;
     }
 
     @GET

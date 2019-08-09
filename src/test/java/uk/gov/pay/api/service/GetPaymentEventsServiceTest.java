@@ -11,6 +11,7 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.PaymentEventsResponse;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
@@ -28,6 +29,9 @@ public class GetPaymentEventsServiceTest {
     @Rule
     public PactProviderRule connectorRule = new PactProviderRule("connector", this);
 
+    @Rule
+    public PactProviderRule ledgerRule = new PactProviderRule("ledger", this);
+
     @Mock
     private PublicApiConfig mockConfiguration;
 
@@ -35,23 +39,26 @@ public class GetPaymentEventsServiceTest {
     private static final String ACCOUNT_ID = "42";
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         when(mockConfiguration.getConnectorUrl()).thenReturn(connectorRule.getUrl());
         when(mockConfiguration.getBaseUrl()).thenReturn("http://publicapi.test.localhost/");
 
         PublicApiUriGenerator publicApiUriGenerator = new PublicApiUriGenerator(mockConfiguration);
         ConnectorUriGenerator connectorUriGenerator = new ConnectorUriGenerator(mockConfiguration);
+        LedgerUriGenerator ledgerUriGenerator = new LedgerUriGenerator(mockConfiguration);
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
+        LedgerService ledgerService = new LedgerService(client, ledgerUriGenerator);
+        ConnectorService connectorService = new ConnectorService(client, connectorUriGenerator, mockConfiguration);
 
-        getPaymentEventsService = new GetPaymentEventsService(client, connectorUriGenerator, publicApiUriGenerator);
+        getPaymentEventsService = new GetPaymentEventsService(publicApiUriGenerator, connectorService, ledgerService);
     }
 
     @Test
     @PactVerification("connector")
     @Pacts(pacts = {"publicapi-connector-get-payment-events"})
-    public void shouldReturnPaymentEvents() {
+    public void shouldReturnPaymentEventsWhenCallingConnector() {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
-        PaymentEventsResponse paymentEventsResponse = getPaymentEventsService.getPaymentEvent(account, "abc123");
+        PaymentEventsResponse paymentEventsResponse = getPaymentEventsService.getPaymentEventsFromConnector(account, "abc123");
         assertThat(paymentEventsResponse.getPaymentId(), is("abc123"));
         assertThat(paymentEventsResponse.getLinks().getSelf().getHref(), is("http://publicapi.test.localhost/v1/payments/abc123/events"));
         assertThat(paymentEventsResponse.getEvents().size(), is(2));
