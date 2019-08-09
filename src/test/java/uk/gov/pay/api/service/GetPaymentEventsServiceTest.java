@@ -41,6 +41,7 @@ public class GetPaymentEventsServiceTest {
     @Before
     public void setUp() {
         when(mockConfiguration.getConnectorUrl()).thenReturn(connectorRule.getUrl());
+        when(mockConfiguration.getLedgerUrl()).thenReturn(ledgerRule.getUrl());
         when(mockConfiguration.getBaseUrl()).thenReturn("http://publicapi.test.localhost/");
 
         PublicApiUriGenerator publicApiUriGenerator = new PublicApiUriGenerator(mockConfiguration);
@@ -74,5 +75,28 @@ public class GetPaymentEventsServiceTest {
         assertThat(paymentEventsResponse.getEvents().get(1).getState().getCode(), is("P0010"));
         assertThat(paymentEventsResponse.getEvents().get(1).getState().getMessage(), is("Payment method rejected"));
         assertThat(paymentEventsResponse.getEvents().get(1).getUpdated(), is("2019-08-06T10:34:48.487Z"));
+    }
+
+    @Test
+    @PactVerification("ledger")
+    @Pacts(pacts = {"publicapi-ledger-get-payment-events"})
+    public void shouldReturnPaymentEventsWhenCallingLedger() {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        PaymentEventsResponse paymentEventsResponse = getPaymentEventsService.getPaymentEventsFromLedger(account, "abc123");
+        assertThat(paymentEventsResponse.getPaymentId(), is("abc123"));
+        assertThat(paymentEventsResponse.getLinks().getSelf().getHref(), is("http://publicapi.test.localhost/v1/payments/abc123/events"));
+        assertThat(paymentEventsResponse.getEvents().size(), is(2));
+        assertThat(paymentEventsResponse.getEvents().get(0).getPaymentId(), is("abc123"));
+        assertThat(paymentEventsResponse.getEvents().get(0).getPaymentLink().getPaymentLink().getHref(), is("http://publicapi.test.localhost/v1/payments/abc123"));
+        assertThat(paymentEventsResponse.getEvents().get(0).getState().getStatus(), is("created"));
+        assertThat(paymentEventsResponse.getEvents().get(0).getState().isFinished(), is(false));
+        assertThat(paymentEventsResponse.getEvents().get(0).getUpdated(), is("2019-08-06T10:34:43.487123Z"));
+        assertThat(paymentEventsResponse.getEvents().get(1).getPaymentId(), is("abc123"));
+        assertThat(paymentEventsResponse.getEvents().get(1).getPaymentLink().getPaymentLink().getHref(), is("http://publicapi.test.localhost/v1/payments/abc123"));
+        assertThat(paymentEventsResponse.getEvents().get(1).getState().getStatus(), is("failed"));
+        assertThat(paymentEventsResponse.getEvents().get(1).getState().isFinished(), is(true));
+        assertThat(paymentEventsResponse.getEvents().get(1).getState().getCode(), is("P0010"));
+        assertThat(paymentEventsResponse.getEvents().get(1).getState().getMessage(), is("Payment method rejected"));
+        assertThat(paymentEventsResponse.getEvents().get(1).getUpdated(), is("2019-08-06T10:34:48.123456Z"));
     }
 }
