@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.pay.api.validation.ValidPaymentOutcome;
 
+import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
 @ValidPaymentOutcome
