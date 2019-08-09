@@ -1,20 +1,21 @@
 package uk.gov.pay.api.service;
 
-import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.GetChargeException;
-import uk.gov.pay.api.exception.GetRefundsException;
 import uk.gov.pay.api.exception.GetEventsException;
+import uk.gov.pay.api.exception.GetRefundsException;
 import uk.gov.pay.api.model.Charge;
 import uk.gov.pay.api.model.ChargeFromResponse;
-import uk.gov.pay.api.model.RefundsFromConnector;
-import uk.gov.pay.api.model.RefundsResponse;
 import uk.gov.pay.api.model.PaymentEvents;
+import uk.gov.pay.api.model.Refund;
+import uk.gov.pay.api.model.RefundsFromConnector;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.apache.http.HttpStatus.SC_OK;
 
@@ -22,14 +23,10 @@ public class ConnectorService {
     private final Client client;
     private final ConnectorUriGenerator connectorUriGenerator;
 
-    private final String baseUrl;
-
     @Inject
-    public ConnectorService(Client client, ConnectorUriGenerator connectorUriGenerator,
-                            PublicApiConfig publicApiConfig) {
+    public ConnectorService(Client client, ConnectorUriGenerator connectorUriGenerator) {
         this.client = client;
         this.connectorUriGenerator = connectorUriGenerator;
-        this.baseUrl = publicApiConfig.getBaseUrl();
     }
 
     public Charge getCharge(Account account, String paymentId) {
@@ -62,15 +59,21 @@ public class ConnectorService {
         throw new GetEventsException(connectorResponse);
     }
 
-    public RefundsResponse getPaymentRefunds(Account account, String paymentId) {
+    public List<Refund> getPaymentRefunds(String accountId, String paymentId) {
         Response connectorResponse = client
-                .target(connectorUriGenerator.refundsForPaymentURI(account.getAccountId(), paymentId))
+                .target(connectorUriGenerator.refundsForPaymentURI(accountId, paymentId))
                 .request()
                 .get();
 
         if (connectorResponse.getStatus() == SC_OK) {
             RefundsFromConnector refundsFromConnector = connectorResponse.readEntity(RefundsFromConnector.class);
-            return RefundsResponse.valueOf(refundsFromConnector, baseUrl);
+            return refundsFromConnector
+                    .getEmbedded()
+                    .getRefunds()
+                    .stream()
+                    .map(refundFromConnector ->
+                            Refund.valueOf(refundFromConnector))
+                    .collect(Collectors.toList());
         }
 
         throw new GetRefundsException(connectorResponse);

@@ -1,42 +1,64 @@
 package uk.gov.pay.api.model;
 
-import black.door.hate.HalResource;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import uk.gov.pay.api.model.links.RefundLinksForSearch;
 
-import javax.ws.rs.core.UriBuilder;
-import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static black.door.hate.HalRepresentation.HalRepresentationBuilder;
-import static black.door.hate.HalRepresentation.builder;
-import static uk.gov.pay.api.resources.PaymentRefundsResource.PAYMENT_BY_ID_PATH;
-import static uk.gov.pay.api.resources.PaymentRefundsResource.PAYMENT_REFUNDS_PATH;
+public class RefundsResponse {
 
-public class RefundsResponse extends HalResourceResponse {
+    @JsonProperty("payment_id")
+    private String paymentId;
+    @JsonProperty("_links")
+    private RefundLinksForSearch links;
+    @JsonProperty("_embedded")
+    private EmbeddedRefunds embedded;
 
-    private RefundsResponse(HalRepresentationBuilder refundHalRepresentation, URI location) {
-        super(refundHalRepresentation, location);
+    private RefundsResponse(String paymentId, List<RefundResponse> refundsForPayment, String selfLink, String paymentLink) {
+        this.paymentId = paymentId;
+
+        embedded = new EmbeddedRefunds();
+        embedded.refunds = refundsForPayment;
+
+        this.links = new RefundLinksForSearch();
+        this.links.addPayment(paymentLink);
+        this.links.addSelf(selfLink);
     }
 
-    public static RefundsResponse valueOf(RefundsFromConnector refundsEntity, String baseUrl) {
+    public static RefundsResponse from(String paymentId,
+                                     List<RefundResponse> refundsForPayment,
+                                     String selfLink,
+                                     String paymentLink) {
+        return new RefundsResponse(paymentId, refundsForPayment, selfLink, paymentLink);
+    }
 
-        URI selfLink = UriBuilder.fromUri(baseUrl)
-                .path(PAYMENT_REFUNDS_PATH)
-                .build(refundsEntity.getPaymentId());
+    public String getPaymentId() {
+        return paymentId;
+    }
 
-        URI paymentLink = UriBuilder.fromUri(baseUrl)
-                .path(PAYMENT_BY_ID_PATH)
-                .build(refundsEntity.getPaymentId());
+    public RefundLinksForSearch getLinks() {
+        return links;
+    }
 
-        List<HalResource> refundHalResources = refundsEntity.getEmbedded().getRefunds().stream()
-                .map(refund -> RefundResponse.valueOf(refund, refundsEntity.getPaymentId(), baseUrl))
-                .collect(Collectors.toList());
+    public EmbeddedRefunds getEmbedded() {
+        return embedded;
+    }
 
-        HalRepresentationBuilder refundHalRepresentation = builder()
-                .addProperty("payment_id", refundsEntity.getPaymentId())
-                .addLink("payment", paymentLink)
-                .addEmbedded("refunds", refundHalResources);
+    public class EmbeddedRefunds {
+        private List<RefundResponse> refunds;
 
-        return new RefundsResponse(refundHalRepresentation, selfLink);
+        public EmbeddedRefunds() {
+        }
+
+        public List<RefundResponse> getRefunds() {
+            return refunds;
+        }
+
+        @Override
+        public String toString() {
+            return "Embedded{" +
+                    "refunds=" + refunds +
+                    '}';
+        }
     }
 }
