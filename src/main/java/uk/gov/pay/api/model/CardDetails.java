@@ -63,7 +63,7 @@ public class CardDetails {
         return cardHolderName;
     }
 
-    @ApiModelProperty(example = "12/20")
+    @ApiModelProperty(value = "The expiry date of the card in MM/yy format", example = "04/24")
     public String getExpiryDate() {
         return expiryDate;
     }
