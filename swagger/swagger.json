@@ -1079,7 +1079,8 @@
         },
         "expiry_date" : {
           "type" : "string",
-          "example" : "12/20",
+          "example" : "04/24",
+          "description" : "The expiry date of the card in MM/yy format",
           "readOnly" : true
         },
         "billing_address" : {
