@@ -52,7 +52,7 @@ public class PaymentError {
         CREATE_PAYMENT_MANDATE_STATE_INVALID("P1103",
                 "Can't create payment. The mandate's state must be pending or active."),
         CREATE_PAYMENT_MANDATE_ID_INVALID("P1100",
-                "Can't create payment. The mandate with the corresponding ID you provided does not exist."),
+                "Can't create payment. A mandate with the ID provided does not exist."),
 
         GET_PAYMENT_REFUND_NOT_FOUND_ERROR("P0700", "Not found"),
         GET_PAYMENT_REFUND_CONNECTOR_ERROR("P0798", "Downstream system error"),
