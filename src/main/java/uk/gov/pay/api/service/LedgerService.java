@@ -6,7 +6,9 @@ import uk.gov.pay.api.exception.GetEventsException;
 import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.Charge;
 import uk.gov.pay.api.model.TransactionEvents;
+import uk.gov.pay.api.exception.GetRefundsException;
 import uk.gov.pay.api.model.TransactionResponse;
+import uk.gov.pay.api.model.ledger.RefundsFromLedger;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
@@ -34,7 +36,7 @@ public class LedgerService {
             TransactionResponse transactionResponse = response.readEntity(TransactionResponse.class);
             return Charge.from(transactionResponse);
         }
-        
+
         throw new GetChargeException(response);
     }
 
@@ -47,7 +49,19 @@ public class LedgerService {
         if (response.getStatus() == SC_OK) {
             return response.readEntity(TransactionEvents.class);
         }
-
         throw new GetEventsException(response);
+    }
+
+    public RefundsFromLedger getPaymentRefunds(String accountId, String paymentId) {
+        Response response = client
+                .target(ledgerUriGenerator.transactionsForTransactionURI(accountId, paymentId))
+                .request()
+                .get();
+
+        if (response.getStatus() == SC_OK) {
+            return response.readEntity(RefundsFromLedger.class);
+        }
+
+        throw new GetRefundsException(response);
     }
 }

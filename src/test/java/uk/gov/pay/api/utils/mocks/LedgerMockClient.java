@@ -3,7 +3,7 @@ package uk.gov.pay.api.utils.mocks;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.google.gson.GsonBuilder;
-import org.bouncycastle.cert.ocsp.RespData;
+import uk.gov.pay.api.utils.JsonStringBuilder;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +20,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.eclipse.jetty.http.HttpStatus.NOT_FOUND_404;
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
 
-public class LedgerMockClient  {
+public class LedgerMockClient {
 
     private final WireMockClassRule ledgerMock;
 
@@ -51,5 +51,19 @@ public class LedgerMockClient  {
 
         ledgerMock.stubFor(get(urlPathEqualTo(format("/v1/transaction/%s", paymentId)))
                 .willReturn(response));
+    }
+
+    public void respondWithGetAllRefunds(String transactionId,
+                                         RefundTransactionFromLedgerFixture... refunds) {
+
+        JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
+                .add("parent_transaction_id", transactionId)
+                .add("transactions", refunds);
+
+        ledgerMock.stubFor(get(urlPathEqualTo(format("/v1/transaction/%s/transaction", transactionId)))
+                .willReturn(aResponse()
+                        .withStatus(OK_200)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withBody(jsonStringBuilder.build())));
     }
 }

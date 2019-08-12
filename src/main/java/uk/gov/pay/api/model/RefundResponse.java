@@ -3,6 +3,7 @@ package uk.gov.pay.api.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import uk.gov.pay.api.model.ledger.RefundTransactionFromLedger;
 import uk.gov.pay.api.model.links.RefundLinksForSearch;
 
 import javax.ws.rs.core.UriBuilder;
@@ -21,15 +22,26 @@ public class RefundResponse {
     private RefundLinksForSearch links;
     private String status;
 
-    private RefundResponse(Refund refund, String selfLink, String paymentLink) {
+    private RefundResponse(RefundFromConnector refund, URI selfLink, URI paymentLink) {
         this.refundId = refund.getRefundId();
         this.amount = refund.getAmount();
         this.status = refund.getStatus();
         this.createdDate = refund.getCreatedDate();
         this.links = new RefundLinksForSearch();
 
-        links.addSelf(selfLink);
-        links.addPayment(paymentLink);
+        links.addSelf(selfLink.toString());
+        links.addPayment(paymentLink.toString());
+    }
+
+    private RefundResponse(RefundTransactionFromLedger refund, URI selfLink, URI paymentLink) {
+        this.refundId = refund.getTransactionId();
+        this.amount = refund.getAmount();
+        this.status = refund.getState().getStatus();
+        this.createdDate = refund.getCreatedDate();
+        this.links = new RefundLinksForSearch();
+
+        links.addSelf(selfLink.toString());
+        links.addPayment(paymentLink.toString());
     }
 
     private RefundResponse(String refundId, Long amount, String status,
@@ -44,7 +56,11 @@ public class RefundResponse {
         links.addPayment(paymentLink.toString());
     }
 
-    public static RefundResponse from(Refund refund, String selfLink, String paymentLink) {
+    public static RefundResponse from(RefundFromConnector refund, URI selfLink, URI paymentLink) {
+        return new RefundResponse(refund, selfLink, paymentLink);
+    }
+
+    public static RefundResponse from(RefundTransactionFromLedger refund, URI selfLink, URI paymentLink) {
         return new RefundResponse(refund, selfLink, paymentLink);
     }
 
@@ -63,7 +79,7 @@ public class RefundResponse {
                 refundEntity.getAmount(),
                 refundEntity.getStatus(),
                 refundEntity.getCreatedDate(),
-                selfLink, 
+                selfLink,
                 paymentLink);
     }
 

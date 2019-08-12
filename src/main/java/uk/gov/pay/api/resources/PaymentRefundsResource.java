@@ -31,6 +31,7 @@ import uk.gov.pay.api.service.GetPaymentRefundsService;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -103,10 +104,14 @@ public class PaymentRefundsResource {
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public RefundsResponse getRefunds(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                                      @PathParam(PATH_PAYMENT_KEY) String paymentId) {
+                                      @PathParam(PATH_PAYMENT_KEY) String paymentId,
+                                      @ApiParam(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
 
-        logger.info("Get refunds for payment request - paymentId={}", paymentId);
-        RefundsResponse refundsResponse = getPaymentRefundsService.getConnectorPaymentRefunds(account, paymentId);
+        logger.info("Get refunds for payment request - paymentId={} using strategy={}", paymentId, strategyName);
+
+        GetPaymentRefundsStrategy strategy = new GetPaymentRefundsStrategy(strategyName, account, paymentId, getPaymentRefundsService);
+        RefundsResponse refundsResponse = strategy.validateAndExecute();
+        
         logger.debug("refund returned - [ {} ]", refundsResponse);
         return refundsResponse;
     }
