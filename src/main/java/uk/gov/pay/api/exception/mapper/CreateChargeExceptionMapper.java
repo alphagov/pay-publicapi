@@ -14,6 +14,7 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_ACCOUNT_ERROR;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_CONNECTOR_ERROR;
+import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_MANDATE_ID_INVALID;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_MANDATE_STATE_INVALID;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
@@ -37,6 +38,9 @@ public class CreateChargeExceptionMapper implements ExceptionMapper<CreateCharge
         } else if (exception.getErrorIdentifier() == ErrorIdentifier.MANDATE_STATE_INVALID) {
             statusCode = HttpStatus.CONFLICT_409;
             paymentError = aPaymentError(CREATE_PAYMENT_MANDATE_STATE_INVALID);
+        } else if (exception.getErrorIdentifier() == ErrorIdentifier.MANDATE_ID_INVALID) {
+            statusCode = HttpStatus.CONFLICT_409;
+            paymentError = aPaymentError(CREATE_PAYMENT_MANDATE_ID_INVALID);
         } else {
             paymentError = aPaymentError(CREATE_PAYMENT_CONNECTOR_ERROR);
         }
