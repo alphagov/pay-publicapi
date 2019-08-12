@@ -3,6 +3,8 @@ package uk.gov.pay.api.service;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.GetChargeException;
 import uk.gov.pay.api.exception.GetEventsException;
+import uk.gov.pay.api.exception.GetRefundException;
+import uk.gov.pay.api.exception.GetTransactionException;
 import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.Charge;
 import uk.gov.pay.api.model.TransactionEvents;
@@ -26,6 +28,7 @@ public class LedgerService {
         this.ledgerUriGenerator = ledgerUriGenerator;
     }
 
+    //todo: transaction type
     public Charge getTransaction(Account account, String paymentId) {
         Response response = client
                 .target(ledgerUriGenerator.transactionURI(account, paymentId))
@@ -38,6 +41,19 @@ public class LedgerService {
         }
 
         throw new GetChargeException(response);
+    }
+
+    public TransactionResponse getTransaction(Account account, String transactionId, String transactionType, String parentExternalId) {
+        Response response = client
+                .target(ledgerUriGenerator.transactionURI(account, transactionId, transactionType, parentExternalId))
+                .request()
+                .get();
+
+        if (response.getStatus() == SC_OK) {
+            return response.readEntity(TransactionResponse.class);
+        }
+
+        throw new GetTransactionException(response);
     }
 
     public TransactionEvents getTransactionEvents(Account account, String paymentId) {

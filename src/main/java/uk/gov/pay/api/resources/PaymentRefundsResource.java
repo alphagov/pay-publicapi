@@ -26,6 +26,7 @@ import uk.gov.pay.api.model.RefundsResponse;
 import uk.gov.pay.api.model.search.card.RefundForSearchResult;
 import uk.gov.pay.api.model.search.card.RefundResult;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
+import uk.gov.pay.api.service.GetPaymentRefundService;
 import uk.gov.pay.api.service.GetPaymentRefundsService;
 
 import javax.inject.Inject;
@@ -76,14 +77,17 @@ public class PaymentRefundsResource {
     private final Client client;
     private final String connectorUrl;
     private GetPaymentRefundsService getPaymentRefundsService;
+    private GetPaymentRefundService getPaymentRefundService;
 
     @Inject
     public PaymentRefundsResource(Client client, PublicApiConfig configuration,
-                                  GetPaymentRefundsService getPaymentRefundsService) {
+                                  GetPaymentRefundsService getPaymentRefundsService,
+                                  GetPaymentRefundService getPaymentRefundService) {
         this.client = client;
         this.baseUrl = configuration.getBaseUrl();
         this.connectorUrl = configuration.getConnectorUrl();
         this.getPaymentRefundsService = getPaymentRefundsService;
+        this.getPaymentRefundService = getPaymentRefundService;
     }
 
     @GET
@@ -111,7 +115,7 @@ public class PaymentRefundsResource {
 
         GetPaymentRefundsStrategy strategy = new GetPaymentRefundsStrategy(strategyName, account, paymentId, getPaymentRefundsService);
         RefundsResponse refundsResponse = strategy.validateAndExecute();
-        
+
         logger.debug("refund returned - [ {} ]", refundsResponse);
         return refundsResponse;
     }
@@ -137,22 +141,17 @@ public class PaymentRefundsResource {
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public RefundResponse getRefundById(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                         @PathParam(PATH_PAYMENT_KEY) String paymentId,
-                                        @PathParam(PATH_REFUND_KEY) String refundId) {
+                                        @PathParam(PATH_REFUND_KEY) String refundId,
+                                        @ApiParam(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
 
         logger.info("Payment refund request - paymentId={}, refundId={}", paymentId, refundId);
-        Response connectorResponse = client
-                .target(getConnectorUrl(format(CONNECTOR_CHARGE_REFUND_BY_ID_RESOURCE, account.getAccountId(), paymentId, refundId)))
-                .request()
-                .get();
 
-        if (connectorResponse.getStatus() == SC_OK) {
-            RefundFromConnector refundFromConnector = connectorResponse.readEntity(RefundFromConnector.class);
-            logger.info("refund returned - [ {} ]", refundFromConnector);
+        var strategy = new GetPaymentRefundStrategy(strategyName, account, paymentId, refundId, getPaymentRefundService);
+        RefundResponse refundResponse = strategy.validateAndExecute();
 
-            RefundResponse refundResponse = RefundResponse.valueOf(refundFromConnector, paymentId, baseUrl);
-            return refundResponse;
-        }
-        throw new GetRefundException(connectorResponse);
+        logger.info("refund returned - [ {} ]", refundResponse);
+
+        return refundResponse;
     }
 
     @POST
