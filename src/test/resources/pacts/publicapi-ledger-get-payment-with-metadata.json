@@ -22,7 +22,8 @@
         "method": "GET",
         "path": "/v1/transaction/ch_123abc456xyz",
         "query": {
-          "account_id": ["123456"]
+          "account_id": ["123456"],
+          "transaction_type": ["PAYMENT"]
         }
       },
       "response": {

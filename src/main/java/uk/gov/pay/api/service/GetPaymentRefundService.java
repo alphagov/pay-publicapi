@@ -5,7 +5,6 @@ import uk.gov.pay.api.exception.GetRefundException;
 import uk.gov.pay.api.exception.GetTransactionException;
 import uk.gov.pay.api.model.RefundFromConnector;
 import uk.gov.pay.api.model.RefundResponse;
-import uk.gov.pay.api.model.TransactionResponse;
 import uk.gov.pay.api.model.ledger.RefundTransactionFromLedger;
 
 import javax.inject.Inject;
@@ -37,7 +36,7 @@ public class GetPaymentRefundService {
 
     public RefundResponse getLedgerPaymentRefund(Account account, String paymentId, String refundId) {
         try {
-            RefundTransactionFromLedger refund = ledgerService.getTransaction(account, refundId, "REFUND", paymentId);
+            RefundTransactionFromLedger refund = ledgerService.getRefundTransaction(account, refundId, paymentId);
 
             return RefundResponse.from(
                     refund,

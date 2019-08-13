@@ -28,10 +28,9 @@ public class LedgerService {
         this.ledgerUriGenerator = ledgerUriGenerator;
     }
 
-    //todo: transaction type
-    public Charge getTransaction(Account account, String paymentId) {
+    public Charge getPaymentTransaction(Account account, String paymentId) {
         Response response = client
-                .target(ledgerUriGenerator.transactionURI(account, paymentId))
+                .target(ledgerUriGenerator.transactionURI(account, paymentId, "PAYMENT"))
                 .request()
                 .get();
 
@@ -43,9 +42,9 @@ public class LedgerService {
         throw new GetChargeException(response);
     }
 
-    public RefundTransactionFromLedger getTransaction(Account account, String transactionId, String transactionType, String parentExternalId) {
+    public RefundTransactionFromLedger getRefundTransaction(Account account, String transactionId, String parentExternalId) {
         Response response = client
-                .target(ledgerUriGenerator.transactionURI(account, transactionId, transactionType, parentExternalId))
+                .target(ledgerUriGenerator.transactionURI(account, transactionId, "REFUND", parentExternalId))
                 .request()
                 .get();
 

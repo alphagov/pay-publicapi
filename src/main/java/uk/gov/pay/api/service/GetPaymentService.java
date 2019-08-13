@@ -29,7 +29,7 @@ public class GetPaymentService {
     }
     
     public PaymentWithAllLinks getLedgerTransaction(Account account, String paymentId) {
-        Charge charge = ledgerService.getTransaction(account, paymentId);
+        Charge charge = ledgerService.getPaymentTransaction(account, paymentId);
         
         return getPaymentWithAllLinks(account, charge);
     }
