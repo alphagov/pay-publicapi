@@ -3,13 +3,13 @@ package uk.gov.pay.api.service;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.GetChargeException;
 import uk.gov.pay.api.exception.GetEventsException;
-import uk.gov.pay.api.exception.GetRefundException;
+import uk.gov.pay.api.exception.GetRefundsException;
 import uk.gov.pay.api.exception.GetTransactionException;
 import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.Charge;
 import uk.gov.pay.api.model.TransactionEvents;
-import uk.gov.pay.api.exception.GetRefundsException;
 import uk.gov.pay.api.model.TransactionResponse;
+import uk.gov.pay.api.model.ledger.RefundTransactionFromLedger;
 import uk.gov.pay.api.model.ledger.RefundsFromLedger;
 
 import javax.inject.Inject;
@@ -43,14 +43,14 @@ public class LedgerService {
         throw new GetChargeException(response);
     }
 
-    public TransactionResponse getTransaction(Account account, String transactionId, String transactionType, String parentExternalId) {
+    public RefundTransactionFromLedger getTransaction(Account account, String transactionId, String transactionType, String parentExternalId) {
         Response response = client
                 .target(ledgerUriGenerator.transactionURI(account, transactionId, transactionType, parentExternalId))
                 .request()
                 .get();
 
         if (response.getStatus() == SC_OK) {
-            return response.readEntity(TransactionResponse.class);
+            return response.readEntity(RefundTransactionFromLedger.class);
         }
 
         throw new GetTransactionException(response);

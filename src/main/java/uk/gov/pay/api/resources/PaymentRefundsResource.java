@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateRefundException;
-import uk.gov.pay.api.exception.GetRefundException;
 import uk.gov.pay.api.model.ChargeFromResponse;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.PaymentError;
@@ -49,7 +48,6 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.ACCEPTED;
 import static javax.ws.rs.core.UriBuilder.fromPath;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.http.HttpStatus.SC_OK;
 
 @Path(PaymentRefundsResource.PAYMENT_REFUNDS_PATH)
 @Api(tags = "Refunding card payments", value = "/refunds")

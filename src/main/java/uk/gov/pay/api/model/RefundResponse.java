@@ -56,27 +56,12 @@ public class RefundResponse {
         links.addPayment(paymentLink.toString());
     }
 
-    public RefundResponse(TransactionResponse transaction, URI selfLink, URI paymentLink) {
-        this.refundId = transaction.getTransactionId();
-        this.amount = transaction.getAmount();
-        this.status = transaction.getState().getStatus();
-        this.createdDate = transaction.getCreatedDate();
-        this.links = new RefundLinksForSearch();
-
-        links.addSelf(selfLink.toString());
-        links.addPayment(paymentLink.toString());
-    }
-
     public static RefundResponse from(RefundFromConnector refund, URI selfLink, URI paymentLink) {
         return new RefundResponse(refund, selfLink, paymentLink);
     }
 
     public static RefundResponse from(RefundTransactionFromLedger refund, URI selfLink, URI paymentLink) {
         return new RefundResponse(refund, selfLink, paymentLink);
-    }
-
-    public static RefundResponse from(TransactionResponse transaction, URI selfLink, URI paymentLink) {
-        return new RefundResponse(transaction, selfLink, paymentLink);
     }
     
     //todo: remove after full refactoring of PaymentRefundsResource (to use service layer) 
