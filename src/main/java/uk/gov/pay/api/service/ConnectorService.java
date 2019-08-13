@@ -5,16 +5,19 @@ import uk.gov.pay.api.exception.GetChargeException;
 import uk.gov.pay.api.exception.GetEventsException;
 import uk.gov.pay.api.exception.GetRefundException;
 import uk.gov.pay.api.exception.GetRefundsException;
+import uk.gov.pay.api.exception.SearchRefundsException;
 import uk.gov.pay.api.model.Charge;
 import uk.gov.pay.api.model.ChargeFromResponse;
 import uk.gov.pay.api.model.PaymentEvents;
 import uk.gov.pay.api.model.RefundFromConnector;
 import uk.gov.pay.api.model.RefundsFromConnector;
+import uk.gov.pay.api.model.search.card.SearchRefundsResponseFromConnector;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Map;
 
 import static org.apache.http.HttpStatus.SC_OK;
 
@@ -81,5 +84,18 @@ public class ConnectorService {
         }
 
         throw new GetRefundException(connectorResponse);
+    }
+
+    public SearchRefundsResponseFromConnector searchRefunds(Account account, Map<String, String> queryParams) {
+        Response connectorResponse = client
+                .target(connectorUriGenerator.refundsURIWithParams(account, queryParams))
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get();
+
+        if (connectorResponse.getStatus() == SC_OK) {
+            return connectorResponse.readEntity(SearchRefundsResponseFromConnector.class);
+        }
+        throw new SearchRefundsException(connectorResponse);
     }
 }

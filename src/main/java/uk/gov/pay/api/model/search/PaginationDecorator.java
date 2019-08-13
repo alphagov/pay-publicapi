@@ -10,18 +10,19 @@ import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Optional;
 
 public class PaginationDecorator {
 
     private final String baseUrl;
-    
+
     @Inject
     public PaginationDecorator(PublicApiConfig config) {
         baseUrl = config.getBaseUrl();
     }
-    
+
     public HalRepresentation.HalRepresentationBuilder decoratePagination(HalRepresentation.HalRepresentationBuilder halRepresentationBuilder,
-                                                                            SearchPagination pagination, String path) {
+                                                                         SearchPagination pagination, String path) {
 
         HalRepresentation.HalRepresentationBuilder builder = addPaginationProperties(halRepresentationBuilder, pagination);
         SearchNavigationLinks links = pagination.getLinks();
@@ -37,6 +38,20 @@ public class PaginationDecorator {
         return builder;
     }
 
+    public SearchNavigationLinks transformLinksToPublicApiUri(
+            SearchNavigationLinks links, String path) {
+        try {
+            links.withSelfLink(transformIntoPublicUriAsString(baseUrl, links.getSelf(), path));
+            links.withFirstLink(transformIntoPublicUriAsString(baseUrl, links.getFirstPage(), path));
+            links.withLastLink(transformIntoPublicUriAsString(baseUrl, links.getLastPage(), path));
+            links.withPrevLink(transformIntoPublicUriAsString(baseUrl, links.getPrevPage(), path));
+            links.withNextLink(transformIntoPublicUriAsString(baseUrl, links.getNextPage(), path));
+        } catch (URISyntaxException ex) {
+            throw new SearchPaymentsException(ex);
+        }
+        return links;
+    }
+
     private HalRepresentation.HalRepresentationBuilder addPaginationProperties(HalRepresentation.HalRepresentationBuilder halRepresentationBuilder,
                                                                                SearchPagination pagination) {
         halRepresentationBuilder
@@ -50,6 +65,14 @@ public class PaginationDecorator {
         if (uri != null) {
             halRepresentationBuilder.addLink(name, uri);
         }
+    }
+
+    private String transformIntoPublicUriAsString(String baseUrl, Link link, String path) throws URISyntaxException {
+        URI uri = transformIntoPublicUri(baseUrl, link, path);
+
+        return Optional.ofNullable(uri)
+                .map(URI::toString)
+                .orElse(null);
     }
 
     private URI transformIntoPublicUri(String baseUrl, Link link, String path) throws URISyntaxException {
