@@ -14,6 +14,7 @@ import uk.gov.pay.api.model.RefundsFromConnector;
 import uk.gov.pay.api.model.search.card.SearchRefundsResponseFromConnector;
 
 import javax.inject.Inject;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -94,7 +95,11 @@ public class ConnectorService {
                 .get();
 
         if (connectorResponse.getStatus() == SC_OK) {
-            return connectorResponse.readEntity(SearchRefundsResponseFromConnector.class);
+            try {
+                return connectorResponse.readEntity(SearchRefundsResponseFromConnector.class);
+            } catch (ProcessingException exception) {
+                throw new SearchRefundsException(exception);
+            }
         }
         throw new SearchRefundsException(connectorResponse);
     }
