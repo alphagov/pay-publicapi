@@ -21,7 +21,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response;
 
 import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -59,7 +58,7 @@ public class SearchRefundsResource {
             @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
             @ApiResponse(code = 422, message = "Invalid parameters. See Public API documentation for the correct data formats", response = RefundError.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = RefundError.class)})
-    public Response searchRefunds(@ApiParam(value = "accountId", hidden = true)
+    public SearchRefundsResults searchRefunds(@ApiParam(value = "accountId", hidden = true)
                                   @Auth Account account,
                                   @ApiParam(value = "From date of refunds to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z", hidden = false)
                                   @QueryParam("from_date") String fromDate,
@@ -75,6 +74,6 @@ public class SearchRefundsResource {
                         fromDate, toDate, pageNumber, displaySize));
 
         RefundsParams refundsParams = new RefundsParams(fromDate, toDate, pageNumber, displaySize);
-        return searchRefundsService.getAllRefunds(account, refundsParams);
+        return searchRefundsService.searchConnectorRefunds(account, refundsParams);
     }
 }

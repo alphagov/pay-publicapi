@@ -1,27 +1,20 @@
 package uk.gov.pay.api.service;
 
-import black.door.hate.HalRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.exception.SearchRefundsException;
 import uk.gov.pay.api.model.search.PaginationDecorator;
 import uk.gov.pay.api.model.search.card.RefundForSearchRefundsResult;
-import uk.gov.pay.api.model.search.card.SearchRefundsResponse;
+import uk.gov.pay.api.model.search.card.SearchRefundsResponseFromConnector;
+import uk.gov.pay.api.model.search.card.SearchRefundsResults;
 
 import javax.inject.Inject;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.apache.http.HttpStatus.SC_OK;
 import static uk.gov.pay.api.validation.RefundSearchValidator.validateSearchParameters;
 
 public class SearchRefundsService {
@@ -36,27 +29,24 @@ public class SearchRefundsService {
     private static final String FROM_DATE = "from_date";
     private static final String TO_DATE = "to_date";
 
-    private final ConnectorUriGenerator connectorUriGenerator;
-    private final Client client;
     private final PublicApiUriGenerator publicApiUriGenerator;
     private final PaginationDecorator paginationDecorator;
+    private ConnectorService connectorService;
 
     @Inject
-    public SearchRefundsService(Client client,
-                                ConnectorUriGenerator uriGenerator,
+    public SearchRefundsService(ConnectorService connectorService,
                                 PublicApiUriGenerator publicApiUriGenerator,
                                 PaginationDecorator paginationDecorator) {
 
-        this.client = client;
-        this.connectorUriGenerator = uriGenerator;
+        this.connectorService = connectorService;
         this.publicApiUriGenerator = publicApiUriGenerator;
         this.paginationDecorator = paginationDecorator;
     }
 
-    public Response getAllRefunds(Account account, RefundsParams params) {
+    public SearchRefundsResults searchConnectorRefunds(Account account, RefundsParams params) {
         validateSearchParameters(params);
         Map<String, String> queryParams = buildQueryString(params);
-        return getSearchResponse(account, queryParams);
+        return getConnectorSearchRefundsResponse(account, queryParams);
     }
 
     private Map<String, String> buildQueryString(RefundsParams params) {
@@ -68,28 +58,12 @@ public class SearchRefundsService {
         return queryParams;
     }
 
-    private Response getSearchResponse(Account account, Map<String, String> queryParams) {
-        String url = connectorUriGenerator.refundsURIWithParams(account, queryParams);
-        Response connectorResponse = client
-                .target(url)
-                .request()
-                .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
-                .get();
-
-        if (connectorResponse.getStatus() == SC_OK) {
-            return processResponse(connectorResponse);
-        }
-        throw new SearchRefundsException(connectorResponse);
+    private SearchRefundsResults getConnectorSearchRefundsResponse(Account account, Map<String, String> queryParams) {
+        SearchRefundsResponseFromConnector searchRefundsResponseFromConnector = connectorService.searchRefunds(account, queryParams);
+        return processResponse(searchRefundsResponseFromConnector);
     }
 
-    private Response processResponse(Response connectorResponse) {
-        SearchRefundsResponse searchResponse;
-        try {
-            searchResponse = connectorResponse.readEntity(SearchRefundsResponse.class);
-        } catch (ProcessingException ex) {
-            throw new SearchRefundsException(ex);
-        }
-
+    private SearchRefundsResults processResponse(SearchRefundsResponseFromConnector searchResponse) {
         List<RefundForSearchRefundsResult> results = searchResponse.getRefunds()
                 .stream()
                 .map(refund -> RefundForSearchRefundsResult.valueOf(refund,
@@ -97,11 +71,12 @@ public class SearchRefundsService {
                         publicApiUriGenerator.getRefundsURI(refund.getChargeId(), refund.getRefundId())))
                 .collect(Collectors.toList());
 
-        HalRepresentation.HalRepresentationBuilder halRepresentation = HalRepresentation
-                .builder()
-                .addProperty("results", results);
-        return Response.ok().entity(
-                paginationDecorator.decoratePagination(halRepresentation, searchResponse, REFUNDS_PATH).build().toString())
-                .build();
+        return new SearchRefundsResults(
+                searchResponse.getTotal(),
+                searchResponse.getCount(),
+                searchResponse.getPage(),
+                results,
+                paginationDecorator.transformLinksToPublicApiUri(searchResponse.getLinks(), REFUNDS_PATH)
+        );
     }
 }

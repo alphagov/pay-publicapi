@@ -21,6 +21,15 @@ public class SearchRefundsResults implements SearchPagination {
     @ApiModelProperty(name = "_links")
     private SearchNavigationLinks links;
 
+    public SearchRefundsResults(int total, int count, int page, List<RefundForSearchRefundsResult> results,
+                                    SearchNavigationLinks links) {
+        this.total = total;
+        this.count = count;
+        this.page = page;
+        this.results = results;
+        this.links = links;
+    }
+    
     @Override
     public int getTotal() {
         return total;
