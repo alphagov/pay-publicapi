@@ -29,7 +29,10 @@ public class CreateChargeExceptionMapper implements ExceptionMapper<CreateCharge
         PaymentError paymentError;
         int statusCode = HttpStatus.INTERNAL_SERVER_ERROR_500;
 
-        if (exception.getErrorStatus() == NOT_FOUND.getStatusCode()) {
+        if (exception.getErrorIdentifier() == ErrorIdentifier.MANDATE_ID_INVALID) {
+            statusCode = HttpStatus.CONFLICT_409;
+            paymentError = aPaymentError(CREATE_PAYMENT_MANDATE_ID_INVALID);
+        } else if (exception.getErrorStatus() == NOT_FOUND.getStatusCode()) {
             paymentError = aPaymentError(CREATE_PAYMENT_ACCOUNT_ERROR);
         } else if (exception.getErrorIdentifier() == ErrorIdentifier.ZERO_AMOUNT_NOT_ALLOWED) {
             statusCode = HttpStatus.UNPROCESSABLE_ENTITY_422;
@@ -38,9 +41,6 @@ public class CreateChargeExceptionMapper implements ExceptionMapper<CreateCharge
         } else if (exception.getErrorIdentifier() == ErrorIdentifier.MANDATE_STATE_INVALID) {
             statusCode = HttpStatus.CONFLICT_409;
             paymentError = aPaymentError(CREATE_PAYMENT_MANDATE_STATE_INVALID);
-        } else if (exception.getErrorIdentifier() == ErrorIdentifier.MANDATE_ID_INVALID) {
-            statusCode = HttpStatus.CONFLICT_409;
-            paymentError = aPaymentError(CREATE_PAYMENT_MANDATE_ID_INVALID);
         } else {
             paymentError = aPaymentError(CREATE_PAYMENT_CONNECTOR_ERROR);
         }
