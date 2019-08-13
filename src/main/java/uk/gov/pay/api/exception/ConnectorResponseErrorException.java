@@ -22,6 +22,12 @@ public class ConnectorResponseErrorException extends RuntimeException {
         response.close();
     }
 
+    ConnectorResponseErrorException(ConnectorResponseErrorException exception) {
+        super(exception);
+        this.status = exception.status;
+        this.error = exception.error;
+    }
+    
     ConnectorResponseErrorException(Throwable cause) {
         super(cause);
     }

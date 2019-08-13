@@ -63,7 +63,7 @@ public class RefundResponse {
     public static RefundResponse from(RefundTransactionFromLedger refund, URI selfLink, URI paymentLink) {
         return new RefundResponse(refund, selfLink, paymentLink);
     }
-
+    
     //todo: remove after full refactoring of PaymentRefundsResource (to use service layer) 
     public static RefundResponse valueOf(RefundFromConnector refundEntity, String paymentId, String baseUrl) {
         URI selfLink = UriBuilder.fromUri(baseUrl)
