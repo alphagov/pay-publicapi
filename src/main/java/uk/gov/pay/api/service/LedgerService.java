@@ -5,16 +5,20 @@ import uk.gov.pay.api.exception.GetChargeException;
 import uk.gov.pay.api.exception.GetEventsException;
 import uk.gov.pay.api.exception.GetRefundsException;
 import uk.gov.pay.api.exception.GetTransactionException;
+import uk.gov.pay.api.exception.SearchRefundsException;
 import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.Charge;
 import uk.gov.pay.api.model.TransactionEvents;
 import uk.gov.pay.api.model.TransactionResponse;
 import uk.gov.pay.api.model.ledger.RefundTransactionFromLedger;
 import uk.gov.pay.api.model.ledger.RefundsFromLedger;
+import uk.gov.pay.api.model.ledger.SearchRefundsResponseFromLedger;
 
 import javax.inject.Inject;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
+import java.util.Map;
 
 import static org.apache.http.HttpStatus.SC_OK;
 
@@ -22,6 +26,9 @@ public class LedgerService {
     private final Client client;
     private final LedgerUriGenerator ledgerUriGenerator;
 
+    private static final String PARAM_ACCOUNT_ID = "account_id";
+    private static final String PARAM_TRANSACTION_TYPE = "transaction_type";
+    
     @Inject
     public LedgerService(Client client, LedgerUriGenerator ledgerUriGenerator) {
         this.client = client;
@@ -78,5 +85,26 @@ public class LedgerService {
         }
 
         throw new GetRefundsException(response);
+    }
+
+    public SearchRefundsResponseFromLedger searchRefunds(Account account, Map<String, String> paramsAsMap) {
+
+        paramsAsMap.put(PARAM_ACCOUNT_ID, account.getAccountId());
+        paramsAsMap.put(PARAM_TRANSACTION_TYPE,"REFUND");
+        
+        Response response = client
+                .target(ledgerUriGenerator.transactionsURIWithParams(paramsAsMap))
+                .request()
+                .get();
+
+        if (response.getStatus() == SC_OK) {
+            try {
+                return response.readEntity(SearchRefundsResponseFromLedger.class);
+            } catch (ProcessingException exception) {
+                throw new SearchRefundsException(exception);
+            }
+        }
+
+        throw new SearchRefundsException(response);
     }
 }

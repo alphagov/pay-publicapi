@@ -14,6 +14,7 @@ public class RefundTransactionFromLedger {
     String createdDate;
     String refundedBy;
     String transactionId;
+    String parentTransactionId;
     TransactionState state;
 
     public Long getAmount() {
@@ -38,6 +39,10 @@ public class RefundTransactionFromLedger {
 
     public String getTransactionId() {
         return transactionId;
+    }
+
+    public String getParentTransactionId() {
+        return parentTransactionId;
     }
 
     public TransactionState getState() {
