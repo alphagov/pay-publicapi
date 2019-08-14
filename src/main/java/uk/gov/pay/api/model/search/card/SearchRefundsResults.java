@@ -1,5 +1,8 @@
 package uk.gov.pay.api.model.search.card;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.links.SearchNavigationLinks;
@@ -8,6 +11,7 @@ import uk.gov.pay.api.model.search.SearchPagination;
 import java.util.List;
 
 @ApiModel(value = "RefundSearchResults")
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class SearchRefundsResults implements SearchPagination {
 
     @ApiModelProperty(name = "total", example = "100")
@@ -19,6 +23,7 @@ public class SearchRefundsResults implements SearchPagination {
     @ApiModelProperty(name = "results")
     private List<RefundForSearchRefundsResult> results;
     @ApiModelProperty(name = "_links")
+    @JsonProperty("_links")
     private SearchNavigationLinks links;
 
     public SearchRefundsResults(int total, int count, int page, List<RefundForSearchRefundsResult> results,
