@@ -3,7 +3,6 @@ package uk.gov.pay.api.it.telephone;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.gov.pay.api.resources.telephone.TelephonePaymentResourceITBase;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 
 import java.util.HashMap;

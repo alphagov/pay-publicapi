@@ -1,4 +1,4 @@
-package uk.gov.pay.api.resources.telephone;
+package uk.gov.pay.api.it.telephone;
 
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.google.gson.Gson;
