@@ -34,6 +34,9 @@ public class GetPaymentRefundServiceTest {
 
     @Rule
     public PactProviderRule connectorRule = new PactProviderRule("connector", this);
+    
+    @Rule
+    public PactProviderRule ledgerRule = new PactProviderRule("ledger", this);
 
     @Mock
     private PublicApiConfig mockConfiguration;
@@ -41,6 +44,7 @@ public class GetPaymentRefundServiceTest {
     @Before
     public void setup() {
         when(mockConfiguration.getConnectorUrl()).thenReturn(connectorRule.getUrl());
+        when(mockConfiguration.getLedgerUrl()).thenReturn(ledgerRule.getUrl());
         when(mockConfiguration.getBaseUrl()).thenReturn("http://publicapi.test.localhost/");
 
         PublicApiUriGenerator publicApiUriGenerator = new PublicApiUriGenerator(mockConfiguration);
@@ -58,6 +62,22 @@ public class GetPaymentRefundServiceTest {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
 
         RefundResponse refund = getPaymentService.getConnectorPaymentRefund(account, CHARGE_ID, REFUND_ID);
+
+        assertThat(refund.getRefundId(), is(REFUND_ID));
+        assertThat(refund.getStatus(), is("success"));
+        assertThat(refund.getAmount(), is(100L));
+        assertThat(refund.getCreatedDate(), is("2018-09-22T10:14:16.067Z"));
+        assertThat(refund.getLinks().getPayment().getHref(), is("http://publicapi.test.localhost/v1/payments/123456789"));
+        assertThat(refund.getLinks().getSelf().getHref(), is("http://publicapi.test.localhost/v1/payments/123456789/refunds/r_123abc456def"));
+    }
+    
+    @Test
+    @PactVerification({"ledger"})
+    @Pacts(pacts = {"publicapi-ledger-get-payment-refund"})
+    public void testGetLedgerPaymentRefund() {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+
+        RefundResponse refund = getPaymentService.getLedgerPaymentRefund(account, CHARGE_ID, REFUND_ID);
 
         assertThat(refund.getRefundId(), is(REFUND_ID));
         assertThat(refund.getStatus(), is("success"));
