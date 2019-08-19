@@ -5,6 +5,7 @@ import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
 import uk.gov.pay.api.it.fixtures.PaymentRefundJsonFixture;
+import uk.gov.pay.api.it.fixtures.PaymentRefundSearchJsonFixture;
 import uk.gov.pay.api.it.fixtures.PaymentSingleResultBuilder;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetails;
@@ -58,6 +59,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     private static final String CONNECTOR_MOCK_CHARGE_EVENTS_PATH = CONNECTOR_MOCK_CHARGE_PATH + "/events";
     private static final String CONNECTOR_MOCK_CHARGE_REFUNDS_PATH = CONNECTOR_MOCK_CHARGE_PATH + "/refunds";
+    private static final String CONNECTOR_MOCK_SEARCH_REFUNDS_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/refunds";
     private static final String CONNECTOR_MOCK_CHARGE_REFUND_BY_ID_PATH = CONNECTOR_MOCK_CHARGE_REFUNDS_PATH + "/%s";
     private static final String REFERENCE_KEY = "reference";
     private static final String EMAIL_KEY = "email";
@@ -283,6 +285,27 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withBody(jsonStringBuilder.build()));
     }
 
+    public void respondWithSearchRefunds(String gatewayAccountId, PaymentRefundSearchJsonFixture... refunds) {
+
+        Map<String, Link> links = (ImmutableMap.of("first_page", new Link("http://server:port/first-link?page=1"),
+                "prev_page", new Link("http://server:port/prev-link?page=2"),
+                "self", new Link("http://server:port/self-link?page=3"),
+                "last_page", new Link("http://server:port/last-link?page=5"),
+                "next_page", new Link("http://server:port/next-link?page=4")));
+
+        JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
+                .add("total", 1)
+                .add("count", 1)
+                .add("page", 1)
+                .add("results", Arrays.asList(refunds))
+                .add("_links", links);
+
+        whenSearchRefunds(gatewayAccountId, aResponse()
+                .withStatus(OK_200)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                .withBody(jsonStringBuilder.build()));
+    }
+
     public void respondRefundNotFound(String gatewayAccountId, String chargeId, String refundId) {
         whenGetRefundById(gatewayAccountId, chargeId, refundId,
                 withStatusAndErrorMessage(BAD_REQUEST_400, String.format("Refund with id [%s] not found.", refundId), GENERIC));
@@ -364,6 +387,11 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     private void whenGetAllRefunds(String gatewayAccountId, String chargeId, ResponseDefinitionBuilder response) {
         wireMockClassRule.stubFor(get(urlPathEqualTo(format(CONNECTOR_MOCK_CHARGE_REFUNDS_PATH, gatewayAccountId, chargeId)))
+                .willReturn(response));
+    }
+
+    private void whenSearchRefunds(String gatewayAccountId, ResponseDefinitionBuilder response) {
+        wireMockClassRule.stubFor(get(urlPathEqualTo(format(CONNECTOR_MOCK_SEARCH_REFUNDS_PATH, gatewayAccountId)))
                 .willReturn(response));
     }
 
