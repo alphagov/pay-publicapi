@@ -18,6 +18,7 @@ import uk.gov.pay.api.service.SearchRefundsService;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -67,13 +68,16 @@ public class SearchRefundsResource {
                                   @ApiParam(value = "Page number requested for the search, should be a positive integer (optional, defaults to 1)", hidden = false)
                                   @QueryParam("page") String pageNumber,
                                   @ApiParam(value = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)", hidden = false)
-                                  @QueryParam("display_size") String displaySize) {
+                                  @QueryParam("display_size") String displaySize, 
+                                  @ApiParam(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
 
-        logger.info("Refunds search request - [ {} ]",
+        logger.info("Refunds search request with strategy [{}]- [ {} ]", strategyName,
                 format("from_date: %s, to_date: %s, page: %s, display_size: %s",
                         fromDate, toDate, pageNumber, displaySize));
 
         RefundsParams refundsParams = new RefundsParams(fromDate, toDate, pageNumber, displaySize);
-        return searchRefundsService.searchConnectorRefunds(account, refundsParams);
+        SearchRefundsStrategy strategy = new SearchRefundsStrategy(strategyName, account, refundsParams, searchRefundsService);
+
+        return strategy.validateAndExecute();
     }
 }
