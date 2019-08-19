@@ -55,7 +55,7 @@ public class SearchRefundsService {
                 .stream()
                 .map(refund -> RefundForSearchRefundsResult.valueOf(
                         refund,
-                        publicApiUriGenerator.getPaymentURI(refund.getTransactionId()),
+                        publicApiUriGenerator.getPaymentURI(refund.getParentTransactionId()),
                         publicApiUriGenerator.getRefundsURI(refund.getParentTransactionId(),
                                 refund.getTransactionId()))
                 )
