@@ -10,14 +10,11 @@ import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 import java.util.Optional;
 
 public class PaginationDecorator {
 
     private final String baseUrl;
-    private final List<String> queryParametersToBeExcluded
-            = List.of("account_id", "gateway_account_id", "transaction_type");
 
     @Inject
     public PaginationDecorator(PublicApiConfig config) {
@@ -44,14 +41,15 @@ public class PaginationDecorator {
     public SearchNavigationLinks transformLinksToPublicApiUri(
             SearchNavigationLinks links, String path) {
         try {
-            return links.withSelfLink(transformIntoPublicUriAsString(baseUrl, links.getSelf(), path))
-                    .withFirstLink(transformIntoPublicUriAsString(baseUrl, links.getFirstPage(), path))
-                    .withLastLink(transformIntoPublicUriAsString(baseUrl, links.getLastPage(), path))
-                    .withPrevLink(transformIntoPublicUriAsString(baseUrl, links.getPrevPage(), path))
-                    .withNextLink(transformIntoPublicUriAsString(baseUrl, links.getNextPage(), path));
+            links.withSelfLink(transformIntoPublicUriAsString(baseUrl, links.getSelf(), path));
+            links.withFirstLink(transformIntoPublicUriAsString(baseUrl, links.getFirstPage(), path));
+            links.withLastLink(transformIntoPublicUriAsString(baseUrl, links.getLastPage(), path));
+            links.withPrevLink(transformIntoPublicUriAsString(baseUrl, links.getPrevPage(), path));
+            links.withNextLink(transformIntoPublicUriAsString(baseUrl, links.getNextPage(), path));
         } catch (URISyntaxException ex) {
             throw new SearchPaymentsException(ex);
         }
+        return links;
     }
 
     private HalRepresentation.HalRepresentationBuilder addPaginationProperties(HalRepresentation.HalRepresentationBuilder halRepresentationBuilder,
@@ -70,31 +68,20 @@ public class PaginationDecorator {
     }
 
     private String transformIntoPublicUriAsString(String baseUrl, Link link, String path) throws URISyntaxException {
-        UriBuilder uriBuilder = getUriBuilder(baseUrl, link, path);
+        URI uri = transformIntoPublicUri(baseUrl, link, path);
 
-        return Optional.ofNullable(uriBuilder)
-                .map(builder -> {
-                    // breaks the order of query parameters 
-                    queryParametersToBeExcluded.forEach(queryParam ->
-                            uriBuilder.replaceQueryParam(queryParam, (Object[]) null));
-                    return builder.build().toString();
-                })
+        return Optional.ofNullable(uri)
+                .map(URI::toString)
                 .orElse(null);
     }
 
     private URI transformIntoPublicUri(String baseUrl, Link link, String path) throws URISyntaxException {
-        UriBuilder uriBuilder = getUriBuilder(baseUrl, link, path);
-        return Optional.ofNullable(uriBuilder)
-                .map(builder -> builder.build())
-                .orElse(null);
-    }
-
-    private UriBuilder getUriBuilder(String baseUrl, Link link, String path) throws URISyntaxException {
         if (link == null)
             return null;
 
         return UriBuilder.fromUri(baseUrl)
                 .path(path)
-                .replaceQuery(new URI(link.getHref()).getQuery());
+                .replaceQuery(new URI(link.getHref()).getQuery())
+                .build();
     }
 }

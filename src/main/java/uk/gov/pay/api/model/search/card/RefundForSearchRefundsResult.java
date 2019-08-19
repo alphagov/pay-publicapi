@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import uk.gov.pay.api.model.ledger.RefundTransactionFromLedger;
 import uk.gov.pay.api.model.links.RefundLinksForSearch;
 
 import java.net.URI;
@@ -90,17 +89,6 @@ public class RefundForSearchRefundsResult {
                 refundResult.getCreatedDate(),
                 refundResult.getStatus(),
                 refundResult.getChargeId(),
-                refundResult.getAmount(),
-                paymentURI,
-                refundsURI);
-    }
-
-    public static RefundForSearchRefundsResult valueOf(RefundTransactionFromLedger refundResult, URI paymentURI, URI refundsURI) {
-        return new RefundForSearchRefundsResult(
-                refundResult.getTransactionId(),
-                refundResult.getCreatedDate(),
-                refundResult.getState().getStatus(),
-                refundResult.getParentTransactionId(),
                 refundResult.getAmount(),
                 paymentURI,
                 refundsURI);
