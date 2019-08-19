@@ -51,6 +51,10 @@ public class ConnectorUriGenerator {
         String path = format("/v1/api/accounts/%s/charges/%s/cancel", account.getAccountId(), paymentId);
         return buildConnectorUri(path, Maps.newHashMap());
     }
+    
+    String telephoneChargesURI(Account account) {
+        return null;
+    }
 
     public String eventsURI(Account account, Optional<ZonedDateTime> toDate, Optional<ZonedDateTime> fromDate, Integer page, Integer displaySize, String agreementId, String paymentId) {
 
