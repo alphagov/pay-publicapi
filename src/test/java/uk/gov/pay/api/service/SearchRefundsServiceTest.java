@@ -13,6 +13,7 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.RefundsValidationException;
+import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.search.PaginationDecorator;
 import uk.gov.pay.api.model.search.card.SearchRefundsResults;
@@ -47,9 +48,11 @@ public class SearchRefundsServiceTest {
 
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
         ConnectorUriGenerator connectorUriGenerator = new ConnectorUriGenerator(mockConfiguration);
+        LedgerUriGenerator ledgerUriGenerator = new LedgerUriGenerator(mockConfiguration);
 
         searchRefundsService = new SearchRefundsService(
                 new ConnectorService(client, connectorUriGenerator),
+                new LedgerService(client, ledgerUriGenerator),
                 new PublicApiUriGenerator(mockConfiguration),
                 new PaginationDecorator(mockConfiguration));
     }
@@ -86,7 +89,7 @@ public class SearchRefundsServiceTest {
         assertThat(results.getResults().get(1).getLinks().getSelf().getHref(), is(format("http://publicapi.test.localhost/v1/payments/%s/refunds/%s", extChargeId, refundId2)));
         assertThat(results.getResults().get(1).getLinks().getPayment().getHref(), is(format("http://publicapi.test.localhost/v1/payments/%s", extChargeId)));
 
-        assertThat(results.getLinks().getSelf().getHref(), is("http://publicapi.test.localhost/v1/refunds?page=1&display_size=2"));
+        assertThat(results.getLinks().getSelf().getHref(), is("http://publicapi.test.localhost/v1/refunds?display_size=2&page=1"));
     }
 
     @Test
@@ -133,7 +136,7 @@ public class SearchRefundsServiceTest {
         assertThat(results.getResults().get(1).getLinks().getSelf().getHref(), is(format("http://publicapi.test.localhost/v1/payments/%s/refunds/%s", extChargeId, refundId2)));
         assertThat(results.getResults().get(1).getLinks().getPayment().getHref(), is(format("http://publicapi.test.localhost/v1/payments/%s", extChargeId)));
 
-        assertThat(results.getLinks().getSelf().getHref(), is("http://publicapi.test.localhost/v1/refunds?from_date=2016-01-25T13%3A22%3A55Z&to_date=2016-01-25T13%3A24%3A55Z&page=1&display_size=500"));
+        assertThat(results.getLinks().getSelf().getHref(), is("http://publicapi.test.localhost/v1/refunds?from_date=2016-01-25T13%3A22%3A55Z&to_date=2016-01-25T13%3A24%3A55Z&display_size=500&page=1"));
     }
 
     @Test
