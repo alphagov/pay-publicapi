@@ -16,13 +16,11 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.http.HttpStatus.SC_OK;
 import static uk.gov.pay.api.validation.PaymentSearchValidator.validateSearchParameters;
 
@@ -30,83 +28,38 @@ public class PaymentSearchService {
 
     private static final String PAYMENTS_PATH = "/v1/payments";
     private static final Logger LOGGER = LoggerFactory.getLogger(PaymentSearchService.class);
-    
-    public static final String REFERENCE_KEY = "reference";
-    public static final String EMAIL_KEY = "email";
-    public static final String STATE_KEY = "state";
-    public static final String CARD_BRAND_KEY = "card_brand";
-    public static final String FIRST_DIGITS_CARD_NUMBER_KEY = "first_digits_card_number";
-    public static final String LAST_DIGITS_CARD_NUMBER_KEY = "last_digits_card_number";
-    public static final String CARDHOLDER_NAME_KEY = "cardholder_name";
-    public static final String FROM_DATE_KEY = "from_date";
-    public static final String TO_DATE_KEY = "to_date";
-    public static final String PAGE = "page";
-    public static final String DISPLAY_SIZE = "display_size";
-    
-    private final ConnectorUriGenerator connectorUriGenerator;
-    private final Client client;
+
     private final PublicApiUriGenerator publicApiUriGenerator;
     private final PaginationDecorator paginationDecorator;
+    private ConnectorService connectorService;
 
     @Inject
-    public PaymentSearchService(Client client,
-                                ConnectorUriGenerator connectorUriGenerator,
-                                PublicApiUriGenerator publicApiUriGenerator,
-                                PaginationDecorator paginationDecorator) {
-        this.client = client;
-        this.connectorUriGenerator = connectorUriGenerator;
+    public PaymentSearchService(PublicApiUriGenerator publicApiUriGenerator,
+                                PaginationDecorator paginationDecorator,
+                                ConnectorService connectorService) {
         this.publicApiUriGenerator = publicApiUriGenerator;
         this.paginationDecorator = paginationDecorator;
+        this.connectorService = connectorService;
     }
-    
-    public Response doSearch(Account account, String reference, String email, String state, String cardBrand,
-                             String fromDate, String toDate, String pageNumber, String displaySize, String agreementId, String cardHolderName, String firstDigitsCardNumber, String lastDigitsCardNumber) {
-        
-        validateSearchParameters(account, state, reference, email, cardBrand, fromDate, toDate, pageNumber, displaySize, agreementId, firstDigitsCardNumber, lastDigitsCardNumber);
 
-        if (isNotBlank(cardBrand)) {
-            cardBrand = cardBrand.toLowerCase();
-        }
-        
-        Map<String, String> queryParams = new LinkedHashMap<>();
-        queryParams.put(REFERENCE_KEY, reference);
-        queryParams.put(EMAIL_KEY, email);
-        queryParams.put(STATE_KEY, state);
-        queryParams.put(CARD_BRAND_KEY, cardBrand);
-        queryParams.put(CARDHOLDER_NAME_KEY, cardHolderName);
-        queryParams.put(FIRST_DIGITS_CARD_NUMBER_KEY, firstDigitsCardNumber);
-        queryParams.put(LAST_DIGITS_CARD_NUMBER_KEY, lastDigitsCardNumber);
-        queryParams.put(FROM_DATE_KEY, fromDate);
-        queryParams.put(TO_DATE_KEY, toDate);
-        queryParams.put(PAGE, pageNumber);
-        queryParams.put(DISPLAY_SIZE, displaySize);
-        
+    public Response doSearch(Account account, PaymentSearchParams searchParams) {
+        validateSearchParameters(account, searchParams);
+
+        Map<String, String> queryParams = searchParams.getParamsAsMap();
+
         return getSearchResponse(account, queryParams);
     }
-    
+
     private Response getSearchResponse(Account account, Map<String, String> queryParams) {
         queryParams.put("transactionType", "charge");
 
-        String url = connectorUriGenerator.chargesURIWithParams(account, queryParams);
-        Response connectorResponse = client
-                .target(url)
-                .request()
-                .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
-                .get();
+        PaymentSearchResponse<ChargeFromResponse> paymentSearchResponse =
+                connectorService.searchPayments(account, queryParams);
 
-        if (connectorResponse.getStatus() == SC_OK) {
-            return processResponse(connectorResponse);
-        }
-        throw new SearchPaymentsException(connectorResponse);
+        return processResponse(paymentSearchResponse);
     }
 
-    private Response processResponse(Response connectorResponse) {
-        PaymentSearchResponse<ChargeFromResponse> response;
-        try {
-            response = connectorResponse.readEntity(new GenericType<PaymentSearchResponse<ChargeFromResponse>>(){});
-        } catch (ProcessingException ex) {
-            throw new SearchPaymentsException(ex);
-        }
+    private Response processResponse(PaymentSearchResponse<ChargeFromResponse> response) {
         List<PaymentForSearchResult> chargeFromResponses = response.getPayments()
                 .stream()
                 .map(charge -> PaymentForSearchResult.valueOf(

@@ -26,6 +26,7 @@ import uk.gov.pay.api.service.CapturePaymentService;
 import uk.gov.pay.api.service.CreatePaymentService;
 import uk.gov.pay.api.service.GetPaymentEventsService;
 import uk.gov.pay.api.service.GetPaymentService;
+import uk.gov.pay.api.service.PaymentSearchParams;
 import uk.gov.pay.api.service.PaymentSearchService;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
 
@@ -199,8 +200,22 @@ public class PaymentsResource {
                 format("reference:%s, email: %s, status: %s, card_brand %s, fromDate: %s, toDate: %s, page: %s, display_size: %s, agreement_id: %s, cardholder_name: %s, first_digits_card_number: %s, last_digits_card_number: %s",
                         reference, email, state, cardBrand, fromDate, toDate, pageNumber, displaySize, agreementId, cardHolderName, firstDigitsCardNumber, lastDigitsCardNumber));
 
-        return paymentSearchService.doSearch(account, reference, email, state, cardBrand,
-                fromDate, toDate, pageNumber, displaySize, agreementId, cardHolderName, firstDigitsCardNumber, lastDigitsCardNumber);
+        var paymentSearchParams = new PaymentSearchParams.Builder()
+                .withReference(reference)
+                .withEmail(email)
+                .withState(state)
+                .withCardBrand(cardBrand)
+                .withFromDate(fromDate)
+                .withToDate(toDate)
+                .withPageNumber(pageNumber)
+                .withDisplaySize(displaySize)
+                .withAgreementId(agreementId)
+                .withCardHolderName(cardHolderName)
+                .withFirstDigitsCardNumber(firstDigitsCardNumber)
+                .withLastDigitsCardNumber(lastDigitsCardNumber)
+                .build();
+
+        return paymentSearchService.doSearch(account, paymentSearchParams);
     }
 
     @POST

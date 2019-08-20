@@ -45,10 +45,10 @@ public class CardPaymentSearchServiceTest {
 
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
         ConnectorUriGenerator connectorUriGenerator = new ConnectorUriGenerator(configuration);
-        paymentSearchService = new PaymentSearchService(client,
-                connectorUriGenerator,
+        paymentSearchService = new PaymentSearchService(
                 new PublicApiUriGenerator(configuration),
-                new PaginationDecorator(configuration));
+                new PaginationDecorator(configuration),
+                new ConnectorService(client, connectorUriGenerator));
     }
     
     @Test
@@ -56,11 +56,8 @@ public class CardPaymentSearchServiceTest {
     @Pacts(pacts = {"publicapi-connector-search-payment-by-last-digits-card-number"})
     public void searchShouldReturnAResponseWithOneTransaction_whenFilteringByLastDigitsCardNumber() {
         Account account = new Account("123456", TokenPaymentType.CARD);
-        Response response =
-                paymentSearchService.doSearch(account, null, null,
-                        null, null, null,
-                        null, null, null,
-                        null, null, null, "1234");
+        var searchParams = new PaymentSearchParams.Builder().withLastDigitsCardNumber("1234").build();
+        Response response = paymentSearchService.doSearch(account, searchParams);
         JsonAssert.with(response.getEntity().toString())
                 .assertThat("count", is(1))
                 .assertThat("total", is(1))
@@ -88,11 +85,8 @@ public class CardPaymentSearchServiceTest {
     @Pacts(pacts = {"publicapi-connector-search-payment-by-first-digits-card-number"})
     public void searchShouldReturnAResponseWithOneTransaction_whenFilteringByFirstDigitsCardNumber() {
         Account account = new Account("123456", TokenPaymentType.CARD);
-        Response response =
-                paymentSearchService.doSearch(account, null, null,
-                        null, null, null,
-                        null, null, null,
-                        null, null, "123456", null);
+        var searchParams = new PaymentSearchParams.Builder().withFirstDigitsCardNumber("123456").build();
+        Response response = paymentSearchService.doSearch(account, searchParams);
         JsonAssert.with(response.getEntity().toString())
                 .assertThat("count", is(1))
                 .assertThat("total", is(1))
@@ -120,11 +114,8 @@ public class CardPaymentSearchServiceTest {
     @Pacts(pacts = {"publicapi-connector-search-payment-by-cardholder-name"})
     public void searchShouldReturnAResponseWithOneTransaction_whenFilteringByCardHolderName() {
         Account account = new Account("123456", TokenPaymentType.CARD);
-        Response response =
-                paymentSearchService.doSearch(account, null, null,
-                        null, null, null,
-                        null, null, null,
-                        null, "pay", null, null);
+        var searchParams = new PaymentSearchParams.Builder().withCardHolderName("pay").build();
+        Response response = paymentSearchService.doSearch(account, searchParams);
         JsonAssert.with(response.getEntity().toString())
                 .assertThat("count", is(1))
                 .assertThat("total", is(1))
@@ -153,11 +144,8 @@ public class CardPaymentSearchServiceTest {
     @Pacts(pacts = {"publicapi-connector-search-payment-with-charge-in-awaiting-capture-state"})
     public void searchShouldReturnAResponseWithCaptureLinkPresent() {
         Account account = new Account("123456", TokenPaymentType.CARD);
-        Response response =
-                paymentSearchService.doSearch(account, null, null,
-                        null, null, null,
-                        null, null, null,
-                        null, null, null, null);
+        var searchParams = new PaymentSearchParams.Builder().build();
+        Response response = paymentSearchService.doSearch(account, searchParams);
         JsonAssert.with(response.getEntity().toString())
                 .assertThat("results[0]._links", hasKey("capture"))
                 .assertThat("results[0]._links.capture.method", is("POST"));
