@@ -12,6 +12,7 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.search.PaginationDecorator;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
@@ -45,10 +46,12 @@ public class CardPaymentSearchServiceTest {
 
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
         ConnectorUriGenerator connectorUriGenerator = new ConnectorUriGenerator(configuration);
+        LedgerUriGenerator ledgerUriGenerator = new LedgerUriGenerator(configuration);
         paymentSearchService = new PaymentSearchService(
                 new PublicApiUriGenerator(configuration),
                 new PaginationDecorator(configuration),
-                new ConnectorService(client, connectorUriGenerator));
+                new ConnectorService(client, connectorUriGenerator),
+                new LedgerService(client, ledgerUriGenerator));
     }
     
     @Test
@@ -57,7 +60,7 @@ public class CardPaymentSearchServiceTest {
     public void searchShouldReturnAResponseWithOneTransaction_whenFilteringByLastDigitsCardNumber() {
         Account account = new Account("123456", TokenPaymentType.CARD);
         var searchParams = new PaymentSearchParams.Builder().withLastDigitsCardNumber("1234").build();
-        Response response = paymentSearchService.doSearch(account, searchParams);
+        Response response = paymentSearchService.searchConnectorPayments(account, searchParams);
         JsonAssert.with(response.getEntity().toString())
                 .assertThat("count", is(1))
                 .assertThat("total", is(1))
@@ -86,7 +89,7 @@ public class CardPaymentSearchServiceTest {
     public void searchShouldReturnAResponseWithOneTransaction_whenFilteringByFirstDigitsCardNumber() {
         Account account = new Account("123456", TokenPaymentType.CARD);
         var searchParams = new PaymentSearchParams.Builder().withFirstDigitsCardNumber("123456").build();
-        Response response = paymentSearchService.doSearch(account, searchParams);
+        Response response = paymentSearchService.searchConnectorPayments(account, searchParams);
         JsonAssert.with(response.getEntity().toString())
                 .assertThat("count", is(1))
                 .assertThat("total", is(1))
@@ -115,7 +118,7 @@ public class CardPaymentSearchServiceTest {
     public void searchShouldReturnAResponseWithOneTransaction_whenFilteringByCardHolderName() {
         Account account = new Account("123456", TokenPaymentType.CARD);
         var searchParams = new PaymentSearchParams.Builder().withCardHolderName("pay").build();
-        Response response = paymentSearchService.doSearch(account, searchParams);
+        Response response = paymentSearchService.searchConnectorPayments(account, searchParams);
         JsonAssert.with(response.getEntity().toString())
                 .assertThat("count", is(1))
                 .assertThat("total", is(1))
@@ -145,7 +148,7 @@ public class CardPaymentSearchServiceTest {
     public void searchShouldReturnAResponseWithCaptureLinkPresent() {
         Account account = new Account("123456", TokenPaymentType.CARD);
         var searchParams = new PaymentSearchParams.Builder().build();
-        Response response = paymentSearchService.doSearch(account, searchParams);
+        Response response = paymentSearchService.searchConnectorPayments(account, searchParams);
         JsonAssert.with(response.getEntity().toString())
                 .assertThat("results[0]._links", hasKey("capture"))
                 .assertThat("results[0]._links.capture.method", is("POST"));

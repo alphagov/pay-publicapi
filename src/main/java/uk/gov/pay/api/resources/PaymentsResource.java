@@ -194,6 +194,7 @@ public class PaymentsResource {
                                    @ApiParam(value = "Last four digits of the card used to make payment", hidden = false)
 
                                    @QueryParam("last_digits_card_number") String lastDigitsCardNumber,
+                                   @ApiParam(hidden = true) @HeaderParam("X-Ledger") String strategyName,
                                    @Context UriInfo uriInfo) {
 
         logger.info("Payments search request - [ {} ]",
@@ -215,7 +216,8 @@ public class PaymentsResource {
                 .withLastDigitsCardNumber(lastDigitsCardNumber)
                 .build();
 
-        return paymentSearchService.doSearch(account, paymentSearchParams);
+        var strategy = new SearchPaymentsStrategy(strategyName, account, paymentSearchParams, paymentSearchService);
+        return strategy.validateAndExecute();
     }
 
     @POST
