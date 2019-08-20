@@ -134,6 +134,6 @@ public class LedgerService {
             }
         }
 
-        throw new SearchRefundsException(response);
+        throw new SearchPaymentsException(response);
     }
 }
