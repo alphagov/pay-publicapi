@@ -45,10 +45,10 @@ public class CardPaymentSearchServiceTest {
 
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
         ConnectorUriGenerator connectorUriGenerator = new ConnectorUriGenerator(configuration);
-        paymentSearchService = new PaymentSearchService(client,
-                connectorUriGenerator,
+        paymentSearchService = new PaymentSearchService(
                 new PublicApiUriGenerator(configuration),
-                new PaginationDecorator(configuration));
+                new PaginationDecorator(configuration),
+                new ConnectorService(client, connectorUriGenerator));
     }
     
     @Test

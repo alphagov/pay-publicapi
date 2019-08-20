@@ -28,54 +28,38 @@ public class PaymentSearchService {
 
     private static final String PAYMENTS_PATH = "/v1/payments";
     private static final Logger LOGGER = LoggerFactory.getLogger(PaymentSearchService.class);
-    
-    private final ConnectorUriGenerator connectorUriGenerator;
-    private final Client client;
+
     private final PublicApiUriGenerator publicApiUriGenerator;
     private final PaginationDecorator paginationDecorator;
+    private ConnectorService connectorService;
 
     @Inject
-    public PaymentSearchService(Client client,
-                                ConnectorUriGenerator connectorUriGenerator,
-                                PublicApiUriGenerator publicApiUriGenerator,
-                                PaginationDecorator paginationDecorator) {
-        this.client = client;
-        this.connectorUriGenerator = connectorUriGenerator;
+    public PaymentSearchService(PublicApiUriGenerator publicApiUriGenerator,
+                                PaginationDecorator paginationDecorator,
+                                ConnectorService connectorService) {
         this.publicApiUriGenerator = publicApiUriGenerator;
         this.paginationDecorator = paginationDecorator;
+        this.connectorService = connectorService;
     }
-    
+
     public Response doSearch(Account account, PaymentSearchParams searchParams) {
         validateSearchParameters(account, searchParams);
-        
+
         Map<String, String> queryParams = searchParams.getParamsAsMap();
-        
+
         return getSearchResponse(account, queryParams);
     }
-    
+
     private Response getSearchResponse(Account account, Map<String, String> queryParams) {
         queryParams.put("transactionType", "charge");
 
-        String url = connectorUriGenerator.chargesURIWithParams(account, queryParams);
-        Response connectorResponse = client
-                .target(url)
-                .request()
-                .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
-                .get();
+        PaymentSearchResponse<ChargeFromResponse> paymentSearchResponse =
+                connectorService.searchPayments(account, queryParams);
 
-        if (connectorResponse.getStatus() == SC_OK) {
-            return processResponse(connectorResponse);
-        }
-        throw new SearchPaymentsException(connectorResponse);
+        return processResponse(paymentSearchResponse);
     }
 
-    private Response processResponse(Response connectorResponse) {
-        PaymentSearchResponse<ChargeFromResponse> response;
-        try {
-            response = connectorResponse.readEntity(new GenericType<PaymentSearchResponse<ChargeFromResponse>>(){});
-        } catch (ProcessingException ex) {
-            throw new SearchPaymentsException(ex);
-        }
+    private Response processResponse(PaymentSearchResponse<ChargeFromResponse> response) {
         List<PaymentForSearchResult> chargeFromResponses = response.getPayments()
                 .stream()
                 .map(charge -> PaymentForSearchResult.valueOf(
