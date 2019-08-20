@@ -34,6 +34,9 @@ public class CardPaymentSearchServiceTest {
     @Rule
     public PactProviderRule connectorRule = new PactProviderRule("connector", this);
 
+    @Rule
+    public PactProviderRule ledgerRule = new PactProviderRule("ledger", this);
+
     @Mock
     private PublicApiConfig configuration;
     private PaymentSearchService paymentSearchService;
@@ -41,6 +44,7 @@ public class CardPaymentSearchServiceTest {
     @Before
     public void setUp() {
         when(configuration.getConnectorUrl()).thenReturn(connectorRule.getUrl());
+        when(configuration.getLedgerUrl()).thenReturn(ledgerRule.getUrl());
 
         when(configuration.getBaseUrl()).thenReturn("http://publicapi.test.localhost/");
 
@@ -53,7 +57,7 @@ public class CardPaymentSearchServiceTest {
                 new ConnectorService(client, connectorUriGenerator),
                 new LedgerService(client, ledgerUriGenerator));
     }
-    
+
     @Test
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-search-payment-by-last-digits-card-number"})
@@ -152,5 +156,37 @@ public class CardPaymentSearchServiceTest {
         JsonAssert.with(response.getEntity().toString())
                 .assertThat("results[0]._links", hasKey("capture"))
                 .assertThat("results[0]._links.capture.method", is("POST"));
+    }
+
+    @Test
+    @PactVerification({"ledger"})
+    @Pacts(pacts = {"publicapi-ledger-search-payments"})
+    public void ledgerSearchShouldReturnAResponseWithOneTransaction() {
+        Account account = new Account("123456", TokenPaymentType.CARD);
+        var searchParams = new PaymentSearchParams.Builder()
+                .withCardHolderName("j.doe@example.org")
+                .build();
+
+        Response response = paymentSearchService.searchLedgerPayments(account, searchParams);
+        JsonAssert.with(response.getEntity().toString())
+                .assertThat("count", is(1))
+                .assertThat("total", is(1))
+                .assertThat("page", is(1))
+                .assertThat("results", is(collectionWithSize(equalTo(1))))
+                .assertThat("results[0]", hasKey("amount"))
+                .assertThat("results[0]", hasKey("state"))
+                .assertThat("results[0]", hasKey("reference"))
+                .assertThat("results[0]", hasKey("email"))
+                .assertThat("results[0].card_details.cardholder_name", is("j.doe@example.org"))
+                .assertThat("results[0].card_details", hasKey("first_digits_card_number"))
+                .assertThat("results[0].card_details", hasKey("last_digits_card_number"))
+                .assertThat("results[0].state", hasKey("status"))
+                .assertThat("results[0].state", hasKey("finished"))
+                .assertThat("results[0]", hasKey("_links"))
+                .assertThat("_links", hasKey("self"))
+                .assertThat("_links", hasKey("first_page"))
+                .assertThat("_links", hasKey("last_page"))
+                .assertNotDefined("_links.next_page")
+                .assertNotDefined("_links.prev_page");
     }
 }

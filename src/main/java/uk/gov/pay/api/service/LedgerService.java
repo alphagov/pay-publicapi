@@ -114,7 +114,6 @@ public class LedgerService {
         throw new SearchRefundsException(response);
     }
 
-    //todo: refactor searchPayments and searchRefunds to use shared method
     public PaymentSearchResponse<TransactionResponse> searchPayments(Account account, Map<String, String> paramsAsMap) {
 
         paramsAsMap.put(PARAM_ACCOUNT_ID, account.getAccountId());
