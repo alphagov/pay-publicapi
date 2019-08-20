@@ -2,6 +2,7 @@ package uk.gov.pay.api.validation;
 
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.PaymentValidationException;
+import uk.gov.pay.api.service.PaymentSearchParams;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -27,13 +28,20 @@ import static uk.gov.pay.api.validation.SearchValidator.validateToDate;
 public class PaymentSearchValidator {
     private static final int FIRST_DIGITS_CARD_NUMBER_LENGTH = 6;
     private static final int LAST_DIGITS_CARD_NUMBER_LENGTH = 4;
-    
+
     // we should really find a way to not have this anywhere but in the connector...
     private static final Set<String> VALID_CARD_PAYMENT_STATES =
             new HashSet<>(Arrays.asList("created", "started", "submitted", "success", "failed", "cancelled", "error"));
 
     private static final Set<String> VALID_DIRECT_DEBIT_STATES =
             new HashSet<>(Arrays.asList("started", "pending", "success", "failed", "cancelled"));
+
+    public static void validateSearchParameters(Account account, PaymentSearchParams searchParams) {
+        validateSearchParameters(account, searchParams.getState(), searchParams.getReference(),
+                searchParams.getEmail(), searchParams.getCardBrand(), searchParams.getFromDate(),
+                searchParams.getToDate(), searchParams.getPageNumber(), searchParams.getDisplaySize(),
+                searchParams.getAgreementId(), searchParams.getFirstDigitsCardNumber(), searchParams.getLastDigitsCardNumber());
+    }
 
     public static void validateSearchParameters(Account account,
                                                 String state,
@@ -69,7 +77,7 @@ public class PaymentSearchValidator {
     }
 
     private static void validateMandateId(String mandate_id, List<String> validationErrors) {
-        if (!isValid(mandate_id, MANDATE_ID_MAX_LENGTH)){
+        if (!isValid(mandate_id, MANDATE_ID_MAX_LENGTH)) {
             validationErrors.add("mandate_id");
         }
     }
