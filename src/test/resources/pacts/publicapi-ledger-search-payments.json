@@ -68,13 +68,13 @@
           ],
           "_links": {
             "self": {
-              "href": "http://ledger.service.backend/v1/transaction?account_id=1234566&cardholder_name=j.doe@example.org&last_digits_card_number=1234&cardholder_name=pay&transaction_type=PAYMENT&page=1&display_size=500"
+              "href": "http://ledger.service.backend/v1/transaction?account_id=1234566&cardholder_name=j.doe@example.org&transaction_type=PAYMENT&page=1&display_size=500"
             },
             "last_page": {
-              "href": "http://ledger.service.backend/v1/transaction?account_id=123456&cardholder_name=j.doe@example.org&last_digits_card_number=1234&cardholder_name=pay&transaction_type=PAYMENT&page=1&display_size=500"
+              "href": "http://ledger.service.backend/v1/transaction?account_id=123456&cardholder_name=j.doe@example.org&transaction_type=PAYMENT&page=1&display_size=500"
             },
             "first_page": {
-              "href": "http://ledger.service.backend/v1/transaction?account_id=123456&cardholder_name=j.doe@example.org&last_digits_card_number=1234&cardholder_name=pay&transaction_type=PAYMENT&page=1&display_size=500"
+              "href": "http://ledger.service.backend/v1/transaction?account_id=123456&cardholder_name=j.doe@example.org&transaction_type=PAYMENT&page=1&display_size=500"
             }
           }
         },

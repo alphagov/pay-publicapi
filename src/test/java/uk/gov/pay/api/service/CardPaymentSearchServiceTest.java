@@ -183,9 +183,9 @@ public class CardPaymentSearchServiceTest {
                 .assertThat("results[0].state", hasKey("status"))
                 .assertThat("results[0].state", hasKey("finished"))
                 .assertThat("results[0]", hasKey("_links"))
-                .assertThat("_links", hasKey("self"))
-                .assertThat("_links", hasKey("first_page"))
-                .assertThat("_links", hasKey("last_page"))
+                .assertThat("_links.self.href", is("http://publicapi.test.localhost/v1/payments?display_size=500&page=1&cardholder_name=j.doe%40example.org"))
+                .assertThat("_links.first_page.href", is("http://publicapi.test.localhost/v1/payments?display_size=500&page=1&cardholder_name=j.doe%40example.org"))
+                .assertThat("_links.last_page.href", is("http://publicapi.test.localhost/v1/payments?display_size=500&page=1&cardholder_name=j.doe%40example.org"))
                 .assertNotDefined("_links.next_page")
                 .assertNotDefined("_links.prev_page");
     }
