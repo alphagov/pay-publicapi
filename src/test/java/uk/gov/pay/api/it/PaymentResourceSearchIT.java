@@ -472,11 +472,11 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
                 .body("total", is(40))
                 .body("count", is(10))
                 .body("page", is(2))
-                .body("_links.next_page.href", is(expectedChargesLocationFor("?query=next&from_date=2016-01-01T23%3A59%3A59Z")))
-                .body("_links.prev_page.href", is(expectedChargesLocationFor("?query=prev&from_date=2016-01-01T23%3A59%3A59Z")))
-                .body("_links.first_page.href", is(expectedChargesLocationFor("?query=first&from_date=2016-01-01T23%3A59%3A59Z")))
-                .body("_links.last_page.href", is(expectedChargesLocationFor("?query=last&from_date=2016-01-01T23%3A59%3A59Z")))
-                .body("_links.self.href", is(expectedChargesLocationFor("?query=self&from_date=2016-01-01T23%3A59%3A59Z")));
+                .body("_links.next_page.href", is(expectedChargesLocationFor("?from_date=2016-01-01T23%3A59%3A59Z&query=next")))
+                .body("_links.prev_page.href", is(expectedChargesLocationFor("?from_date=2016-01-01T23%3A59%3A59Z&query=prev")))
+                .body("_links.first_page.href", is(expectedChargesLocationFor("?from_date=2016-01-01T23%3A59%3A59Z&query=first")))
+                .body("_links.last_page.href", is(expectedChargesLocationFor("?from_date=2016-01-01T23%3A59%3A59Z&query=last")))
+                .body("_links.self.href", is(expectedChargesLocationFor("?from_date=2016-01-01T23%3A59%3A59Z&query=self")));
 
         List<Map<String, Object>> results = response.extract().body().jsonPath().getList("results");
         assertThat(results, matchesField("reference", TEST_REFERENCE));

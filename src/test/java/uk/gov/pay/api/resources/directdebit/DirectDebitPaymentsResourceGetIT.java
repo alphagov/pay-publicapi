@@ -111,11 +111,11 @@ public class DirectDebitPaymentsResourceGetIT extends DirectDebitResourceITBase 
                 .body("results[0]._links.self.method", Matchers.is("GET"))
                 .body("results[0]._links.mandate.href", Matchers.is(mandateLocationFor(payments.get(0).getMandate_id())))
                 .body("results[0]._links.mandate.method", Matchers.is("GET"))
-                .body("_links.next_page.href", is(expectedPaginationLink("?query=next&from_date=2016-01-01T23%3A59%3A59Z")))
-                .body("_links.prev_page.href", is(expectedPaginationLink("?query=prev&from_date=2016-01-01T23%3A59%3A59Z")))
-                .body("_links.first_page.href", is(expectedPaginationLink("?query=first&from_date=2016-01-01T23%3A59%3A59Z")))
-                .body("_links.last_page.href", is(expectedPaginationLink("?query=last&from_date=2016-01-01T23%3A59%3A59Z")))
-                .body("_links.self.href", is(expectedPaginationLink("?query=self&from_date=2016-01-01T23%3A59%3A59Z")));
+                .body("_links.next_page.href", is(expectedPaginationLink("?from_date=2016-01-01T23%3A59%3A59Z&query=next")))
+                .body("_links.prev_page.href", is(expectedPaginationLink("?from_date=2016-01-01T23%3A59%3A59Z&query=prev")))
+                .body("_links.first_page.href", is(expectedPaginationLink("?from_date=2016-01-01T23%3A59%3A59Z&query=first")))
+                .body("_links.last_page.href", is(expectedPaginationLink("?from_date=2016-01-01T23%3A59%3A59Z&query=last")))
+                .body("_links.self.href", is(expectedPaginationLink("?from_date=2016-01-01T23%3A59%3A59Z&query=self")));
     }
 
     @Test

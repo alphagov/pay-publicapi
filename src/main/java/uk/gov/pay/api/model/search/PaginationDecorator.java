@@ -85,7 +85,12 @@ public class PaginationDecorator {
     private URI transformIntoPublicUri(String baseUrl, Link link, String path) throws URISyntaxException {
         UriBuilder uriBuilder = getUriBuilder(baseUrl, link, path);
         return Optional.ofNullable(uriBuilder)
-                .map(builder -> builder.build())
+                .map(builder -> {
+                    // breaks the order of query parameters
+                    queryParametersToBeExcluded.forEach(queryParam ->
+                            uriBuilder.replaceQueryParam(queryParam, (Object[]) null));
+                    return builder.build();
+                })
                 .orElse(null);
     }
 
