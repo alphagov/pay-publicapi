@@ -1136,7 +1136,7 @@
           "example" : "en",
           "description" : "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages",
           "readOnly" : true,
-          "enum" : [ "ENGLISH", "WELSH" ]
+          "enum" : [ "en", "cy" ]
         },
         "email" : {
           "type" : "string",
@@ -1159,8 +1159,11 @@
           "readOnly" : true
         },
         "metadata" : {
+          "type" : "object",
           "readOnly" : true,
-          "$ref" : "#/definitions/ExternalMetadata"
+          "additionalProperties" : {
+            "type" : "string"
+          }
         },
         "prefilled_cardholder_details" : {
           "description" : "prefilled_cardholder_details",
@@ -1262,7 +1265,7 @@
         "language" : {
           "type" : "string",
           "example" : "en",
-          "enum" : [ "ENGLISH", "WELSH" ]
+          "enum" : [ "en", "cy" ]
         },
         "payment_id" : {
           "type" : "string",
@@ -1472,17 +1475,6 @@
         }
       },
       "description" : "An error response"
-    },
-    "ExternalMetadata" : {
-      "type" : "object",
-      "properties" : {
-        "metadata" : {
-          "type" : "object",
-          "additionalProperties" : {
-            "type" : "object"
-          }
-        }
-      }
     },
     "GetPaymentResult" : {
       "type" : "object",
@@ -2283,6 +2275,7 @@
           }
         },
         "_links" : {
+          "readOnly" : true,
           "$ref" : "#/definitions/SearchNavigationLinks"
         }
       }

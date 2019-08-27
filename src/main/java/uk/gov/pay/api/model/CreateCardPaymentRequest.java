@@ -73,6 +73,7 @@ public class CreateCardPaymentRequest {
 
     private final Boolean delayedCapture;
 
+    @ApiModelProperty(name = "metadata", dataType = "Map[String,String]")
     private final ExternalMetadata metadata;
 
     @Valid
@@ -105,7 +106,7 @@ public class CreateCardPaymentRequest {
         return description;
     }
 
-    @ApiModelProperty(value = "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages", required = false, example = "en")
+    @ApiModelProperty(value = "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages", required = false, example = "en", allowableValues = "en,cy")
     @JsonProperty(LANGUAGE_FIELD_NAME)
     public Optional<SupportedLanguage> getLanguage() {
         return Optional.ofNullable(language);
