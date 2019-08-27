@@ -32,7 +32,7 @@ public class CreatePaymentResult {
     private String reference;
 
     @JsonProperty
-    @ApiModelProperty(name = "language", access = "language", example = "en")
+    @ApiModelProperty(name = "language", access = "language", example = "en", allowableValues = "en,cy")
     private SupportedLanguage language;
 
     @JsonProperty
