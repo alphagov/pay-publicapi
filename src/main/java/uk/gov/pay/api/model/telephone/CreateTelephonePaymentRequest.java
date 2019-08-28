@@ -55,7 +55,7 @@ public class CreateTelephonePaymentRequest {
     private String emailAddress;
 
     @NotNull
-    @ValidCardExpiryDate
+    @ValidCardExpiryDate(message = "Field [card_expiry] must have valid MM/YY")
     private String cardExpiry;
     
     @ValidCardLastFourDigits
