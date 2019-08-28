@@ -2,7 +2,6 @@ package uk.gov.pay.api.validation;
 
 import org.junit.BeforeClass;
 import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
-import uk.gov.pay.api.model.telephone.PaymentOutcome;
 
 import javax.validation.Validation;
 import javax.validation.Validator;

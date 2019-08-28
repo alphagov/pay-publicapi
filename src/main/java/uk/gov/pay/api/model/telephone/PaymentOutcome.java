@@ -21,6 +21,10 @@ public class PaymentOutcome {
 
     public PaymentOutcome() {
     }
+    
+    public PaymentOutcome(String status) {
+        this.status = status;
+    }
 
     public PaymentOutcome(String status, String code, Supplemental supplemental) {
         // For testing deserialization
