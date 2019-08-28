@@ -72,7 +72,7 @@ public class CardExpiryValidationIT extends TelephonePaymentResourceITBase {
     }
 
     @Test
-    public void respondWith422_whenMonthisNull() {
+    public void respondWith422_whenCardExpiryisNull() {
         HashMap<String, Object> request_body = new HashMap<>();
         request_body.put("amount", 100);
         request_body.put("reference", "Some reference");
