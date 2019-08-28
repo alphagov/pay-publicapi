@@ -44,7 +44,7 @@ public class CardExpiryValidatorTest {
     }
 
     @Test
-    public void failsValidationForInvalidCardType() {
+    public void failsValidationForInvalidCardExpiry() {
 
         CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
                 .cardExpiry("99/99")
@@ -57,7 +57,7 @@ public class CardExpiryValidatorTest {
     }
 
     @Test
-    public void passesValidationForValidCardType() {
+    public void passesValidationForValidCardExpiry() {
 
         CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
                 .cardExpiry("01/99")
