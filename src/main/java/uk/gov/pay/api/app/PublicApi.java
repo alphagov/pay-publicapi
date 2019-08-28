@@ -102,6 +102,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         environment.jersey().register(injector.getInstance(TransactionsResource.class));
         environment.jersey().register(injector.getInstance(TelephonePaymentNotificationResource.class));
         environment.jersey().register(new InjectingValidationFeature(injector));
+
         environment.jersey().register(injector.getInstance(RateLimiterFilter.class));
         
         environment.servlets().addFilter("AuthorizationValidationFilter", injector.getInstance(AuthorizationValidationFilter.class))
