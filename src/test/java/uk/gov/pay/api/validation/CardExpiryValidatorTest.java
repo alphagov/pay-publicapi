@@ -44,7 +44,20 @@ public class CardExpiryValidatorTest {
     }
 
     @Test
-    public void failsValidationForInvalidCardExpiry() {
+    public void failsValidationForInvalidMonth00() {
+
+        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+                .cardExpiry("00/99")
+                .build();
+
+        Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
+
+        assertThat(constraintViolations.size(), is(1));
+        assertThat(constraintViolations.iterator().next().getMessage(), is("Field [card_expiry] must have valid MM/YY"));
+    }
+    
+    @Test
+    public void failsValidationForInvalidMonth99() {
 
         CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
                 .cardExpiry("99/99")
