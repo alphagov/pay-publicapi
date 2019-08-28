@@ -1160,9 +1160,11 @@
         },
         "metadata" : {
           "type" : "object",
+          "example" : "{\"ledger_code\":\"123\", \"reconciled\": true}",
+          "description" : "Additional metadata - up to 10 name/value pairs - on the payment. Each key must be between 1 and 30 characters long. The value, if a string, must be no greater than 50 characters long. Other permissible value types: boolean, number.",
           "readOnly" : true,
           "additionalProperties" : {
-            "type" : "string"
+            "type" : "object"
           }
         },
         "prefilled_cardholder_details" : {
