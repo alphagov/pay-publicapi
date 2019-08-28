@@ -11,10 +11,6 @@ public class CardExpiryValidator implements ConstraintValidator<ValidCardExpiryD
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
         
-        if (value == null) {
-            return false;
-        }
-        
         return pattern.matcher(value).matches();
         
     }

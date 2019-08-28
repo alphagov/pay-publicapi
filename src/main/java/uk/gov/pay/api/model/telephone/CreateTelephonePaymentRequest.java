@@ -55,6 +55,7 @@ public class CreateTelephonePaymentRequest {
     private String emailAddress;
     
     @ValidCardExpiryDate
+    @NotNull
     private String cardExpiry;
     
     @ValidCardLastFourDigits
