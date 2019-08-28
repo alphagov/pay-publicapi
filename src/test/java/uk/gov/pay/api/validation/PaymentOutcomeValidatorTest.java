@@ -1,12 +1,19 @@
 package uk.gov.pay.api.validation;
 
 import org.junit.BeforeClass;
+import org.junit.Test;
 import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
 import uk.gov.pay.api.model.telephone.PaymentOutcome;
 
+import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+
+import java.util.Set;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 
 public class PaymentOutcomeValidatorTest {
 
@@ -36,6 +43,21 @@ public class PaymentOutcomeValidatorTest {
                 .emailAddress("jane_doe@example.com")
                 .telephoneNumber("+447700900796");
     }
+
+    @Test
+    public void failsValidationForInvalidPaymentOutcomeStatus() {
+
+        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+                .paymentOutcome(new PaymentOutcome("invalid"))
+                .build();
+
+        Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
+
+        assertThat(constraintViolations.size(), is(1));
+        assertThat(constraintViolations.iterator().next().getMessage(), is("Field [payment_outcome] must include a valid status and error code"));
+    }
+    
+    
     
     
 }
