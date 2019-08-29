@@ -6,7 +6,7 @@ import uk.gov.pay.api.validation.ValidPaymentOutcome;
 
 import java.util.Optional;
 
-@ValidPaymentOutcome
+@ValidPaymentOutcome(message = "Field [payment_outcome] must include a valid status and error code")
 public class PaymentOutcome {
     
     @JsonProperty("status")
