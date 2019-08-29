@@ -10,7 +10,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <dropwizard.version>1.3.13</dropwizard.version>
         <guice.version>4.2.2</guice.version>
-        <guava.version>28.0-jre</guava.version>
+        <guava.version>28.1-jre</guava.version>
         <wiremock.version>2.24.1</wiremock.version>
         <swagger.jersey2.version>1.5.22</swagger.jersey2.version>
         <hamcrest.version>2.1</hamcrest.version>
