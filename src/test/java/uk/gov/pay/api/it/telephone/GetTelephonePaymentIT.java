@@ -1,5 +1,6 @@
 package uk.gov.pay.api.it.telephone;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,6 +15,7 @@ import static io.restassured.http.ContentType.JSON;
 public class GetTelephonePaymentIT extends TelephonePaymentResourceITBase {
     
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    public static final int REFERENCE_MAX_LENGTH = 255;
 
     @Before
     public void setUpBearerTokenAndRequestBody() {
@@ -89,5 +91,12 @@ public class GetTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .body("state.finished", is(true))
                 .body("state.message", is("Created"))
                 .body("state.code", is("P0010"));
+    }
+
+    @Test
+    public void respondWith422_whenReferenceLengthisGreaterThanMaxValue() {
+        requestBody.replace("reference", StringUtils.repeat("*", 256));
+        postPaymentResponse(toJson(requestBody))
+                .statusCode(422);
     }
 }
