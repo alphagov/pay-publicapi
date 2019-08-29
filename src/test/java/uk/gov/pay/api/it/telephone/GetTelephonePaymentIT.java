@@ -127,4 +127,11 @@ public class GetTelephonePaymentIT extends TelephonePaymentResourceITBase {
         postPaymentResponse(toJson(requestBody))
                 .statusCode(422);
     }
+
+    @Test
+    public void respondWith422_whenProviderIdIsNull() {
+        requestBody.replace("provider_id", null);
+        postPaymentResponse(toJson(requestBody))
+                .statusCode(422);
+    }
 }
