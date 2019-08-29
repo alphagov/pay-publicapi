@@ -30,22 +30,29 @@ public class LocalRateLimiter {
                 .build();
     }
 
-    void checkRateOf(String key, String method) throws RateLimitException {
+    void checkRateOf(String accountId, String key, String method) throws RateLimitException {
+
+        RateLimit rateLimit = null;
         try {
-            cache.get(key, () -> new RateLimit(getNoOfRequestsForMethod(method), perMillis)).updateAllowance();
+            rateLimit = cache.get(key, () -> new RateLimit(getNoOfRequestsForMethod(method), perMillis));
+            rateLimit.updateAllowance();
         } catch (ExecutionException e) {
             //ExecutionException is thrown when the valueLoader (cache.get())  throws a checked exception.
             //We just create a new instance (RateLimit) so no exceptions will be thrown, this should never happen.
             LOGGER.error("Unexpected error creating a Rate Limiter object in cache", e);
+        } catch (RateLimitException e) {
+            LOGGER.info(String.format("LocalRateLimiter - Rate limit exceeded for account [%s] and method [%s] - count: %d, rate allowed: %d", accountId, method,
+                    rateLimit.getRequestCount(),
+                    rateLimit.getNoOfReq()));
+
+            throw e;
         }
     }
-    
+
     private int getNoOfRequestsForMethod(String method) {
         if (HttpMethod.POST.equals(method)) {
             return noOfReqForPostPerNode;
         }
         return noOfReqPerNode;
     }
-
-
 }

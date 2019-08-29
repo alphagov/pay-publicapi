@@ -43,7 +43,7 @@ public class RedisRateLimiter {
         }
 
         if (count != null && count > getNoOfReqForMethod(method)) {
-            LOGGER.info(String.format("rate limit exceeded for account [%s] and method [%s] - count: %d, rate allowed: %d", accountId, method, count, getNoOfReqForMethod(method)));
+            LOGGER.info(String.format("RedisRateLimiter - Rate limit exceeded for account [%s] and method [%s] - count: %d, rate allowed: %d", accountId, method, count, getNoOfReqForMethod(method)));
             throw new RateLimitException();
         }
     }

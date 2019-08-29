@@ -37,4 +37,12 @@ final class RateLimit {
             throw new RateLimitException();
         }
     }
+
+    public int getNoOfReq() {
+        return noOfReq;
+    }
+
+    public int getRequestCount() {
+        return requestCount;
+    }
 }

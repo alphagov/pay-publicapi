@@ -45,6 +45,6 @@ public class RateLimiterTest {
         rateLimiter.checkRateOf(accountId, key, POST);
         rateLimiter.checkRateOf(accountId, key, POST);
 
-        verify(localRateLimiter, times(2)).checkRateOf(key, POST);
+        verify(localRateLimiter, times(2)).checkRateOf(accountId, key, POST);
     }
 }
