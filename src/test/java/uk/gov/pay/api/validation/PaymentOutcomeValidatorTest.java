@@ -122,6 +122,18 @@ public class PaymentOutcomeValidatorTest {
 
         assertThat(constraintViolations.isEmpty(), is(true));
     }
+
+    @Test
+    public void passesValidationForPaymentOutcomeStatusOfSuccess() {
+
+        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+                .paymentOutcome(new PaymentOutcome("success"))
+                .build();
+
+        Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
+
+        assertThat(constraintViolations.isEmpty(), is(true));
+    }
     
     
     
