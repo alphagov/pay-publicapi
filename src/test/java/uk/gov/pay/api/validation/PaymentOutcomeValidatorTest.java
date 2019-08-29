@@ -101,6 +101,27 @@ public class PaymentOutcomeValidatorTest {
         assertThat(constraintViolations.size(), is(1));
         assertThat(constraintViolations.iterator().next().getMessage(), is("Field [payment_outcome] must include a valid status and error code"));
     }
+
+    @Test
+    public void passesValidationForCorrectErrorCode() {
+
+        PaymentOutcome paymentOutcome = new PaymentOutcome(
+                "failed",
+                "P0010",
+                new Supplemental(
+                        "ECKOH01234",
+                        "textual message describing error code"
+                )
+        );
+
+        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+                .paymentOutcome(paymentOutcome)
+                .build();
+
+        Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
+
+        assertThat(constraintViolations.isEmpty(), is(true));
+    }
     
     
     
