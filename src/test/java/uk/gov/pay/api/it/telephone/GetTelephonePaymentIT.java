@@ -94,8 +94,15 @@ public class GetTelephonePaymentIT extends TelephonePaymentResourceITBase {
     }
 
     @Test
-    public void respondWith422_whenReferenceLengthisGreaterThanMaxValue() {
+    public void respondWith422_whenReferenceLengthIsGreaterThanMaxValue() {
         requestBody.replace("reference", StringUtils.repeat("*", 256));
+        postPaymentResponse(toJson(requestBody))
+                .statusCode(422);
+    }
+
+    @Test
+    public void respondWith422_whenDescriptionLengthIsGreaterThanMaxValue() {
+        requestBody.replace("description", StringUtils.repeat("*", 256));
         postPaymentResponse(toJson(requestBody))
                 .statusCode(422);
     }
