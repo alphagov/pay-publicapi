@@ -43,16 +43,16 @@ import uk.gov.pay.api.exception.mapper.ViolationExceptionMapper;
 import uk.gov.pay.api.filter.AuthorizationValidationFilter;
 import uk.gov.pay.api.filter.RateLimiterFilter;
 import uk.gov.pay.api.healthcheck.Ping;
-import uk.gov.pay.api.resources.MandatesResource;
 import uk.gov.pay.api.ledger.resource.TransactionsResource;
 import uk.gov.pay.api.resources.DirectDebitEventsResource;
 import uk.gov.pay.api.resources.HealthCheckResource;
-import uk.gov.pay.api.resources.telephone.TelephonePaymentNotificationResource;
+import uk.gov.pay.api.resources.MandatesResource;
 import uk.gov.pay.api.resources.PaymentRefundsResource;
 import uk.gov.pay.api.resources.PaymentsResource;
 import uk.gov.pay.api.resources.RequestDeniedResource;
 import uk.gov.pay.api.resources.SearchRefundsResource;
 import uk.gov.pay.api.resources.directdebit.DirectDebitPaymentsResource;
+import uk.gov.pay.api.resources.telephone.TelephonePaymentNotificationResource;
 import uk.gov.pay.api.validation.InjectingValidationFeature;
 import uk.gov.pay.commons.utils.logging.LoggingFilter;
 
@@ -102,11 +102,9 @@ public class PublicApi extends Application<PublicApiConfig> {
         environment.jersey().register(injector.getInstance(TransactionsResource.class));
         environment.jersey().register(injector.getInstance(TelephonePaymentNotificationResource.class));
         environment.jersey().register(new InjectingValidationFeature(injector));
-
+        environment.jersey().register(injector.getInstance(RateLimiterFilter.class));
+        
         environment.servlets().addFilter("AuthorizationValidationFilter", injector.getInstance(AuthorizationValidationFilter.class))
-                .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");
-
-        environment.servlets().addFilter("RateLimiterFilter", injector.getInstance(RateLimiterFilter.class))
                 .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");
 
         environment.servlets().addFilter("LoggingFilter", injector.getInstance(LoggingFilter.class))
