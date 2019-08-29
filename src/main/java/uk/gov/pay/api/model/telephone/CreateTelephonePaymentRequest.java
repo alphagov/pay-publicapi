@@ -59,7 +59,8 @@ public class CreateTelephonePaymentRequest {
     @ValidCardExpiryDate(message = "Field [card_expiry] must have valid MM/YY")
     private String cardExpiry;
     
-    @ValidCardLastFourDigits
+    @NotNull
+    @ValidCardLastFourDigits(message = "Field [last_four_digits] must be exactly 4 digits")
     private String lastFourDigits;
     
     @ValidCardFirstSixDigits
