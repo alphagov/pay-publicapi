@@ -80,4 +80,17 @@ public class CardFirstSixDigitsValidatorTest {
 
         assertThat(constraintViolations.isEmpty(), is(true));
     }
+
+    @Test
+    public void passesValidationForNullDigits() {
+
+        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+                .firstSixDigits(null)
+                .build();
+
+        Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
+
+        assertThat(constraintViolations.size(), is(1));
+        assertThat(constraintViolations.iterator().next().getMessage().equals("Field [first_six_digits] must be exactly 6 digits"), is(false));
+    }
 }
