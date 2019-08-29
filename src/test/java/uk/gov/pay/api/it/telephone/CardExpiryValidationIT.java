@@ -46,7 +46,7 @@ public class CardExpiryValidationIT extends TelephonePaymentResourceITBase {
 
     @Test
     public void respondWith422_whenMonthis99() {
-        requestBody.replace("card_expiry", "99/99");
+        requestBody.put("card_expiry", "99/99");
         postPaymentResponse(toJson(requestBody))
                 .statusCode(422);
     }
