@@ -5,7 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class PaymentOutcomeValidationIT extends TelephonePaymentResourceITBase {

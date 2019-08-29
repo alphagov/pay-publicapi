@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.core.Is.is;
@@ -64,6 +63,27 @@ public class GetTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .body("last_four_digits", is("1234"))
                 .body("first_six_digits", is("123456"))
                 .body("telephone_number", is("+447700900796"))
+                .body("payment_id", is("dummypaymentid123notpersisted"))
+                .body("state.status", is("success"))
+                .body("state.finished", is(true))
+                .body("state.message", is("Created"))
+                .body("state.code", is("P0010"));
+    }
+
+    @Test
+    public void createTelephonePaymentWithRequiredFields() {
+        postPaymentResponse(toJson(requestBody))
+                .statusCode(201)
+                .contentType(JSON)
+                .body("amount", is(100))
+                .body("reference", is("Some reference"))
+                .body("description", is("Some description"))
+                .body("processor_id", is("1PROC"))
+                .body("payment_outcome.status", is("success"))
+                .body("card_type", is("visa"))
+                .body("card_expiry", is("01/08"))
+                .body("last_four_digits", is("1234"))
+                .body("first_six_digits", is("123456"))
                 .body("payment_id", is("dummypaymentid123notpersisted"))
                 .body("state.status", is("success"))
                 .body("state.finished", is(true))

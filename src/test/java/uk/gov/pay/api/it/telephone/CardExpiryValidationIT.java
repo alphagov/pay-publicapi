@@ -5,11 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 
-import java.util.HashMap;
 import java.util.Map;
-
-import static io.restassured.http.ContentType.JSON;
-import static org.hamcrest.core.Is.is;
 
 public class CardExpiryValidationIT extends TelephonePaymentResourceITBase {
     
