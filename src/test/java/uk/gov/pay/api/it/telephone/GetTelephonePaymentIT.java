@@ -15,7 +15,6 @@ import static io.restassured.http.ContentType.JSON;
 public class GetTelephonePaymentIT extends TelephonePaymentResourceITBase {
     
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
-    public static final int REFERENCE_MAX_LENGTH = 255;
 
     @Before
     public void setUpBearerTokenAndRequestBody() {
