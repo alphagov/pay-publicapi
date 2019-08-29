@@ -4,6 +4,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
 import uk.gov.pay.api.model.telephone.PaymentOutcome;
+import uk.gov.pay.api.model.telephone.Supplemental;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -49,6 +50,28 @@ public class PaymentOutcomeValidatorTest {
 
         CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
                 .paymentOutcome(new PaymentOutcome("invalid"))
+                .build();
+
+        Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
+
+        assertThat(constraintViolations.size(), is(1));
+        assertThat(constraintViolations.iterator().next().getMessage(), is("Field [payment_outcome] must include a valid status and error code"));
+    }
+
+    @Test
+    public void failsValidationForPaymentOutcomeStatusSuccessAndErrorCodeGiven() {
+
+        PaymentOutcome paymentOutcome = new PaymentOutcome(
+                "success",
+                "error",
+                new Supplemental(
+                        "ECKOH01234",
+                        "textual message describing error code"
+                )
+        );
+
+        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+                .paymentOutcome(paymentOutcome)
                 .build();
 
         Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
