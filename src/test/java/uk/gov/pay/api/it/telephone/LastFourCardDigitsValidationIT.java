@@ -25,7 +25,6 @@ public class LastFourCardDigitsValidationIT extends TelephonePaymentResourceITBa
         requestBody.put("payment_outcome", Map.of("status", "success"));
         requestBody.put("card_type", "visa");
         requestBody.put("card_expiry", "01/99");
-        requestBody.put("last_four_digits", "1234");
         requestBody.put("first_six_digits", "123456");
     }
 
@@ -51,6 +50,12 @@ public class LastFourCardDigitsValidationIT extends TelephonePaymentResourceITBa
     @Test
     public void respondWith422_whenLastFourDigitsIsNull() {
         requestBody.put("last_four_digits", null);
+        postPaymentResponse(toJson(requestBody))
+                .statusCode(422);
+    }
+
+    @Test
+    public void respondWith422_whenLastFourDigitsisMissing() {
         postPaymentResponse(toJson(requestBody))
                 .statusCode(422);
     }
