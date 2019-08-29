@@ -47,7 +47,8 @@ public class CreateTelephonePaymentRequest {
     @NotNull
     private PaymentOutcome paymentOutcome;
     
-    @ValidCardType
+    @NotNull
+    @ValidCardType(message = "Field [card_type] must be either master-card, visa, maestro, diners-club or american-express")
     private String cardType;
     
     private String nameOnCard;

@@ -80,7 +80,4 @@ public class CardTypeValidatorTest {
         assertThat(constraintViolations.size(), is(1));
         assertThat(constraintViolations.iterator().next().getMessage().equals("Field [card_type] must be either master-card, visa, maestro, diners-club or american-express"), is(false));
     }
-    
-    
-
 }
