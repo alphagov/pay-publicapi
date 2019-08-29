@@ -91,46 +91,4 @@ public class GetTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .body("state.message", is("Created"))
                 .body("state.code", is("P0010"));
     }
-
-    @Test
-    public void respondWith422_whenReferenceLengthIsGreaterThanMaxValue() {
-        requestBody.replace("reference", StringUtils.repeat("*", 256));
-        postPaymentResponse(toJson(requestBody))
-                .statusCode(422);
-    }
-
-    @Test
-    public void respondWith422_whenDescriptionLengthIsGreaterThanMaxValue() {
-        requestBody.replace("description", StringUtils.repeat("*", 256));
-        postPaymentResponse(toJson(requestBody))
-                .statusCode(422);
-    }
-
-    @Test
-    public void respondWith422_whenProcessorIdIsMissing() {
-        requestBody.remove("processor_id");
-        postPaymentResponse(toJson(requestBody))
-                .statusCode(422);
-    }
-
-    @Test
-    public void respondWith422_whenProcessorIdIsNull() {
-        requestBody.replace("processor_id", null);
-        postPaymentResponse(toJson(requestBody))
-                .statusCode(422);
-    }
-
-    @Test
-    public void respondWith422_whenProviderIdIsMissing() {
-        requestBody.remove("provider_id");
-        postPaymentResponse(toJson(requestBody))
-                .statusCode(422);
-    }
-
-    @Test
-    public void respondWith422_whenProviderIdIsNull() {
-        requestBody.replace("provider_id", null);
-        postPaymentResponse(toJson(requestBody))
-                .statusCode(422);
-    }
 }
