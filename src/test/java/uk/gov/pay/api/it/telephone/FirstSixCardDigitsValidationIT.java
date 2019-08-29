@@ -27,7 +27,6 @@ public class FirstSixCardDigitsValidationIT extends TelephonePaymentResourceITBa
         requestBody.put("card_type", "visa");
         requestBody.put("card_expiry", "00/99");
         requestBody.put("last_four_digits", "1234");
-        
     }
 
     @After

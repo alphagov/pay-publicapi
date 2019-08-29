@@ -39,10 +39,8 @@ public class GetTelephonePaymentIT extends TelephonePaymentResourceITBase {
         request_body.put("last_four_digits", "1234");
         request_body.put("first_six_digits", "123456");
         request_body.put("telephone_number", "+447700900796");
-
-        String payload = toJson(request_body);
         
-        String responseBody = postPaymentResponse(payload)
+        postPaymentResponse(toJson(request_body))
                 .statusCode(201)
                 .contentType(JSON)
                 .body("amount", is(100))
