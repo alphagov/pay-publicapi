@@ -108,8 +108,15 @@ public class GetTelephonePaymentIT extends TelephonePaymentResourceITBase {
     }
 
     @Test
-    public void respondWith422_whenProcessorIdIsNull() {
+    public void respondWith422_whenProcessorIdIsMissing() {
         requestBody.remove("processor_id");
+        postPaymentResponse(toJson(requestBody))
+                .statusCode(422);
+    }
+
+    @Test
+    public void respondWith422_whenProviderIdIsMissing() {
+        requestBody.remove("provider_id");
         postPaymentResponse(toJson(requestBody))
                 .statusCode(422);
     }
