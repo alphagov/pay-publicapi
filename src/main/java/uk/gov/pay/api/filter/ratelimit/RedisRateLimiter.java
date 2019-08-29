@@ -30,7 +30,7 @@ public class RedisRateLimiter {
     /**
      * @throws RateLimitException
      */
-    synchronized void checkRateOf(String key, String method)
+    synchronized void checkRateOf(String accountId, String key, String method)
             throws RedisException, RateLimitException {
 
         Long count;
@@ -43,7 +43,7 @@ public class RedisRateLimiter {
         }
 
         if (count != null && count > getNoOfReqForMethod(method)) {
-            LOGGER.info(String.format("rate exceeded - count: %d, rate: %d", count, getNoOfReqForMethod(method)));
+            LOGGER.info(String.format("rate limit exceeded for account [%s] and method [%s] - count: %d, rate allowed: %d", accountId, method, count, getNoOfReqForMethod(method)));
             throw new RateLimitException();
         }
     }

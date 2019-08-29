@@ -54,12 +54,12 @@ public class RateLimiterFilterTest {
     @Test
     public void shouldCheckRateLimitsWhenFilterIsInvoked() throws Exception {
         rateLimiterFilter.filter(mockContainerRequestContext);
-        verify(rateLimiter).checkRateOf(any(), any());
+        verify(rateLimiter).checkRateOf(any(), any(), any());
     }
 
     @Test
     public void shouldSendErrorResponse_whenRateLimitExceeded() throws Exception {
-        doThrow(RateLimitException.class).when(rateLimiter).checkRateOf("GET-" + authorization, "GET");
+        doThrow(RateLimitException.class).when(rateLimiter).checkRateOf("account-id", "GET-" + authorization, "GET");
 
         try {
             rateLimiterFilter.filter(mockContainerRequestContext);
