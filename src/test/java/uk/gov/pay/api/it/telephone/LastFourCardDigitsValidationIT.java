@@ -1,5 +1,6 @@
 package uk.gov.pay.api.it.telephone;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
@@ -10,87 +11,47 @@ import java.util.Map;
 public class LastFourCardDigitsValidationIT extends TelephonePaymentResourceITBase {
     
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    private static final HashMap<String, Object> requestBody = new HashMap<>();
 
     @Before
-    public void setUpBearerToken() {
+    public void setUpBearerTokenAndRequestBody() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+
+        requestBody.put("amount", 100);
+        requestBody.put("reference", "Some refeerence");
+        requestBody.put("description", "Some description");
+        requestBody.put("processor_id", "1PROC");
+        requestBody.put("provider_id", "1PROV");
+        requestBody.put("payment_outcome", Map.of("status", "success"));
+        requestBody.put("card_type", "visa");
+        requestBody.put("card_expiry", "01/99");
+        requestBody.put("last_four_digits", "1234");
+        requestBody.put("first_six_digits", "123456");
+    }
+
+    @After
+    public void tearDown() {
+        requestBody.clear();
     }
 
     @Test
     public void respondWith422_whenThreeDigitsProvideOnly() {
-        HashMap<String, Object> request_body = new HashMap<>();
-        request_body.put("amount", 100);
-        request_body.put("reference", "Some reference");
-        request_body.put("description", "Some description");
-        request_body.put("created_date", "2018-02-21T16:04:25Z");
-        request_body.put("authorised_date", "2018-02-21T16:05:33Z");
-        request_body.put("processor_id", "1PROC");
-        request_body.put("provider_id", "1PROV");
-        request_body.put("auth_code", "666");
-        request_body.put("payment_outcome", Map.of("status", "success"));
-        request_body.put("card_type", "visa");
-        request_body.put("name_on_card", "Jane Doe");
-        request_body.put("email_address", "jane_doe@example.com");
-        request_body.put("card_expiry", "01/99");
-        request_body.put("last_four_digits", "123");
-        request_body.put("first_six_digits", "123456");
-        request_body.put("telephone_number", "+447700900796");
-
-        String payload = toJson(request_body);
-        
-        postPaymentResponse(payload)
+        requestBody.put("last_four_digits", "123");
+        postPaymentResponse(toJson(requestBody))
                 .statusCode(422);
     }
 
     @Test
     public void respondWith422_whenFiveDigitsProvideOnly() {
-        HashMap<String, Object> request_body = new HashMap<>();
-        request_body.put("amount", 100);
-        request_body.put("reference", "Some reference");
-        request_body.put("description", "Some description");
-        request_body.put("created_date", "2018-02-21T16:04:25Z");
-        request_body.put("authorised_date", "2018-02-21T16:05:33Z");
-        request_body.put("processor_id", "1PROC");
-        request_body.put("provider_id", "1PROV");
-        request_body.put("auth_code", "666");
-        request_body.put("payment_outcome", Map.of("status", "success"));
-        request_body.put("card_type", "visa");
-        request_body.put("name_on_card", "Jane Doe");
-        request_body.put("email_address", "jane_doe@example.com");
-        request_body.put("card_expiry", "01/99");
-        request_body.put("last_four_digits", "12345");
-        request_body.put("first_six_digits", "123456");
-        request_body.put("telephone_number", "+447700900796");
-
-        String payload = toJson(request_body);
-
-        postPaymentResponse(payload)
+        requestBody.put("last_four_digits", "12345");
+        postPaymentResponse(toJson(requestBody))
                 .statusCode(422);
     }
 
     @Test
     public void respondWith422_whenLastFourDigitsIsNull() {
-        HashMap<String, Object> request_body = new HashMap<>();
-        request_body.put("amount", 100);
-        request_body.put("reference", "Some reference");
-        request_body.put("description", "Some description");
-        request_body.put("created_date", "2018-02-21T16:04:25Z");
-        request_body.put("authorised_date", "2018-02-21T16:05:33Z");
-        request_body.put("processor_id", "1PROC");
-        request_body.put("provider_id", "1PROV");
-        request_body.put("auth_code", "666");
-        request_body.put("payment_outcome", Map.of("status", "success"));
-        request_body.put("card_type", "visa");
-        request_body.put("name_on_card", "Jane Doe");
-        request_body.put("email_address", "jane_doe@example.com");
-        request_body.put("card_expiry", "01/08");
-        request_body.put("last_four_digits", null);
-        request_body.put("first_six_digits", "123456");
-        request_body.put("telephone_number", "+447700900796");
-
-        String payload = toJson(request_body);
-
-        postPaymentResponse(payload)
+        requestBody.put("last_four_digits", null);
+        postPaymentResponse(toJson(requestBody))
                 .statusCode(422);
     }
 }
