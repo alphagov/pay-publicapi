@@ -69,4 +69,17 @@ public class CardLastFourDigitsValidatorTest {
         assertThat(constraintViolations.iterator().next().getMessage(), is("Field [last_four_digits] must be exactly 4 digits"));
     }
 
+    @Test
+    public void failsValidationForFourDigits() {
+
+        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+                .lastFourDigits("1234")
+                .build();
+
+        Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
+
+        assertThat(constraintViolations.size(), is(1));
+        assertThat(constraintViolations.iterator().next().getMessage(), is("Field [last_four_digits] must be exactly 4 digits"));
+    }
+
 }
