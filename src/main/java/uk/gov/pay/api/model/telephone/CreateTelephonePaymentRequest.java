@@ -35,19 +35,19 @@ public class CreateTelephonePaymentRequest {
     
     private String authorisedDate;
     
-    @NotNull
+    @NotNull(message = "Field [processor_id] cannot be null")
     private String processorId;
     
-    @NotNull
+    @NotNull(message = "Field [provider_id] cannot be null")
     private String providerId;
     
     private String authCode;
     
     @Valid
-    @NotNull
+    @NotNull(message = "Field [payment_outcome] cannot be null")
     private PaymentOutcome paymentOutcome;
     
-    @NotNull
+    @NotNull(message = "Field [card_type] cannot be null")
     @ValidCardType(message = "Field [card_type] must be either master-card, visa, maestro, diners-club or american-express")
     private String cardType;
     
@@ -55,11 +55,11 @@ public class CreateTelephonePaymentRequest {
     
     private String emailAddress;
 
-    @NotNull
+    @NotNull(message = "Field [card_expiry] cannot be null")
     @ValidCardExpiryDate(message = "Field [card_expiry] must have valid MM/YY")
     private String cardExpiry;
     
-    @NotNull
+    @NotNull(message = "Field [last_four_digits] cannot be null")
     @ValidCardLastFourDigits(message = "Field [last_four_digits] must be exactly 4 digits")
     private String lastFourDigits;
     
