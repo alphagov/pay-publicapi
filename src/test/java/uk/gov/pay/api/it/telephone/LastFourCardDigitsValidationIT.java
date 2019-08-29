@@ -11,7 +11,6 @@ import java.util.Map;
 public class LastFourCardDigitsValidationIT extends TelephonePaymentResourceITBase {
     
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
-    private static final HashMap<String, Object> requestBody = new HashMap<>();
 
     @Before
     public void setUpBearerTokenAndRequestBody() {

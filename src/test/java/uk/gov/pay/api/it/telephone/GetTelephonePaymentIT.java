@@ -16,8 +16,6 @@ public class GetTelephonePaymentIT extends TelephonePaymentResourceITBase {
     
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
 
-    private static final HashMap<String, Object> requestBody = new HashMap<>();
-
     @Before
     public void setUpBearerTokenAndRequestBody() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
