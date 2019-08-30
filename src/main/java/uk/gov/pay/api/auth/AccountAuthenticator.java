@@ -14,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Optional;
 
+import static java.lang.String.format;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.Response.Status.OK;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
@@ -58,6 +59,7 @@ public class AccountAuthenticator implements Authenticator<String, Account> {
         String tokenType = Optional.ofNullable(responseEntity.get("token_type"))
                 .map(JsonNode::asText).orElse(CARD.toString());
         TokenPaymentType tokenPaymentType = fromString(tokenType);
+        logger.info(format("Authenticated account with accountId: %s", accountId));
         return Optional.of(new Account(accountId, tokenPaymentType));
     }
 }
