@@ -1299,11 +1299,18 @@
             "type" : "string"
           }
         },
+        "email" : {
+          "type" : "string",
+          "example" : "citizen@example.org"
+        },
         "refund_summary" : {
           "$ref" : "#/definitions/RefundSummary"
         },
         "settlement_summary" : {
           "$ref" : "#/definitions/SettlementSummary"
+        },
+        "card_details" : {
+          "$ref" : "#/definitions/CardDetails"
         }
       }
     },

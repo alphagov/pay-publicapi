@@ -72,4 +72,12 @@ public class CreatePaymentResult {
     @JsonProperty
     @ApiModelProperty(name = "metadata", dataType = "Map[String,String]")
     private ExternalMetadata metadata;
+
+    @JsonProperty
+    @ApiModelProperty(name = "email", example = "citizen@example.org", required = false)
+    private String email;
+
+    @JsonProperty(value = "card_details")
+    @ApiModelProperty(name = "card_details", required = false)
+    private CardDetails cardDetails;
 }
