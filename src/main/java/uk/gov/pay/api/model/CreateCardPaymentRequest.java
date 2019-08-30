@@ -1,6 +1,7 @@
 package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.Length;
@@ -136,6 +137,11 @@ public class CreateCardPaymentRequest {
     }
 
     @JsonProperty("metadata")
+    @ApiModelProperty(value = "Additional metadata - up to 10 name/value pairs - on the payment. " +
+            "Each key must be between 1 and 30 characters long. " +
+            "The value, if a string, must be no greater than 50 characters long. " +
+            "Other permissible value types: boolean, number.",
+            dataType = "java.util.Map", example = "{\"ledger_code\":\"123\", \"reconciled\": true}")
     public Optional<ExternalMetadata> getMetadata() {
         return Optional.ofNullable(metadata);
     }
