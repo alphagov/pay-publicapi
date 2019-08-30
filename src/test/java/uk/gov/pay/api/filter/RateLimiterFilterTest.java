@@ -19,7 +19,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -28,6 +27,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class RateLimiterFilterTest {
 
+    public static final String ACCOUNT_ID = "account-id";
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
     private String authorization = "Bearer whateverAuthorizationToken";
@@ -41,7 +41,7 @@ public class RateLimiterFilterTest {
         rateLimiter = mock(RateLimiter.class);
         rateLimiterFilter = new RateLimiterFilter(rateLimiter, new ObjectMapper());
 
-        Account account = new Account("account-id", TokenPaymentType.CARD);
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
         SecurityContext mockSecurityContext = mock(SecurityContext.class);
         when(mockSecurityContext.getUserPrincipal()).thenReturn(account);
 
@@ -53,8 +53,12 @@ public class RateLimiterFilterTest {
 
     @Test
     public void shouldCheckRateLimitsWhenFilterIsInvoked() throws Exception {
+        when(mockContainerRequestContext.getHeaderString("Authorization")).thenReturn("apiKey");
+        when(mockContainerRequestContext.getMethod()).thenReturn("POST");
+        
         rateLimiterFilter.filter(mockContainerRequestContext);
-        verify(rateLimiter).checkRateOf(any(), any(), any());
+        
+        verify(rateLimiter).checkRateOf(ACCOUNT_ID, "POST-apiKey", "POST");
     }
 
     @Test

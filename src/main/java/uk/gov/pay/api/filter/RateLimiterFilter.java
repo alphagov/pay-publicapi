@@ -69,7 +69,7 @@ public class RateLimiterFilter implements ContainerRequestFilter {
         try {
             rateLimiter.checkRateOf(accountId, method + "-" + authorization, method);
         } catch (RateLimitException e) {
-            LOGGER.info("Rate limit reached for current service and account [{}]. Sending response '429 Too Many Requests'", accountId);
+            LOGGER.info("Rate limit reached for current service [account - {}, method - {}]. Sending response '429 Too Many Requests'", accountId, method);
             setTooManyRequestsError();
         }
     }
