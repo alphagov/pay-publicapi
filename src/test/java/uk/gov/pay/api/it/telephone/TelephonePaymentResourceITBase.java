@@ -13,6 +13,7 @@ import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.it.rule.RedisDockerRule;
 import uk.gov.pay.api.model.TokenPaymentType;
+import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorDDMockClient;
@@ -35,6 +36,7 @@ public abstract class TelephonePaymentResourceITBase {
     protected static final String GATEWAY_ACCOUNT_ID = "GATEWAY_ACCOUNT_ID";
     protected static final String PAYMENTS_PATH = "/v1/payment_notification/";
     protected static final HashMap<String, Object> requestBody = new HashMap<>();
+    protected static final CreateTelephonePaymentRequest.Builder createTelephonePaymentRequest = new CreateTelephonePaymentRequest.Builder();
 
     @ClassRule
     public static RedisDockerRule redisDockerRule;

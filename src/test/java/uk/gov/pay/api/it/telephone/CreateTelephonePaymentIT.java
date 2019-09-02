@@ -1,12 +1,12 @@
 package uk.gov.pay.api.it.telephone;
 
-import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
+import uk.gov.pay.api.model.telephone.PaymentOutcome;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
+import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 
 import java.util.Map;
 
@@ -16,6 +16,7 @@ import static io.restassured.http.ContentType.JSON;
 public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
     
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
 
     @Before
     public void setUpBearerTokenAndRequestBody() {
@@ -31,6 +32,18 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
         requestBody.put("card_expiry", "01/08");
         requestBody.put("last_four_digits", "1234");
         requestBody.put("first_six_digits", "123456");
+        
+        createTelephonePaymentRequest.
+                withAmount(100)
+                .withReference("Somereference")
+                .withDescription("Somedescription")
+                .withProcessorId("1PROC")
+                .withProviderId("1PROV")
+                .withPaymentOutcome(new PaymentOutcome("success"))
+                .withCardType("visa")
+                .withCardExpiry("01/08")
+                .withLastFourDigits("1234")
+                .withFirstSixDigits("123456");
     }
 
     @After
@@ -46,6 +59,17 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
         requestBody.put("name_on_card", "Jane Doe");
         requestBody.put("email_address", "jane_doe@example.com");
         requestBody.put("telephone_number", "+447700900796");
+        
+        createTelephonePaymentRequest
+                .withAuthCode("666")
+                .withCreatedDate("2018-02-21T16:04:25Z")
+                .withAuthorisedDate("2018-02-21T16:05:33Z")
+                .withNameOnCard("JaneDoe")
+                .withEmailAddress("jane_doe@example.com")
+                .withTelephoneNumber("+447700900796");
+
+        connectorMockClient.respondCreated_whenCreateTelephoneCharge(GATEWAY_ACCOUNT_ID, createTelephonePaymentRequest
+                .build());
         
         postPaymentResponse(toJson(requestBody))
                 .statusCode(201)
