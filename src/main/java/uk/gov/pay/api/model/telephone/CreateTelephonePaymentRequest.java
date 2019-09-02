@@ -63,7 +63,7 @@ public class CreateTelephonePaymentRequest {
     @ValidCardLastFourDigits(message = "Field [last_four_digits] must be exactly 4 digits")
     private String lastFourDigits;
     
-    @NotNull(message = "Field [first_six_digits_ cannot be null")
+    @NotNull(message = "Field [first_six_digits] cannot be null")
     @ValidCardFirstSixDigits(message = "Field [first_six_digits] must be exactly 6 digits")
     private String firstSixDigits;
     
