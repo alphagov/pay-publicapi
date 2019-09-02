@@ -8,7 +8,7 @@ import uk.gov.pay.api.utils.PublicAuthMockClient;
 
 import java.util.Map;
 
-public class BuiltInValidationIT extends TelephonePaymentResourceITBase {
+public class PredefinedValidationIT extends TelephonePaymentResourceITBase {
 
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
 
