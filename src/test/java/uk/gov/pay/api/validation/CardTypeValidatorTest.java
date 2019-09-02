@@ -72,6 +72,6 @@ public class CardTypeValidatorTest {
         Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
 
         assertThat(constraintViolations.size(), is(1));
-        assertThat(constraintViolations.iterator().next().getMessage().equals("Field [card_type] must be either master-card, visa, maestro, diners-club or american-express"), is(false));
+        assertThat(constraintViolations.iterator().next().getMessage(),is("Field [card_type] cannot be null"));
     }
 }
