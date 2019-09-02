@@ -12,10 +12,9 @@ public class CardExpiryValidator implements ConstraintValidator<ValidCardExpiryD
     public boolean isValid(String value, ConstraintValidatorContext context) {
         
         if (value == null) {
-            return false;
+            return true;
         }
         
         return pattern.matcher(value).matches();
-        
     }
 }

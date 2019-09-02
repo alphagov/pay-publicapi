@@ -22,6 +22,7 @@ public abstract class BaseConnectorMockClient {
 
     static String CONNECTOR_MOCK_ACCOUNTS_PATH = "/v1/api/accounts/%s";
     static String CONNECTOR_MOCK_CHARGES_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/charges";
+    static String CONNECTOR_MOCK_TELEPHONE_CHARGES_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/telephone_charges";
     static String CONNECTOR_MOCK_CHARGE_PATH = CONNECTOR_MOCK_CHARGES_PATH + "/%s";
     
     WireMockClassRule wireMockClassRule;

@@ -76,6 +76,12 @@ public class ConnectorUriGeneratorTest {
     }
 
     @Test
+    public void shouldGenerateTheRightTelephoneChargeURI() {
+        String uri = connectorUriGenerator.telephoneChargesURI(cardAccount);
+        assertThat(uri, is("https://bla.test/v1/api/accounts/accountId/telephone_charges"));
+    }
+
+    @Test
     public void shouldGenerateTheRightCancelURI() {
         String uri = connectorUriGenerator.cancelURI(cardAccount, chargeId);
         assertThat(uri, is("https://bla.test/v1/api/accounts/accountId/charges/" + chargeId + "/cancel"));

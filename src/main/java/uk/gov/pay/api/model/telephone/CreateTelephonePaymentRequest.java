@@ -1,13 +1,11 @@
 package uk.gov.pay.api.model.telephone;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import uk.gov.pay.api.validation.ValidCardExpiryDate;
 import uk.gov.pay.api.validation.ValidCardFirstSixDigits;
 import uk.gov.pay.api.validation.ValidCardLastFourDigits;
 import uk.gov.pay.api.validation.ValidCardType;
-import uk.gov.pay.api.validation.ValidPaymentOutcome;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -37,32 +35,36 @@ public class CreateTelephonePaymentRequest {
     
     private String authorisedDate;
     
-    @NotNull
+    @NotNull(message = "Field [processor_id] cannot be null")
     private String processorId;
     
-    @NotNull
+    @NotNull(message = "Field [provider_id] cannot be null")
     private String providerId;
     
     private String authCode;
     
     @Valid
-    @NotNull
+    @NotNull(message = "Field [payment_outcome] cannot be null")
     private PaymentOutcome paymentOutcome;
     
-    @ValidCardType
+    @NotNull(message = "Field [card_type] cannot be null")
+    @ValidCardType(message = "Field [card_type] must be either master-card, visa, maestro, diners-club or american-express")
     private String cardType;
     
     private String nameOnCard;
     
     private String emailAddress;
-    
-    @ValidCardExpiryDate
+
+    @NotNull(message = "Field [card_expiry] cannot be null")
+    @ValidCardExpiryDate(message = "Field [card_expiry] must have valid MM/YY")
     private String cardExpiry;
     
-    @ValidCardLastFourDigits
+    @NotNull(message = "Field [last_four_digits] cannot be null")
+    @ValidCardLastFourDigits(message = "Field [last_four_digits] must be exactly 4 digits")
     private String lastFourDigits;
     
-    @ValidCardFirstSixDigits
+    @NotNull(message = "Field [first_six_digits] cannot be null")
+    @ValidCardFirstSixDigits(message = "Field [first_six_digits] must be exactly 6 digits")
     private String firstSixDigits;
     
     private String telephoneNumber;
@@ -89,6 +91,25 @@ public class CreateTelephonePaymentRequest {
         this.lastFourDigits = lastFourDigits;
         this.firstSixDigits = firstSixDigits;
         this.telephoneNumber = telephoneNumber;
+    }
+    
+    public CreateTelephonePaymentRequest(TelephoneRequestBuilder builder) {
+        this.amount = builder.amount;
+        this.reference = builder.reference;
+        this.description = builder.description;
+        this.createdDate = builder.createdDate;
+        this.authorisedDate = builder.authorisedDate;
+        this.processorId = builder.processorId;
+        this.providerId = builder.providerId;
+        this.authCode = builder.authCode;
+        this.paymentOutcome = builder.paymentOutcome;
+        this.cardType = builder.cardType;
+        this.nameOnCard = builder.nameOnCard;
+        this.emailAddress = builder.emailAddress;
+        this.cardExpiry = builder.cardExpiry;
+        this.lastFourDigits = builder.lastFourDigits;
+        this.firstSixDigits = builder.firstSixDigits;
+        this.telephoneNumber = builder.telephoneNumber;
     }
 
     public int getAmount() {
@@ -153,5 +174,123 @@ public class CreateTelephonePaymentRequest {
 
     public String getTelephoneNumber() {
         return telephoneNumber;
+    }
+
+    public static class TelephoneRequestBuilder {
+        private int amount;
+
+        private String reference;
+
+        private String description;
+
+        private String createdDate;
+
+        private String authorisedDate;
+
+        private String processorId;
+
+        private String providerId;
+
+        private String authCode;
+
+        private PaymentOutcome paymentOutcome;
+
+        private String cardType;
+
+        private String nameOnCard;
+
+        private String emailAddress;
+
+        private String cardExpiry;
+
+        private String lastFourDigits;
+
+        private String firstSixDigits;
+
+        private String telephoneNumber;
+
+        public TelephoneRequestBuilder withAmount(int amount) {
+            this.amount = amount;
+            return this;
+        }
+
+        public TelephoneRequestBuilder withReference(String reference) {
+            this.reference = reference;
+            return this;
+        }
+
+        public TelephoneRequestBuilder withDescription(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public TelephoneRequestBuilder withCreatedDate(String createdDate) {
+            this.createdDate = createdDate;
+            return this;
+        }
+
+        public TelephoneRequestBuilder withAuthorisedDate(String authorisedDate) {
+            this.authorisedDate = authorisedDate;
+            return this;
+        }
+
+        public TelephoneRequestBuilder withProcessorId(String processorId) {
+            this.processorId = processorId;
+            return this;
+        }
+
+        public TelephoneRequestBuilder withProviderId(String providerId) {
+            this.providerId = providerId;
+            return this;
+        }
+
+        public TelephoneRequestBuilder withAuthCode(String authCode) {
+            this.authCode = authCode;
+            return this;
+        }
+
+        public TelephoneRequestBuilder withPaymentOutcome(PaymentOutcome paymentOutcome) {
+            this.paymentOutcome = paymentOutcome;
+            return this;
+        }
+
+        public TelephoneRequestBuilder withCardType(String cardType) {
+            this.cardType = cardType;
+            return this;
+        }
+
+        public TelephoneRequestBuilder withNameOnCard(String nameOnCard) {
+            this.nameOnCard = nameOnCard;
+            return this;
+        }
+
+        public TelephoneRequestBuilder withEmailAddress(String emailAddress) {
+            this.emailAddress = emailAddress;
+            return this;
+        }
+
+        public TelephoneRequestBuilder withCardExpiry(String cardExpiry) {
+            this.cardExpiry = cardExpiry;
+            return this;
+        }
+
+        public TelephoneRequestBuilder withLastFourDigits(String lastFourDigits) {
+            this.lastFourDigits = lastFourDigits;
+            return this;
+        }
+
+        public TelephoneRequestBuilder withFirstSixDigits(String firstSixDigits) {
+            this.firstSixDigits = firstSixDigits;
+            return this;
+        }
+
+        public TelephoneRequestBuilder withTelephoneNumber(String telephoneNumber) {
+            this.telephoneNumber = telephoneNumber;
+            return this;
+        }
+
+        public CreateTelephonePaymentRequest build() {
+            return new CreateTelephonePaymentRequest(this);
+        }
     }
 }

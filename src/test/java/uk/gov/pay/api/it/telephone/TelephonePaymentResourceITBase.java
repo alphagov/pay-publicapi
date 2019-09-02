@@ -1,4 +1,4 @@
-package uk.gov.pay.api.resources.telephone;
+package uk.gov.pay.api.it.telephone;
 
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.google.gson.Gson;
@@ -17,6 +17,7 @@ import uk.gov.pay.api.utils.ApiKeyGenerator;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorDDMockClient;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static io.dropwizard.testing.ConfigOverride.config;
@@ -33,6 +34,7 @@ public abstract class TelephonePaymentResourceITBase {
     protected static final String API_KEY = ApiKeyGenerator.apiKeyValueOf("TEST_BEARER_TOKEN", "qwer9yuhgf");
     protected static final String GATEWAY_ACCOUNT_ID = "GATEWAY_ACCOUNT_ID";
     protected static final String PAYMENTS_PATH = "/v1/payment_notification/";
+    protected static final HashMap<String, Object> requestBody = new HashMap<>();
 
     @ClassRule
     public static RedisDockerRule redisDockerRule;
