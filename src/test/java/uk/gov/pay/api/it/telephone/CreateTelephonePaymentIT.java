@@ -12,7 +12,7 @@ import java.util.Map;
 import static org.hamcrest.core.Is.is;
 import static io.restassured.http.ContentType.JSON;
 
-public class GetTelephonePaymentIT extends TelephonePaymentResourceITBase {
+public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
     
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
 
