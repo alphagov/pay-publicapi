@@ -4,6 +4,7 @@ import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.SettlementSummary;
+import uk.gov.pay.api.model.telephone.PaymentOutcome;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.util.ArrayList;
@@ -15,8 +16,9 @@ import java.util.Optional;
 public class ChargeResponseFromConnector {
     private final Long amount, corporateCardSurcharge, totalAmount; 
     private final PaymentState state; 
-    private final String chargeId, returnUrl, description, reference, email, paymentProvider, gatewayTransactionId, createdDate;
+    private final String chargeId, returnUrl, description, reference, email, telephoneNumber, paymentProvider, gatewayTransactionId, processorId, providerId, authCode, createdDate, authorisedDate;
     private final SupportedLanguage language; 
+    private final PaymentOutcome paymentOutcome;
     private final boolean delayedCapture; 
     private final RefundSummary refundSummary; 
     private final SettlementSummary settlementSummary; 
@@ -25,7 +27,7 @@ public class ChargeResponseFromConnector {
     private final Optional<Map<String, Object>> metadata;
     private final Long fee;
     private final Long netAmount;
-
+    
     public Long getAmount() {
         return amount;
     }
@@ -62,6 +64,10 @@ public class ChargeResponseFromConnector {
         return email;
     }
 
+    public String getTelephoneNumber() {
+        return telephoneNumber;
+    }
+
     public String getPaymentProvider() {
         return paymentProvider;
     }
@@ -70,12 +76,32 @@ public class ChargeResponseFromConnector {
         return gatewayTransactionId;
     }
 
+    public String getProcessorId() {
+        return processorId;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public String getAuthCode() {
+        return authCode;
+    }
+
     public String getCreatedDate() {
         return createdDate;
     }
 
+    public String getAuthorisedDate() {
+        return authorisedDate;
+    }
+
     public SupportedLanguage getLanguage() {
         return language;
+    }
+
+    public PaymentOutcome getPaymentOutcome() {
+        return paymentOutcome;
     }
 
     public boolean isDelayedCapture() {
