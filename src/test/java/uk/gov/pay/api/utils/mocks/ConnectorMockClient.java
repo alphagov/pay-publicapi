@@ -180,7 +180,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         return format(CONNECTOR_MOCK_CHARGE_EVENTS_PATH, accountId, chargeId);
     }
 
-    public void respondOk_whenCreateTelephoneCharge(String gatewayAccountId, CreateTelephonePaymentRequest requestParams) {
+    public void respondCreated_whenCreateTelephoneCharge(String gatewayAccountId, CreateTelephonePaymentRequest requestParams) {
 
         var responseFromConnector = aCreateOrGetChargeResponseFromConnector()
                 .withAmount(requestParams.getAmount())
@@ -220,7 +220,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         mockCreateTelephoneCharge(gatewayAccountId, aResponse()
                 .withStatus(CREATED_201)
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                .withBody(buildChargeResponse(responseFromConnector.build())));
+                .withBody(buildTelephoneChargeResponse(responseFromConnector.build())));
     }
 
     public void respondOk_whenCreateCharge(String gatewayAccountId, CreateChargeRequestParams requestParams) {
