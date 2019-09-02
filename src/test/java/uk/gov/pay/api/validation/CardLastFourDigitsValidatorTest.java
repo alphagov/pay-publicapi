@@ -29,17 +29,11 @@ public class CardLastFourDigitsValidatorTest {
                 .amount(1200)
                 .description("Some description")
                 .reference("Some reference")
-                .createdDate("2018-02-21T16:04:25Z")
-                .authorisedDate("2018-02-21T16:05:33Z")
-                .authCode("666")
                 .processorId("1PROC")
                 .providerId("1PROV")
                 .cardExpiry("01/99")
                 .cardType("visa")
                 .firstSixDigits("123456")
-                .nameOnCard("Jane Doe")
-                .emailAddress("jane_doe@example.com")
-                .telephoneNumber("+447700900796")
                 .paymentOutcome(new PaymentOutcome("success"));
     }
     
