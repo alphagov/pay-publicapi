@@ -52,8 +52,7 @@ public class CreatePaymentWithPrefilledCardholderDetailsValidationIT extends Pay
             "line1, Must be less than or equal to 255 characters length", 
             "line2, Must be less than or equal to 255 characters length",
             "city, Must be less than or equal to 255 characters length",
-            "postcode, Must be less than or equal to 25 characters length",
-            "country, Must be exactly 2 characters length"
+            "postcode, Must be less than or equal to 25 characters length"
     })
     public void shouldFailOnInvalidAddress(String addressField, String message) {
         payload.add("prefilled_cardholder_details", Map.of("billing_address", 
