@@ -39,20 +39,6 @@ public class LastFourCardDigitsValidationIT extends TelephonePaymentResourceITBa
     }
 
     @Test
-    public void respondWith422_whenFiveDigitsProvideOnly() {
-        requestBody.put("last_four_digits", "12345");
-        postPaymentResponse(toJson(requestBody))
-                .statusCode(422);
-    }
-
-    @Test
-    public void respondWith422_whenLastFourDigitsIsNull() {
-        requestBody.put("last_four_digits", null);
-        postPaymentResponse(toJson(requestBody))
-                .statusCode(422);
-    }
-
-    @Test
     public void respondWith422_whenLastFourDigitsisMissing() {
         postPaymentResponse(toJson(requestBody))
                 .statusCode(422);

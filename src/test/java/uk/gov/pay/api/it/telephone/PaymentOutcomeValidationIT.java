@@ -37,24 +37,7 @@ public class PaymentOutcomeValidationIT extends TelephonePaymentResourceITBase {
         postPaymentResponse(toJson(requestBody))
                 .statusCode(422);
     }
-
-    @Test
-    public void respondWith422_whenStatusIsFailedButNoErrorCodeProvided() {
-        requestBody.put("payment_outcome", Map.of("status", "failed"));
-        postPaymentResponse(toJson(requestBody))
-                .statusCode(422);
-    }
-
-    @Test
-    public void respondWith422_whenStatusisFailedButErrorCodeNotRecognized() {
-        requestBody.put("payment_outcome", Map.of(
-                "status", "failed",
-                "code", "unknown_error"
-        ));
-        postPaymentResponse(toJson(requestBody))
-                .statusCode(422);
-    }
-
+    
     @Test
     public void respondWith422_whenPaymentOutcomeIsNull() {
         requestBody.put("payment_outcome", null);
@@ -64,14 +47,6 @@ public class PaymentOutcomeValidationIT extends TelephonePaymentResourceITBase {
 
     @Test
     public void respondWith422_whenPaymentOutcomeIsMissing() {
-        postPaymentResponse(toJson(requestBody))
-                .statusCode(422);
-    }
-
-    @Test
-    public void respondWith422_whenPaymentOutcomeStatusIsMissing() {
-        requestBody.put("payment_outcome", Map.of(
-        ));
         postPaymentResponse(toJson(requestBody))
                 .statusCode(422);
     }
