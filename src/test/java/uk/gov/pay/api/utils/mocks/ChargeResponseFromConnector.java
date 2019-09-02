@@ -144,10 +144,16 @@ public class ChargeResponseFromConnector {
         this.description = builder.description;
         this.reference = builder.reference;
         this.email = builder.email;
+        this.telephoneNumber = builder.telephoneNumber;
         this.paymentProvider = builder.paymentProvider;
         this.gatewayTransactionId = builder.gatewayTransactionId;
+        this.processorId = builder.processorId;
+        this.providerId = builder.providerId;
+        this.authCode = builder.authCode;
         this.createdDate = builder.createdDate;
+        this.authorisedDate = builder.authorisedDate;
         this.language = builder.language;
+        this.paymentOutcome = builder.paymentOutcome;
         this.delayedCapture = builder.delayedCapture;
         this.corporateCardSurcharge = builder.corporateCardSurcharge;
         this.totalAmount = builder.totalAmount;
@@ -163,8 +169,9 @@ public class ChargeResponseFromConnector {
     public static final class ChargeResponseFromConnectorBuilder {
         private Long amount, corporateCardSurcharge, totalAmount;
         private PaymentState state;
-        private String chargeId, returnUrl, description, reference, email, paymentProvider, gatewayTransactionId, createdDate;
+        private String chargeId, returnUrl, description, reference, email, telephoneNumber, paymentProvider, gatewayTransactionId, processorId, providerId, authCode, createdDate, authorisedDate;
         private SupportedLanguage language;
+        private PaymentOutcome paymentOutcome;
         private Boolean delayedCapture;
         private RefundSummary refundSummary;
         private SettlementSummary settlementSummary;
@@ -240,8 +247,23 @@ public class ChargeResponseFromConnector {
             return this;
         }
 
+        public ChargeResponseFromConnectorBuilder withTelephoneNumber(String telephoneNumber) {
+            this.telephoneNumber = telephoneNumber;
+            return this;
+        }
+
         public ChargeResponseFromConnectorBuilder withPaymentProvider(String paymentProvider) {
             this.paymentProvider = paymentProvider;
+            return this;
+        }
+
+        public ChargeResponseFromConnectorBuilder withProcessorId(String processorId) {
+            this.processorId = processorId;
+            return this;
+        }
+
+        public ChargeResponseFromConnectorBuilder withProviderId(String providerId) {
+            this.providerId = providerId;
             return this;
         }
 
@@ -250,13 +272,28 @@ public class ChargeResponseFromConnector {
             return this;
         }
 
+        public ChargeResponseFromConnectorBuilder withAuthCode(String authCode) {
+            this.authCode = authCode;
+            return this;
+        }
+
         public ChargeResponseFromConnectorBuilder withCreatedDate(String createdDate) {
             this.createdDate = createdDate;
             return this;
         }
 
+        public ChargeResponseFromConnectorBuilder withAuthorisedDate(String authorisedDate) {
+            this.authorisedDate = authorisedDate;
+            return this;
+        }
+
         public ChargeResponseFromConnectorBuilder withLanguage(SupportedLanguage language) {
             this.language = language;
+            return this;
+        }
+
+        public ChargeResponseFromConnectorBuilder withPaymentOutcome(PaymentOutcome paymentOutcome) {
+            this.paymentOutcome = paymentOutcome;
             return this;
         }
 
