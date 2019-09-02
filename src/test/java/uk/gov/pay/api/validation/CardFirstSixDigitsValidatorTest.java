@@ -26,22 +26,22 @@ public class CardFirstSixDigitsValidatorTest {
         validator = factory.getValidator();
 
         telephoneRequestBuilder
-                .amount(1200)
-                .description("Some description")
-                .reference("Some reference")
-                .processorId("1PROC")
-                .providerId("1PROV")
-                .cardExpiry("01/99")
-                .cardType("visa")
-                .lastFourDigits("1234")
-                .paymentOutcome(new PaymentOutcome("success"));
+                .withAmount(1200)
+                .withDescription("Some description")
+                .withReference("Some reference")
+                .withProcessorId("1PROC")
+                .withProviderId("1PROV")
+                .withCardExpiry("01/99")
+                .withCardType("visa")
+                .withLastFourDigits("1234")
+                .withPaymentOutcome(new PaymentOutcome("success"));
     }
     
     @Test
     public void failsValidationForFiveDigits() {
 
         CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
-                .firstSixDigits("12345")
+                .withFirstSixDigits("12345")
                 .build();
 
         Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
@@ -54,7 +54,7 @@ public class CardFirstSixDigitsValidatorTest {
     public void failsValidationForSevenDigits() {
 
         CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
-                .firstSixDigits("1234567")
+                .withFirstSixDigits("1234567")
                 .build();
 
         Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
@@ -67,7 +67,7 @@ public class CardFirstSixDigitsValidatorTest {
     public void passesValidationForSixDigits() {
 
         CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
-                .firstSixDigits("123456")
+                .withFirstSixDigits("123456")
                 .build();
 
         Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
@@ -79,7 +79,7 @@ public class CardFirstSixDigitsValidatorTest {
     public void passesValidationForNullDigits() {
 
         CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
-                .firstSixDigits(null)
+                .withFirstSixDigits(null)
                 .build();
 
         Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);

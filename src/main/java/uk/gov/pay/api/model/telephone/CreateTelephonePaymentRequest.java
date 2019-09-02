@@ -209,82 +209,82 @@ public class CreateTelephonePaymentRequest {
 
         private String telephoneNumber;
 
-        public TelephoneRequestBuilder amount(int amount) {
+        public TelephoneRequestBuilder withAmount(int amount) {
             this.amount = amount;
             return this;
         }
 
-        public TelephoneRequestBuilder reference(String reference) {
+        public TelephoneRequestBuilder withReference(String reference) {
             this.reference = reference;
             return this;
         }
 
-        public TelephoneRequestBuilder description(String description) {
+        public TelephoneRequestBuilder withDescription(String description) {
             this.description = description;
             return this;
         }
 
-        public TelephoneRequestBuilder createdDate(String createdDate) {
+        public TelephoneRequestBuilder withCreatedDate(String createdDate) {
             this.createdDate = createdDate;
             return this;
         }
 
-        public TelephoneRequestBuilder authorisedDate(String authorisedDate) {
+        public TelephoneRequestBuilder withAuthorisedDate(String authorisedDate) {
             this.authorisedDate = authorisedDate;
             return this;
         }
 
-        public TelephoneRequestBuilder processorId(String processorId) {
+        public TelephoneRequestBuilder withProcessorId(String processorId) {
             this.processorId = processorId;
             return this;
         }
 
-        public TelephoneRequestBuilder providerId(String providerId) {
+        public TelephoneRequestBuilder withProviderId(String providerId) {
             this.providerId = providerId;
             return this;
         }
 
-        public TelephoneRequestBuilder authCode(String authCode) {
+        public TelephoneRequestBuilder withAuthCode(String authCode) {
             this.authCode = authCode;
             return this;
         }
 
-        public TelephoneRequestBuilder paymentOutcome(PaymentOutcome paymentOutcome) {
+        public TelephoneRequestBuilder withPaymentOutcome(PaymentOutcome paymentOutcome) {
             this.paymentOutcome = paymentOutcome;
             return this;
         }
 
-        public TelephoneRequestBuilder cardType(String cardType) {
+        public TelephoneRequestBuilder withCardType(String cardType) {
             this.cardType = cardType;
             return this;
         }
 
-        public TelephoneRequestBuilder nameOnCard(String nameOnCard) {
+        public TelephoneRequestBuilder withNameOnCard(String nameOnCard) {
             this.nameOnCard = nameOnCard;
             return this;
         }
 
-        public TelephoneRequestBuilder emailAddress(String emailAddress) {
+        public TelephoneRequestBuilder withEmailAddress(String emailAddress) {
             this.emailAddress = emailAddress;
             return this;
         }
 
-        public TelephoneRequestBuilder cardExpiry(String cardExpiry) {
+        public TelephoneRequestBuilder withCardExpiry(String cardExpiry) {
             this.cardExpiry = cardExpiry;
             return this;
         }
 
-        public TelephoneRequestBuilder lastFourDigits(String lastFourDigits) {
+        public TelephoneRequestBuilder withLastFourDigits(String lastFourDigits) {
             this.lastFourDigits = lastFourDigits;
             return this;
         }
 
-        public TelephoneRequestBuilder firstSixDigits(String firstSixDigits) {
+        public TelephoneRequestBuilder withFirstSixDigits(String firstSixDigits) {
             this.firstSixDigits = firstSixDigits;
             return this;
         }
 
-        public TelephoneRequestBuilder telephoneNumber(String telephoneNumber) {
+        public TelephoneRequestBuilder withTelephoneNumber(String telephoneNumber) {
             this.telephoneNumber = telephoneNumber;
             return this;
         }

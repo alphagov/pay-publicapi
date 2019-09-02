@@ -28,28 +28,28 @@ public class PaymentOutcomeValidatorTest {
         validator = factory.getValidator();
 
         telephoneRequestBuilder
-                .amount(1200)
-                .description("Some description")
-                .reference("Some reference")
-                .createdDate("2018-02-21T16:04:25Z")
-                .authorisedDate("2018-02-21T16:05:33Z")
-                .authCode("666")
-                .processorId("1PROC")
-                .providerId("1PROV")
-                .lastFourDigits("1234")
-                .firstSixDigits("123456")
-                .cardExpiry("01/13")
-                .cardType("visa")
-                .nameOnCard("Jane Doe")
-                .emailAddress("jane_doe@example.com")
-                .telephoneNumber("+447700900796");
+                .withAmount(1200)
+                .withDescription("Some description")
+                .withReference("Some reference")
+                .withCreatedDate("2018-02-21T16:04:25Z")
+                .withAuthorisedDate("2018-02-21T16:05:33Z")
+                .withAuthCode("666")
+                .withProcessorId("1PROC")
+                .withProviderId("1PROV")
+                .withLastFourDigits("1234")
+                .withFirstSixDigits("123456")
+                .withCardExpiry("01/13")
+                .withCardType("visa")
+                .withNameOnCard("Jane Doe")
+                .withEmailAddress("jane_doe@example.com")
+                .withTelephoneNumber("+447700900796");
     }
 
     @Test
     public void failsValidationForInvalidPaymentOutcomeStatus() {
 
         CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
-                .paymentOutcome(new PaymentOutcome("invalid"))
+                .withPaymentOutcome(new PaymentOutcome("invalid"))
                 .build();
 
         Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
@@ -71,7 +71,7 @@ public class PaymentOutcomeValidatorTest {
         );
 
         CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
-                .paymentOutcome(paymentOutcome)
+                .withPaymentOutcome(paymentOutcome)
                 .build();
 
         Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
@@ -93,7 +93,7 @@ public class PaymentOutcomeValidatorTest {
         );
 
         CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
-                .paymentOutcome(paymentOutcome)
+                .withPaymentOutcome(paymentOutcome)
                 .build();
 
         Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
@@ -115,7 +115,7 @@ public class PaymentOutcomeValidatorTest {
         );
 
         CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
-                .paymentOutcome(paymentOutcome)
+                .withPaymentOutcome(paymentOutcome)
                 .build();
 
         Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
@@ -127,7 +127,7 @@ public class PaymentOutcomeValidatorTest {
     public void passesValidationForPaymentOutcomeStatusOfSuccess() {
 
         CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
-                .paymentOutcome(new PaymentOutcome("success"))
+                .withPaymentOutcome(new PaymentOutcome("success"))
                 .build();
 
         Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
@@ -139,7 +139,7 @@ public class PaymentOutcomeValidatorTest {
     public void passesValidationForNullPaymentOutcome() {
 
         CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
-                .paymentOutcome(null)
+                .withPaymentOutcome(null)
                 .build();;
 
         Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);

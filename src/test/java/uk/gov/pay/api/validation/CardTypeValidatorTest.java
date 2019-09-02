@@ -26,22 +26,22 @@ public class CardTypeValidatorTest {
         validator = factory.getValidator();
 
         telephoneRequestBuilder
-                .amount(1200)
-                .description("Some description")
-                .reference("Some reference")
-                .processorId("1PROC")
-                .providerId("1PROV")
-                .cardExpiry("01/99")
-                .lastFourDigits("1234")
-                .firstSixDigits("123456")
-                .paymentOutcome(new PaymentOutcome("success"));
+                .withAmount(1200)
+                .withDescription("Some description")
+                .withReference("Some reference")
+                .withProcessorId("1PROC")
+                .withProviderId("1PROV")
+                .withCardExpiry("01/99")
+                .withLastFourDigits("1234")
+                .withFirstSixDigits("123456")
+                .withPaymentOutcome(new PaymentOutcome("success"));
     }
 
     @Test
     public void failsValidationForInvalidCardType() {
 
         CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
-                .cardType("bad-card")
+                .withCardType("bad-card")
                 .build();
 
         Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
@@ -54,7 +54,7 @@ public class CardTypeValidatorTest {
     public void passesValidationForValidCardType() {
 
         CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
-                .cardType("visa")
+                .withCardType("visa")
                 .build();
 
         Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
@@ -66,7 +66,7 @@ public class CardTypeValidatorTest {
     public void passesValidationForNullCardType() {
 
         CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
-                .cardType(null)
+                .withCardType(null)
                 .build();
 
         Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);

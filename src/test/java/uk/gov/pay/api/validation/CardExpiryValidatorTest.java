@@ -26,22 +26,22 @@ public class CardExpiryValidatorTest {
         validator = factory.getValidator();
 
         telephoneRequestBuilder
-                .amount(1200)
-                .description("Some description")
-                .reference("Some reference")
-                .processorId("1PROC")
-                .providerId("1PROV")
-                .lastFourDigits("1234")
-                .firstSixDigits("123456")
-                .cardType("visa")
-                .paymentOutcome(new PaymentOutcome("success"));
+                .withAmount(1200)
+                .withDescription("Some description")
+                .withReference("Some reference")
+                .withProcessorId("1PROC")
+                .withProviderId("1PROV")
+                .withLastFourDigits("1234")
+                .withFirstSixDigits("123456")
+                .withCardType("visa")
+                .withPaymentOutcome(new PaymentOutcome("success"));
     }
 
     @Test
     public void failsValidationForInvalidMonth00() {
 
         CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
-                .cardExpiry("00/99")
+                .withCardExpiry("00/99")
                 .build();
 
         Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
@@ -54,7 +54,7 @@ public class CardExpiryValidatorTest {
     public void failsValidationForInvalidMonth99() {
 
         CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
-                .cardExpiry("99/99")
+                .withCardExpiry("99/99")
                 .build();
 
         Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
@@ -67,7 +67,7 @@ public class CardExpiryValidatorTest {
     public void passesValidationForValidCardExpiry() {
 
         CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
-                .cardExpiry("01/99")
+                .withCardExpiry("01/99")
                 .build();
 
         Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
@@ -79,7 +79,7 @@ public class CardExpiryValidatorTest {
     public void passesValidationForNullCardExpiry() {
 
         CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
-                .cardExpiry(null)
+                .withCardExpiry(null)
                 .build();
 
         Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);

@@ -26,22 +26,22 @@ public class CardLastFourDigitsValidatorTest {
         validator = factory.getValidator();
 
         telephoneRequestBuilder
-                .amount(1200)
-                .description("Some description")
-                .reference("Some reference")
-                .processorId("1PROC")
-                .providerId("1PROV")
-                .cardExpiry("01/99")
-                .cardType("visa")
-                .firstSixDigits("123456")
-                .paymentOutcome(new PaymentOutcome("success"));
+                .withAmount(1200)
+                .withDescription("Some description")
+                .withReference("Some reference")
+                .withProcessorId("1PROC")
+                .withProviderId("1PROV")
+                .withCardExpiry("01/99")
+                .withCardType("visa")
+                .withFirstSixDigits("123456")
+                .withPaymentOutcome(new PaymentOutcome("success"));
     }
     
     @Test
     public void failsValidationForThreeDigits() {
 
         CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
-                .lastFourDigits("123")
+                .withLastFourDigits("123")
                 .build();
 
         Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
@@ -54,7 +54,7 @@ public class CardLastFourDigitsValidatorTest {
     public void failsValidationForFiveDigits() {
 
         CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
-                .lastFourDigits("12345")
+                .withLastFourDigits("12345")
                 .build();
 
         Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
@@ -67,7 +67,7 @@ public class CardLastFourDigitsValidatorTest {
     public void passesValidationForFourDigits() {
 
         CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
-                .lastFourDigits("1234")
+                .withLastFourDigits("1234")
                 .build();
 
         Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
@@ -79,7 +79,7 @@ public class CardLastFourDigitsValidatorTest {
     public void failsValidationForNullDigits() {
 
         CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
-                .lastFourDigits(null)
+                .withLastFourDigits(null)
                 .build();
 
         Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
