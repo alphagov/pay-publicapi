@@ -375,6 +375,11 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withHeader(CONTENT_TYPE, matching(APPLICATION_JSON)).willReturn(responseDefinitionBuilder));
     }
 
+    public void mockCreateTelephoneCharge(String gatewayAccountId, ResponseDefinitionBuilder responseDefinitionBuilder) {
+        wireMockClassRule.stubFor(post(urlPathEqualTo(format(CONNECTOR_MOCK_TELEPHONE_CHARGES_PATH, gatewayAccountId)))
+                .withHeader(CONTENT_TYPE, matching(APPLICATION_JSON)).willReturn(responseDefinitionBuilder));
+    }
+
     private void whenCreateRefund(String gatewayAccountId, String chargeId, ResponseDefinitionBuilder response) {
         wireMockClassRule.stubFor(post(urlPathEqualTo(format(CONNECTOR_MOCK_CHARGE_REFUNDS_PATH, gatewayAccountId, chargeId)))
                 .willReturn(response));
