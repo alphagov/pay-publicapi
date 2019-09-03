@@ -3,11 +3,23 @@ package uk.gov.pay.api.service.telephone;
 import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
 import uk.gov.pay.api.model.telephone.State;
 import uk.gov.pay.api.model.telephone.TelephonePaymentResponse;
+import uk.gov.pay.api.service.ConnectorUriGenerator;
+
+import javax.inject.Inject;
+import javax.ws.rs.client.Client;
 
 public class CreateTelephonePaymentService {
     
+    private final Client client;
+    private final ConnectorUriGenerator connectorUriGenerator;
+
+    @Inject
+    public CreateTelephonePaymentService(Client client, ConnectorUriGenerator connectorUriGenerator) {
+        this.client = client;
+        this.connectorUriGenerator = connectorUriGenerator;
+    }
+
     public TelephonePaymentResponse create(CreateTelephonePaymentRequest createTelephonePaymentRequest){
-        
         
         return null;
     }
