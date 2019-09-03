@@ -89,7 +89,6 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .add("description", responseFromConnector.getDescription())
                 .add("processor_id", responseFromConnector.getProcessorId())
                 .add("provider_id", responseFromConnector.getProviderId())
-                .add("auth_code", responseFromConnector.getAuthCode())
                 .add("charge_id", responseFromConnector.getChargeId())
                 .add("delayed_capture", false)
                 .addToMap("state","finished", responseFromConnector.getState().isFinished())
@@ -99,6 +98,13 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .addToMap("card_details","last_digits_card_number", responseFromConnector.getCardDetails().getLastDigitsCardNumber())
                 .addToMap("card_details","first_digits_card_number", responseFromConnector.getCardDetails().getFirstDigitsCardNumber())
                 .addToMap("payment_outcome", "status", responseFromConnector.getPaymentOutcome().getStatus());
+        
+        ofNullable(responseFromConnector.getAuthCode()).ifPresent(authCode -> request.add("auth_code", authCode));
+        ofNullable(responseFromConnector.getCreatedDate()).ifPresent(createdDate -> request.add("created_date", createdDate));
+        ofNullable(responseFromConnector.getAuthorisedDate()).ifPresent(authorisedDate -> request.add("authorised_date", authorisedDate));
+        ofNullable(responseFromConnector.getEmail()).ifPresent(email -> request.add("email", email));
+        ofNullable(responseFromConnector.getTelephoneNumber()).ifPresent(telephoneNumber -> request.add("telephone_number", telephoneNumber));
+        ofNullable(responseFromConnector.getCardDetails().getCardHolderName()).ifPresent(cardHolderName -> request.addToMap("card_details", "cardholder_name", cardHolderName));
         
         return request.build();
     }
