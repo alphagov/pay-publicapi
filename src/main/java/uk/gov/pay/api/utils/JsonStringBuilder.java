@@ -39,7 +39,7 @@ public class JsonStringBuilder {
         return this;
     }
 
-    public JsonStringBuilder addToMap(String mapKey, String key, String value) {
+    public JsonStringBuilder addToMap(String mapKey, String key, Object value) {
         Map<String, Object> nestedMap = ensureNestedMap(mapKey);
         nestedMap.put(key, value);
         return this;

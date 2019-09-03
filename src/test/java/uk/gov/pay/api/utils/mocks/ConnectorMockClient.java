@@ -81,43 +81,27 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     private String buildTelephoneChargeResponse(ChargeResponseFromConnector responseFromConnector) {
 
         List<Map<String, Link>> links = new ArrayList<>();
-        
-        JsonStringBuilder state = new JsonStringBuilder();
-        state.add("finished", responseFromConnector.getState().isFinished());
-        state.add("status", responseFromConnector.getState().getStatus());
 
-        JsonStringBuilder paymentOutcome = new JsonStringBuilder();
-        paymentOutcome.add("status", responseFromConnector.getPaymentOutcome().getStatus());
-        
-        JsonStringBuilder cardDetails = new JsonStringBuilder();
-        cardDetails.add("last_digits_card_number", responseFromConnector.getCardDetails().getLastDigitsCardNumber());
-        cardDetails.add("first_digits_card_number", responseFromConnector.getCardDetails().getFirstDigitsCardNumber());
-        cardDetails.add("cardholder_name", responseFromConnector.getCardDetails().getCardHolderName()); // Modify
-        cardDetails.add("expiry_date", responseFromConnector.getCardDetails().getExpiryDate());
-        cardDetails.add("card_brand", responseFromConnector.getCardDetails().getCardBrand());
-
-        ofNullable(responseFromConnector.getCardDetails().getCardHolderName()).ifPresent(name -> cardDetails.add("cardholder_name", name));
-        
-        JsonStringBuilder resultBuilder = new JsonStringBuilder()
+        JsonStringBuilder request = new JsonStringBuilder()
                 .add("amount", responseFromConnector.getAmount())
-                .add("state", state)
-                .add("_links", links)
-                .add("payment_outcome", paymentOutcome)
-                .add("card_details", cardDetails)
+                .add("reference", responseFromConnector.getReference())
+                .add("links", links)
                 .add("description", responseFromConnector.getDescription())
-                .add("charge_id", responseFromConnector.getChargeId())
                 .add("processor_id", responseFromConnector.getProcessorId())
                 .add("provider_id", responseFromConnector.getProviderId())
-                .add("delayed_capture", responseFromConnector.isDelayedCapture());
+                .add("auth_code", responseFromConnector.getAuthCode())
+                .add("charge_id", responseFromConnector.getChargeId())
+                .add("delayed_capture", false)
+                .addToMap("state","finished", responseFromConnector.getState().isFinished())
+                .addToMap("state","status", responseFromConnector.getState().getStatus())
+                .addToMap("card_details","card_brand", responseFromConnector.getCardDetails().getCardBrand())
+                .addToMap("card_details","expiry_date", responseFromConnector.getCardDetails().getExpiryDate())
+                .addToMap("card_details","last_digits_card_number", responseFromConnector.getCardDetails().getLastDigitsCardNumber())
+                .addToMap("card_details","first_digits_card_number", responseFromConnector.getCardDetails().getFirstDigitsCardNumber())
+                .addToMap("payment_outcome", "status", responseFromConnector.getPaymentOutcome().getStatus());
         
-        ofNullable(responseFromConnector.getEmail()).ifPresent(email -> resultBuilder.add("email", email));
-        ofNullable(responseFromConnector.getTelephoneNumber()).ifPresent(telephoneNumber -> resultBuilder.add("telephone_number", telephoneNumber));
-        ofNullable(responseFromConnector.getCreatedDate()).ifPresent(createdDate -> resultBuilder.add("created_date", createdDate));
-        ofNullable(responseFromConnector.getAuthorisedDate()).ifPresent(authorisedDate -> resultBuilder.add("authorised_date", authorisedDate));
-        
-        return resultBuilder.build();
+        return request.build();
     }
-    
     
     private String buildChargeResponse(ChargeResponseFromConnector responseFromConnector) {
         PaymentSingleResultBuilder resultBuilder = aSuccessfulSinglePayment()
@@ -181,13 +165,16 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     }
 
     public void respondCreated_whenCreateTelephoneCharge(String gatewayAccountId, CreateTelephonePaymentRequest requestParams) {
-
+        
         var responseFromConnector = aCreateOrGetChargeResponseFromConnector()
                 .withAmount(requestParams.getAmount())
-                .withChargeId("chargeId")
+                .withChargeId("dummypaymentid123notpersisted")
                 .withState(new PaymentState("success", true, null, null))
                 .withDescription(requestParams.getDescription())
+                .withProcessorId(requestParams.getProcessorId())
+                .withProviderId(requestParams.getProviderId())
                 .withReference(requestParams.getReference())
+                .withDelayedCapture(false)
                 .withCardDetails(new CardDetails(
                         requestParams.getLastFourDigits(),
                         requestParams.getFirstSixDigits(),
@@ -202,7 +189,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         }
 
         if (requestParams.getAuthorisedDate() != null) {
-            responseFromConnector.withCreatedDate(requestParams.getAuthorisedDate());
+            responseFromConnector.withAuthorisedDate(requestParams.getAuthorisedDate());
         }
         
         if (requestParams.getEmailAddress() != null) {
@@ -216,11 +203,11 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         if (requestParams.getAuthCode() != null) {
             responseFromConnector.withAuthCode(requestParams.getAuthCode());
         }
-
+        
         mockCreateTelephoneCharge(gatewayAccountId, aResponse()
                 .withStatus(CREATED_201)
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                .withBody(buildTelephoneChargeResponse(responseFromConnector.build())));
+                .withBody(buildTelephoneChargeResponse(responseFromConnector.buildTelephoneChargeResponse())));
     }
 
     public void respondOk_whenCreateCharge(String gatewayAccountId, CreateChargeRequestParams requestParams) {

@@ -182,6 +182,7 @@ public class TelephonePaymentResponse {
     public static TelephonePaymentResponse from(ChargeFromResponse chargeFromResponse) {
         return new TelephonePaymentResponse.Builder()
                 .withAmount(chargeFromResponse.getAmount())
+                .withDescription(chargeFromResponse.getDescription())
                 .withReference(chargeFromResponse.getReference())
                 .withCreatedDate(chargeFromResponse.getCreatedDate())
                 .withAuthorisedDate(chargeFromResponse.getAuthorisedDate())

@@ -327,6 +327,10 @@ public class ChargeResponseFromConnector {
             return this;
         }
 
+        public ChargeResponseFromConnector buildTelephoneChargeResponse() {
+            return new ChargeResponseFromConnector(this);
+        }
+        
         public ChargeResponseFromConnector build() {
             List.of(amount, chargeId, language, links).forEach(Objects::requireNonNull);
             

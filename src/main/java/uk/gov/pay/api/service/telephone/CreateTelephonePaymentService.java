@@ -1,12 +1,11 @@
 package uk.gov.pay.api.service.telephone;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.http.HttpStatus;
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.exception.CreateChargeException;
 import uk.gov.pay.api.model.ChargeFromResponse;
 import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
 import uk.gov.pay.api.model.telephone.TelephonePaymentResponse;
-import uk.gov.pay.api.resources.RequestDeniedResource;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 
 import javax.inject.Inject;
@@ -21,7 +20,6 @@ public class CreateTelephonePaymentService {
     
     private final Client client;
     private final ConnectorUriGenerator connectorUriGenerator;
-    private static final Logger logger = LoggerFactory.getLogger(CreateTelephonePaymentService.class);
 
     @Inject
     public CreateTelephonePaymentService(Client client, ConnectorUriGenerator connectorUriGenerator) {
@@ -33,22 +31,18 @@ public class CreateTelephonePaymentService {
         Response connectorResponse = createTelephoneCharge(account, createTelephonePaymentRequest);
         
         if (!createdSuccessfully(connectorResponse)) {
-            logger.info("Successful response");
+            throw new CreateChargeException(connectorResponse);
         }
         
         ChargeFromResponse chargeFromResponse = connectorResponse.readEntity(ChargeFromResponse.class);
-        
         return TelephonePaymentResponse.from(chargeFromResponse);
     }
     
     private boolean createdSuccessfully(Response connectorResponse) {
-        int status = connectorResponse.getStatus();
-        return status == 200 || status == 201;
+        return connectorResponse.getStatus() == HttpStatus.SC_CREATED || connectorResponse.getStatus() == HttpStatus.SC_OK;
     }
     
     private Response createTelephoneCharge(Account account, CreateTelephonePaymentRequest createTelephonePaymentRequest) {
-        logger.info("JSON Posted: " + buildTelephoneChargeRequestPayload(createTelephonePaymentRequest));
-        
         return client
                 .target(connectorUriGenerator.telephoneChargesURI(account))
                 .request()

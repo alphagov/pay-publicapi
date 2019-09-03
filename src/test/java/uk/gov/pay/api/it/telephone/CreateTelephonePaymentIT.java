@@ -33,8 +33,8 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
         requestBody.put("last_four_digits", "1234");
         requestBody.put("first_six_digits", "123456");
         
-        createTelephonePaymentRequest.
-                withAmount(100)
+        createTelephonePaymentRequest
+                .withAmount(100)
                 .withReference("Some reference")
                 .withDescription("Some description")
                 .withProcessorId("1PROC")
@@ -111,6 +111,7 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
         postPaymentResponse(toJson(requestBody))
                 .statusCode(201)
                 .contentType(JSON)
+                .log().all()
                 .body("amount", is(100))
                 .body("reference", is("Some reference"))
                 .body("description", is("Some description"))
