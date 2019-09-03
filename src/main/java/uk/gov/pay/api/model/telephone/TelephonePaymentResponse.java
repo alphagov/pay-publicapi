@@ -3,6 +3,7 @@ package uk.gov.pay.api.model.telephone;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import uk.gov.pay.api.model.ChargeFromResponse;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class TelephonePaymentResponse {
@@ -46,7 +47,28 @@ public class TelephonePaymentResponse {
     public TelephonePaymentResponse() {
         // For Jackson
     }
-
+    
+    public TelephonePaymentResponse(Builder builder) {
+        this.amount = builder.amount;
+        this.reference = builder.reference;
+        this.description = builder.description;
+        this.createdDate = builder.createdDate;
+        this.authorisedDate = builder.authorisedDate;
+        this.processorId = builder.processorId;
+        this.providerId = builder.providerId;
+        this.authCode = builder.authCode;
+        this.paymentOutcome = builder.paymentOutcome;
+        this.cardType = builder.cardType;
+        this.nameOnCard = builder.nameOnCard;
+        this.emailAddress = builder.emailAddress;
+        this.cardExpiry = builder.cardExpiry;
+        this.lastFourDigits = builder.lastFourDigits;
+        this.firstSixDigits = builder.firstSixDigits;
+        this.telephoneNumber = builder.telephoneNumber;
+        this.paymentId = builder.paymentId;
+        this.state = builder.state;
+    }
+    
     public TelephonePaymentResponse(int amount, 
                                     String reference, 
                                     String description, 
@@ -154,5 +176,120 @@ public class TelephonePaymentResponse {
 
     public State getState() {
         return state;
+    }
+    
+    public static class Builder {
+        private int amount;
+        private String reference;
+        private String description;
+        private String createdDate;
+        private String authorisedDate;
+        private String processorId;
+        private String providerId;
+        private String authCode;
+        private PaymentOutcome paymentOutcome;
+        private String cardType;
+        private String nameOnCard;
+        private String emailAddress;
+        private String cardExpiry;
+        private String lastFourDigits;
+        private String firstSixDigits;
+        private String telephoneNumber;
+        private String paymentId;
+        private State state;
+
+        public Builder setAmount(int amount) {
+            this.amount = amount;
+            return this;
+        }
+
+        public Builder withReference(String reference) {
+            this.reference = reference;
+            return this;
+        }
+
+        public Builder withDescription(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Builder withCreatedDate(String createdDate) {
+            this.createdDate = createdDate;
+            return this;
+        }
+
+        public Builder withAuthorisedDate(String authorisedDate) {
+            this.authorisedDate = authorisedDate;
+            return this;
+        }
+
+        public Builder withProcessorId(String processorId) {
+            this.processorId = processorId;
+            return this;
+        }
+
+        public Builder withProviderId(String providerId) {
+            this.providerId = providerId;
+            return this;
+        }
+
+        public Builder withAuthCode(String authCode) {
+            this.authCode = authCode;
+            return this;
+        }
+
+        public Builder withPaymentOutcome(PaymentOutcome paymentOutcome) {
+            this.paymentOutcome = paymentOutcome;
+            return this;
+        }
+
+        public Builder withCardType(String cardType) {
+            this.cardType = cardType;
+            return this;
+        }
+
+        public Builder withNameOnCard(String nameOnCard) {
+            this.nameOnCard = nameOnCard;
+            return this;
+        }
+
+        public Builder withEmailAddress(String emailAddress) {
+            this.emailAddress = emailAddress;
+            return this;
+        }
+
+        public Builder withCardExpiry(String cardExpiry) {
+            this.cardExpiry = cardExpiry;
+            return this;
+        }
+
+        public Builder withLastFourDigits(String lastFourDigits) {
+            this.lastFourDigits = lastFourDigits;
+            return this;
+        }
+
+        public Builder withFirstSixDigits(String firstSixDigits) {
+            this.firstSixDigits = firstSixDigits;
+            return this;
+        }
+
+        public Builder withTelephoneNumber(String telephoneNumber) {
+            this.telephoneNumber = telephoneNumber;
+            return this;
+        }
+
+        public Builder withPaymentId(String paymentId) {
+            this.paymentId = paymentId;
+            return this;
+        }
+
+        public Builder withState(State state) {
+            this.state = state;
+            return this;
+        }
+        
+        public TelephonePaymentResponse build () {
+            return new TelephonePaymentResponse(this);
+        }
     }
 }
