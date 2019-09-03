@@ -2,6 +2,7 @@ package uk.gov.pay.api.model.telephone;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.api.validation.ValidCardExpiryDate;
 import uk.gov.pay.api.validation.ValidCardFirstSixDigits;
 import uk.gov.pay.api.validation.ValidCardLastFourDigits;
@@ -68,6 +69,23 @@ public class CreateTelephonePaymentRequest {
     private String firstSixDigits;
     
     private String telephoneNumber;
+    
+    public String toConnectorPayload() {
+        JsonStringBuilder request = new JsonStringBuilder()
+                .add("amount", this.getAmount())
+                .add("reference", this.getReference())
+                .add("description", this.getDescription())
+                .add("processor_id", this.getProcessorId())
+                .add("provider_id", this.getProviderId())
+                .add("auth_code", this.getAuthCode())
+                .add("payment_outcome", this.getPaymentOutcome())
+                .add("card_type", this.getCardType())
+                .add("card_expiry", this.getCardExpiry())
+                .add("last_four_digits", this.getLastFourDigits())
+                .add("first_six_digits", this.getFirstSixDigits());
+        
+        return request.build();
+    }
 
     public CreateTelephonePaymentRequest() {
         // To enable Jackson serialisation we need a default constructor

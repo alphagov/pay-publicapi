@@ -1,12 +1,14 @@
 package uk.gov.pay.api.service.telephone;
 
+import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
-import uk.gov.pay.api.model.telephone.State;
 import uk.gov.pay.api.model.telephone.TelephonePaymentResponse;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 public class CreateTelephonePaymentService {
     
@@ -50,7 +52,7 @@ public class CreateTelephonePaymentService {
                 createTelephonePaymentRequest.getLastFourDigits(), - in card details
                 createTelephonePaymentRequest.getFirstSixDigits(), - in card details
                 createTelephonePaymentRequest.getTelephoneNumber(), - DONE
-                "dummypaymentid123notpersisted",
-                state
+                "dummypaymentid123notpersisted", - in chargeID
+                state - in PaymentState
         );
          */
