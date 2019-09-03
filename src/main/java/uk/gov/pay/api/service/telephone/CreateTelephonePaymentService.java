@@ -1,9 +1,12 @@
 package uk.gov.pay.api.service.telephone;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.ChargeFromResponse;
 import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
 import uk.gov.pay.api.model.telephone.TelephonePaymentResponse;
+import uk.gov.pay.api.resources.RequestDeniedResource;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 
 import javax.inject.Inject;
@@ -18,6 +21,7 @@ public class CreateTelephonePaymentService {
     
     private final Client client;
     private final ConnectorUriGenerator connectorUriGenerator;
+    private static final Logger logger = LoggerFactory.getLogger(CreateTelephonePaymentService.class);
 
     @Inject
     public CreateTelephonePaymentService(Client client, ConnectorUriGenerator connectorUriGenerator) {
@@ -28,12 +32,23 @@ public class CreateTelephonePaymentService {
     public TelephonePaymentResponse create(Account account, CreateTelephonePaymentRequest createTelephonePaymentRequest){
         Response connectorResponse = createTelephoneCharge(account, createTelephonePaymentRequest);
         
+        if (!createdSuccessfully(connectorResponse)) {
+            logger.info("Successful response");
+        }
+        
         ChargeFromResponse chargeFromResponse = connectorResponse.readEntity(ChargeFromResponse.class);
         
         return TelephonePaymentResponse.from(chargeFromResponse);
     }
     
+    private boolean createdSuccessfully(Response connectorResponse) {
+        int status = connectorResponse.getStatus();
+        return status == 200 || status == 201;
+    }
+    
     private Response createTelephoneCharge(Account account, CreateTelephonePaymentRequest createTelephonePaymentRequest) {
+        logger.info("JSON Posted: " + buildTelephoneChargeRequestPayload(createTelephonePaymentRequest));
+        
         return client
                 .target(connectorUriGenerator.telephoneChargesURI(account))
                 .request()
@@ -45,33 +60,3 @@ public class CreateTelephonePaymentService {
         return json(requestPayload.toConnectorPayload());
     }
 }
-
-/*
-        State state = new State(
-                "success",
-                true,
-                "Created",
-                "P0010"
-        );
-        
-        return new TelephonePaymentResponse(
-                createTelephonePaymentRequest.getAmount(), - DONE
-                createTelephonePaymentRequest.getReference(), - DONE
-                createTelephonePaymentRequest.getDescription(), - DONE
-                createTelephonePaymentRequest.getCreatedDate(), - DONE
-                createTelephonePaymentRequest.getAuthorisedDate(), - DONE
-                createTelephonePaymentRequest.getProcessorId(), - DONE
-                createTelephonePaymentRequest.getProviderId(), - DONE
-                createTelephonePaymentRequest.getAuthCode(), - DONE
-                createTelephonePaymentRequest.getPaymentOutcome(), - DONE
-                createTelephonePaymentRequest.getCardType(), - in card details
-                createTelephonePaymentRequest.getNameOnCard(), - in card details
-                createTelephonePaymentRequest.getEmailAddress(), - in email
-                createTelephonePaymentRequest.getCardExpiry(), - in card details
-                createTelephonePaymentRequest.getLastFourDigits(), - in card details
-                createTelephonePaymentRequest.getFirstSixDigits(), - in card details
-                createTelephonePaymentRequest.getTelephoneNumber(), - DONE
-                "dummypaymentid123notpersisted", - in chargeID
-                state - in PaymentState
-        );
-         */

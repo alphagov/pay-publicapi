@@ -14,6 +14,8 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import static java.util.Optional.ofNullable;
+
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class CreateTelephonePaymentRequest {
 
@@ -78,11 +80,24 @@ public class CreateTelephonePaymentRequest {
                 .add("processor_id", this.getProcessorId())
                 .add("provider_id", this.getProviderId())
                 .add("auth_code", this.getAuthCode())
-                .add("payment_outcome", this.getPaymentOutcome())
                 .add("card_type", this.getCardType())
                 .add("card_expiry", this.getCardExpiry())
                 .add("last_four_digits", this.getLastFourDigits())
-                .add("first_six_digits", this.getFirstSixDigits());
+                .add("first_six_digits", this.getFirstSixDigits())
+                .addToMap("payment_outcome", "status", this.getPaymentOutcome().getStatus());
+        ofNullable(this.getPaymentOutcome().getCode()).ifPresent(code -> request.addToMap("payment_outcome", "code", code));
+        this.getPaymentOutcome().getSupplemental().ifPresent(supplemental -> {
+                    request.addToNestedMap("error_code", supplemental.getErrorCode(), "payment_outcome", "supplemental");
+                    request.addToNestedMap("error_message", supplemental.getErrorMessage(), "payment_outcome", "supplemental");
+                }
+        );
+
+        ofNullable(this.getCreatedDate()).ifPresent(createdDate -> request.add("created_date", createdDate));
+        ofNullable(this.getAuthorisedDate()).ifPresent(authorisedDate -> request.add("authorised_date", authorisedDate));
+        ofNullable(this.getAuthCode()).ifPresent(authCode -> request.add("auth_code", authCode));
+        ofNullable(this.getNameOnCard()).ifPresent(nameOnCard -> request.add("name_on_card", nameOnCard));
+        ofNullable(this.getEmailAddress()).ifPresent(emailAddress -> request.add("email_address", emailAddress));
+        ofNullable(this.getTelephoneNumber()).ifPresent(telephoneNumber -> request.add("telephone_number", telephoneNumber));
         
         return request.build();
     }

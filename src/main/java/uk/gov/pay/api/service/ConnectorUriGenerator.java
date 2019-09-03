@@ -53,7 +53,7 @@ public class ConnectorUriGenerator {
     }
     
     public String telephoneChargesURI(Account account) {
-        return buildConnectorUri(format("/v1/api/accounts/%s/telephone_charges", account.getAccountId()));
+        return buildConnectorUri(format("/v1/api/accounts/%s/telephone-charges", account.getAccountId()));
     }
 
     public String eventsURI(Account account, Optional<ZonedDateTime> toDate, Optional<ZonedDateTime> fromDate, Integer page, Integer displaySize, String agreementId, String paymentId) {
