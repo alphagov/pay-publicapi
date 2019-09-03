@@ -1,6 +1,7 @@
 package uk.gov.pay.api.service.telephone;
 
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.model.ChargeFromResponse;
 import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
 import uk.gov.pay.api.model.telephone.TelephonePaymentResponse;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
@@ -24,7 +25,11 @@ public class CreateTelephonePaymentService {
         this.connectorUriGenerator = connectorUriGenerator;
     }
 
-    public TelephonePaymentResponse create(CreateTelephonePaymentRequest createTelephonePaymentRequest){
+    public TelephonePaymentResponse create(Account account, CreateTelephonePaymentRequest createTelephonePaymentRequest){
+        Response connectorResponse = createTelephoneCharge(account, createTelephonePaymentRequest);
+        
+        ChargeFromResponse chargeFromResponse = connectorResponse.readEntity(ChargeFromResponse.class);
+        
         return null;
     }
     
