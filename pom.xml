@@ -17,7 +17,7 @@
         <jackson.version>2.9.9</jackson.version>
         <logback.version>1.2.3</logback.version>
         <docker-client.version>8.16.0</docker-client.version>
-        <pay-java-commons.version>1.0.20190816103843</pay-java-commons.version>
+        <pay-java-commons.version>1.0.20190828103217</pay-java-commons.version>
         <pact.version>3.6.12</pact.version>
         <PACT_BROKER_URL/>
         <PACT_BROKER_USERNAME/>
@@ -51,6 +51,11 @@
         <dependency>
             <groupId>uk.gov.pay</groupId>
             <artifactId>validation</artifactId>
+            <version>${pay-java-commons.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>uk.gov.pay</groupId>
+            <artifactId>logging</artifactId>
             <version>${pay-java-commons.version}</version>
         </dependency>
         <dependency>
