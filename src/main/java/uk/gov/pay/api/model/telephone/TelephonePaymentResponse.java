@@ -4,11 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import uk.gov.pay.api.model.ChargeFromResponse;
+import uk.gov.pay.api.model.PaymentState;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class TelephonePaymentResponse {
     
-    private int amount;
+    private Long amount;
     
     private String reference;
     
@@ -42,7 +43,7 @@ public class TelephonePaymentResponse {
     
     private String paymentId;
     
-    private State state;
+    private PaymentState state;
 
     public TelephonePaymentResponse() {
         // For Jackson
@@ -69,7 +70,7 @@ public class TelephonePaymentResponse {
         this.state = builder.state;
     }
     
-    public TelephonePaymentResponse(int amount, 
+    public TelephonePaymentResponse(Long amount, 
                                     String reference, 
                                     String description, 
                                     String createdDate, 
@@ -86,7 +87,7 @@ public class TelephonePaymentResponse {
                                     String firstSixDigits, 
                                     String telephoneNumber, 
                                     String paymentId, 
-                                    State state) {
+                                    PaymentState state) {
         // For testing serialization
         this.amount = amount;
         this.reference = reference;
@@ -108,7 +109,7 @@ public class TelephonePaymentResponse {
         this.state = state;
     }
 
-    public int getAmount() {
+    public Long getAmount() {
         return amount;
     }
 
@@ -174,12 +175,34 @@ public class TelephonePaymentResponse {
 
     public String getPaymentId() { return paymentId; }
 
-    public State getState() {
+    public PaymentState getState() {
         return state;
     }
     
+    public static TelephonePaymentResponse from(ChargeFromResponse chargeFromResponse) {
+        return new TelephonePaymentResponse.Builder()
+                .withAmount(chargeFromResponse.getAmount())
+                .withReference(chargeFromResponse.getReference())
+                .withCreatedDate(chargeFromResponse.getCreatedDate())
+                .withAuthorisedDate(chargeFromResponse.getAuthorisedDate())
+                .withProcessorId(chargeFromResponse.getProcessorId())
+                .withProviderId(chargeFromResponse.getProviderId())
+                .withAuthCode(chargeFromResponse.getAuthCode())
+                .withPaymentOutcome(chargeFromResponse.getPaymentOutcome())
+                .withCardType(chargeFromResponse.getCardBrand())
+                .withNameOnCard(chargeFromResponse.getCardDetails().getCardHolderName())
+                .withEmailAddress(chargeFromResponse.getEmail())
+                .withCardExpiry(chargeFromResponse.getCardDetails().getExpiryDate())
+                .withLastFourDigits(chargeFromResponse.getCardDetails().getLastDigitsCardNumber())
+                .withFirstSixDigits(chargeFromResponse.getCardDetails().getFirstDigitsCardNumber())
+                .withTelephoneNumber(chargeFromResponse.getTelephoneNumber())
+                .withPaymentId(chargeFromResponse.getChargeId())
+                .withState(chargeFromResponse.getState())
+                .build();
+    }
+    
     public static class Builder {
-        private int amount;
+        private Long amount;
         private String reference;
         private String description;
         private String createdDate;
@@ -196,9 +219,9 @@ public class TelephonePaymentResponse {
         private String firstSixDigits;
         private String telephoneNumber;
         private String paymentId;
-        private State state;
+        private PaymentState state;
 
-        public Builder setAmount(int amount) {
+        public Builder withAmount(Long amount) {
             this.amount = amount;
             return this;
         }
@@ -283,7 +306,7 @@ public class TelephonePaymentResponse {
             return this;
         }
 
-        public Builder withState(State state) {
+        public Builder withState(PaymentState state) {
             this.state = state;
             return this;
         }
