@@ -34,22 +34,22 @@ public class CreateTelephonePaymentService {
         );
         
         return new TelephonePaymentResponse(
-                createTelephonePaymentRequest.getAmount(),
-                createTelephonePaymentRequest.getReference(),
-                createTelephonePaymentRequest.getDescription(),
-                createTelephonePaymentRequest.getCreatedDate(),
-                createTelephonePaymentRequest.getAuthorisedDate(),
-                createTelephonePaymentRequest.getProcessorId(),
-                createTelephonePaymentRequest.getProviderId(),
-                createTelephonePaymentRequest.getAuthCode(),
-                createTelephonePaymentRequest.getPaymentOutcome(),
-                createTelephonePaymentRequest.getCardType(),
-                createTelephonePaymentRequest.getNameOnCard(),
-                createTelephonePaymentRequest.getEmailAddress(),
-                createTelephonePaymentRequest.getCardExpiry(),
-                createTelephonePaymentRequest.getLastFourDigits(),
-                createTelephonePaymentRequest.getFirstSixDigits(),
-                createTelephonePaymentRequest.getTelephoneNumber(),
+                createTelephonePaymentRequest.getAmount(), - DONE
+                createTelephonePaymentRequest.getReference(), - DONE
+                createTelephonePaymentRequest.getDescription(), - DONE
+                createTelephonePaymentRequest.getCreatedDate(), - DONE
+                createTelephonePaymentRequest.getAuthorisedDate(), - DONE
+                createTelephonePaymentRequest.getProcessorId(), - DONE
+                createTelephonePaymentRequest.getProviderId(), - DONE
+                createTelephonePaymentRequest.getAuthCode(), - DONE
+                createTelephonePaymentRequest.getPaymentOutcome(), - DONE
+                createTelephonePaymentRequest.getCardType(), - in card details
+                createTelephonePaymentRequest.getNameOnCard(), - in card details
+                createTelephonePaymentRequest.getEmailAddress(), - in email
+                createTelephonePaymentRequest.getCardExpiry(), - in card details
+                createTelephonePaymentRequest.getLastFourDigits(), - in card details
+                createTelephonePaymentRequest.getFirstSixDigits(), - in card details
+                createTelephonePaymentRequest.getTelephoneNumber(), - DONE
                 "dummypaymentid123notpersisted",
                 state
         );
