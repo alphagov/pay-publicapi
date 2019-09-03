@@ -30,7 +30,7 @@ public class CreateTelephonePaymentService {
         
         ChargeFromResponse chargeFromResponse = connectorResponse.readEntity(ChargeFromResponse.class);
         
-        return null;
+        return TelephonePaymentResponse.from(chargeFromResponse);
     }
     
     private Response createTelephoneCharge(Account account, CreateTelephonePaymentRequest createTelephonePaymentRequest) {
