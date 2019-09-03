@@ -35,8 +35,8 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
         
         createTelephonePaymentRequest.
                 withAmount(100)
-                .withReference("Somereference")
-                .withDescription("Somedescription")
+                .withReference("Some reference")
+                .withDescription("Some description")
                 .withProcessorId("1PROC")
                 .withProviderId("1PROV")
                 .withPaymentOutcome(new PaymentOutcome("success"))
@@ -49,6 +49,13 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
     @After
     public void tearDown() {
         requestBody.clear();
+        createTelephonePaymentRequest
+                .withAuthCode(null)
+                .withCreatedDate(null)
+                .withAuthorisedDate(null)
+                .withNameOnCard(null)
+                .withEmailAddress(null)
+                .withTelephoneNumber(null);
     }
 
     @Test
@@ -64,7 +71,7 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .withAuthCode("666")
                 .withCreatedDate("2018-02-21T16:04:25Z")
                 .withAuthorisedDate("2018-02-21T16:05:33Z")
-                .withNameOnCard("JaneDoe")
+                .withNameOnCard("Jane Doe")
                 .withEmailAddress("jane_doe@example.com")
                 .withTelephoneNumber("+447700900796");
 
@@ -80,6 +87,7 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .body("created_date", is("2018-02-21T16:04:25Z"))
                 .body("authorised_date", is("2018-02-21T16:05:33Z"))
                 .body("processor_id", is("1PROC"))
+                .body("provider_id", is("1PROV"))
                 .body("auth_code", is("666"))
                 .body("payment_outcome.status", is("success"))
                 .body("card_type", is("visa"))
@@ -91,13 +99,15 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .body("telephone_number", is("+447700900796"))
                 .body("payment_id", is("dummypaymentid123notpersisted"))
                 .body("state.status", is("success"))
-                .body("state.finished", is(true))
-                .body("state.message", is("Created"))
-                .body("state.code", is("P0010"));
+                .body("state.finished", is(true));
     }
 
     @Test
     public void createTelephonePaymentWithRequiredFields() {
+
+        connectorMockClient.respondCreated_whenCreateTelephoneCharge(GATEWAY_ACCOUNT_ID, createTelephonePaymentRequest
+                .build());
+        
         postPaymentResponse(toJson(requestBody))
                 .statusCode(201)
                 .contentType(JSON)
@@ -105,6 +115,7 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .body("reference", is("Some reference"))
                 .body("description", is("Some description"))
                 .body("processor_id", is("1PROC"))
+                .body("provider_id", is("1PROV"))
                 .body("payment_outcome.status", is("success"))
                 .body("card_type", is("visa"))
                 .body("card_expiry", is("01/08"))
@@ -112,8 +123,6 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .body("first_six_digits", is("123456"))
                 .body("payment_id", is("dummypaymentid123notpersisted"))
                 .body("state.status", is("success"))
-                .body("state.finished", is(true))
-                .body("state.message", is("Created"))
-                .body("state.code", is("P0010"));
+                .body("state.finished", is(true));
     }
 }

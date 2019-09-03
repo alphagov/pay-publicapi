@@ -8,6 +8,12 @@ public class CreateTelephonePaymentService {
     
     public TelephonePaymentResponse create(CreateTelephonePaymentRequest createTelephonePaymentRequest){
         
+        
+        return null;
+    }
+}
+
+/*
         State state = new State(
                 "success",
                 true,
@@ -35,5 +41,4 @@ public class CreateTelephonePaymentService {
                 "dummypaymentid123notpersisted",
                 state
         );
-    }
-}
+         */
