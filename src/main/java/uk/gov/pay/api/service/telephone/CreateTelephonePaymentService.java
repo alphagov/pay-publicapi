@@ -7,8 +7,11 @@ import uk.gov.pay.api.service.ConnectorUriGenerator;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import static javax.ws.rs.client.Entity.json;
 
 public class CreateTelephonePaymentService {
     
@@ -22,8 +25,19 @@ public class CreateTelephonePaymentService {
     }
 
     public TelephonePaymentResponse create(CreateTelephonePaymentRequest createTelephonePaymentRequest){
-        
         return null;
+    }
+    
+    private Response createTelephoneCharge(Account account, CreateTelephonePaymentRequest createTelephonePaymentRequest) {
+        return client
+                .target(connectorUriGenerator.telephoneChargesURI(account))
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .post(buildTelephoneChargeRequestPayload(createTelephonePaymentRequest));
+    }
+    
+    private Entity buildTelephoneChargeRequestPayload(CreateTelephonePaymentRequest requestPayload) {
+        return json(requestPayload.toConnectorPayload());
     }
 }
 
