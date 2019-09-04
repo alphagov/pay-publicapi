@@ -41,6 +41,8 @@ import uk.gov.pay.api.exception.mapper.SearchChargesExceptionMapper;
 import uk.gov.pay.api.exception.mapper.SearchRefundsExceptionMapper;
 import uk.gov.pay.api.exception.mapper.ViolationExceptionMapper;
 import uk.gov.pay.api.filter.AuthorizationValidationFilter;
+import uk.gov.pay.api.filter.ClearMdcValuesFilter;
+import uk.gov.pay.api.filter.GatewayAccountIdFilter;
 import uk.gov.pay.api.filter.RateLimiterFilter;
 import uk.gov.pay.api.healthcheck.Ping;
 import uk.gov.pay.api.ledger.resource.TransactionsResource;
@@ -104,12 +106,17 @@ public class PublicApi extends Application<PublicApiConfig> {
         environment.jersey().register(new InjectingValidationFeature(injector));
 
         environment.jersey().register(injector.getInstance(RateLimiterFilter.class));
-        
+        environment.jersey().register(new GatewayAccountIdFilter());
+
+        environment.servlets().addFilter("ClearMdcValuesFilter", injector.getInstance(ClearMdcValuesFilter.class))
+                .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");
+
         environment.servlets().addFilter("AuthorizationValidationFilter", injector.getInstance(AuthorizationValidationFilter.class))
                 .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");
 
         environment.servlets().addFilter("LoggingFilter", injector.getInstance(LoggingFilter.class))
                 .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");
+
         /*
            Turn off 'FilteringJacksonJaxbJsonProvider' which overrides dropwizard JacksonMessageBodyProvider.
            Fails on Integration tests if not disabled. 
