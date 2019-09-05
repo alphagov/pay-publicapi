@@ -99,6 +99,11 @@ public class URLValidatorTest {
     }
 
     @Test
+    public void whenUrlTldIsLocal_shouldAllowAsValid() {
+        assertThat(SECURITY_ENABLED.isValid("https://a-fake-test-env.fakeservice.local/public/web/govuk-return"), is(true));
+    }
+
+    @Test
     public void whenUrlIsNotAnAcceptedProtocol_disabledSecureConnection_shouldFailValidation() {
         assertThat(SECURITY_DISABLED.isValid("ftp://ftp.funet.fi/pub/standards/RFC/rfc959.txt"), is(false));
     }

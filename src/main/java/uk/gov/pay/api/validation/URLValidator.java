@@ -27,7 +27,7 @@ public enum URLValidator {
     };
 
     static {
-        String[] otherValidTlds = new String[]{"internal"};
+        String[] otherValidTlds = new String[]{"internal", "local"};
         DomainValidator.updateTLDOverride(ArrayType.GENERIC_PLUS, otherValidTlds);
     }
 
