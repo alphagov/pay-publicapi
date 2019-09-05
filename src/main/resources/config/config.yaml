@@ -5,6 +5,11 @@ server:
   adminConnectors:
     - type: http
       port: ${ADMIN_PORT:-8081}
+  requestLog:
+    appenders:
+      - type: console
+        target: stdout
+        logFormat: "%h:%localPort %i{X-Request-Id} %i{X-Forwarded-For} %a [%t] \"%r\" %s %b %D %i{X-Forwarded-Proto} \"%i{Referer}\" \"%i{User-Agent}\""
 
 logging:
   level: INFO
