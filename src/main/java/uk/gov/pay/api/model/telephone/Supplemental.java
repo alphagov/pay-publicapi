@@ -1,5 +1,6 @@
 package uk.gov.pay.api.model.telephone;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -24,10 +25,12 @@ public class Supplemental {
         this.errorMessage = errorMessage;
     }
 
+    @JsonIgnore
     public Optional<String> getErrorCode() {
         return Optional.ofNullable(errorCode);
     }
 
+    @JsonIgnore
     public Optional<String> getErrorMessage() {
         return Optional.ofNullable(errorMessage);
     }
