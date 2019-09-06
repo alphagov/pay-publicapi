@@ -194,6 +194,13 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                         .withBody(buildChargeResponse(build)));
     }
 
+    public void mockCreateTelephoneCharge(String gatewayAccountId, ResponseDefinitionBuilder responseDefinitionBuilder) {
+        wireMockClassRule.stubFor(post(urlPathEqualTo(format(CONNECTOR_MOCK_TELEPHONE_CHARGES_PATH, gatewayAccountId)))
+                .withHeader(CONTENT_TYPE, matching(APPLICATION_JSON)).willReturn(responseDefinitionBuilder));
+    }
+    
+    
+    
     public void respondAccepted_whenCreateARefund(int amount, int refundAmountAvailable, String gatewayAccountId, String chargeId, String refundId, String status, String createdDate) {
         whenCreateRefund(gatewayAccountId, chargeId, aResponse()
                 .withStatus(ACCEPTED_202)
