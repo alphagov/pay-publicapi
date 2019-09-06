@@ -34,7 +34,7 @@ public class PublicApiConfig extends Configuration {
     private Boolean allowHttpForReturnUrl;
 
     @NotNull
-    private Boolean alwaysGetPaymentRefundStrategyTest.javaUseFutureStrategy;
+    private Boolean alwaysUseFutureStrategy;
 
     private String apiKeyHmacSecret;
 

@@ -13,32 +13,34 @@ public abstract class LedgerOrConnectorStrategyTemplate<T> {
     private static final Logger logger = LoggerFactory.getLogger(LedgerOrConnectorStrategyTemplate.class);
     private String strategy;
     private List<String> VALID_STRATEGIES = ImmutableList.of("ledger-only", "future-behaviour");
-    
+
     public LedgerOrConnectorStrategyTemplate(PublicApiConfig configuration, String strategy) {
         this.strategy = strategy;
     }
 
     private void validate() {
-        if(!StringUtils.isBlank(strategy) && !VALID_STRATEGIES.contains(strategy)) {
+        if (!StringUtils.isBlank(strategy) && !VALID_STRATEGIES.contains(strategy)) {
             logger.warn("Not valid strategy (valid values are \"ledger-only\", \"future-behaviour\" or empty); using the default strategy");
             strategy = null;
         }
     }
-    
+
     public T validateAndExecute() {
         validate();
 
-        if("ledger-only".equals(strategy)) {
-            return executeLedgerOnlyStrategy();
-        } else if ("future-behaviour".equals(strategy)) {
+        if ("future-behaviour".equals(strategy)) {
             return executeFutureBehaviourStrategy();
+        } else if ("ledger-only".equals(strategy)) {
+            return executeLedgerOnlyStrategy();
         }
-        
+
         return executeDefaultStrategy();
     }
-    
+
     protected abstract T executeLedgerOnlyStrategy();
+
     protected abstract T executeFutureBehaviourStrategy();
+
     protected abstract T executeDefaultStrategy();
 }
 
