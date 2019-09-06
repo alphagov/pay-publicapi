@@ -292,7 +292,7 @@ public class ChargeResponseFromConnector {
             return this;
         }
 
-        public ChargeResponseFromConnectorBuilder setPaymentOutcome(PaymentOutcome paymentOutcome) {
+        public ChargeResponseFromConnectorBuilder withPaymentOutcome(PaymentOutcome paymentOutcome) {
             this.paymentOutcome = paymentOutcome;
             return this;
         }

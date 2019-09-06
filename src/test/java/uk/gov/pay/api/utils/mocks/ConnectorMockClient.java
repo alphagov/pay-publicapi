@@ -11,6 +11,7 @@ import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.links.Link;
+import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.commons.model.ErrorIdentifier;
 import uk.gov.pay.commons.model.SupportedLanguage;
@@ -103,6 +104,37 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         responseFromConnector.getMetadata().ifPresent(m -> resultBuilder.withMetadata(m));
 
         return resultBuilder.build();
+    }
+    
+    private String buildTelephoneChargeResponse(ChargeResponseFromConnector responseFromConnector) {
+        
+        List<Map<String, Link>> links = new ArrayList<>();
+        
+        JsonStringBuilder request = new JsonStringBuilder()
+                .add("amount", responseFromConnector.getAmount())
+                .add("reference", responseFromConnector.getReference())
+                .add("links", links)
+                .add("description", responseFromConnector.getDescription())
+                .add("processor_id", responseFromConnector.getProviderId())
+                .add("provider_id", responseFromConnector.getProviderId())
+                .add("charge_id", responseFromConnector.getChargeId())
+                .add("delayed_capture", false)
+                .addToMap("state", "finished", responseFromConnector.getState().isFinished())
+                .addToMap("state", "status", responseFromConnector.getState().getStatus())
+                .addToMap("card_details", "card_brand", responseFromConnector.getCardDetails().getCardBrand())
+                .addToMap("card_details", "expiry_date", responseFromConnector.getCardDetails().getExpiryDate())
+                .addToMap("card_details", "last_digits_card_number", responseFromConnector.getCardDetails().getLastDigitsCardNumber())
+                .addToMap("card_details", "first_digits_card_number", responseFromConnector.getCardDetails().getFirstDigitsCardNumber())
+                .addToMap("payment_outcome", "status", responseFromConnector.getPaymentOutcome().getStatus());
+
+        ofNullable(responseFromConnector.getAuthCode()).ifPresent(authCode -> request.add("auth_code", authCode));
+        ofNullable(responseFromConnector.getCreatedDate()).ifPresent(createdDate -> request.add("created_date", createdDate));
+        ofNullable(responseFromConnector.getAuthorisedDate()).ifPresent(authorisedDate -> request.add("authorised_date", authorisedDate));
+        ofNullable(responseFromConnector.getEmail()).ifPresent(email -> request.add("email", email));
+        ofNullable(responseFromConnector.getTelephoneNumber()).ifPresent(telephoneNumber -> request.add("telephone_number", telephoneNumber));
+        ofNullable(responseFromConnector.getCardDetails().getCardHolderName()).ifPresent(cardHolderName -> request.addToMap("card_details", "cardholder_name", cardHolderName));
+
+        return request.build();
     }
 
     private String buildGetRefundResponse(String refundId, int amount, int refundAmountAvailable, String status, String createdDate) {
@@ -198,8 +230,6 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         wireMockClassRule.stubFor(post(urlPathEqualTo(format(CONNECTOR_MOCK_TELEPHONE_CHARGES_PATH, gatewayAccountId)))
                 .withHeader(CONTENT_TYPE, matching(APPLICATION_JSON)).willReturn(responseDefinitionBuilder));
     }
-    
-    
     
     public void respondAccepted_whenCreateARefund(int amount, int refundAmountAvailable, String gatewayAccountId, String chargeId, String refundId, String status, String createdDate) {
         whenCreateRefund(gatewayAccountId, chargeId, aResponse()
