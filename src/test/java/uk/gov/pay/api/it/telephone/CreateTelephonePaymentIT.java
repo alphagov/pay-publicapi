@@ -1,20 +1,21 @@
 package uk.gov.pay.api.it.telephone;
 
-import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import uk.gov.pay.api.utils.PublicAuthMockClient;
+import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 
 import java.util.Map;
 
 import static org.hamcrest.core.Is.is;
 import static io.restassured.http.ContentType.JSON;
 
-public class GetTelephonePaymentIT extends TelephonePaymentResourceITBase {
+public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
     
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
 
     @Before
     public void setUpBearerTokenAndRequestBody() {
