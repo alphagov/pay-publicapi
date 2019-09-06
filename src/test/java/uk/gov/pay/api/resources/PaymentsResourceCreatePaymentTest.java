@@ -82,14 +82,6 @@ public class PaymentsResourceCreatePaymentTest {
 
     @Before
     public void setup() {
-        paymentsResource = new PaymentsResource(createPaymentService,
-                paymentSearchService,
-                publicApiUriGenerator,
-                getPaymentService,
-                capturePaymentService,
-                cancelPaymentService,
-                getPaymentEventsService,
-                configuration);
         when(publicApiUriGenerator.getPaymentURI(anyString())).thenReturn(URI.create(paymentUri));
     }
 

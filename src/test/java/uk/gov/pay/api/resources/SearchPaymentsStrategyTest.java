@@ -17,6 +17,7 @@ import uk.gov.pay.api.service.PaymentSearchService;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(JUnitParamsRunner.class)
 public class SearchPaymentsStrategyTest {
@@ -52,5 +53,15 @@ public class SearchPaymentsStrategyTest {
 
         verify(mockPaymentSearchService).searchConnectorPayments(account, paymentSearchParams);
         verify(mockPaymentSearchService, never()).searchLedgerPayments(account, paymentSearchParams);
+    }
+
+    @Test
+    public void whenSwitchingToFutureStrategyUsesFutureBehaviourStrategy() {
+        when(configuration.getAlwaysUseFutureStrategy()).thenReturn(true);
+        searchPaymentsStrategy = new SearchPaymentsStrategy(configuration, null, account, paymentSearchParams, mockPaymentSearchService);
+        searchPaymentsStrategy.validateAndExecute();
+
+        verify(mockPaymentSearchService).searchLedgerPayments(account, paymentSearchParams);
+        verify(mockPaymentSearchService, never()).searchConnectorPayments(account, paymentSearchParams);
     }
 }

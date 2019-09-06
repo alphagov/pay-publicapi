@@ -30,7 +30,7 @@ public abstract class LedgerOrConnectorStrategyTemplate<T> {
     public T validateAndExecute() {
         validate();
 
-        if ("future-behaviour".equals(strategy)) {
+        if (shouldAlwaysUseFutureStrategy || "future-behaviour".equals(strategy)) {
             return executeFutureBehaviourStrategy();
         } else if ("ledger-only".equals(strategy)) {
             return executeLedgerOnlyStrategy();

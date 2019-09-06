@@ -24,6 +24,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -104,5 +105,15 @@ public class GetOnePaymentStrategyTest {
 
         verify(mockGetPaymentService, never()).getPayment(mockAccountId, mockPaymentId);
         verify(mockGetPaymentService).getConnectorCharge(mockAccountId, mockPaymentId);
+    }
+
+    @Test
+    public void whenSwitchingToFutureStrategyUsesFutureBehaviourStrategy() {
+        when(configuration.getAlwaysUseFutureStrategy()).thenReturn(true);
+        getOnePaymentStrategy = new GetOnePaymentStrategy(configuration, "ledger-only", mockAccountId, mockPaymentId, mockGetPaymentService);
+
+        getOnePaymentStrategy.validateAndExecute();
+
+        verify(mockGetPaymentService).getPayment(mockAccountId, mockPaymentId);
     }
 }

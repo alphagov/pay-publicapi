@@ -68,4 +68,13 @@ public class GetPaymentRefundStrategyTest {
         verify(mockGetPaymentRefundService, never()).getLedgerPaymentRefund(account, paymentId, refundId);
         verify(mockGetPaymentRefundService, never()).getPaymentRefund(account, paymentId, refundId);
     }
+
+    @Test
+    public void whenSwitchingToFutureStrategyUsesFutureBehaviourStrategy() {
+        when(configuration.getAlwaysUseFutureStrategy()).thenReturn(true);
+        getPaymentRefundStrategy = new GetPaymentRefundStrategy(configuration, null, account, paymentId, refundId, mockGetPaymentRefundService);
+        getPaymentRefundStrategy.validateAndExecute();
+
+        verify(mockGetPaymentRefundService).getPaymentRefund(account, paymentId, refundId);
+    }
 }

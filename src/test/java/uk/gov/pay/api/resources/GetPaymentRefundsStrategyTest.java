@@ -16,6 +16,7 @@ import uk.gov.pay.api.service.GetPaymentRefundsService;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(JUnitParamsRunner.class)
 public class GetPaymentRefundsStrategyTest {
@@ -51,5 +52,15 @@ public class GetPaymentRefundsStrategyTest {
 
         verify(mockGetPaymentRefundsService).getConnectorPaymentRefunds(account, paymentId);
         verify(mockGetPaymentRefundsService, never()).getLedgerTransactionTransactions(account, paymentId);
+    }
+
+    @Test
+    public void whenSwitchingToFutureStrategyUsesFutureBehaviourStrategy() {
+        when(configuration.getAlwaysUseFutureStrategy()).thenReturn(true);
+        getPaymentRefundsStrategy = new GetPaymentRefundsStrategy(configuration, null, account, paymentId, mockGetPaymentRefundsService);
+        getPaymentRefundsStrategy.validateAndExecute();
+
+        verify(mockGetPaymentRefundsService).getLedgerTransactionTransactions(account, paymentId);
+        verify(mockGetPaymentRefundsService, never()).getConnectorPaymentRefunds(account, paymentId);
     }
 }

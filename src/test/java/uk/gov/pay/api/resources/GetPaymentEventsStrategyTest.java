@@ -25,6 +25,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GetPaymentEventsStrategyTest {
@@ -105,5 +106,16 @@ public class GetPaymentEventsStrategyTest {
 
         verify(getPaymentEventsService, never()).getPaymentEventsFromLedger(mockAccountId, mockPaymentId);
         verify(getPaymentEventsService).getPaymentEventsFromConnector(mockAccountId, mockPaymentId);
+    }
+
+    @Test
+    public void whenSwitchingToFutureStrategyUsesFutureBehaviourStrategy() {
+        when(configuration.getAlwaysUseFutureStrategy()).thenReturn(true);
+        getPaymentEventsStrategy = new GetPaymentEventsStrategy(configuration, null, mockAccountId, mockPaymentId, getPaymentEventsService);
+
+        getPaymentEventsStrategy.validateAndExecute();
+
+        verify(getPaymentEventsService).getPaymentEventsFromLedger(mockAccountId, mockPaymentId);
+        verify(getPaymentEventsService, never()).getPaymentEventsFromConnector(mockAccountId, mockPaymentId);
     }
 }
