@@ -1,14 +1,14 @@
 package uk.gov.pay.api.service.telephone;
 
+import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
-import uk.gov.pay.api.model.telephone.State;
 import uk.gov.pay.api.model.telephone.TelephonePaymentResponse;
 
 public class CreateTelephonePaymentService {
     
     public TelephonePaymentResponse create(CreateTelephonePaymentRequest createTelephonePaymentRequest){
         
-        State state = new State(
+        PaymentState state = new PaymentState(
                 "success",
                 true,
                 "Created",
