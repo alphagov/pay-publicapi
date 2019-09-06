@@ -3,6 +3,7 @@ package uk.gov.pay.api.model.telephone;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import uk.gov.pay.api.model.PaymentState;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class TelephonePaymentResponse {
@@ -41,7 +42,7 @@ public class TelephonePaymentResponse {
     
     private String paymentId;
     
-    private State state;
+    private PaymentState state;
 
     public TelephonePaymentResponse() {
         // For Jackson
@@ -64,7 +65,7 @@ public class TelephonePaymentResponse {
                                     String firstSixDigits, 
                                     String telephoneNumber, 
                                     String paymentId, 
-                                    State state) {
+                                    PaymentState state) {
         // For testing serialization
         this.amount = amount;
         this.reference = reference;
@@ -152,7 +153,7 @@ public class TelephonePaymentResponse {
 
     public String getPaymentId() { return paymentId; }
 
-    public State getState() {
+    public PaymentState getState() {
         return state;
     }
 }
