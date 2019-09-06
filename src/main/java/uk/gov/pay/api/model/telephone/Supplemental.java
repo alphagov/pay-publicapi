@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
+import java.util.Optional;
+
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Supplemental {
     
@@ -22,11 +24,11 @@ public class Supplemental {
         this.errorMessage = errorMessage;
     }
 
-    public String getErrorCode() {
-        return errorCode;
+    public Optional<String> getErrorCode() {
+        return Optional.ofNullable(errorCode);
     }
 
-    public String getErrorMessage() {
-        return errorMessage;
+    public Optional<String> getErrorMessage() {
+        return Optional.ofNullable(errorMessage);
     }
 }
