@@ -93,7 +93,7 @@ public class CreateTelephonePaymentRequest {
         this.telephoneNumber = telephoneNumber;
     }
     
-    public CreateTelephonePaymentRequest(TelephoneRequestBuilder builder) {
+    public CreateTelephonePaymentRequest(Builder builder) {
         this.amount = builder.amount;
         this.reference = builder.reference;
         this.description = builder.description;
@@ -176,7 +176,7 @@ public class CreateTelephonePaymentRequest {
         return telephoneNumber;
     }
 
-    public static class TelephoneRequestBuilder {
+    public static class Builder {
         private int amount;
 
         private String reference;
@@ -209,82 +209,82 @@ public class CreateTelephonePaymentRequest {
 
         private String telephoneNumber;
 
-        public TelephoneRequestBuilder withAmount(int amount) {
+        public Builder withAmount(int amount) {
             this.amount = amount;
             return this;
         }
 
-        public TelephoneRequestBuilder withReference(String reference) {
+        public Builder withReference(String reference) {
             this.reference = reference;
             return this;
         }
 
-        public TelephoneRequestBuilder withDescription(String description) {
+        public Builder withDescription(String description) {
             this.description = description;
             return this;
         }
 
-        public TelephoneRequestBuilder withCreatedDate(String createdDate) {
+        public Builder withCreatedDate(String createdDate) {
             this.createdDate = createdDate;
             return this;
         }
 
-        public TelephoneRequestBuilder withAuthorisedDate(String authorisedDate) {
+        public Builder withAuthorisedDate(String authorisedDate) {
             this.authorisedDate = authorisedDate;
             return this;
         }
 
-        public TelephoneRequestBuilder withProcessorId(String processorId) {
+        public Builder withProcessorId(String processorId) {
             this.processorId = processorId;
             return this;
         }
 
-        public TelephoneRequestBuilder withProviderId(String providerId) {
+        public Builder withProviderId(String providerId) {
             this.providerId = providerId;
             return this;
         }
 
-        public TelephoneRequestBuilder withAuthCode(String authCode) {
+        public Builder withAuthCode(String authCode) {
             this.authCode = authCode;
             return this;
         }
 
-        public TelephoneRequestBuilder withPaymentOutcome(PaymentOutcome paymentOutcome) {
+        public Builder withPaymentOutcome(PaymentOutcome paymentOutcome) {
             this.paymentOutcome = paymentOutcome;
             return this;
         }
 
-        public TelephoneRequestBuilder withCardType(String cardType) {
+        public Builder withCardType(String cardType) {
             this.cardType = cardType;
             return this;
         }
 
-        public TelephoneRequestBuilder withNameOnCard(String nameOnCard) {
+        public Builder withNameOnCard(String nameOnCard) {
             this.nameOnCard = nameOnCard;
             return this;
         }
 
-        public TelephoneRequestBuilder withEmailAddress(String emailAddress) {
+        public Builder withEmailAddress(String emailAddress) {
             this.emailAddress = emailAddress;
             return this;
         }
 
-        public TelephoneRequestBuilder withCardExpiry(String cardExpiry) {
+        public Builder withCardExpiry(String cardExpiry) {
             this.cardExpiry = cardExpiry;
             return this;
         }
 
-        public TelephoneRequestBuilder withLastFourDigits(String lastFourDigits) {
+        public Builder withLastFourDigits(String lastFourDigits) {
             this.lastFourDigits = lastFourDigits;
             return this;
         }
 
-        public TelephoneRequestBuilder withFirstSixDigits(String firstSixDigits) {
+        public Builder withFirstSixDigits(String firstSixDigits) {
             this.firstSixDigits = firstSixDigits;
             return this;
         }
 
-        public TelephoneRequestBuilder withTelephoneNumber(String telephoneNumber) {
+        public Builder withTelephoneNumber(String telephoneNumber) {
             this.telephoneNumber = telephoneNumber;
             return this;
         }

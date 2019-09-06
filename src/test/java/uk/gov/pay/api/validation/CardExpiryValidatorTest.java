@@ -16,7 +16,7 @@ import static org.hamcrest.core.Is.is;
 
 public class CardExpiryValidatorTest {
 
-    private static CreateTelephonePaymentRequest.TelephoneRequestBuilder telephoneRequestBuilder = new CreateTelephonePaymentRequest.TelephoneRequestBuilder();
+    private static CreateTelephonePaymentRequest.Builder builder = new CreateTelephonePaymentRequest.Builder();
 
     private static Validator validator;
 
@@ -25,7 +25,7 @@ public class CardExpiryValidatorTest {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
 
-        telephoneRequestBuilder
+        builder
                 .withAmount(1200)
                 .withDescription("Some description")
                 .withReference("Some reference")
@@ -40,7 +40,7 @@ public class CardExpiryValidatorTest {
     @Test
     public void failsValidationForInvalidMonth00() {
 
-        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+        CreateTelephonePaymentRequest telephonePaymentRequest = builder
                 .withCardExpiry("00/99")
                 .build();
 
@@ -53,7 +53,7 @@ public class CardExpiryValidatorTest {
     @Test
     public void failsValidationForInvalidMonth99() {
 
-        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+        CreateTelephonePaymentRequest telephonePaymentRequest = builder
                 .withCardExpiry("99/99")
                 .build();
 
@@ -66,7 +66,7 @@ public class CardExpiryValidatorTest {
     @Test
     public void passesValidationForValidCardExpiry() {
 
-        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+        CreateTelephonePaymentRequest telephonePaymentRequest = builder
                 .withCardExpiry("01/99")
                 .build();
 
@@ -78,7 +78,7 @@ public class CardExpiryValidatorTest {
     @Test
     public void passesValidationForNullCardExpiry() {
 
-        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+        CreateTelephonePaymentRequest telephonePaymentRequest = builder
                 .withCardExpiry(null)
                 .build();
 

@@ -16,7 +16,7 @@ import static org.hamcrest.core.Is.is;
 
 public class CardFirstSixDigitsValidatorTest {
 
-    private static CreateTelephonePaymentRequest.TelephoneRequestBuilder telephoneRequestBuilder = new CreateTelephonePaymentRequest.TelephoneRequestBuilder();
+    private static CreateTelephonePaymentRequest.Builder builder = new CreateTelephonePaymentRequest.Builder();
 
     private static Validator validator;
 
@@ -25,7 +25,7 @@ public class CardFirstSixDigitsValidatorTest {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
 
-        telephoneRequestBuilder
+        builder
                 .withAmount(1200)
                 .withDescription("Some description")
                 .withReference("Some reference")
@@ -40,7 +40,7 @@ public class CardFirstSixDigitsValidatorTest {
     @Test
     public void failsValidationForFiveDigits() {
 
-        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+        CreateTelephonePaymentRequest telephonePaymentRequest = builder
                 .withFirstSixDigits("12345")
                 .build();
 
@@ -53,7 +53,7 @@ public class CardFirstSixDigitsValidatorTest {
     @Test
     public void failsValidationForSevenDigits() {
 
-        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+        CreateTelephonePaymentRequest telephonePaymentRequest = builder
                 .withFirstSixDigits("1234567")
                 .build();
 
@@ -66,7 +66,7 @@ public class CardFirstSixDigitsValidatorTest {
     @Test
     public void passesValidationForSixDigits() {
 
-        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+        CreateTelephonePaymentRequest telephonePaymentRequest = builder
                 .withFirstSixDigits("123456")
                 .build();
 
@@ -78,7 +78,7 @@ public class CardFirstSixDigitsValidatorTest {
     @Test
     public void passesValidationForNullDigits() {
 
-        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+        CreateTelephonePaymentRequest telephonePaymentRequest = builder
                 .withFirstSixDigits(null)
                 .build();
 

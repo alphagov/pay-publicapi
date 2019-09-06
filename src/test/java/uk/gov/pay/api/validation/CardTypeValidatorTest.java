@@ -16,7 +16,7 @@ import static org.hamcrest.core.Is.is;
 
 public class CardTypeValidatorTest {
 
-    private static CreateTelephonePaymentRequest.TelephoneRequestBuilder telephoneRequestBuilder = new CreateTelephonePaymentRequest.TelephoneRequestBuilder();
+    private static CreateTelephonePaymentRequest.Builder builder = new CreateTelephonePaymentRequest.Builder();
 
     private static Validator validator;
 
@@ -25,7 +25,7 @@ public class CardTypeValidatorTest {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
 
-        telephoneRequestBuilder
+        builder
                 .withAmount(1200)
                 .withDescription("Some description")
                 .withReference("Some reference")
@@ -40,7 +40,7 @@ public class CardTypeValidatorTest {
     @Test
     public void failsValidationForInvalidCardType() {
 
-        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+        CreateTelephonePaymentRequest telephonePaymentRequest = builder
                 .withCardType("bad-card")
                 .build();
 
@@ -53,7 +53,7 @@ public class CardTypeValidatorTest {
     @Test
     public void passesValidationForValidCardType() {
 
-        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+        CreateTelephonePaymentRequest telephonePaymentRequest = builder
                 .withCardType("visa")
                 .build();
 
@@ -65,7 +65,7 @@ public class CardTypeValidatorTest {
     @Test
     public void passesValidationForNullCardType() {
 
-        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+        CreateTelephonePaymentRequest telephonePaymentRequest = builder
                 .withCardType(null)
                 .build();
 
