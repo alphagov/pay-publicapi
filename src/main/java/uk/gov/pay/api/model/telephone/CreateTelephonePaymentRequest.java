@@ -12,6 +12,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Optional;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class CreateTelephonePaymentRequest {
@@ -124,12 +125,12 @@ public class CreateTelephonePaymentRequest {
         return description;
     }
 
-    public String getCreatedDate() {
-        return createdDate;
+    public Optional<String> getCreatedDate() {
+        return Optional.ofNullable(createdDate);
     }
 
-    public String getAuthorisedDate() {
-        return authorisedDate;
+    public Optional<String> getAuthorisedDate() {
+        return Optional.ofNullable(authorisedDate);
     }
 
     public String getProcessorId() {
@@ -140,8 +141,8 @@ public class CreateTelephonePaymentRequest {
         return providerId;
     }
 
-    public String getAuthCode() {
-        return authCode;
+    public Optional<String> getAuthCode() {
+        return Optional.ofNullable(authCode);
     }
     
     public PaymentOutcome getPaymentOutcome() {
@@ -152,12 +153,12 @@ public class CreateTelephonePaymentRequest {
         return cardType;
     }
 
-    public String getNameOnCard() {
-        return nameOnCard;
+    public Optional<String> getNameOnCard() {
+        return Optional.ofNullable(nameOnCard);
     }
 
-    public String getEmailAddress() {
-        return emailAddress;
+    public Optional<String> getEmailAddress() {
+        return Optional.ofNullable(emailAddress);
     }
 
     public String getCardExpiry() {
@@ -172,8 +173,8 @@ public class CreateTelephonePaymentRequest {
         return firstSixDigits;
     }
 
-    public String getTelephoneNumber() {
-        return telephoneNumber;
+    public Optional<String> getTelephoneNumber() {
+        return Optional.ofNullable(telephoneNumber);
     }
 
     public static class Builder {
