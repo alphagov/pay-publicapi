@@ -3,9 +3,12 @@ package uk.gov.pay.api.resources;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.GetRefundException;
@@ -20,6 +23,9 @@ import static org.mockito.Mockito.when;
 
 @RunWith(JUnitParamsRunner.class)
 public class GetPaymentRefundStrategyTest {
+
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
 
     @Mock
     private PublicApiConfig configuration;
