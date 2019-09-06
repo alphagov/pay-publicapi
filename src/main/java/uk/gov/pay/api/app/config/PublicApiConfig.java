@@ -33,6 +33,9 @@ public class PublicApiConfig extends Configuration {
     @NotNull
     private Boolean allowHttpForReturnUrl;
 
+    @NotNull
+    private Boolean alwaysGetPaymentRefundStrategyTest.javaUseFutureStrategy;
+
     private String apiKeyHmacSecret;
 
     @NotNull
@@ -59,6 +62,7 @@ public class PublicApiConfig extends Configuration {
     public String getConnectorUrl() {
         return connectorUrl;
     }
+
     public String getConnectorDDUrl() {
         return connectorDDUrl;
     }
@@ -95,7 +99,15 @@ public class PublicApiConfig extends Configuration {
         return rateLimiterConfig;
     }
 
-    public CacheBuilderSpec getAuthenticationCachePolicy() { return authenticationCachePolicy; }
+    public CacheBuilderSpec getAuthenticationCachePolicy() {
+        return authenticationCachePolicy;
+    }
 
-    public JedisFactory getJedisFactory() { return redis;  }
+    public JedisFactory getJedisFactory() {
+        return redis;
+    }
+
+    public Boolean getAlwaysUseFutureStrategy() {
+        return alwaysUseFutureStrategy;
+    }
 }

@@ -11,6 +11,7 @@ import io.swagger.annotations.Authorization;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CaptureChargeException;
 import uk.gov.pay.api.model.CreateCardPaymentRequest;
@@ -61,6 +62,7 @@ public class PaymentsResource {
     private final CapturePaymentService capturePaymentService;
     private final CancelPaymentService cancelPaymentService;
     private final GetPaymentEventsService getPaymentEventsService;
+    private PublicApiConfig configuration;
 
     @Inject
     public PaymentsResource(CreatePaymentService createPaymentService,
@@ -69,7 +71,8 @@ public class PaymentsResource {
                             GetPaymentService getPaymentService,
                             CapturePaymentService capturePaymentService,
                             CancelPaymentService cancelPaymentService,
-                            GetPaymentEventsService getPaymentEventsService) {
+                            GetPaymentEventsService getPaymentEventsService,
+                            PublicApiConfig configuration) {
         this.createPaymentService = createPaymentService;
         this.publicApiUriGenerator = publicApiUriGenerator;
         this.paymentSearchService = paymentSearchService;
@@ -77,6 +80,7 @@ public class PaymentsResource {
         this.capturePaymentService = capturePaymentService;
         this.cancelPaymentService = cancelPaymentService;
         this.getPaymentEventsService = getPaymentEventsService;
+        this.configuration = configuration;
     }
 
     @GET
@@ -105,7 +109,7 @@ public class PaymentsResource {
 
         logger.info("Payment request - paymentId={}", paymentId);
 
-        var strategy = new GetOnePaymentStrategy(strategyName, account, paymentId, getPaymentService);
+        var strategy = new GetOnePaymentStrategy(configuration, strategyName, account, paymentId, getPaymentService);
         PaymentWithAllLinks payment = strategy.validateAndExecute();
 
         logger.info("Payment returned - [ {} ]", payment);
@@ -138,7 +142,7 @@ public class PaymentsResource {
 
         logger.info("Payment events request - payment_id={}", paymentId);
 
-        var strategy = new GetPaymentEventsStrategy(strategyName, account, paymentId, getPaymentEventsService);
+        var strategy = new GetPaymentEventsStrategy(configuration, strategyName, account, paymentId, getPaymentEventsService);
         PaymentEventsResponse paymentEventsResponse = strategy.validateAndExecute();
 
         logger.info("Payment events returned - [ {} ]", paymentEventsResponse);
@@ -216,7 +220,7 @@ public class PaymentsResource {
                 .withLastDigitsCardNumber(lastDigitsCardNumber)
                 .build();
 
-        var strategy = new SearchPaymentsStrategy(strategyName, account, paymentSearchParams, paymentSearchService);
+        var strategy = new SearchPaymentsStrategy(configuration, strategyName, account, paymentSearchParams, paymentSearchService);
         return strategy.validateAndExecute();
     }
 

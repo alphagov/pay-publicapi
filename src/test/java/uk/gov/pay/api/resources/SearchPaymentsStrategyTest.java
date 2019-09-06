@@ -4,6 +4,8 @@ import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.service.PaymentSearchParams;
@@ -15,6 +17,9 @@ import static org.mockito.Mockito.verify;
 
 @RunWith(JUnitParamsRunner.class)
 public class SearchPaymentsStrategyTest {
+    @Mock
+    private PublicApiConfig configuration;
+
     private PaymentSearchService mockPaymentSearchService = mock(PaymentSearchService.class);
     private SearchPaymentsStrategy searchPaymentsStrategy;
 
@@ -24,7 +29,7 @@ public class SearchPaymentsStrategyTest {
     @Test
     @Parameters({"ledger-only", "future-behaviour"})
     public void validateAndExecuteShouldUseLedgerOnlyForListedStrategies(String strategy) {
-        searchPaymentsStrategy = new SearchPaymentsStrategy(strategy, account, paymentSearchParams, mockPaymentSearchService);
+        searchPaymentsStrategy = new SearchPaymentsStrategy(configuration, strategy, account, paymentSearchParams, mockPaymentSearchService);
         searchPaymentsStrategy.validateAndExecute();
 
         verify(mockPaymentSearchService).searchLedgerPayments(account, paymentSearchParams);
@@ -34,7 +39,7 @@ public class SearchPaymentsStrategyTest {
     @Test
     @Parameters({"", "unknown"})
     public void validateAndExecuteShouldUseConnectorOnlyForDefaultOrUnknownStrategy(String strategy) {
-        searchPaymentsStrategy = new SearchPaymentsStrategy(strategy, account, paymentSearchParams, mockPaymentSearchService);
+        searchPaymentsStrategy = new SearchPaymentsStrategy(configuration, strategy, account, paymentSearchParams, mockPaymentSearchService);
 
         searchPaymentsStrategy.validateAndExecute();
 

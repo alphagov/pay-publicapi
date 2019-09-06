@@ -12,6 +12,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.service.GetPaymentEventsService;
@@ -27,7 +28,10 @@ import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GetPaymentEventsStrategyTest {
-    
+
+    @Mock
+    private PublicApiConfig configuration;
+
     @Mock
     private GetPaymentEventsService getPaymentEventsService;
 
@@ -35,7 +39,7 @@ public class GetPaymentEventsStrategyTest {
     ArgumentCaptor<LoggingEvent> loggingEventArgumentCaptor;
 
     private Appender<ILoggingEvent> mockAppender;
-    
+
     private GetPaymentEventsStrategy getPaymentEventsStrategy;
     private String mockPaymentId = "some-payment-id";
     private Account mockAccountId = new Account("some-account-id", TokenPaymentType.CARD);
@@ -49,8 +53,8 @@ public class GetPaymentEventsStrategyTest {
 
     @Test
     public void whenNoStrategyProvidedUsesDefaultStrategy() {
-        getPaymentEventsStrategy = new GetPaymentEventsStrategy(null, mockAccountId, mockPaymentId, getPaymentEventsService);
-        
+        getPaymentEventsStrategy = new GetPaymentEventsStrategy(configuration, null, mockAccountId, mockPaymentId, getPaymentEventsService);
+
         getPaymentEventsStrategy.validateAndExecute();
 
         verify(getPaymentEventsService, never()).getPaymentEventsFromLedger(mockAccountId, mockPaymentId);
@@ -59,7 +63,7 @@ public class GetPaymentEventsStrategyTest {
 
     @Test
     public void whenEmptyStrategyProvidedUsesDefaultStrategy() {
-        getPaymentEventsStrategy = new GetPaymentEventsStrategy("", mockAccountId, mockPaymentId, getPaymentEventsService);
+        getPaymentEventsStrategy = new GetPaymentEventsStrategy(configuration, "", mockAccountId, mockPaymentId, getPaymentEventsService);
 
         getPaymentEventsStrategy.validateAndExecute();
 
@@ -69,7 +73,7 @@ public class GetPaymentEventsStrategyTest {
 
     @Test
     public void whenLedgerOnlyStrategyProvidedUsesLedgerStrategy() {
-        getPaymentEventsStrategy = new GetPaymentEventsStrategy("ledger-only", mockAccountId, mockPaymentId, getPaymentEventsService);
+        getPaymentEventsStrategy = new GetPaymentEventsStrategy(configuration, "ledger-only", mockAccountId, mockPaymentId, getPaymentEventsService);
 
         getPaymentEventsStrategy.validateAndExecute();
 
@@ -79,7 +83,7 @@ public class GetPaymentEventsStrategyTest {
 
     @Test
     public void whenFutureBehaviourStrategyProvidedUsesFutureBehaviourStrategy() {
-        getPaymentEventsStrategy = new GetPaymentEventsStrategy("future-behaviour", mockAccountId, mockPaymentId, getPaymentEventsService);
+        getPaymentEventsStrategy = new GetPaymentEventsStrategy(configuration, "future-behaviour", mockAccountId, mockPaymentId, getPaymentEventsService);
 
         getPaymentEventsStrategy.validateAndExecute();
 
@@ -89,7 +93,7 @@ public class GetPaymentEventsStrategyTest {
 
     @Test
     public void whenNotValidStrategyProvidedUsesDefaultStrategy() {
-        getPaymentEventsStrategy = new GetPaymentEventsStrategy("not-valid-strategy-name", mockAccountId, mockPaymentId, getPaymentEventsService);
+        getPaymentEventsStrategy = new GetPaymentEventsStrategy(configuration, "not-valid-strategy-name", mockAccountId, mockPaymentId, getPaymentEventsService);
 
         getPaymentEventsStrategy.validateAndExecute();
 

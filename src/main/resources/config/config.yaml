@@ -26,6 +26,8 @@ connectorDDUrl: ${CONNECTOR_DD_URL}
 publicAuthUrl: ${PUBLIC_AUTH_URL}
 ledgerUrl: ${LEDGER_URL}
 
+alwaysUseFutureStrategy: ${FEATURE_ALWAYS_USE_FUTURE_LEDGER_CONNECTOR_STRATEGY:-false}
+
 graphiteHost: ${METRICS_HOST:-localhost}
 graphitePort: ${METRICS_PORT:-8092}
 

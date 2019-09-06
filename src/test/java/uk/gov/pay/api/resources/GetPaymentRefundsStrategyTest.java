@@ -4,6 +4,8 @@ import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.service.GetPaymentRefundsService;
@@ -15,6 +17,9 @@ import static org.mockito.Mockito.verify;
 @RunWith(JUnitParamsRunner.class)
 public class GetPaymentRefundsStrategyTest {
 
+    @Mock
+    private PublicApiConfig configuration;
+
     private GetPaymentRefundsService mockGetPaymentRefundsService = mock(GetPaymentRefundsService.class);
     private GetPaymentRefundsStrategy getPaymentRefundsStrategy;
 
@@ -24,7 +29,7 @@ public class GetPaymentRefundsStrategyTest {
     @Test
     @Parameters({"ledger-only", "future-behaviour"})
     public void validateAndExecuteShouldUseLedgerOnlyForListedStrategies(String strategy) {
-        getPaymentRefundsStrategy = new GetPaymentRefundsStrategy(strategy, account, paymentId, mockGetPaymentRefundsService);
+        getPaymentRefundsStrategy = new GetPaymentRefundsStrategy(configuration, strategy, account, paymentId, mockGetPaymentRefundsService);
         getPaymentRefundsStrategy.validateAndExecute();
 
         verify(mockGetPaymentRefundsService).getLedgerTransactionTransactions(account, paymentId);
@@ -34,7 +39,7 @@ public class GetPaymentRefundsStrategyTest {
     @Test
     @Parameters({"", "unknown"})
     public void validateAndExecuteShouldUseConnectorOnlyForDefaultOrUnknownStrategy(String strategy) {
-        getPaymentRefundsStrategy = new GetPaymentRefundsStrategy(strategy, account, paymentId, mockGetPaymentRefundsService);
+        getPaymentRefundsStrategy = new GetPaymentRefundsStrategy(configuration, strategy, account, paymentId, mockGetPaymentRefundsService);
 
         getPaymentRefundsStrategy.validateAndExecute();
 

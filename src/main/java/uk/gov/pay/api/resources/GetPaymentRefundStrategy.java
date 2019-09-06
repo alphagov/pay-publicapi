@@ -1,6 +1,7 @@
 package uk.gov.pay.api.resources;
 
 
+import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.RefundResponse;
 import uk.gov.pay.api.service.GetPaymentRefundService;
@@ -12,9 +13,9 @@ public class GetPaymentRefundStrategy extends LedgerOrConnectorStrategyTemplate<
     private final String refundId;
     private final GetPaymentRefundService getPaymentRefundsService;
 
-    public GetPaymentRefundStrategy(String strategy, Account account, String paymentId, String refundId,
+    public GetPaymentRefundStrategy(PublicApiConfig configuration, String strategy, Account account, String paymentId, String refundId,
                                     GetPaymentRefundService getPaymentRefundsService) {
-        super(strategy);
+        super(configuration, strategy);
         this.account = account;
         this.paymentId = paymentId;
         this.refundId = refundId;

@@ -1,6 +1,7 @@
 package uk.gov.pay.api.resources;
 
 
+import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.search.card.SearchRefundsResults;
 import uk.gov.pay.api.service.RefundsParams;
@@ -12,9 +13,9 @@ public class SearchRefundsStrategy extends LedgerOrConnectorStrategyTemplate<Sea
     private RefundsParams refundsParams;
     private final SearchRefundsService searchRefundsService;
 
-    public SearchRefundsStrategy(String strategy, Account account, RefundsParams refundsParams,
+    public SearchRefundsStrategy(PublicApiConfig configuration, String strategy, Account account, RefundsParams refundsParams,
                                  SearchRefundsService searchRefundsService) {
-        super(strategy);
+        super(configuration, strategy);
         this.account = account;
         this.refundsParams = refundsParams;
         this.searchRefundsService = searchRefundsService;
