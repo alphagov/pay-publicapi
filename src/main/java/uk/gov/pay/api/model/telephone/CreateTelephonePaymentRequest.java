@@ -26,12 +26,15 @@ public class CreateTelephonePaymentRequest {
     
     @Min(value = AMOUNT_MIN_VALUE, message = "Must be greater than or equal to 1")
     @Max(value = AMOUNT_MAX_VALUE, message = "Must be less than or equal to {value}")
+    @NotNull(message = "Field [amount] cannot be null")
     private int amount;
     
     @Size(max = REFERENCE_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
+    @NotNull(message = "Field [reference] cannot be null")
     private String reference;
     
     @Size(max = DESCRIPTION_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
+    @NotNull(message = "Field [description] cannot be null")
     private String description;
 
     @JsonProperty("created_date")
