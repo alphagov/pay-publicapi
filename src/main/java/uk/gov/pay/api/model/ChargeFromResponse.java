@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import uk.gov.pay.api.model.telephone.PaymentOutcome;
 import uk.gov.pay.api.utils.CustomSupportedLanguageDeserializer;
 import uk.gov.pay.commons.api.json.ExternalMetadataDeserialiser;
 import uk.gov.pay.commons.model.SupportedLanguage;
@@ -48,6 +49,9 @@ public class ChargeFromResponse {
 
     private String email;
 
+    @JsonProperty(value = "telephone_number")
+    private String telephoneNumber;
+
     @JsonDeserialize(using = CustomSupportedLanguageDeserializer.class)
     private SupportedLanguage language;
 
@@ -68,6 +72,21 @@ public class ChargeFromResponse {
 
     @JsonProperty(value = "created_date")
     private String createdDate;
+
+    @JsonProperty(value = "authorised_date")
+    private String authorisedDate;
+
+    @JsonProperty(value = "processor_id")
+    private String processorId;
+
+    @JsonProperty(value = "provider_id")
+    private String providerId;
+
+    @JsonProperty(value = "auth_code")
+    private String authCode;
+
+    @JsonProperty(value = "payment_outcome")
+    private PaymentOutcome paymentOutcome;
 
     @JsonProperty(value = "gateway_transaction_id")
     private String gatewayTransactionId;
@@ -105,6 +124,10 @@ public class ChargeFromResponse {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getTelephoneNumber() {
+        return telephoneNumber;
     }
 
     public SupportedLanguage getLanguage() {
@@ -148,6 +171,26 @@ public class ChargeFromResponse {
 
     public String getCreatedDate() {
         return createdDate;
+    }
+
+    public String getAuthorisedDate() {
+        return authorisedDate;
+    }
+
+    public String getProcessorId() {
+        return processorId;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public String getAuthCode() {
+        return authCode;
+    }
+
+    public PaymentOutcome getPaymentOutcome() {
+        return paymentOutcome;
     }
 
     public List<PaymentConnectorResponseLink> getLinks() {
