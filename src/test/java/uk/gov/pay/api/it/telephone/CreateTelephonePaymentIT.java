@@ -104,6 +104,9 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
 
     @Test
     public void createTelephonePaymentWithRequiredFields() {
+        connectorMockClient.respondCreated_whenCreateTelephoneCharge(GATEWAY_ACCOUNT_ID, createTelephonePaymentRequest
+                .build());
+        
         postPaymentResponse(toJson(requestBody))
                 .statusCode(201)
                 .contentType(JSON)
@@ -118,8 +121,6 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .body("first_six_digits", is("123456"))
                 .body("payment_id", is("dummypaymentid123notpersisted"))
                 .body("state.status", is("success"))
-                .body("state.finished", is(true))
-                .body("state.message", is("Created"))
-                .body("state.code", is("P0010"));
+                .body("state.finished", is(true));
     }
 }
