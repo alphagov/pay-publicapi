@@ -74,14 +74,10 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .withNameOnCard("Jane Doe")
                 .withEmailAddress("jane_doe@example.com")
                 .withTelephoneNumber("+447700900796");
-
-        System.out.println("About to set up mock");
-
+        
         connectorMockClient.respondCreated_whenCreateTelephoneCharge(GATEWAY_ACCOUNT_ID, createTelephonePaymentRequest
                 .build());
-
-        System.out.println("about to submit JSON body");
-
+        
         postPaymentResponse(toJson(requestBody))
                 .statusCode(201)
                 .contentType(JSON)
