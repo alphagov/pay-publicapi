@@ -188,6 +188,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 )
                 .withPaymentOutcome(requestParams.getPaymentOutcome())
                 .withChargeId("dummypaymentid123notpersisted")
+                .withDelayedCapture(false)
                 .withState(new PaymentState("success", true, null, null));
 
         requestParams.getCreatedDate().ifPresent(createdDate -> responseFromConnector.withCreatedDate(createdDate));
@@ -222,6 +223,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 )
                 .withPaymentOutcome(requestParams.getPaymentOutcome())
                 .withChargeId("dummypaymentid123notpersisted")
+                .withDelayedCapture(false)
                 .withState(new PaymentState("success", true, null, null));
 
         requestParams.getCreatedDate().ifPresent(createdDate -> responseFromConnector.withCreatedDate(createdDate));
