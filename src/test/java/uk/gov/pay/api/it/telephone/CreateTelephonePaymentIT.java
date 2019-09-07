@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import uk.gov.pay.api.model.telephone.PaymentOutcome;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 
@@ -31,11 +32,30 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
         requestBody.put("card_expiry", "01/08");
         requestBody.put("last_four_digits", "1234");
         requestBody.put("first_six_digits", "123456");
+
+        createTelephonePaymentRequest
+                .withAmount(100)
+                .withReference("Some reference")
+                .withDescription("Some description")
+                .withProcessorId("1PROC")
+                .withProviderId("1PROV")
+                .withPaymentOutcome(new PaymentOutcome("success"))
+                .withCardType("visa")
+                .withCardExpiry("01/08")
+                .withLastFourDigits("1234")
+                .withFirstSixDigits("123456");
     }
 
     @After
     public void tearDown() {
         requestBody.clear();
+        createTelephonePaymentRequest
+                .withAuthCode(null)
+                .withCreatedDate(null)
+                .withAuthorisedDate(null)
+                .withNameOnCard(null)
+                .withEmailAddress(null)
+                .withTelephoneNumber(null);
     }
 
     @Test
@@ -46,7 +66,22 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
         requestBody.put("name_on_card", "Jane Doe");
         requestBody.put("email_address", "jane_doe@example.com");
         requestBody.put("telephone_number", "+447700900796");
-        
+
+        createTelephonePaymentRequest
+                .withAuthCode("666")
+                .withCreatedDate("2018-02-21T16:04:25Z")
+                .withAuthorisedDate("2018-02-21T16:05:33Z")
+                .withNameOnCard("Jane Doe")
+                .withEmailAddress("jane_doe@example.com")
+                .withTelephoneNumber("+447700900796");
+
+        System.out.println("About to set up mock");
+
+        connectorMockClient.respondCreated_whenCreateTelephoneCharge(GATEWAY_ACCOUNT_ID, createTelephonePaymentRequest
+                .build());
+
+        System.out.println("about to submit JSON body");
+
         postPaymentResponse(toJson(requestBody))
                 .statusCode(201)
                 .contentType(JSON)
@@ -56,6 +91,7 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .body("created_date", is("2018-02-21T16:04:25Z"))
                 .body("authorised_date", is("2018-02-21T16:05:33Z"))
                 .body("processor_id", is("1PROC"))
+                .body("provider_id", is("1PROV"))
                 .body("auth_code", is("666"))
                 .body("payment_outcome.status", is("success"))
                 .body("card_type", is("visa"))
@@ -67,9 +103,7 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .body("telephone_number", is("+447700900796"))
                 .body("payment_id", is("dummypaymentid123notpersisted"))
                 .body("state.status", is("success"))
-                .body("state.finished", is(true))
-                .body("state.message", is("Created"))
-                .body("state.code", is("P0010"));
+                .body("state.finished", is(true));
     }
 
     @Test

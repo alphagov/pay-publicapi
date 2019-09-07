@@ -3,6 +3,7 @@ package uk.gov.pay.api.resources.telephone;
 import com.codahale.metrics.annotation.Timed;
 import io.dropwizard.auth.Auth;
 import io.swagger.annotations.Api;
+import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.auth.Account;
@@ -25,15 +26,15 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 public class TelephonePaymentNotificationResource {
 
     private static final Logger logger = LoggerFactory.getLogger(TelephonePaymentNotificationResource.class);
-    
+
     private final CreateTelephonePaymentService createTelephonePaymentService;
-    
+
     @Inject
-    public TelephonePaymentNotificationResource(CreateTelephonePaymentService createTelephonePaymentService){
+    public TelephonePaymentNotificationResource(CreateTelephonePaymentService createTelephonePaymentService) {
         this.createTelephonePaymentService = createTelephonePaymentService;
     }
-    
-    
+
+
     @POST
     @Timed
     @Path("/v1/payment_notification")
@@ -41,11 +42,13 @@ public class TelephonePaymentNotificationResource {
     @Produces(APPLICATION_JSON)
     public Response newPayment(@Auth Account account, @Valid CreateTelephonePaymentRequest createTelephonePaymentRequest) {
 
-        TelephonePaymentResponse telephonePaymentResponse = createTelephonePaymentService.create(account, createTelephonePaymentRequest);
-        
-        return Response
-                .status(201)
-                .entity(telephonePaymentResponse)
-                .build();
+        Response connectorResponse = createTelephonePaymentService.getConnectorResponse(account, createTelephonePaymentRequest);
+        TelephonePaymentResponse telephonePaymentResponse = createTelephonePaymentService
+                .create(connectorResponse);
+
+        return connectorResponse.getStatus() == HttpStatus.SC_CREATED 
+                ? Response.status(201).entity(telephonePaymentResponse).build()
+                : Response.status(200).entity(telephonePaymentResponse).build();
     }
 }
+

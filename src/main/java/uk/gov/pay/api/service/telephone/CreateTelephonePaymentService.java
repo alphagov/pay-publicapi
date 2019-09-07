@@ -28,12 +28,16 @@ public class CreateTelephonePaymentService {
         this.connectorUriGenerator = connectorUriGenerator;
     }
     
-    public TelephonePaymentResponse create(Account account, CreateTelephonePaymentRequest createTelephonePaymentRequest){
+    public Response getConnectorResponse(Account account, CreateTelephonePaymentRequest createTelephonePaymentRequest) {
         Response connectorResponse = createTelephoneCharge(account, createTelephonePaymentRequest);
 
         if (!createdSuccessfully(connectorResponse)) {
             throw new CreateChargeException(connectorResponse);
         }
+        return connectorResponse;
+    }
+    
+    public TelephonePaymentResponse create(Response connectorResponse) {
 
         ChargeFromResponse chargeFromResponse = connectorResponse.readEntity(ChargeFromResponse.class);
         return TelephonePaymentResponse.from(chargeFromResponse);
