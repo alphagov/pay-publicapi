@@ -8,6 +8,7 @@ import uk.gov.pay.api.validation.ValidCardExpiryDate;
 import uk.gov.pay.api.validation.ValidCardFirstSixDigits;
 import uk.gov.pay.api.validation.ValidCardLastFourDigits;
 import uk.gov.pay.api.validation.ValidCardType;
+import uk.gov.pay.api.validation.ValidZonedDateTime;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -38,9 +39,11 @@ public class CreateTelephonePaymentRequest {
     private String description;
 
     @JsonProperty("created_date")
+    @ValidZonedDateTime(message = "Field [created_date] must be a valid ISO-8601 time and date format")
     private String createdDate;
 
     @JsonProperty("authorised_date")
+    @ValidZonedDateTime(message = "Field [authorised_date] must be a valid ISO-8601 time and date format")
     private String authorisedDate;
     
     @NotNull(message = "Field [processor_id] cannot be null")
