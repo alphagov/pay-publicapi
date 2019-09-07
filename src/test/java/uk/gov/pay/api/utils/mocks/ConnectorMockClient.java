@@ -169,11 +169,10 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     private String chargeEventsLocation(String accountId, String chargeId) {
         return format(CONNECTOR_MOCK_CHARGE_EVENTS_PATH, accountId, chargeId);
     }
+    
     public void respondCreated_whenCreateTelephoneCharge(String gatewayAccountId, CreateTelephonePaymentRequest requestParams) {
         var responseFromConnector = aCreateOrGetChargeResponseFromConnector()
                 .withAmount(requestParams.getAmount())
-
-
                 .withDescription(requestParams.getDescription())
                 .withReference(requestParams.getReference())
                 .withProcessorId(requestParams.getProcessorId())
@@ -188,7 +187,6 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                         )
                 )
                 .withPaymentOutcome(requestParams.getPaymentOutcome())
-                .withDelayedCapture(false)
                 .withChargeId("dummypaymentid123notpersisted")
                 .withState(new PaymentState("success", true, null, null));
 
@@ -203,6 +201,39 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                 .withBody(buildTelephoneChargeResponse(responseFromConnector.buildTelephoneChargeResponse()))
 
+        );
+    }
+
+    public void respondOk_whenCreateTelephoneCharge(String gatewayAccountId, CreateTelephonePaymentRequest requestParams) {
+        var responseFromConnector = aCreateOrGetChargeResponseFromConnector()
+                .withAmount(requestParams.getAmount())
+                .withDescription(requestParams.getDescription())
+                .withReference(requestParams.getReference())
+                .withProcessorId(requestParams.getProcessorId())
+                .withProviderId(requestParams.getProviderId())
+                .withCardDetails(new CardDetails(
+                                requestParams.getLastFourDigits(),
+                                requestParams.getFirstSixDigits(),
+                                requestParams.getNameOnCard().orElse(null),
+                                requestParams.getCardExpiry(),
+                                null,
+                                requestParams.getCardType()
+                        )
+                )
+                .withPaymentOutcome(requestParams.getPaymentOutcome())
+                .withChargeId("dummypaymentid123notpersisted")
+                .withState(new PaymentState("success", true, null, null));
+
+        requestParams.getCreatedDate().ifPresent(createdDate -> responseFromConnector.withCreatedDate(createdDate));
+        requestParams.getAuthorisedDate().ifPresent(authorisedDate -> responseFromConnector.withAuthorisedDate(authorisedDate));
+        requestParams.getEmailAddress().ifPresent(emailAddress -> responseFromConnector.withEmail(emailAddress));
+        requestParams.getTelephoneNumber().ifPresent(telephoneNumber -> responseFromConnector.withTelephoneNumber(telephoneNumber));
+        requestParams.getAuthCode().ifPresent(authCode -> responseFromConnector.withAuthCode(authCode));
+
+        mockCreateTelephoneCharge(gatewayAccountId, aResponse()
+                .withStatus(OK_200)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                .withBody(buildTelephoneChargeResponse(responseFromConnector.buildTelephoneChargeResponse()))
         );
     }
 
