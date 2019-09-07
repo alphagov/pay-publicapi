@@ -115,7 +115,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .add("reference", responseFromConnector.getReference())
                 .add("links", links)
                 .add("description", responseFromConnector.getDescription())
-                .add("processor_id", responseFromConnector.getProviderId())
+                .add("processor_id", responseFromConnector.getProcessorId())
                 .add("provider_id", responseFromConnector.getProviderId())
                 .add("charge_id", responseFromConnector.getChargeId())
                 .add("delayed_capture", false)
