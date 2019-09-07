@@ -1,5 +1,7 @@
 package uk.gov.pay.api.model.telephone;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import uk.gov.pay.api.validation.ValidCardExpiryDate;
@@ -31,9 +33,11 @@ public class CreateTelephonePaymentRequest {
     
     @Size(max = DESCRIPTION_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
     private String description;
-    
+
+    @JsonProperty("created_date")
     private String createdDate;
-    
+
+    @JsonProperty("authorised_date")
     private String authorisedDate;
     
     @NotNull(message = "Field [processor_id] cannot be null")
@@ -41,7 +45,8 @@ public class CreateTelephonePaymentRequest {
     
     @NotNull(message = "Field [provider_id] cannot be null")
     private String providerId;
-    
+
+    @JsonProperty("auth_code")
     private String authCode;
     
     @Valid
@@ -51,9 +56,11 @@ public class CreateTelephonePaymentRequest {
     @NotNull(message = "Field [card_type] cannot be null")
     @ValidCardType(message = "Field [card_type] must be either master-card, visa, maestro, diners-club or american-express")
     private String cardType;
-    
+
+    @JsonProperty("name_on_card")
     private String nameOnCard;
-    
+
+    @JsonProperty("email_address")
     private String emailAddress;
 
     @NotNull(message = "Field [card_expiry] cannot be null")
@@ -67,7 +74,8 @@ public class CreateTelephonePaymentRequest {
     @NotNull(message = "Field [first_six_digits] cannot be null")
     @ValidCardFirstSixDigits(message = "Field [first_six_digits] must be exactly 6 digits")
     private String firstSixDigits;
-    
+
+    @JsonProperty("telephone_number")
     private String telephoneNumber;
 
     public CreateTelephonePaymentRequest() {
@@ -124,11 +132,11 @@ public class CreateTelephonePaymentRequest {
     public String getDescription() {
         return description;
     }
-
+    
     public Optional<String> getCreatedDate() {
         return Optional.ofNullable(createdDate);
     }
-
+    
     public Optional<String> getAuthorisedDate() {
         return Optional.ofNullable(authorisedDate);
     }
@@ -140,7 +148,7 @@ public class CreateTelephonePaymentRequest {
     public String getProviderId() {
         return providerId;
     }
-
+    
     public Optional<String> getAuthCode() {
         return Optional.ofNullable(authCode);
     }
@@ -152,11 +160,11 @@ public class CreateTelephonePaymentRequest {
     public String getCardType() {
         return cardType;
     }
-
+    
     public Optional<String> getNameOnCard() {
         return Optional.ofNullable(nameOnCard);
     }
-
+    
     public Optional<String> getEmailAddress() {
         return Optional.ofNullable(emailAddress);
     }
@@ -173,6 +181,7 @@ public class CreateTelephonePaymentRequest {
         return firstSixDigits;
     }
 
+    @JsonIgnore
     public Optional<String> getTelephoneNumber() {
         return Optional.ofNullable(telephoneNumber);
     }
