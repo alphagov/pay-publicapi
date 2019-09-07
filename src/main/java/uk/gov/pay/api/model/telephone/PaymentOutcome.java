@@ -38,8 +38,8 @@ public class PaymentOutcome {
         return status;
     }
 
-    public String getCode() {
-        return code;
+    public Optional<String> getCode() {
+        return Optional.ofNullable(code);
     }
     
     @JsonIgnore
