@@ -41,7 +41,7 @@ public class TelephonePaymentNotificationResource {
     @Produces(APPLICATION_JSON)
     public Response newPayment(@Auth Account account, @Valid CreateTelephonePaymentRequest createTelephonePaymentRequest) {
 
-        TelephonePaymentResponse telephonePaymentResponse = createTelephonePaymentService.create(createTelephonePaymentRequest);
+        TelephonePaymentResponse telephonePaymentResponse = createTelephonePaymentService.create(account, createTelephonePaymentRequest);
         
         return Response
                 .status(201)
