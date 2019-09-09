@@ -168,7 +168,7 @@ public class PaymentsResource {
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response searchPayments(@ApiParam(value = "accountId", hidden = true)
                                    @Auth Account account,
-                                   @ApiParam(value = "Your payment reference to search", hidden = false)
+                                   @ApiParam(value = "Your payment reference to search (exact match, case insensitive)", hidden = false)
                                    @QueryParam("reference") String reference,
                                    @ApiParam(value = "The user email used in the payment to be searched", hidden = false)
                                    @QueryParam("email") String email,
