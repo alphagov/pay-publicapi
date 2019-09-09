@@ -2,6 +2,7 @@ package uk.gov.pay.api.it;
 
 import com.jayway.jsonassert.JsonAssert;
 import io.restassured.response.ValidatableResponse;
+import org.json.JSONObject;
 import org.junit.Test;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetails;
@@ -106,6 +107,26 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .body("metadata.fuh", is("fuh you"));
 
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
+    }
+
+    @Test
+    public void createCardPaymentWithMetadataAsNull_shouldReturn422() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+
+        var payload = new JSONObject()
+                .put("amount", 100)
+                .put("reference", "my reference")
+                .put("description", "my description")
+                .put("metadata", JSONObject.NULL)
+                .put("return_url", "https://test.test")
+                .toString();
+
+        postPaymentResponse(payload)
+                .statusCode(422)
+                .contentType(JSON)
+                .body("field", is("metadata"))
+                .body("code", is("P0102"))
+                .body("description", is("Invalid attribute value: metadata. Value must not be null"));
     }
 
     @Test
