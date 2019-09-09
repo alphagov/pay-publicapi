@@ -2,7 +2,7 @@
   "swagger" : "2.0",
   "info" : {
     "description" : "GOV.UK Pay API",
-    "version" : "1.0.2",
+    "version" : "1.0.3",
     "title" : "GOV.UK Pay API"
   },
   "host" : "publicapi.payments.service.gov.uk",
@@ -423,7 +423,7 @@
         "parameters" : [ {
           "name" : "reference",
           "in" : "query",
-          "description" : "Your payment reference to search",
+          "description" : "Your payment reference to search (exact match, case insensitive)",
           "required" : false,
           "type" : "string"
         }, {
