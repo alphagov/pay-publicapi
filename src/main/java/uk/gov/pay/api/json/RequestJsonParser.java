@@ -66,11 +66,13 @@ class RequestJsonParser {
                 .description(validateAndGetDescription(paymentRequest))
                 .returnUrl(validateAndGetReturnUrl(paymentRequest));
 
-        if (paymentRequest.has(LANGUAGE_FIELD_NAME))
+        if (paymentRequest.has(LANGUAGE_FIELD_NAME)) {
             builder.language(validateAndGetLanguage(paymentRequest));
+        }
 
-        if (paymentRequest.has(DELAYED_CAPTURE_FIELD_NAME))
+        if (paymentRequest.has(DELAYED_CAPTURE_FIELD_NAME)) {
             builder.delayedCapture(validateAndGetDelayedCapture(paymentRequest));
+        }
         
         if (paymentRequest.has(EMAIL_FIELD_NAME)) {
             String email = validateSkipNullValueAndGetString(paymentRequest.get(EMAIL_FIELD_NAME),
@@ -83,8 +85,9 @@ class RequestJsonParser {
             validatePrefilledCardholderDetails(prefilledNode, builder);
         }
 
-        if (paymentRequest.has(METADATA))
+        if (paymentRequest.has(METADATA)) {
             builder.metadata(validateAndGetMetadata(paymentRequest));
+        }
 
         return builder.build();
     }
@@ -146,7 +149,7 @@ class RequestJsonParser {
     }
 
     private static ExternalMetadata validateAndGetMetadata(JsonNode paymentRequest) {
-        Map<String, Object> metadataMap = null;
+        Map<String, Object> metadataMap;
         try {
             metadataMap = objectMapper.convertValue(paymentRequest.get("metadata"), Map.class);
         } catch (IllegalArgumentException e) {
@@ -154,6 +157,13 @@ class RequestJsonParser {
                     "Must be an object of JSON key-value pairs");
             throw new WebApplicationException(Response.status(SC_UNPROCESSABLE_ENTITY).entity(paymentError).build());
         }
+
+        if (metadataMap == null) {
+            PaymentError paymentError = aPaymentError(METADATA, CREATE_PAYMENT_VALIDATION_ERROR,
+                    "Value must not be null");
+            throw new WebApplicationException(Response.status(SC_UNPROCESSABLE_ENTITY).entity(paymentError).build());
+        }
+
         ExternalMetadata metadata = new ExternalMetadata(metadataMap);
         Set<ConstraintViolation<ExternalMetadata>> violations = validator.validate(metadata);
         if (violations.size() > 0) {
