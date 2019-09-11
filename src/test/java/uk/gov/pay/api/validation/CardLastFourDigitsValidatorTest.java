@@ -16,7 +16,7 @@ import static org.hamcrest.core.Is.is;
 
 public class CardLastFourDigitsValidatorTest {
 
-    private static CreateTelephonePaymentRequest.TelephoneRequestBuilder telephoneRequestBuilder = new CreateTelephonePaymentRequest.TelephoneRequestBuilder();
+    private static CreateTelephonePaymentRequest.Builder builder = new CreateTelephonePaymentRequest.Builder();
 
     private static Validator validator;
 
@@ -25,7 +25,7 @@ public class CardLastFourDigitsValidatorTest {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
 
-        telephoneRequestBuilder
+        builder
                 .withAmount(1200)
                 .withDescription("Some description")
                 .withReference("Some reference")
@@ -40,7 +40,7 @@ public class CardLastFourDigitsValidatorTest {
     @Test
     public void failsValidationForThreeDigits() {
 
-        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+        CreateTelephonePaymentRequest telephonePaymentRequest = builder
                 .withLastFourDigits("123")
                 .build();
 
@@ -53,7 +53,7 @@ public class CardLastFourDigitsValidatorTest {
     @Test
     public void failsValidationForFiveDigits() {
 
-        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+        CreateTelephonePaymentRequest telephonePaymentRequest = builder
                 .withLastFourDigits("12345")
                 .build();
 
@@ -66,7 +66,7 @@ public class CardLastFourDigitsValidatorTest {
     @Test
     public void passesValidationForFourDigits() {
 
-        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+        CreateTelephonePaymentRequest telephonePaymentRequest = builder
                 .withLastFourDigits("1234")
                 .build();
 
@@ -78,7 +78,7 @@ public class CardLastFourDigitsValidatorTest {
     @Test
     public void failsValidationForNullDigits() {
 
-        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+        CreateTelephonePaymentRequest telephonePaymentRequest = builder
                 .withLastFourDigits(null)
                 .build();
 

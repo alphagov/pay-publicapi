@@ -18,7 +18,7 @@ import static org.hamcrest.core.Is.is;
 
 public class PaymentOutcomeValidatorTest {
 
-    private static CreateTelephonePaymentRequest.TelephoneRequestBuilder telephoneRequestBuilder = new CreateTelephonePaymentRequest.TelephoneRequestBuilder();
+    private static CreateTelephonePaymentRequest.Builder builder = new CreateTelephonePaymentRequest.Builder();
 
     private static Validator validator;
 
@@ -27,7 +27,7 @@ public class PaymentOutcomeValidatorTest {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
 
-        telephoneRequestBuilder
+        builder
                 .withAmount(1200)
                 .withDescription("Some description")
                 .withReference("Some reference")
@@ -48,7 +48,7 @@ public class PaymentOutcomeValidatorTest {
     @Test
     public void failsValidationForInvalidPaymentOutcomeStatus() {
 
-        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+        CreateTelephonePaymentRequest telephonePaymentRequest = builder
                 .withPaymentOutcome(new PaymentOutcome("invalid"))
                 .build();
 
@@ -70,7 +70,7 @@ public class PaymentOutcomeValidatorTest {
                 )
         );
 
-        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+        CreateTelephonePaymentRequest telephonePaymentRequest = builder
                 .withPaymentOutcome(paymentOutcome)
                 .build();
 
@@ -92,7 +92,7 @@ public class PaymentOutcomeValidatorTest {
                 )
         );
 
-        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+        CreateTelephonePaymentRequest telephonePaymentRequest = builder
                 .withPaymentOutcome(paymentOutcome)
                 .build();
 
@@ -114,7 +114,7 @@ public class PaymentOutcomeValidatorTest {
                 )
         );
 
-        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+        CreateTelephonePaymentRequest telephonePaymentRequest = builder
                 .withPaymentOutcome(paymentOutcome)
                 .build();
 
@@ -126,7 +126,7 @@ public class PaymentOutcomeValidatorTest {
     @Test
     public void passesValidationForPaymentOutcomeStatusOfSuccess() {
 
-        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+        CreateTelephonePaymentRequest telephonePaymentRequest = builder
                 .withPaymentOutcome(new PaymentOutcome("success"))
                 .build();
 
@@ -138,13 +138,13 @@ public class PaymentOutcomeValidatorTest {
     @Test
     public void passesValidationForNullPaymentOutcome() {
 
-        CreateTelephonePaymentRequest telephonePaymentRequest = telephoneRequestBuilder
+        CreateTelephonePaymentRequest telephonePaymentRequest = builder
                 .withPaymentOutcome(null)
                 .build();;
 
         Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
 
         assertThat(constraintViolations.size(), is(1));
-        assertThat(constraintViolations.iterator().next().getMessage().equals("Field [payment_outcome] must include a valid status and error code"), is(false));
+        assertThat(constraintViolations.iterator().next().getMessage(), is("Field [payment_outcome] cannot be null"));
     }
 }

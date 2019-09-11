@@ -1,14 +1,14 @@
 package uk.gov.pay.api.service.telephone;
 
+import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
-import uk.gov.pay.api.model.telephone.State;
 import uk.gov.pay.api.model.telephone.TelephonePaymentResponse;
 
 public class CreateTelephonePaymentService {
     
     public TelephonePaymentResponse create(CreateTelephonePaymentRequest createTelephonePaymentRequest){
         
-        State state = new State(
+        PaymentState state = new PaymentState(
                 "success",
                 true,
                 "Created",
@@ -19,19 +19,19 @@ public class CreateTelephonePaymentService {
                 createTelephonePaymentRequest.getAmount(),
                 createTelephonePaymentRequest.getReference(),
                 createTelephonePaymentRequest.getDescription(),
-                createTelephonePaymentRequest.getCreatedDate(),
-                createTelephonePaymentRequest.getAuthorisedDate(),
+                createTelephonePaymentRequest.getCreatedDate().orElse(null),
+                createTelephonePaymentRequest.getAuthorisedDate().orElse(null),
                 createTelephonePaymentRequest.getProcessorId(),
                 createTelephonePaymentRequest.getProviderId(),
-                createTelephonePaymentRequest.getAuthCode(),
+                createTelephonePaymentRequest.getAuthCode().orElse(null),
                 createTelephonePaymentRequest.getPaymentOutcome(),
                 createTelephonePaymentRequest.getCardType(),
-                createTelephonePaymentRequest.getNameOnCard(),
-                createTelephonePaymentRequest.getEmailAddress(),
+                createTelephonePaymentRequest.getNameOnCard().orElse(null),
+                createTelephonePaymentRequest.getEmailAddress().orElse(null),
                 createTelephonePaymentRequest.getCardExpiry(),
                 createTelephonePaymentRequest.getLastFourDigits(),
                 createTelephonePaymentRequest.getFirstSixDigits(),
-                createTelephonePaymentRequest.getTelephoneNumber(),
+                createTelephonePaymentRequest.getTelephoneNumber().orElse(null),
                 "dummypaymentid123notpersisted",
                 state
         );

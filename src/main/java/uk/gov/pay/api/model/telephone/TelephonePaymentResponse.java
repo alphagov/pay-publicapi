@@ -1,8 +1,12 @@
 package uk.gov.pay.api.model.telephone;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import uk.gov.pay.api.model.PaymentState;
+
+import java.util.Optional;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class TelephonePaymentResponse {
@@ -13,22 +17,27 @@ public class TelephonePaymentResponse {
     
     private String description;
     
+    @JsonProperty("created_date")
     private String createdDate;
-    
+
+    @JsonProperty("authorised_date")
     private String authorisedDate;
     
     private String processorId;
     
     private String providerId;
-    
+
+    @JsonProperty("auth_code")
     private String authCode;
     
     private PaymentOutcome paymentOutcome;
     
     private String cardType;
-    
+
+    @JsonProperty("name_on_card")
     private String nameOnCard;
-    
+
+    @JsonProperty("email_address")
     private String emailAddress;
     
     private String cardExpiry;
@@ -36,12 +45,13 @@ public class TelephonePaymentResponse {
     private String lastFourDigits;
     
     private String firstSixDigits;
-    
+
+    @JsonProperty("telephone_number")
     private String telephoneNumber;
     
     private String paymentId;
     
-    private State state;
+    private PaymentState state;
 
     public TelephonePaymentResponse() {
         // For Jackson
@@ -64,7 +74,7 @@ public class TelephonePaymentResponse {
                                     String firstSixDigits, 
                                     String telephoneNumber, 
                                     String paymentId, 
-                                    State state) {
+                                    PaymentState state) {
         // For testing serialization
         this.amount = amount;
         this.reference = reference;
@@ -98,12 +108,14 @@ public class TelephonePaymentResponse {
         return description;
     }
 
-    public String getCreatedDate() {
-        return createdDate;
+    @JsonIgnore
+    public Optional<String> getCreatedDate() {
+        return Optional.ofNullable(createdDate);
     }
 
-    public String getAuthorisedDate() {
-        return authorisedDate;
+    @JsonIgnore
+    public Optional<String> getAuthorisedDate() {
+        return Optional.ofNullable(authorisedDate);
     }
 
     public String getProcessorId() {
@@ -114,8 +126,9 @@ public class TelephonePaymentResponse {
         return providerId;
     }
 
-    public String getAuthCode() {
-        return authCode;
+    @JsonIgnore
+    public Optional<String> getAuthCode() {
+        return Optional.ofNullable(authCode);
     }
 
     public PaymentOutcome getPaymentOutcome() {
@@ -126,12 +139,14 @@ public class TelephonePaymentResponse {
         return cardType;
     }
 
-    public String getNameOnCard() {
-        return nameOnCard;
+    @JsonIgnore
+    public Optional<String> getNameOnCard() {
+        return Optional.ofNullable(nameOnCard);
     }
 
-    public String getEmailAddress() {
-        return emailAddress;
+    @JsonIgnore
+    public Optional<String> getEmailAddress() {
+        return Optional.ofNullable(emailAddress);
     }
 
     public String getCardExpiry() {
@@ -146,13 +161,14 @@ public class TelephonePaymentResponse {
         return firstSixDigits;
     }
 
-    public String getTelephoneNumber() {
-        return telephoneNumber;
+    @JsonIgnore
+    public Optional<String> getTelephoneNumber() {
+        return Optional.ofNullable(telephoneNumber);
     }
 
     public String getPaymentId() { return paymentId; }
 
-    public State getState() {
+    public PaymentState getState() {
         return state;
     }
 }
