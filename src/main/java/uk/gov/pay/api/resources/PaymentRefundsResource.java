@@ -74,6 +74,7 @@ public class PaymentRefundsResource {
     private final String baseUrl;
     private final Client client;
     private final String connectorUrl;
+    private PublicApiConfig configuration;
     private GetPaymentRefundsService getPaymentRefundsService;
     private GetPaymentRefundService getPaymentRefundService;
 
@@ -84,6 +85,7 @@ public class PaymentRefundsResource {
         this.client = client;
         this.baseUrl = configuration.getBaseUrl();
         this.connectorUrl = configuration.getConnectorUrl();
+        this.configuration = configuration;
         this.getPaymentRefundsService = getPaymentRefundsService;
         this.getPaymentRefundService = getPaymentRefundService;
     }
@@ -111,7 +113,7 @@ public class PaymentRefundsResource {
 
         logger.info("Get refunds for payment request - paymentId={} using strategy={}", paymentId, strategyName);
 
-        GetPaymentRefundsStrategy strategy = new GetPaymentRefundsStrategy(strategyName, account, paymentId, getPaymentRefundsService);
+        GetPaymentRefundsStrategy strategy = new GetPaymentRefundsStrategy(configuration, strategyName, account, paymentId, getPaymentRefundsService);
         RefundsResponse refundsResponse = strategy.validateAndExecute();
 
         logger.debug("refund returned - [ {} ]", refundsResponse);
@@ -144,7 +146,7 @@ public class PaymentRefundsResource {
 
         logger.info("Payment refund request - paymentId={}, refundId={}", paymentId, refundId);
 
-        var strategy = new GetPaymentRefundStrategy(strategyName, account, paymentId, refundId, getPaymentRefundService);
+        var strategy = new GetPaymentRefundStrategy(configuration, strategyName, account, paymentId, refundId, getPaymentRefundService);
         RefundResponse refundResponse = strategy.validateAndExecute();
 
         logger.info("refund returned - [ {} ]", refundResponse);

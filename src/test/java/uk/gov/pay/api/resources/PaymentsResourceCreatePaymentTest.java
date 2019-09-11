@@ -4,8 +4,10 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetails;
@@ -40,6 +42,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class PaymentsResourceCreatePaymentTest {
 
+    @InjectMocks
     private PaymentsResource paymentsResource;
 
     @Mock
@@ -62,13 +65,15 @@ public class PaymentsResourceCreatePaymentTest {
 
     @Mock
     private CapturePaymentService capturePaymentService;
-    
+
     @Mock
     private CancelPaymentService cancelPaymentService;
 
     @Mock
     private GetPaymentEventsService getPaymentEventsService;
 
+    @Mock
+    private PublicApiConfig configuration;
 
     @Mock
     private GetDirectDebitPaymentService getDirectDebitPaymentService;
@@ -77,13 +82,6 @@ public class PaymentsResourceCreatePaymentTest {
 
     @Before
     public void setup() {
-        paymentsResource = new PaymentsResource(createPaymentService,
-                paymentSearchService,
-                publicApiUriGenerator,
-                getPaymentService,
-                capturePaymentService,
-                cancelPaymentService,
-                getPaymentEventsService);
         when(publicApiUriGenerator.getPaymentURI(anyString())).thenReturn(URI.create(paymentUri));
     }
 
@@ -134,7 +132,7 @@ public class PaymentsResourceCreatePaymentTest {
                 URI.create(paymentUri + "/capture"),
                 null,
                 null,
-                "providerId", 
+                "providerId",
                 null,
                 null, null);
     }

@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.RefundError;
 import uk.gov.pay.api.model.search.card.SearchRefundsResults;
@@ -34,10 +35,12 @@ public class SearchRefundsResource {
     private static final Logger logger = LoggerFactory.getLogger(SearchRefundsResource.class);
 
     private final SearchRefundsService searchRefundsService;
+    private PublicApiConfig configuration;
 
     @Inject
-    public SearchRefundsResource(SearchRefundsService searchRefundsService) {
+    public SearchRefundsResource(SearchRefundsService searchRefundsService, PublicApiConfig configuration) {
         this.searchRefundsService = searchRefundsService;
+        this.configuration = configuration;
     }
 
     @GET
@@ -76,7 +79,7 @@ public class SearchRefundsResource {
                         fromDate, toDate, pageNumber, displaySize));
 
         RefundsParams refundsParams = new RefundsParams(fromDate, toDate, pageNumber, displaySize);
-        SearchRefundsStrategy strategy = new SearchRefundsStrategy(strategyName, account, refundsParams, searchRefundsService);
+        SearchRefundsStrategy strategy = new SearchRefundsStrategy(configuration, strategyName, account, refundsParams, searchRefundsService);
 
         return strategy.validateAndExecute();
     }

@@ -1,5 +1,6 @@
 package uk.gov.pay.api.resources;
 
+import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.service.PaymentSearchParams;
 import uk.gov.pay.api.service.PaymentSearchService;
@@ -11,8 +12,8 @@ public class SearchPaymentsStrategy extends LedgerOrConnectorStrategyTemplate<Re
     private final PaymentSearchParams paymentSearchParams;
     private final PaymentSearchService paymentSearchService;
 
-    public SearchPaymentsStrategy(String strategyName, Account account, PaymentSearchParams paymentSearchParams, PaymentSearchService paymentSearchService) {
-        super(strategyName);
+    public SearchPaymentsStrategy(PublicApiConfig configuration, String strategyName, Account account, PaymentSearchParams paymentSearchParams, PaymentSearchService paymentSearchService) {
+        super(configuration, strategyName);
         this.account = account;
         this.paymentSearchParams = paymentSearchParams;
         this.paymentSearchService = paymentSearchService;

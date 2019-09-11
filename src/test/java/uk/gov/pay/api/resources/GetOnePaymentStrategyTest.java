@@ -12,6 +12,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.service.GetPaymentService;
@@ -23,11 +24,15 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GetOnePaymentStrategyTest {
-    
+
+    @Mock
+    private PublicApiConfig configuration;
+
     @Mock
     private GetPaymentService mockGetPaymentService;
 
@@ -35,7 +40,7 @@ public class GetOnePaymentStrategyTest {
     ArgumentCaptor<LoggingEvent> loggingEventArgumentCaptor;
 
     private Appender<ILoggingEvent> mockAppender;
-    
+
     private GetOnePaymentStrategy getOnePaymentStrategy;
     private String mockPaymentId = "some-payment-id";
     private Account mockAccountId = new Account("some-account-id", TokenPaymentType.CARD);
@@ -49,8 +54,8 @@ public class GetOnePaymentStrategyTest {
 
     @Test
     public void whenNoStrategyProvidedUsesDefaultStrategy() {
-        getOnePaymentStrategy = new GetOnePaymentStrategy(null, mockAccountId, mockPaymentId, mockGetPaymentService);
-        
+        getOnePaymentStrategy = new GetOnePaymentStrategy(configuration, null, mockAccountId, mockPaymentId, mockGetPaymentService);
+
         getOnePaymentStrategy.validateAndExecute();
 
         verify(mockGetPaymentService, never()).getPayment(mockAccountId, mockPaymentId);
@@ -59,7 +64,7 @@ public class GetOnePaymentStrategyTest {
 
     @Test
     public void whenEmptyStrategyProvidedUsesDefaultStrategy() {
-        getOnePaymentStrategy = new GetOnePaymentStrategy("", mockAccountId, mockPaymentId, mockGetPaymentService);
+        getOnePaymentStrategy = new GetOnePaymentStrategy(configuration, "", mockAccountId, mockPaymentId, mockGetPaymentService);
 
         getOnePaymentStrategy.validateAndExecute();
 
@@ -69,7 +74,7 @@ public class GetOnePaymentStrategyTest {
 
     @Test
     public void whenLedgerOnlyStrategyProvidedUsesLedgerStrategy() {
-        getOnePaymentStrategy = new GetOnePaymentStrategy("ledger-only", mockAccountId, mockPaymentId, mockGetPaymentService);
+        getOnePaymentStrategy = new GetOnePaymentStrategy(configuration, "ledger-only", mockAccountId, mockPaymentId, mockGetPaymentService);
 
         getOnePaymentStrategy.validateAndExecute();
 
@@ -79,7 +84,7 @@ public class GetOnePaymentStrategyTest {
 
     @Test
     public void whenFutureBehaviourStrategyProvidedUsesFutureBehaviourStrategy() {
-        getOnePaymentStrategy = new GetOnePaymentStrategy("future-behaviour", mockAccountId, mockPaymentId, mockGetPaymentService);
+        getOnePaymentStrategy = new GetOnePaymentStrategy(configuration, "future-behaviour", mockAccountId, mockPaymentId, mockGetPaymentService);
 
         getOnePaymentStrategy.validateAndExecute();
 
@@ -88,7 +93,7 @@ public class GetOnePaymentStrategyTest {
 
     @Test
     public void whenNotValidStrategyProvidedUsesDefaultStrategy() {
-        getOnePaymentStrategy = new GetOnePaymentStrategy("not-valid-strategy-name", mockAccountId, mockPaymentId, mockGetPaymentService);
+        getOnePaymentStrategy = new GetOnePaymentStrategy(configuration, "not-valid-strategy-name", mockAccountId, mockPaymentId, mockGetPaymentService);
 
         getOnePaymentStrategy.validateAndExecute();
 
@@ -100,5 +105,15 @@ public class GetOnePaymentStrategyTest {
 
         verify(mockGetPaymentService, never()).getPayment(mockAccountId, mockPaymentId);
         verify(mockGetPaymentService).getConnectorCharge(mockAccountId, mockPaymentId);
+    }
+
+    @Test
+    public void whenSwitchingToFutureStrategyUsesFutureBehaviourStrategy() {
+        when(configuration.getAlwaysUseFutureStrategy()).thenReturn(true);
+        getOnePaymentStrategy = new GetOnePaymentStrategy(configuration, "ledger-only", mockAccountId, mockPaymentId, mockGetPaymentService);
+
+        getOnePaymentStrategy.validateAndExecute();
+
+        verify(mockGetPaymentService).getPayment(mockAccountId, mockPaymentId);
     }
 }

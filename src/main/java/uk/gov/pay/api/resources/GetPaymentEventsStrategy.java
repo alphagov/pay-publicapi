@@ -1,5 +1,6 @@
 package uk.gov.pay.api.resources;
 
+import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.PaymentEventsResponse;
 import uk.gov.pay.api.service.GetPaymentEventsService;
@@ -9,9 +10,9 @@ public class GetPaymentEventsStrategy extends LedgerOrConnectorStrategyTemplate<
     private final String paymentId;
     private final GetPaymentEventsService getPaymentEventsService;
 
-    public GetPaymentEventsStrategy(String strategyName, Account account, String paymentId,
+    public GetPaymentEventsStrategy(PublicApiConfig configuration, String strategyName, Account account, String paymentId,
                                     GetPaymentEventsService getPaymentEventsService) {
-        super(strategyName);
+        super(configuration, strategyName);
         this.account = account;
         this.paymentId = paymentId;
         this.getPaymentEventsService = getPaymentEventsService;
