@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.api.validation.ValidCardExpiryDate;
 import uk.gov.pay.api.validation.ValidCardFirstSixDigits;
 import uk.gov.pay.api.validation.ValidCardLastFourDigits;
@@ -83,6 +84,36 @@ public class CreateTelephonePaymentRequest {
 
     @JsonProperty("telephone_number")
     private String telephoneNumber;
+
+    public String toConnectorPayload() {
+        JsonStringBuilder request = new JsonStringBuilder()
+                .add("amount", this.getAmount())
+                .add("reference", this.getReference())
+                .add("description", this.getDescription())
+                .add("processor_id", this.getProcessorId())
+                .add("provider_id", this.getProviderId())
+                .add("auth_code", this.getAuthCode())
+                .add("card_type", this.getCardType())
+                .add("card_expiry", this.getCardExpiry())
+                .add("last_four_digits", this.getLastFourDigits())
+                .add("first_six_digits", this.getFirstSixDigits())
+                .addToMap("payment_outcome", "status", this.getPaymentOutcome().getStatus());
+        this.getPaymentOutcome().getCode().ifPresent(code -> request.addToMap("payment_outcome", "code", code));
+        this.getPaymentOutcome().getSupplemental().ifPresent(supplemental -> {
+                    request.addToNestedMap("error_code", supplemental.getErrorCode(), "payment_outcome", "supplemental");
+                    request.addToNestedMap("error_message", supplemental.getErrorMessage(), "payment_outcome", "supplemental");
+                }
+        );
+
+        this.getCreatedDate().ifPresent(createdDate -> request.add("created_date", createdDate));
+        this.getAuthorisedDate().ifPresent(authorisedDate -> request.add("authorised_date", authorisedDate));
+        this.getAuthCode().ifPresent(authCode -> request.add("auth_code", authCode));
+        this.getNameOnCard().ifPresent(nameOnCard -> request.add("name_on_card", nameOnCard));
+        this.getEmailAddress().ifPresent(emailAddress -> request.add("email_address", emailAddress));
+        this.getTelephoneNumber().ifPresent(telephoneNumber -> request.add("telephone_number", telephoneNumber));
+
+        return request.build();
+    }
 
     public CreateTelephonePaymentRequest() {
         // To enable Jackson serialisation we need a default constructor

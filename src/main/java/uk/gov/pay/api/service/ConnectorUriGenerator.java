@@ -52,7 +52,7 @@ public class ConnectorUriGenerator {
         return buildConnectorUri(path, Maps.newHashMap());
     }
     
-    String telephoneChargesURI(Account account) {
+    public String telephoneChargesURI(Account account) {
         return buildConnectorUri(format("/v1/api/accounts/%s/telephone-charges", account.getAccountId()));
     }
 
