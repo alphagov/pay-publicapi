@@ -46,9 +46,7 @@ public class TelephonePaymentNotificationResource {
         TelephonePaymentResponse telephonePaymentResponse = createTelephonePaymentService
                 .create(connectorResponse);
 
-        return connectorResponse.getStatus() == HttpStatus.SC_CREATED 
-                ? Response.status(201).entity(telephonePaymentResponse).build()
-                : Response.status(200).entity(telephonePaymentResponse).build();
+        return Response.status(connectorResponse.getStatus()).entity(telephonePaymentResponse).build();
     }
 }
 
