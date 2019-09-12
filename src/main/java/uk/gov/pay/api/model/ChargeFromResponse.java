@@ -3,7 +3,9 @@ package uk.gov.pay.api.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import uk.gov.pay.api.model.telephone.PaymentOutcome;
 import uk.gov.pay.api.utils.CustomSupportedLanguageDeserializer;
 import uk.gov.pay.commons.api.json.ExternalMetadataDeserialiser;
@@ -14,29 +16,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class ChargeFromResponse {
-
-    @JsonProperty("charge_id")
+    
     private String chargeId;
-
-    @JsonProperty("return_url")
+    
     private String returnUrl;
-
-    @JsonProperty("payment_provider")
+    
     private String paymentProvider;
-
-    @JsonProperty("links")
+    
     private List<PaymentConnectorResponseLink> links = new ArrayList<>();
-
-    @JsonProperty(value = "refund_summary")
+    
     private RefundSummary refundSummary;
-
-    @JsonProperty(value = "settlement_summary")
+    
     private SettlementSummary settlementSummary;
-
-    @JsonProperty(value = "card_details")
+    
     private CardDetails cardDetails;
 
     private Long amount;
@@ -48,47 +45,34 @@ public class ChargeFromResponse {
     private String reference;
 
     private String email;
-
-    @JsonProperty(value = "telephone_number")
+    
     private String telephoneNumber;
 
     @JsonDeserialize(using = CustomSupportedLanguageDeserializer.class)
     private SupportedLanguage language;
-
-    @JsonProperty(value = "delayed_capture")
+    
     private boolean delayedCapture;
-
-    @JsonProperty("corporate_card_surcharge")
+    
     private Long corporateCardSurcharge;
-
-    @JsonProperty("total_amount")
+    
     private Long totalAmount;
-
-    @JsonProperty("fee")
+    
     private Long fee;
-
-    @JsonProperty("net_amount")
+    
     private Long netAmount;
-
-    @JsonProperty(value = "created_date")
+    
     private String createdDate;
-
-    @JsonProperty(value = "authorised_date")
+    
     private String authorisedDate;
-
-    @JsonProperty(value = "processor_id")
+    
     private String processorId;
-
-    @JsonProperty(value = "provider_id")
+    
     private String providerId;
-
-    @JsonProperty(value = "auth_code")
+    
     private String authCode;
-
-    @JsonProperty(value = "payment_outcome")
+    
     private PaymentOutcome paymentOutcome;
-
-    @JsonProperty(value = "gateway_transaction_id")
+    
     private String gatewayTransactionId;
 
     @JsonDeserialize(using = ExternalMetadataDeserialiser.class)
