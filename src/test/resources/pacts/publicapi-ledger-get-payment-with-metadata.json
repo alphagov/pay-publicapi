@@ -23,7 +23,8 @@
         "path": "/v1/transaction/ch_123abc456xyz",
         "query": {
           "account_id": ["123456"],
-          "transaction_type": ["PAYMENT"]
+          "transaction_type": ["PAYMENT"],
+          "status_version": ["1"]
         }
       },
       "response": {

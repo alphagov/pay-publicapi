@@ -34,7 +34,8 @@ public class LedgerUriGenerator {
         String path = format("/v1/transaction/%s", paymentId);
         return buildLedgerUri(path, Map.of(
                 "account_id", gatewayAccountId.getAccountId(),
-                "transaction_type", transactionType
+                "transaction_type", transactionType,
+                "status_version", "1"
         ));
     }
 
@@ -43,13 +44,17 @@ public class LedgerUriGenerator {
         return buildLedgerUri(path, Map.of(
                 "account_id", gatewayAccountId.getAccountId(),
                 "transaction_type", transactionType,
-                "parent_external_id", paymentId)
+                "parent_external_id", paymentId,
+                "status_version", "1")
         );
     }
 
     public String transactionEventsURI(Account gatewayAccountId, String paymentId) {
         String path = format("/v1/transaction/%s/event", paymentId);
-        return buildLedgerUri(path, Map.of("gateway_account_id", gatewayAccountId.getAccountId()));
+        return buildLedgerUri(path, Map.of(
+                "gateway_account_id", gatewayAccountId.getAccountId(),
+                "status_version", "1")
+        );
     }
 
     public String transactionsForTransactionURI(String gatewayAccountId, String paymentId) {
