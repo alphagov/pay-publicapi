@@ -21,18 +21,6 @@ Configuration of the application is performed via environment variables, some of
 | `REDIS_URL`                 | No        | localhost:6379 | The location of the redis endpoint to store rate-limiter information in                                    |
 | `TOKEN_API_HMAC_SECRET`     | Yes       | N/A            | Hmac secret to be used to validate that the given token is genuine (Api Key = Token + Hmac (Token, Secret) |
 
-## Custom CA certificates
-
-By default, the application will use the default Java truststore for validating
-TLS connections. The docker startup script will add any PEM-format certificates
-in `CERTS_PATH` to the default truststore prior to starting the application.
-
-If `CERTS_PATH` is not specified, the default truststore will be used as-is.
-
-| Variable     | Description                               |
-| -------------| ----------------------------------------- |
-| `CERTS_PATH` | A directory within the container containing CA certificates to add to the default Java truststore |
-
 ## Rate limiting
 
 The application will rate-limit incoming API requests, recording the current
