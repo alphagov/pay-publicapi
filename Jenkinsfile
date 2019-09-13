@@ -156,11 +156,11 @@ pipeline {
        parallel {
          stage('Card Smoke Test') {
            when { branch 'master' }
-           steps { runCardSmokeTest() }
+           steps { runSmokeTest('smoke-card') }
          }
          stage('Direct Debit Smoke Test') {
            when { branch 'master' }
-           steps { runDirectDebitSmokeTest() }
+           steps { runSmokeTest("smoke-directdebit") }
          }
        }
      }
