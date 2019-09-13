@@ -7,6 +7,4 @@ then
   set +a  
 fi
 
-export CERTS_PATH=$WORKSPACE/pay-scripts/services/ssl/certs
-
 eval "$@"
