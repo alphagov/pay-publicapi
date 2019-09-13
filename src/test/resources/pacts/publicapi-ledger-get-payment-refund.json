@@ -24,7 +24,8 @@
         "query": {
           "account_id": ["123456"],
           "parent_external_id" :["123456789"],
-          "transaction_type":["REFUND"]
+          "transaction_type":["REFUND"],
+          "status_version": ["1"]
         }
       },
       "response": {

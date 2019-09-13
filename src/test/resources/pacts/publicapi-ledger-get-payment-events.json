@@ -21,7 +21,8 @@
         "method": "GET",
         "path": "/v1/transaction/abc123/event",
         "query": {
-          "gateway_account_id": ["42"]
+          "gateway_account_id": ["42"],
+          "status_version": ["1"]
         }
       },
       "response": {
@@ -55,21 +56,21 @@
             "$.transaction_id": {
               "matchers": [
                 {
-                  "match": "type"
+                  "match": "value"
                 }
               ]
             },
             "$.events[0].state.status": {
               "matchers": [
                 {
-                  "match": "type"
+                  "match": "value"
                 }
               ]
             },
             "$.events[0].state.finished": {
               "matchers": [
                 {
-                  "match": "type"
+                  "match": "value"
                 }
               ]
             },
@@ -84,28 +85,28 @@
             "$.events[1].state.status": {
               "matchers": [
                 {
-                  "match": "type"
+                  "match": "value"
                 }
               ]
             },
             "$.events[1].state.finished": {
               "matchers": [
                 {
-                  "match": "type"
+                  "match": "value"
                 }
               ]
             },
             "$.events[1].state.code": {
               "matchers": [
                 {
-                  "match": "type"
+                  "match": "value"
                 }
               ]
             },
             "$.events[1].state.message": {
               "matchers": [
                 {
-                  "match": "type"
+                  "match": "value"
                 }
               ]
             },
