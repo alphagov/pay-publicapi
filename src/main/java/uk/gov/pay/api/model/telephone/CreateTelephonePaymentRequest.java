@@ -216,8 +216,7 @@ public class CreateTelephonePaymentRequest {
     public String getFirstSixDigits() {
         return firstSixDigits;
     }
-
-    @JsonIgnore
+    
     public Optional<String> getTelephoneNumber() {
         return Optional.ofNullable(telephoneNumber);
     }
