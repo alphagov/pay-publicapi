@@ -92,7 +92,6 @@ public class CreateTelephonePaymentRequest {
                 .add("description", this.getDescription())
                 .add("processor_id", this.getProcessorId())
                 .add("provider_id", this.getProviderId())
-                .add("auth_code", this.getAuthCode())
                 .add("card_type", this.getCardType())
                 .add("card_expiry", this.getCardExpiry())
                 .add("last_four_digits", this.getLastFourDigits())
@@ -100,8 +99,8 @@ public class CreateTelephonePaymentRequest {
                 .addToMap("payment_outcome", "status", this.getPaymentOutcome().getStatus());
         this.getPaymentOutcome().getCode().ifPresent(code -> request.addToMap("payment_outcome", "code", code));
         this.getPaymentOutcome().getSupplemental().ifPresent(supplemental -> {
-                    request.addToNestedMap("error_code", supplemental.getErrorCode(), "payment_outcome", "supplemental");
-                    request.addToNestedMap("error_message", supplemental.getErrorMessage(), "payment_outcome", "supplemental");
+                    supplemental.getErrorCode().ifPresent(errorCode -> request.addToNestedMap("error_code", errorCode, "payment_outcome", "supplemental"));
+                    supplemental.getErrorCode().ifPresent(errorMessage -> request.addToNestedMap("error_message", errorMessage, "payment_outcome", "supplemental"));
                 }
         );
 
@@ -217,8 +216,7 @@ public class CreateTelephonePaymentRequest {
     public String getFirstSixDigits() {
         return firstSixDigits;
     }
-
-    @JsonIgnore
+    
     public Optional<String> getTelephoneNumber() {
         return Optional.ofNullable(telephoneNumber);
     }
