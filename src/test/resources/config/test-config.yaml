@@ -35,6 +35,9 @@ rateLimiter:
   noOfReqForPost: 1000
   noOfReqPerNode: 1
   noOfReqForPostPerNode: 1
+  elevatedAccounts: 1, 2, 3
+  noOfReqForElevatedAccounts: 1000
+  noOfPostReqForElevatedAccounts: 1000
 
 redis:
   endpoint: localhost:6379
