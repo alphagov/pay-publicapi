@@ -20,7 +20,7 @@ public class RefundForSearchRefundsResult {
     @JsonProperty("created_date")
     @ApiModelProperty(example = "2017-01-10T16:52:07.855Z")
     private String createdDate;
-
+    
     private String chargeId;
 
     private Long amount;
