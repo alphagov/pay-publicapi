@@ -12,6 +12,7 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.filter.ratelimit.LocalRateLimiter;
 import uk.gov.pay.api.filter.ratelimit.RateLimiter;
 import uk.gov.pay.api.filter.ratelimit.RedisRateLimiter;
+import uk.gov.pay.api.filter.ratelimit.RateLimitManager;
 import uk.gov.pay.api.json.CreatePaymentRefundRequestDeserializer;
 import uk.gov.pay.api.json.CreateCardPaymentRequestDeserializer;
 import uk.gov.pay.api.json.StringDeserializer;
@@ -86,8 +87,8 @@ public class PublicApiModule extends AbstractModule {
     }
 
     private RedisRateLimiter getRedisRateLimiter() {
-        return new RedisRateLimiter(configuration.getRateLimiterConfig().getNoOfReq(),
-                configuration.getRateLimiterConfig().getNoOfReqForPost(),
+        var rateLimitManager = new RateLimitManager(configuration.getRateLimiterConfig());
+        return new RedisRateLimiter(rateLimitManager,
                 configuration.getRateLimiterConfig().getPerMillis(),
                 configuration.getJedisFactory().build(environment));
     }

@@ -3,6 +3,7 @@ package uk.gov.pay.api.filter.ratelimit;
 import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.api.filter.RateLimiterKey;
 
 public class RateLimiter {
 
@@ -17,13 +18,13 @@ public class RateLimiter {
         this.redisRateLimiter = redisRateLimiter;
     }
 
-    public void checkRateOf(String accountId, String key, String method) throws RateLimitException {
+    public void checkRateOf(String accountId, RateLimiterKey key, String method) throws RateLimitException {
         try {
-            redisRateLimiter.checkRateOf(accountId, key, method);
+            redisRateLimiter.checkRateOf(accountId, key);
         } catch (RedisException e) {
             LOGGER.warn("Exception occurred checking rate limits using RedisRateLimiter, falling back to LocalRateLimiter");
 
-            localRateLimiter.checkRateOf(accountId, key, method);
+            localRateLimiter.checkRateOf(accountId, key.getKey(), method);
         }
     }
 }

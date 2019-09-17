@@ -17,8 +17,11 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriInfo;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -35,6 +38,10 @@ public class RateLimiterFilterTest {
     private RateLimiter rateLimiter;
     @Mock
     private ContainerRequestContext mockContainerRequestContext;
+    @Mock
+    private UriInfo uriInfo;
+    @Mock
+    private RateLimiterKey rateLimiterKey;
 
     @Before
     public void setup() {
@@ -49,6 +56,8 @@ public class RateLimiterFilterTest {
 
         when(mockContainerRequestContext.getHeaderString("Authorization")).thenReturn(authorization);
         when(mockContainerRequestContext.getMethod()).thenReturn("GET");
+        when(mockContainerRequestContext.getUriInfo()).thenReturn(uriInfo);
+        when(uriInfo.getPath()).thenReturn("");
     }
 
     @Test
@@ -58,12 +67,12 @@ public class RateLimiterFilterTest {
         
         rateLimiterFilter.filter(mockContainerRequestContext);
         
-        verify(rateLimiter).checkRateOf(ACCOUNT_ID, "POST-apiKey", "POST");
+        verify(rateLimiter).checkRateOf(eq(ACCOUNT_ID), any(), eq("POST"));
     }
 
     @Test
     public void shouldSendErrorResponse_whenRateLimitExceeded() throws Exception {
-        doThrow(RateLimitException.class).when(rateLimiter).checkRateOf("account-id", "GET-" + authorization, "GET");
+        doThrow(RateLimitException.class).when(rateLimiter).checkRateOf(eq("account-id"), any(), eq("GET"));
 
         try {
             rateLimiterFilter.filter(mockContainerRequestContext);
