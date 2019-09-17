@@ -100,7 +100,7 @@ public class CreateTelephonePaymentRequest {
         this.getPaymentOutcome().getCode().ifPresent(code -> request.addToMap("payment_outcome", "code", code));
         this.getPaymentOutcome().getSupplemental().ifPresent(supplemental -> {
                     supplemental.getErrorCode().ifPresent(errorCode -> request.addToNestedMap("error_code", errorCode, "payment_outcome", "supplemental"));
-                    supplemental.getErrorCode().ifPresent(errorMessage -> request.addToNestedMap("error_message", errorMessage, "payment_outcome", "supplemental"));
+                    supplemental.getErrorMessage().ifPresent(errorMessage -> request.addToNestedMap("error_message", errorMessage, "payment_outcome", "supplemental"));
                 }
         );
 
