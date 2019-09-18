@@ -62,12 +62,12 @@ public class RateLimiterFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        final String authorization = requestContext.getHeaderString("Authorization");
         final String method = requestContext.getMethod();
 
         String accountId = getAccountId(requestContext);
+        RateLimiterKey key = RateLimiterKey.from(requestContext, accountId);
         try {
-            rateLimiter.checkRateOf(accountId, method + "-" + authorization, method);
+            rateLimiter.checkRateOf(accountId, key);
         } catch (RateLimitException e) {
             LOGGER.info("Rate limit reached for current service [account - {}, method - {}]. Sending response '429 Too Many Requests'", accountId, method);
             setTooManyRequestsError();

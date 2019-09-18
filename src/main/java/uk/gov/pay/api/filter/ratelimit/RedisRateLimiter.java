@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import uk.gov.pay.api.filter.RateLimiterKey;
 
 import javax.ws.rs.HttpMethod;
 import java.time.LocalDateTime;
@@ -14,15 +15,13 @@ import java.time.temporal.ChronoField;
 public class RedisRateLimiter {
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisRateLimiter.class);
 
-    private final int noOfReq;
-    private final int noOfReqForPost;
+    private RateLimitManager rateLimitManager;
     private final int perMillis;
     private JedisPool jedisPool;
 
     @Inject
-    public RedisRateLimiter(int noOfReq, int noOfReqForPost, int perMillis, JedisPool jedisPool) {
-        this.noOfReq = noOfReq;
-        this.noOfReqForPost = noOfReqForPost;
+    public RedisRateLimiter(RateLimitManager rateLimitManager, int perMillis, JedisPool jedisPool) {
+        this.rateLimitManager = rateLimitManager;
         this.perMillis = perMillis;
         this.jedisPool = jedisPool;
     }
@@ -30,21 +29,24 @@ public class RedisRateLimiter {
     /**
      * @throws RateLimitException
      */
-    synchronized void checkRateOf(String accountId, String key, String method)
+    synchronized void checkRateOf(String accountId, RateLimiterKey key)
             throws RedisException, RateLimitException {
 
         Long count;
 
         try {
-            count = updateAllowance(key);
+            count = updateAllowance(key.getKey());
         } catch (Exception e) {
             // Exception possible if redis is unavailable or perMillis is too high        
             throw new RedisException();
         }
 
-        if (count != null && count > getNoOfReqForMethod(method)) {
-            LOGGER.info(String.format("RedisRateLimiter - Rate limit exceeded for account [%s] and method [%s] - count: %d, rate allowed: %d", accountId, method, count, getNoOfReqForMethod(method)));
-            throw new RateLimitException();
+        if (count != null) {
+            int allowedNumberOfRequests = rateLimitManager.getAllowedNumberOfRequests(key, accountId);
+            if (count > allowedNumberOfRequests) {
+                LOGGER.info(String.format("RedisRateLimiter - Rate limit exceeded for account [%s] and type [%s] - count: %d, rate allowed: %d", accountId, key.getKeyType(), count, allowedNumberOfRequests));
+                throw new RateLimitException();
+            }
         }
     }
 
@@ -64,13 +66,6 @@ public class RedisRateLimiter {
 
     private Jedis getResource() {
         return jedisPool.getResource();
-    }
-
-    private int getNoOfReqForMethod(String method) {
-        if (HttpMethod.POST.equals(method)) {
-            return noOfReqForPost;
-        }
-        return noOfReq;
     }
 
     /**
