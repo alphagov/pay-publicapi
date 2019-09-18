@@ -24,6 +24,7 @@
           "account_id": [
             "123456"
           ],
+          "status_version": ["1"],
           "cardholder_name": ["j.doe@example.org"],
           "transaction_type": ["PAYMENT"]
         }

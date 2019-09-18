@@ -23,7 +23,8 @@
         "query": {
           "account_id": [
             "123456"
-          ]
+          ],
+          "status_version": ["1"]
         }
       },
       "response": {
