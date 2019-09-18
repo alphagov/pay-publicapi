@@ -5,7 +5,9 @@ import io.dropwizard.Configuration;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class RateLimiterConfig extends Configuration {
 
@@ -63,6 +65,6 @@ public class RateLimiterConfig extends Configuration {
     }
 
     public List<String> getElevatedAccounts() {
-        return elevatedAccounts;
+        return Optional.ofNullable(elevatedAccounts).orElse(Collections.emptyList());
     }
 }
