@@ -181,7 +181,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                                 requestParams.getLastFourDigits(),
                                 requestParams.getFirstSixDigits(),
                                 requestParams.getNameOnCard().orElse(null),
-                                requestParams.getCardExpiry(),
+                                requestParams.getCardExpiry().orElse(null),
                                 null,
                                 requestParams.getCardType()
                         )
@@ -216,7 +216,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                                 requestParams.getLastFourDigits(),
                                 requestParams.getFirstSixDigits(),
                                 requestParams.getNameOnCard().orElse(null),
-                                requestParams.getCardExpiry(),
+                                requestParams.getCardExpiry().orElse(null),
                                 null,
                                 requestParams.getCardType()
                         )
