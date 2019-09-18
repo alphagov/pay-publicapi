@@ -17,7 +17,7 @@ public class PaginationDecorator {
 
     private final String baseUrl;
     private final List<String> queryParametersToBeExcluded
-            = List.of("account_id", "gateway_account_id", "transaction_type");
+            = List.of("account_id", "gateway_account_id", "transaction_type", "status_version");
 
     @Inject
     public PaginationDecorator(PublicApiConfig config) {

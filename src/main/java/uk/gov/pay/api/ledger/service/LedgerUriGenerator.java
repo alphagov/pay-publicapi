@@ -18,6 +18,7 @@ public class LedgerUriGenerator {
     }
 
     public String transactionsURIWithParams(Map<String, String> queryParams) {
+        queryParams.put("status_version", "1");
         return buildLedgerUri("/v1/transaction", queryParams);
     }
 

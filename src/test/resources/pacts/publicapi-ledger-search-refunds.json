@@ -23,6 +23,7 @@
           "account_id": [
             "777"
           ],
+          "status_version": ["1"],
           "transaction_type": ["REFUND"],
           "from_date": [
             "2018-09-21T13:22:55Z"
