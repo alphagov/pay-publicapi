@@ -4,6 +4,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.api.filter.RateLimiterKey;
 
 import javax.ws.rs.HttpMethod;
 import java.util.concurrent.ExecutionException;
@@ -30,18 +31,20 @@ public class LocalRateLimiter {
                 .build();
     }
 
-    void checkRateOf(String accountId, String key, String method) throws RateLimitException {
+    void checkRateOf(String accountId, RateLimiterKey rateLimiterKey) throws RateLimitException {
 
         RateLimit rateLimit = null;
         try {
-            rateLimit = cache.get(key, () -> new RateLimit(getNoOfRequestsForMethod(method), perMillis));
+            rateLimit = cache.get(rateLimiterKey.getKey(), () -> new RateLimit(getNoOfRequestsForMethod(rateLimiterKey.getMethod()), perMillis));
             rateLimit.updateAllowance();
         } catch (ExecutionException e) {
             //ExecutionException is thrown when the valueLoader (cache.get())  throws a checked exception.
             //We just create a new instance (RateLimit) so no exceptions will be thrown, this should never happen.
             LOGGER.error("Unexpected error creating a Rate Limiter object in cache", e);
         } catch (RateLimitException e) {
-            LOGGER.info(String.format("LocalRateLimiter - Rate limit exceeded for account [%s] and method [%s] - count: %d, rate allowed: %d", accountId, method,
+            LOGGER.info(String.format("LocalRateLimiter - Rate limit exceeded for account [%s] and method [%s] - count: %d, rate allowed: %d",
+                    accountId,
+                    rateLimiterKey.getMethod(),
                     rateLimit.getRequestCount(),
                     rateLimit.getNoOfReq()));
 
