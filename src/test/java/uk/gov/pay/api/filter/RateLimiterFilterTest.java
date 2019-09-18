@@ -54,7 +54,6 @@ public class RateLimiterFilterTest {
 
         when(mockContainerRequestContext.getSecurityContext()).thenReturn(mockSecurityContext);
 
-        when(mockContainerRequestContext.getHeaderString("Authorization")).thenReturn(authorization);
         when(mockContainerRequestContext.getMethod()).thenReturn("GET");
         when(mockContainerRequestContext.getUriInfo()).thenReturn(uriInfo);
         when(uriInfo.getPath()).thenReturn("");
@@ -62,17 +61,16 @@ public class RateLimiterFilterTest {
 
     @Test
     public void shouldCheckRateLimitsWhenFilterIsInvoked() throws Exception {
-        when(mockContainerRequestContext.getHeaderString("Authorization")).thenReturn("apiKey");
         when(mockContainerRequestContext.getMethod()).thenReturn("POST");
         
         rateLimiterFilter.filter(mockContainerRequestContext);
         
-        verify(rateLimiter).checkRateOf(eq(ACCOUNT_ID), any(), eq("POST"));
+        verify(rateLimiter).checkRateOf(eq(ACCOUNT_ID), any());
     }
 
     @Test
     public void shouldSendErrorResponse_whenRateLimitExceeded() throws Exception {
-        doThrow(RateLimitException.class).when(rateLimiter).checkRateOf(eq("account-id"), any(), eq("GET"));
+        doThrow(RateLimitException.class).when(rateLimiter).checkRateOf(eq("account-id"), any());
 
         try {
             rateLimiterFilter.filter(mockContainerRequestContext);

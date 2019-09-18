@@ -28,8 +28,6 @@ public class RateLimitManagerTest {
     @Mock
     private RateLimiterConfig rateLimiterConfig;
 
-    @Mock
-    private RateLimiterKey rateLimiterKey;
     
     private RateLimitManager rateLimitManager;
     
@@ -53,7 +51,7 @@ public class RateLimitManagerTest {
             ",PUT,1"
     })
     public void returnsNumberOfAllowedRequests(String account, String method, int expectedNumberOfAllowedRequests) {
-        when(rateLimiterKey.getMethod()).thenReturn(method);
+        var rateLimiterKey = new RateLimiterKey("path", "key-type", method);
         
         assertThat(rateLimitManager.getAllowedNumberOfRequests(rateLimiterKey, account), is(expectedNumberOfAllowedRequests));
     }

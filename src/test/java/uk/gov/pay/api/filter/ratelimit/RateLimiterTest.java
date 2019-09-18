@@ -32,8 +32,8 @@ public class RateLimiterTest {
 
     @Test
     public void shouldInvokeRedisRateLimiter_whenRedisDbIsAvaiable() throws Exception {
-        rateLimiter.checkRateOf(accountId, rateLimiterKey, POST);
-        rateLimiter.checkRateOf(accountId, rateLimiterKey, POST);
+        rateLimiter.checkRateOf(accountId, rateLimiterKey);
+        rateLimiter.checkRateOf(accountId, rateLimiterKey);
 
         verify(redisRateLimiter, times(2)).checkRateOf(accountId, rateLimiterKey);
     }
@@ -42,11 +42,12 @@ public class RateLimiterTest {
     public void shouldInvokeLocalRateLimiter_whenRedisIsNotAvaiable() throws Exception {
         String key = "key2";
         when(rateLimiterKey.getKey()).thenReturn(key);
+        when(rateLimiterKey.getMethod()).thenReturn("POST");
 
         doThrow(new RedisException()).when(redisRateLimiter).checkRateOf(accountId, rateLimiterKey);
 
-        rateLimiter.checkRateOf(accountId, rateLimiterKey, POST);
-        rateLimiter.checkRateOf(accountId, rateLimiterKey, POST);
+        rateLimiter.checkRateOf(accountId, rateLimiterKey);
+        rateLimiter.checkRateOf(accountId, rateLimiterKey);
 
         verify(localRateLimiter, times(2)).checkRateOf(accountId, key, POST);
     }

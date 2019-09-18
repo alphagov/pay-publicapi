@@ -65,9 +65,9 @@ public class RateLimiterFilter implements ContainerRequestFilter {
         final String method = requestContext.getMethod();
 
         String accountId = getAccountId(requestContext);
-        RateLimiterKey key = RateLimiterKey.from(requestContext);
+        RateLimiterKey key = RateLimiterKey.from(requestContext, accountId);
         try {
-            rateLimiter.checkRateOf(accountId, key, method);
+            rateLimiter.checkRateOf(accountId, key);
         } catch (RateLimitException e) {
             LOGGER.info("Rate limit reached for current service [account - {}, method - {}]. Sending response '429 Too Many Requests'", accountId, method);
             setTooManyRequestsError();

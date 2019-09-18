@@ -1,8 +1,11 @@
 package uk.gov.pay.api.filter;
 
+import org.apache.commons.lang3.StringUtils;
+import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.utils.PathHelper;
 
 import javax.ws.rs.container.ContainerRequestContext;
+import java.util.Optional;
 
 public class RateLimiterKey {
     
@@ -16,7 +19,7 @@ public class RateLimiterKey {
         this.method = method;
     }
 
-    public static RateLimiterKey from(ContainerRequestContext requestContext) {
+    public static RateLimiterKey from(ContainerRequestContext requestContext, String accountId) {
         final String method = requestContext.getMethod();
 
         StringBuilder builder = new StringBuilder(method);
@@ -27,7 +30,7 @@ public class RateLimiterKey {
         }
 
         final String keyType = builder.toString();
-        builder.append("-" + requestContext.getHeaderString("Authorization"));
+        builder.append("-" + accountId);
 
         return new RateLimiterKey(builder.toString(), keyType, method);
     }

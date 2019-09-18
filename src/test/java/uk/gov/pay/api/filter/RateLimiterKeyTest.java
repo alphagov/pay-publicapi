@@ -32,21 +32,20 @@ public class RateLimiterKeyTest {
     @Before
     public void setUp() {
         when(containerRequestContext.getUriInfo()).thenReturn(uriInfo);
-        when(containerRequestContext.getHeaderString("Authorization")).thenReturn("headerValue");
     }
     
     @Test
     @Parameters({
-            "/v1/payments,POST,POST-create_payment,POST-create_payment-headerValue",
-            "/v1/payments/paymentId/capture,POST,POST-capture_payment,POST-capture_payment-headerValue",
-            "/v1/payments/paymentId/cancel,POST,POST,POST-headerValue",
-            "/v1/payments,GET,GET,GET-headerValue"
+            "/v1/payments,POST,POST-create_payment,POST-create_payment-account_id",
+            "/v1/payments/paymentId/capture,POST,POST-capture_payment,POST-capture_payment-account_id",
+            "/v1/payments/paymentId/cancel,POST,POST,POST-account_id",
+            "/v1/payments,GET,GET,GET-account_id"
     })
     public void returnsRateLimiterKey(String path, String method, String expectedKeyType, String expectedKey) {
         when(uriInfo.getPath()).thenReturn(path);
         when(containerRequestContext.getMethod()).thenReturn(method);
 
-        var rateLimiterKey = RateLimiterKey.from(containerRequestContext);
+        var rateLimiterKey = RateLimiterKey.from(containerRequestContext, "account_id");
         assertThat(rateLimiterKey.getKey(), is(expectedKey));
         assertThat(rateLimiterKey.getKeyType(), is(expectedKeyType));
     }
