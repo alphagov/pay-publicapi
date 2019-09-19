@@ -24,7 +24,7 @@ public class RateLimiter {
         } catch (RedisException e) {
             LOGGER.warn("Exception occurred checking rate limits using RedisRateLimiter, falling back to LocalRateLimiter");
 
-            localRateLimiter.checkRateOf(accountId, key.getKey(), key.getMethod());
+            localRateLimiter.checkRateOf(accountId, key);
         }
     }
 }

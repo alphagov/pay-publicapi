@@ -16,6 +16,9 @@ public class StringToListConverter extends StdConverter<String, List<String>> {
             return Collections.emptyList();
         }
 
-        return Arrays.stream(value.split(",")).map(String::trim).collect(Collectors.toList());
+        return Arrays.stream(value.split(","))
+                .filter(StringUtils::isNotBlank)
+                .map(String::trim)
+                .collect(Collectors.toList());
     }
 }

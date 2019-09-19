@@ -1,12 +1,11 @@
 package uk.gov.pay.api.utils;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class PathHelper {
 
     public static String getPathType(String pathValue, String method) {
-        String path = pathValue;
-        if (path.endsWith("/")) {
-            path = path.substring(0, path.length() - 1);
-        }
+        String path = StringUtils.removeEnd(pathValue, "/");
 
         if (path.endsWith("/capture")) {
             return "capture_payment";

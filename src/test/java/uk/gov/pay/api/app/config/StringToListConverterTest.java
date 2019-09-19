@@ -32,8 +32,10 @@ public class StringToListConverterTest {
         return new Object[]{
                 new Object[]{null, Collections.emptyList()},
                 new Object[]{"", Collections.emptyList()},
+                new Object[]{", ,   ,", Collections.emptyList()},
                 new Object[]{"a", List.of("a")},
-                new Object[]{"a, b, b", List.of("a", "b", "b")}
+                new Object[]{"a, b, b", List.of("a", "b", "b")},
+                new Object[]{"a, , b", List.of("a", "b")}
         };
     }
 }

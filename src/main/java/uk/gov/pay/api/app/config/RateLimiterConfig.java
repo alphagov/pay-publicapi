@@ -3,6 +3,7 @@ package uk.gov.pay.api.app.config;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.dropwizard.Configuration;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.util.Collections;
@@ -29,6 +30,7 @@ public class RateLimiterConfig extends Configuration {
     @Min(1)
     private int noOfReqForPostPerNode;
 
+    @Valid
     @JsonDeserialize(converter = StringToListConverter.class)
     private List<String> elevatedAccounts;
 

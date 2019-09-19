@@ -1,14 +1,11 @@
 package uk.gov.pay.api.filter;
 
-import org.apache.commons.lang3.StringUtils;
-import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.utils.PathHelper;
 
 import javax.ws.rs.container.ContainerRequestContext;
-import java.util.Optional;
 
 public class RateLimiterKey {
-    
+
     private String method;
     private String key;
     private String keyType;

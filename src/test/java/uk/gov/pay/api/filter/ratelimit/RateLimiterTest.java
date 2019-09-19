@@ -18,15 +18,16 @@ public class RateLimiterTest {
     private static final String POST = "POST";
     private static final String accountId = "account-id";
     @Mock
-    LocalRateLimiter localRateLimiter;
+    private LocalRateLimiter localRateLimiter;
     @Mock
-    RedisRateLimiter redisRateLimiter;
-    @Mock
+    private RedisRateLimiter redisRateLimiter;
+
     private RateLimiterKey rateLimiterKey;
-    RateLimiter rateLimiter;
+    private RateLimiter rateLimiter;
 
     @Before
     public void setup() {
+        rateLimiterKey = new RateLimiterKey("key2", "key-type", POST);
         rateLimiter = new RateLimiter(localRateLimiter, redisRateLimiter);
     }
 
@@ -40,15 +41,11 @@ public class RateLimiterTest {
 
     @Test
     public void shouldInvokeLocalRateLimiter_whenRedisIsNotAvaiable() throws Exception {
-        String key = "key2";
-        when(rateLimiterKey.getKey()).thenReturn(key);
-        when(rateLimiterKey.getMethod()).thenReturn("POST");
-
         doThrow(new RedisException()).when(redisRateLimiter).checkRateOf(accountId, rateLimiterKey);
 
         rateLimiter.checkRateOf(accountId, rateLimiterKey);
         rateLimiter.checkRateOf(accountId, rateLimiterKey);
 
-        verify(localRateLimiter, times(2)).checkRateOf(accountId, key, POST);
+        verify(localRateLimiter, times(2)).checkRateOf(accountId, rateLimiterKey);
     }
 }

@@ -8,7 +8,6 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import uk.gov.pay.api.filter.RateLimiterKey;
 
-import javax.ws.rs.HttpMethod;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
 
@@ -44,7 +43,8 @@ public class RedisRateLimiter {
         if (count != null) {
             int allowedNumberOfRequests = rateLimitManager.getAllowedNumberOfRequests(key, accountId);
             if (count > allowedNumberOfRequests) {
-                LOGGER.info(String.format("RedisRateLimiter - Rate limit exceeded for account [%s] and type [%s] - count: %d, rate allowed: %d", accountId, key.getKeyType(), count, allowedNumberOfRequests));
+                LOGGER.info(String.format("RedisRateLimiter - Rate limit exceeded for account [%s] and method [%s] - count: %d, rate allowed: %d",
+                        accountId, key.getKeyType(), count, allowedNumberOfRequests));
                 throw new RateLimitException();
             }
         }

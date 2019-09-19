@@ -1,0 +1,52 @@
+server:
+  applicationConnectors:
+    - type: http
+      port: 0
+  adminConnectors:
+    - type: http
+      port: 0
+
+logging:
+  level: INFO
+  appenders:
+    - type: console
+      threshold: ALL
+      timeZone: UTC
+      target: stdout
+      logFormat: "[%d{yyyy-MM-dd HH:mm:ss.SSS}] [thread=%thread] [level=%-5level] [logger=%logger{15}] [requestID=%X{X-Request-Id:-(none)}] [gateway_account_id=%X{gateway_account_id:-(none)}] - %msg%n"
+
+baseUrl: http://publicapi.url/
+connectorUrl: http://connector_card.url/
+connectorDDUrl: http://connector_direct_debit.url/
+publicAuthUrl: http://publicauth.url/v1/auth
+ledgerUrl: http://ledger.url/
+
+alwaysUseFutureStrategy: false
+
+graphiteHost: ${METRICS_HOST:-localhost}
+graphitePort: ${METRICS_PORT:-8092}
+
+jerseyClientConfig:
+  disabledSecureConnection: "true"
+
+rateLimiter:
+  noOfReq: 1000
+  perMillis: 1000
+  noOfReqForPost: 1000
+  noOfReqPerNode: 1
+  noOfReqForPostPerNode: 1
+  elevatedAccounts:
+  noOfReqForElevatedAccounts: 1000
+  noOfPostReqForElevatedAccounts: 1000
+
+redis:
+  endpoint: localhost:6379
+  ssl: false
+  timeout: 100
+
+allowHttpForReturnUrl: false
+
+apiKeyHmacSecret: qwer9yuhgf
+
+# Caching authenticator.
+authenticationCachePolicy: expireAfterWrite=3s

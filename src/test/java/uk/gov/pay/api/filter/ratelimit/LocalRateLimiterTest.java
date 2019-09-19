@@ -15,6 +15,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.api.filter.RateLimiterKey;
 
 import java.util.Arrays;
 import java.util.List;
@@ -56,23 +57,23 @@ public class LocalRateLimiterTest {
 
     @Test
     public void rateLimiterSetTo_2CallsPerSecond_shouldAllow2ConsecutiveCallsWithSameKeys() throws Exception {
-
         String key = "key1";
+        var rateLimiterKey = new RateLimiterKey(key, "key-type", POST);
         localRateLimiter = new LocalRateLimiter(2, 2, 1000);
 
-        localRateLimiter.checkRateOf(accountId, key, POST);
-        localRateLimiter.checkRateOf(accountId, key, POST);
+        localRateLimiter.checkRateOf(accountId, rateLimiterKey);
+        localRateLimiter.checkRateOf(accountId, rateLimiterKey);
     }
 
     @Test(expected = RateLimitException.class)
     public void rateLimiterSetTo_1CallPer300Millis_shouldAFailWhen2ConsecutiveCallsWithSameKeysAreMade() throws RateLimitException {
-
         String key = "key2";
+        var rateLimiterKey = new RateLimiterKey(key, "key-type", POST);
         localRateLimiter = new LocalRateLimiter(1, 1, 300);
 
         try {
-            localRateLimiter.checkRateOf(accountId, key, POST);
-            localRateLimiter.checkRateOf(accountId, key, POST);
+            localRateLimiter.checkRateOf(accountId, rateLimiterKey);
+            localRateLimiter.checkRateOf(accountId, rateLimiterKey);
         } catch (RateLimitException e) {
             verify(mockAppender, times(1)).doAppend(loggingEventArgumentCaptor.capture());
             List<LoggingEvent> loggingEvents = loggingEventArgumentCaptor.getAllValues();
@@ -85,27 +86,27 @@ public class LocalRateLimiterTest {
 
     @Test
     public void rateLimiterSetTo_3CallsPerSecond_shouldAllowMakingOnly3CallsWithSameKey() throws Exception {
-
         String key = "key3";
+        var rateLimiterKey = new RateLimiterKey(key, "key-type", POST);
         localRateLimiter = new LocalRateLimiter(3, 3, 1000);
 
         ExecutorService executor = Executors.newFixedThreadPool(3);
 
         List<Callable<String>> tasks = Arrays.asList(
                 () -> {
-                    localRateLimiter.checkRateOf(accountId, key, POST);
+                    localRateLimiter.checkRateOf(accountId, rateLimiterKey);
                     return "task1";
                 },
                 () -> {
-                    localRateLimiter.checkRateOf(accountId, key, POST);
+                    localRateLimiter.checkRateOf(accountId, rateLimiterKey);
                     return "task2";
                 },
                 () -> {
-                    localRateLimiter.checkRateOf(accountId, key, POST);
+                    localRateLimiter.checkRateOf(accountId, rateLimiterKey);
                     return "task3";
                 },
                 () -> {
-                    localRateLimiter.checkRateOf(accountId, key, POST);
+                    localRateLimiter.checkRateOf(accountId, rateLimiterKey);
                     return "task4";
                 }
         );

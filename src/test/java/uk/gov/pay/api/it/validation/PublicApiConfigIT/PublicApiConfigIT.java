@@ -1,4 +1,4 @@
-package uk.gov.pay.api.it.validation;
+package uk.gov.pay.api.it.validation.PublicApiConfigIT;
 
 import io.dropwizard.testing.ResourceHelpers;
 import io.dropwizard.testing.junit.DropwizardAppRule;
