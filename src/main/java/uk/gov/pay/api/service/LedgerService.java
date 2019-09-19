@@ -29,6 +29,7 @@ import static org.apache.http.HttpStatus.SC_OK;
 public class LedgerService {
     private static final String PARAM_ACCOUNT_ID = "account_id";
     private static final String PARAM_TRANSACTION_TYPE = "transaction_type";
+    private static final String PARAM_EXACT_REFERENCE_MATCH = "exact_reference_match";
     private static final String PAYMENT_TRANSACTION_TYPE = "PAYMENT";
     private static final String REFUND_TRANSACTION_TYPE = "REFUND";
 
@@ -118,6 +119,7 @@ public class LedgerService {
 
         paramsAsMap.put(PARAM_ACCOUNT_ID, account.getAccountId());
         paramsAsMap.put(PARAM_TRANSACTION_TYPE, PAYMENT_TRANSACTION_TYPE);
+        paramsAsMap.put(PARAM_EXACT_REFERENCE_MATCH, "true");
 
         Response response = client
                 .target(ledgerUriGenerator.transactionsURIWithParams(paramsAsMap))
