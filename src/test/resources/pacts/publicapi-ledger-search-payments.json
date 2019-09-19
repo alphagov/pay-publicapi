@@ -26,7 +26,8 @@
           ],
           "status_version": ["1"],
           "cardholder_name": ["j.doe@example.org"],
-          "transaction_type": ["PAYMENT"]
+          "transaction_type": ["PAYMENT"],
+          "exact_reference_match": ["true"]
         }
       },
       "response": {
