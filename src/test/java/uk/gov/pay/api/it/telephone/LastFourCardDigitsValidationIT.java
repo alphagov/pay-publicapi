@@ -37,10 +37,4 @@ public class LastFourCardDigitsValidationIT extends TelephonePaymentResourceITBa
         postPaymentResponse(toJson(requestBody))
                 .statusCode(422);
     }
-
-    @Test
-    public void respondWith422_whenLastFourDigitsisMissing() {
-        postPaymentResponse(toJson(requestBody))
-                .statusCode(422);
-    }
 }

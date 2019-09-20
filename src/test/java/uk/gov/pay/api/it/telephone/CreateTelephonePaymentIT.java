@@ -29,9 +29,6 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
         requestBody.put("processor_id", "1PROC");
         requestBody.put("provider_id", "1PROV");
         requestBody.put("payment_outcome", Map.of("status", "success"));
-        requestBody.put("card_type", "visa");
-        requestBody.put("last_four_digits", "1234");
-        requestBody.put("first_six_digits", "123456");
 
         createTelephonePaymentRequest
                 .withAmount(100)
@@ -39,10 +36,7 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .withDescription("Some description")
                 .withProcessorId("1PROC")
                 .withProviderId("1PROV")
-                .withPaymentOutcome(new PaymentOutcome("success"))
-                .withCardType("visa")
-                .withLastFourDigits("1234")
-                .withFirstSixDigits("123456");
+                .withPaymentOutcome(new PaymentOutcome("success"));
     }
 
     @After
@@ -55,7 +49,10 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .withNameOnCard(null)
                 .withEmailAddress(null)
                 .withTelephoneNumber(null)
-                .withCardExpiry(null);
+                .withCardExpiry(null)
+                .withCardType(null)
+                .withLastFourDigits(null)
+                .withFirstSixDigits(null);
     }
 
     @Test
@@ -67,6 +64,9 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
         requestBody.put("email_address", "jane_doe@example.com");
         requestBody.put("telephone_number", "+447700900796");
         requestBody.put("card_expiry", "01/08");
+        requestBody.put("card_type", "visa");
+        requestBody.put("last_four_digits", "1234");
+        requestBody.put("first_six_digits", "123456");
 
         createTelephonePaymentRequest
                 .withAuthCode("666")
@@ -75,7 +75,10 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .withNameOnCard("Jane Doe")
                 .withEmailAddress("jane_doe@example.com")
                 .withTelephoneNumber("+447700900796")
-                .withCardExpiry("01/08");
+                .withCardExpiry("01/08")
+                .withCardType("visa")
+                .withLastFourDigits("1234")
+                .withFirstSixDigits("123456");
         
         connectorMockClient.respondCreated_whenCreateTelephoneCharge(GATEWAY_ACCOUNT_ID, createTelephonePaymentRequest
                 .build());
@@ -117,9 +120,6 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .body("description", is("Some description"))
                 .body("processor_id", is("1PROC"))
                 .body("payment_outcome.status", is("success"))
-                .body("card_type", is("visa"))
-                .body("last_four_digits", is("1234"))
-                .body("first_six_digits", is("123456"))
                 .body("payment_id", is("dummypaymentid123notpersisted"))
                 .body("state.status", is("success"))
                 .body("state.finished", is(true));
@@ -138,10 +138,10 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .body("description", is("Some description"))
                 .body("processor_id", is("1PROC"))
                 .body("payment_outcome.status", is("success"))
-                .body("card_type", is("visa"))
+                .body("card_type", is(nullValue()))
                 .body("card_expiry", is(nullValue()))
-                .body("last_four_digits", is("1234"))
-                .body("first_six_digits", is("123456"))
+                .body("last_four_digits", is(nullValue()))
+                .body("first_six_digits", is(nullValue()))
                 .body("payment_id", is("dummypaymentid123notpersisted"))
                 .body("state.status", is("success"))
                 .body("state.finished", is(true));
