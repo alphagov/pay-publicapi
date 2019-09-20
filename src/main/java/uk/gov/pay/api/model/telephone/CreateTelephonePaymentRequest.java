@@ -70,7 +70,6 @@ public class CreateTelephonePaymentRequest {
     @JsonProperty("email_address")
     private String emailAddress;
 
-    @NotNull(message = "Field [card_expiry] cannot be null")
     @ValidCardExpiryDate(message = "Field [card_expiry] must have valid MM/YY")
     private String cardExpiry;
     
@@ -93,17 +92,17 @@ public class CreateTelephonePaymentRequest {
                 .add("processor_id", this.getProcessorId())
                 .add("provider_id", this.getProviderId())
                 .add("card_type", this.getCardType())
-                .add("card_expiry", this.getCardExpiry())
                 .add("last_four_digits", this.getLastFourDigits())
                 .add("first_six_digits", this.getFirstSixDigits())
                 .addToMap("payment_outcome", "status", this.getPaymentOutcome().getStatus());
         this.getPaymentOutcome().getCode().ifPresent(code -> request.addToMap("payment_outcome", "code", code));
         this.getPaymentOutcome().getSupplemental().ifPresent(supplemental -> {
-                    supplemental.getErrorCode().ifPresent(errorCode -> request.addToNestedMap("error_code", errorCode, "payment_outcome", "supplemental"));
-                    supplemental.getErrorMessage().ifPresent(errorMessage -> request.addToNestedMap("error_message", errorMessage, "payment_outcome", "supplemental"));
+            supplemental.getErrorCode().ifPresent(errorCode -> request.addToNestedMap("error_code", errorCode, "payment_outcome", "supplemental"));
+            supplemental.getErrorMessage().ifPresent(errorMessage -> request.addToNestedMap("error_message", errorMessage, "payment_outcome", "supplemental"));
                 }
         );
 
+        this.getCardExpiry().ifPresent(cardExpiry -> request.add("card_expiry", cardExpiry));
         this.getCreatedDate().ifPresent(createdDate -> request.add("created_date", createdDate));
         this.getAuthorisedDate().ifPresent(authorisedDate -> request.add("authorised_date", authorisedDate));
         this.getAuthCode().ifPresent(authCode -> request.add("auth_code", authCode));
@@ -205,8 +204,8 @@ public class CreateTelephonePaymentRequest {
         return Optional.ofNullable(emailAddress);
     }
 
-    public String getCardExpiry() {
-        return cardExpiry;
+    public Optional<String> getCardExpiry() {
+        return Optional.ofNullable(cardExpiry);
     }
 
     public String getLastFourDigits() {

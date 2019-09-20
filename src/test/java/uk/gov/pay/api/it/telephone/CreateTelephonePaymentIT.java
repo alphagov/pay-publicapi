@@ -10,6 +10,7 @@ import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static io.restassured.http.ContentType.JSON;
 
@@ -29,7 +30,6 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
         requestBody.put("provider_id", "1PROV");
         requestBody.put("payment_outcome", Map.of("status", "success"));
         requestBody.put("card_type", "visa");
-        requestBody.put("card_expiry", "01/08");
         requestBody.put("last_four_digits", "1234");
         requestBody.put("first_six_digits", "123456");
 
@@ -41,7 +41,6 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .withProviderId("1PROV")
                 .withPaymentOutcome(new PaymentOutcome("success"))
                 .withCardType("visa")
-                .withCardExpiry("01/08")
                 .withLastFourDigits("1234")
                 .withFirstSixDigits("123456");
     }
@@ -55,7 +54,8 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .withAuthorisedDate(null)
                 .withNameOnCard(null)
                 .withEmailAddress(null)
-                .withTelephoneNumber(null);
+                .withTelephoneNumber(null)
+                .withCardExpiry(null);
     }
 
     @Test
@@ -66,6 +66,7 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
         requestBody.put("name_on_card", "Jane Doe");
         requestBody.put("email_address", "jane_doe@example.com");
         requestBody.put("telephone_number", "+447700900796");
+        requestBody.put("card_expiry", "01/08");
 
         createTelephonePaymentRequest
                 .withAuthCode("666")
@@ -73,7 +74,8 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .withAuthorisedDate("2018-02-21T16:05:33Z")
                 .withNameOnCard("Jane Doe")
                 .withEmailAddress("jane_doe@example.com")
-                .withTelephoneNumber("+447700900796");
+                .withTelephoneNumber("+447700900796")
+                .withCardExpiry("01/08");
         
         connectorMockClient.respondCreated_whenCreateTelephoneCharge(GATEWAY_ACCOUNT_ID, createTelephonePaymentRequest
                 .build());
@@ -116,7 +118,6 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .body("processor_id", is("1PROC"))
                 .body("payment_outcome.status", is("success"))
                 .body("card_type", is("visa"))
-                .body("card_expiry", is("01/08"))
                 .body("last_four_digits", is("1234"))
                 .body("first_six_digits", is("123456"))
                 .body("payment_id", is("dummypaymentid123notpersisted"))
@@ -138,7 +139,7 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .body("processor_id", is("1PROC"))
                 .body("payment_outcome.status", is("success"))
                 .body("card_type", is("visa"))
-                .body("card_expiry", is("01/08"))
+                .body("card_expiry", is(nullValue()))
                 .body("last_four_digits", is("1234"))
                 .body("first_six_digits", is("123456"))
                 .body("payment_id", is("dummypaymentid123notpersisted"))

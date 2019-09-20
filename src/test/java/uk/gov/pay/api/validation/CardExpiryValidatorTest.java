@@ -84,7 +84,6 @@ public class CardExpiryValidatorTest {
 
         Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
 
-        assertThat(constraintViolations.size(), is(1));
-        assertThat(constraintViolations.iterator().next().getMessage(),is("Field [card_expiry] cannot be null"));
+        assertThat(constraintViolations.isEmpty(), is(true));
     }
 }
