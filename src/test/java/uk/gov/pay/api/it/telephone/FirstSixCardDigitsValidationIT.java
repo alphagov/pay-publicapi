@@ -37,10 +37,4 @@ public class FirstSixCardDigitsValidationIT extends TelephonePaymentResourceITBa
         postPaymentResponse(toJson(requestBody))
                 .statusCode(422);
     }
-
-    @Test
-    public void respondWith422_whenFirstSixDigitsIsMissing() {
-        postPaymentResponse(toJson(requestBody))
-                .statusCode(422);
-    }
 }

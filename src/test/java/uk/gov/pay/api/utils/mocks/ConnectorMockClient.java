@@ -178,12 +178,12 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withProcessorId(requestParams.getProcessorId())
                 .withProviderId(requestParams.getProviderId())
                 .withCardDetails(new CardDetails(
-                                requestParams.getLastFourDigits(),
-                                requestParams.getFirstSixDigits(),
+                                requestParams.getLastFourDigits().orElse(null),
+                                requestParams.getFirstSixDigits().orElse(null),
                                 requestParams.getNameOnCard().orElse(null),
                                 requestParams.getCardExpiry().orElse(null),
                                 null,
-                                requestParams.getCardType()
+                                requestParams.getCardType().orElse(null)
                         )
                 )
                 .withPaymentOutcome(requestParams.getPaymentOutcome())
@@ -213,12 +213,12 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withProcessorId(requestParams.getProcessorId())
                 .withProviderId(requestParams.getProviderId())
                 .withCardDetails(new CardDetails(
-                                requestParams.getLastFourDigits(),
-                                requestParams.getFirstSixDigits(),
+                                requestParams.getLastFourDigits().orElse(null),
+                                requestParams.getFirstSixDigits().orElse(null),
                                 requestParams.getNameOnCard().orElse(null),
                                 requestParams.getCardExpiry().orElse(null),
                                 null,
-                                requestParams.getCardType()
+                                requestParams.getCardType().orElse(null)
                         )
                 )
                 .withPaymentOutcome(requestParams.getPaymentOutcome())
