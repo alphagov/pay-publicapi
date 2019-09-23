@@ -88,9 +88,6 @@ public class CreateTelephonePaymentRequest {
                 .add("description", this.getDescription())
                 .add("processor_id", this.getProcessorId())
                 .add("provider_id", this.getProviderId())
-                .add("card_type", this.getCardType())
-                .add("last_four_digits", this.getLastFourDigits())
-                .add("first_six_digits", this.getFirstSixDigits())
                 .addToMap("payment_outcome", "status", this.getPaymentOutcome().getStatus());
         this.getPaymentOutcome().getCode().ifPresent(code -> request.addToMap("payment_outcome", "code", code));
         this.getPaymentOutcome().getSupplemental().ifPresent(supplemental -> {
@@ -106,6 +103,9 @@ public class CreateTelephonePaymentRequest {
         this.getNameOnCard().ifPresent(nameOnCard -> request.add("name_on_card", nameOnCard));
         this.getEmailAddress().ifPresent(emailAddress -> request.add("email_address", emailAddress));
         this.getTelephoneNumber().ifPresent(telephoneNumber -> request.add("telephone_number", telephoneNumber));
+        this.getCardType().ifPresent(cardType -> request.add("card_type", cardType));
+        this.getLastFourDigits().ifPresent(lastFourDigits -> request.add("last_four_digits", lastFourDigits));
+        this.getFirstSixDigits().ifPresent(firstSixDigits -> request.add("first_six_digits", firstSixDigits));
 
         return request.build();
     }
