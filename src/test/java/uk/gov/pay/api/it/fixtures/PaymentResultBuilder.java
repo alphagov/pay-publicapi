@@ -52,6 +52,7 @@ public abstract class PaymentResultBuilder {
         public String expiry_date;
         public Address billing_address;
         public String card_brand;
+        public String card_type;
 
         public CardDetails() {
         }
@@ -63,6 +64,7 @@ public abstract class PaymentResultBuilder {
             this.expiry_date = cardDetails.getExpiryDate();
             this.card_brand = cardDetails.getCardBrand();
             this.billing_address = cardDetails.getBillingAddress().map(Address::new).orElse(null);
+            this.card_type = cardDetails.getCardType();
         }
     }
 
