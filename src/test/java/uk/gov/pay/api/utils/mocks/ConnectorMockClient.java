@@ -94,14 +94,14 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withLinks(responseFromConnector.getLinks())
                 .withSettlementSummary(responseFromConnector.getSettlementSummary());
 
-        ofNullable(responseFromConnector.getCardDetails()).ifPresent(resultBuilder::withCardDetails);
-        ofNullable(responseFromConnector.getRefundSummary()).ifPresent(resultBuilder::withRefundSummary);
-        ofNullable(responseFromConnector.getGatewayTransactionId()).ifPresent(resultBuilder::withGatewayTransactionId);
-        ofNullable(responseFromConnector.getCorporateCardSurcharge()).ifPresent(resultBuilder::withCorporateCardSurcharge);
-        ofNullable(responseFromConnector.getTotalAmount()).ifPresent(resultBuilder::withTotalAmount);
-        ofNullable(responseFromConnector.getFee()).ifPresent(resultBuilder::withFee);
-        ofNullable(responseFromConnector.getNetAmount()).ifPresent(resultBuilder::withNetAmount);
-        responseFromConnector.getMetadata().ifPresent(resultBuilder::withMetadata);
+        ofNullable(responseFromConnector.getCardDetails()).ifPresent(x -> resultBuilder.withCardDetails(x));
+        ofNullable(responseFromConnector.getRefundSummary()).ifPresent(x -> resultBuilder.withRefundSummary(x));
+        ofNullable(responseFromConnector.getGatewayTransactionId()).ifPresent(x -> resultBuilder.withGatewayTransactionId(x));
+        ofNullable(responseFromConnector.getCorporateCardSurcharge()).ifPresent(x -> resultBuilder.withCorporateCardSurcharge(x));
+        ofNullable(responseFromConnector.getTotalAmount()).ifPresent(x -> resultBuilder.withTotalAmount(x));
+        ofNullable(responseFromConnector.getFee()).ifPresent(x -> resultBuilder.withFee(x));
+        ofNullable(responseFromConnector.getNetAmount()).ifPresent(x -> resultBuilder.withNetAmount(x));
+        responseFromConnector.getMetadata().ifPresent(m -> resultBuilder.withMetadata(m));
 
         return resultBuilder.build();
     }
@@ -169,7 +169,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     private String chargeEventsLocation(String accountId, String chargeId) {
         return format(CONNECTOR_MOCK_CHARGE_EVENTS_PATH, accountId, chargeId);
     }
-
+    
     public void respondCreated_whenCreateTelephoneCharge(String gatewayAccountId, CreateTelephonePaymentRequest requestParams) {
         var responseFromConnector = aCreateOrGetChargeResponseFromConnector()
                 .withAmount(requestParams.getAmount())
@@ -183,8 +183,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                                 requestParams.getNameOnCard().orElse(null),
                                 requestParams.getCardExpiry().orElse(null),
                                 null,
-                                requestParams.getCardType().orElse(null),
-                                null
+                                requestParams.getCardType().orElse(null)
                         )
                 )
                 .withPaymentOutcome(requestParams.getPaymentOutcome())
@@ -192,11 +191,11 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withDelayedCapture(false)
                 .withState(new PaymentState("success", true, null, null));
 
-        requestParams.getCreatedDate().ifPresent(responseFromConnector::withCreatedDate);
-        requestParams.getAuthorisedDate().ifPresent(responseFromConnector::withAuthorisedDate);
-        requestParams.getEmailAddress().ifPresent(responseFromConnector::withEmail);
-        requestParams.getTelephoneNumber().ifPresent(responseFromConnector::withTelephoneNumber);
-        requestParams.getAuthCode().ifPresent(responseFromConnector::withAuthCode);
+        requestParams.getCreatedDate().ifPresent(createdDate -> responseFromConnector.withCreatedDate(createdDate));
+        requestParams.getAuthorisedDate().ifPresent(authorisedDate -> responseFromConnector.withAuthorisedDate(authorisedDate));
+        requestParams.getEmailAddress().ifPresent(emailAddress -> responseFromConnector.withEmail(emailAddress));
+        requestParams.getTelephoneNumber().ifPresent(telephoneNumber -> responseFromConnector.withTelephoneNumber(telephoneNumber));
+        requestParams.getAuthCode().ifPresent(authCode -> responseFromConnector.withAuthCode(authCode));
 
         mockCreateTelephoneCharge(gatewayAccountId, aResponse()
                 .withStatus(CREATED_201)
@@ -219,8 +218,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                                 requestParams.getNameOnCard().orElse(null),
                                 requestParams.getCardExpiry().orElse(null),
                                 null,
-                                requestParams.getCardType().orElse(null),
-                                null
+                                requestParams.getCardType().orElse(null)
                         )
                 )
                 .withPaymentOutcome(requestParams.getPaymentOutcome())
@@ -228,11 +226,11 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withDelayedCapture(false)
                 .withState(new PaymentState("success", true, null, null));
 
-        requestParams.getCreatedDate().ifPresent(responseFromConnector::withCreatedDate);
-        requestParams.getAuthorisedDate().ifPresent(responseFromConnector::withAuthorisedDate);
-        requestParams.getEmailAddress().ifPresent(responseFromConnector::withEmail);
-        requestParams.getTelephoneNumber().ifPresent(responseFromConnector::withTelephoneNumber);
-        requestParams.getAuthCode().ifPresent(responseFromConnector::withAuthCode);
+        requestParams.getCreatedDate().ifPresent(createdDate -> responseFromConnector.withCreatedDate(createdDate));
+        requestParams.getAuthorisedDate().ifPresent(authorisedDate -> responseFromConnector.withAuthorisedDate(authorisedDate));
+        requestParams.getEmailAddress().ifPresent(emailAddress -> responseFromConnector.withEmail(emailAddress));
+        requestParams.getTelephoneNumber().ifPresent(telephoneNumber -> responseFromConnector.withTelephoneNumber(telephoneNumber));
+        requestParams.getAuthCode().ifPresent(authCode -> responseFromConnector.withAuthCode(authCode));
 
         mockCreateTelephoneCharge(gatewayAccountId, aResponse()
                 .withStatus(OK_200)
@@ -255,7 +253,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withCreatedDate(SDF.format(new Date()))
                 .withLanguage(SupportedLanguage.ENGLISH)
                 .withDelayedCapture(false)
-                .withCardDetails(new CardDetails("1234", "123456", "Mr. Payment", "12/19", null, "Mastercard", "debit"))
+                .withCardDetails(new CardDetails("1234", "123456", "Mr. Payment", "12/19", null, "Mastercard"))
                 .withLink(validGetLink(chargeLocation(gatewayAccountId, "chargeId"), "self"))
                 .withLink(validGetLink(nextUrl("chargeTokenId"), "next_url"))
                 .withLink(validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap("chargeTokenId")));
@@ -273,17 +271,17 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
             Address billingAddress = new Address(requestParams.getAddressLine1().orElse(null), requestParams.getAddressLine2().orElse(null),
                     requestParams.getAddressPostcode().orElse(null), requestParams.getAddressCity().orElse(null), requestParams.getAddressCountry().orElse(null));
             CardDetails cardDetails = new CardDetails(null, null, requestParams.getCardholderName().orElse(null),
-                    null, billingAddress, null, null);
+                    null, billingAddress, null);
             responseFromConnector.withCardDetails(cardDetails);
         }
-
+        
         mockCreateCharge(gatewayAccountId, aResponse()
-                .withStatus(CREATED_201)
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                .withHeader(LOCATION, chargeLocation(gatewayAccountId, "chargeId"))
-                .withBody(buildChargeResponse(responseFromConnector.build())));
+                        .withStatus(CREATED_201)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withHeader(LOCATION, chargeLocation(gatewayAccountId, "chargeId"))
+                        .withBody(buildChargeResponse(responseFromConnector.build())));
     }
-
+    
     public void respondOk_whenCreateCharge(String chargeTokenId, String gatewayAccountId, ChargeResponseFromConnector responseFromConnector) {
         ChargeResponseFromConnector build = aCreateOrGetChargeResponseFromConnector(responseFromConnector)
                 .withLink(validGetLink(chargeLocation(gatewayAccountId, responseFromConnector.getChargeId()), "self"))
@@ -301,7 +299,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         wireMockClassRule.stubFor(post(urlPathEqualTo(format(CONNECTOR_MOCK_TELEPHONE_CHARGES_PATH, gatewayAccountId)))
                 .withHeader(CONTENT_TYPE, matching(APPLICATION_JSON)).willReturn(responseDefinitionBuilder));
     }
-
+    
     public void respondAccepted_whenCreateARefund(int amount, int refundAmountAvailable, String gatewayAccountId, String chargeId, String refundId, String status, String createdDate) {
         whenCreateRefund(gatewayAccountId, chargeId, aResponse()
                 .withStatus(ACCEPTED_202)
@@ -327,7 +325,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     public void respondPreconditionFailed_whenCreateRefund(String gatewayAccountId, String errorMsg, String chargeId) {
         whenCreateRefund(gatewayAccountId, chargeId, withStatusAndErrorMessage(PRECONDITION_FAILED_412, errorMsg, REFUND_AMOUNT_AVAILABLE_MISMATCH));
     }
-
+    
     public void respondZeroAmountNotAllowed(String gatewayAccountId) {
         mockCreateCharge(gatewayAccountId, withStatusAndErrorMessage(UNPROCESSABLE_ENTITY_422, "anything", ZERO_AMOUNT_NOT_ALLOWED));
     }
@@ -532,7 +530,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     private ResponseDefinitionBuilder withStatusAndErrorMessage(int statusCode, String errorMsg, ErrorIdentifier errorIdentifier) {
         return withStatusAndErrorMessage(statusCode, errorMsg, errorIdentifier, null);
     }
-
+    
     private ResponseDefinitionBuilder withStatusAndErrorMessage(int statusCode, String errorMsg, ErrorIdentifier errorIdentifier, String reason) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("message", List.of(errorMsg));
@@ -540,7 +538,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         if (reason != null) {
             payload.put("reason", reason);
         }
-
+        
         return aResponse()
                 .withStatus(statusCode)
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON)
@@ -563,8 +561,8 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     }
 
     public void respondBadRequest_whenCreateARefund(String reason, String gatewayAccountId, String chargeId) {
-        whenCreateRefund(gatewayAccountId, chargeId,
-                withStatusAndErrorMessage(BAD_REQUEST_400,
+        whenCreateRefund(gatewayAccountId, chargeId, 
+                withStatusAndErrorMessage(BAD_REQUEST_400, 
                         "A message that should be completely ignored (only log)", REFUND_NOT_AVAILABLE, reason));
     }
 }

@@ -10,6 +10,7 @@ import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.SettlementSummary;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
+import uk.gov.pay.api.utils.mocks.ConnectorDDMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 import uk.gov.pay.api.utils.mocks.LedgerMockClient;
 import uk.gov.pay.commons.model.SupportedLanguage;
@@ -51,7 +52,6 @@ public class GetPaymentIT extends PaymentResourceITestBase {
     private static final RefundSummary REFUND_SUMMARY = new RefundSummary("pending", 100L, 50L);
     private static final String PAYMENT_PROVIDER = "Sandbox";
     private static final String CARD_BRAND_LABEL = "Mastercard";
-    private static final String CARD_TYPE = "debit";
     private static final String RETURN_URL = "https://somewhere.gov.uk/rainbow/1";
     private static final String REFERENCE = "Some reference <script> alert('This is a ?{simple} XSS attack.')</script>";
     private static final String EMAIL = "alice.111@mail.fake";
@@ -61,7 +61,7 @@ public class GetPaymentIT extends PaymentResourceITestBase {
     private static final Map<String, String> PAYMENT_CREATED = new ChargeEventBuilder(CREATED, CREATED_DATE).build();
     private static final List<Map<String, String>> EVENTS = Collections.singletonList(PAYMENT_CREATED);
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
-    private static final CardDetails CARD_DETAILS = new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, CARD_TYPE);
+    private static final CardDetails CARD_DETAILS = new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL);
 
     private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
@@ -117,7 +117,6 @@ public class GetPaymentIT extends PaymentResourceITestBase {
                 .body("settlement_summary.capture_submit_time", is(ISO_INSTANT_MILLISECOND_PRECISION.format(CAPTURE_SUBMIT_TIME)))
                 .body("settlement_summary.captured_date", is(DateTimeUtils.toLocalDateString(CAPTURED_DATE)))
                 .body("card_details.card_brand", is(CARD_BRAND_LABEL))
-                .body("card_details.card_type", is(CARD_TYPE))
                 .body("card_details.cardholder_name", is(CARD_DETAILS.getCardHolderName()))
                 .body("card_details.first_digits_card_number", is(CARD_DETAILS.getFirstDigitsCardNumber()))
                 .body("card_details.last_digits_card_number", is(CARD_DETAILS.getLastDigitsCardNumber()))
@@ -126,6 +125,7 @@ public class GetPaymentIT extends PaymentResourceITestBase {
                 .body("card_details.billing_address.line2", is(CARD_DETAILS.getBillingAddress().get().getLine2()))
                 .body("card_details.billing_address.postcode", is(CARD_DETAILS.getBillingAddress().get().getPostcode()))
                 .body("card_details.billing_address.country", is(CARD_DETAILS.getBillingAddress().get().getCountry()))
+                .body( "card_details", hasKey("card_type"))
                 .body("_links.self.href", is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)))
                 .body("_links.self.method", is("GET"))
                 .body("_links.events.href", is(paymentEventsLocationFor(CHARGE_ID)))
@@ -223,7 +223,7 @@ public class GetPaymentIT extends PaymentResourceITestBase {
 
     @Test
     public void getPayment_DoesNotReturnCardDigits_IfNotPresentInCardDetails() {
-        CardDetails cardDetails = new CardDetails(null, null, "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, CARD_TYPE);
+        CardDetails cardDetails = new CardDetails(null, null, "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL);
 
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
@@ -320,8 +320,7 @@ public class GetPaymentIT extends PaymentResourceITestBase {
                 "Mr. Payment",
                 "12/19",
                 null,
-                CARD_BRAND_LABEL,
-                CARD_TYPE);
+                CARD_BRAND_LABEL);
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
@@ -555,37 +554,6 @@ public class GetPaymentIT extends PaymentResourceITestBase {
                 .body("amount", is(AMOUNT));
     }
 
-    @Test
-    public void getPaymentWithNullCardType_ReturnsPaymentWithNullCardType() {
-        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-
-        connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
-                aCreateOrGetChargeResponseFromConnector()
-                        .withAmount(AMOUNT)
-                        .withChargeId(CHARGE_ID)
-                        .withState(AWAITING_CAPTURE_REQUEST)
-                        .withReturnUrl(RETURN_URL)
-                        .withDescription(DESCRIPTION)
-                        .withReference(REFERENCE)
-                        .withEmail(EMAIL)
-                        .withPaymentProvider(PAYMENT_PROVIDER)
-                        .withCreatedDate(CREATED_DATE)
-                        .withLanguage(SupportedLanguage.ENGLISH)
-                        .withDelayedCapture(true)
-                        .withRefundSummary(REFUND_SUMMARY)
-                        .withSettlementSummary(SETTLEMENT_SUMMARY)
-                        .withCardDetails(new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, null))
-                        .withGatewayTransactionId(GATEWAY_TRANSACTION_ID)
-                        .withCorporateCardSurcharge(0L)
-                        .withTotalAmount(0L)
-                        .build());
-
-        getPaymentResponse(API_KEY, CHARGE_ID)
-                .statusCode(200)
-                .contentType(JSON)
-                .body("card_details.card_type", is(nullValue()));
-    }
- 
     @Test
     public void getPayment_ReturnsPaymentWithCaptureUrl() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);

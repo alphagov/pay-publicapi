@@ -32,22 +32,20 @@ public class CardDetails {
     private final String cardBrand;
     
     @JsonProperty("card_type")
-    private final String cardType;
+    private final String cardType = null;
 
     public CardDetails(@JsonProperty("last_digits_card_number") String lastDigitsCardNumber,
                        @JsonProperty("first_digits_card_number") String firstDigitsCardNumber,
                        @JsonProperty("cardholder_name") String cardHolderName,
                        @JsonProperty("expiry_date") String expiryDate,
                        @JsonProperty("billing_address") Address billingAddress,
-                       @JsonProperty("card_brand") String cardBrand,
-                       @JsonProperty("card_type") String cardType) {
+                       @JsonProperty("card_brand") String cardBrand) {
         this.lastDigitsCardNumber = lastDigitsCardNumber;
         this.firstDigitsCardNumber = firstDigitsCardNumber;
         this.cardHolderName = cardHolderName;
         this.expiryDate = expiryDate;
         this.billingAddress = billingAddress;
         this.cardBrand = cardBrand;
-        this.cardType = cardType;
     }
 
     @ApiModelProperty(example = "1234")
