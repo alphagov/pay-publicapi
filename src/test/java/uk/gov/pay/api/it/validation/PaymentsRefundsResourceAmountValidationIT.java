@@ -26,7 +26,7 @@ public class PaymentsRefundsResourceAmountValidationIT extends PaymentResourceIT
 
     private static final int REFUND_AMOUNT_AVAILABLE = 9000;
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
-    private static final CardDetails CARD_DETAILS = new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, "Visa");
+    private static final CardDetails CARD_DETAILS = new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, "Visa", "credit");
 
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
     private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);

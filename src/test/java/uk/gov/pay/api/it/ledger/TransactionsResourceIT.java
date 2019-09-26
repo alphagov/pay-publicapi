@@ -74,7 +74,7 @@ public class TransactionsResourceIT {
     public void shouldReturnAListOfTransactions() {
         Address billingAddress = new Address("line1", null, "AB1 CD2", "London", "GB");
         CardDetails cardDetails = new CardDetails(null, null, "J. Doe",
-                null, billingAddress, "");
+                null, billingAddress, "", null);
         PaymentNavigationLinksFixture fixture = new PaymentNavigationLinksFixture();
         fixture.withSelfLink("https://ledger/v1/transaction?account_id=1&reference=reference&page=1&display_size=500");
         fixture.withFirstLink("https://ledger/v1/transaction?account_id=1&reference=reference&page=1&display_size=500");
