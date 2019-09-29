@@ -18,12 +18,14 @@ public class RefundLinksForSearch {
     private Link payment;
 
     @ApiModelProperty(value = SELF, dataType = "uk.gov.pay.api.model.links.Link")
+    @Schema(description = "self")
     @JsonProperty(value = SELF)
     public Link getSelf() {
         return self;
     }
-    
+
     @ApiModelProperty(value = PAYMENT, dataType = "uk.gov.pay.api.model.links.Link")
+    @Schema(description = "payment")
     @JsonProperty(value = PAYMENT)
     public Link getPayment() {
         return payment;

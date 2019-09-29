@@ -3,11 +3,13 @@ package uk.gov.pay.api.resources.error;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static java.lang.String.format;
 
 @ApiModel(value = "ErrorResponse", description = "An error response")
+@Schema(name = "ErrorResponse", description = "An error response")
 @JsonInclude(NON_NULL)
 public class ApiErrorResponse {
 
@@ -45,11 +47,13 @@ public class ApiErrorResponse {
     }
 
     @ApiModelProperty(example = "P0900")
+    @Schema(example = "P0900")
     public String getCode() {
         return code.value();
     }
 
     @ApiModelProperty(example = "Too many requests")
+    @Schema(example = "Too many requests")
     public String getDescription() {
         return description;
     }
