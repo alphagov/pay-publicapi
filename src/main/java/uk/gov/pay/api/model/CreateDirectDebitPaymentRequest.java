@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Max;
@@ -12,6 +13,7 @@ import javax.validation.constraints.Size;
 import java.util.StringJoiner;
 
 @ApiModel(description = "The Direct Debit Payment Request Payload")
+@Schema(description = "The Direct Debit Payment Request Payload")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateDirectDebitPaymentRequest {
 
@@ -45,21 +47,25 @@ public class CreateDirectDebitPaymentRequest {
     }
     
     @ApiModelProperty(value = "amount in pence", required = true, allowableValues = "range[1, 10000000]", example = "12000")
+    @Schema(description = "amount in pence", required = true, example = "12000", minimum = "1", maximum = "10000000")
     public int getAmount() {
         return amount;
     }
 
     @ApiModelProperty(value = "payment reference", required = true, example = "12345")
+    @Schema(description = "payment reference", required = true, example = "12345")
     public String getReference() {
         return reference;
     }
 
     @ApiModelProperty(value = "payment description", required = true, example = "New passport application")
+    @Schema(description = "payment description", required = true, example = "New passport application")
     public String getDescription() {
         return description;
     }
 
     @ApiModelProperty(value = "ID of the mandates being used to collect the payment", required = false, example = "33890b55-b9ea-4e2f-90fd-77ae0e9009e2")
+    @Schema(description = "ID of the mandates being used to collect the payment", required = false, example = "33890b55-b9ea-4e2f-90fd-77ae0e9009e2")
     public String getMandateId() {
         return mandateId;
     }

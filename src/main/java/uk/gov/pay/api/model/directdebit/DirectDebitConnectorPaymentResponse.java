@@ -2,38 +2,48 @@ package uk.gov.pay.api.model.directdebit;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.api.model.DirectDebitPaymentState;
 
 import java.util.Objects;
 
+import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DirectDebitConnectorPaymentResponse {
     @JsonProperty
+    @Schema(example = "1200", accessMode = READ_ONLY)
     private Long amount;
     
     @JsonProperty
     private DirectDebitPaymentState state;
     
     @JsonProperty("mandate_id")
+    @Schema(example = "33890b55-b9ea-4e2f-90fd-77ae0e9009e2", accessMode = READ_ONLY)
     private String mandateId;
     
     @JsonProperty
+    @Schema(example = "Your Service Description", accessMode = READ_ONLY)
     private String description;
 
     @JsonProperty
+    @Schema(example = "your-reference", accessMode = READ_ONLY)
     private String reference;
     
     @JsonProperty("payment_id")
+    @Schema(example = "payment id", accessMode = READ_ONLY)
     private String paymentExternalId;
 
     @JsonProperty("payment_provider")
+    @Schema(example = "worldpay", accessMode = READ_ONLY)
     private String paymentProvider;
 
-
+    @Schema(example = "2016-01-21T17:15:000Z", accessMode = READ_ONLY)
     @JsonProperty("created_date")
     private String createdDate;
 
     @JsonProperty("provider_id")
+    @Schema(example = "provider id", accessMode = READ_ONLY)
     private String providerId;
 
     public String getPaymentProvider() {
