@@ -1,0 +1,24 @@
+resourceClasses:
+    - uk.gov.pay.api.resources.PaymentRefundsResource
+    - uk.gov.pay.api.resources.SearchRefundsResource
+    - uk.gov.pay.api.resources.PaymentsResource
+    - uk.gov.pay.api.resources.MandatesResource
+    - uk.gov.pay.api.resources.directdebit.DirectDebitPaymentsResource
+openAPI:
+  info:
+    description: 'GOV.UK Pay API'
+    version: '1.0.3'
+    title: 'GOV.UK Pay API'
+  servers:
+    - url: 'https://publicapi.payments.service.gov.uk'
+  tags:
+    - name: Card payments
+    - name: Direct Debit
+    - name: Refunding card payments
+
+  components:
+    securitySchemes:
+      BearerAuth:
+        type: http
+        scheme: bearer
+        description: "<br> The Authorisation token needs to be specified in the 'Authorization' header as `Authorization: Bearer YOUR_API_KEY_HERE`"
