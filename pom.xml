@@ -19,7 +19,6 @@
         <docker-client.version>8.16.0</docker-client.version>
         <pay-java-commons.version>1.0.20191001125636</pay-java-commons.version>
         <pact.version>3.6.14</pact.version>
-        <swagger.lib.version>2.0.9</swagger.lib.version>
         <PACT_BROKER_URL/>
         <PACT_BROKER_USERNAME/>
         <PACT_BROKER_PASSWORD/>
@@ -221,12 +220,6 @@
                     <artifactId>jersey-container-servlet-core</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations</artifactId>
-            <version>${swagger.lib.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -515,27 +508,6 @@
                         <phase>compile</phase>
                         <goals>
                             <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-maven-plugin</artifactId>
-                <version>${swagger.lib.version}</version>
-                <configuration>
-                    <outputPath>swagger</outputPath>
-                    <outputFileName>swagger_v3_0_0</outputFileName>
-                    <outputFormat>JSON</outputFormat>
-                    <prettyPrint>true</prettyPrint>
-                    <configurationFilePath>${basedir}/src/main/resources/config/swagger-config.yaml
-                    </configurationFilePath>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>resolve</goal>
                         </goals>
                     </execution>
                 </executions>
