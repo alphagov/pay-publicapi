@@ -13,22 +13,22 @@ import javax.validation.constraints.Size;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@ApiModel(description = "The Payload to create a new Mandate")
+@ApiModel(description = "The structure of your request to the API when you create a Direct Debit mandate.")
 public class CreateMandateRequest {
 
     @NotNull
     @ValidReturnUrl
     @Size(max = 2000, message = "Must be less than or equal to {max} characters length")
-    @JsonProperty(value = "return_url")
+    @JsonProperty(value = "An HTTPS URL on your site that your user will be sent back to once they have confirmed the mandate on GOV.UK Pay.")
     private String returnUrl;
 
     @NotNull
     @NotBlank
     @Size(max = 255, message = "Must be less than or equal to {max} characters length")
-    @JsonProperty(value = "reference")
+    @JsonProperty(value = "The reference number you want to associate with this mandate.")
     private String reference;
-    
-    @JsonProperty(value = "description")
+
+    @JsonProperty(value = "A human-readable description of the mandate.")
     @Size(min = 1, max = 255, message = "Must have a size between {min} and {max}")
     private String description;
 

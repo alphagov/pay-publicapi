@@ -90,20 +90,18 @@ public class PaymentsResource {
     @ApiOperation(
             nickname = "Get a payment",
             value = "Find payment by ID",
-            notes = "Return information about the payment " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
+            notes = "Get information about a single payment. You must include your API key in the 'Authorization' HTTP header: `Authorization: Bearer YOUR-API-KEY`.",
             code = 200,
             authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = GetPaymentResult.class),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
+            @ApiResponse(code = 200, message = "Your request succeeded.", response = GetPaymentResult.class),
+            @ApiResponse(code = 401, message = "You did not include your API key in the 'Authorization' HTTP header, or the key was invalid."),
+            @ApiResponse(code = 404, message = "No payment matched the `paymentId` you provided.", response = PaymentError.class),
+            @ApiResponse(code = 429, message = "You exceeded a [rate limit](https://docs.payments.service.gov.uk/api_reference/#rate-limits) for requests to the API.", response = ApiErrorResponse.class),
+            @ApiResponse(code = 500, message = "Something's wrong with GOV.UK Pay. [Contact us](https://docs.payments.service.gov.uk/support_contact_and_more_information/#contact-us) for help.", response = PaymentError.class)})
     public Response getPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                @PathParam("paymentId")
-                               @ApiParam(name = "paymentId", value = "Payment identifier", example = "hu20sqlact5260q2nanm0q8u93")
+                               @ApiParam(name = "paymentId", value = "The payment to get information about.", example = "hu20sqlact5260q2nanm0q8u93")
                                        String paymentId,
                                @ApiParam(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
 
@@ -123,20 +121,18 @@ public class PaymentsResource {
     @ApiOperation(
             nickname = "Get events for a payment",
             value = "Return payment events by ID",
-            notes = "Return payment events information about a certain payment " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
+            notes = "Get events from a single payment. You must include your API key in the 'Authorization' HTTP header: `Authorization: Bearer YOUR-API-KEY`.",
             code = 200,
             authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = PaymentEventsResponse.class),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
+            @ApiResponse(code = 200, message = "Your request succeeded.", response = PaymentEventsResponse.class),
+            @ApiResponse(code = 401, message = "You did not include your API key in the 'Authorization' HTTP header, or the key was invalid."),
+            @ApiResponse(code = 404, message = "No payment matched the `paymentId` you provided.", response = PaymentError.class),
+            @ApiResponse(code = 429, message = "You exceeded a [rate limit](https://docs.payments.service.gov.uk/api_reference/#rate-limits) for requests to the API.", response = ApiErrorResponse.class),
+            @ApiResponse(code = 500, message = "Something's wrong with GOV.UK Pay. [Contact us](https://docs.payments.service.gov.uk/support_contact_and_more_information/#contact-us) for help.", response = PaymentError.class)})
     public PaymentEventsResponse getPaymentEvents(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                                   @PathParam("paymentId")
-                                                  @ApiParam(name = "paymentId", value = "Payment identifier", example = "hu20sqlact5260q2nanm0q8u93")
+                                                  @ApiParam(name = "paymentId", value = "The payment to get events from.", example = "hu20sqlact5260q2nanm0q8u93")
                                                           String paymentId,
                                                   @ApiParam(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
 
@@ -157,45 +153,43 @@ public class PaymentsResource {
     @ApiOperation(
             nickname = "Search payments",
             value = "Search payments",
-            notes = "Search payments by reference, state, 'from' and 'to' date. " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
+            notes = "Search payments. You must include your API key in the 'Authorization' HTTP header: `Authorization: Bearer YOUR-API-KEY`.",
             responseContainer = "List",
             code = 200,
             authorizations = {@Authorization("Authorization")})
 
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = PaymentSearchResults.class),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 422, message = "Invalid parameters: from_date, to_date, status, display_size. See Public API documentation for the correct data formats", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
+            @ApiResponse(code = 200, message = "Your request succeeded.", response = PaymentSearchResults.class),
+            @ApiResponse(code = 401, message = "You did not include your API key in the 'Authorization' HTTP header, or the key was invalid."),
+            @ApiResponse(code = 422, message = "There were invalid parameters in your request.", response = PaymentError.class),
+            @ApiResponse(code = 429, message = "You exceeded a [rate limit](https://docs.payments.service.gov.uk/api_reference/#rate-limits) for requests to the API.", response = ApiErrorResponse.class),
+            @ApiResponse(code = 500, message = "Something's wrong with GOV.UK Pay. [Contact us](https://docs.payments.service.gov.uk/support_contact_and_more_information/#contact-us) for help.", response = PaymentError.class)})
     public Response searchPayments(@ApiParam(value = "accountId", hidden = true)
                                    @Auth Account account,
-                                   @ApiParam(value = "Your payment reference to search (exact match, case insensitive)", hidden = false)
+                                   @ApiParam(value = "The payment reference to search for (case insensitive, exact match only).", hidden = false)
                                    @QueryParam("reference") String reference,
-                                   @ApiParam(value = "The user email used in the payment to be searched", hidden = false)
+                                   @ApiParam(value = "The user email address to search for (case insensitive).", hidden = false)
                                    @QueryParam("email") String email,
-                                   @ApiParam(value = "State of payments to be searched. Example=success", hidden = false, allowableValues = "created,started,submitted,success,failed,cancelled,error")
+                                   @ApiParam(value = "The payment state to search for (case sensitive, exact match only).", hidden = false, allowableValues = "created,started,submitted,success,failed,cancelled,error")
                                    @QueryParam("state") String state,
-                                   @ApiParam(value = "Card brand used for payment. Example=master-card", hidden = false)
+                                   @ApiParam(value = "The card brand to search for (case sensitive).", hidden = false)
                                    @QueryParam("card_brand") String cardBrand,
-                                   @ApiParam(value = "From date of payments to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z", hidden = false)
+                                   @ApiParam(value = "The start date for payments to be searched, inclusive. Dates must be in ISO 8601 format. For example 2015-08-13T12:35:00Z.", hidden = false)
                                    @QueryParam("from_date") String fromDate,
-                                   @ApiParam(value = "To date of payments to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z", hidden = false)
+                                   @ApiParam(value = "The end date for payments to be searched, inclusive. Dates must be in ISO 8601 format. For example 2015-08-13T12:35:00Z.", hidden = false)
                                    @QueryParam("to_date") String toDate,
-                                   @ApiParam(value = "Page number requested for the search, should be a positive integer (optional, defaults to 1)", hidden = false)
+                                   @ApiParam(value = "Which page number of results to return. The default is 1.", hidden = false)
                                    @QueryParam("page") String pageNumber,
-                                   @ApiParam(value = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)", hidden = false)
+                                   @ApiParam(value = "The number of results per page. This must be between 1 and 500. The default is 500.", hidden = false)
                                    @QueryParam("display_size") String displaySize,
                                    @ApiParam(value = "Direct Debit Agreement Id", hidden = true)
                                    @QueryParam("agreement_id") String agreementId,
-                                   @ApiParam(value = "Name on card used to make payment", hidden = false)
+                                   @ApiParam(value = "The end user name to search for (case insensitive).", hidden = false)
                                    @QueryParam("cardholder_name") String cardHolderName,
-                                   @ApiParam(value = "First six digits of the card used to make payment", hidden = false)
+                                   @ApiParam(value = "The first 6 digits of a payment card to search for (exact match only).", hidden = false)
 
                                    @QueryParam("first_digits_card_number") String firstDigitsCardNumber,
-                                   @ApiParam(value = "Last four digits of the card used to make payment", hidden = false)
+                                   @ApiParam(value = "The last 4 digits of a payment card to search for (exact match only).", hidden = false)
 
                                    @QueryParam("last_digits_card_number") String lastDigitsCardNumber,
                                    @ApiParam(hidden = true) @HeaderParam("X-Ledger") String strategyName,
@@ -232,18 +226,16 @@ public class PaymentsResource {
     @ApiOperation(
             nickname = "Create a payment",
             value = "Create new payment",
-            notes = "Create a new payment for the account associated to the Authorisation token. " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
+            notes = "Create a payment. You must include your API key in the 'Authorization' HTTP header: `Authorization: Bearer YOUR-API-KEY`. The API will create a payment in the account linked to the API key you provide.",
             code = 201,
             authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Created", response = CreatePaymentResult.class),
-            @ApiResponse(code = 400, message = "Bad request", response = PaymentError.class),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 422, message = "Invalid attribute value: description. Must be less than or equal to 255 characters length", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
+            @ApiResponse(code = 201, message = "The payment was successfully created.", response = CreatePaymentResult.class),
+            @ApiResponse(code = 400, message = "The API could not process your request, for example because you did not include a required parameter.", response = PaymentError.class),
+            @ApiResponse(code = 401, message = "You did not include your API key in the 'Authorization' HTTP header, or the key was invalid."),
+            @ApiResponse(code = 422, message = "The `description` you provided was longer than the maximum of 255 characters.", response = PaymentError.class),
+            @ApiResponse(code = 429, message = "You exceeded a [rate limit](https://docs.payments.service.gov.uk/api_reference/#rate-limits) for requests to the API.", response = ApiErrorResponse.class),
+            @ApiResponse(code = 500, message = "Something's wrong with GOV.UK Pay. [Contact us](https://docs.payments.service.gov.uk/support_contact_and_more_information/#contact-us) for help.", response = PaymentError.class)})
     public Response createNewPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                      @ApiParam(value = "requestPayload", required = true) @Valid CreateCardPaymentRequest createCardPaymentRequest) {
         logger.info("Payment create request parsed to {}", createCardPaymentRequest);
@@ -266,24 +258,21 @@ public class PaymentsResource {
     @ApiOperation(
             nickname = "Cancel a payment",
             value = "Cancel payment",
-            notes = "Cancel a payment based on the provided payment ID and the Authorisation token. " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be cancelled if it's in " +
-                    "a state that isn't finished.",
+            notes = "Cancel a payment, if the value of `finished` is `false`. You must include your API key in the 'Authorization' HTTP header: `Authorization: Bearer YOUR-API-KEY`.",
             code = 204,
             authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
-            @ApiResponse(code = 204, message = "No Content"),
-            @ApiResponse(code = 400, message = "Cancellation of payment failed", response = PaymentError.class),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
+            @ApiResponse(code = 204, message = "The payment was successfully cancelled."),
+            @ApiResponse(code = 400, message = "The cancellation request failed.", response = PaymentError.class),
+            @ApiResponse(code = 401, message = "You did not include your API key in the 'Authorization' HTTP header, or the key was invalid."),
+            @ApiResponse(code = 404, message = "No payment matched the `paymentId` you provided.", response = PaymentError.class),
             @ApiResponse(code = 409, message = "Conflict", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)
+            @ApiResponse(code = 429, message = "You exceeded a [rate limit](https://docs.payments.service.gov.uk/api_reference/#rate-limits) for requests to the API.", response = ApiErrorResponse.class),
+            @ApiResponse(code = 500, message = "Something's wrong with GOV.UK Pay. [Contact us](https://docs.payments.service.gov.uk/support_contact_and_more_information/#contact-us) for help.", response = PaymentError.class)
     })
     public Response cancelPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                   @PathParam("paymentId")
-                                  @ApiParam(name = "paymentId", value = "Payment identifier", example = "hu20sqlact5260q2nanm0q8u93")
+                                  @ApiParam(name = "paymentId", value = "The payment to cancel.", example = "hu20sqlact5260q2nanm0q8u93")
                                           String paymentId) {
 
         logger.info("Payment cancel request - payment_id=[{}]", paymentId);
@@ -298,24 +287,21 @@ public class PaymentsResource {
     @ApiOperation(
             nickname = "Capture a payment",
             value = "Capture payment",
-            notes = "Capture a payment based on the provided payment ID and the Authorisation token. " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be captured if it's in " +
-                    "'submitted' state",
+            notes = "Capture a delayed payment. You must include your API key in the 'Authorization' HTTP header: `Authorization: Bearer YOUR-API-KEY`.",
             code = 204,
             authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
-            @ApiResponse(code = 204, message = "No Content"),
-            @ApiResponse(code = 400, message = "Capture of payment failed", response = PaymentError.class),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
+            @ApiResponse(code = 204, message = "The payment was successfully captured."),
+            @ApiResponse(code = 400, message = "The capture request failed.", response = PaymentError.class),
+            @ApiResponse(code = 401, message = "You did not include your API key in the 'Authorization' HTTP header, or the key was invalid."),
+            @ApiResponse(code = 404, message = "No payment matched the `paymentId` you provided.", response = PaymentError.class),
             @ApiResponse(code = 409, message = "Conflict", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)
+            @ApiResponse(code = 429, message = "You exceeded a [rate limit](https://docs.payments.service.gov.uk/api_reference/#rate-limits) for requests to the API.", response = ApiErrorResponse.class),
+            @ApiResponse(code = 500, message = "Something's wrong with GOV.UK Pay. [Contact us](https://docs.payments.service.gov.uk/support_contact_and_more_information/#contact-us) for help.", response = PaymentError.class)
     })
     public Response capturePayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                    @PathParam("paymentId")
-                                   @ApiParam(name = "paymentId", value = "Payment identifier", example = "hu20sqlact5260q2nanm0q8u93")
+                                   @ApiParam(name = "paymentId", value = "The payment to capture.", example = "hu20sqlact5260q2nanm0q8u93")
                                            String paymentId) {
         logger.info("Payment capture request - payment_id=[{}]", paymentId);
 

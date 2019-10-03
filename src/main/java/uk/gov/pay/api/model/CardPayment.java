@@ -58,7 +58,7 @@ public class CardPayment extends Payment {
 
     @JsonProperty("return_url")
     protected String returnUrl;
-    
+
     protected String email;
 
     protected PaymentState state;
@@ -97,7 +97,7 @@ public class CardPayment extends Payment {
      *
      * @return
      */
-    @ApiModelProperty(value = "Card Brand", example = "Visa", notes = "Deprecated. Please use card_details.card_brand instead")
+    @ApiModelProperty(value = "The brand of the payment card, for example `master-card`.", example = "Visa", notes = "Deprecated. Please use card_details.card_brand instead")
     @JsonProperty("card_brand")
     @Deprecated
     public String getCardBrand() {
@@ -128,7 +128,7 @@ public class CardPayment extends Payment {
         return language;
     }
 
-    @ApiModelProperty(value = "delayed capture flag", example = "false")
+    @ApiModelProperty(value = "Whether to [delay capture](https://docs.payments.service.gov.uk/optional_features/delayed_capture/) of this payment.", example = "false")
     public boolean getDelayedCapture() {
         return delayedCapture;
     }
@@ -138,12 +138,12 @@ public class CardPayment extends Payment {
         return Optional.ofNullable(corporateCardSurcharge);
     }
 
-    @ApiModelProperty(example = "5", value = "processing fee taken by the GOV.UK Pay platform, in pence. Only available depending on payment service provider")
+    @ApiModelProperty(example = "5", value = "The Payment Service Provider (PSP) transaction fee that we took from the amount your user paid, in pence. This is only included in the API response if you use GOV.UK’s PSP.")
     public Optional<Long> getFee() {
         return Optional.ofNullable(fee);
     }
 
-    @ApiModelProperty(example = "1195", value = "amount including all surcharges and less all fees, in pence. Only available depending on payment service provider")
+    @ApiModelProperty(example = "1195", value = "The amount that will be paid into your account, in pence. This is only included in the API response if you use GOV.UK’s PSP.")
     public Optional<Long> getNetAmount() {
         return Optional.ofNullable(netAmount);
     }

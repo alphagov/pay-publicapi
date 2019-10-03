@@ -50,28 +50,26 @@ public class SearchRefundsResource {
     @ApiOperation(
             nickname = "Search refunds",
             value = "Search refunds",
-            notes = "Search refunds by 'from' and 'to' date. " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
+            notes = "Search refunds. You must include your API key in the 'Authorization' HTTP header: `Authorization: Bearer YOUR-API-KEY`.",
             responseContainer = "List",
             authorizations = {@Authorization("Authorization")},
             code = 200)
 
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = SearchRefundsResults.class),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 422, message = "Invalid parameters. See Public API documentation for the correct data formats", response = RefundError.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = RefundError.class)})
+            @ApiResponse(code = 200, message = "Your request succeeded.", response = SearchRefundsResults.class),
+            @ApiResponse(code = 401, message = "You did not include your API key in the 'Authorization' HTTP header, or the key was invalid."),
+            @ApiResponse(code = 422, message = "You exceeded a [rate limit](https://docs.payments.service.gov.uk/api_reference/#rate-limits) for requests to the API.", response = RefundError.class),
+            @ApiResponse(code = 500, message = "Something's wrong with GOV.UK Pay. [Contact us](https://docs.payments.service.gov.uk/support_contact_and_more_information/#contact-us) for help.", response = RefundError.class)})
     public SearchRefundsResults searchRefunds(@ApiParam(value = "accountId", hidden = true)
                                   @Auth Account account,
-                                  @ApiParam(value = "From date of refunds to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z", hidden = false)
+                                  @ApiParam(value = "The start date for refunds to be searched, inclusive. Dates must be in ISO 8601 format. For example 2015-08-13T12:35:00Z.", hidden = false)
                                   @QueryParam("from_date") String fromDate,
-                                  @ApiParam(value = "To date of refunds to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z", hidden = false)
+                                  @ApiParam(value = "The end date for refunds to be searched, inclusive. Dates must be in ISO 8601 format. For example 2015-08-13T12:35:00Z.", hidden = false)
                                   @QueryParam("to_date") String toDate,
-                                  @ApiParam(value = "Page number requested for the search, should be a positive integer (optional, defaults to 1)", hidden = false)
+                                  @ApiParam(value = "Which page number of results to return. The default is 1.", hidden = false)
                                   @QueryParam("page") String pageNumber,
-                                  @ApiParam(value = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)", hidden = false)
-                                  @QueryParam("display_size") String displaySize, 
+                                  @ApiParam(value = "The number of results per page. This must be between 1 and 500. The default is 500.", hidden = false)
+                                  @QueryParam("display_size") String displaySize,
                                   @ApiParam(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
 
         logger.info("Refunds search request with strategy [{}]- [ {} ]", strategyName,

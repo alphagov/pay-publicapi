@@ -62,16 +62,14 @@ public class MandatesResource {
     @ApiOperation(
             nickname = "Get a mandate",
             value = "Find mandate by ID",
-            notes = "Return information about the mandate. " +
-                    "The Authorisation token needs to be specified in the 'Authorization' header " +
-                    "as 'Authorization: Bearer YOUR_API_KEY_HERE'",
+            notes = "Get information about a single mandate. You must include your API key in the 'Authorization' HTTP header: `Authorization: Bearer YOUR-API-KEY`.",
             authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = MandateResponse.class),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 404, message = "Not found", response = MandateError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = MandateError.class)})
+            @ApiResponse(code = 200, message = "Your request succeeded.", response = MandateResponse.class),
+            @ApiResponse(code = 401, message = "You did not include your API key in the 'Authorization' HTTP header, or the key was invalid."),
+            @ApiResponse(code = 404, message = "No mandate matched the `mandateId` you provided.", response = MandateError.class),
+            @ApiResponse(code = 429, message = "You exceeded a [rate limit](https://docs.payments.service.gov.uk/api_reference/#rate-limits) for requests to the API.", response = ApiErrorResponse.class),
+            @ApiResponse(code = 500, message = "Something's wrong with GOV.UK Pay. [Contact us](https://docs.payments.service.gov.uk/support_contact_and_more_information/#contact-us) for help.", response = MandateError.class)})
     public Response getMandate(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                @PathParam("mandateId") String mandateId) {
         LOGGER.info("Mandate get request - [ {} ]", mandateId);
@@ -87,26 +85,24 @@ public class MandatesResource {
     @ApiOperation(
             nickname = "Search mandates",
             value = "Search mandates",
-            notes = "Searches for mandates with the parameters provided. " +
-                    "The Authorisation token needs to be specified in the 'Authorization' header " +
-                    "as 'Authorization: Bearer YOUR_API_KEY_HERE'",
+            notes = "Search Direct Debit mandates. You must include your API key in the 'Authorization' HTTP header: `Authorization: Bearer YOUR-API-KEY`",
             authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = SearchMandateResponse.class),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 404, message = "Not found", response = MandateError.class),
-            @ApiResponse(code = 422, message = "Invalid parameters: from_date, to_date, state, page, display_size. See Public API documentation for the correct data formats", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = MandateError.class)})
+            @ApiResponse(code = 200, message = "Your request succeeded.", response = SearchMandateResponse.class),
+            @ApiResponse(code = 401, message = "You did not include your API key in the 'Authorization' HTTP header, or the key was invalid."),
+            @ApiResponse(code = 404, message = "There are no results that match your search.", response = MandateError.class),
+            @ApiResponse(code = 422, message = "There were invalid parameters in your request.", response = PaymentError.class),
+            @ApiResponse(code = 429, message = "You exceeded a [rate limit](https://docs.payments.service.gov.uk/api_reference/#rate-limits) for requests to the API.", response = ApiErrorResponse.class),
+            @ApiResponse(code = 500, message = "Something's wrong with GOV.UK Pay. [Contact us](https://docs.payments.service.gov.uk/support_contact_and_more_information/#contact-us) for help.", response = MandateError.class)})
     public Response searchMandates(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                    @Valid @BeanParam DirectDebitSearchMandatesParams mandateSearchParams) {
         LOGGER.info("Mandate search request - [ {} ]", mandateSearchParams.toString());
         SearchMandateResponse searchMandatesResponse = mandateSearchService.search(account, mandateSearchParams);
-        
+
         LOGGER.info("Mandate search returned: [ {} ]", searchMandatesResponse);
         return Response.ok().entity(searchMandatesResponse).build();
     }
-    
+
     @POST
     @Timed
     @Path("/v1/directdebit/mandates")
@@ -115,19 +111,17 @@ public class MandatesResource {
     @ApiOperation(
             nickname = "Create a mandate",
             value = "Create a new mandate",
-            notes = "Create a new mandate for the account associated to the Authorisation token. " +
-                    "The Authorisation token needs to be specified in the 'Authorization' header " +
-                    "as 'Authorization: Bearer YOUR_API_KEY_HERE'",
+            notes = "Set up a Direct Debit mandate. You must include your API key in the 'Authorization' HTTP header: `Authorization: Bearer YOUR-API-KEY`. The API will create a mandate in the account linked to the API key you provide.",
             code = 201,
             authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Created", response = MandateResponse.class),
-            @ApiResponse(code = 400, message = "Bad request", response = PaymentError.class),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
+            @ApiResponse(code = 201, message = "The mandate was successfully set up.", response = MandateResponse.class),
+            @ApiResponse(code = 400, message = "The API could not process your request, for example because you did not include a required parameter.", response = PaymentError.class),
+            @ApiResponse(code = 401, message = "You did not include your API key in the 'Authorization' HTTP header, or the key was invalid."),
+            @ApiResponse(code = 429, message = "You exceeded a [rate limit](https://docs.payments.service.gov.uk/api_reference/#rate-limits) for requests to the API.", response = ApiErrorResponse.class),
+            @ApiResponse(code = 500, message = "Something's wrong with GOV.UK Pay. [Contact us](https://docs.payments.service.gov.uk/support_contact_and_more_information/#contact-us) for help.", response = PaymentError.class)})
     public Response createMandate(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                                  @ApiParam(value = "requestPayload", required = true) @Valid CreateMandateRequest createMandateRequest) {
+                                  @ApiParam(value = "The structure of your request to the API when you set up a Direct Debit mandate.", required = true) @Valid CreateMandateRequest createMandateRequest) {
         LOGGER.info("Mandate create request - [ {} ]", createMandateRequest);
         MandateResponse createMandateResponse = mandateService.create(account, createMandateRequest);
         URI mandateUri = UriBuilder.fromUri(baseUrl)

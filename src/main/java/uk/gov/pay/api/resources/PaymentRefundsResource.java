@@ -97,16 +97,15 @@ public class PaymentRefundsResource {
             response = RefundForSearchResult.class,
             nickname = "Get all refunds for a payment",
             value = "Get all refunds for a payment",
-            notes = "Return refunds for a payment. " +
-                    "The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+            notes = "Get all refunds for a payment. You must include your API key in the 'Authorization' HTTP header: `Authorization: Bearer YOUR-API-KEY`.",
             code = 200,
             authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
+            @ApiResponse(code = 200, message = "Your request succeeded."),
+            @ApiResponse(code = 401, message = "You did not include your API key in the 'Authorization' HTTP header, or the key was invalid."),
+            @ApiResponse(code = 404, message = "No payment matched the `paymentId` you provided.", response = PaymentError.class),
+            @ApiResponse(code = 429, message = "You exceeded a [rate limit](https://docs.payments.service.gov.uk/api_reference/#rate-limits) for requests to the API.", response = ApiErrorResponse.class),
+            @ApiResponse(code = 500, message = "Something's wrong with GOV.UK Pay. [Contact us](https://docs.payments.service.gov.uk/support_contact_and_more_information/#contact-us) for help.", response = PaymentError.class)})
     public RefundsResponse getRefunds(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                       @PathParam(PATH_PAYMENT_KEY) String paymentId,
                                       @ApiParam(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
@@ -128,17 +127,15 @@ public class PaymentRefundsResource {
             response = RefundResult.class,
             nickname = "Get a payment refund",
             value = "Find payment refund by ID",
-            notes = "Return payment refund information by Refund ID " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
+            notes = "Check the status of a refund. You must include your API key in the 'Authorization' HTTP header: `Authorization: Bearer YOUR-API-KEY`.",
             code = 200,
             authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
+            @ApiResponse(code = 200, message = "Your request succeeded."),
+            @ApiResponse(code = 401, message = "You did not include your API key in the 'Authorization' HTTP header, or the key was invalid."),
+            @ApiResponse(code = 404, message = "No refund matched the `refundId` you provided.", response = PaymentError.class),
+            @ApiResponse(code = 429, message = "You exceeded a [rate limit](https://docs.payments.service.gov.uk/api_reference/#rate-limits) for requests to the API.", response = ApiErrorResponse.class),
+            @ApiResponse(code = 500, message = "Something's wrong with GOV.UK Pay. [Contact us](https://docs.payments.service.gov.uk/support_contact_and_more_information/#contact-us) for help.", response = PaymentError.class)})
     public RefundResponse getRefundById(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                         @PathParam(PATH_PAYMENT_KEY) String paymentId,
                                         @PathParam(PATH_REFUND_KEY) String refundId,
@@ -162,18 +159,17 @@ public class PaymentRefundsResource {
             response = RefundResult.class,
             nickname = "Submit a refund for a payment",
             value = "Submit a refund for a payment",
-            notes = "Return issued refund information. " +
-                    "The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+            notes = "Create a refund. You must include your API key in the 'Authorization' HTTP header: `Authorization: Bearer YOUR-API-KEY`.",
             code = 202,
             authorizations = {@Authorization("Authorization")}
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 202, message = "ACCEPTED"),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
-            @ApiResponse(code = 412, message = "Refund amount available mismatch"),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
+            @ApiResponse(code = 202, message = "Your request succeeded, but the refund is still being processed."),
+            @ApiResponse(code = 401, message = "You did not include your API key in the 'Authorization' HTTP header, or the key was invalid."),
+            @ApiResponse(code = 404, message = "No payment matched the `paymentId` you provided.", response = PaymentError.class),
+            @ApiResponse(code = 412, message = "The `refund_amount_available` you provided did not match the amount that's available to refund."),
+            @ApiResponse(code = 429, message = "You exceeded a [rate limit](https://docs.payments.service.gov.uk/api_reference/#rate-limits) for requests to the API.", response = ApiErrorResponse.class),
+            @ApiResponse(code = 500, message = "Something's wrong with GOV.UK Pay. [Contact us](https://docs.payments.service.gov.uk/support_contact_and_more_information/#contact-us) for help.", response = PaymentError.class)})
     public Response submitRefund(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                  @ApiParam(value = "paymentId", required = true) @PathParam(PATH_PAYMENT_KEY) String paymentId,
                                  @ApiParam(value = "requestPayload", required = true) CreatePaymentRefundRequest requestPayload) {

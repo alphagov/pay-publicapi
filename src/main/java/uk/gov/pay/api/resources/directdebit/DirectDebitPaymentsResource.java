@@ -69,18 +69,16 @@ public class DirectDebitPaymentsResource {
     @ApiOperation(
             nickname = "Collect a Direct Debit payment",
             value = "Create new Direct Debit payment",
-            notes = "Create a new Direct Debit payment for the account associated to the Authorisation token. " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
+            notes = "Create a new Direct Debit payment. You must include your API key in the 'Authorization' HTTP header: `Authorization: Bearer YOUR-API-KEY`. The API will create a mandate in the account linked to the API key you provide.",
             code = 201,
             authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Created", response = DirectDebitPayment.class),
-            @ApiResponse(code = 400, message = "Bad request", response = PaymentError.class),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 422, message = "Invalid parameters: amount, reference, description, mandate id. See Public API documentation for the correct data formats", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
+            @ApiResponse(code = 201, message = "The payment was successfully created.", response = DirectDebitPayment.class),
+            @ApiResponse(code = 400, message = "The API could not process your request, for example because you did not include a required parameter.", response = PaymentError.class),
+            @ApiResponse(code = 401, message = "You did not include your API key in the 'Authorization' HTTP header, or the key was invalid."),
+            @ApiResponse(code = 422, message = "There were invalid parameters in your request.", response = PaymentError.class),
+            @ApiResponse(code = 429, message = "You exceeded a [rate limit](https://docs.payments.service.gov.uk/api_reference/#rate-limits) for requests to the API.", response = ApiErrorResponse.class),
+            @ApiResponse(code = 500, message = "Something's wrong with GOV.UK Pay. [Contact us](https://docs.payments.service.gov.uk/support_contact_and_more_information/#contact-us) for help.", response = PaymentError.class)})
     public Response createPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
                                   @ApiParam(value = "requestPayload", required = true) @Valid CreateDirectDebitPaymentRequest request) {
         DirectDebitPayment payment = createDirectDebitPaymentsService.create(account, request);
@@ -95,18 +93,16 @@ public class DirectDebitPaymentsResource {
     @ApiOperation(
             nickname = "Search Direct Debit payments",
             value = "Search Direct Debit payments",
-            notes = "Search Direct Debit payments by reference, state, mandate id, and 'from' and 'to' dates. " +
-                    "The Authorisation token needs to be specified in the 'Authorization' header " +
-                    "as 'Authorization: Bearer YOUR_API_KEY_HERE'",
+            notes = "Search Direct Debit payments. You must include your API key in the 'Authorization' HTTP header: `Authorization: Bearer YOUR-API-KEY`.",
             responseContainer = "List",
             code = 200,
             authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = DirectDebitSearchResponse.class),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 422, message = "Invalid parameter. See Public API documentation for the correct data formats", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
+            @ApiResponse(code = 200, message = "Your request succeeded.", response = DirectDebitSearchResponse.class),
+            @ApiResponse(code = 401, message = "You did not include your API key in the 'Authorization' HTTP header, or the key was invalid."),
+            @ApiResponse(code = 422, message = "There were invalid parameters in your request.", response = PaymentError.class),
+            @ApiResponse(code = 429, message = "You exceeded a [rate limit](https://docs.payments.service.gov.uk/api_reference/#rate-limits) for requests to the API.", response = ApiErrorResponse.class),
+            @ApiResponse(code = 500, message = "Something's wrong with GOV.UK Pay. [Contact us](https://docs.payments.service.gov.uk/support_contact_and_more_information/#contact-us) for help.", response = PaymentError.class)})
     public Response searchPayments(@ApiParam(value = "accountId", hidden = true)
                                    @Auth Account account,
                                    @Valid @BeanParam DirectDebitSearchPaymentsParams searchPaymentsParams,
@@ -123,19 +119,17 @@ public class DirectDebitPaymentsResource {
     @ApiOperation(
             nickname = "Get a Direct Debit payment",
             value = "Find Direct Debit payment by ID",
-            notes = "Return information about the Direct Debit payment. " +
-                    "The Authorisation token needs to be specified in the 'Authorization' header " +
-                    "as 'Authorization: Bearer YOUR_API_KEY_HERE'",
+            notes = "Get information about a single Direct Debit payment. You must include your API key in the 'Authorization' HTTP header: `Authorization: Bearer YOUR-API-KEY`.",
             code = 200,
             authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = DirectDebitPayment.class),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
+            @ApiResponse(code = 200, message = "Your request succeeded.", response = DirectDebitPayment.class),
+            @ApiResponse(code = 401, message = "You did not include your API key in the 'Authorization' HTTP header, or the key was invalid."),
+            @ApiResponse(code = 404, message = "No payment matched the `paymentId` you provided.", response = PaymentError.class),
+            @ApiResponse(code = 429, message = "You exceeded a [rate limit](https://docs.payments.service.gov.uk/api_reference/#rate-limits) for requests to the API.", response = ApiErrorResponse.class),
+            @ApiResponse(code = 500, message = "Something's wrong with GOV.UK Pay. [Contact us](https://docs.payments.service.gov.uk/support_contact_and_more_information/#contact-us) for help.", response = PaymentError.class)})
     public Response getPayment(@ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                               @PathParam("paymentId") @ApiParam(value = "Payment identifier") String paymentId) {
+                               @PathParam("paymentId") @ApiParam(value = "The payment to get information about.") String paymentId) {
 
         LOGGER.info("Direct Debit Payment request - paymentId={}", paymentId);
         DirectDebitPayment payment = getDirectDebitPaymentService.getDirectDebitPayment(account, paymentId);

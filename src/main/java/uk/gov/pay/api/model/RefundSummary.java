@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(value="RefundSummary", description = "A structure representing the refunds availability")
+@ApiModel(value="RefundSummary", description = "Information about a refund.")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RefundSummary {
 
@@ -25,17 +25,17 @@ public class RefundSummary {
         this.amountSubmitted = amountSubmitted;
     }
 
-    @ApiModelProperty(value = "Availability status of the refund", example = "available")
+    @ApiModelProperty(value = "The status of the refund.", example = "available")
     public String getStatus() {
         return status;
     }
 
-    @ApiModelProperty(value = "Amount available for refund in pence", example = "100")
+    @ApiModelProperty(value = "How much you can refund in pence.", example = "100")
     public long getAmountAvailable() {
         return amountAvailable;
     }
 
-    @ApiModelProperty(value = "Amount submitted for refunds on this Payment in pence")
+    @ApiModelProperty(value = "How much you've already refunded.")
     public long getAmountSubmitted() {
         return amountSubmitted;
     }

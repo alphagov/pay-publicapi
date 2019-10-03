@@ -13,11 +13,11 @@ import java.util.Optional;
 public class PrefilledCardholderDetails {
 
     @JsonProperty("cardholder_name")
-    @ApiModelProperty(name = "cardholder_name", value = "prefilled cardholder name", required = false, example = "J. Bogs")
+    @ApiModelProperty(name = "cardholder_name", value = "The name to prefill the **Cardholder name** field with on the payment pages.", required = false, example = "J. Bogs")
     @Size(max = 255, message = "Must be less than or equal to {max} characters length")
     private String cardholderName;
 
-    @ApiModelProperty(name = "billing_address", value = "prefilled billing address", required = false)
+    @ApiModelProperty(name = "billing_address", value = "The address to prefill the **Billing address** field with on the payment pages.", required = false)
     @JsonProperty("billing_address")
     @Valid
     private Address billingAddress;
@@ -25,7 +25,7 @@ public class PrefilledCardholderDetails {
     public Optional<Address> getBillingAddress() {
         return Optional.ofNullable(billingAddress);
     }
-    
+
     public Optional<String> getCardholderName() {
         return Optional.ofNullable(cardholderName);
     }
@@ -33,7 +33,7 @@ public class PrefilledCardholderDetails {
     public void setCardholderName(String cardholderName) {
         this.cardholderName = cardholderName;
     }
-    
+
     public void setAddress(String addressLine1, String addressLine2, String postcode, String city, String country) {
         this.billingAddress = new Address(addressLine1, addressLine2, postcode, city, country);
     }

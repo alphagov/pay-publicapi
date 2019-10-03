@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Optional;
 
-@ApiModel(value = "PaymentRefundRequest", description = "The Payment Refund Request Payload")
+@ApiModel(value = "PaymentRefundRequest", description = "The structure of your request to the API when you create a refund.")
 public class CreatePaymentRefundRequest {
 
     public static final String REFUND_AMOUNT_AVAILABLE = "refund_amount_available";
@@ -24,7 +24,7 @@ public class CreatePaymentRefundRequest {
         this.refundAmountAvailable = refundAmountAvailable;
     }
 
-    @ApiModelProperty(value = "Amount in pence. Can't be more than the available amount for refunds", required = true, allowableValues = "range[1, 10000000]", example = "150000")
+    @ApiModelProperty(value = "How much to refund in pence.", required = true, allowableValues = "range[1, 10000000]", example = "150000")
     public int getAmount() {
         return amount;
     }
@@ -34,7 +34,7 @@ public class CreatePaymentRefundRequest {
      *
      * @return
      */
-    @ApiModelProperty(value = "Amount in pence. Total amount still available before issuing the refund", required = false, allowableValues = "range[1, 10000000]", example = "200000")
+    @ApiModelProperty(value = "The `amount_available` you received when you got information about the payment.", required = false, allowableValues = "range[1, 10000000]", example = "200000")
     public Optional<Integer> getRefundAmountAvailable() {
         return Optional.ofNullable(refundAmountAvailable);
     }

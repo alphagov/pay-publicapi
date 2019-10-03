@@ -10,7 +10,7 @@ import java.util.Optional;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.ALWAYS;
 
 @JsonInclude(ALWAYS)
-@ApiModel(value = "CardDetails", description = "A structure representing the payment card")
+@ApiModel(value = "CardDetails", description = "Information about a payment card.")
 public class CardDetails {
 
     @JsonProperty("last_digits_card_number")
@@ -30,7 +30,7 @@ public class CardDetails {
 
     @JsonProperty("card_brand")
     private final String cardBrand;
-    
+
     @JsonProperty("card_type")
     private final String cardType;
 
@@ -65,7 +65,7 @@ public class CardDetails {
         return cardHolderName;
     }
 
-    @ApiModelProperty(value = "The expiry date of the card in MM/yy format", example = "04/24")
+    @ApiModelProperty(value = "The expiry date of the card in the format MM/YY.", example = "04/24")
     public String getExpiryDate() {
         return expiryDate;
     }
@@ -79,7 +79,7 @@ public class CardDetails {
         return cardBrand;
     }
 
-    @ApiModelProperty(value = "The card type, `debit` or `credit` or `null` if not able to determine", allowableValues = "debit,credit,null", example = "debit")
+    @ApiModelProperty(value = "Whether the card is `debit` or `credit`. This is `null` if we did not recognise which type of card your user made the payment with.", allowableValues = "debit,credit,null", example = "debit")
     public String getCardType() {
         return cardType;
     }

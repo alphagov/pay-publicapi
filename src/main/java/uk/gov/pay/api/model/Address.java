@@ -14,7 +14,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(NON_NULL)
-@ApiModel(value = "Address", description = "A structure representing the billing address of a card")
+@ApiModel(value = "Address", description = "The billing address for a payment card.")
 public class Address {
 
     @Size(max = 255, message = "Must be less than or equal to {max} characters length")

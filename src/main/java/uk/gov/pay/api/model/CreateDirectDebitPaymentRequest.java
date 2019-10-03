@@ -11,7 +11,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import java.util.StringJoiner;
 
-@ApiModel(description = "The Direct Debit Payment Request Payload")
+@ApiModel(description = "The structure of your request to the API when you collect a payment against a Direct Debit mandate.")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateDirectDebitPaymentRequest {
 
@@ -39,27 +39,27 @@ public class CreateDirectDebitPaymentRequest {
     @Size(max = MANDATE_ID_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
     @NotBlank
     private String mandateId;
-    
+
     public CreateDirectDebitPaymentRequest() {
         //To enable Jackson serialisation we need a default constructor
     }
-    
-    @ApiModelProperty(value = "amount in pence", required = true, allowableValues = "range[1, 10000000]", example = "12000")
+
+    @ApiModelProperty(value = "The amount in pence.", required = true, allowableValues = "range[1, 10000000]", example = "12000")
     public int getAmount() {
         return amount;
     }
 
-    @ApiModelProperty(value = "payment reference", required = true, example = "12345")
+    @ApiModelProperty(value = "The reference number you want to associate with this payment.", required = true, example = "12345")
     public String getReference() {
         return reference;
     }
 
-    @ApiModelProperty(value = "payment description", required = true, example = "New passport application")
+    @ApiModelProperty(value = "A human-readable description of the payment.", required = true, example = "New passport application")
     public String getDescription() {
         return description;
     }
 
-    @ApiModelProperty(value = "ID of the mandates being used to collect the payment", required = false, example = "33890b55-b9ea-4e2f-90fd-77ae0e9009e2")
+    @ApiModelProperty(value = "The ID of the mandate you want to collect the payment against.", required = false, example = "33890b55-b9ea-4e2f-90fd-77ae0e9009e2")
     public String getMandateId() {
         return mandateId;
     }

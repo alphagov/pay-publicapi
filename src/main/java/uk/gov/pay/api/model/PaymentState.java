@@ -11,7 +11,7 @@ import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@ApiModel(value = "PaymentState", description = "A structure representing the current state of the payment in its lifecycle.")
+@ApiModel(value = "PaymentState", description = "The status of a payment.")
 public class PaymentState {
     @JsonProperty("status")
     private String status;
@@ -24,7 +24,7 @@ public class PaymentState {
 
     @JsonProperty("code")
     private String code;
-    
+
 
     public static PaymentState createPaymentState(JsonNode node) {
         return new PaymentState(
@@ -49,26 +49,26 @@ public class PaymentState {
         this.code = code;
     }
 
-    @ApiModelProperty(value = "Current progress of the payment in its lifecycle", example = "created")
+    @ApiModelProperty(value = "The current stage of the user's payment journey.", example = "created")
     public String getStatus() {
         return status;
     }
 
-    @ApiModelProperty(value = "Whether the payment has finished")
+    @ApiModelProperty(value = "Whether the user's payment journey is complete.")
     public boolean isFinished() {
         return finished;
     }
 
-    @ApiModelProperty(value = "What went wrong with the Payment if it finished with an error - English message", example = "User cancelled the payment")
+    @ApiModelProperty(value = "What went wrong if the payment did not complete successfully.", example = "User cancelled the payment")
     public String getMessage() {
         return message;
     }
 
-    @ApiModelProperty(value = "What went wrong with the Payment if it finished with an error - error code", example = "P010")
+    @ApiModelProperty(value = "Which error code was generated if the payment did not complete successfully.", example = "P010")
     public String getCode() {
         return code;
     }
-    
+
     @Override
     public String toString() {
         return "PaymentState{" +

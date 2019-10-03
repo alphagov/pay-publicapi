@@ -66,7 +66,7 @@ public class CreateCardPaymentRequest {
     @JsonProperty("email")
     @Length(max = EMAIL_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
     private String email;
-    
+
     @ValidReturnUrl
     @Size(max = URL_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
     @JsonProperty("return_url")
@@ -79,7 +79,7 @@ public class CreateCardPaymentRequest {
 
     @Valid
     private final PrefilledCardholderDetails prefilledCardholderDetails;
-    
+
     public CreateCardPaymentRequest(CreateCardPaymentRequestBuilder builder) {
         this.amount = builder.getAmount();
         this.reference = builder.getReference();
@@ -92,55 +92,52 @@ public class CreateCardPaymentRequest {
         this.prefilledCardholderDetails = builder.getPrefilledCardholderDetails();
     }
 
-    @ApiModelProperty(value = "amount in pence", required = true, allowableValues = "range[1, 10000000]", example = "12000")
+    @ApiModelProperty(value = "The amount in pence.", required = true, allowableValues = "range[1, 10000000]", example = "12000")
     public int getAmount() {
         return amount;
     }
 
-    @ApiModelProperty(value = "payment reference", required = true, example = "12345")
+    @ApiModelProperty(value = "The reference number you want to associate with this payment.", required = true, example = "12345")
     public String getReference() {
         return reference;
     }
 
-    @ApiModelProperty(value = "payment description", required = true, example = "New passport application")
+    @ApiModelProperty(value = "A human-readable description of the payment.", required = true, example = "New passport application")
     public String getDescription() {
         return description;
     }
 
-    @ApiModelProperty(value = "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages", required = false, example = "en", allowableValues = "en,cy")
+    @ApiModelProperty(value = "Which language your users will see on the payment pages when they make a payment.", required = false, example = "en", allowableValues = "en,cy")
     @JsonProperty(LANGUAGE_FIELD_NAME)
     public Optional<SupportedLanguage> getLanguage() {
         return Optional.ofNullable(language);
     }
 
-    @ApiModelProperty(value = "email", required = false, example = "Joe.Bogs@example.org")
+    @ApiModelProperty(value = "The email address of your user.", required = false, example = "Joe.Bogs@example.org")
     @JsonProperty(EMAIL_FIELD_NAME)
     public Optional<String> getEmail() {
         return Optional.ofNullable(email);
     }
-    
-    @ApiModelProperty(value = "service return url", required = true, example = "https://service-name.gov.uk/transactions/12345")
+
+    @ApiModelProperty(value = "An HTTPS URL on your site that your user will be sent back to once they have completed their payment attempt on GOV.UK Pay.", required = true, example = "https://service-name.gov.uk/transactions/12345")
     public String getReturnUrl() {
         return returnUrl;
     }
 
-    @ApiModelProperty(value = "prefilled_cardholder_details", required = false)
+    @ApiModelProperty(value = "End user details that you've collected in your service, which the API will use to [prefill fields]( https://docs.payments.service.gov.uk/optional_features/prefill_user_details/) on the payment pages.", required = false)
     @JsonProperty(CreateCardPaymentRequest.PREFILLED_CARDHOLDER_DETAILS_FIELD_NAME)
     public Optional<PrefilledCardholderDetails> getPrefilledCardholderDetails() {
         return Optional.ofNullable(prefilledCardholderDetails);
     }
 
-    @ApiModelProperty(value = "delayed capture flag", required = false, example = "false")
+    @ApiModelProperty(value = "Whether to [delay capture](https://docs.payments.service.gov.uk/optional_features/delayed_capture/) of this payment.", required = false, example = "false")
     @JsonProperty(DELAYED_CAPTURE_FIELD_NAME)
     public Optional<Boolean> getDelayedCapture() {
         return Optional.ofNullable(delayedCapture);
     }
 
     @JsonProperty("metadata")
-    @ApiModelProperty(value = "Additional metadata - up to 10 name/value pairs - on the payment. " +
-            "Each key must be between 1 and 30 characters long. " +
-            "The value, if a string, must be no greater than 50 characters long. " +
-            "Other permissible value types: boolean, number.",
+    @ApiModelProperty(value = "Custom metadata to add to the payment.",
             dataType = "java.util.Map", example = "{\"ledger_code\":\"123\", \"reconciled\": true}")
     public Optional<ExternalMetadata> getMetadata() {
         return Optional.ofNullable(metadata);
@@ -156,7 +153,7 @@ public class CreateCardPaymentRequest {
         getDelayedCapture().ifPresent(delayedCapture -> request.add("delayed_capture", delayedCapture));
         getMetadata().ifPresent(metadata -> request.add("metadata", metadata.getMetadata()));
         getEmail().ifPresent(email -> request.add("email", email));
-        
+
         getPrefilledCardholderDetails().ifPresent(prefilledDetails -> {
             prefilledDetails.getCardholderName().ifPresent(name -> request.addToMap(PREFILLED_CARDHOLDER_DETAILS, "cardholder_name", name));
             prefilledDetails.getBillingAddress().ifPresent(address -> {
@@ -167,7 +164,7 @@ public class CreateCardPaymentRequest {
                 request.addToNestedMap("country", address.getCountry(), PREFILLED_CARDHOLDER_DETAILS, BILLING_ADDRESS);
             });
         });
-        
+
         return request.build();
     }
 
