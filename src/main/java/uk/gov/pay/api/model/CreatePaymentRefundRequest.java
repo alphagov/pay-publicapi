@@ -3,17 +3,25 @@ package uk.gov.pay.api.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Optional;
 
+import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
+
 @ApiModel(value = "PaymentRefundRequest", description = "The Payment Refund Request Payload")
+@Schema(name = "PaymentRefundRequest", description = "The Payment Refund Request Payload")
 public class CreatePaymentRefundRequest {
 
     public static final String REFUND_AMOUNT_AVAILABLE = "refund_amount_available";
     public static final int REFUND_MIN_VALUE = 1;
 
+    @Schema(description = "Amount in pence. Can't be more than the available amount for refunds", required = true,
+            example = "150000")
     private int amount;
     @JsonProperty("refund_amount_available")
+    @Schema(description = "Amount in pence. Total amount still available before issuing the refund", required = false,
+            example = "200000", accessMode = READ_ONLY)
     private Integer refundAmountAvailable;
 
     public CreatePaymentRefundRequest() {

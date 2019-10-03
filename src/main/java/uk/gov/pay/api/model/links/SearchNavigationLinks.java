@@ -2,8 +2,10 @@ package uk.gov.pay.api.model.links;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @ApiModel(value = "SearchNavigationLinks", description = "Links to navigate through pages")
+@Schema(name = "SearchNavigationLinks", description = "Links to navigate through pages")
 public class SearchNavigationLinks {
 
     @JsonProperty(value = "self")

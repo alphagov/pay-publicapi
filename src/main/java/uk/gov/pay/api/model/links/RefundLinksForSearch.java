@@ -3,10 +3,12 @@ package uk.gov.pay.api.model.links;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import static javax.ws.rs.HttpMethod.GET;
 
 @ApiModel(value = "RefundLinksForSearch", description = "links for search refunds resource")
+@Schema(name = "RefundLinksForSearch", description = "links for search refunds resource")
 public class RefundLinksForSearch {
 
     private static final String SELF = "self";
@@ -16,12 +18,14 @@ public class RefundLinksForSearch {
     private Link payment;
 
     @ApiModelProperty(value = SELF, dataType = "uk.gov.pay.api.model.links.Link")
+    @Schema(description = "self")
     @JsonProperty(value = SELF)
     public Link getSelf() {
         return self;
     }
-    
+
     @ApiModelProperty(value = PAYMENT, dataType = "uk.gov.pay.api.model.links.Link")
+    @Schema(description = "payment")
     @JsonProperty(value = PAYMENT)
     public Link getPayment() {
         return payment;

@@ -3,12 +3,14 @@ package uk.gov.pay.api.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static com.google.common.collect.ObjectArrays.concat;
 import static java.lang.String.format;
 
 @ApiModel(value = "PaymentError", description = "A Payment Error response")
+@Schema(name = "PaymentError", description = "A Payment Error response")
 @JsonInclude(NON_NULL)
 public class PaymentError {
 
@@ -104,16 +106,19 @@ public class PaymentError {
     }
 
     @ApiModelProperty(example = "amount")
+    @Schema(example = "amount")
     public String getField() {
         return field;
     }
 
     @ApiModelProperty(example = "P0102")
+    @Schema(example = "P0102")
     public String getCode() {
         return code.value();
     }
 
     @ApiModelProperty(example = "Invalid attribute value: amount. Must be less than or equal to 10000000")
+    @Schema(example = "Invalid attribute value: amount. Must be less than or equal to 10000000")
     public String getDescription() {
         return description;
     }
