@@ -6,12 +6,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Objects;
+
+import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ApiModel(value = "PaymentState", description = "A structure representing the current state of the payment in its lifecycle.")
+@Schema(name = "PaymentState", description = "A structure representing the current state of the payment in its lifecycle.")
 public class PaymentState {
     @JsonProperty("status")
     private String status;
@@ -50,21 +54,27 @@ public class PaymentState {
     }
 
     @ApiModelProperty(value = "Current progress of the payment in its lifecycle", example = "created")
+    @Schema(description = "Current progress of the payment in its lifecycle", example = "created", accessMode = READ_ONLY)
     public String getStatus() {
         return status;
     }
 
     @ApiModelProperty(value = "Whether the payment has finished")
+    @Schema(description = "Whether the payment has finished", accessMode = READ_ONLY)
     public boolean isFinished() {
         return finished;
     }
 
     @ApiModelProperty(value = "What went wrong with the Payment if it finished with an error - English message", example = "User cancelled the payment")
+    @Schema(description = "What went wrong with the Payment if it finished with an error - English message",
+            example = "User cancelled the payment", accessMode = READ_ONLY)
     public String getMessage() {
         return message;
     }
 
     @ApiModelProperty(value = "What went wrong with the Payment if it finished with an error - error code", example = "P010")
+    @Schema(description = "What went wrong with the Payment if it finished with an error - error code", example = "P010",
+            accessMode = READ_ONLY)
     public String getCode() {
         return code;
     }

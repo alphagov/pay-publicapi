@@ -203,8 +203,9 @@ public class PaymentRefundsResource {
             summary = "Return issued refund information. " +
                     "The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
             responses = {
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "202", description = "ACCEPTED",
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "successful operation",
                             content = @Content(schema = @Schema(implementation = RefundResult.class))),
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "202", description = "ACCEPTED"),
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Credentials are required to access this resource"),
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not found",
                             content = @Content(schema = @Schema(implementation = PaymentError.class))),

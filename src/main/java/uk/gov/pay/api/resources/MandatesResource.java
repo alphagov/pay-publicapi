@@ -168,7 +168,7 @@ public class MandatesResource {
                     "The Authorisation token needs to be specified in the 'Authorization' header " +
                     "as 'Authorization: Bearer YOUR_API_KEY_HERE'",
             responses = {
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK",
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Created",
                             content = @Content(schema = @Schema(implementation = MandateResponse.class))),
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Bad Request",
                             content = @Content(schema = @Schema(implementation = PaymentError.class))),

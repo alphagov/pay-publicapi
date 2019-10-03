@@ -3,6 +3,7 @@ package uk.gov.pay.api.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
@@ -14,10 +15,12 @@ public class PrefilledCardholderDetails {
 
     @JsonProperty("cardholder_name")
     @ApiModelProperty(name = "cardholder_name", value = "prefilled cardholder name", required = false, example = "J. Bogs")
+    @Schema(name = "cardholder_name", description = "prefilled cardholder name", example = "J. Bogs")
     @Size(max = 255, message = "Must be less than or equal to {max} characters length")
     private String cardholderName;
 
     @ApiModelProperty(name = "billing_address", value = "prefilled billing address", required = false)
+    @Schema(name = "billing_address", description = "prefilled billing address")
     @JsonProperty("billing_address")
     @Valid
     private Address billingAddress;
