@@ -59,7 +59,7 @@ public class CreateDirectDebitPaymentRequest {
         return description;
     }
 
-    @ApiModelProperty(value = "The ID of the mandate you want to collect the payment against.", required = false, example = "33890b55-b9ea-4e2f-90fd-77ae0e9009e2")
+    @ApiModelProperty(value = "The identifier of the mandate you want to collect the payment against.", required = false, example = "33890b55-b9ea-4e2f-90fd-77ae0e9009e2")
     public String getMandateId() {
         return mandateId;
     }

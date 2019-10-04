@@ -62,7 +62,7 @@ public class MandatesResource {
     @ApiOperation(
             nickname = "Get a mandate",
             value = "Find mandate by ID",
-            notes = "Get information about a single mandate. You must include your API key in the 'Authorization' HTTP header: `Authorization: Bearer YOUR-API-KEY`.",
+            notes = "Get information about a single Direct Debit mandate. You must include your API key in the 'Authorization' HTTP header: `Authorization: Bearer YOUR-API-KEY`.",
             authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Your request succeeded.", response = MandateResponse.class),

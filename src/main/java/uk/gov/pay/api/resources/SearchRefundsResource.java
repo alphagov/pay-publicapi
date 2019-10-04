@@ -66,7 +66,7 @@ public class SearchRefundsResource {
                                   @QueryParam("from_date") String fromDate,
                                   @ApiParam(value = "The end date for refunds to be searched, exclusive. Dates must be in ISO 8601 format. For example 2015-08-13T12:35:00Z.", hidden = false)
                                   @QueryParam("to_date") String toDate,
-                                  @ApiParam(value = "Which page number of results to return.", hidden = false)
+                                  @ApiParam(value = "The page number of results to return.", hidden = false)
                                   @QueryParam("page") String pageNumber,
                                   @ApiParam(value = "The number of results per page.", hidden = false)
                                   @QueryParam("display_size") String displaySize,

@@ -44,7 +44,7 @@ public class DirectDebitSearchPaymentsParams {
     private String toDate;
 
     @QueryParam("page")
-    @ApiParam(value = "Which page number of results to return.")
+    @ApiParam(value = "The page number of results to return.")
     @Min(value = 1, message = "Must be greater than or equal to {value}")
     private Integer page;
 
