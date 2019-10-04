@@ -39,34 +39,14 @@ values:
 | `RATE_LIMITER_VALUE_PER_NODE_POST` | Default 5    | Number of `POST` requests allowed per `RATE_LIMITER_PER_MILLIS` milliseconds for a given client |
 | `RATE_LIMITER_PER_MILLIS`          | Default 1000 | Rate limiter time window |
 
-## API through gelato.io 
+## API specification
 
-gelato.io is a hosted service that dynamically generates beautiful documentation and sandbox from a Swagger-compliant API.
-It also provides customized documentation, markdown editor, automatic API explorer, code sample Generation, custom styling and allows to add a custom domain.
+Read our [developer documentation](https://docs.payments.service.gov.uk/#gov-uk-pay-documentation) for guidance on using the API.
 
-Useful links:
- - [API Portal](https://gds-payments.gelato.io)
- - [API Documentation](https://gds-payments.gelato.io/reference/docs)
- - [API Reference](https://gds-payments.gelato.io/reference/api/v1)
- - [API Explorer](https://gds-payments.gelato.io/api-explorer/)
+For more detailed information you can use our:
 
-## API Specification
-
-The [API Specification](docs/api_specification.md) provides more detail on the paths and operations including examples.
-
-| Path                                                   | Method | Description                        |
-| ------------------------------------------------------ | ------ | ---------------------------------- |
-|[`/v1/payments`](docs/api_specification.md#post-v1payments)                      | POST   |  creates a payment                 |
-|[`/v1/payments/{paymentId}`](docs/api_specification.md#get-v1paymentspaymentid)  | GET    |  returns a payment by ID           |
-|[`/v1/payments/{paymentId}/cancel`](docs/api_specification.md#post-v1paymentspaymentidcancel)  | POST   |  cancels a payment |
-|[`/v1/payments/{paymentId}/events`](docs/api_specification.md#get-v1paymentspaymentidevents)  | GET    |  returns all audit events for the payment referred by this ID  |
-|[`/v1/payments`](docs/api_specification.md#get-v1payments)  | GET    |  search/filter payments           |
-|[`/v1/payments/{paymentId}/refunds`](docs/api_specification.md#get-v1paymentspaymentidrefunds)| GET   |  returns a list of refunds for the payment|
-|[`/v1/payments/{paymentId}/refunds`](docs/api_specification.md#post-v1paymentspaymentidrefunds)| POST |  creates a new refund for the payment     |
-|[`/v1/payments/{paymentId}/refunds/{refundId}`](docs/api_specification.md#get-v1paymentspaymentidrefundsrefundid)| GET | returns a refund by ID   |
-|[`/v1/refunds`](docs/api_specification.md#get-v1refunds)  | GET    |  search/filter refunds           |
-|[`/v1/directdebit/mandates`](docs/api_specification.md#post-v1directdebitmandates) | POST | create a mandate|
-------------------------------------------------------------------------------------------------
+- [API browser](https://govukpay-api-browser.cloudapps.digital/#gov-uk-pay-api)
+- [Swagger file](https://github.com/alphagov/pay-publicapi/blob/master/swagger/swagger.json)
 
 ## Dependencies
 
@@ -79,4 +59,3 @@ The [API Specification](docs/api_specification.md) provides more detail on the p
 ## Responsible Disclosure
 
 GOV.UK Pay aims to stay secure for everyone. If you are a security researcher and have discovered a security vulnerability in this code, we appreciate your help in disclosing it to us in a responsible manner. We will give appropriate credit to those reporting confirmed issues. Please e-mail gds-team-pay-security@digital.cabinet-office.gov.uk with details of any issue you find, we aim to reply quickly.
-
