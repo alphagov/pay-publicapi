@@ -137,7 +137,7 @@ public class CreateCardPaymentRequest {
     }
 
     @JsonProperty("metadata")
-    @ApiModelProperty(value = "Custom metadata to add to the payment.",
+    @ApiModelProperty(value = "[Custom metadata](https://docs.payments.service.gov.uk/optional_features/custom_metadata/) to add to the payment.",
             dataType = "java.util.Map", example = "{\"ledger_code\":\"123\", \"reconciled\": true}")
     public Optional<ExternalMetadata> getMetadata() {
         return Optional.ofNullable(metadata);
