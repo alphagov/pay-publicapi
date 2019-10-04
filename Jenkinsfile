@@ -100,9 +100,9 @@ pipeline {
                 env.PACT_TAG = gitBranchName()
             }
             ws('contract-tests-wp') {
-                runPactProviderTests("pay-direct-debit-connector", "${env.PACT_TAG}")
-                runPactProviderTests("pay-connector", "${env.PACT_TAG}")
-                runPactProviderTests("pay-ledger", "${env.PACT_TAG}")
+                runPactProviderTests("pay-direct-debit-connector", "${env.PACT_TAG}", "publicapi")
+                runPactProviderTests("pay-connector", "${env.PACT_TAG}", "publicapi")
+                runPactProviderTests("pay-ledger", "${env.PACT_TAG}", "publicapi")
             }
         }
         post {
