@@ -166,30 +166,30 @@ public class PaymentsResource {
             @ApiResponse(code = 500, message = "Something's wrong with GOV.UK Pay. [Contact us](https://docs.payments.service.gov.uk/support_contact_and_more_information/#contact-us) for help.", response = PaymentError.class)})
     public Response searchPayments(@ApiParam(value = "accountId", hidden = true)
                                    @Auth Account account,
-                                   @ApiParam(value = "The payment reference to search for (case insensitive, exact match only).", hidden = false)
+                                   @ApiParam(value = "The payment reference to search for - case insensitive, exact match only.", hidden = false)
                                    @QueryParam("reference") String reference,
-                                   @ApiParam(value = "The user email address to search for (case insensitive).", hidden = false)
+                                   @ApiParam(value = "The user email address to search for - case insensitive.", hidden = false)
                                    @QueryParam("email") String email,
-                                   @ApiParam(value = "The payment state to search for (case sensitive, exact match only).", hidden = false, allowableValues = "created,started,submitted,success,failed,cancelled,error")
+                                   @ApiParam(value = "The payment state to search for - case sensitive, exact match only.", hidden = false, allowableValues = "created,started,submitted,success,failed,cancelled,error")
                                    @QueryParam("state") String state,
-                                   @ApiParam(value = "The card brand to search for (case sensitive).", hidden = false)
+                                   @ApiParam(value = "The card brand to search for - case sensitive.", hidden = false)
                                    @QueryParam("card_brand") String cardBrand,
-                                   @ApiParam(value = "The start date for payments to be searched, inclusive. Dates must be in ISO 8601 format. For example 2015-08-13T12:35:00Z.", hidden = false)
+                                   @ApiParam(value = "The start date for payments to be searched - inclusive. Dates must be in ISO 8601 format. For example 2015-08-13T12:35:00Z.", hidden = false)
                                    @QueryParam("from_date") String fromDate,
-                                   @ApiParam(value = "The end date for payments to be searched, inclusive. Dates must be in ISO 8601 format. For example 2015-08-13T12:35:00Z.", hidden = false)
+                                   @ApiParam(value = "The end date for payments to be searched - exclusive. Dates must be in ISO 8601 format. For example 2015-08-13T12:35:00Z.", hidden = false)
                                    @QueryParam("to_date") String toDate,
-                                   @ApiParam(value = "Which page number of results to return. The default is 1.", hidden = false)
+                                   @ApiParam(value = "Which page number of results to return.", hidden = false)
                                    @QueryParam("page") String pageNumber,
-                                   @ApiParam(value = "The number of results per page. This must be between 1 and 500. The default is 500.", hidden = false)
+                                   @ApiParam(value = "The number of results per page.", hidden = false)
                                    @QueryParam("display_size") String displaySize,
                                    @ApiParam(value = "Direct Debit Agreement Id", hidden = true)
                                    @QueryParam("agreement_id") String agreementId,
-                                   @ApiParam(value = "The end user name to search for (case insensitive).", hidden = false)
+                                   @ApiParam(value = "The end user name to search for - case insensitive.", hidden = false)
                                    @QueryParam("cardholder_name") String cardHolderName,
-                                   @ApiParam(value = "The first 6 digits of a payment card to search for (exact match only).", hidden = false)
+                                   @ApiParam(value = "The first 6 digits of a payment card to search for - exact match only.", hidden = false)
 
                                    @QueryParam("first_digits_card_number") String firstDigitsCardNumber,
-                                   @ApiParam(value = "The last 4 digits of a payment card to search for (exact match only).", hidden = false)
+                                   @ApiParam(value = "The first 6 digits of a payment card to search for - exact match only.", hidden = false)
 
                                    @QueryParam("last_digits_card_number") String lastDigitsCardNumber,
                                    @ApiParam(hidden = true) @HeaderParam("X-Ledger") String strategyName,

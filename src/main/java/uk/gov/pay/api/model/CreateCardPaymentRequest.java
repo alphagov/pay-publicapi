@@ -130,7 +130,7 @@ public class CreateCardPaymentRequest {
         return Optional.ofNullable(prefilledCardholderDetails);
     }
 
-    @ApiModelProperty(value = "Whether to [delay capture](https://docs.payments.service.gov.uk/optional_features/delayed_capture/) of this payment.", required = false, example = "false")
+    @ApiModelProperty(value = "Whether to [delay capturing](https://docs.payments.service.gov.uk/optional_features/delayed_capture/) this payment.", required = false, example = "false")
     @JsonProperty(DELAYED_CAPTURE_FIELD_NAME)
     public Optional<Boolean> getDelayedCapture() {
         return Optional.ofNullable(delayedCapture);

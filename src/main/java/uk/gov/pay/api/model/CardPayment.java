@@ -128,7 +128,7 @@ public class CardPayment extends Payment {
         return language;
     }
 
-    @ApiModelProperty(value = "Whether to [delay capture](https://docs.payments.service.gov.uk/optional_features/delayed_capture/) of this payment.", example = "false")
+    @ApiModelProperty(value = "Whether to [delay capturing](https://docs.payments.service.gov.uk/optional_features/delayed_capture/) this payment.", example = "false")
     public boolean getDelayedCapture() {
         return delayedCapture;
     }

@@ -25,7 +25,7 @@ public class CreateMandateRequest {
     @NotNull
     @NotBlank
     @Size(max = 255, message = "Must be less than or equal to {max} characters length")
-    @JsonProperty(value = "The reference number you want to associate with this mandate.")
+    @JsonProperty(value = "The reference number you want to associate with the mandate.")
     private String reference;
 
     @JsonProperty(value = "A human-readable description of the mandate.")

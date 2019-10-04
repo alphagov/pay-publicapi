@@ -13,11 +13,11 @@ import java.util.Optional;
 public class PrefilledCardholderDetails {
 
     @JsonProperty("cardholder_name")
-    @ApiModelProperty(name = "cardholder_name", value = "The name to prefill the **Cardholder name** field with on the payment pages.", required = false, example = "J. Bogs")
+    @ApiModelProperty(name = "cardholder_name", value = "The name to prefill in the **Cardholder name** field on the payment pages.", required = false, example = "J. Bogs")
     @Size(max = 255, message = "Must be less than or equal to {max} characters length")
     private String cardholderName;
 
-    @ApiModelProperty(name = "billing_address", value = "The address to prefill the **Billing address** field with on the payment pages.", required = false)
+    @ApiModelProperty(name = "billing_address", value = "The address to prefill in the **Billing address** field on the payment pages.", required = false)
     @JsonProperty("billing_address")
     @Valid
     private Address billingAddress;

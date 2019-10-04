@@ -50,7 +50,7 @@ public class MandateResponse {
         return payer;
     }
 
-    @ApiModelProperty(value = "The human-readable description of the mandate.")
+    @ApiModelProperty(value = "The human-readable description you gave the mandate.")
     @JsonProperty(value = "description")
     public String getDescription() {
         return description;
@@ -90,13 +90,13 @@ public class MandateResponse {
         return state;
     }
 
-    @ApiModelProperty(value = "API endpoints related to this mandate.")
+    @ApiModelProperty(value = "API endpoints related to the mandate.")
     @JsonProperty(value = "_links")
     public MandateLinks getLinks() {
         return links;
     }
 
-    @ApiModelProperty(value = "The reference number you associated with this mandate.", example = "jhjcvaiqlediuhh23d89hd3")
+    @ApiModelProperty(value = "The reference number you associated with the mandate.", example = "jhjcvaiqlediuhh23d89hd3")
     @JsonProperty(value = "reference")
     public String getReference() { return reference; }
 

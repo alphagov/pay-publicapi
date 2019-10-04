@@ -69,7 +69,7 @@ public class DirectDebitPaymentsResource {
     @ApiOperation(
             nickname = "Collect a Direct Debit payment",
             value = "Create new Direct Debit payment",
-            notes = "Create a new Direct Debit payment. You must include your API key in the 'Authorization' HTTP header: `Authorization: Bearer YOUR-API-KEY`. The API will create a mandate in the account linked to the API key you provide.",
+            notes = "Collect a payment against a Direct Debit mandate. You must include your API key in the 'Authorization' HTTP header: `Authorization: Bearer YOUR-API-KEY`. The API will create a mandate in the account linked to the API key you provide.",
             code = 201,
             authorizations = {@Authorization("Authorization")})
     @ApiResponses(value = {

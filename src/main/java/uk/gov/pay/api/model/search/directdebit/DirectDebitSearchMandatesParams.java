@@ -32,24 +32,24 @@ public class DirectDebitSearchMandatesParams {
     @QueryParam("name")
     private String name;
 
-    @ApiParam(value = "The start date for mandates to be searched, inclusive. Dates must be in ISO 8601 format. For example 2015-08-13T12:35:00Z.")
+    @ApiParam(value = "The start date for mandates to be searched - inclusive. Dates must be in ISO 8601 format. For example 2015-08-13T12:35:00Z.")
     @QueryParam("from_date")
     @ValidDate()
     private String fromDate;
 
     @QueryParam("to_date")
-    @ApiParam(value = "The end date for mandates to be searched, inclusive. Dates must be in ISO 8601 format. For example 2015-08-13T12:35:00Z.")
+    @ApiParam(value = "The end date for mandates to be searched - exclusive. Dates must be in ISO 8601 format. For example 2015-08-13T12:35:00Z.")
     @ValidDate()
     private String toDate;
 
     @QueryParam("page")
-    @ApiParam(value = "Which page number of results to return. The default is 1.")
+    @ApiParam(value = "Which page number of results to return.")
     @DefaultValue("1")
     @Min(value = 1, message = "Must be greater than or equal to {value}")
     private int page;
 
     @QueryParam("display_size")
-    @ApiParam(value = "The number of results per page. This must be between 1 and 500. The default is 500.")
+    @ApiParam(value = "The number of results per page.")
     @DefaultValue("500")
     @Min(value = 1, message = "Must be greater than or equal to {value}")
     @Max(value = 500, message = "Must be less than or equal to {value}")
