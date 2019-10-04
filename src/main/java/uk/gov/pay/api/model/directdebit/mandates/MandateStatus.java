@@ -2,8 +2,10 @@ package uk.gov.pay.api.model.directdebit.mandates;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Schema(description = "mandate state")
 public class MandateStatus {
 
     @JsonProperty("status")

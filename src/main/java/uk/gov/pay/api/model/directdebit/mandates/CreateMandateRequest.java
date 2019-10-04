@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.pay.api.validation.ValidReturnUrl;
 
@@ -14,6 +15,7 @@ import javax.validation.constraints.Size;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ApiModel(description = "The Payload to create a new Mandate")
+@Schema(description = "The Payload to create a new Mandate")
 public class CreateMandateRequest {
 
     @NotNull
@@ -33,16 +35,19 @@ public class CreateMandateRequest {
     private String description;
 
     @ApiModelProperty(value = "mandate description")
+    @Schema(description = "mandate description")
     public String getDescription() {
         return description;
     }
 
     @ApiModelProperty(value = "mandate return url", required = true, example = "https://service-name.gov.uk/transactions/12345")
+    @Schema(description = "mandate return url", required = true, example = "https://service-name.gov.uk/transactions/12345")
     public String getReturnUrl() {
         return returnUrl;
     }
 
     @ApiModelProperty(value = "mandate reference", example = "test_service_reference")
+    @Schema(description = "mandate reference", example = "test_service_reference")
     public String getReference() {
         return reference;
     }

@@ -3,6 +3,7 @@ package uk.gov.pay.api.model.directdebit.mandates;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.api.model.DirectDebitPaymentState;
 import uk.gov.pay.api.model.Payment;
 import uk.gov.pay.api.model.PaymentState;
@@ -13,21 +14,26 @@ import uk.gov.pay.api.service.PublicApiUriGenerator;
 import java.net.URI;
 import java.util.Objects;
 
+import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 import static uk.gov.pay.api.model.directdebit.DirectDebitPaymentLinks.DirectDebitPaymentLinksBuilder.aDirectDebitPaymentLinks;
 import static uk.gov.pay.api.model.directdebit.mandates.DirectDebitPayment.DirectDebitPaymentBuilder.aDirectDebitPayment;
 
 
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 @ApiModel(value = "DirectDebitPayment")
+@Schema(description = "DirectDebitPayment")
 public class DirectDebitPayment extends Payment {
 
     @JsonProperty("mandate_id")
+    @Schema(example = "33890b55-b9ea-4e2f-90fd-77ae0e9009e2", accessMode = READ_ONLY)
     private String mandateId;
     
     @JsonProperty("provider_id")
+    @Schema(example = "provider id", accessMode = READ_ONLY)
     private String providerId;
     
     @JsonProperty("_links")
+    @Schema(name = "_links")
     private DirectDebitPaymentLinks links;
 
     @JsonProperty("state")
