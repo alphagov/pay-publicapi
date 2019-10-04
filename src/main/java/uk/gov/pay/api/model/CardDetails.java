@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Optional;
 
@@ -11,6 +12,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.ALWAYS;
 
 @JsonInclude(ALWAYS)
 @ApiModel(value = "CardDetails", description = "A structure representing the payment card")
+@Schema(name = "CardDetails", description = "A structure representing the payment card")
 public class CardDetails {
 
     @JsonProperty("last_digits_card_number")
@@ -51,21 +53,25 @@ public class CardDetails {
     }
 
     @ApiModelProperty(example = "1234")
+    @Schema(example = "1234")
     public String getLastDigitsCardNumber() {
         return lastDigitsCardNumber;
     }
 
     @ApiModelProperty(example = "123456")
+    @Schema(example = "123456")
     public String getFirstDigitsCardNumber() {
         return firstDigitsCardNumber;
     }
 
     @ApiModelProperty(example = "Mr. Card holder")
+    @Schema(example = "Mr. Card holder")
     public String getCardHolderName() {
         return cardHolderName;
     }
 
     @ApiModelProperty(value = "The expiry date of the card in MM/yy format", example = "04/24")
+    @Schema(description = "The expiry date of the card in MM/yy format", example = "04/24")
     public String getExpiryDate() {
         return expiryDate;
     }
@@ -75,11 +81,13 @@ public class CardDetails {
     }
 
     @ApiModelProperty(example = "Visa")
+    @Schema(example = "Visa")
     public String getCardBrand() {
         return cardBrand;
     }
 
     @ApiModelProperty(value = "The card type, `debit` or `credit` or `null` if not able to determine", allowableValues = "debit,credit,null", example = "debit")
+    @Schema(description = "The card type, `debit` or `credit` or `null` if not able to determine", allowableValues = {"debit","credit","null"}, example = "debit")
     public String getCardType() {
         return cardType;
     }

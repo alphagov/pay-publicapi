@@ -1,9 +1,9 @@
 package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.hibernate.validator.constraints.Length;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.api.validation.ValidReturnUrl;
@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.StringJoiner;
 
 @ApiModel(description = "The Payment Request Payload")
+@Schema(description = "The Payment Request Payload")
 public class CreateCardPaymentRequest {
 
     public static final int EMAIL_MAX_LENGTH = 254;
@@ -75,6 +76,7 @@ public class CreateCardPaymentRequest {
     private final Boolean delayedCapture;
 
     @ApiModelProperty(name = "metadata", dataType = "Map[String,String]")
+    @Schema(name = "metadata", example = "{\"property1\": \"value1\", \"property2\": \"value2\"}\"")
     private final ExternalMetadata metadata;
 
     @Valid
@@ -93,44 +95,52 @@ public class CreateCardPaymentRequest {
     }
 
     @ApiModelProperty(value = "amount in pence", required = true, allowableValues = "range[1, 10000000]", example = "12000")
+    @Schema(description = "amount in pence", required = true, minimum = "1", maximum = "10000000", example = "12000")
     public int getAmount() {
         return amount;
     }
 
     @ApiModelProperty(value = "payment reference", required = true, example = "12345")
+    @Schema(description = "payment reference", required = true, example = "12345")
     public String getReference() {
         return reference;
     }
 
     @ApiModelProperty(value = "payment description", required = true, example = "New passport application")
+    @Schema(description = "payment description", required = true, example = "New passport application")
     public String getDescription() {
         return description;
     }
 
     @ApiModelProperty(value = "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages", required = false, example = "en", allowableValues = "en,cy")
+    @Schema(description = "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages", example = "en")
     @JsonProperty(LANGUAGE_FIELD_NAME)
     public Optional<SupportedLanguage> getLanguage() {
         return Optional.ofNullable(language);
     }
 
     @ApiModelProperty(value = "email", required = false, example = "Joe.Bogs@example.org")
+    @Schema(name = "email", example = "Joe.Bogs@example.org")
     @JsonProperty(EMAIL_FIELD_NAME)
     public Optional<String> getEmail() {
         return Optional.ofNullable(email);
     }
     
     @ApiModelProperty(value = "service return url", required = true, example = "https://service-name.gov.uk/transactions/12345")
+    @Schema(description = "service return url", required = true, example = "https://service-name.gov.uk/transactions/12345")
     public String getReturnUrl() {
         return returnUrl;
     }
 
     @ApiModelProperty(value = "prefilled_cardholder_details", required = false)
+    @Schema(description = "prefilled_cardholder_details")
     @JsonProperty(CreateCardPaymentRequest.PREFILLED_CARDHOLDER_DETAILS_FIELD_NAME)
     public Optional<PrefilledCardholderDetails> getPrefilledCardholderDetails() {
         return Optional.ofNullable(prefilledCardholderDetails);
     }
 
     @ApiModelProperty(value = "delayed capture flag", required = false, example = "false")
+    @Schema(description = "delayed capture flag", example = "false")
     @JsonProperty(DELAYED_CAPTURE_FIELD_NAME)
     public Optional<Boolean> getDelayedCapture() {
         return Optional.ofNullable(delayedCapture);
@@ -142,6 +152,11 @@ public class CreateCardPaymentRequest {
             "The value, if a string, must be no greater than 50 characters long. " +
             "Other permissible value types: boolean, number.",
             dataType = "java.util.Map", example = "{\"ledger_code\":\"123\", \"reconciled\": true}")
+    @Schema(description = "Additional metadata - up to 10 name/value pairs - on the payment. " +
+            "Each key must be between 1 and 30 characters long. " +
+            "The value, if a string, must be no greater than 50 characters long. " +
+            "Other permissible value types: boolean, number.",
+            example = "{\"ledger_code\":\"123\", \"reconciled\": true}")
     public Optional<ExternalMetadata> getMetadata() {
         return Optional.ofNullable(metadata);
     }

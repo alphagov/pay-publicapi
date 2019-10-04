@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
 @ApiModel(value="SettlementSummary", description = "A structure representing information about a settlement")
+@Schema(name = "SettlementSummary", description = "A structure representing information about a settlement")
 public class SettlementSummary {
 
     @JsonProperty("capture_submit_time")
@@ -23,11 +25,14 @@ public class SettlementSummary {
     }
 
     @ApiModelProperty(value = "Date and time capture request has been submitted (may be null if capture request was not immediately acknowledged by payment gateway)", example = "2016-01-21T17:15:000Z")
+    @Schema(description = "Date and time capture request has been submitted (may be null if capture request was not immediately acknowledged by payment gateway)", 
+            example = "2016-01-21T17:15:000Z")
     public String getCaptureSubmitTime() {
         return captureSubmitTime;
     }
 
     @ApiModelProperty(value = "Date of the capture event", example = "2016-01-21")
+    @Schema(description = "Date of the capture event", example = "2016-01-21")
     public String getCapturedDate() {
         return capturedDate;
     }

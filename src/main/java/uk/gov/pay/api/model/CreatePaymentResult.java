@@ -3,6 +3,7 @@ package uk.gov.pay.api.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.api.model.links.PaymentLinks;
 import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.commons.model.charge.ExternalMetadata;
@@ -17,6 +18,7 @@ public class CreatePaymentResult {
 
     @JsonProperty
     @ApiModelProperty(name = "amount", example = "1200")
+    @Schema(name = "amount", example = "1200")
     private long amount;
 
     @JsonProperty
@@ -25,34 +27,42 @@ public class CreatePaymentResult {
 
     @JsonProperty
     @ApiModelProperty(example = "Your Service Description")
+    @Schema(example = "Your Service Description")
     private String description;
 
     @JsonProperty
     @ApiModelProperty(example = "your-reference")
+    @Schema(example = "your-reference")
     private String reference;
 
     @JsonProperty
     @ApiModelProperty(name = "language", access = "language", example = "en", allowableValues = "en,cy")
+    @Schema(name = "language", example = "en")
     private SupportedLanguage language;
 
     @JsonProperty
     @ApiModelProperty(name = "payment_id", example = "hu20sqlact5260q2nanm0q8u93")
+    @Schema(name = "payment_id", example = "hu20sqlact5260q2nanm0q8u93")
     private String paymentId;
 
     @JsonProperty
     @ApiModelProperty(name = "payment_provider", example = "worldpay")
+    @Schema(name = "payment_provider", example = "worldpay")
     private String paymentProvider;
 
     @JsonProperty
     @ApiModelProperty(name = "return_url", example = "http://your.service.domain/your-reference")
+    @Schema(name = "return_url", example = "http://your.service.domain/your-reference")
     private String returnUrl;
 
     @JsonProperty
     @ApiModelProperty(name = "created_date", example = "2016-01-21T17:15:00Z")
+    @Schema(name = "created_date", example = "2016-01-21T17:15:00Z")
     private String createdDate;
 
     @JsonProperty
     @ApiModelProperty(name = "delayed_capture", access = "delayed_capture")
+    @Schema(name = "delayed_capture")
     private boolean delayedCapture;
 
     @JsonProperty("refund_summary")
@@ -63,21 +73,26 @@ public class CreatePaymentResult {
 
     @JsonProperty
     @ApiModelProperty(name = LINKS_JSON_ATTRIBUTE)
+    @Schema(name = LINKS_JSON_ATTRIBUTE)
     private PaymentLinks links;
 
     @JsonProperty
     @ApiModelProperty(name = "provider_id", example = "null")
+    @Schema(name = "provider_id", example = "null")
     private String providerId;
 
     @JsonProperty
     @ApiModelProperty(name = "metadata", dataType = "Map[String,String]")
+    @Schema(name = "metadata")
     private ExternalMetadata metadata;
 
     @JsonProperty
     @ApiModelProperty(name = "email", example = "citizen@example.org", required = false)
+    @Schema(name = "email", example = "citizen@example.org")
     private String email;
 
     @JsonProperty(value = "card_details")
-    @ApiModelProperty(name = "card_details", required = false)
+    @ApiModelProperty(name = "card_details")
+    @Schema(name = "card_details")
     private CardDetails cardDetails;
 }

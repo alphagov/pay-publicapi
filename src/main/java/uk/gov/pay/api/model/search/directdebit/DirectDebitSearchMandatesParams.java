@@ -2,6 +2,7 @@ package uk.gov.pay.api.model.search.directdebit;
 
 import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.commons.validation.ValidDate;
 
 import javax.validation.constraints.Max;
@@ -22,6 +23,7 @@ public class DirectDebitSearchMandatesParams {
     @QueryParam("state")
     @Pattern(regexp = "created|started|pending|active|inactive|cancelled|failed|abandoned|error",
             message = "Must be one of created, started, pending, active, inactive, cancelled, failed, abandoned or error")
+    @Parameter(name = "state", schema = @Schema(allowableValues = {"created","started","pending","active","inactive","cancelled","failed","abandoned","error"}))
     private String state;
 
     @QueryParam("bank_statement_reference")
@@ -47,14 +49,15 @@ public class DirectDebitSearchMandatesParams {
 
     @QueryParam("page")
     @ApiParam(value = "Page number requested for the search, should be a positive integer (optional, defaults to 1)")
-    @Parameter(description = "Page number requested for the search, should be a positive integer (optional, defaults to 1)")
+    @Parameter(description = "Page number requested for the search, should be a positive integer (optional, defaults to 1)", schema = @Schema(minimum = "1"))
     @DefaultValue("1")
     @Min(value = 1, message = "Must be greater than or equal to {value}")
     private int page;
 
     @QueryParam("display_size")
     @ApiParam(value = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)")
-    @Parameter(description = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)")
+    @Parameter(description = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)",
+     schema = @Schema(minimum = "1", maximum = "500"))
     @DefaultValue("500")
     @Min(value = 1, message = "Must be greater than or equal to {value}")
     @Max(value = 500, message = "Must be less than or equal to {value}")
