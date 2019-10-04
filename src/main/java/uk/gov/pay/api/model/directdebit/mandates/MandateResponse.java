@@ -68,7 +68,7 @@ public class MandateResponse {
         return createdDate;
     }
 
-    @ApiModelProperty(value = "The reference number of the mandate.", example = "jhjcvaiqlediuhh23d89hd3")
+    @ApiModelProperty(value = "The unique identifier of the mandate.", example = "jhjcvaiqlediuhh23d89hd3")
     @JsonProperty(value = "mandate_id")
     public String getMandateId() {
         return this.mandateId;

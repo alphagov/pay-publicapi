@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
-@ApiModel(value="SettlementSummary", description = "Information about when your PSP took a payment.")
+@ApiModel(value="SettlementSummary", description = "Information about when your Payment Service Provider (PSP) took a payment.")
 public class SettlementSummary {
 
     @JsonProperty("capture_submit_time")
@@ -27,7 +27,7 @@ public class SettlementSummary {
         return captureSubmitTime;
     }
 
-    @ApiModelProperty(value = "When the PSP took the payment from your user's bank account.", example = "2016-01-21")
+    @ApiModelProperty(value = "When your PSP took the payment from your user's bank account.", example = "2016-01-21")
     public String getCapturedDate() {
         return capturedDate;
     }

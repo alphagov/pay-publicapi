@@ -29,7 +29,7 @@ public class DirectDebitSearchPaymentsParams {
     private String state;
 
     @QueryParam("mandate_id")
-    @ApiParam(value = "The mandate ID to search for - case insensitive.")
+    @ApiParam(value = "The mandate identifier to search for - case insensitive.")
     @Size(min = 1, max = MANDATE_ID_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
     private String mandateId;
 

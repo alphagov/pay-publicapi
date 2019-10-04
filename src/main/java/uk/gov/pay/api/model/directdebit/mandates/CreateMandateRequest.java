@@ -13,7 +13,7 @@ import javax.validation.constraints.Size;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@ApiModel(description = "The structure of your request to the API when you create a Direct Debit mandate.")
+@ApiModel(description = "The structure of your request to the API when you set up a Direct Debit mandate.")
 public class CreateMandateRequest {
 
     @NotNull
