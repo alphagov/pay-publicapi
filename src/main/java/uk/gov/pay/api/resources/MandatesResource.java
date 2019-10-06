@@ -170,7 +170,7 @@ public class MandatesResource {
             responses = {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Created",
                             content = @Content(schema = @Schema(implementation = MandateResponse.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Bad Request",
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Bad request",
                             content = @Content(schema = @Schema(implementation = PaymentError.class))),
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401",
                             description = "Credentials are required to access this resource"),

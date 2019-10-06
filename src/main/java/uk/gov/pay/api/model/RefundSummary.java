@@ -6,6 +6,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
+
 @ApiModel(value = "RefundSummary", description = "A structure representing the refunds availability")
 @Schema(name = "RefundSummary", description = "A structure representing the refunds availability")
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -34,13 +36,13 @@ public class RefundSummary {
     }
 
     @ApiModelProperty(value = "Amount available for refund in pence", example = "100")
-    @Schema(description = "Amount available for refund in pence", example = "100")
+    @Schema(description = "Amount available for refund in pence", example = "100", accessMode = READ_ONLY)
     public long getAmountAvailable() {
         return amountAvailable;
     }
 
     @ApiModelProperty(value = "Amount submitted for refunds on this Payment in pence")
-    @Schema(description = "Amount submitted for refunds on this Payment in pence")
+    @Schema(description = "Amount submitted for refunds on this Payment in pence", accessMode = READ_ONLY)
     public long getAmountSubmitted() {
         return amountSubmitted;
     }

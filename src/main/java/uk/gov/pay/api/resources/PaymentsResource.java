@@ -312,7 +312,7 @@ public class PaymentsResource {
     @Produces(APPLICATION_JSON)
     @Operation(security = {@SecurityRequirement(name = "BearerAuth")},
             operationId = "Create a payment",
-            summary = "Create a payment",
+            summary = "Create new payment",
             description = "Create a new payment for the account associated to the Authorisation token. " +
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
@@ -348,7 +348,7 @@ public class PaymentsResource {
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response createNewPayment(@ApiParam(value = "accountId", hidden = true) @Parameter(hidden = true) @Auth Account account,
-                                     @ApiParam(value = "requestPayload", required = true) @Parameter(required = true, name = "requestPayload")
+                                     @ApiParam(value = "requestPayload", required = true) @Parameter(required = true, description = "requestPayload")
                                      @Valid CreateCardPaymentRequest createCardPaymentRequest) {
         logger.info("Payment create request parsed to {}", createCardPaymentRequest);
 
@@ -380,7 +380,7 @@ public class PaymentsResource {
                             content = @Content(schema = @Schema(implementation = PaymentError.class))),
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401",
                             description = "Credentials are required to access this resource"),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not Found",
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not found",
                             content = @Content(schema = @Schema(implementation = PaymentError.class))),
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "409", description = "Conflict",
                             content = @Content(schema = @Schema(implementation = PaymentError.class))),

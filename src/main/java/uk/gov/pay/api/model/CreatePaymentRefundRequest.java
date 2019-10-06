@@ -17,11 +17,11 @@ public class CreatePaymentRefundRequest {
     public static final int REFUND_MIN_VALUE = 1;
 
     @Schema(description = "Amount in pence. Can't be more than the available amount for refunds", required = true,
-            example = "150000")
+            example = "150000", minimum = "1", maximum = "10000000")
     private int amount;
     @JsonProperty("refund_amount_available")
     @Schema(description = "Amount in pence. Total amount still available before issuing the refund", required = false,
-            example = "200000", accessMode = READ_ONLY)
+            example = "200000", accessMode = READ_ONLY, minimum = "1", maximum = "10000000")
     private Integer refundAmountAvailable;
 
     public CreatePaymentRefundRequest() {

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include;
+import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 
 @ApiModel(value = "PostLink", description = "A POST link related to a payment")
 @Schema(name = "PostLink", description = "A POST link related to a payment")
@@ -29,7 +30,7 @@ public class PostLink extends Link {
     }
 
     @ApiModelProperty(example = "POST")
-    @Schema(example = "POST")
+    @Schema(example = "POST", accessMode = READ_ONLY)
     public String getMethod() {
         return super.getMethod();
     }

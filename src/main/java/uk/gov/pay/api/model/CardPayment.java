@@ -131,6 +131,7 @@ public class CardPayment extends Payment {
     }
 
     @ApiModelProperty(example = "en", allowableValues = "en,cy")
+    @Schema(name = "language", example = "en")
     public SupportedLanguage getLanguage() {
         return language;
     }
