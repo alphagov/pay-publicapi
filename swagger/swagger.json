@@ -1,11 +1,13 @@
 {
-  "swagger" : "2.0",
+  "openapi" : "3.0.1",
   "info" : {
+    "title" : "GOV.UK Pay API",
     "description" : "GOV.UK Pay API",
-    "version" : "1.0.3",
-    "title" : "GOV.UK Pay API"
+    "version" : "1.0.3"
   },
-  "host" : "publicapi.payments.service.gov.uk",
+  "servers" : [ {
+    "url" : "https://publicapi.payments.service.gov.uk"
+  } ],
   "tags" : [ {
     "name" : "Card payments"
   }, {
@@ -13,78 +15,31 @@
   }, {
     "name" : "Refunding card payments"
   } ],
-  "schemes" : [ "https" ],
   "paths" : {
-    "/v1/directdebit/mandates" : {
+    "/v1/directdebit/mandates/{mandateId}" : {
       "get" : {
         "tags" : [ "Direct Debit" ],
-        "summary" : "Search mandates",
-        "description" : "Searches for mandates with the parameters provided. The Authorisation token needs to be specified in the 'Authorization' header as 'Authorization: Bearer YOUR_API_KEY_HERE'",
-        "operationId" : "Search mandates",
-        "produces" : [ "application/json" ],
+        "summary" : "Find mandate by ID",
+        "description" : "Return information about the mandate. The Authorisation token needs to be specified in the 'Authorization' header as 'Authorization: Bearer YOUR_API_KEY_HERE'",
+        "operationId" : "Get a mandate",
         "parameters" : [ {
-          "name" : "reference",
-          "in" : "query",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "state",
-          "in" : "query",
-          "required" : false,
-          "type" : "string",
-          "pattern" : "created|started|pending|active|inactive|cancelled|failed|abandoned|error"
-        }, {
-          "name" : "bank_statement_reference",
-          "in" : "query",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "email",
-          "in" : "query",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "name",
-          "in" : "query",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "from_date",
-          "in" : "query",
-          "description" : "From date of mandates to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "to_date",
-          "in" : "query",
-          "description" : "To date of mandates to be searched (this date is exclusive). Example=2015-08-13T12:35:00Z",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "page",
-          "in" : "query",
-          "description" : "Page number requested for the search, should be a positive integer (optional, defaults to 1)",
-          "required" : false,
-          "type" : "integer",
-          "default" : 1,
-          "minimum" : 1,
-          "format" : "int32"
-        }, {
-          "name" : "display_size",
-          "in" : "query",
-          "description" : "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)",
-          "required" : false,
-          "type" : "integer",
-          "default" : 500,
-          "maximum" : 500,
-          "minimum" : 1,
-          "format" : "int32"
+          "name" : "mandateId",
+          "in" : "path",
+          "description" : "mandateId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
         } ],
         "responses" : {
           "200" : {
             "description" : "OK",
-            "schema" : {
-              "$ref" : "#/definitions/SearchMandateResponse"
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/MandateResponse"
+                }
+              }
             }
           },
           "401" : {
@@ -92,31 +47,170 @@
           },
           "404" : {
             "description" : "Not found",
-            "schema" : {
-              "$ref" : "#/definitions/MandateError"
-            }
-          },
-          "422" : {
-            "description" : "Invalid parameters: from_date, to_date, state, page, display_size. See Public API documentation for the correct data formats",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/MandateError"
+                }
+              }
             }
           },
           "429" : {
             "description" : "Too many requests",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorResponse"
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
             }
           },
           "500" : {
             "description" : "Downstream system error",
-            "schema" : {
-              "$ref" : "#/definitions/MandateError"
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/MandateError"
+                }
+              }
             }
           }
         },
         "security" : [ {
-          "Authorization" : [ ]
+          "BearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/v1/directdebit/mandates" : {
+      "get" : {
+        "tags" : [ "Direct Debit" ],
+        "summary" : "Search mandates",
+        "description" : "Searches for mandates with the parameters provided. The Authorisation token needs to be specified in the 'Authorization' header as 'Authorization: Bearer YOUR_API_KEY_HERE'",
+        "operationId" : "Search mandates",
+        "parameters" : [ {
+          "name" : "reference",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "state",
+          "in" : "query",
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "created", "started", "pending", "active", "inactive", "cancelled", "failed", "abandoned", "error" ]
+          }
+        }, {
+          "name" : "bank_statement_reference",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "email",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "name",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "from_date",
+          "in" : "query",
+          "description" : "From date of mandates to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "to_date",
+          "in" : "query",
+          "description" : "To date of mandates to be searched (this date is exclusive). Example=2015-08-13T12:35:00Z",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page number requested for the search, should be a positive integer (optional, defaults to 1)",
+          "schema" : {
+            "minimum" : 1,
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 1
+          }
+        }, {
+          "name" : "display_size",
+          "in" : "query",
+          "description" : "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)",
+          "schema" : {
+            "maximum" : 500,
+            "minimum" : 1,
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 500
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SearchMandateResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "404" : {
+            "description" : "Not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/MandateError"
+                }
+              }
+            }
+          },
+          "422" : {
+            "description" : "Invalid parameters: from_date, to_date, state, page, display_size. See Public API documentation for the correct data formats",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/MandateError"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
         } ]
       },
       "post" : {
@@ -124,28 +218,36 @@
         "summary" : "Create a new mandate",
         "description" : "Create a new mandate for the account associated to the Authorisation token. The Authorisation token needs to be specified in the 'Authorization' header as 'Authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "Create a mandate",
-        "consumes" : [ "application/json" ],
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "in" : "body",
-          "name" : "body",
+        "requestBody" : {
           "description" : "requestPayload",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/CreateMandateRequest"
-          }
-        } ],
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CreateMandateRequest"
+              }
+            }
+          },
+          "required" : true
+        },
         "responses" : {
           "201" : {
             "description" : "Created",
-            "schema" : {
-              "$ref" : "#/definitions/MandateResponse"
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/MandateResponse"
+                }
+              }
             }
           },
           "400" : {
             "description" : "Bad request",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
             }
           },
           "401" : {
@@ -153,641 +255,27 @@
           },
           "429" : {
             "description" : "Too many requests",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorResponse"
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
             }
           },
           "500" : {
             "description" : "Downstream system error",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
             }
           }
         },
         "security" : [ {
-          "Authorization" : [ ]
-        } ]
-      }
-    },
-    "/v1/directdebit/mandates/{mandateId}" : {
-      "get" : {
-        "tags" : [ "Direct Debit" ],
-        "summary" : "Find mandate by ID",
-        "description" : "Return information about the mandate. The Authorisation token needs to be specified in the 'Authorization' header as 'Authorization: Bearer YOUR_API_KEY_HERE'",
-        "operationId" : "Get a mandate",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "mandateId",
-          "in" : "path",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "schema" : {
-              "$ref" : "#/definitions/MandateResponse"
-            }
-          },
-          "401" : {
-            "description" : "Credentials are required to access this resource"
-          },
-          "404" : {
-            "description" : "Not found",
-            "schema" : {
-              "$ref" : "#/definitions/MandateError"
-            }
-          },
-          "429" : {
-            "description" : "Too many requests",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorResponse"
-            }
-          },
-          "500" : {
-            "description" : "Downstream system error",
-            "schema" : {
-              "$ref" : "#/definitions/MandateError"
-            }
-          }
-        },
-        "security" : [ {
-          "Authorization" : [ ]
-        } ]
-      }
-    },
-    "/v1/directdebit/payments" : {
-      "get" : {
-        "tags" : [ "Direct Debit" ],
-        "summary" : "Search Direct Debit payments",
-        "description" : "Search Direct Debit payments by reference, state, mandate id, and 'from' and 'to' dates. The Authorisation token needs to be specified in the 'Authorization' header as 'Authorization: Bearer YOUR_API_KEY_HERE'",
-        "operationId" : "Search Direct Debit payments",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "reference",
-          "in" : "query",
-          "description" : "Your payment reference to search",
-          "required" : false,
-          "type" : "string",
-          "maxLength" : 255,
-          "minLength" : 1
-        }, {
-          "name" : "state",
-          "in" : "query",
-          "description" : "State of payments to be searched. Example=success",
-          "required" : false,
-          "type" : "string",
-          "pattern" : "created|pending|success|failed|cancelled|paidout|indemnityclaim|error"
-        }, {
-          "name" : "mandate_id",
-          "in" : "query",
-          "description" : "The GOV.UK Pay identifier for the mandate",
-          "required" : false,
-          "type" : "string",
-          "maxLength" : 26,
-          "minLength" : 1
-        }, {
-          "name" : "from_date",
-          "in" : "query",
-          "description" : "From date of Direct Debit payments to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "to_date",
-          "in" : "query",
-          "description" : "To date of Direct Debit payments to be searched (this date is exclusive). Example=2015-08-13T12:35:00Z",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "page",
-          "in" : "query",
-          "description" : "Page number requested for the search, should be a positive integer (optional, defaults to 1)",
-          "required" : false,
-          "type" : "integer",
-          "minimum" : 1,
-          "format" : "int32"
-        }, {
-          "name" : "display_size",
-          "in" : "query",
-          "description" : "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)",
-          "required" : false,
-          "type" : "integer",
-          "maximum" : 500,
-          "minimum" : 1,
-          "format" : "int32"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "schema" : {
-              "$ref" : "#/definitions/DirectDebitSearchResponse"
-            }
-          },
-          "401" : {
-            "description" : "Credentials are required to access this resource"
-          },
-          "422" : {
-            "description" : "Invalid parameter. See Public API documentation for the correct data formats",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
-            }
-          },
-          "429" : {
-            "description" : "Too many requests",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorResponse"
-            }
-          },
-          "500" : {
-            "description" : "Downstream system error",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
-            }
-          }
-        },
-        "security" : [ {
-          "Authorization" : [ ]
-        } ]
-      },
-      "post" : {
-        "tags" : [ "Direct Debit" ],
-        "summary" : "Create new Direct Debit payment",
-        "description" : "Create a new Direct Debit payment for the account associated to the Authorisation token. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
-        "operationId" : "Collect a Direct Debit payment",
-        "consumes" : [ "application/json" ],
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "in" : "body",
-          "name" : "body",
-          "description" : "requestPayload",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/CreateDirectDebitPaymentRequest"
-          }
-        } ],
-        "responses" : {
-          "201" : {
-            "description" : "Created",
-            "schema" : {
-              "$ref" : "#/definitions/DirectDebitPayment"
-            }
-          },
-          "400" : {
-            "description" : "Bad request",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
-            }
-          },
-          "401" : {
-            "description" : "Credentials are required to access this resource"
-          },
-          "422" : {
-            "description" : "Invalid parameters: amount, reference, description, mandate id. See Public API documentation for the correct data formats",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
-            }
-          },
-          "429" : {
-            "description" : "Too many requests",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorResponse"
-            }
-          },
-          "500" : {
-            "description" : "Downstream system error",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
-            }
-          }
-        },
-        "security" : [ {
-          "Authorization" : [ ]
-        } ]
-      }
-    },
-    "/v1/directdebit/payments/{paymentId}" : {
-      "get" : {
-        "tags" : [ "Direct Debit" ],
-        "summary" : "Find Direct Debit payment by ID",
-        "description" : "Return information about the Direct Debit payment. The Authorisation token needs to be specified in the 'Authorization' header as 'Authorization: Bearer YOUR_API_KEY_HERE'",
-        "operationId" : "Get a Direct Debit payment",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "paymentId",
-          "in" : "path",
-          "description" : "Payment identifier",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "schema" : {
-              "$ref" : "#/definitions/DirectDebitPayment"
-            }
-          },
-          "401" : {
-            "description" : "Credentials are required to access this resource"
-          },
-          "404" : {
-            "description" : "Not found",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
-            }
-          },
-          "429" : {
-            "description" : "Too many requests",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorResponse"
-            }
-          },
-          "500" : {
-            "description" : "Downstream system error",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
-            }
-          }
-        },
-        "security" : [ {
-          "Authorization" : [ ]
-        } ]
-      }
-    },
-    "/v1/payments" : {
-      "get" : {
-        "tags" : [ "Card payments" ],
-        "summary" : "Search payments",
-        "description" : "Search payments by reference, state, 'from' and 'to' date. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
-        "operationId" : "Search payments",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "reference",
-          "in" : "query",
-          "description" : "Your payment reference to search (exact match, case insensitive)",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "email",
-          "in" : "query",
-          "description" : "The user email used in the payment to be searched",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "state",
-          "in" : "query",
-          "description" : "State of payments to be searched. Example=success",
-          "required" : false,
-          "type" : "string",
-          "enum" : [ "created", "started", "submitted", "success", "failed", "cancelled", "error" ]
-        }, {
-          "name" : "card_brand",
-          "in" : "query",
-          "description" : "Card brand used for payment. Example=master-card",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "from_date",
-          "in" : "query",
-          "description" : "From date of payments to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "to_date",
-          "in" : "query",
-          "description" : "To date of payments to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "page",
-          "in" : "query",
-          "description" : "Page number requested for the search, should be a positive integer (optional, defaults to 1)",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "display_size",
-          "in" : "query",
-          "description" : "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "cardholder_name",
-          "in" : "query",
-          "description" : "Name on card used to make payment",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "first_digits_card_number",
-          "in" : "query",
-          "description" : "First six digits of the card used to make payment",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "last_digits_card_number",
-          "in" : "query",
-          "description" : "Last four digits of the card used to make payment",
-          "required" : false,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentSearchResults"
-            }
-          },
-          "401" : {
-            "description" : "Credentials are required to access this resource"
-          },
-          "422" : {
-            "description" : "Invalid parameters: from_date, to_date, status, display_size. See Public API documentation for the correct data formats",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
-            }
-          },
-          "429" : {
-            "description" : "Too many requests",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorResponse"
-            }
-          },
-          "500" : {
-            "description" : "Downstream system error",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
-            }
-          }
-        },
-        "security" : [ {
-          "Authorization" : [ ]
-        } ]
-      },
-      "post" : {
-        "tags" : [ "Card payments" ],
-        "summary" : "Create new payment",
-        "description" : "Create a new payment for the account associated to the Authorisation token. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
-        "operationId" : "Create a payment",
-        "consumes" : [ "application/json" ],
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "in" : "body",
-          "name" : "body",
-          "description" : "requestPayload",
-          "required" : true,
-          "schema" : {
-            "$ref" : "#/definitions/CreateCardPaymentRequest"
-          }
-        } ],
-        "responses" : {
-          "201" : {
-            "description" : "Created",
-            "schema" : {
-              "$ref" : "#/definitions/CreatePaymentResult"
-            }
-          },
-          "400" : {
-            "description" : "Bad request",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
-            }
-          },
-          "401" : {
-            "description" : "Credentials are required to access this resource"
-          },
-          "422" : {
-            "description" : "Invalid attribute value: description. Must be less than or equal to 255 characters length",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
-            }
-          },
-          "429" : {
-            "description" : "Too many requests",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorResponse"
-            }
-          },
-          "500" : {
-            "description" : "Downstream system error",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
-            }
-          }
-        },
-        "security" : [ {
-          "Authorization" : [ ]
-        } ]
-      }
-    },
-    "/v1/payments/{paymentId}" : {
-      "get" : {
-        "tags" : [ "Card payments" ],
-        "summary" : "Find payment by ID",
-        "description" : "Return information about the payment The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
-        "operationId" : "Get a payment",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "paymentId",
-          "in" : "path",
-          "description" : "Payment identifier",
-          "required" : true,
-          "type" : "string",
-          "x-example" : "hu20sqlact5260q2nanm0q8u93"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "schema" : {
-              "$ref" : "#/definitions/GetPaymentResult"
-            }
-          },
-          "401" : {
-            "description" : "Credentials are required to access this resource"
-          },
-          "404" : {
-            "description" : "Not found",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
-            }
-          },
-          "429" : {
-            "description" : "Too many requests",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorResponse"
-            }
-          },
-          "500" : {
-            "description" : "Downstream system error",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
-            }
-          }
-        },
-        "security" : [ {
-          "Authorization" : [ ]
-        } ]
-      }
-    },
-    "/v1/payments/{paymentId}/cancel" : {
-      "post" : {
-        "tags" : [ "Card payments" ],
-        "summary" : "Cancel payment",
-        "description" : "Cancel a payment based on the provided payment ID and the Authorisation token. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be cancelled if it's in a state that isn't finished.",
-        "operationId" : "Cancel a payment",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "paymentId",
-          "in" : "path",
-          "description" : "Payment identifier",
-          "required" : true,
-          "type" : "string",
-          "x-example" : "hu20sqlact5260q2nanm0q8u93"
-        } ],
-        "responses" : {
-          "204" : {
-            "description" : "No Content"
-          },
-          "400" : {
-            "description" : "Cancellation of payment failed",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
-            }
-          },
-          "401" : {
-            "description" : "Credentials are required to access this resource"
-          },
-          "404" : {
-            "description" : "Not found",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
-            }
-          },
-          "409" : {
-            "description" : "Conflict",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
-            }
-          },
-          "429" : {
-            "description" : "Too many requests",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorResponse"
-            }
-          },
-          "500" : {
-            "description" : "Downstream system error",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
-            }
-          }
-        },
-        "security" : [ {
-          "Authorization" : [ ]
-        } ]
-      }
-    },
-    "/v1/payments/{paymentId}/capture" : {
-      "post" : {
-        "tags" : [ "Card payments" ],
-        "summary" : "Capture payment",
-        "description" : "Capture a payment based on the provided payment ID and the Authorisation token. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be captured if it's in 'submitted' state",
-        "operationId" : "Capture a payment",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "paymentId",
-          "in" : "path",
-          "description" : "Payment identifier",
-          "required" : true,
-          "type" : "string",
-          "x-example" : "hu20sqlact5260q2nanm0q8u93"
-        } ],
-        "responses" : {
-          "204" : {
-            "description" : "No Content"
-          },
-          "400" : {
-            "description" : "Capture of payment failed",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
-            }
-          },
-          "401" : {
-            "description" : "Credentials are required to access this resource"
-          },
-          "404" : {
-            "description" : "Not found",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
-            }
-          },
-          "409" : {
-            "description" : "Conflict",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
-            }
-          },
-          "429" : {
-            "description" : "Too many requests",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorResponse"
-            }
-          },
-          "500" : {
-            "description" : "Downstream system error",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
-            }
-          }
-        },
-        "security" : [ {
-          "Authorization" : [ ]
-        } ]
-      }
-    },
-    "/v1/payments/{paymentId}/events" : {
-      "get" : {
-        "tags" : [ "Card payments" ],
-        "summary" : "Return payment events by ID",
-        "description" : "Return payment events information about a certain payment The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
-        "operationId" : "Get events for a payment",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "paymentId",
-          "in" : "path",
-          "description" : "Payment identifier",
-          "required" : true,
-          "type" : "string",
-          "x-example" : "hu20sqlact5260q2nanm0q8u93"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentEvents"
-            }
-          },
-          "401" : {
-            "description" : "Credentials are required to access this resource"
-          },
-          "404" : {
-            "description" : "Not found",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
-            }
-          },
-          "429" : {
-            "description" : "Too many requests",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorResponse"
-            }
-          },
-          "500" : {
-            "description" : "Downstream system error",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
-            }
-          }
-        },
-        "security" : [ {
-          "Authorization" : [ ]
+          "BearerAuth" : [ ]
         } ]
       }
     },
@@ -797,18 +285,23 @@
         "summary" : "Get all refunds for a payment",
         "description" : "Return refunds for a payment. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "Get all refunds for a payment",
-        "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "paymentId",
           "in" : "path",
           "required" : true,
-          "type" : "string"
+          "schema" : {
+            "type" : "string"
+          }
         } ],
         "responses" : {
           "200" : {
             "description" : "OK",
-            "schema" : {
-              "$ref" : "#/definitions/RefundForSearchResult"
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RefundForSearchResult"
+                }
+              }
             }
           },
           "401" : {
@@ -816,25 +309,37 @@
           },
           "404" : {
             "description" : "Not found",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
             }
           },
           "429" : {
             "description" : "Too many requests",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorResponse"
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
             }
           },
           "500" : {
             "description" : "Downstream system error",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
             }
           }
         },
         "security" : [ {
-          "Authorization" : [ ]
+          "BearerAuth" : [ ]
         } ]
       },
       "post" : {
@@ -842,28 +347,34 @@
         "summary" : "Submit a refund for a payment",
         "description" : "Return issued refund information. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "Submit a refund for a payment",
-        "consumes" : [ "application/json" ],
-        "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "paymentId",
           "in" : "path",
-          "description" : "paymentId",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "in" : "body",
-          "name" : "body",
-          "description" : "requestPayload",
           "required" : true,
           "schema" : {
-            "$ref" : "#/definitions/PaymentRefundRequest"
+            "type" : "string"
           }
         } ],
+        "requestBody" : {
+          "description" : "requestPayload",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/PaymentRefundRequest"
+              }
+            }
+          },
+          "required" : true
+        },
         "responses" : {
           "200" : {
             "description" : "successful operation",
-            "schema" : {
-              "$ref" : "#/definitions/Refund"
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Refund"
+                }
+              }
             }
           },
           "202" : {
@@ -874,8 +385,12 @@
           },
           "404" : {
             "description" : "Not found",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
             }
           },
           "412" : {
@@ -883,19 +398,27 @@
           },
           "429" : {
             "description" : "Too many requests",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorResponse"
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
             }
           },
           "500" : {
             "description" : "Downstream system error",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
             }
           }
         },
         "security" : [ {
-          "Authorization" : [ ]
+          "BearerAuth" : [ ]
         } ]
       }
     },
@@ -905,23 +428,30 @@
         "summary" : "Find payment refund by ID",
         "description" : "Return payment refund information by Refund ID The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "Get a payment refund",
-        "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "paymentId",
           "in" : "path",
           "required" : true,
-          "type" : "string"
+          "schema" : {
+            "type" : "string"
+          }
         }, {
           "name" : "refundId",
           "in" : "path",
           "required" : true,
-          "type" : "string"
+          "schema" : {
+            "type" : "string"
+          }
         } ],
         "responses" : {
           "200" : {
             "description" : "OK",
-            "schema" : {
-              "$ref" : "#/definitions/Refund"
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Refund"
+                }
+              }
             }
           },
           "401" : {
@@ -929,25 +459,538 @@
           },
           "404" : {
             "description" : "Not found",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
             }
           },
           "429" : {
             "description" : "Too many requests",
-            "schema" : {
-              "$ref" : "#/definitions/ErrorResponse"
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
             }
           },
           "500" : {
             "description" : "Downstream system error",
-            "schema" : {
-              "$ref" : "#/definitions/PaymentError"
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
             }
           }
         },
         "security" : [ {
-          "Authorization" : [ ]
+          "BearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/v1/payments/{paymentId}" : {
+      "get" : {
+        "tags" : [ "Card payments" ],
+        "summary" : "Find payment by ID",
+        "description" : "Return information about the payment The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "operationId" : "Get a payment",
+        "parameters" : [ {
+          "name" : "paymentId",
+          "in" : "path",
+          "description" : "Payment identifier",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "hu20sqlact5260q2nanm0q8u93"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/GetPaymentResult"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "404" : {
+            "description" : "Not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/v1/payments/{paymentId}/events" : {
+      "get" : {
+        "tags" : [ "Card payments" ],
+        "summary" : "Return payment events by ID",
+        "description" : "Return payment events information about a certain payment The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "operationId" : "Get events for a payment",
+        "parameters" : [ {
+          "name" : "paymentId",
+          "in" : "path",
+          "description" : "Payment identifier",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "hu20sqlact5260q2nanm0q8u93"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentEvents"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "404" : {
+            "description" : "Not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/v1/payments" : {
+      "get" : {
+        "tags" : [ "Card payments" ],
+        "summary" : "Search payments",
+        "description" : "Search payments by reference, state, 'from' and 'to' date. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "operationId" : "Search payments",
+        "parameters" : [ {
+          "name" : "reference",
+          "in" : "query",
+          "description" : "Your payment reference to search (exact match, case insensitive)",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "email",
+          "in" : "query",
+          "description" : "The user email used in the payment to be searched",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "state",
+          "in" : "query",
+          "description" : "State of payments to be searched. Example=success",
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "created", "started", "submitted", "success", "failed", "cancelled", "error" ]
+          },
+          "example" : "success"
+        }, {
+          "name" : "card_brand",
+          "in" : "query",
+          "description" : "Card brand used for payment. Example=master-card",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "from_date",
+          "in" : "query",
+          "description" : "From date of payments to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "to_date",
+          "in" : "query",
+          "description" : "To date of payments to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page number requested for the search, should be a positive integer (optional, defaults to 1)",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "display_size",
+          "in" : "query",
+          "description" : "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "cardholder_name",
+          "in" : "query",
+          "description" : "Name on card used to make payment",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "first_digits_card_number",
+          "in" : "query",
+          "description" : "First six digits of the card used to make payment",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "last_digits_card_number",
+          "in" : "query",
+          "description" : "Last four digits of the card used to make payment",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentSearchResults"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "422" : {
+            "description" : "Invalid parameters: from_date, to_date, status, display_size. See Public API documentation for the correct data formats",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ]
+      },
+      "post" : {
+        "tags" : [ "Card payments" ],
+        "summary" : "Create new payment",
+        "description" : "Create a new payment for the account associated to the Authorisation token. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "operationId" : "Create a payment",
+        "requestBody" : {
+          "description" : "requestPayload",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CreateCardPaymentRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CreatePaymentResult"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "422" : {
+            "description" : "Invalid attribute value: description. Must be less than or equal to 255 characters length",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/v1/payments/{paymentId}/cancel" : {
+      "post" : {
+        "tags" : [ "Card payments" ],
+        "summary" : "Cancel payment",
+        "description" : "Cancel a payment based on the provided payment ID and the Authorisation token. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be cancelled if it's in a state that isn't finished.",
+        "operationId" : "Cancel a payment",
+        "parameters" : [ {
+          "name" : "paymentId",
+          "in" : "path",
+          "description" : "Payment identifier",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "hu20sqlact5260q2nanm0q8u93"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "400" : {
+            "description" : "Cancellation of payment failed",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "404" : {
+            "description" : "Not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "Conflict",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/v1/payments/{paymentId}/capture" : {
+      "post" : {
+        "tags" : [ "Card payments" ],
+        "summary" : "Capture payment",
+        "description" : "Capture a payment based on the provided payment ID and the Authorisation token. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be captured if it's in 'submitted' state",
+        "operationId" : "Capture a payment",
+        "parameters" : [ {
+          "name" : "paymentId",
+          "in" : "path",
+          "description" : "Payment identifier",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "hu20sqlact5260q2nanm0q8u93"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "400" : {
+            "description" : "Capture of payment failed",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "404" : {
+            "description" : "Not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "Conflict",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
         } ]
       }
     },
@@ -957,37 +1000,44 @@
         "summary" : "Search refunds",
         "description" : "Search refunds by 'from' and 'to' date. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
         "operationId" : "Search refunds",
-        "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "from_date",
           "in" : "query",
           "description" : "From date of refunds to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z",
-          "required" : false,
-          "type" : "string"
+          "schema" : {
+            "type" : "string"
+          }
         }, {
           "name" : "to_date",
           "in" : "query",
           "description" : "To date of refunds to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z",
-          "required" : false,
-          "type" : "string"
+          "schema" : {
+            "type" : "string"
+          }
         }, {
           "name" : "page",
           "in" : "query",
           "description" : "Page number requested for the search, should be a positive integer (optional, defaults to 1)",
-          "required" : false,
-          "type" : "string"
+          "schema" : {
+            "type" : "string"
+          }
         }, {
           "name" : "display_size",
           "in" : "query",
           "description" : "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)",
-          "required" : false,
-          "type" : "string"
+          "schema" : {
+            "type" : "string"
+          }
         } ],
         "responses" : {
           "200" : {
             "description" : "OK",
-            "schema" : {
-              "$ref" : "#/definitions/RefundSearchResults"
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RefundSearchResults"
+                }
+              }
             }
           },
           "401" : {
@@ -995,1398 +1045,1609 @@
           },
           "422" : {
             "description" : "Invalid parameters. See Public API documentation for the correct data formats",
-            "schema" : {
-              "$ref" : "#/definitions/RefundError"
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RefundError"
+                }
+              }
             }
           },
           "500" : {
             "description" : "Downstream system error",
-            "schema" : {
-              "$ref" : "#/definitions/RefundError"
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RefundError"
+                }
+              }
             }
           }
         },
         "security" : [ {
-          "Authorization" : [ ]
+          "BearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/v1/directdebit/payments/{paymentId}" : {
+      "get" : {
+        "tags" : [ "Direct Debit" ],
+        "summary" : "Find Direct Debit payment by ID",
+        "description" : "Return information about the Direct Debit payment. The Authorisation token needs to be specified in the 'Authorization' header as 'Authorization: Bearer YOUR_API_KEY_HERE'",
+        "operationId" : "Get a Direct Debit payment",
+        "parameters" : [ {
+          "name" : "paymentId",
+          "in" : "path",
+          "description" : "Payment identifier",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/DirectDebitPayment"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "404" : {
+            "description" : "Not found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/v1/directdebit/payments" : {
+      "get" : {
+        "tags" : [ "Direct Debit" ],
+        "summary" : "Search Direct Debit payments",
+        "description" : "Search Direct Debit payments by reference, state, mandate id, and 'from' and 'to' dates. The Authorisation token needs to be specified in the 'Authorization' header as 'Authorization: Bearer YOUR_API_KEY_HERE'",
+        "operationId" : "Search Direct Debit payments",
+        "parameters" : [ {
+          "name" : "reference",
+          "in" : "query",
+          "description" : "Your payment reference to search",
+          "schema" : {
+            "maxLength" : 255,
+            "minLength" : 1,
+            "type" : "string"
+          }
+        }, {
+          "name" : "state",
+          "in" : "query",
+          "description" : "State of payments to be searched. Example=success",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "mandate_id",
+          "in" : "query",
+          "description" : "The GOV.UK Pay identifier for the mandate",
+          "schema" : {
+            "maxLength" : 26,
+            "minLength" : 1,
+            "type" : "string"
+          }
+        }, {
+          "name" : "from_date",
+          "in" : "query",
+          "description" : "From date of Direct Debit payments to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "to_date",
+          "in" : "query",
+          "description" : "To date of Direct Debit payments to be searched (this date is exclusive). Example=2015-08-13T12:35:00Z",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Page number requested for the search, should be a positive integer (optional, defaults to 1)",
+          "schema" : {
+            "minimum" : 1,
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "display_size",
+          "in" : "query",
+          "description" : "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)",
+          "schema" : {
+            "maximum" : 500,
+            "minimum" : 1,
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/DirectDebitSearchResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "422" : {
+            "description" : "Invalid parameter. See Public API documentation for the correct data formats",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ]
+      },
+      "post" : {
+        "tags" : [ "Direct Debit" ],
+        "summary" : "Create new Direct Debit payment",
+        "description" : "Create a new Direct Debit payment for the account associated to the Authorisation token. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "operationId" : "Collect a Direct Debit payment",
+        "requestBody" : {
+          "description" : "requestPayload",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CreateDirectDebitPaymentRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/DirectDebitPayment"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "422" : {
+            "description" : "Invalid parameters: amount, reference, description, mandate id. See Public API documentation for the correct data formats",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
         } ]
       }
     }
   },
-  "securityDefinitions" : {
-    "Authorization" : {
-      "type" : "apiKey",
-      "name" : "Authorization",
-      "in" : "header"
-    }
-  },
-  "definitions" : {
-    "Address" : {
-      "type" : "object",
-      "properties" : {
-        "line1" : {
-          "type" : "string",
-          "example" : "address line 1",
-          "readOnly" : true,
-          "minLength" : 0,
-          "maxLength" : 255
-        },
-        "line2" : {
-          "type" : "string",
-          "example" : "address line 2",
-          "readOnly" : true,
-          "minLength" : 0,
-          "maxLength" : 255
-        },
-        "postcode" : {
-          "type" : "string",
-          "example" : "AB1 2CD",
-          "readOnly" : true,
-          "minLength" : 0,
-          "maxLength" : 25
-        },
-        "city" : {
-          "type" : "string",
-          "example" : "address city",
-          "readOnly" : true,
-          "minLength" : 0,
-          "maxLength" : 255
-        },
-        "country" : {
-          "type" : "string",
-          "example" : "GB",
-          "readOnly" : true
-        }
-      },
-      "description" : "A structure representing the billing address of a card"
-    },
-    "CardDetails" : {
-      "type" : "object",
-      "properties" : {
-        "last_digits_card_number" : {
-          "type" : "string",
-          "example" : "1234",
-          "readOnly" : true
-        },
-        "first_digits_card_number" : {
-          "type" : "string",
-          "example" : "123456",
-          "readOnly" : true
-        },
-        "cardholder_name" : {
-          "type" : "string",
-          "example" : "Mr. Card holder",
-          "readOnly" : true
-        },
-        "expiry_date" : {
-          "type" : "string",
-          "example" : "04/24",
-          "description" : "The expiry date of the card in MM/yy format",
-          "readOnly" : true
-        },
-        "billing_address" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/Address"
-        },
-        "card_brand" : {
-          "type" : "string",
-          "example" : "Visa",
-          "readOnly" : true
-        },
-        "card_type" : {
-          "type" : "string",
-          "example" : "debit",
-          "description" : "The card type, `debit` or `credit` or `null` if not able to determine",
-          "readOnly" : true,
-          "enum" : [ "debit", "credit", "null" ]
-        }
-      },
-      "description" : "A structure representing the payment card"
-    },
-    "CreateCardPaymentRequest" : {
-      "type" : "object",
-      "required" : [ "amount", "description", "reference", "return_url" ],
-      "properties" : {
-        "amount" : {
-          "type" : "integer",
-          "format" : "int32",
-          "example" : 12000,
-          "description" : "amount in pence",
-          "readOnly" : true,
-          "minimum" : 0,
-          "maximum" : 10000000
-        },
-        "reference" : {
-          "type" : "string",
-          "example" : "12345",
-          "description" : "payment reference",
-          "readOnly" : true,
-          "minLength" : 0,
-          "maxLength" : 255
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "New passport application",
-          "description" : "payment description",
-          "readOnly" : true,
-          "minLength" : 0,
-          "maxLength" : 255
-        },
-        "language" : {
-          "type" : "string",
-          "example" : "en",
-          "description" : "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages",
-          "readOnly" : true,
-          "enum" : [ "en", "cy" ]
-        },
-        "email" : {
-          "type" : "string",
-          "example" : "Joe.Bogs@example.org",
-          "description" : "email",
-          "readOnly" : true
-        },
-        "return_url" : {
-          "type" : "string",
-          "example" : "https://service-name.gov.uk/transactions/12345",
-          "description" : "service return url",
-          "readOnly" : true,
-          "minLength" : 0,
-          "maxLength" : 2000
-        },
-        "delayed_capture" : {
-          "type" : "boolean",
-          "example" : false,
-          "description" : "delayed capture flag",
-          "readOnly" : true
-        },
-        "metadata" : {
-          "type" : "object",
-          "example" : "{\"ledger_code\":\"123\", \"reconciled\": true}",
-          "description" : "Additional metadata - up to 10 name/value pairs - on the payment. Each key must be between 1 and 30 characters long. The value, if a string, must be no greater than 50 characters long. Other permissible value types: boolean, number.",
-          "readOnly" : true,
-          "additionalProperties" : {
-            "type" : "object"
+  "components" : {
+    "schemas" : {
+      "Link" : {
+        "type" : "object",
+        "properties" : {
+          "href" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "https://an.example.link/from/payment/platform"
+          },
+          "method" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "GET"
           }
         },
-        "prefilled_cardholder_details" : {
-          "description" : "prefilled_cardholder_details",
-          "readOnly" : true,
-          "$ref" : "#/definitions/PrefilledCardholderDetails"
+        "description" : "A link related to a payment"
+      },
+      "MandateLinks" : {
+        "type" : "object",
+        "properties" : {
+          "self" : {
+            "$ref" : "#/components/schemas/Link"
+          },
+          "next_url" : {
+            "$ref" : "#/components/schemas/Link"
+          },
+          "next_url_post" : {
+            "$ref" : "#/components/schemas/PostLink"
+          },
+          "payments" : {
+            "$ref" : "#/components/schemas/Link"
+          }
+        },
+        "description" : "payment, events, self and next links of a Mandate"
+      },
+      "MandateResponse" : {
+        "type" : "object",
+        "properties" : {
+          "mandate_id" : {
+            "type" : "string",
+            "description" : "mandate id",
+            "readOnly" : true,
+            "example" : "jhjcvaiqlediuhh23d89hd3"
+          },
+          "provider_id" : {
+            "type" : "string",
+            "description" : "provider id",
+            "readOnly" : true,
+            "example" : "jhjcvaiqlediuhh23d89hd3"
+          },
+          "reference" : {
+            "type" : "string",
+            "description" : "service reference",
+            "readOnly" : true,
+            "example" : "jhjcvaiqlediuhh23d89hd3"
+          },
+          "return_url" : {
+            "type" : "string",
+            "description" : "service return url",
+            "readOnly" : true,
+            "example" : "https://service-name.gov.uk/transactions/12345"
+          },
+          "state" : {
+            "$ref" : "#/components/schemas/MandateStatus"
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/MandateLinks"
+          },
+          "bank_statement_reference" : {
+            "type" : "string",
+            "description" : "This value comes from GoCardless when a mandate has been created.",
+            "readOnly" : true
+          },
+          "created_date" : {
+            "type" : "string",
+            "description" : "mandate created date",
+            "readOnly" : true
+          },
+          "description" : {
+            "type" : "string",
+            "description" : "description",
+            "readOnly" : true
+          },
+          "payment_provider" : {
+            "type" : "string",
+            "description" : "payment_provider",
+            "readOnly" : true
+          },
+          "payer" : {
+            "$ref" : "#/components/schemas/Payer"
+          }
         }
       },
-      "description" : "The Payment Request Payload"
-    },
-    "CreateDirectDebitPaymentRequest" : {
-      "type" : "object",
-      "required" : [ "amount", "description", "reference" ],
-      "properties" : {
-        "amount" : {
-          "type" : "integer",
-          "format" : "int32",
-          "example" : 12000,
-          "description" : "amount in pence",
-          "readOnly" : true,
-          "minimum" : 100,
-          "maximum" : 10000000
-        },
-        "reference" : {
-          "type" : "string",
-          "example" : "12345",
-          "description" : "payment reference",
-          "readOnly" : true,
-          "minLength" : 0,
-          "maxLength" : 255
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "New passport application",
-          "description" : "payment description",
-          "readOnly" : true,
-          "minLength" : 0,
-          "maxLength" : 255
-        },
-        "mandate_id" : {
-          "type" : "string",
-          "example" : "33890b55-b9ea-4e2f-90fd-77ae0e9009e2",
-          "description" : "ID of the mandates being used to collect the payment",
-          "readOnly" : true,
-          "minLength" : 0,
-          "maxLength" : 26
-        }
-      },
-      "description" : "The Direct Debit Payment Request Payload"
-    },
-    "CreateMandateRequest" : {
-      "type" : "object",
-      "required" : [ "reference", "return_url" ],
-      "properties" : {
-        "return_url" : {
-          "type" : "string",
-          "example" : "https://service-name.gov.uk/transactions/12345",
-          "description" : "mandate return url",
-          "readOnly" : true,
-          "minLength" : 0,
-          "maxLength" : 2000
-        },
-        "reference" : {
-          "type" : "string",
-          "example" : "test_service_reference",
-          "description" : "mandate reference",
-          "readOnly" : true,
-          "minLength" : 0,
-          "maxLength" : 255
-        },
-        "description" : {
-          "type" : "string",
-          "description" : "mandate description",
-          "readOnly" : true,
-          "minLength" : 1,
-          "maxLength" : 255
-        }
-      },
-      "description" : "The Payload to create a new Mandate"
-    },
-    "CreatePaymentResult" : {
-      "type" : "object",
-      "properties" : {
-        "amount" : {
-          "type" : "integer",
-          "format" : "int64",
-          "example" : 1200
-        },
-        "state" : {
-          "$ref" : "#/definitions/PaymentState"
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "Your Service Description"
-        },
-        "reference" : {
-          "type" : "string",
-          "example" : "your-reference"
-        },
-        "language" : {
-          "type" : "string",
-          "example" : "en",
-          "enum" : [ "en", "cy" ]
-        },
-        "payment_id" : {
-          "type" : "string",
-          "example" : "hu20sqlact5260q2nanm0q8u93"
-        },
-        "payment_provider" : {
-          "type" : "string",
-          "example" : "worldpay"
-        },
-        "return_url" : {
-          "type" : "string",
-          "example" : "http://your.service.domain/your-reference"
-        },
-        "created_date" : {
-          "type" : "string",
-          "example" : "2016-01-21T17:15:00Z"
-        },
-        "delayed_capture" : {
-          "type" : "boolean"
-        },
-        "_links" : {
-          "$ref" : "#/definitions/PaymentLinks"
-        },
-        "provider_id" : {
-          "type" : "string",
-          "example" : "null"
-        },
-        "metadata" : {
-          "type" : "object",
-          "additionalProperties" : {
+      "MandateStatus" : {
+        "type" : "object",
+        "properties" : {
+          "status" : {
+            "type" : "string"
+          },
+          "details" : {
             "type" : "string"
           }
         },
-        "email" : {
-          "type" : "string",
-          "example" : "citizen@example.org"
-        },
-        "refund_summary" : {
-          "$ref" : "#/definitions/RefundSummary"
-        },
-        "settlement_summary" : {
-          "$ref" : "#/definitions/SettlementSummary"
-        },
-        "card_details" : {
-          "$ref" : "#/definitions/CardDetails"
-        }
-      }
-    },
-    "DirectDebitConnectorPaymentResponse" : {
-      "type" : "object",
-      "properties" : {
-        "amount" : {
-          "type" : "integer",
-          "format" : "int64",
-          "readOnly" : true
-        },
-        "state" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/DirectDebitPaymentState"
-        },
-        "description" : {
-          "type" : "string",
-          "readOnly" : true
-        },
-        "reference" : {
-          "type" : "string",
-          "readOnly" : true
-        },
-        "mandate_id" : {
-          "type" : "string",
-          "readOnly" : true
-        },
-        "payment_id" : {
-          "type" : "string",
-          "readOnly" : true
-        },
-        "payment_provider" : {
-          "type" : "string",
-          "readOnly" : true
-        },
-        "created_date" : {
-          "type" : "string",
-          "readOnly" : true
-        },
-        "provider_id" : {
-          "type" : "string",
-          "readOnly" : true
-        }
-      }
-    },
-    "DirectDebitPayment" : {
-      "type" : "object",
-      "properties" : {
-        "amount" : {
-          "type" : "integer",
-          "format" : "int64",
-          "example" : 1200
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "Your Service Description"
-        },
-        "reference" : {
-          "type" : "string",
-          "example" : "your-reference"
-        },
-        "payment_id" : {
-          "type" : "string",
-          "example" : "hu20sqlact5260q2nanm0q8u93",
-          "readOnly" : true
-        },
-        "payment_provider" : {
-          "type" : "string",
-          "example" : "worldpay",
-          "readOnly" : true
-        },
-        "created_date" : {
-          "type" : "string",
-          "example" : "2016-01-21T17:15:000Z",
-          "readOnly" : true
-        },
-        "mandate_id" : {
-          "type" : "string",
-          "readOnly" : true
-        },
-        "provider_id" : {
-          "type" : "string",
-          "readOnly" : true
-        },
-        "_links" : {
-          "$ref" : "#/definitions/DirectDebitPaymentLinks"
-        },
-        "state" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/DirectDebitPaymentState"
-        }
-      }
-    },
-    "DirectDebitPaymentLinks" : {
-      "type" : "object",
-      "properties" : {
-        "self" : {
-          "$ref" : "#/definitions/Link"
-        },
-        "mandate" : {
-          "$ref" : "#/definitions/Link"
-        }
+        "description" : "mandate state"
       },
-      "description" : "links for payment"
-    },
-    "DirectDebitPaymentState" : {
-      "type" : "object",
-      "properties" : {
-        "details" : {
-          "type" : "string"
-        },
-        "status" : {
-          "type" : "string"
-        }
-      }
-    },
-    "DirectDebitSearchResponse" : {
-      "type" : "object",
-      "properties" : {
-        "total" : {
-          "type" : "integer",
-          "format" : "int32",
-          "readOnly" : true
-        },
-        "count" : {
-          "type" : "integer",
-          "format" : "int32",
-          "readOnly" : true
-        },
-        "page" : {
-          "type" : "integer",
-          "format" : "int32",
-          "readOnly" : true
-        },
-        "results" : {
-          "type" : "array",
-          "readOnly" : true,
-          "items" : {
-            "$ref" : "#/definitions/DirectDebitConnectorPaymentResponse"
+      "Payer" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string",
+            "readOnly" : true
+          },
+          "email" : {
+            "type" : "string",
+            "readOnly" : true
           }
         },
-        "_links" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/SearchNavigationLinks"
-        }
-      }
-    },
-    "EmbeddedRefunds" : {
-      "type" : "object",
-      "properties" : {
-        "refunds" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/Refund"
+        "description" : "payer"
+      },
+      "PostLink" : {
+        "type" : "object",
+        "properties" : {
+          "type" : {
+            "type" : "string",
+            "example" : "application/x-www-form-urlencoded"
+          },
+          "params" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "object",
+              "example" : {
+                "description" : "This is a value for a parameter called description"
+              }
+            },
+            "example" : {
+              "description" : "This is a value for a parameter called description"
+            }
+          },
+          "href" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "https://an.example.link/from/payment/platform"
+          },
+          "method" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "POST"
+          }
+        },
+        "description" : "A POST link related to a payment"
+      },
+      "MandateError" : {
+        "type" : "object",
+        "properties" : {
+          "field" : {
+            "type" : "string",
+            "example" : "return_url"
+          },
+          "code" : {
+            "type" : "string",
+            "example" : "P0102"
+          },
+          "description" : {
+            "type" : "string",
+            "example" : "Invalid attribute value: return_url. Must be a valid url."
+          }
+        },
+        "description" : "A Mandate Error response"
+      },
+      "ErrorResponse" : {
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "string",
+            "example" : "P0900"
+          },
+          "description" : {
+            "type" : "string",
+            "example" : "Too many requests"
+          }
+        },
+        "description" : "An error response"
+      },
+      "SearchMandateResponse" : {
+        "type" : "object",
+        "properties" : {
+          "total" : {
+            "type" : "integer",
+            "format" : "int32",
+            "readOnly" : true
+          },
+          "count" : {
+            "type" : "integer",
+            "format" : "int32",
+            "readOnly" : true
+          },
+          "page" : {
+            "type" : "integer",
+            "format" : "int32",
+            "readOnly" : true
+          },
+          "results" : {
+            "type" : "array",
+            "readOnly" : true,
+            "items" : {
+              "$ref" : "#/components/schemas/MandateResponse"
+            }
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/SearchNavigationLinks"
           }
         }
-      }
-    },
-    "ErrorResponse" : {
-      "type" : "object",
-      "properties" : {
-        "code" : {
-          "type" : "string",
-          "example" : "P0900"
+      },
+      "SearchNavigationLinks" : {
+        "type" : "object",
+        "properties" : {
+          "self" : {
+            "$ref" : "#/components/schemas/Link"
+          },
+          "first_page" : {
+            "$ref" : "#/components/schemas/Link"
+          },
+          "last_page" : {
+            "$ref" : "#/components/schemas/Link"
+          },
+          "prev_page" : {
+            "$ref" : "#/components/schemas/Link"
+          },
+          "next_page" : {
+            "$ref" : "#/components/schemas/Link"
+          }
         },
-        "description" : {
-          "type" : "string",
-          "example" : "Too many requests"
+        "description" : "Links to navigate through pages"
+      },
+      "PaymentError" : {
+        "type" : "object",
+        "properties" : {
+          "field" : {
+            "type" : "string",
+            "example" : "amount"
+          },
+          "code" : {
+            "type" : "string",
+            "example" : "P0102"
+          },
+          "description" : {
+            "type" : "string",
+            "example" : "Invalid attribute value: amount. Must be less than or equal to 10000000"
+          }
+        },
+        "description" : "A Payment Error response"
+      },
+      "CreateMandateRequest" : {
+        "required" : [ "reference", "return_url" ],
+        "type" : "object",
+        "properties" : {
+          "return_url" : {
+            "maxLength" : 2000,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "mandate return url",
+            "example" : "https://service-name.gov.uk/transactions/12345"
+          },
+          "reference" : {
+            "maxLength" : 255,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "mandate reference",
+            "example" : "test_service_reference"
+          },
+          "description" : {
+            "maxLength" : 255,
+            "minLength" : 1,
+            "type" : "string",
+            "description" : "mandate description"
+          }
+        },
+        "description" : "The Payload to create a new Mandate"
+      },
+      "EmbeddedRefunds" : {
+        "type" : "object",
+        "properties" : {
+          "refunds" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Refund"
+            }
+          }
         }
       },
-      "description" : "An error response"
-    },
-    "GetPaymentResult" : {
-      "type" : "object",
-      "properties" : {
-        "amount" : {
-          "type" : "integer",
-          "format" : "int64",
-          "example" : 1200
+      "Refund" : {
+        "type" : "object",
+        "properties" : {
+          "refund_id" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "act4c33g40j3edfmi8jknab84x"
+          },
+          "created_date" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "2017-01-10T16:52:07.855Z"
+          },
+          "amount" : {
+            "type" : "integer",
+            "format" : "int64",
+            "readOnly" : true,
+            "example" : 120
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/RefundLinksForSearch"
+          },
+          "status" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "success",
+            "enum" : [ "submitted", "success", "error" ]
+          }
+        }
+      },
+      "RefundDetailForSearch" : {
+        "type" : "object",
+        "properties" : {
+          "refund_id" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "act4c33g40j3edfmi8jknab84x"
+          },
+          "created_date" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "2017-01-10T16:52:07.855Z"
+          },
+          "amount" : {
+            "type" : "integer",
+            "format" : "int64",
+            "readOnly" : true,
+            "example" : 120
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/RefundLinksForSearch"
+          },
+          "status" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "success",
+            "enum" : [ "submitted", "success", "error" ]
+          }
+        }
+      },
+      "RefundForSearchResult" : {
+        "type" : "object",
+        "properties" : {
+          "payment_id" : {
+            "type" : "string",
+            "example" : "hu20sqlact5260q2nanm0q8u93"
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/RefundLinksForSearch"
+          },
+          "_embedded" : {
+            "$ref" : "#/components/schemas/EmbeddedRefunds"
+          }
+        }
+      },
+      "RefundLinksForSearch" : {
+        "type" : "object",
+        "properties" : {
+          "self" : {
+            "$ref" : "#/components/schemas/Link"
+          },
+          "payment" : {
+            "$ref" : "#/components/schemas/Link"
+          }
         },
-        "description" : {
-          "type" : "string",
-          "example" : "Your Service Description"
+        "description" : "links for search refunds resource"
+      },
+      "RefundsResponse" : {
+        "type" : "object",
+        "properties" : {
+          "payment_id" : {
+            "type" : "string",
+            "example" : "hu20sqlact5260q2nanm0q8u93"
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/RefundLinksForSearch"
+          },
+          "_embedded" : {
+            "$ref" : "#/components/schemas/EmbeddedRefunds"
+          }
+        }
+      },
+      "PaymentRefundRequest" : {
+        "required" : [ "amount" ],
+        "type" : "object",
+        "properties" : {
+          "amount" : {
+            "maximum" : 10000000,
+            "minimum" : 1,
+            "type" : "integer",
+            "description" : "Amount in pence. Can't be more than the available amount for refunds",
+            "format" : "int32",
+            "example" : 150000
+          },
+          "refund_amount_available" : {
+            "maximum" : 10000000,
+            "minimum" : 1,
+            "type" : "integer",
+            "description" : "Amount in pence. Total amount still available before issuing the refund",
+            "format" : "int32",
+            "readOnly" : true,
+            "example" : 200000
+          }
         },
-        "reference" : {
-          "type" : "string",
-          "example" : "your-reference"
+        "description" : "The Payment Refund Request Payload"
+      },
+      "Address" : {
+        "type" : "object",
+        "properties" : {
+          "line1" : {
+            "maxLength" : 255,
+            "minLength" : 0,
+            "type" : "string",
+            "example" : "address line 1"
+          },
+          "line2" : {
+            "maxLength" : 255,
+            "minLength" : 0,
+            "type" : "string",
+            "example" : "address line 2"
+          },
+          "postcode" : {
+            "maxLength" : 25,
+            "minLength" : 0,
+            "type" : "string",
+            "example" : "AB1 2CD"
+          },
+          "city" : {
+            "maxLength" : 255,
+            "minLength" : 0,
+            "type" : "string",
+            "example" : "address city"
+          },
+          "country" : {
+            "type" : "string",
+            "example" : "GB"
+          }
         },
-        "language" : {
-          "type" : "string",
-          "example" : "en",
-          "enum" : [ "en", "cy" ]
+        "description" : "A structure representing the billing address of a card"
+      },
+      "CardDetails" : {
+        "type" : "object",
+        "properties" : {
+          "last_digits_card_number" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "1234"
+          },
+          "first_digits_card_number" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "123456"
+          },
+          "cardholder_name" : {
+            "type" : "string",
+            "example" : "Mr. Card holder"
+          },
+          "expiry_date" : {
+            "type" : "string",
+            "description" : "The expiry date of the card in MM/yy format",
+            "readOnly" : true,
+            "example" : "04/24"
+          },
+          "billing_address" : {
+            "$ref" : "#/components/schemas/Address"
+          },
+          "card_brand" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "Visa"
+          },
+          "card_type" : {
+            "type" : "string",
+            "description" : "The card type, `debit` or `credit` or `null` if not able to determine",
+            "readOnly" : true,
+            "example" : "debit",
+            "enum" : [ "debit", "credit", "null" ]
+          }
         },
-        "metadata" : {
-          "type" : "object",
-          "additionalProperties" : {
+        "description" : "A structure representing the payment card"
+      },
+      "ExternalMetadata" : {
+        "type" : "object",
+        "properties" : {
+          "metadata" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "object"
+            }
+          }
+        },
+        "description" : "Additional metadata - up to 10 name/value pairs - on the payment. Each key must be between 1 and 30 characters long. The value, if a string, must be no greater than 50 characters long. Other permissible value types: boolean, number.",
+        "example" : {
+          "ledger_code" : "123",
+          "reconciled" : true
+        }
+      },
+      "GetPaymentResult" : {
+        "type" : "object",
+        "properties" : {
+          "amount" : {
+            "type" : "integer",
+            "format" : "int64",
+            "example" : 1200
+          },
+          "description" : {
+            "type" : "string",
+            "example" : "Your Service Description"
+          },
+          "reference" : {
+            "type" : "string",
+            "example" : "your-reference"
+          },
+          "language" : {
+            "type" : "string",
+            "example" : "en",
+            "enum" : [ "en", "cy" ]
+          },
+          "metadata" : {
+            "$ref" : "#/components/schemas/ExternalMetadata"
+          },
+          "email" : {
+            "type" : "string",
+            "example" : "your email"
+          },
+          "state" : {
+            "$ref" : "#/components/schemas/PaymentState"
+          },
+          "payment_id" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "hu20sqlact5260q2nanm0q8u93"
+          },
+          "payment_provider" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "worldpay"
+          },
+          "created_date" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "2016-01-21T17:15:000Z"
+          },
+          "refund_summary" : {
+            "$ref" : "#/components/schemas/RefundSummary"
+          },
+          "settlement_summary" : {
+            "$ref" : "#/components/schemas/SettlementSummary"
+          },
+          "card_details" : {
+            "$ref" : "#/components/schemas/CardDetails"
+          },
+          "delayed_capture" : {
+            "type" : "boolean",
+            "description" : "delayed capture flag",
+            "readOnly" : true,
+            "example" : false
+          },
+          "corporate_card_surcharge" : {
+            "type" : "integer",
+            "format" : "int64",
+            "readOnly" : true,
+            "example" : 250
+          },
+          "total_amount" : {
+            "type" : "integer",
+            "format" : "int64",
+            "readOnly" : true,
+            "example" : 1450
+          },
+          "fee" : {
+            "type" : "integer",
+            "description" : "processing fee taken by the GOV.UK Pay platform, in pence. Only available depending on payment service provider",
+            "format" : "int64",
+            "readOnly" : true,
+            "example" : 5
+          },
+          "net_amount" : {
+            "type" : "integer",
+            "description" : "amount including all surcharges and less all fees, in pence. Only available depending on payment service provider",
+            "format" : "int64",
+            "readOnly" : true,
+            "example" : 1195
+          },
+          "provider_id" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "reference-from-payment-gateway"
+          },
+          "return_url" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "http://your.service.domain/your-reference"
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/PaymentLinks"
+          },
+          "card_brand" : {
+            "type" : "string",
+            "description" : "Card Brand. Deprecated, please use card_details.card_brand instead",
+            "readOnly" : true,
+            "example" : "Visa",
+            "deprecated" : true
+          }
+        }
+      },
+      "PaymentLinks" : {
+        "type" : "object",
+        "properties" : {
+          "self" : {
+            "$ref" : "#/components/schemas/Link"
+          },
+          "next_url" : {
+            "$ref" : "#/components/schemas/Link"
+          },
+          "next_url_post" : {
+            "$ref" : "#/components/schemas/PostLink"
+          },
+          "events" : {
+            "$ref" : "#/components/schemas/Link"
+          },
+          "refunds" : {
+            "$ref" : "#/components/schemas/Link"
+          },
+          "cancel" : {
+            "$ref" : "#/components/schemas/PostLink"
+          },
+          "capture" : {
+            "$ref" : "#/components/schemas/PostLink"
+          }
+        },
+        "description" : "links for payment"
+      },
+      "PaymentState" : {
+        "type" : "object",
+        "properties" : {
+          "status" : {
+            "type" : "string",
+            "description" : "Current progress of the payment in its lifecycle",
+            "readOnly" : true,
+            "example" : "created"
+          },
+          "finished" : {
+            "type" : "boolean",
+            "description" : "Whether the payment has finished",
+            "readOnly" : true
+          },
+          "message" : {
+            "type" : "string",
+            "description" : "What went wrong with the Payment if it finished with an error - English message",
+            "readOnly" : true,
+            "example" : "User cancelled the payment"
+          },
+          "code" : {
+            "type" : "string",
+            "description" : "What went wrong with the Payment if it finished with an error - error code",
+            "readOnly" : true,
+            "example" : "P010"
+          }
+        },
+        "description" : "A structure representing the current state of the payment in its lifecycle."
+      },
+      "RefundSummary" : {
+        "type" : "object",
+        "properties" : {
+          "status" : {
+            "type" : "string",
+            "description" : "Availability status of the refund",
+            "example" : "available"
+          },
+          "amount_available" : {
+            "type" : "integer",
+            "description" : "Amount available for refund in pence",
+            "format" : "int64",
+            "readOnly" : true,
+            "example" : 100
+          },
+          "amount_submitted" : {
+            "type" : "integer",
+            "description" : "Amount submitted for refunds on this Payment in pence",
+            "format" : "int64",
+            "readOnly" : true
+          }
+        },
+        "description" : "A structure representing the refunds availability"
+      },
+      "SettlementSummary" : {
+        "type" : "object",
+        "properties" : {
+          "capture_submit_time" : {
+            "type" : "string",
+            "description" : "Date and time capture request has been submitted (may be null if capture request was not immediately acknowledged by payment gateway)",
+            "readOnly" : true,
+            "example" : "2016-01-21T17:15:000Z"
+          },
+          "captured_date" : {
+            "type" : "string",
+            "description" : "Date of the capture event",
+            "readOnly" : true,
+            "example" : "2016-01-21"
+          }
+        },
+        "description" : "A structure representing information about a settlement"
+      },
+      "PaymentEvent" : {
+        "type" : "object",
+        "properties" : {
+          "payment_id" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "hu20sqlact5260q2nanm0q8u93"
+          },
+          "state" : {
+            "$ref" : "#/components/schemas/PaymentState"
+          },
+          "updated" : {
+            "type" : "string",
+            "description" : "updated",
+            "readOnly" : true,
+            "example" : "2017-01-10T16:44:48.646Z"
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/PaymentEventLink"
+          }
+        },
+        "description" : "A List of Payment Events information"
+      },
+      "PaymentEventLink" : {
+        "type" : "object",
+        "properties" : {
+          "payment_url" : {
+            "$ref" : "#/components/schemas/Link"
+          }
+        },
+        "description" : "Resource link for a payment of a payment event"
+      },
+      "PaymentEvents" : {
+        "type" : "object",
+        "properties" : {
+          "events" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PaymentEvent"
+            }
+          },
+          "payment_id" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "hu20sqlact5260q2nanm0q8u93"
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/PaymentLinksForEvents"
+          }
+        },
+        "description" : "A List of Payment Events information"
+      },
+      "PaymentLinksForEvents" : {
+        "type" : "object",
+        "properties" : {
+          "self" : {
+            "$ref" : "#/components/schemas/Link"
+          }
+        },
+        "description" : "links for events resource"
+      },
+      "PaymentDetailForSearch" : {
+        "type" : "object",
+        "properties" : {
+          "amount" : {
+            "type" : "integer",
+            "format" : "int64",
+            "example" : 1200
+          },
+          "description" : {
+            "type" : "string",
+            "example" : "Your Service Description"
+          },
+          "reference" : {
+            "type" : "string",
+            "example" : "your-reference"
+          },
+          "language" : {
+            "type" : "string",
+            "example" : "en",
+            "enum" : [ "en", "cy" ]
+          },
+          "metadata" : {
+            "$ref" : "#/components/schemas/ExternalMetadata"
+          },
+          "email" : {
+            "type" : "string",
+            "example" : "your email"
+          },
+          "state" : {
+            "$ref" : "#/components/schemas/PaymentState"
+          },
+          "payment_id" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "hu20sqlact5260q2nanm0q8u93"
+          },
+          "payment_provider" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "worldpay"
+          },
+          "created_date" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "2016-01-21T17:15:000Z"
+          },
+          "refund_summary" : {
+            "$ref" : "#/components/schemas/RefundSummary"
+          },
+          "settlement_summary" : {
+            "$ref" : "#/components/schemas/SettlementSummary"
+          },
+          "card_details" : {
+            "$ref" : "#/components/schemas/CardDetails"
+          },
+          "delayed_capture" : {
+            "type" : "boolean",
+            "description" : "delayed capture flag",
+            "readOnly" : true,
+            "example" : false
+          },
+          "corporate_card_surcharge" : {
+            "type" : "integer",
+            "format" : "int64",
+            "readOnly" : true,
+            "example" : 250
+          },
+          "total_amount" : {
+            "type" : "integer",
+            "format" : "int64",
+            "readOnly" : true,
+            "example" : 1450
+          },
+          "fee" : {
+            "type" : "integer",
+            "description" : "processing fee taken by the GOV.UK Pay platform, in pence. Only available depending on payment service provider",
+            "format" : "int64",
+            "readOnly" : true,
+            "example" : 5
+          },
+          "net_amount" : {
+            "type" : "integer",
+            "description" : "amount including all surcharges and less all fees, in pence. Only available depending on payment service provider",
+            "format" : "int64",
+            "readOnly" : true,
+            "example" : 1195
+          },
+          "provider_id" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "reference-from-payment-gateway"
+          },
+          "return_url" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "http://your.service.domain/your-reference"
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/PaymentLinksForSearch"
+          },
+          "card_brand" : {
+            "type" : "string",
+            "description" : "Card Brand. Deprecated, please use card_details.card_brand instead",
+            "readOnly" : true,
+            "example" : "Visa",
+            "deprecated" : true
+          }
+        }
+      },
+      "PaymentLinksForSearch" : {
+        "type" : "object",
+        "properties" : {
+          "self" : {
+            "$ref" : "#/components/schemas/Link"
+          },
+          "cancel" : {
+            "$ref" : "#/components/schemas/PostLink"
+          },
+          "events" : {
+            "$ref" : "#/components/schemas/Link"
+          },
+          "refunds" : {
+            "$ref" : "#/components/schemas/Link"
+          },
+          "capture" : {
+            "$ref" : "#/components/schemas/PostLink"
+          }
+        },
+        "description" : "links for search payment resource"
+      },
+      "PaymentSearchResults" : {
+        "type" : "object",
+        "properties" : {
+          "total" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 100
+          },
+          "count" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 20
+          },
+          "page" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 1
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/SearchNavigationLinks"
+          },
+          "results" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PaymentDetailForSearch"
+            }
+          }
+        }
+      },
+      "CreatePaymentResult" : {
+        "type" : "object",
+        "properties" : {
+          "amount" : {
+            "type" : "integer",
+            "format" : "int64",
+            "example" : 1200
+          },
+          "state" : {
+            "$ref" : "#/components/schemas/PaymentState"
+          },
+          "description" : {
+            "type" : "string",
+            "example" : "Your Service Description"
+          },
+          "reference" : {
+            "type" : "string",
+            "example" : "your-reference"
+          },
+          "language" : {
+            "type" : "string",
+            "example" : "en",
+            "enum" : [ "en", "cy" ]
+          },
+          "payment_id" : {
+            "type" : "string",
+            "example" : "hu20sqlact5260q2nanm0q8u93"
+          },
+          "payment_provider" : {
+            "type" : "string",
+            "example" : "worldpay"
+          },
+          "return_url" : {
+            "type" : "string",
+            "example" : "http://your.service.domain/your-reference"
+          },
+          "created_date" : {
+            "type" : "string",
+            "example" : "2016-01-21T17:15:00Z"
+          },
+          "delayed_capture" : {
+            "type" : "boolean"
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/PaymentLinks"
+          },
+          "provider_id" : {
+            "type" : "string",
+            "example" : "null"
+          },
+          "metadata" : {
+            "$ref" : "#/components/schemas/ExternalMetadata"
+          },
+          "email" : {
+            "type" : "string",
+            "example" : "citizen@example.org"
+          },
+          "refund_summary" : {
+            "$ref" : "#/components/schemas/RefundSummary"
+          },
+          "settlement_summary" : {
+            "$ref" : "#/components/schemas/SettlementSummary"
+          },
+          "card_details" : {
+            "$ref" : "#/components/schemas/CardDetails"
+          }
+        }
+      },
+      "CreateCardPaymentRequest" : {
+        "required" : [ "amount", "description", "reference", "return_url" ],
+        "type" : "object",
+        "properties" : {
+          "amount" : {
+            "maximum" : 10000000,
+            "minimum" : 0,
+            "type" : "integer",
+            "description" : "amount in pence",
+            "format" : "int32",
+            "example" : 12000
+          },
+          "reference" : {
+            "maxLength" : 255,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "payment reference",
+            "example" : "12345"
+          },
+          "description" : {
+            "maxLength" : 255,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "payment description",
+            "example" : "New passport application"
+          },
+          "language" : {
+            "type" : "string",
+            "description" : "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages",
+            "example" : "en",
+            "enum" : [ "en", "cy" ]
+          },
+          "email" : {
+            "type" : "string",
+            "description" : "email",
+            "example" : "Joe.Bogs@example.org"
+          },
+          "return_url" : {
+            "maxLength" : 2000,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "service return url",
+            "example" : "https://service-name.gov.uk/transactions/12345"
+          },
+          "delayed_capture" : {
+            "type" : "boolean",
+            "description" : "delayed capture flag",
+            "example" : false
+          },
+          "metadata" : {
+            "$ref" : "#/components/schemas/ExternalMetadata"
+          },
+          "prefilled_cardholder_details" : {
+            "$ref" : "#/components/schemas/PrefilledCardholderDetails"
+          }
+        },
+        "description" : "The Payment Request Payload"
+      },
+      "PrefilledCardholderDetails" : {
+        "type" : "object",
+        "properties" : {
+          "cardholder_name" : {
+            "maxLength" : 255,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "prefilled cardholder name",
+            "example" : "J. Bogs"
+          },
+          "billing_address" : {
+            "$ref" : "#/components/schemas/Address"
+          }
+        },
+        "description" : "prefilled_cardholder_details"
+      },
+      "RefundSearchResults" : {
+        "type" : "object",
+        "properties" : {
+          "total" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 100
+          },
+          "count" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 20
+          },
+          "page" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 1
+          },
+          "results" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/RefundDetailForSearch"
+            }
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/SearchNavigationLinks"
+          }
+        }
+      },
+      "RefundError" : {
+        "type" : "object",
+        "properties" : {
+          "field" : {
+            "type" : "string",
+            "example" : "amount_submitted"
+          },
+          "code" : {
+            "type" : "string",
+            "example" : "P0102"
+          },
+          "description" : {
+            "type" : "string",
+            "example" : "Invalid attribute value: amountSubmitted. Must be less than or equal to 10000000"
+          }
+        },
+        "description" : "A Refund Error response"
+      },
+      "DirectDebitPayment" : {
+        "type" : "object",
+        "properties" : {
+          "amount" : {
+            "type" : "integer",
+            "format" : "int64",
+            "example" : 1200
+          },
+          "description" : {
+            "type" : "string",
+            "example" : "Your Service Description"
+          },
+          "reference" : {
+            "type" : "string",
+            "example" : "your-reference"
+          },
+          "payment_id" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "hu20sqlact5260q2nanm0q8u93"
+          },
+          "payment_provider" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "worldpay"
+          },
+          "created_date" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "2016-01-21T17:15:000Z"
+          },
+          "mandate_id" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "33890b55-b9ea-4e2f-90fd-77ae0e9009e2"
+          },
+          "provider_id" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "provider id"
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/DirectDebitPaymentLinks"
+          },
+          "state" : {
+            "$ref" : "#/components/schemas/DirectDebitPaymentState"
+          }
+        },
+        "description" : "DirectDebitPayment"
+      },
+      "DirectDebitPaymentLinks" : {
+        "type" : "object",
+        "properties" : {
+          "self" : {
+            "$ref" : "#/components/schemas/Link"
+          },
+          "mandate" : {
+            "$ref" : "#/components/schemas/Link"
+          }
+        },
+        "description" : "links for payment"
+      },
+      "DirectDebitPaymentState" : {
+        "type" : "object",
+        "properties" : {
+          "details" : {
+            "type" : "string"
+          },
+          "status" : {
             "type" : "string"
           }
-        },
-        "email" : {
-          "type" : "string",
-          "example" : "your email"
-        },
-        "state" : {
-          "$ref" : "#/definitions/PaymentState"
-        },
-        "payment_id" : {
-          "type" : "string",
-          "example" : "hu20sqlact5260q2nanm0q8u93",
-          "readOnly" : true
-        },
-        "payment_provider" : {
-          "type" : "string",
-          "example" : "worldpay",
-          "readOnly" : true
-        },
-        "created_date" : {
-          "type" : "string",
-          "example" : "2016-01-21T17:15:000Z",
-          "readOnly" : true
-        },
-        "refund_summary" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/RefundSummary"
-        },
-        "settlement_summary" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/SettlementSummary"
-        },
-        "card_details" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/CardDetails"
-        },
-        "delayed_capture" : {
-          "type" : "boolean",
-          "example" : false,
-          "description" : "delayed capture flag",
-          "readOnly" : true
-        },
-        "corporate_card_surcharge" : {
-          "type" : "integer",
-          "format" : "int64",
-          "example" : 250,
-          "readOnly" : true
-        },
-        "total_amount" : {
-          "type" : "integer",
-          "format" : "int64",
-          "example" : 1450,
-          "readOnly" : true
-        },
-        "fee" : {
-          "type" : "integer",
-          "format" : "int64",
-          "example" : 5,
-          "description" : "processing fee taken by the GOV.UK Pay platform, in pence. Only available depending on payment service provider",
-          "readOnly" : true
-        },
-        "net_amount" : {
-          "type" : "integer",
-          "format" : "int64",
-          "example" : 1195,
-          "description" : "amount including all surcharges and less all fees, in pence. Only available depending on payment service provider",
-          "readOnly" : true
-        },
-        "provider_id" : {
-          "type" : "string",
-          "example" : "reference-from-payment-gateway",
-          "readOnly" : true
-        },
-        "return_url" : {
-          "type" : "string",
-          "example" : "http://your.service.domain/your-reference",
-          "readOnly" : true
-        },
-        "_links" : {
-          "$ref" : "#/definitions/PaymentLinks"
-        },
-        "card_brand" : {
-          "type" : "string",
-          "example" : "Visa",
-          "description" : "Card Brand",
-          "readOnly" : true
-        }
-      }
-    },
-    "Link" : {
-      "type" : "object",
-      "properties" : {
-        "href" : {
-          "type" : "string",
-          "example" : "https://an.example.link/from/payment/platform",
-          "readOnly" : true
-        },
-        "method" : {
-          "type" : "string",
-          "example" : "GET",
-          "readOnly" : true
         }
       },
-      "description" : "A link related to a payment"
-    },
-    "MandateError" : {
-      "type" : "object",
-      "properties" : {
-        "field" : {
-          "type" : "string",
-          "example" : "return_url"
-        },
-        "code" : {
-          "type" : "string",
-          "example" : "P0102"
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "Invalid attribute value: return_url. Must be a valid url."
-        }
-      },
-      "description" : "A Mandate Error response"
-    },
-    "MandateLinks" : {
-      "type" : "object",
-      "properties" : {
-        "self" : {
-          "description" : "self",
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        },
-        "next_url" : {
-          "description" : "next_url",
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        },
-        "next_url_post" : {
-          "description" : "next_url_post",
-          "readOnly" : true,
-          "$ref" : "#/definitions/PostLink"
-        },
-        "payments" : {
-          "description" : "payments",
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        }
-      },
-      "description" : "payment, events, self and next links of a Mandate"
-    },
-    "MandateResponse" : {
-      "type" : "object",
-      "properties" : {
-        "mandate_id" : {
-          "type" : "string",
-          "example" : "jhjcvaiqlediuhh23d89hd3",
-          "description" : "mandate id",
-          "readOnly" : true
-        },
-        "provider_id" : {
-          "type" : "string",
-          "example" : "jhjcvaiqlediuhh23d89hd3",
-          "description" : "provider id",
-          "readOnly" : true
-        },
-        "reference" : {
-          "type" : "string",
-          "example" : "jhjcvaiqlediuhh23d89hd3",
-          "description" : "service reference",
-          "readOnly" : true
-        },
-        "return_url" : {
-          "type" : "string",
-          "example" : "https://service-name.gov.uk/transactions/12345",
-          "description" : "service return url",
-          "readOnly" : true
-        },
-        "state" : {
-          "example" : "CREATED",
-          "description" : "mandate state",
-          "readOnly" : true,
-          "$ref" : "#/definitions/MandateStatus"
-        },
-        "_links" : {
-          "description" : "links",
-          "readOnly" : true,
-          "$ref" : "#/definitions/MandateLinks"
-        },
-        "bank_statement_reference" : {
-          "type" : "string",
-          "description" : "This value comes from GoCardless when a mandate has been created.",
-          "readOnly" : true
-        },
-        "created_date" : {
-          "type" : "string",
-          "description" : "mandate created date",
-          "readOnly" : true
-        },
-        "description" : {
-          "type" : "string",
-          "description" : "description",
-          "readOnly" : true
-        },
-        "payment_provider" : {
-          "type" : "string",
-          "description" : "payment_provider",
-          "readOnly" : true
-        },
-        "payer" : {
-          "description" : "payer",
-          "readOnly" : true,
-          "$ref" : "#/definitions/Payer"
-        }
-      }
-    },
-    "MandateStatus" : {
-      "type" : "object",
-      "properties" : {
-        "status" : {
-          "type" : "string"
-        },
-        "details" : {
-          "type" : "string"
-        }
-      }
-    },
-    "Payer" : {
-      "type" : "object",
-      "properties" : {
-        "name" : {
-          "type" : "string",
-          "readOnly" : true
-        },
-        "email" : {
-          "type" : "string",
-          "readOnly" : true
-        }
-      }
-    },
-    "PaymentDetailForSearch" : {
-      "type" : "object",
-      "properties" : {
-        "amount" : {
-          "type" : "integer",
-          "format" : "int64",
-          "example" : 1200
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "Your Service Description"
-        },
-        "reference" : {
-          "type" : "string",
-          "example" : "your-reference"
-        },
-        "language" : {
-          "type" : "string",
-          "example" : "en",
-          "enum" : [ "en", "cy" ]
-        },
-        "metadata" : {
-          "type" : "object",
-          "additionalProperties" : {
-            "type" : "string"
+      "DirectDebitConnectorPaymentResponse" : {
+        "type" : "object",
+        "properties" : {
+          "amount" : {
+            "type" : "integer",
+            "format" : "int64",
+            "readOnly" : true,
+            "example" : 1200
+          },
+          "state" : {
+            "$ref" : "#/components/schemas/DirectDebitPaymentState"
+          },
+          "description" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "Your Service Description"
+          },
+          "reference" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "your-reference"
+          },
+          "mandate_id" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "33890b55-b9ea-4e2f-90fd-77ae0e9009e2"
+          },
+          "payment_id" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "payment id"
+          },
+          "payment_provider" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "worldpay"
+          },
+          "created_date" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "2016-01-21T17:15:000Z"
+          },
+          "provider_id" : {
+            "type" : "string",
+            "readOnly" : true,
+            "example" : "provider id"
           }
         },
-        "email" : {
-          "type" : "string",
-          "example" : "your email"
-        },
-        "state" : {
-          "$ref" : "#/definitions/PaymentState"
-        },
-        "payment_id" : {
-          "type" : "string",
-          "example" : "hu20sqlact5260q2nanm0q8u93",
-          "readOnly" : true
-        },
-        "payment_provider" : {
-          "type" : "string",
-          "example" : "worldpay",
-          "readOnly" : true
-        },
-        "created_date" : {
-          "type" : "string",
-          "example" : "2016-01-21T17:15:000Z",
-          "readOnly" : true
-        },
-        "refund_summary" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/RefundSummary"
-        },
-        "settlement_summary" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/SettlementSummary"
-        },
-        "card_details" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/CardDetails"
-        },
-        "delayed_capture" : {
-          "type" : "boolean",
-          "example" : false,
-          "description" : "delayed capture flag",
-          "readOnly" : true
-        },
-        "corporate_card_surcharge" : {
-          "type" : "integer",
-          "format" : "int64",
-          "example" : 250,
-          "readOnly" : true
-        },
-        "total_amount" : {
-          "type" : "integer",
-          "format" : "int64",
-          "example" : 1450,
-          "readOnly" : true
-        },
-        "fee" : {
-          "type" : "integer",
-          "format" : "int64",
-          "example" : 5,
-          "description" : "processing fee taken by the GOV.UK Pay platform, in pence. Only available depending on payment service provider",
-          "readOnly" : true
-        },
-        "net_amount" : {
-          "type" : "integer",
-          "format" : "int64",
-          "example" : 1195,
-          "description" : "amount including all surcharges and less all fees, in pence. Only available depending on payment service provider",
-          "readOnly" : true
-        },
-        "provider_id" : {
-          "type" : "string",
-          "example" : "reference-from-payment-gateway",
-          "readOnly" : true
-        },
-        "return_url" : {
-          "type" : "string",
-          "example" : "http://your.service.domain/your-reference",
-          "readOnly" : true
-        },
-        "_links" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/PaymentLinksForSearch"
-        },
-        "card_brand" : {
-          "type" : "string",
-          "example" : "Visa",
-          "description" : "Card Brand",
-          "readOnly" : true
-        }
-      }
-    },
-    "PaymentError" : {
-      "type" : "object",
-      "properties" : {
-        "field" : {
-          "type" : "string",
-          "example" : "amount"
-        },
-        "code" : {
-          "type" : "string",
-          "example" : "P0102"
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "Invalid attribute value: amount. Must be less than or equal to 10000000"
-        }
+        "readOnly" : true
       },
-      "description" : "A Payment Error response"
-    },
-    "PaymentEvent" : {
-      "type" : "object",
-      "properties" : {
-        "payment_id" : {
-          "type" : "string",
-          "example" : "hu20sqlact5260q2nanm0q8u93",
-          "readOnly" : true
-        },
-        "state" : {
-          "description" : "state",
-          "readOnly" : true,
-          "$ref" : "#/definitions/PaymentState"
-        },
-        "updated" : {
-          "type" : "string",
-          "example" : "2017-01-10T16:44:48.646Z",
-          "description" : "updated",
-          "readOnly" : true
-        },
-        "_links" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/PaymentEventLink"
-        }
-      },
-      "description" : "A List of Payment Events information"
-    },
-    "PaymentEventLink" : {
-      "type" : "object",
-      "properties" : {
-        "payment_url" : {
-          "description" : "payment_url",
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        }
-      },
-      "description" : "Resource link for a payment of a payment event"
-    },
-    "PaymentEvents" : {
-      "type" : "object",
-      "properties" : {
-        "events" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/PaymentEvent"
-          }
-        },
-        "payment_id" : {
-          "type" : "string",
-          "example" : "hu20sqlact5260q2nanm0q8u93",
-          "readOnly" : true
-        },
-        "_links" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/PaymentLinksForEvents"
-        }
-      },
-      "description" : "A List of Payment Events information"
-    },
-    "PaymentLinks" : {
-      "type" : "object",
-      "properties" : {
-        "self" : {
-          "description" : "self",
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        },
-        "next_url" : {
-          "description" : "next_url",
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        },
-        "next_url_post" : {
-          "description" : "next_url_post",
-          "readOnly" : true,
-          "$ref" : "#/definitions/PostLink"
-        },
-        "events" : {
-          "description" : "events",
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        },
-        "refunds" : {
-          "description" : "refunds",
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        },
-        "cancel" : {
-          "description" : "cancel",
-          "readOnly" : true,
-          "$ref" : "#/definitions/PostLink"
-        },
-        "capture" : {
-          "description" : "capture",
-          "readOnly" : true,
-          "$ref" : "#/definitions/PostLink"
-        }
-      },
-      "description" : "links for payment"
-    },
-    "PaymentLinksForEvents" : {
-      "type" : "object",
-      "properties" : {
-        "self" : {
-          "description" : "self",
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        }
-      },
-      "description" : "links for events resource"
-    },
-    "PaymentLinksForSearch" : {
-      "type" : "object",
-      "properties" : {
-        "self" : {
-          "description" : "self",
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        },
-        "cancel" : {
-          "description" : "cancel",
-          "readOnly" : true,
-          "$ref" : "#/definitions/PostLink"
-        },
-        "events" : {
-          "description" : "events",
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        },
-        "refunds" : {
-          "description" : "refunds",
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        },
-        "capture" : {
-          "description" : "capture",
-          "readOnly" : true,
-          "$ref" : "#/definitions/PostLink"
-        }
-      },
-      "description" : "links for search payment resource"
-    },
-    "PaymentRefundRequest" : {
-      "type" : "object",
-      "required" : [ "amount" ],
-      "properties" : {
-        "amount" : {
-          "type" : "integer",
-          "format" : "int32",
-          "example" : 150000,
-          "description" : "Amount in pence. Can't be more than the available amount for refunds",
-          "minimum" : 1,
-          "maximum" : 10000000
-        },
-        "refund_amount_available" : {
-          "type" : "integer",
-          "format" : "int32",
-          "example" : 200000,
-          "description" : "Amount in pence. Total amount still available before issuing the refund",
-          "readOnly" : true,
-          "minimum" : 1,
-          "maximum" : 10000000
-        }
-      },
-      "description" : "The Payment Refund Request Payload"
-    },
-    "PaymentSearchResults" : {
-      "type" : "object",
-      "properties" : {
-        "total" : {
-          "type" : "integer",
-          "format" : "int32",
-          "example" : 100
-        },
-        "count" : {
-          "type" : "integer",
-          "format" : "int32",
-          "example" : 20
-        },
-        "page" : {
-          "type" : "integer",
-          "format" : "int32",
-          "example" : 1
-        },
-        "_links" : {
-          "$ref" : "#/definitions/SearchNavigationLinks"
-        },
-        "results" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/PaymentDetailForSearch"
+      "DirectDebitSearchResponse" : {
+        "type" : "object",
+        "properties" : {
+          "total" : {
+            "type" : "integer",
+            "format" : "int32",
+            "readOnly" : true,
+            "example" : 100
+          },
+          "count" : {
+            "type" : "integer",
+            "format" : "int32",
+            "readOnly" : true,
+            "example" : 20
+          },
+          "page" : {
+            "type" : "integer",
+            "format" : "int32",
+            "readOnly" : true,
+            "example" : 1
+          },
+          "results" : {
+            "type" : "array",
+            "readOnly" : true,
+            "items" : {
+              "$ref" : "#/components/schemas/DirectDebitConnectorPaymentResponse"
+            }
+          },
+          "_links" : {
+            "$ref" : "#/components/schemas/SearchNavigationLinks"
           }
         }
-      }
-    },
-    "PaymentState" : {
-      "type" : "object",
-      "properties" : {
-        "status" : {
-          "type" : "string",
-          "example" : "created",
-          "description" : "Current progress of the payment in its lifecycle",
-          "readOnly" : true
-        },
-        "finished" : {
-          "type" : "boolean",
-          "description" : "Whether the payment has finished",
-          "readOnly" : true
-        },
-        "message" : {
-          "type" : "string",
-          "example" : "User cancelled the payment",
-          "description" : "What went wrong with the Payment if it finished with an error - English message",
-          "readOnly" : true
-        },
-        "code" : {
-          "type" : "string",
-          "example" : "P010",
-          "description" : "What went wrong with the Payment if it finished with an error - error code",
-          "readOnly" : true
-        }
       },
-      "description" : "A structure representing the current state of the payment in its lifecycle."
-    },
-    "PostLink" : {
-      "type" : "object",
-      "properties" : {
-        "type" : {
-          "type" : "string",
-          "example" : "application/x-www-form-urlencoded"
-        },
-        "params" : {
-          "type" : "object",
-          "example" : "\"description\":\"This is a value for a parameter called description\"",
-          "additionalProperties" : {
-            "type" : "object"
+      "CreateDirectDebitPaymentRequest" : {
+        "required" : [ "amount", "description", "reference" ],
+        "type" : "object",
+        "properties" : {
+          "amount" : {
+            "maximum" : 10000000,
+            "minimum" : 100,
+            "type" : "integer",
+            "description" : "amount in pence",
+            "format" : "int32",
+            "example" : 12000
+          },
+          "reference" : {
+            "maxLength" : 255,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "payment reference",
+            "example" : "12345"
+          },
+          "description" : {
+            "maxLength" : 255,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "payment description",
+            "example" : "New passport application"
+          },
+          "mandate_id" : {
+            "maxLength" : 26,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "ID of the mandates being used to collect the payment",
+            "example" : "33890b55-b9ea-4e2f-90fd-77ae0e9009e2"
           }
         },
-        "href" : {
-          "type" : "string",
-          "example" : "https://an.example.link/from/payment/platform",
-          "readOnly" : true
-        },
-        "method" : {
-          "type" : "string",
-          "example" : "POST",
-          "readOnly" : true
-        }
-      },
-      "description" : "A POST link related to a payment"
-    },
-    "PrefilledCardholderDetails" : {
-      "type" : "object",
-      "properties" : {
-        "cardholder_name" : {
-          "type" : "string",
-          "example" : "J. Bogs",
-          "description" : "prefilled cardholder name",
-          "minLength" : 0,
-          "maxLength" : 255
-        },
-        "billing_address" : {
-          "description" : "prefilled billing address",
-          "readOnly" : true,
-          "$ref" : "#/definitions/Address"
-        }
+        "description" : "The Direct Debit Payment Request Payload"
       }
     },
-    "Refund" : {
-      "type" : "object",
-      "properties" : {
-        "refund_id" : {
-          "type" : "string",
-          "example" : "act4c33g40j3edfmi8jknab84x",
-          "readOnly" : true
-        },
-        "created_date" : {
-          "type" : "string",
-          "example" : "2017-01-10T16:52:07.855Z",
-          "readOnly" : true
-        },
-        "amount" : {
-          "type" : "integer",
-          "format" : "int64",
-          "example" : 120,
-          "readOnly" : true
-        },
-        "_links" : {
-          "$ref" : "#/definitions/RefundLinksForSearch"
-        },
-        "status" : {
-          "type" : "string",
-          "example" : "success",
-          "readOnly" : true,
-          "enum" : [ "submitted", "success", "error" ]
-        }
+    "securitySchemes" : {
+      "BearerAuth" : {
+        "type" : "http",
+        "description" : "<br> The Authorisation token needs to be specified in the 'Authorization' header as `Authorization: Bearer YOUR_API_KEY_HERE`",
+        "scheme" : "bearer"
       }
-    },
-    "RefundDetailForSearch" : {
-      "type" : "object",
-      "properties" : {
-        "refund_id" : {
-          "type" : "string",
-          "example" : "act4c33g40j3edfmi8jknab84x",
-          "readOnly" : true
-        },
-        "created_date" : {
-          "type" : "string",
-          "example" : "2017-01-10T16:52:07.855Z",
-          "readOnly" : true
-        },
-        "amount" : {
-          "type" : "integer",
-          "format" : "int64",
-          "example" : 120,
-          "readOnly" : true
-        },
-        "_links" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/RefundLinksForSearch"
-        },
-        "status" : {
-          "type" : "string",
-          "example" : "success",
-          "readOnly" : true,
-          "enum" : [ "submitted", "success", "error" ]
-        }
-      }
-    },
-    "RefundError" : {
-      "type" : "object",
-      "properties" : {
-        "field" : {
-          "type" : "string",
-          "example" : "amount_submitted"
-        },
-        "code" : {
-          "type" : "string",
-          "example" : "P0102"
-        },
-        "description" : {
-          "type" : "string",
-          "example" : "Invalid attribute value: amountSubmitted. Must be less than or equal to 10000000"
-        }
-      },
-      "description" : "A Refund Error response"
-    },
-    "RefundForSearchResult" : {
-      "type" : "object",
-      "properties" : {
-        "payment_id" : {
-          "type" : "string",
-          "example" : "hu20sqlact5260q2nanm0q8u93"
-        },
-        "_links" : {
-          "$ref" : "#/definitions/RefundLinksForSearch"
-        },
-        "_embedded" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/EmbeddedRefunds"
-        }
-      }
-    },
-    "RefundLinksForSearch" : {
-      "type" : "object",
-      "properties" : {
-        "self" : {
-          "description" : "self",
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        },
-        "payment" : {
-          "description" : "payment",
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        }
-      },
-      "description" : "links for search refunds resource"
-    },
-    "RefundSearchResults" : {
-      "type" : "object",
-      "properties" : {
-        "total" : {
-          "type" : "integer",
-          "format" : "int32",
-          "example" : 100
-        },
-        "count" : {
-          "type" : "integer",
-          "format" : "int32",
-          "example" : 20
-        },
-        "page" : {
-          "type" : "integer",
-          "format" : "int32",
-          "example" : 1
-        },
-        "results" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/RefundDetailForSearch"
-          }
-        },
-        "_links" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/SearchNavigationLinks"
-        }
-      }
-    },
-    "RefundSummary" : {
-      "type" : "object",
-      "properties" : {
-        "status" : {
-          "type" : "string",
-          "example" : "available",
-          "description" : "Availability status of the refund"
-        },
-        "amount_available" : {
-          "type" : "integer",
-          "format" : "int64",
-          "example" : 100,
-          "description" : "Amount available for refund in pence",
-          "readOnly" : true
-        },
-        "amount_submitted" : {
-          "type" : "integer",
-          "format" : "int64",
-          "description" : "Amount submitted for refunds on this Payment in pence",
-          "readOnly" : true
-        }
-      },
-      "description" : "A structure representing the refunds availability"
-    },
-    "SearchMandateResponse" : {
-      "type" : "object",
-      "properties" : {
-        "total" : {
-          "type" : "integer",
-          "format" : "int32",
-          "readOnly" : true
-        },
-        "count" : {
-          "type" : "integer",
-          "format" : "int32",
-          "readOnly" : true
-        },
-        "page" : {
-          "type" : "integer",
-          "format" : "int32",
-          "readOnly" : true
-        },
-        "results" : {
-          "type" : "array",
-          "readOnly" : true,
-          "items" : {
-            "$ref" : "#/definitions/MandateResponse"
-          }
-        },
-        "_links" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/SearchNavigationLinks"
-        }
-      }
-    },
-    "SearchNavigationLinks" : {
-      "type" : "object",
-      "properties" : {
-        "self" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        },
-        "first_page" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        },
-        "last_page" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        },
-        "prev_page" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        },
-        "next_page" : {
-          "readOnly" : true,
-          "$ref" : "#/definitions/Link"
-        }
-      },
-      "description" : "Links to navigate through pages"
-    },
-    "SettlementSummary" : {
-      "type" : "object",
-      "properties" : {
-        "capture_submit_time" : {
-          "type" : "string",
-          "example" : "2016-01-21T17:15:000Z",
-          "description" : "Date and time capture request has been submitted (may be null if capture request was not immediately acknowledged by payment gateway)",
-          "readOnly" : true
-        },
-        "captured_date" : {
-          "type" : "string",
-          "example" : "2016-01-21",
-          "description" : "Date of the capture event",
-          "readOnly" : true
-        }
-      },
-      "description" : "A structure representing information about a settlement"
     }
   }
 }
