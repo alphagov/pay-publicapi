@@ -1,0 +1,4 @@
+# GOV.UK Pay Hadolint configuration, primarily for use by Codacy
+
+ignored:
+  - DL3017
