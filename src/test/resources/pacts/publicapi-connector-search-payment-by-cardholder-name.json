@@ -87,7 +87,8 @@
                   "county": "aCounty",
                   "country": "aCountry"
                 },
-                "card_brand": "Visa"
+                "card_brand": "Visa",
+                "card_type": "debit"
               },
               "delayed_capture": true
             }
