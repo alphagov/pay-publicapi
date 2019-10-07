@@ -1,9 +1,10 @@
 resourceClasses:
-    - uk.gov.pay.api.resources.PaymentRefundsResource
-    - uk.gov.pay.api.resources.SearchRefundsResource
-    - uk.gov.pay.api.resources.PaymentsResource
-    - uk.gov.pay.api.resources.MandatesResource
-    - uk.gov.pay.api.resources.directdebit.DirectDebitPaymentsResource
+  - uk.gov.pay.api.resources.PaymentRefundsResource
+  - uk.gov.pay.api.resources.SearchRefundsResource
+  - uk.gov.pay.api.resources.PaymentsResource
+  - uk.gov.pay.api.resources.MandatesResource
+  - uk.gov.pay.api.resources.directdebit.DirectDebitPaymentsResource
+readAllResources: false
 openAPI:
   info:
     description: 'GOV.UK Pay API'

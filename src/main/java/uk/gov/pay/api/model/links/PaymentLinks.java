@@ -3,6 +3,7 @@ package uk.gov.pay.api.model.links;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import static javax.ws.rs.HttpMethod.GET;
 import static javax.ws.rs.HttpMethod.POST;
 
 @ApiModel(value = "PaymentLinks", description = "links for payment")
+@Schema(name = "PaymentLinks", description = "links for payment")
 public class PaymentLinks {
 
     private static final String SELF = "self";

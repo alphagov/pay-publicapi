@@ -1,19 +1,26 @@
 package uk.gov.pay.api.model.search.directdebit;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.api.model.directdebit.mandates.MandateResponse;
 import uk.gov.pay.api.model.links.SearchNavigationLinks;
 
 import java.util.List;
 
+import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
+
 public class SearchMandateResponse {
     @JsonProperty("total")
+    @Schema(accessMode = READ_ONLY)
     private final int total;
     @JsonProperty("count")
+    @Schema(accessMode = READ_ONLY)
     private final int count;
     @JsonProperty("page")
+    @Schema(accessMode = READ_ONLY)
     private final int page;
     @JsonProperty("results")
+    @Schema(accessMode = READ_ONLY)
     private final List<MandateResponse> mandates;
     @JsonProperty("_links")
     private final SearchNavigationLinks links;

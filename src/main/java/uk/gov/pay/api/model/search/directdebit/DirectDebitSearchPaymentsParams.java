@@ -2,6 +2,7 @@ package uk.gov.pay.api.model.search.directdebit;
 
 import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.commons.validation.ValidDate;
 
 import javax.validation.constraints.Max;
@@ -18,7 +19,7 @@ public class DirectDebitSearchPaymentsParams {
     
     @QueryParam("reference")
     @ApiParam(value = "Your payment reference to search")
-    @Parameter(description = "Your payment reference to search")
+    @Parameter(description = "Your payment reference to search", schema = @Schema(minLength = 1, maxLength = REFERENCE_MAX_LENGTH))
     @Size(min = 1, max = REFERENCE_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
     private String reference;
     
@@ -31,7 +32,7 @@ public class DirectDebitSearchPaymentsParams {
     
     @QueryParam("mandate_id")
     @ApiParam(value = "The GOV.UK Pay identifier for the mandate")
-    @Parameter(description = "The GOV.UK Pay identifier for the mandate")
+    @Parameter(description = "The GOV.UK Pay identifier for the mandate", schema = @Schema(minLength = 1, maxLength = MANDATE_ID_MAX_LENGTH))
     @Size(min = 1, max = MANDATE_ID_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
     private String mandateId;
     
@@ -49,13 +50,15 @@ public class DirectDebitSearchPaymentsParams {
     
     @QueryParam("page")
     @ApiParam(value = "Page number requested for the search, should be a positive integer (optional, defaults to 1)")
-    @Parameter(description = "Page number requested for the search, should be a positive integer (optional, defaults to 1)")
+    @Parameter(description = "Page number requested for the search, should be a positive integer (optional, defaults to 1)",
+            schema = @Schema(minimum = "1"))
     @Min(value = 1, message = "Must be greater than or equal to {value}")
     private Integer page;
     
     @QueryParam("display_size")
     @ApiParam(value = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)")
-    @Parameter(description = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)")
+    @Parameter(description = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)",
+            schema = @Schema(minimum = "1", maximum = "500"))
     @Min(value = 1, message = "Must be greater than or equal to {value}")
     @Max(value = 500, message = "Must be less than or equal to {value}")
     private Integer displaySize;

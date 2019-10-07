@@ -120,7 +120,7 @@ public class CreateCardPaymentRequest {
     }
 
     @ApiModelProperty(value = "email", required = false, example = "Joe.Bogs@example.org")
-    @Schema(name = "email", example = "Joe.Bogs@example.org")
+    @Schema(name = "email", example = "Joe.Bogs@example.org", description = "email")
     @JsonProperty(EMAIL_FIELD_NAME)
     public Optional<String> getEmail() {
         return Optional.ofNullable(email);

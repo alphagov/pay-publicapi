@@ -102,7 +102,8 @@ public class PaymentRefundsResource {
     @Produces(APPLICATION_JSON)
     @Operation(security = {@SecurityRequirement(name = "BearerAuth")},
             operationId = "Get all refunds for a payment",
-            summary = "Return refunds for a payment. " +
+            summary = "Get all refunds for a payment",
+            description = "Return refunds for a payment. " +
                     "The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
             responses = {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK",
@@ -148,7 +149,8 @@ public class PaymentRefundsResource {
     @Path("/{refundId}")
     @Operation(security = {@SecurityRequirement(name = "BearerAuth")},
             operationId = "Get a payment refund",
-            summary = "Return payment refund information by Refund ID " +
+            summary = "Find payment refund by ID",
+            description = "Return payment refund information by Refund ID " +
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             responses = {
@@ -200,7 +202,8 @@ public class PaymentRefundsResource {
     @Consumes(APPLICATION_JSON)
     @Operation(security = {@SecurityRequirement(name = "BearerAuth")},
             operationId = "Submit a refund for a payment",
-            summary = "Return issued refund information. " +
+            summary = "Submit a refund for a payment",
+            description = "Return issued refund information. " +
                     "The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
             responses = {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "successful operation",

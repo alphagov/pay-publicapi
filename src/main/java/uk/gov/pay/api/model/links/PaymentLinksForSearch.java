@@ -3,11 +3,13 @@ package uk.gov.pay.api.model.links;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import static javax.ws.rs.HttpMethod.GET;
 import static javax.ws.rs.HttpMethod.POST;
 
 @ApiModel(value = "PaymentLinksForSearch", description = "links for search payment resource")
+@Schema(name = "PaymentLinksForSearch", description = "links for search payment resource")
 public class PaymentLinksForSearch {
 
     private static final String SELF = "self";
@@ -52,6 +54,7 @@ public class PaymentLinksForSearch {
     }
 
     @ApiModelProperty(value = CAPTURE, dataType = "uk.gov.pay.api.model.links.PostLink")
+    @Schema(name = CAPTURE, implementation = PostLink.class)
     public Link getCapture() {
         return capture;
     }

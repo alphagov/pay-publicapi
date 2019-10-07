@@ -57,7 +57,8 @@ public class SearchRefundsResource {
     @Operation(
             security = {@SecurityRequirement(name = "BearerAuth")},
             operationId = "Search refunds",
-            summary = "Search refunds by 'from' and 'to' date. " +
+            summary = "Search refunds",
+            description = "Search refunds by 'from' and 'to' date. " +
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             responses = {
