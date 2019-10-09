@@ -41,7 +41,7 @@ values:
 
 ## API specification
 
-Read our [developer documentation](https://docs.payments.service.gov.uk/#gov-uk-pay-documentation) for guidance on using the API.
+Read our  [developer documentation](https://docs.payments.service.gov.uk/#gov-uk-pay-documentation) for guidance on using the API.
 
 For more detailed information you can use our:
 
