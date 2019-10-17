@@ -13,7 +13,7 @@
         <guava.version>28.0-jre</guava.version>
         <wiremock.version>2.25.0</wiremock.version>
         <swagger.jersey2.version>1.5.24</swagger.jersey2.version>
-        <hamcrest.version>2.1</hamcrest.version>
+        <hamcrest.version>2.2</hamcrest.version>
         <jackson.version>2.10.0</jackson.version>
         <logback.version>1.2.3</logback.version>
         <docker-client.version>8.16.0</docker-client.version>
