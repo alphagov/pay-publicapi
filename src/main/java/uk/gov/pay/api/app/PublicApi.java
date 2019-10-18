@@ -57,6 +57,7 @@ import uk.gov.pay.api.resources.directdebit.DirectDebitPaymentsResource;
 import uk.gov.pay.api.resources.telephone.TelephonePaymentNotificationResource;
 import uk.gov.pay.api.validation.InjectingValidationFeature;
 import uk.gov.pay.commons.utils.logging.LoggingFilter;
+import uk.gov.pay.logging.LogstashConsoleAppenderFactory;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.util.concurrent.TimeUnit;
@@ -83,6 +84,7 @@ public class PublicApi extends Application<PublicApiConfig> {
                 return configuration.getJedisFactory();
             }
         });
+        bootstrap.getObjectMapper().getSubtypeResolver().registerSubtypes(LogstashConsoleAppenderFactory.class);
     }
 
     @Override
