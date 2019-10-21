@@ -19,7 +19,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 public @interface ValidCardType {
 
-    String message() default "Must be either master-card, visa, maestro, diners-club or american-express";
+    String message() default "Must be either master-card, visa, maestro, diners-club, american-express or jcb";
 
     Class<?>[] groups() default {};
 

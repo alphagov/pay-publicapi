@@ -1,6 +1,5 @@
 package uk.gov.pay.api.model.telephone;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -60,7 +59,7 @@ public class CreateTelephonePaymentRequest {
     @NotNull(message = "Field [payment_outcome] cannot be null")
     private PaymentOutcome paymentOutcome;
     
-    @ValidCardType(message = "Field [card_type] must be either master-card, visa, maestro, diners-club or american-express")
+    @ValidCardType(message = "Field [card_type] must be either master-card, visa, maestro, diners-club, american-express or jcb")
     private String cardType;
 
     @JsonProperty("name_on_card")
