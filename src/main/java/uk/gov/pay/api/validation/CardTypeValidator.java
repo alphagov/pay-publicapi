@@ -3,7 +3,6 @@ package uk.gov.pay.api.validation;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.HashSet;
-import java.util.regex.Pattern;
 
 public class CardTypeValidator implements ConstraintValidator<ValidCardExpiryDate, String> {
     
@@ -15,6 +14,8 @@ public class CardTypeValidator implements ConstraintValidator<ValidCardExpiryDat
         CARD_TYPES.add("maestro");
         CARD_TYPES.add("diners-club");
         CARD_TYPES.add("american-express");
+        CARD_TYPES.add("jcb");
+        CARD_TYPES.add("discover");
     }
     
     @Override
