@@ -15,7 +15,6 @@ public class CardTypeValidator implements ConstraintValidator<ValidCardExpiryDat
         CARD_TYPES.add("diners-club");
         CARD_TYPES.add("american-express");
         CARD_TYPES.add("jcb");
-        CARD_TYPES.add("discover");
     }
     
     @Override
