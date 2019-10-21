@@ -125,6 +125,11 @@
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.dhatim</groupId>
+            <artifactId>dropwizard-sentry</artifactId>
+            <version>1.3.9-1</version>
+        </dependency>
         <!-- testing -->
         <dependency>
             <groupId>uk.gov.pay</groupId>

@@ -19,6 +19,10 @@ logging:
       target: stdout
       customFields:
         container: "publicapi"
+    - type: sentry
+      threshold: ERROR
+      dsn: ${SENTRY_DSN:-https://example.com@dummy/1}
+      environment: ${ENVIRONMENT}
 
 baseUrl: ${PUBLICAPI_BASE}
 connectorUrl: ${CONNECTOR_URL}
