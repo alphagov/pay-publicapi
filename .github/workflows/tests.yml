@@ -1,0 +1,44 @@
+name: tests
+
+on: push
+
+jobs:
+  build:
+    name: end-to-end
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout pay-publicapi
+        uses: actions/checkout@master
+        with:
+          path: component
+      - name: checkout pay-scripts
+        uses: actions/checkout@master
+        with:
+          repository: alphagov/pay-scripts
+          token: ${{ secrets.alphagov_pay_ci_ro_token }}
+          ref: master
+          fetch-depth: 1
+          path: scripts
+      - uses: actions/setup-ruby@v1
+        with:
+          ruby-version: '2.x'
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '11'
+      - name: build pay-publicapi
+        run: |
+          pushd $GITHUB_WORKSPACE/../component
+          ./build-local.sh
+          popd
+      - name: run tests
+        run: |
+          pushd $GITHUB_WORKSPACE/../scripts
+          export tag_publicapi=local
+          docker login --username alphagovpaydevci --password-stdin <<< "${{ secrets.alphagovpaydevci_docker_token }}"
+          ./setup-dev.sh
+          ./all.sh master up
+          ./run-endtoend.sh /app/bin/e2e-card
+          ./run-endtoend.sh /app/bin/e2e-directdebit
+          ./run-endtoend.sh /app/bin/e2e-products
+          ./all.sh master down
+          popd
