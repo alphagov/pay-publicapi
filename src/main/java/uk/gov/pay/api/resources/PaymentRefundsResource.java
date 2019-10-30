@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateRefundException;
-import uk.gov.pay.api.model.ChargeFromResponse;
+import uk.gov.pay.api.model.Charge;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.RefundFromConnector;
@@ -31,6 +31,7 @@ import uk.gov.pay.api.model.RefundsResponse;
 import uk.gov.pay.api.model.search.card.RefundForSearchResult;
 import uk.gov.pay.api.model.search.card.RefundResult;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
+import uk.gov.pay.api.service.ConnectorService;
 import uk.gov.pay.api.service.GetPaymentRefundService;
 import uk.gov.pay.api.service.GetPaymentRefundsService;
 
@@ -76,7 +77,6 @@ public class PaymentRefundsResource {
     private static final String CONNECTOR_CHARGE_RESOURCE = CONNECTOR_CHARGES_RESOURCE + "/%s";
 
     private static final String CONNECTOR_CHARGE_REFUNDS_RESOURCE = CONNECTOR_CHARGE_RESOURCE + "/refunds";
-    private static final String CONNECTOR_CHARGE_REFUND_BY_ID_RESOURCE = CONNECTOR_CHARGE_REFUNDS_RESOURCE + "/%s";
 
     private final String baseUrl;
     private final Client client;
@@ -84,17 +84,19 @@ public class PaymentRefundsResource {
     private PublicApiConfig configuration;
     private GetPaymentRefundsService getPaymentRefundsService;
     private GetPaymentRefundService getPaymentRefundService;
+    private ConnectorService connectorService;
 
     @Inject
     public PaymentRefundsResource(Client client, PublicApiConfig configuration,
                                   GetPaymentRefundsService getPaymentRefundsService,
-                                  GetPaymentRefundService getPaymentRefundService) {
+                                  GetPaymentRefundService getPaymentRefundService, ConnectorService connectorService) {
         this.client = client;
         this.baseUrl = configuration.getBaseUrl();
         this.connectorUrl = configuration.getConnectorUrl();
         this.configuration = configuration;
         this.getPaymentRefundsService = getPaymentRefundsService;
         this.getPaymentRefundService = getPaymentRefundService;
+        this.connectorService = connectorService;
     }
 
     @GET
@@ -244,13 +246,8 @@ public class PaymentRefundsResource {
 
         Integer refundAmountAvailable = requestPayload.getRefundAmountAvailable()
                 .orElseGet(() -> {
-                    Response getChargeResponse = client
-                            .target(getConnectorUrl(format(CONNECTOR_CHARGE_RESOURCE, account.getAccountId(), paymentId)))
-                            .request()
-                            .get();
-
-                    ChargeFromResponse chargeFromResponse = getChargeResponse.readEntity(ChargeFromResponse.class);
-                    return Long.valueOf(chargeFromResponse.getRefundSummary().getAmountAvailable()).intValue();
+                    Charge charge = connectorService.getCharge(account, paymentId);
+                    return Long.valueOf(charge.getRefundSummary().getAmountAvailable()).intValue();
                 });
 
         ImmutableMap<String, Object> payloadMap = ImmutableMap.of("amount", requestPayload.getAmount(), "refund_amount_available", refundAmountAvailable);
