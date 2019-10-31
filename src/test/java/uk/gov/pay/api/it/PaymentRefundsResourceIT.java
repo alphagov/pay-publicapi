@@ -27,6 +27,7 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.ACCEPTED;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
@@ -202,6 +203,18 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
                         .build());
 
         postRefundRequest(payload);
+    }
+    
+    @Test
+    public void createRefundWhenChargeNotFound_shouldReturn404() {
+        String payload = new GsonBuilder().create().toJson(Map.of("amount", AMOUNT));
+
+        connectorMockClient.respondChargeNotFound(CHARGE_ID, GATEWAY_ACCOUNT_ID, "Not found");
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+
+        postRefunds(payload)
+                .then()
+                .statusCode(NOT_FOUND.getStatusCode());
     }
 
     @Test
