@@ -24,7 +24,7 @@ public class ViolationExceptionMapper implements ExceptionMapper<JerseyViolation
 
     @Override
     public Response toResponse(JerseyViolationException exception) {
-        LOGGER.error(exception.getMessage());
+        LOGGER.info(exception.getMessage());
         ConstraintViolation<?> firstException = exception.getConstraintViolations().iterator().next();
         String fieldName = getApiFieldName(firstException.getPropertyPath());
         
