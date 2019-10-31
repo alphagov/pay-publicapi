@@ -27,6 +27,7 @@ import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.RefundFromConnector;
 import uk.gov.pay.api.model.RefundResponse;
+import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.RefundsResponse;
 import uk.gov.pay.api.model.search.card.RefundForSearchResult;
 import uk.gov.pay.api.model.search.card.RefundResult;
@@ -48,6 +49,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static javax.ws.rs.client.Entity.json;
@@ -245,10 +247,11 @@ public class PaymentRefundsResource {
         logger.info("Create a refund for payment request - paymentId={}", paymentId);
 
         Integer refundAmountAvailable = requestPayload.getRefundAmountAvailable()
-                .orElseGet(() -> {
-                    Charge charge = connectorService.getCharge(account, paymentId);
-                    return Long.valueOf(charge.getRefundSummary().getAmountAvailable()).intValue();
-                });
+                .orElseGet(() -> Optional.ofNullable(connectorService.getCharge(account, paymentId))
+                        .map(Charge::getRefundSummary)
+                        .map(RefundSummary::getAmountAvailable)
+                        .map(Long::intValue)
+                        .orElse(0));
 
         ImmutableMap<String, Object> payloadMap = ImmutableMap.of("amount", requestPayload.getAmount(), "refund_amount_available", refundAmountAvailable);
         String connectorPayload = new GsonBuilder().create().toJson(
