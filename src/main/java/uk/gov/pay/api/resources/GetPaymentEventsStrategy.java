@@ -25,7 +25,7 @@ public class GetPaymentEventsStrategy extends LedgerOrConnectorStrategyTemplate<
 
     @Override
     protected PaymentEventsResponse executeFutureBehaviourStrategy() {
-        return executeLedgerOnlyStrategy();
+        return getPaymentEventsService.getPaymentEvents(account, paymentId);
     }
 
     @Override
