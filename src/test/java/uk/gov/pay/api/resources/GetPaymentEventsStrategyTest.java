@@ -88,8 +88,7 @@ public class GetPaymentEventsStrategyTest {
 
         getPaymentEventsStrategy.validateAndExecute();
 
-        verify(getPaymentEventsService).getPaymentEventsFromLedger(mockAccountId, mockPaymentId);
-        verify(getPaymentEventsService, never()).getPaymentEventsFromConnector(mockAccountId, mockPaymentId);
+        verify(getPaymentEventsService).getPaymentEvents(mockAccountId, mockPaymentId);
     }
 
     @Test
@@ -115,7 +114,6 @@ public class GetPaymentEventsStrategyTest {
 
         getPaymentEventsStrategy.validateAndExecute();
 
-        verify(getPaymentEventsService).getPaymentEventsFromLedger(mockAccountId, mockPaymentId);
-        verify(getPaymentEventsService, never()).getPaymentEventsFromConnector(mockAccountId, mockPaymentId);
+        verify(getPaymentEventsService).getPaymentEvents(mockAccountId, mockPaymentId);
     }
 }

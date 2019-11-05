@@ -1,6 +1,7 @@
 package uk.gov.pay.api.service;
 
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.exception.GetEventsException;
 import uk.gov.pay.api.model.PaymentEvents;
 import uk.gov.pay.api.model.PaymentEventsResponse;
 import uk.gov.pay.api.model.TransactionEvents;
@@ -39,5 +40,13 @@ public class GetPaymentEventsService {
         URI paymentLink = publicApiUriGenerator.getPaymentURI(paymentId);
 
         return PaymentEventsResponse.from(transactionEvents, paymentLink, paymentEventsLink);
+    }
+
+    public PaymentEventsResponse getPaymentEvents(Account account, String paymentId) {
+        try {
+            return getPaymentEventsFromConnector(account, paymentId);
+        } catch (GetEventsException ex) {
+            return getPaymentEventsFromLedger(account, paymentId);
+        }
     }
 }
