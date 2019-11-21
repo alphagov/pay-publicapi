@@ -27,7 +27,7 @@ public class SearchRefundsExceptionMapper implements ExceptionMapper<SearchRefun
 
     private Response buildResponse(SearchRefundsException exception, RefundError.Code connectorError, Response.Status status) {
         RefundError refundError = aRefundError(connectorError);
-        LOGGER.error("Connector response was {}.\n Returning http status {} with error body {}", exception.getMessage(), status, refundError);
+        LOGGER.info("Connector response was {}.\n Returning http status {} with error body {}", exception.getMessage(), status, refundError);
         return Response
                 .status(status)
                 .entity(refundError)

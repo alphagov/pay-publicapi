@@ -29,7 +29,7 @@ public class CreateAgreementExceptionMapper implements ExceptionMapper<CreateMan
             mandateError = MandateError.aMandateError(MandateError.Code.CREATE_MANDATE_CONNECTOR_ERROR);
         }
 
-        LOGGER.error("Direct Debit connector invalid response was {}.\n Returning http status {} with error body {}",
+        LOGGER.info("Direct Debit connector invalid response was {}.\n Returning http status {} with error body {}",
                 exception.getMessage(), INTERNAL_SERVER_ERROR, mandateError);
 
         return Response

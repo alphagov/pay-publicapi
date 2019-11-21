@@ -43,7 +43,7 @@ public class CreateChargeExceptionMapper implements ExceptionMapper<CreateCharge
             paymentError = aPaymentError(CREATE_PAYMENT_MANDATE_STATE_INVALID);
         } else {
             paymentError = aPaymentError(CREATE_PAYMENT_CONNECTOR_ERROR);
-            LOGGER.error("Connector invalid response was {}.\n Returning http status {} with error body {}",
+            LOGGER.info("Connector invalid response was {}.\n Returning http status {} with error body {}",
                     exception.getMessage(), INTERNAL_SERVER_ERROR, paymentError);
         }
 
