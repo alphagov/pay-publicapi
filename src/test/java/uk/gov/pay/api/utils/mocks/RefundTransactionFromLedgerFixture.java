@@ -10,12 +10,14 @@ public class RefundTransactionFromLedgerFixture {
     private final TransactionState state;
     private final String createdDate;
     private final String transactionId;
+    private final String parentTransactionId;
 
     public RefundTransactionFromLedgerFixture(RefundTransactionFromLedgerBuilder builder) {
         this.amount = builder.amount;
         this.state = builder.state;
         this.createdDate = builder.createdDate;
         this.transactionId = builder.transactionId;
+        this.parentTransactionId = builder.parentTransactionId;
     }
 
     public Long getAmount() {
@@ -34,11 +36,16 @@ public class RefundTransactionFromLedgerFixture {
         return transactionId;
     }
 
+    public String getParentTransactionId() {
+        return parentTransactionId;
+    }
+
     public static final class RefundTransactionFromLedgerBuilder {
         private Long amount;
         private TransactionState state;
         private String createdDate;
         private String transactionId;
+        private String parentTransactionId;
 
         private RefundTransactionFromLedgerBuilder() {
         }
@@ -64,6 +71,11 @@ public class RefundTransactionFromLedgerFixture {
 
         public RefundTransactionFromLedgerBuilder withTransactionId(String transactionId) {
             this.transactionId = transactionId;
+            return this;
+        }
+
+        public RefundTransactionFromLedgerBuilder withParentTransactionId(String parentTransactionId) {
+            this.parentTransactionId = parentTransactionId;
             return this;
         }
 

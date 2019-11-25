@@ -2,10 +2,14 @@ package uk.gov.pay.api.it;
 
 
 import io.restassured.response.ValidatableResponse;
+import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.api.it.fixtures.PaymentRefundSearchJsonFixture;
+import uk.gov.pay.api.model.ledger.TransactionState;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
+import uk.gov.pay.api.utils.mocks.LedgerMockClient;
+import uk.gov.pay.api.utils.mocks.RefundTransactionFromLedgerFixture;
 import uk.gov.pay.commons.validation.DateTimeUtils;
 
 import java.time.ZonedDateTime;
@@ -16,6 +20,7 @@ import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
+import static uk.gov.pay.api.utils.mocks.RefundTransactionFromLedgerFixture.RefundTransactionFromLedgerBuilder.aRefundTransactionFromLedgerFixture;
 import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public class SearchRefundsResourceIT extends PaymentResourceITestBase {
@@ -25,19 +30,50 @@ public class SearchRefundsResourceIT extends PaymentResourceITestBase {
     private static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(TIMESTAMP);
 
     private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
+    private LedgerMockClient ledgerMockClient = new LedgerMockClient(ledgerMock);
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
 
-    @Test
-    public void searchRefunds_shouldReturnValidResponse() {
-
+    @Before
+    public void setUp() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+    }
 
-        PaymentRefundSearchJsonFixture refund_1 = new PaymentRefundSearchJsonFixture(100L, CREATED_DATE, "100", CHARGE_ID, "available", new ArrayList<>());
-        PaymentRefundSearchJsonFixture refund_2 = new PaymentRefundSearchJsonFixture(300L, CREATED_DATE, "300", CHARGE_ID, "pending", new ArrayList<>());
+    @Test
+    public void searchRefundsThroughConnector_shouldReturnValidResponse() {
+        String connectorOnlyStrategy = "";
+        PaymentRefundSearchJsonFixture refund1 = new PaymentRefundSearchJsonFixture(100L, CREATED_DATE, "100", CHARGE_ID, "available", new ArrayList<>());
+        PaymentRefundSearchJsonFixture refund2 = new PaymentRefundSearchJsonFixture(300L, CREATED_DATE, "300", CHARGE_ID, "pending", new ArrayList<>());
 
-        connectorMockClient.respondWithSearchRefunds(GATEWAY_ACCOUNT_ID, refund_1, refund_2);
+        connectorMockClient.respondWithSearchRefunds(GATEWAY_ACCOUNT_ID, refund1, refund2);
 
-        getRefundsSearchResponse(API_KEY)
+        assertRefundsSearchResponse(connectorOnlyStrategy);
+    }
+
+    @Test
+    public void searchRefundsThroughLedger_shouldReturnValidResponse() {
+        RefundTransactionFromLedgerFixture refund1 = aRefundTransactionFromLedgerFixture()
+                .withAmount(100L)
+                .withCreatedDate(CREATED_DATE)
+                .withTransactionId("100")
+                .withParentTransactionId(CHARGE_ID)
+                .withState(new TransactionState("available", false))
+                .build();
+
+        RefundTransactionFromLedgerFixture refund2 = aRefundTransactionFromLedgerFixture()
+                .withAmount(300L)
+                .withCreatedDate(CREATED_DATE)
+                .withTransactionId("300")
+                .withParentTransactionId(CHARGE_ID)
+                .withState(new TransactionState("pending", false))
+                .build();
+
+        ledgerMockClient.respondWithSearchRefunds(refund1, refund2);
+
+        assertRefundsSearchResponse("ledger-only");
+    }
+
+    private void assertRefundsSearchResponse(String strategy) {
+        getRefundsSearchResponse(strategy)
                 .statusCode(200)
                 .contentType(JSON)
                 .body("total", is(1))
@@ -64,11 +100,11 @@ public class SearchRefundsResourceIT extends PaymentResourceITestBase {
                 .body("_links.last_page.href", is("http://publicapi.url/v1/refunds?page=5"));
     }
 
-    private ValidatableResponse getRefundsSearchResponse(String bearerToken) {
+    private ValidatableResponse getRefundsSearchResponse(String strategy) {
         return given().port(app.getLocalPort())
-                .header(AUTHORIZATION, "Bearer " + bearerToken)
+                .header("X-Ledger", strategy)
+                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
                 .get("/v1/refunds")
                 .then();
     }
-
 }
