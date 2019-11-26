@@ -13,12 +13,14 @@ import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
+import uk.gov.pay.api.utils.mocks.LedgerMockClient;
 import uk.gov.pay.commons.validation.DateTimeUtils;
 
 import java.io.InputStream;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static io.restassured.RestAssured.given;
@@ -60,9 +62,12 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
     private static final String SEARCH_PATH = "/v1/payments";
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
     private static final CardDetails CARD_DETAILS = new CardDetails(TEST_LAST_DIGITS_CARD_NUMBER, TEST_FIRST_DIGITS_CARD_NUMBER, TEST_CARDHOLDER_NAME, "12/19", BILLING_ADDRESS, TEST_CARD_BRAND_LABEL, TEST_CARD_TYPE);
+    private static final String LEDGER_ONLY_STRATEGY = "ledger-only";
+    private static final String CONNECTOR_STRATEGY = "";
 
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
     private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
+    private LedgerMockClient ledgerMockClient = new LedgerMockClient(ledgerMock);
 
     @Before
     public void mapBearerTokenToAccountId() {
@@ -70,7 +75,18 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPaymentsWithMetadata() {
+    public void searchPaymentsWithMetadataThroughConnector() {
+        searchPaymentsWithMetadata(
+                payments -> connectorMockClient.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, payments), CONNECTOR_STRATEGY);
+    }
+
+    @Test
+    public void searchPaymentsWithMetadataThroughLedger() {
+        searchPaymentsWithMetadata(
+                payments -> ledgerMockClient.respondOk_whenSearchCharges(payments), LEDGER_ONLY_STRATEGY);
+    }
+
+    private void searchPaymentsWithMetadata(Consumer<String> mockResponseFunction, String strategy) {
         String payments = aPaginatedPaymentSearchResult()
                 .withCount(2)
                 .withPage(1)
@@ -85,9 +101,9 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
                         .getResults())
                 .build();
 
-        connectorMockClient.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, payments);
+        mockResponseFunction.accept(payments);
 
-        searchPayments(Map.of()).statusCode(200)
+        searchPayments(Map.of(), strategy).statusCode(200)
                 .contentType(JSON).log().body()
                 .body("results[0].metadata.reconciled", is(true))
                 .body("results[0].metadata.ledger_code", is(123))
@@ -100,7 +116,18 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_shouldOnlyReturnAllowedProperties() {
+    public void searchPaymentsThroughConnector_shouldOnlyReturnAllowedProperties() {
+        searchPayments_shouldOnlyReturnAllowedProperties(
+                payments -> connectorMockClient.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, payments), CONNECTOR_STRATEGY);
+    }
+
+    @Test
+    public void searchPaymentsThroughLedger_shouldOnlyReturnAllowedProperties() {
+        searchPayments_shouldOnlyReturnAllowedProperties(
+                payments -> ledgerMockClient.respondOk_whenSearchCharges(payments), LEDGER_ONLY_STRATEGY);
+    }
+
+    private void searchPayments_shouldOnlyReturnAllowedProperties(Consumer<String> mockResponseFunction, String strategy) {
         String payments = aPaginatedPaymentSearchResult()
                 .withCount(10)
                 .withPage(2)
@@ -118,9 +145,9 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
                         .getResults())
                 .build();
 
-        connectorMockClient.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, payments);
+        mockResponseFunction.accept(payments);
 
-        String responseBody = searchPayments(ImmutableMap.of("reference", TEST_REFERENCE))
+        String responseBody = searchPayments(ImmutableMap.of("reference", TEST_REFERENCE), strategy)
                 .statusCode(200)
                 .contentType(JSON)
                 .body("results[0].created_date", is(DEFAULT_CREATED_DATE))
@@ -171,11 +198,21 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
                 .assertNotDefined("_links.next_url.params")
                 .assertNotDefined("_links.events.type")
                 .assertNotDefined("_links.events.params");
-
     }
 
     @Test
-    public void searchPayments_ShouldNotIncludeCancelLinkIfThePaymentCannotBeCancelled() {
+    public void searchPaymentsThroughConnector_ShouldNotIncludeCancelLinkIfThePaymentCannotBeCancelled() {
+        searchPayments_ShouldNotIncludeCancelLinkIfThePaymentCannotBeCancelled(
+                payments -> connectorMockClient.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, payments), CONNECTOR_STRATEGY);
+    }
+
+    @Test
+    public void searchPaymentsThroughLedger_ShouldNotIncludeCancelLinkIfThePaymentCannotBeCancelled() {
+        searchPayments_ShouldNotIncludeCancelLinkIfThePaymentCannotBeCancelled(
+                payments -> ledgerMockClient.respondOk_whenSearchCharges(payments), LEDGER_ONLY_STRATEGY);
+    }
+
+    private void searchPayments_ShouldNotIncludeCancelLinkIfThePaymentCannotBeCancelled(Consumer<String> mockResponseFunction, String strategy) {
         String payments = aPaginatedPaymentSearchResult()
                 .withCount(10)
                 .withPage(2)
@@ -187,13 +224,12 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
                         .getResults())
                 .build();
 
-        connectorMockClient.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, payments);
+        mockResponseFunction.accept(payments);
 
-        searchPayments(ImmutableMap.of("reference", TEST_REFERENCE))
+        searchPayments(ImmutableMap.of("reference", TEST_REFERENCE), strategy)
                 .statusCode(200)
                 .contentType(JSON)
                 .body("results[0]._links.cancel", is(nullValue()));
-
     }
 
     @Test
@@ -436,6 +472,20 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
 
     @Test
     public void searchPayments_getsPaginatedResultsFromConnector() {
+        searchPayments_getsPaginatedResults(
+                payments -> connectorMockClient.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, payments),
+                CONNECTOR_STRATEGY
+        );
+    }
+
+    @Test
+    public void searchPayments_getsPaginatedResultsFromLedger() {
+        searchPayments_getsPaginatedResults(
+                payments -> ledgerMockClient.respondOk_whenSearchCharges(payments), LEDGER_ONLY_STRATEGY
+        );
+    }
+
+    private void searchPayments_getsPaginatedResults(Consumer<String> mockResponseFunction, String strategy) {
 
         PaymentNavigationLinksFixture links = new PaymentNavigationLinksFixture()
                 .withPrevLink("http://server:port/path?query=prev&from_date=2016-01-01T23:59:59Z")
@@ -458,7 +508,8 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
                 .withLinks(links)
                 .build();
 
-        connectorMockClient.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, payments);
+        mockResponseFunction.accept(payments);
+
         ImmutableMap<String, String> queryParams = ImmutableMap.of(
                 "reference", TEST_REFERENCE,
                 "state", TEST_STATE,
@@ -466,7 +517,7 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
                 "page", "2",
                 "display_size", "10"
         );
-        ValidatableResponse response = searchPayments(queryParams)
+        ValidatableResponse response = searchPayments(queryParams, strategy)
                 .statusCode(200)
                 .contentType(JSON)
                 .body("results.size()", equalTo(10))
@@ -484,7 +535,6 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
         assertThat(results, matchesField("email", TEST_EMAIL));
         assertThat(results, matchesState(TEST_STATE));
         assertThat(results, matchesCreatedDateInBetween(TEST_FROM_DATE, TEST_TO_DATE));
-
     }
 
     private String expectedChargesLocationFor(String queryParams) {
@@ -493,8 +543,17 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
 
     @Test
     public void searchPayments_errorIfConnectorRespondsWith404() throws Exception {
+        searchPayments_errorIfServiceRespondsWith404(CONNECTOR_STRATEGY);
+    }
+
+    @Test
+    public void searchPayments_errorIfLedgerRespondsWith404() throws Exception {
+        searchPayments_errorIfServiceRespondsWith404(LEDGER_ONLY_STRATEGY);
+    }
+
+    private void searchPayments_errorIfServiceRespondsWith404(String strategy) throws Exception {
         InputStream body = searchPayments(
-                ImmutableMap.of("reference", TEST_REFERENCE, "state", TEST_STATE, "from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
+                ImmutableMap.of("reference", TEST_REFERENCE, "state", TEST_STATE, "from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE), strategy)
                 .statusCode(404)
                 .contentType(JSON).extract()
                 .body().asInputStream();
@@ -507,8 +566,24 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
 
     @Test
     public void searchPayments_errorIfConnectorResponseIsInvalid() throws Exception {
-        connectorMockClient.whenSearchCharges(GATEWAY_ACCOUNT_ID,
-                aResponse().withStatus(OK_200).withHeader(CONTENT_TYPE, APPLICATION_JSON).withBody("wtf"));
+        searchPayments_errorIfServiceResponseIsInvalid(
+                () -> connectorMockClient.whenSearchCharges(GATEWAY_ACCOUNT_ID,
+                        aResponse().withStatus(OK_200).withHeader(CONTENT_TYPE, APPLICATION_JSON).withBody("wtf")),
+                CONNECTOR_STRATEGY
+        );
+    }
+
+    @Test
+    public void searchPayments_errorIfLedgerResponseIsInvalid() throws Exception {
+        searchPayments_errorIfServiceResponseIsInvalid(
+                () -> ledgerMockClient.whenSearchTransactions(
+                        aResponse().withStatus(OK_200).withHeader(CONTENT_TYPE, APPLICATION_JSON).withBody("wtf")),
+                LEDGER_ONLY_STRATEGY
+        );
+    }
+
+    private void searchPayments_errorIfServiceResponseIsInvalid(Runnable mockResponseFunction, String strategy) throws Exception {
+        mockResponseFunction.run();
 
         InputStream body = searchPayments(
                 ImmutableMap.of(
@@ -516,7 +591,7 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
                         "email", TEST_EMAIL,
                         "state", TEST_STATE,
                         "from_date", TEST_FROM_DATE,
-                        "to_date", TEST_TO_DATE))
+                        "to_date", TEST_TO_DATE), strategy)
                 .statusCode(500)
                 .contentType(JSON).extract()
                 .body().asInputStream();
@@ -569,9 +644,18 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_filterByInvalidCardBrand() throws Exception {
+    public void searchPaymentsThroughConnector_filterByInvalidCardBrand() throws Exception {
+        searchPayments_filterByInvalidCardBrand(CONNECTOR_STRATEGY);
+    }
+
+    @Test
+    public void searchPaymentsThroughLedger_filterByInvalidCardBrand() throws Exception {
+        searchPayments_filterByInvalidCardBrand(LEDGER_ONLY_STRATEGY);
+    }
+
+    public void searchPayments_filterByInvalidCardBrand(String strategy) throws Exception {
         InputStream body = searchPayments(
-                ImmutableMap.of("card_brand", "my_credit_card"))
+                ImmutableMap.of("card_brand", "my_credit_card"), strategy)
                 .statusCode(404)
                 .contentType(JSON).extract()
                 .body().asInputStream();
@@ -579,7 +663,6 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
         JsonAssert.with(body)
                 .assertThat("$.*", hasSize(2))
                 .assertThat("$.description", is("Page not found"));
-
     }
 
     @Test
@@ -688,9 +771,14 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
     }
 
     private ValidatableResponse searchPayments(Map<String, String> queryParams) {
+        return searchPayments(queryParams, "");
+    }
+
+    private ValidatableResponse searchPayments(Map<String, String> queryParams, String strategy) {
         return given().port(app.getLocalPort())
                 .accept(JSON)
                 .contentType(JSON)
+                .header("X-Ledger", strategy)
                 .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
                 .queryParams(queryParams)
                 .get(SEARCH_PATH)
