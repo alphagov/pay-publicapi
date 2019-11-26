@@ -62,8 +62,6 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
     private static final String SEARCH_PATH = "/v1/payments";
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
     private static final CardDetails CARD_DETAILS = new CardDetails(TEST_LAST_DIGITS_CARD_NUMBER, TEST_FIRST_DIGITS_CARD_NUMBER, TEST_CARDHOLDER_NAME, "12/19", BILLING_ADDRESS, TEST_CARD_BRAND_LABEL, TEST_CARD_TYPE);
-    private static final String LEDGER_ONLY_STRATEGY = "ledger-only";
-    private static final String CONNECTOR_STRATEGY = "";
 
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
     private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
