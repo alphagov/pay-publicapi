@@ -55,12 +55,13 @@ abstract public class ResourcesFilterITestBase {
     static final List<Map<String, String>> EVENTS = List.of(new ChargeEventBuilder(CREATED, CREATED_DATE).build());
     static final String GATEWAY_ACCOUNT_ID = "GATEWAY_ACCOUNT_ID";
     static final String PAYLOAD = paymentPayload();
-    
+
     private static final int CONNECTOR_PORT = findFreePort();
     private static final int PUBLIC_AUTH_PORT = findFreePort();
+    private static final int LEDGER_PORT = findFreePort();
 
     private ExecutorService executor = Executors.newFixedThreadPool(2);
-    
+
     @ClassRule
     public static RedisDockerRule redisDockerRule;
 
@@ -71,21 +72,26 @@ abstract public class ResourcesFilterITestBase {
             e.printStackTrace();
         }
     }
-    
+
     @ClassRule
     public static WireMockClassRule connectorMock = new WireMockClassRule(CONNECTOR_PORT);
+
+    @ClassRule
+    public static WireMockClassRule ledgerMock = new WireMockClassRule(LEDGER_PORT);
 
     @ClassRule
     public static WireMockClassRule publicAuthMock = new WireMockClassRule(PUBLIC_AUTH_PORT);
 
     @Rule
     public DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
-            PublicApi.class, 
-            resourceFilePath("config/test-config.yaml"), 
-            config("connectorUrl", "http://localhost:" + CONNECTOR_PORT), 
-            config("connectorDDUrl", "http://localhost"), 
-            config("publicAuthUrl", "http://localhost:" + PUBLIC_AUTH_PORT + "/v1/auth"), 
+            PublicApi.class,
+            resourceFilePath("config/test-config.yaml"),
+            config("connectorUrl", "http://localhost:" + CONNECTOR_PORT),
+            config("connectorDDUrl", "http://localhost"),
+            config("publicAuthUrl", "http://localhost:" + PUBLIC_AUTH_PORT + "/v1/auth"),
             config("redis.endpoint", redisDockerRule.getRedisUrl()),
+            config("ledgerUrl", "http://localhost:" + LEDGER_PORT),
+            config("alwaysUseFutureStrategy", "true"),
             config("rateLimiter.noOfReq", "1"),
             config("rateLimiter.noOfReqForPost", "1")
     );

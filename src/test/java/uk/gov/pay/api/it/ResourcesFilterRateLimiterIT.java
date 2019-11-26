@@ -5,6 +5,7 @@ import io.restassured.response.ValidatableResponse;
 import org.junit.Test;
 import uk.gov.pay.api.it.fixtures.PaymentNavigationLinksFixture;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
+import uk.gov.pay.api.utils.mocks.LedgerMockClient;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.util.Arrays;
@@ -13,13 +14,14 @@ import java.util.concurrent.Callable;
 
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.assertThat;
-import static uk.gov.pay.api.it.fixtures.PaginatedPaymentSearchResultFixture.aPaginatedPaymentSearchResult;
+import static uk.gov.pay.api.it.fixtures.PaginatedTransactionSearchResultFixture.aPaginatedTransactionSearchResult;
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.aSuccessfulSearchPayment;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 
 public class ResourcesFilterRateLimiterIT extends ResourcesFilterITestBase {
 
     private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
+    private LedgerMockClient ledgerMockClient = new LedgerMockClient(ledgerMock);
     
     @Test
     public void createPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
@@ -100,7 +102,7 @@ public class ResourcesFilterRateLimiterIT extends ResourcesFilterITestBase {
 
     @Test
     public void searchPayments_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
-        String payments = aPaginatedPaymentSearchResult()
+        String payments = aPaginatedTransactionSearchResult()
                 .withCount(10)
                 .withPage(2)
                 .withTotal(20)
@@ -111,7 +113,7 @@ public class ResourcesFilterRateLimiterIT extends ResourcesFilterITestBase {
                         .withNumberOfResults(1).getResults())
                 .build();
 
-        connectorMockClient.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, payments);
+        ledgerMockClient.respondOk_whenSearchCharges(payments);
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> searchPayments(API_KEY, ImmutableMap.of("reference", REFERENCE)),
