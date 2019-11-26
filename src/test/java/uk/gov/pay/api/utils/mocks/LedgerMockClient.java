@@ -1,11 +1,14 @@
 package uk.gov.pay.api.utils.mocks;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
 import uk.gov.pay.api.model.links.Link;
 import uk.gov.pay.api.utils.JsonStringBuilder;
+import uk.gov.pay.commons.model.ErrorIdentifier;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -20,12 +23,15 @@ import static java.lang.String.format;
 import static javax.ws.rs.core.HttpHeaders.ACCEPT;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
+import static org.eclipse.jetty.http.HttpStatus.INTERNAL_SERVER_ERROR_500;
 import static org.eclipse.jetty.http.HttpStatus.NOT_FOUND_404;
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
 
 public class LedgerMockClient {
 
     private final WireMockClassRule ledgerMock;
+    private final ObjectMapper mapper = new ObjectMapper();
 
     public LedgerMockClient(WireMockClassRule ledgerMock) {
         this.ledgerMock = ledgerMock;
@@ -90,5 +96,37 @@ public class LedgerMockClient {
                         .withStatus(OK_200)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                         .withBody(jsonStringBuilder.build())));
+    }
+
+    public void respondWithRefund(String refundId, RefundTransactionFromLedgerFixture refund) {
+        try {
+            var body = mapper.writeValueAsString(refund);
+            ledgerMock.stubFor(get(urlPathEqualTo(format("/v1/transaction/%s", refundId)))
+                    .willReturn(aResponse()
+                            .withStatus(OK_200)
+                            .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                            .withBody(body)));
+        } catch (JsonProcessingException e) {
+        }
+    }
+
+    public void respondRefundWithError(String refundId) {
+        respondRefundError(refundId, "Downstream system error", INTERNAL_SERVER_ERROR_500);
+    }
+
+    public void respondRefundNotFound(String refundId) {
+        respondRefundError(refundId, format("Refund with id [%s] not found.", refundId), BAD_REQUEST_400);
+    }
+
+    public void respondRefundError(String refundId, String message, int status) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("message", List.of(message));
+        payload.put("error_identifier", ErrorIdentifier.GENERIC.toString());
+
+        ledgerMock.stubFor(get(urlPathEqualTo(format("/v1/transaction/%s", refundId)))
+                .willReturn(aResponse()
+                        .withStatus(status)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withBody(new GsonBuilder().create().toJson(payload))));
     }
 }
