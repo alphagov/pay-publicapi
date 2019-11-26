@@ -98,6 +98,19 @@ public class LedgerMockClient {
                         .withBody(jsonStringBuilder.build())));
     }
 
+    //todo: use gson - try/catch not required
+    public void respondWithTransaction(String transactionId, TransactionFromLedgerFixture transaction) {
+        try {
+            var body = mapper.writeValueAsString(transaction);
+            ledgerMock.stubFor(get(urlPathEqualTo(format("/v1/transaction/%s", transactionId)))
+                    .willReturn(aResponse()
+                            .withStatus(OK_200)
+                            .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                            .withBody(body)));
+        } catch (JsonProcessingException e) {
+        }
+    }
+    //todo: refactor
     public void respondWithRefund(String refundId, RefundTransactionFromLedgerFixture refund) {
         try {
             var body = mapper.writeValueAsString(refund);
@@ -118,7 +131,7 @@ public class LedgerMockClient {
         respondRefundError(refundId, format("Refund with id [%s] not found.", refundId), BAD_REQUEST_400);
     }
 
-    public void respondRefundError(String refundId, String message, int status) {
+    private void respondRefundError(String refundId, String message, int status) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("message", List.of(message));
         payload.put("error_identifier", ErrorIdentifier.GENERIC.toString());
