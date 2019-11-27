@@ -159,7 +159,7 @@ public class SearchRefundsServiceTest {
     @Test
     @PactVerification({"ledger"})
     @Pacts(pacts = {"publicapi-ledger-search-refunds"})
-    public void getAllRefundsShouldReturnCorrectFromAndToDateFromLedger() {
+    public void getAllRefundsShouldReturnFromLedger() {
         RefundsParams params = new RefundsParams("2018-09-21T13:22:55Z", "2018-10-23T13:24:55Z", "1", "500");
         String accountId = "777";
         String refundId1 = "111111";

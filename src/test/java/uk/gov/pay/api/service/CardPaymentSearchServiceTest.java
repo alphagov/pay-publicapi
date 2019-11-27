@@ -147,6 +147,114 @@ public class CardPaymentSearchServiceTest {
     }
 
     @Test
+    @PactVerification({"ledger"})
+    @Pacts(pacts = {"publicapi-ledger-search-payment-by-cardholder-name"})
+    public void searchShouldReturnAResponseWithOneTransaction_whenFilteringByCardHolderNameFromLedger() {
+        Account account = new Account("123456", TokenPaymentType.CARD);
+        var searchParams = new PaymentSearchParams.Builder()
+                .withCardHolderName("J Doe")
+                .withPageNumber("1")
+                .withDisplaySize("500")
+                .build();
+        Response response = paymentSearchService.searchLedgerPayments(account, searchParams);
+        JsonAssert.with(response.getEntity().toString())
+                .assertThat("count", is(1))
+                .assertThat("total", is(1))
+                .assertThat("page", is(1))
+                .assertThat("results", is(collectionWithSize(equalTo(1))))
+                .assertThat("results[0]", hasKey("amount"))
+                .assertThat("results[0]", hasKey("state"))
+                .assertThat("results[0]", hasKey("reference"))
+                .assertThat("results[0]", hasKey("email"))
+                .assertThat("results[0].card_details.cardholder_name", is("J Doe"))
+                .assertThat("results[0].card_details", hasKey("first_digits_card_number"))
+                .assertThat("results[0].card_details", hasKey("last_digits_card_number"))
+                .assertThat("results[0].state", hasKey("status"))
+                .assertThat("results[0].state", hasKey("finished"));
+   }
+
+    @Test
+    @PactVerification({"ledger"})
+    @Pacts(pacts = {"publicapi-ledger-search-payment-by-first-digits-card-number"})
+    public void searchShouldReturnAResponseWithOneTransaction_whenFilteringByFirstDigitsCardNumberFromLedger() {
+        Account account = new Account("123456", TokenPaymentType.CARD);
+        var searchParams = new PaymentSearchParams.Builder()
+                .withFirstDigitsCardNumber("424242")
+                .withPageNumber("1")
+                .withDisplaySize("500")
+                .build();
+        Response response = paymentSearchService.searchLedgerPayments(account, searchParams);
+        JsonAssert.with(response.getEntity().toString())
+                .assertThat("count", is(1))
+                .assertThat("total", is(1))
+                .assertThat("page", is(1))
+                .assertThat("results", is(collectionWithSize(equalTo(1))))
+                .assertThat("results[0]", hasKey("amount"))
+                .assertThat("results[0]", hasKey("state"))
+                .assertThat("results[0]", hasKey("reference"))
+                .assertThat("results[0]", hasKey("email"))
+                .assertThat("results[0].card_details.cardholder_name", is("J Doe"))
+                .assertThat("results[0].card_details", hasKey("first_digits_card_number"))
+                .assertThat("results[0].card_details", hasKey("last_digits_card_number"))
+                .assertThat("results[0].state", hasKey("status"))
+                .assertThat("results[0].state", hasKey("finished"));
+    }
+
+    @Test
+    @PactVerification({"ledger"})
+    @Pacts(pacts = {"publicapi-ledger-search-payment-by-last-digits-card-number"})
+    public void searchShouldReturnAResponseWithOneTransaction_whenFilteringByLastDigitsCardNumberFromLedger() {
+        Account account = new Account("123456", TokenPaymentType.CARD);
+        var searchParams = new PaymentSearchParams.Builder()
+                .withLastDigitsCardNumber("4242")
+                .withPageNumber("1")
+                .withDisplaySize("500")
+                .build();
+        Response response = paymentSearchService.searchLedgerPayments(account, searchParams);
+        JsonAssert.with(response.getEntity().toString())
+                .assertThat("count", is(1))
+                .assertThat("total", is(1))
+                .assertThat("page", is(1))
+                .assertThat("results", is(collectionWithSize(equalTo(1))))
+                .assertThat("results[0]", hasKey("amount"))
+                .assertThat("results[0]", hasKey("state"))
+                .assertThat("results[0]", hasKey("reference"))
+                .assertThat("results[0]", hasKey("email"))
+                .assertThat("results[0].card_details.cardholder_name", is("J Doe"))
+                .assertThat("results[0].card_details", hasKey("first_digits_card_number"))
+                .assertThat("results[0].card_details", hasKey("last_digits_card_number"))
+                .assertThat("results[0].state", hasKey("status"))
+                .assertThat("results[0].state", hasKey("finished"));
+    }
+
+    @Test
+    @PactVerification({"ledger"})
+    @Pacts(pacts = {"publicapi-ledger-search-payment-with-charge-in-success-state"})
+    public void searchShouldReturnAResponseWithOneTransaction_whenFilteringByStateFromLedger() {
+        Account account = new Account("123456", TokenPaymentType.CARD);
+        var searchParams = new PaymentSearchParams.Builder()
+                .withState("success")
+                .withPageNumber("1")
+                .withDisplaySize("500")
+                .build();
+        Response response = paymentSearchService.searchLedgerPayments(account, searchParams);
+        JsonAssert.with(response.getEntity().toString())
+                .assertThat("count", is(1))
+                .assertThat("total", is(1))
+                .assertThat("page", is(1))
+                .assertThat("results", is(collectionWithSize(equalTo(1))))
+                .assertThat("results[0]", hasKey("amount"))
+                .assertThat("results[0]", hasKey("state"))
+                .assertThat("results[0]", hasKey("reference"))
+                .assertThat("results[0]", hasKey("email"))
+                .assertThat("results[0].card_details.cardholder_name", is("J Doe"))
+                .assertThat("results[0].card_details", hasKey("first_digits_card_number"))
+                .assertThat("results[0].card_details", hasKey("last_digits_card_number"))
+                .assertThat("results[0].state", hasKey("status"))
+                .assertThat("results[0].state", hasKey("finished"));
+    }
+
+    @Test
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-search-payment-with-charge-in-awaiting-capture-state"})
     public void searchShouldReturnAResponseWithCaptureLinkPresent() {
@@ -181,12 +289,6 @@ public class CardPaymentSearchServiceTest {
                 .assertThat("results[0].card_details", hasKey("first_digits_card_number"))
                 .assertThat("results[0].card_details", hasKey("last_digits_card_number"))
                 .assertThat("results[0].state", hasKey("status"))
-                .assertThat("results[0].state", hasKey("finished"))
-                .assertThat("results[0]", hasKey("_links"))
-                .assertThat("_links.self.href", is("http://publicapi.test.localhost/v1/payments?display_size=500&page=1&cardholder_name=j.doe%40example.org"))
-                .assertThat("_links.first_page.href", is("http://publicapi.test.localhost/v1/payments?display_size=500&page=1&cardholder_name=j.doe%40example.org"))
-                .assertThat("_links.last_page.href", is("http://publicapi.test.localhost/v1/payments?display_size=500&page=1&cardholder_name=j.doe%40example.org"))
-                .assertNotDefined("_links.next_page")
-                .assertNotDefined("_links.prev_page");
+                .assertThat("results[0].state", hasKey("finished"));
     }
 }
