@@ -2,6 +2,7 @@ package uk.gov.pay.api.utils.mocks;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.google.common.collect.ImmutableMap;
@@ -35,6 +36,7 @@ public class LedgerMockClient {
 
     public LedgerMockClient(WireMockClassRule ledgerMock) {
         this.ledgerMock = ledgerMock;
+        mapper.registerModule(new Jdk8Module());
     }
 
     public void respondOk_whenSearchCharges(String expectedResponse) {
@@ -122,6 +124,20 @@ public class LedgerMockClient {
                         .withBody(body)));
     }
 
+    public void respondWithTransactionEvents(String transactionId, TransactionEventFixture... events) {
+        JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
+                .add("transaction_id", transactionId)
+                .add("events", Arrays.asList(events));
+        String path = format("/v1/transaction/%s/event", transactionId);
+
+        String test = jsonStringBuilder.build();
+        ledgerMock.stubFor(get(urlPathEqualTo(path))
+                .willReturn(aResponse()
+                        .withStatus(OK_200)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withBody(test)));
+    }
+
     public void respondRefundWithError(String refundId) {
         respondTransactionError(refundId, "Downstream system error", INTERNAL_SERVER_ERROR_500);
     }
@@ -136,15 +152,15 @@ public class LedgerMockClient {
 
     public void respondTransactionEventsWithError(String transactionId, String errorMessage, int status) {
         String path = format("/v1/transaction/%s/event", transactionId);
-        respondError(transactionId, errorMessage, status, path);
+        respondError(errorMessage, status, path);
     }
 
     private void respondTransactionError(String transactionId, String message, int status) {
         String path = format("/v1/transaction/%s", transactionId);
-        respondError(transactionId, message, status, path);
+        respondError(message, status, path);
     }
 
-    private void respondError(String transactionId, String message, int status, String path) {
+    private void respondError(String message, int status, String path) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("message", List.of(message));
         payload.put("error_identifier", ErrorIdentifier.GENERIC.toString());

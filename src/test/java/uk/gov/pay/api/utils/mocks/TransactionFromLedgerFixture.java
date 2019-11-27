@@ -117,7 +117,7 @@ public class TransactionFromLedgerFixture {
         this.settlementSummary = builder.settlementSummary;
         this.cardDetails = builder.cardDetails;
         this.description = builder.description;
-        this.reference = builder.description;
+        this.reference = builder.reference;
         this.email = builder.email;
         this.language = builder.language;
         this.delayedCapture = builder.delayedCapture;
