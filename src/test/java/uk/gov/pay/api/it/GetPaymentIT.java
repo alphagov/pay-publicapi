@@ -14,6 +14,7 @@ import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 import uk.gov.pay.api.utils.mocks.LedgerMockClient;
+import uk.gov.pay.api.utils.mocks.TransactionFromLedgerFixture;
 import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.commons.validation.DateTimeUtils;
 
@@ -24,11 +25,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.apache.http.HttpStatus.SC_NOT_ACCEPTABLE;
+import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
@@ -36,6 +37,7 @@ import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
+import static uk.gov.pay.api.utils.mocks.TransactionFromLedgerFixture.TransactionFromLedgerBuilder.aTransactionFromLedgerFixture;
 import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public class GetPaymentIT extends PaymentResourceITestBase {
@@ -44,8 +46,8 @@ public class GetPaymentIT extends PaymentResourceITestBase {
     private static final ZonedDateTime CAPTURE_SUBMIT_TIME = ZonedDateTime.parse("2016-01-02T15:02:00Z");
     private static final SettlementSummary SETTLEMENT_SUMMARY = new SettlementSummary(ISO_INSTANT_MILLISECOND_PRECISION.format(CAPTURE_SUBMIT_TIME), DateTimeUtils.toLocalDateString(CAPTURED_DATE));
     private static final int AMOUNT = 9999999;
-    private static final Long FEE = 5l;
-    private static final Long NET_AMOUNT = 9999994l;
+    private static final Long FEE = 5L;
+    private static final Long NET_AMOUNT = 9999994L;
     private static final String CHARGE_ID = "ch_ab2341da231434l";
     private static final String CHARGE_TOKEN_ID = "token_1234567asdf";
     private static final PaymentState CREATED = new PaymentState("created", false, null, null);
@@ -194,7 +196,7 @@ public class GetPaymentIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPayment_DoesNotReturnCardDigits_IfNotPresentInCardDetails() {
+    public void getPaymentThroughConnector_DoesNotReturnCardDigits_IfNotPresentInCardDetails() {
         CardDetails cardDetails = new CardDetails(null, null, "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, CARD_TYPE);
 
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
@@ -202,7 +204,23 @@ public class GetPaymentIT extends PaymentResourceITestBase {
                         .withCardDetails(cardDetails)
                         .build());
 
-        getPaymentResponse(CHARGE_ID)
+        assertPaymentWithoutCardDetails(getPaymentResponse(CHARGE_ID));
+    }
+
+    @Test
+    public void getPaymentThroughLedger_DoesNotReturnCardDigits_IfNotPresentInCardDetails() {
+        CardDetails cardDetails = new CardDetails(null, null, "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, CARD_TYPE);
+
+        ledgerMockClient.respondWithTransaction(CHARGE_ID,
+                getLedgerTransaction()
+                        .withCardDetails(cardDetails)
+                        .build());
+
+        assertPaymentWithoutCardDetails(getPaymentResponse(CHARGE_ID, LEDGER_ONLY_STRATEGY));
+    }
+
+    private void assertPaymentWithoutCardDetails(ValidatableResponse paymentResponse) {
+        paymentResponse
                 .statusCode(200)
                 .contentType(JSON)
                 .body("payment_id", is(CHARGE_ID))
@@ -211,31 +229,61 @@ public class GetPaymentIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPayment_ShouldNotIncludeCancelLinkIfPaymentCannotBeCancelled() {
+    public void getPaymentThroughConnector_ShouldNotIncludeCancelLinkIfPaymentCannotBeCancelled() {
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 getConnectorCharge()
                         .withState(new PaymentState("success", true, null, null))
                         .withSettlementSummary(null)
                         .build());
 
-        getPaymentResponse(CHARGE_ID)
+        assertPaymentWithoutCancelLink(getPaymentResponse(CHARGE_ID));
+    }
+
+    @Test
+    public void getPaymentThroughLedger_ShouldNotIncludeCancelLinkIfPaymentCannotBeCancelled() {
+        ledgerMockClient.respondWithTransaction(CHARGE_ID,
+                getLedgerTransaction()
+                        .withState(new PaymentState("success", true, null, null))
+                        .withSettlementSummary(null)
+                        .build());
+
+        assertPaymentWithoutCancelLink(getPaymentResponse(CHARGE_ID, LEDGER_ONLY_STRATEGY));
+    }
+
+    private void assertPaymentWithoutCancelLink(ValidatableResponse paymentResponse) {
+        paymentResponse
                 .statusCode(200)
                 .contentType(JSON)
                 .body("_links.cancel", is(nullValue()));
     }
 
     @Test
-    public void getPayment_ShouldNotIncludeSettlementFieldsIfNull() {
+    public void getPaymentThroughConnector_ShouldNotIncludeSettlementFieldsIfNull() {
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 getConnectorCharge()
                         .withState(CREATED)
                         .withSettlementSummary(new SettlementSummary(null, null))
                         .build());
 
-        getPaymentResponse(CHARGE_ID)
+        assertPaymentWithoutSettlementSummary(getPaymentResponse(CHARGE_ID));
+    }
+
+    @Test
+    public void getPaymentThroughLedger_ShouldNotIncludeSettlementFieldsIfNull() {
+        ledgerMockClient.respondWithTransaction(CHARGE_ID,
+                getLedgerTransaction()
+                        .withState(CREATED)
+                        .withSettlementSummary(new SettlementSummary(null, null))
+                        .build());
+
+        assertPaymentWithoutSettlementSummary(getPaymentResponse(CHARGE_ID, LEDGER_ONLY_STRATEGY));
+    }
+
+    private void assertPaymentWithoutSettlementSummary(ValidatableResponse paymentResponse) {
+        paymentResponse
                 .statusCode(200)
                 .contentType(JSON)
-                .root("settlement_summary")
+                .rootPath("settlement_summary")
                 .body("containsKey('capture_submit_time')", is(false))
                 .body("containsKey('captured_date')", is(false));
     }
@@ -272,13 +320,13 @@ public class GetPaymentIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPayment_returns404_whenConnectorAndLedgerRespondsWith404() throws IOException {
+    public void getPayment_returns404_whenConnectorAndLedgerRespondWith404() throws IOException {
         String paymentId = "ds2af2afd3df112";
         String errorMessage = "backend-error-message";
         connectorMockClient.respondChargeNotFound(GATEWAY_ACCOUNT_ID, paymentId, errorMessage);
         ledgerMockClient.respondTransactionNotFound(paymentId, errorMessage);
 
-        InputStream body = getPaymentResponse(paymentId)
+        InputStream body = getPaymentResponse(paymentId, "future-behaviour")
                 .statusCode(404)
                 .contentType(JSON).extract()
                 .body().asInputStream();
@@ -295,7 +343,20 @@ public class GetPaymentIT extends PaymentResourceITestBase {
         String errorMessage = "backend-error-message";
         connectorMockClient.respondWhenGetCharge(GATEWAY_ACCOUNT_ID, paymentId, errorMessage, SC_NOT_ACCEPTABLE);
 
-        InputStream body = getPaymentResponse(paymentId)
+        assertErrorPaymentResponse(getPaymentResponse(paymentId));
+    }
+
+    @Test
+    public void getPayment_returns500_whenLedgerRespondsWithResponseOtherThan200Or404() throws IOException {
+        String paymentId = "ds2af2afd3df112";
+        String errorMessage = "backend-error-message";
+        ledgerMockClient.respondTransactionWithError(paymentId, errorMessage, SC_NOT_ACCEPTABLE);
+
+        assertErrorPaymentResponse(getPaymentResponse(paymentId, LEDGER_ONLY_STRATEGY));
+    }
+
+    private void assertErrorPaymentResponse(ValidatableResponse response) throws IOException {
+        InputStream body = response
                 .statusCode(500)
                 .contentType(JSON).extract()
                 .body().asInputStream();
@@ -336,7 +397,20 @@ public class GetPaymentIT extends PaymentResourceITestBase {
         String errorMessage = "backend-error-message";
         connectorMockClient.respondChargeEventsNotFound(GATEWAY_ACCOUNT_ID, paymentId, errorMessage);
 
-        InputStream body = getPaymentEventsResponse(paymentId)
+        assertEventsNotFoundResponse(getPaymentEventsResponse(paymentId));
+    }
+
+    @Test
+    public void getPaymentEvents_returns404_whenLedgerRespondsWith404() throws IOException {
+        String paymentId = "ds2af2afd3df112";
+        String errorMessage = "backend-error-message";
+        ledgerMockClient.respondTransactionEventsWithError(paymentId, errorMessage, SC_NOT_FOUND);
+
+        assertEventsNotFoundResponse(getPaymentEventsResponse(paymentId, LEDGER_ONLY_STRATEGY));
+    }
+
+    private void assertEventsNotFoundResponse(ValidatableResponse response) throws IOException {
+        InputStream body = response
                 .statusCode(404)
                 .contentType(JSON).extract()
                 .body().asInputStream();
@@ -353,7 +427,20 @@ public class GetPaymentIT extends PaymentResourceITestBase {
         String errorMessage = "backend-error-message";
         connectorMockClient.respondWhenGetChargeEvents(GATEWAY_ACCOUNT_ID, paymentId, errorMessage, SC_NOT_ACCEPTABLE);
 
-        InputStream body = getPaymentEventsResponse(paymentId)
+        assertErrorEventsResponse(getPaymentEventsResponse(paymentId));
+    }
+
+    @Test
+    public void getPaymentEvents_returns500_whenLedgerRespondsWithResponseOtherThan200Or404() throws IOException {
+        String paymentId = "ds2af2afd3df112";
+        String errorMessage = "backend-error-message";
+        ledgerMockClient.respondTransactionEventsWithError(paymentId, errorMessage, SC_NOT_ACCEPTABLE);
+
+        assertErrorEventsResponse(getPaymentEventsResponse(paymentId, LEDGER_ONLY_STRATEGY));
+    }
+
+    private void assertErrorEventsResponse(ValidatableResponse response) throws IOException {
+        InputStream body = response
                 .statusCode(500)
                 .contentType(JSON).extract()
                 .body().asInputStream();
@@ -365,14 +452,29 @@ public class GetPaymentIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPayment_ReturnsPaymentWithCorporateCardSurcharge() {
+    public void getPaymentThroughConnector_ReturnsPaymentWithCorporateCardSurcharge() {
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 getConnectorCharge()
                         .withCorporateCardSurcharge(250L)
                         .withTotalAmount(AMOUNT + 250L)
                         .build());
 
-        getPaymentResponse(CHARGE_ID)
+        assertPaymentCorporateCardSurcharge(getPaymentResponse(CHARGE_ID));
+    }
+
+    @Test
+    public void getPaymentThroughLedger_ReturnsPaymentWithCorporateCardSurcharge() {
+        ledgerMockClient.respondWithTransaction(CHARGE_ID,
+                getLedgerTransaction()
+                        .withCorporateCardSurcharge(250L)
+                        .withTotalAmount(AMOUNT + 250L)
+                        .build());
+
+        assertPaymentCorporateCardSurcharge(getPaymentResponse(CHARGE_ID, LEDGER_ONLY_STRATEGY));
+    }
+
+    private void assertPaymentCorporateCardSurcharge(ValidatableResponse paymentResponse) {
+        paymentResponse
                 .statusCode(200)
                 .contentType(JSON)
                 .body("corporate_card_surcharge", is(250))
@@ -380,14 +482,29 @@ public class GetPaymentIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPayment_ReturnsPaymentWithFeeAndNetAmount() {
+    public void getPaymentThroughConnector_ReturnsPaymentWithFeeAndNetAmount() {
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 getConnectorCharge()
                         .withFee(FEE)
                         .withNetAmount(NET_AMOUNT)
                         .build());
 
-        getPaymentResponse(CHARGE_ID)
+        assertPaymentWithFeeAndNetAmount(getPaymentResponse(CHARGE_ID));
+    }
+
+    @Test
+    public void getPaymentThroughLedger_ReturnsPaymentWithFeeAndNetAmount() {
+        ledgerMockClient.respondWithTransaction(CHARGE_ID,
+                getLedgerTransaction()
+                        .withFee(FEE)
+                        .withNetAmount(NET_AMOUNT)
+                        .build());
+
+        assertPaymentWithFeeAndNetAmount(getPaymentResponse(CHARGE_ID, LEDGER_ONLY_STRATEGY));
+    }
+
+    private void assertPaymentWithFeeAndNetAmount(ValidatableResponse paymentResponse) {
+        paymentResponse
                 .statusCode(200)
                 .contentType(JSON)
                 .body("fee", is(FEE.intValue()))
@@ -399,7 +516,18 @@ public class GetPaymentIT extends PaymentResourceITestBase {
     public void getPayment_ReturnsPaymentWithOutFeeAndNetAmount_IfNotAvailableFromConnector() {
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, getConnectorCharge().build());
 
-        getPaymentResponse(CHARGE_ID)
+        assertPaymentWithoutFeeAndNetAmount(getPaymentResponse(CHARGE_ID));
+    }
+
+    @Test
+    public void getPaymentThroughLedger_ReturnsPaymentWithOutFeeAndNetAmount_IfNotAvailable() {
+        ledgerMockClient.respondWithTransaction(CHARGE_ID, getLedgerTransaction().build());
+
+        assertPaymentWithoutFeeAndNetAmount(getPaymentResponse(CHARGE_ID, LEDGER_ONLY_STRATEGY));
+    }
+
+    private void assertPaymentWithoutFeeAndNetAmount(ValidatableResponse paymentResponse) {
+        paymentResponse
                 .statusCode(200)
                 .contentType(JSON)
                 .body("containsKey('fee')", is(false))
@@ -408,7 +536,7 @@ public class GetPaymentIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentWithNullCardType_ReturnsPaymentWithNullCardType() {
+    public void getPaymentWithNullCardTypeThroughConnector_ReturnsPaymentWithNullCardType() {
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 getConnectorCharge()
                         .withState(AWAITING_CAPTURE_REQUEST)
@@ -424,7 +552,23 @@ public class GetPaymentIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPayment_ReturnsPaymentWithCaptureUrl() {
+    public void getPaymentWithNullCardTypeThroughLedger_ReturnsPaymentWithNullCardType() {
+        ledgerMockClient.respondWithTransaction(CHARGE_ID,
+                getLedgerTransaction()
+                        .withState(AWAITING_CAPTURE_REQUEST)
+                        .withCardDetails(new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, null))
+                        .withCorporateCardSurcharge(0L)
+                        .withTotalAmount(0L)
+                        .build());
+
+        getPaymentResponse(CHARGE_ID, LEDGER_ONLY_STRATEGY)
+                .statusCode(200)
+                .contentType(JSON)
+                .body("card_details.card_type", is(nullValue()));
+    }
+
+    @Test
+    public void getPaymentThroughConnector_ReturnsPaymentWithCaptureUrl() { // only through connector (based on response links)
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 getConnectorCharge()
                         .withState(AWAITING_CAPTURE_REQUEST)
@@ -458,15 +602,44 @@ public class GetPaymentIT extends PaymentResourceITestBase {
                 .withGatewayTransactionId(GATEWAY_TRANSACTION_ID);
     }
 
+    private TransactionFromLedgerFixture.TransactionFromLedgerBuilder getLedgerTransaction() {
+        return aTransactionFromLedgerFixture()
+                .withAmount((long) AMOUNT)
+                .withTransactionId(CHARGE_ID)
+                .withState(CAPTURED)
+                .withReturnUrl(RETURN_URL)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withEmail(EMAIL)
+                .withPaymentProvider(PAYMENT_PROVIDER)
+                .withCreatedDate(CREATED_DATE)
+                .withLanguage(SupportedLanguage.ENGLISH)
+                .withDelayedCapture(true)
+                .withRefundSummary(REFUND_SUMMARY)
+                .withSettlementSummary(SETTLEMENT_SUMMARY)
+                .withCardDetails(CARD_DETAILS)
+                .withGatewayTransactionId(GATEWAY_TRANSACTION_ID);
+    }
+
     private ValidatableResponse getPaymentResponse(String paymentId) {
+        return getPaymentResponse(paymentId, "");
+    }
+
+    private ValidatableResponse getPaymentResponse(String paymentId, String strategy) {
         return given().port(app.getLocalPort())
+                .header("X-Ledger", strategy)
                 .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
                 .get(PAYMENTS_PATH + paymentId)
                 .then();
     }
 
     private ValidatableResponse getPaymentEventsResponse(String paymentId) {
+        return getPaymentEventsResponse(paymentId, "");
+    }
+
+    private ValidatableResponse getPaymentEventsResponse(String paymentId, String strategy) {
         return given().port(app.getLocalPort())
+                .header("X-Ledger", strategy)
                 .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
                 .get(String.format("/v1/payments/%s/events", paymentId))
                 .then();
