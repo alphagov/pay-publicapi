@@ -79,6 +79,7 @@ public abstract class PaymentResourceITestBase {
         connectorMock.resetAll();
         connectorDDMock.resetAll();
         publicAuthMock.resetAll();
+        ledgerMock.resetAll();
     }
 
     String frontendUrlFor(TokenPaymentType paymentType) {
