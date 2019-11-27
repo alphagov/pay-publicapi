@@ -36,7 +36,7 @@ public class ExternalServiceClientTest {
     private ArgumentCaptor<MultivaluedMap<String, Object>> builderArgumentCaptor;
 
     @Before
-    public void setup() {
+    public void setUp() {
         externalServiceClient = new ExternalServiceClient(client);
         when(client.target(anyString())).thenReturn(webTarget);
         when(webTarget.request()).thenReturn(builder);

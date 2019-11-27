@@ -10,6 +10,7 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.util.Map;
+import java.util.Optional;
 
 public class ExternalServiceClient {
 
@@ -25,7 +26,10 @@ public class ExternalServiceClient {
     }
 
     private MultivaluedMap<String, Object> getHeaders() {
-        return new MultivaluedHashMap<>(Map.of("X-Request-Id", MDC.get("x_request_id")));
+        return Optional.ofNullable(MDC.get("x_request_id"))
+                    .filter(s -> !s.isBlank())
+                    .map(s -> new MultivaluedHashMap<String, Object>(Map.of("X-Request-Id", s)))
+                    .orElse(new MultivaluedHashMap<>());
     }
 
     public Response post(String url) {
