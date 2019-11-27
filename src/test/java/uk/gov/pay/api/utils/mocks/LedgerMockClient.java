@@ -45,7 +45,7 @@ public class LedgerMockClient {
     }
 
     public void whenSearchTransactions(ResponseDefinitionBuilder response) {
-        ledgerMock.stubFor(get(urlPathEqualTo(format("/v1/transaction")))
+        ledgerMock.stubFor(get(urlPathEqualTo("/v1/transaction"))
                 .withHeader(ACCEPT, matching(APPLICATION_JSON)).willReturn(response));
     }
 
@@ -98,32 +98,58 @@ public class LedgerMockClient {
                         .withBody(jsonStringBuilder.build())));
     }
 
-    public void respondWithRefund(String refundId, RefundTransactionFromLedgerFixture refund) {
+    public void respondWithTransaction(String transactionId, TransactionFromLedgerFixture transaction) {
         try {
-            var body = mapper.writeValueAsString(refund);
-            ledgerMock.stubFor(get(urlPathEqualTo(format("/v1/transaction/%s", refundId)))
-                    .willReturn(aResponse()
-                            .withStatus(OK_200)
-                            .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                            .withBody(body)));
+            var body = mapper.writeValueAsString(transaction);
+            respondWithTransaction(transactionId, body);
         } catch (JsonProcessingException e) {
         }
     }
 
+    public void respondWithRefund(String refundId, RefundTransactionFromLedgerFixture refund) {
+        try {
+            var body = mapper.writeValueAsString(refund);
+            respondWithTransaction(refundId, body);
+        } catch (JsonProcessingException e) {
+        }
+    }
+
+    private void respondWithTransaction(String transactionId, String body) {
+        ledgerMock.stubFor(get(urlPathEqualTo(format("/v1/transaction/%s", transactionId)))
+                .willReturn(aResponse()
+                        .withStatus(OK_200)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withBody(body)));
+    }
+
     public void respondRefundWithError(String refundId) {
-        respondRefundError(refundId, "Downstream system error", INTERNAL_SERVER_ERROR_500);
+        respondTransactionError(refundId, "Downstream system error", INTERNAL_SERVER_ERROR_500);
     }
 
     public void respondRefundNotFound(String refundId) {
-        respondRefundError(refundId, format("Refund with id [%s] not found.", refundId), BAD_REQUEST_400);
+        respondTransactionError(refundId, format("Refund with id [%s] not found.", refundId), BAD_REQUEST_400);
     }
 
-    public void respondRefundError(String refundId, String message, int status) {
+    public void respondTransactionWithError(String paymentId, String errorMessage, int status) {
+        respondTransactionError(paymentId, errorMessage, status);
+    }
+
+    public void respondTransactionEventsWithError(String transactionId, String errorMessage, int status) {
+        String path = format("/v1/transaction/%s/event", transactionId);
+        respondError(transactionId, errorMessage, status, path);
+    }
+
+    private void respondTransactionError(String transactionId, String message, int status) {
+        String path = format("/v1/transaction/%s", transactionId);
+        respondError(transactionId, message, status, path);
+    }
+
+    private void respondError(String transactionId, String message, int status, String path) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("message", List.of(message));
         payload.put("error_identifier", ErrorIdentifier.GENERIC.toString());
 
-        ledgerMock.stubFor(get(urlPathEqualTo(format("/v1/transaction/%s", refundId)))
+        ledgerMock.stubFor(get(urlPathEqualTo(path))
                 .willReturn(aResponse()
                         .withStatus(status)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
