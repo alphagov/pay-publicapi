@@ -11,7 +11,6 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.clients.ExternalServiceClient;
 import uk.gov.pay.api.exception.CreateChargeException;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardPayment;
@@ -27,6 +26,7 @@ import uk.gov.pay.commons.model.charge.ExternalMetadata;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
+import javax.ws.rs.client.Client;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -55,9 +55,10 @@ public class CreatePaymentServiceTest {
 
         PublicApiUriGenerator publicApiUriGenerator = new PublicApiUriGenerator(configuration);
         ConnectorUriGenerator connectorUriGenerator = new ConnectorUriGenerator(configuration);
-        var client = new ExternalServiceClient(RestClientFactory.buildClient(new RestClientConfig(false)));
+        Client client = RestClientFactory.buildClient(new RestClientConfig(false));
 
-        createPaymentService = new CreatePaymentService(client, publicApiUriGenerator, connectorUriGenerator);
+        createPaymentService = new CreatePaymentService(client,
+                publicApiUriGenerator, connectorUriGenerator);
     }
 
     @Test

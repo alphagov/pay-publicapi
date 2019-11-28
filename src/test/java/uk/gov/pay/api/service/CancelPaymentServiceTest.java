@@ -11,7 +11,6 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.clients.ExternalServiceClient;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
@@ -41,7 +40,7 @@ public class CancelPaymentServiceTest {
         when(mockConfiguration.getConnectorUrl()).thenReturn(connectorRule.getUrl());
         ConnectorUriGenerator connectorUriGenerator = new ConnectorUriGenerator(mockConfiguration);
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
-        cancelPaymentService = new CancelPaymentService(new ExternalServiceClient(client), connectorUriGenerator);
+        cancelPaymentService = new CancelPaymentService(client, connectorUriGenerator);
     }
 
     @Test
