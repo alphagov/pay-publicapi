@@ -12,7 +12,6 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.clients.ExternalServiceClient;
 import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.search.PaginationDecorator;
@@ -55,7 +54,7 @@ public class CardPaymentSearchServiceTest {
         paymentSearchService = new PaymentSearchService(
                 new PublicApiUriGenerator(configuration),
                 new PaginationDecorator(configuration),
-                new ConnectorService(new ExternalServiceClient(client), connectorUriGenerator),
+                new ConnectorService(client, connectorUriGenerator),
                 new LedgerService(client, ledgerUriGenerator));
     }
 

@@ -11,7 +11,6 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.clients.ExternalServiceClient;
 import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.RefundResponse;
 import uk.gov.pay.api.model.TokenPaymentType;
@@ -52,7 +51,7 @@ public class GetPaymentRefundServiceTest {
         ConnectorUriGenerator connectorUriGenerator = new ConnectorUriGenerator(mockConfiguration);
         LedgerUriGenerator ledgerUriGenerator = new LedgerUriGenerator(mockConfiguration);
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
-        getPaymentService = new GetPaymentRefundService(new ConnectorService(new ExternalServiceClient(client), connectorUriGenerator),
+        getPaymentService = new GetPaymentRefundService(new ConnectorService(client, connectorUriGenerator),
                 new LedgerService(client, ledgerUriGenerator), publicApiUriGenerator);
     }
 

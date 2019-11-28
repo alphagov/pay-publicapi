@@ -2,7 +2,6 @@ package uk.gov.pay.api.service;
 
 import org.apache.http.HttpStatus;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.clients.ExternalServiceClient;
 import uk.gov.pay.api.exception.CreateChargeException;
 import uk.gov.pay.api.model.Charge;
 import uk.gov.pay.api.model.ChargeFromResponse;
@@ -10,19 +9,21 @@ import uk.gov.pay.api.model.CreateCardPaymentRequest;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 
 import javax.inject.Inject;
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import static javax.ws.rs.client.Entity.json;
 
 public class CreatePaymentService {
 
-    private final ExternalServiceClient client;
+    private final Client client;
     private final PublicApiUriGenerator publicApiUriGenerator;
     private final ConnectorUriGenerator connectorUriGenerator;
 
     @Inject
-    public CreatePaymentService(ExternalServiceClient client, PublicApiUriGenerator publicApiUriGenerator, ConnectorUriGenerator connectorUriGenerator) {
+    public CreatePaymentService(Client client, PublicApiUriGenerator publicApiUriGenerator, ConnectorUriGenerator connectorUriGenerator) {
         this.client = client;
         this.publicApiUriGenerator = publicApiUriGenerator;
         this.connectorUriGenerator = connectorUriGenerator;
@@ -55,7 +56,11 @@ public class CreatePaymentService {
     }
 
     private Response createCharge(Account account, CreateCardPaymentRequest createCardPaymentRequest) {
-        return client.post(connectorUriGenerator.chargesURI(account), buildChargeRequestPayload(createCardPaymentRequest));
+        return client
+                .target(connectorUriGenerator.chargesURI(account))
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .post(buildChargeRequestPayload(createCardPaymentRequest));
     }
 
     private Entity buildChargeRequestPayload(CreateCardPaymentRequest requestPayload) {
