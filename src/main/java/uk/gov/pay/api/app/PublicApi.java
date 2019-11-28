@@ -56,8 +56,8 @@ import uk.gov.pay.api.resources.SearchRefundsResource;
 import uk.gov.pay.api.resources.directdebit.DirectDebitPaymentsResource;
 import uk.gov.pay.api.resources.telephone.TelephonePaymentNotificationResource;
 import uk.gov.pay.api.validation.InjectingValidationFeature;
-import uk.gov.pay.commons.utils.logging.LoggingFilter;
 import uk.gov.pay.logging.GovUkPayDropwizardRequestJsonLogLayoutFactory;
+import uk.gov.pay.logging.LoggingFilter;
 import uk.gov.pay.logging.LogstashConsoleAppenderFactory;
 
 import javax.net.ssl.HttpsURLConnection;
