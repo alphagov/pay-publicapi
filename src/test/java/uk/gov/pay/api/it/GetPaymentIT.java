@@ -24,6 +24,7 @@ import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
@@ -37,6 +38,7 @@ import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
+import static uk.gov.pay.api.utils.mocks.TransactionEventFixture.TransactionEventFixtureBuilder.aTransactionEventFixture;
 import static uk.gov.pay.api.utils.mocks.TransactionFromLedgerFixture.TransactionFromLedgerBuilder.aTransactionFromLedgerFixture;
 import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
@@ -78,19 +80,65 @@ public class GetPaymentIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentWithMetadata() {
+    public void getPaymentWithMetadataThroughConnector() {
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 getConnectorCharge()
                         .withMetadata(Map.of("reconciled", true, "ledger_code", 123, "fuh", "fuh you", "surcharge", 1.23))
                         .build());
 
-        getPaymentResponse(CHARGE_ID)
-                .statusCode(200)
-                .contentType(JSON).log().body()
+        ValidatableResponse response = getPaymentResponse(CHARGE_ID);
+
+        assertCommonPaymentFields(response);
+        assertConnectorOnlyPaymentFields(response);
+        assertPaymentWithMetadata(response);
+    }
+
+    @Test
+    public void getPaymentWithMetadataThroughLedger() {
+        ledgerMockClient.respondWithTransaction(CHARGE_ID,
+                getLedgerTransaction()
+                        .withMetadata(Map.of("reconciled", true, "ledger_code", 123, "fuh", "fuh you", "surcharge", 1.23))
+                        .build());
+
+        ValidatableResponse response = getPaymentResponse(CHARGE_ID, LEDGER_ONLY_STRATEGY);
+
+        assertCommonPaymentFields(response);
+        assertPaymentWithMetadata(response);
+    }
+
+    private void assertPaymentWithMetadata(ValidatableResponse response) {
+        response
                 .body("metadata.reconciled", is(true))
                 .body("metadata.ledger_code", is(123))
                 .body("metadata.fuh", is("fuh you"))
-                .body("metadata.surcharge", is(1.23f))
+                .body("metadata.surcharge", is(1.23f));
+    }
+
+    @Test
+    public void getPaymentThroughConnector_ReturnsPayment() {
+        connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, getConnectorCharge().build());
+
+        ValidatableResponse response = getPaymentResponse(CHARGE_ID);
+
+        assertCommonPaymentFields(response);
+        assertConnectorOnlyPaymentFields(response);
+        response.body("metadata", is(nullValue()));
+    }
+
+    @Test
+    public void getPaymentThroughLedger_ReturnsPayment() {
+        ledgerMockClient.respondWithTransaction(CHARGE_ID, getLedgerTransaction().build());
+
+        ValidatableResponse response = getPaymentResponse(CHARGE_ID, LEDGER_ONLY_STRATEGY);
+
+        assertCommonPaymentFields(response);
+        response.body("metadata", is(nullValue()));
+    }
+
+    private void assertCommonPaymentFields(ValidatableResponse paymentResponse) {
+        paymentResponse
+                .statusCode(200)
+                .contentType(JSON).log().body()
                 .body("payment_id", is(CHARGE_ID))
                 .body("reference", is(REFERENCE))
                 .body("email", is(EMAIL))
@@ -123,14 +171,6 @@ public class GetPaymentIT extends PaymentResourceITestBase {
                 .body("_links.self.method", is("GET"))
                 .body("_links.events.href", is(paymentEventsLocationFor(CHARGE_ID)))
                 .body("_links.events.method", is("GET"))
-                .body("_links.next_url.href", is(frontendUrlFor(CARD) + CHARGE_ID))
-                .body("_links.next_url.method", is("GET"))
-                .body("_links.next_url_post.href", is(frontendUrlFor(CARD)))
-                .body("_links.next_url_post.method", is("POST"))
-                .body("_links.next_url_post.type", is("application/x-www-form-urlencoded"))
-                .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
-                .body("_links.events.href", is(paymentEventsLocationFor(CHARGE_ID)))
-                .body("_links.events.method", is("GET"))
                 .body("_links.cancel.href", is(paymentCancelLocationFor(CHARGE_ID)))
                 .body("_links.cancel.method", is("POST"))
                 .body("_links.refunds.href", is(paymentRefundsLocationFor(CHARGE_ID)))
@@ -139,60 +179,14 @@ public class GetPaymentIT extends PaymentResourceITestBase {
                 .body("containsKey('total_amount')", is(false));
     }
 
-    @Test
-    public void getPayment_ReturnsPayment() {
-        connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, getConnectorCharge().build());
-
-        getPaymentResponse(CHARGE_ID)
-                .statusCode(200)
-                .contentType(JSON)
-                .body("metadata", is(nullValue()))
-                .body("payment_id", is(CHARGE_ID))
-                .body("reference", is(REFERENCE))
-                .body("email", is(EMAIL))
-                .body("description", is(DESCRIPTION))
-                .body("amount", is(AMOUNT))
-                .body("state.status", is(CAPTURED.getStatus()))
-                .body("return_url", is(RETURN_URL))
-                .body("payment_provider", is(PAYMENT_PROVIDER))
-                .body("card_brand", is(CARD_BRAND_LABEL))
-                .body("created_date", is(CREATED_DATE))
-                .body("language", is("en"))
-                .body("delayed_capture", is(true))
-                .body("provider_id", is(GATEWAY_TRANSACTION_ID))
-                .body("refund_summary.status", is("pending"))
-                .body("refund_summary.amount_submitted", is(50))
-                .body("refund_summary.amount_available", is(100))
-                .body("settlement_summary.capture_submit_time", is(ISO_INSTANT_MILLISECOND_PRECISION.format(CAPTURE_SUBMIT_TIME)))
-                .body("settlement_summary.captured_date", is(DateTimeUtils.toLocalDateString(CAPTURED_DATE)))
-                .body("card_details.card_brand", is(CARD_BRAND_LABEL))
-                .body("card_details.cardholder_name", is(CARD_DETAILS.getCardHolderName()))
-                .body("card_details.first_digits_card_number", is(CARD_DETAILS.getFirstDigitsCardNumber()))
-                .body("card_details.last_digits_card_number", is(CARD_DETAILS.getLastDigitsCardNumber()))
-                .body("card_details.expiry_date", is(CARD_DETAILS.getExpiryDate()))
-                .body("card_details.billing_address.line1", is(CARD_DETAILS.getBillingAddress().get().getLine1()))
-                .body("card_details.billing_address.line2", is(CARD_DETAILS.getBillingAddress().get().getLine2()))
-                .body("card_details.billing_address.postcode", is(CARD_DETAILS.getBillingAddress().get().getPostcode()))
-                .body("card_details.billing_address.country", is(CARD_DETAILS.getBillingAddress().get().getCountry()))
-                .body("card_details", hasKey("card_type"))
-                .body("_links.self.href", is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)))
-                .body("_links.self.method", is("GET"))
-                .body("_links.events.href", is(paymentEventsLocationFor(CHARGE_ID)))
-                .body("_links.events.method", is("GET"))
+    private void assertConnectorOnlyPaymentFields(ValidatableResponse paymentResponse) {
+        paymentResponse
                 .body("_links.next_url.href", is(frontendUrlFor(CARD) + CHARGE_ID))
                 .body("_links.next_url.method", is("GET"))
                 .body("_links.next_url_post.href", is(frontendUrlFor(CARD)))
                 .body("_links.next_url_post.method", is("POST"))
                 .body("_links.next_url_post.type", is("application/x-www-form-urlencoded"))
-                .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID))
-                .body("_links.events.href", is(paymentEventsLocationFor(CHARGE_ID)))
-                .body("_links.events.method", is("GET"))
-                .body("_links.cancel.href", is(paymentCancelLocationFor(CHARGE_ID)))
-                .body("_links.cancel.method", is("POST"))
-                .body("_links.refunds.href", is(paymentRefundsLocationFor(CHARGE_ID)))
-                .body("_links.refunds.method", is("GET"))
-                .body("containsKey('corporate_card_surcharge')", is(false))
-                .body("containsKey('total_amount')", is(false));
+                .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID));
     }
 
     @Test
@@ -290,6 +284,25 @@ public class GetPaymentIT extends PaymentResourceITestBase {
 
     @Test
     public void getPayment_BillingAddressShouldBeNullWhenNotPresentInConnectorResponse() {
+        getPayment_BillingAddressShouldBeNullWhenNotPresentInServiceResponse(
+                cd -> connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+                        getConnectorCharge()
+                                .withCardDetails(cd)
+                                .build()),
+                CONNECTOR_STRATEGY);
+    }
+
+    @Test
+    public void getPayment_BillingAddressShouldBeNullWhenNotPresentInLedgerResponse() {
+        getPayment_BillingAddressShouldBeNullWhenNotPresentInServiceResponse(
+                cd -> ledgerMockClient.respondWithTransaction(CHARGE_ID,
+                        getLedgerTransaction()
+                                .withCardDetails(cd)
+                                .build()),
+                LEDGER_ONLY_STRATEGY);
+    }
+
+    private void getPayment_BillingAddressShouldBeNullWhenNotPresentInServiceResponse(Consumer<CardDetails> mockResponseFunction, String strategy) {
         CardDetails cardDetails = new CardDetails("1234",
                 "123456",
                 "Mr. Payment",
@@ -298,12 +311,9 @@ public class GetPaymentIT extends PaymentResourceITestBase {
                 CARD_BRAND_LABEL,
                 CARD_TYPE);
 
-        connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
-                getConnectorCharge()
-                        .withCardDetails(cardDetails)
-                        .build());
+        mockResponseFunction.accept(cardDetails);
 
-        getPaymentResponse(CHARGE_ID)
+        getPaymentResponse(CHARGE_ID, strategy)
                 .statusCode(200)
                 .contentType(JSON)
                 .body("card_details", hasKey("billing_address"))
@@ -368,10 +378,22 @@ public class GetPaymentIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentEvents_ReturnsPaymentEvents() {
+    public void getPaymentEventsThroughConnector_ReturnsPaymentEvents() {
         connectorMockClient.respondWithChargeEventsFound(GATEWAY_ACCOUNT_ID, CHARGE_ID, EVENTS);
 
-        getPaymentEventsResponse(CHARGE_ID)
+        assertPaymentEventsResponse(getPaymentEventsResponse(CHARGE_ID));
+    }
+
+    @Test
+    public void getPaymentEventsThroughLedger_ReturnsPaymentEvents() {
+        var eventFixture = aTransactionEventFixture().withState(CREATED).withTimestamp(CREATED_DATE).build();
+        ledgerMockClient.respondWithTransactionEvents(CHARGE_ID, eventFixture);
+
+        assertPaymentEventsResponse(getPaymentEventsResponse(CHARGE_ID, LEDGER_ONLY_STRATEGY));
+    }
+
+    private void assertPaymentEventsResponse(ValidatableResponse paymentEventsResponse) {
+        paymentEventsResponse
                 .statusCode(200)
                 .contentType(JSON)
                 .body("payment_id", is(CHARGE_ID))
