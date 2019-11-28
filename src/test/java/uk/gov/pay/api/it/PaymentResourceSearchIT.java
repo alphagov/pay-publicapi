@@ -114,13 +114,15 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
     @Test
     public void searchPaymentsThroughConnector_shouldOnlyReturnAllowedProperties() {
         searchPayments_shouldOnlyReturnAllowedProperties(
-                payments -> connectorMockClient.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, payments), CONNECTOR_STRATEGY);
+                payments -> connectorMockClient.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, payments),
+                CONNECTOR_STRATEGY);
     }
 
     @Test
     public void searchPaymentsThroughLedger_shouldOnlyReturnAllowedProperties() {
         searchPayments_shouldOnlyReturnAllowedProperties(
-                payments -> ledgerMockClient.respondOk_whenSearchCharges(payments), LEDGER_ONLY_STRATEGY);
+                payments -> ledgerMockClient.respondOk_whenSearchCharges(payments),
+                LEDGER_ONLY_STRATEGY);
     }
 
     private void searchPayments_shouldOnlyReturnAllowedProperties(Consumer<String> mockResponseFunction, String strategy) {
@@ -383,7 +385,7 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_ShouldIncludeCaptureLink_whenReturnedFromConnector() {
+    public void searchPayments_ShouldIncludeCaptureLink_whenReturnedFromConnector() {   // applies only to searches through connector, when we switch to ledger it will never be the case
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         String submittedState = "submitted";
         String chargeId = "charge-id";
@@ -413,6 +415,19 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
 
     @Test
     public void searchPayments_getsResultsFromConnector_withNoBillingAddress() {
+        searchPayments_getsResults_withNoBillingAddress(
+                payments -> connectorMockClient.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, payments), CONNECTOR_STRATEGY
+        );
+    }
+
+    @Test
+    public void searchPayments_getsResultsFromLedger_withNoBillingAddress() {
+        searchPayments_getsResults_withNoBillingAddress(
+                payments -> ledgerMockClient.respondOk_whenSearchCharges(payments), LEDGER_ONLY_STRATEGY
+        );
+    }
+
+    private void searchPayments_getsResults_withNoBillingAddress(Consumer<String> mockResponseFunction, String strategy) {
 
         String payments = aPaginatedPaymentSearchResult()
                 .withPayments(aSuccessfulSearchPayment()
@@ -427,9 +442,10 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
                         .getResults())
                 .build();
 
-        connectorMockClient.respondOk_whenSearchCharges(GATEWAY_ACCOUNT_ID, payments);
+        mockResponseFunction.accept(payments);
+
         ImmutableMap<String, String> queryParams = ImmutableMap.of();
-        searchPayments(queryParams)
+        searchPayments(queryParams, strategy)
                 .statusCode(200)
                 .contentType(JSON)
                 .body("results[0].card_details", hasKey("billing_address"))
