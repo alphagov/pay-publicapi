@@ -13,6 +13,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -60,5 +61,23 @@ public class ExternalServiceClientTest {
 
         verify(builder).headers(builderArgumentCaptor.capture());
         assertThat(builderArgumentCaptor.getValue().getFirst("X-Request-Id")).isEqualTo("123-easy-as-abc");
+    }
+    
+    @Test
+    public void assert_empty_headers_in_post_request_when_mdc_is_empty() {
+        MDC.clear();
+        externalServiceClient.post("http://example123.com");
+
+        verify(builder).headers(builderArgumentCaptor.capture());
+        assertThat(builderArgumentCaptor.getAllValues()).containsExactly(new MultivaluedHashMap<>());
+    }
+
+    @Test
+    public void assert_empty_headers_in_get_request_when_mdc_is_empty() {
+        MDC.clear();
+        externalServiceClient.get("http://example123.com");
+
+        verify(builder).headers(builderArgumentCaptor.capture());
+        assertThat(builderArgumentCaptor.getAllValues()).containsExactly(new MultivaluedHashMap<>());
     }
 }
