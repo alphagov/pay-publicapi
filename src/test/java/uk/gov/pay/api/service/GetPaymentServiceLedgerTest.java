@@ -13,6 +13,7 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.clients.ExternalServiceClient;
 import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.PaymentState;
@@ -67,7 +68,7 @@ public class GetPaymentServiceLedgerTest {
         LedgerUriGenerator ledgerUriGenerator = new LedgerUriGenerator(mockConfiguration);
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
         getPaymentService = new GetPaymentService(publicApiUriGenerator,
-                new ConnectorService(client, connectorUriGenerator),
+                new ConnectorService(new ExternalServiceClient(client), connectorUriGenerator),
                 new LedgerService(client, ledgerUriGenerator));
     }
 

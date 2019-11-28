@@ -11,6 +11,7 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.clients.ExternalServiceClient;
 import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.RefundResponse;
 import uk.gov.pay.api.model.RefundsResponse;
@@ -50,7 +51,7 @@ public class GetPaymentRefundsServiceTest {
         LedgerService ledgerService = new LedgerService(client, ledgerUriGenerator);
 
         ConnectorUriGenerator connectorUriGenerator = new ConnectorUriGenerator(mockConfiguration);
-        ConnectorService connectorService = new ConnectorService(client, connectorUriGenerator);
+        ConnectorService connectorService = new ConnectorService(new ExternalServiceClient(client), connectorUriGenerator);
 
         getPaymentRefundsService = new GetPaymentRefundsService(connectorService, ledgerService, publicApiUriGenerator);
     }

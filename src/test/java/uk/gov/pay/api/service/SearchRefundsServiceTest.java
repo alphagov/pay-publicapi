@@ -12,6 +12,7 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.clients.ExternalServiceClient;
 import uk.gov.pay.api.exception.RefundsValidationException;
 import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.TokenPaymentType;
@@ -54,7 +55,7 @@ public class SearchRefundsServiceTest {
         LedgerUriGenerator ledgerUriGenerator = new LedgerUriGenerator(mockConfiguration);
 
         searchRefundsService = new SearchRefundsService(
-                new ConnectorService(client, connectorUriGenerator),
+                new ConnectorService(new ExternalServiceClient(client), connectorUriGenerator),
                 new LedgerService(client, ledgerUriGenerator),
                 new PublicApiUriGenerator(mockConfiguration),
                 new PaginationDecorator(mockConfiguration));

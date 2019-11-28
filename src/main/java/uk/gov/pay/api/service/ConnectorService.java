@@ -1,6 +1,7 @@
 package uk.gov.pay.api.service;
 
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.clients.ExternalServiceClient;
 import uk.gov.pay.api.exception.GetChargeException;
 import uk.gov.pay.api.exception.GetEventsException;
 import uk.gov.pay.api.exception.GetRefundException;
@@ -17,29 +18,24 @@ import uk.gov.pay.api.model.search.card.SearchRefundsResponseFromConnector;
 
 import javax.inject.Inject;
 import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
 import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Map;
 
 import static org.apache.http.HttpStatus.SC_OK;
 
 public class ConnectorService {
-    private final Client client;
+    private final ExternalServiceClient client;
     private final ConnectorUriGenerator connectorUriGenerator;
 
     @Inject
-    public ConnectorService(Client client, ConnectorUriGenerator connectorUriGenerator) {
+    public ConnectorService(ExternalServiceClient client, ConnectorUriGenerator connectorUriGenerator) {
         this.client = client;
         this.connectorUriGenerator = connectorUriGenerator;
     }
 
     public Charge getCharge(Account account, String paymentId) {
-        Response response = client
-                .target(connectorUriGenerator.chargeURI(account, paymentId))
-                .request()
-                .get();
+        Response response = client.get(connectorUriGenerator.chargeURI(account, paymentId));
 
         if (response.getStatus() == SC_OK) {
             ChargeFromResponse chargeFromResponse = response.readEntity(ChargeFromResponse.class);
@@ -50,11 +46,7 @@ public class ConnectorService {
     }
 
     public PaymentEvents getChargeEvents(Account account, String paymentId) {
-        Response connectorResponse = client
-                .target(connectorUriGenerator.chargeEventsURI(account, paymentId))
-                .request()
-                .accept(MediaType.APPLICATION_JSON)
-                .get();
+        Response connectorResponse = client.get(connectorUriGenerator.chargeEventsURI(account, paymentId));
 
         if (connectorResponse.getStatus() == SC_OK) {
             return connectorResponse.readEntity(PaymentEvents.class);
@@ -64,10 +56,7 @@ public class ConnectorService {
     }
 
     public RefundsFromConnector getPaymentRefunds(String accountId, String paymentId) {
-        Response connectorResponse = client
-                .target(connectorUriGenerator.refundsForPaymentURI(accountId, paymentId))
-                .request()
-                .get();
+        Response connectorResponse = client.get(connectorUriGenerator.refundsForPaymentURI(accountId, paymentId));
 
         if (connectorResponse.getStatus() == SC_OK) {
             return connectorResponse.readEntity(RefundsFromConnector.class);
@@ -77,11 +66,7 @@ public class ConnectorService {
     }
 
     public RefundFromConnector getPaymentRefund(String accountId, String paymentId, String refundId) {
-        Response connectorResponse = client
-                .target(connectorUriGenerator.refundForPaymentURI(accountId, paymentId, refundId))
-                .request()
-                .accept(MediaType.APPLICATION_JSON)
-                .get();
+        Response connectorResponse = client.get(connectorUriGenerator.refundForPaymentURI(accountId, paymentId, refundId));
 
         if (connectorResponse.getStatus() == SC_OK) {
             return connectorResponse.readEntity(RefundFromConnector.class);
@@ -91,11 +76,7 @@ public class ConnectorService {
     }
 
     public SearchRefundsResponseFromConnector searchRefunds(Account account, Map<String, String> queryParams) {
-        Response connectorResponse = client
-                .target(connectorUriGenerator.refundsURIWithParams(account, queryParams))
-                .request()
-                .accept(MediaType.APPLICATION_JSON)
-                .get();
+        Response connectorResponse = client.get(connectorUriGenerator.refundsURIWithParams(account, queryParams));
 
         if (connectorResponse.getStatus() == SC_OK) {
             try {
@@ -109,15 +90,11 @@ public class ConnectorService {
 
     public PaymentSearchResponse<ChargeFromResponse> searchPayments(Account account, Map<String, String> queryParams) {
         String url = connectorUriGenerator.chargesURIWithParams(account, queryParams);
-        Response connectorResponse = client
-                .target(url)
-                .request()
-                .accept(MediaType.APPLICATION_JSON)
-                .get();
+        Response connectorResponse = client.get(url);
 
         if (connectorResponse.getStatus() == SC_OK) {
             try {
-                return connectorResponse.readEntity(new GenericType<PaymentSearchResponse<ChargeFromResponse>>() {
+                return connectorResponse.readEntity(new GenericType<>() {
                 });
             } catch (ProcessingException ex) {
                 throw new SearchPaymentsException(ex);

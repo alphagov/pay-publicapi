@@ -11,11 +11,11 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.clients.ExternalServiceClient;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
-import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
 
 import static org.hamcrest.core.Is.is;
@@ -41,7 +41,7 @@ public class CapturePaymentServiceTest {
         when(mockConfiguration.getConnectorUrl()).thenReturn(connectorRule.getUrl());
 
         ConnectorUriGenerator connectorUriGenerator = new ConnectorUriGenerator(mockConfiguration);
-        Client client = RestClientFactory.buildClient(new RestClientConfig(false));
+        var client = new ExternalServiceClient(RestClientFactory.buildClient(new RestClientConfig(false)));
         capturePaymentService = new CapturePaymentService(client, connectorUriGenerator);
     }
 
