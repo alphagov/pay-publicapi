@@ -15,12 +15,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import uk.gov.pay.logging.LoggingKeys;
 
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientResponseContext;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
-
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
@@ -28,9 +28,12 @@ import java.util.UUID;
 import static java.lang.String.format;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static uk.gov.pay.api.filter.RestClientLoggingFilter.HEADER_REQUEST_ID;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RestClientLoggingFilterTest {
@@ -67,7 +70,7 @@ public class RestClientLoggingFilterTest {
         when(clientRequestContext.getUri()).thenReturn(requestUrl);
         when(clientRequestContext.getMethod()).thenReturn(requestMethod);
         when(clientRequestContext.getHeaders()).thenReturn(mockHeaders);
-        MDC.put(HEADER_REQUEST_ID,requestId);
+        MDC.put(LoggingKeys.MDC_REQUEST_ID_KEY, requestId);
 
         loggingFilter.filter(clientRequestContext);
 
@@ -92,7 +95,7 @@ public class RestClientLoggingFilterTest {
 
         when(clientRequestContext.getHeaders()).thenReturn(mockHeaders);
         when(clientResponseContext.getHeaders()).thenReturn(mockHeaders2);
-        MDC.put(HEADER_REQUEST_ID,requestId);
+        MDC.put(LoggingKeys.MDC_REQUEST_ID_KEY, requestId);
         loggingFilter.filter(clientRequestContext);
 
         loggingFilter.filter(clientRequestContext,clientResponseContext);
