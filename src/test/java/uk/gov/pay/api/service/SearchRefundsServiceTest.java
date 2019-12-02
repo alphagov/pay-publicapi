@@ -191,6 +191,18 @@ public class SearchRefundsServiceTest {
     }
 
     @Test
+    @PactVerification({"ledger"})
+    @Pacts(pacts = {"publicapi-ledger-search-refunds-with-page-and-display-when-no-refunds-exist"})
+    public void getAllRefundsShouldReturnNoRefundsFromLedgerWhenThereAreNone() {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        RefundsParams params = new RefundsParams(null, null, "1", "1");
+        SearchRefundsResults results = searchRefundsService.searchLedgerRefunds(account, params);
+        assertThat(results.getCount(), is(0));
+        assertThat(results.getTotal(), is(0));
+        assertThat(results.getPage(), is(1));
+    }
+
+    @Test
     public void getSearchResponseFromLedger_shouldThrowRefundsValidationExceptionWhenParamsAreInvalid() {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
         String invalid = "invalid_param";
