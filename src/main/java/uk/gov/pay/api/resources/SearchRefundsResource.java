@@ -42,12 +42,10 @@ public class SearchRefundsResource {
     private static final Logger logger = LoggerFactory.getLogger(SearchRefundsResource.class);
 
     private final SearchRefundsService searchRefundsService;
-    private PublicApiConfig configuration;
 
     @Inject
     public SearchRefundsResource(SearchRefundsService searchRefundsService, PublicApiConfig configuration) {
         this.searchRefundsService = searchRefundsService;
-        this.configuration = configuration;
     }
 
     @GET
@@ -98,16 +96,14 @@ public class SearchRefundsResource {
                                   @QueryParam("page") String pageNumber,
                                   @Parameter(description = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)", hidden = false)
                                   @ApiParam(value = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)", hidden = false)
-                                  @QueryParam("display_size") String displaySize,
-                                  @Parameter(hidden = true) @ApiParam(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
+                                  @QueryParam("display_size") String displaySize) {
 
-        logger.info("Refunds search request with strategy [{}]- [ {} ]", strategyName,
+        logger.info("Refunds search request - [ {} ]",
                 format("from_date: %s, to_date: %s, page: %s, display_size: %s",
                         fromDate, toDate, pageNumber, displaySize));
 
         RefundsParams refundsParams = new RefundsParams(fromDate, toDate, pageNumber, displaySize);
-        SearchRefundsStrategy strategy = new SearchRefundsStrategy(configuration, strategyName, account, refundsParams, searchRefundsService);
 
-        return strategy.validateAndExecute();
+        return searchRefundsService.searchLedgerRefunds(account, refundsParams);
     }
 }

@@ -45,7 +45,6 @@ public class SearchRefundsServiceTest {
 
     @Before
     public void setUp() {
-        when(mockConfiguration.getConnectorUrl()).thenReturn(connectorRule.getUrl());
         when(mockConfiguration.getLedgerUrl()).thenReturn(ledgerRule.getUrl());
         when(mockConfiguration.getBaseUrl()).thenReturn("http://publicapi.test.localhost/");
 
@@ -61,88 +60,6 @@ public class SearchRefundsServiceTest {
     }
 
     @Test
-    @PactVerification({"connector"})
-    @Pacts(pacts = {"publicapi-connector-search-refunds-with-page-and-display"})
-    public void getAllRefundsShouldReturnCorrectTotalAndPageAndDisplaySize() {
-        RefundsParams params = new RefundsParams(null, null, "1", "2");
-        String accountId = "777";
-        String refundId1 = "111111";
-        String refundId2 = "222222";
-        String extChargeId = "someExternalId";
-        Account account = new Account(accountId, TokenPaymentType.CARD);
-        SearchRefundsResults results = searchRefundsService.searchConnectorRefunds(account, params);
-
-        assertThat(results.getResults().size(), is(2));
-        assertThat(results.getCount(), is(2));
-        assertThat(results.getTotal(), is(2));
-        assertThat(results.getPage(), is(1));
-        assertThat(results.getResults().get(0).getStatus(), is("available"));
-        assertThat(results.getResults().get(0).getCreatedDate(), is("2017-10-01T01:41:01Z"));
-        assertThat(results.getResults().get(0).getRefundId(), is(refundId1));
-        assertThat(results.getResults().get(0).getChargeId(), is(extChargeId));
-        assertThat(results.getResults().get(0).getAmount(), is(98L));
-        assertThat(results.getResults().get(0).getLinks().getSelf().getHref(), is(format("http://publicapi.test.localhost/v1/payments/%s/refunds/%s", extChargeId, refundId1)));
-        assertThat(results.getResults().get(0).getLinks().getPayment().getHref(), is(format("http://publicapi.test.localhost/v1/payments/%s", extChargeId)));
-
-        assertThat(results.getResults().get(1).getStatus(), is("available"));
-        assertThat(results.getResults().get(1).getCreatedDate(), is("2017-09-02T02:42:02Z"));
-        assertThat(results.getResults().get(1).getRefundId(), is(refundId2));
-        assertThat(results.getResults().get(1).getChargeId(), is(extChargeId));
-        assertThat(results.getResults().get(1).getAmount(), is(100L));
-        assertThat(results.getResults().get(1).getLinks().getSelf().getHref(), is(format("http://publicapi.test.localhost/v1/payments/%s/refunds/%s", extChargeId, refundId2)));
-        assertThat(results.getResults().get(1).getLinks().getPayment().getHref(), is(format("http://publicapi.test.localhost/v1/payments/%s", extChargeId)));
-
-        assertThat(results.getLinks().getSelf().getHref(), is("http://publicapi.test.localhost/v1/refunds?display_size=2&page=1"));
-    }
-
-    @Test
-    @PactVerification({"connector"})
-    @Pacts(pacts = {"publicapi-connector-search-refunds-with-page-and-display-when-no-refunds-exist"})
-    public void getAllRefundsShouldReturnNoRefundsWhenThereAreNone() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
-        RefundsParams params = new RefundsParams(null, null, "1", "1");
-        SearchRefundsResults results = searchRefundsService.searchConnectorRefunds(account, params);
-        assertThat(results.getCount(), is(0));
-        assertThat(results.getTotal(), is(0));
-        assertThat(results.getPage(), is(1));
-    }
-
-    @Test
-    @PactVerification({"connector"})
-    @Pacts(pacts = {"publicapi-connector-search-refunds-with-from-and-to-date"})
-    public void getAllRefundsShouldReturnCorrectFromAndToDate() {
-        RefundsParams params = new RefundsParams("2016-01-25T13:22:55Z", "2016-01-25T13:24:55Z", "1", "500");
-        String accountId = "777";
-        String refundId1 = "111111";
-        String refundId2 = "222222";
-        String extChargeId = "someExternalId";
-        Account account = new Account(accountId, TokenPaymentType.CARD);
-        SearchRefundsResults results = searchRefundsService.searchConnectorRefunds(account, params);
-
-        assertThat(results.getResults().size(), is(2));
-        assertThat(results.getCount(), is(2));
-        assertThat(results.getTotal(), is(2));
-        assertThat(results.getPage(), is(1));
-        assertThat(results.getResults().get(0).getStatus(), is("available"));
-        assertThat(results.getResults().get(0).getCreatedDate(), is("2016-01-25T13:23:55Z"));
-        assertThat(results.getResults().get(0).getRefundId(), is(refundId1));
-        assertThat(results.getResults().get(0).getChargeId(), is(extChargeId));
-        assertThat(results.getResults().get(0).getAmount(), is(98L));
-        assertThat(results.getResults().get(0).getLinks().getSelf().getHref(), is(format("http://publicapi.test.localhost/v1/payments/%s/refunds/%s", extChargeId, refundId1)));
-        assertThat(results.getResults().get(0).getLinks().getPayment().getHref(), is(format("http://publicapi.test.localhost/v1/payments/%s", extChargeId)));
-
-        assertThat(results.getResults().get(1).getStatus(), is("available"));
-        assertThat(results.getResults().get(1).getCreatedDate(), is("2016-01-25T13:23:55Z"));
-        assertThat(results.getResults().get(1).getRefundId(), is(refundId2));
-        assertThat(results.getResults().get(1).getChargeId(), is(extChargeId));
-        assertThat(results.getResults().get(1).getAmount(), is(100L));
-        assertThat(results.getResults().get(1).getLinks().getSelf().getHref(), is(format("http://publicapi.test.localhost/v1/payments/%s/refunds/%s", extChargeId, refundId2)));
-        assertThat(results.getResults().get(1).getLinks().getPayment().getHref(), is(format("http://publicapi.test.localhost/v1/payments/%s", extChargeId)));
-
-        assertThat(results.getLinks().getSelf().getHref(), is("http://publicapi.test.localhost/v1/refunds?from_date=2016-01-25T13%3A22%3A55Z&to_date=2016-01-25T13%3A24%3A55Z&display_size=500&page=1"));
-    }
-
-    @Test
     public void getSearchResponse_shouldThrowRefundsValidationExceptionWhenParamsAreInvalid() {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
         String invalid = "invalid_param";
@@ -153,7 +70,7 @@ public class SearchRefundsServiceTest {
                 "P1101",
                 format("Invalid parameters: %s. See Public API documentation for the correct data formats",
                         "page, display_size")));
-        searchRefundsService.searchConnectorRefunds(account, params);
+        searchRefundsService.searchLedgerRefunds(account, params);
     }
 
     @Test
