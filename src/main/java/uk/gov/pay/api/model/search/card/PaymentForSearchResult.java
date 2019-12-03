@@ -6,7 +6,6 @@ import io.swagger.annotations.ApiModelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.CardPayment;
-import uk.gov.pay.api.model.ChargeFromResponse;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
@@ -46,43 +45,6 @@ public class PaymentForSearchResult extends CardPayment {
         if (links.stream().anyMatch(link -> "capture".equals(link.getRel()))) {
             this.links.addCapture(paymentCaptureUri.toString());
         }
-    }
-
-    public static PaymentForSearchResult valueOf(
-            ChargeFromResponse paymentResult,
-            URI selfLink,
-            URI paymentEventsLink,
-            URI paymentCancelLink,
-            URI paymentRefundsLink,
-            URI paymentCaptureUri) {
-
-        return new PaymentForSearchResult(
-                paymentResult.getChargeId(),
-                paymentResult.getAmount(),
-                paymentResult.getState(),
-                paymentResult.getReturnUrl(),
-                paymentResult.getDescription(),
-                paymentResult.getReference(),
-                paymentResult.getEmail(),
-                paymentResult.getPaymentProvider(),
-                paymentResult.getCreatedDate(),
-                paymentResult.getLanguage(),
-                paymentResult.getDelayedCapture(),
-                paymentResult.getRefundSummary(),
-                paymentResult.getSettlementSummary(),
-                paymentResult.getCardDetails(),
-                paymentResult.getLinks(),
-                selfLink,
-                paymentEventsLink,
-                paymentCancelLink,
-                paymentRefundsLink,
-                paymentCaptureUri,
-                paymentResult.getCorporateCardSurcharge(),
-                paymentResult.getTotalAmount(),
-                paymentResult.getGatewayTransactionId(),
-                paymentResult.getMetadata().orElse(null),
-                paymentResult.getFee(),
-                paymentResult.getNetAmount());
     }
 
     public static PaymentForSearchResult valueOf(

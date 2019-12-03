@@ -1,7 +1,5 @@
 package uk.gov.pay.api.service;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,23 +38,6 @@ public class ConnectorUriGeneratorTest {
     @Test
     public void shouldGenerateTheRightChargeURIForCardConnector() {
         String uri = connectorUriGenerator.chargesURI(cardAccount);
-        assertThat(uri, is("https://bla.test/v1/api/accounts/accountId/charges"));
-    }
-
-    @Test
-    public void shouldGenerateTheRightChargeURIWithQueryParams() {
-        String uri = connectorUriGenerator.chargesURIWithParams(cardAccount,
-                ImmutableMap.of(
-                        "param1", "value1",
-                        "param2", "value2"
-                )
-        );
-        assertThat(uri, is("https://bla.test/v1/api/accounts/accountId/charges?param1=value1&param2=value2"));
-    }
-
-    @Test
-    public void shouldGenerateTheRightChargeURIWhenNoQueryParamsArePassed() {
-        String uri = connectorUriGenerator.chargesURIWithParams(cardAccount, Maps.newHashMap());
         assertThat(uri, is("https://bla.test/v1/api/accounts/accountId/charges"));
     }
 
