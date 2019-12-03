@@ -4,16 +4,13 @@ package uk.gov.pay.api.it;
 import io.restassured.response.ValidatableResponse;
 import org.junit.Before;
 import org.junit.Test;
-import uk.gov.pay.api.it.fixtures.PaymentRefundSearchJsonFixture;
 import uk.gov.pay.api.model.ledger.TransactionState;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
-import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 import uk.gov.pay.api.utils.mocks.LedgerMockClient;
 import uk.gov.pay.api.utils.mocks.RefundTransactionFromLedgerFixture;
 import uk.gov.pay.commons.validation.DateTimeUtils;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
@@ -29,7 +26,6 @@ public class SearchRefundsResourceIT extends PaymentResourceITestBase {
     private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
     private static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(TIMESTAMP);
 
-    private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
     private LedgerMockClient ledgerMockClient = new LedgerMockClient(ledgerMock);
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
 
@@ -39,18 +35,7 @@ public class SearchRefundsResourceIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchRefundsThroughConnector_shouldReturnValidResponse() {
-        String connectorOnlyStrategy = "";
-        PaymentRefundSearchJsonFixture refund1 = new PaymentRefundSearchJsonFixture(100L, CREATED_DATE, "100", CHARGE_ID, "available", new ArrayList<>());
-        PaymentRefundSearchJsonFixture refund2 = new PaymentRefundSearchJsonFixture(300L, CREATED_DATE, "300", CHARGE_ID, "pending", new ArrayList<>());
-
-        connectorMockClient.respondWithSearchRefunds(GATEWAY_ACCOUNT_ID, refund1, refund2);
-
-        assertRefundsSearchResponse(connectorOnlyStrategy);
-    }
-
-    @Test
-    public void searchRefundsThroughLedger_shouldReturnValidResponse() {
+    public void searchRefunds_shouldReturnValidResponse() {
         RefundTransactionFromLedgerFixture refund1 = aRefundTransactionFromLedgerFixture()
                 .withAmount(100L)
                 .withCreatedDate(CREATED_DATE)
@@ -69,11 +54,7 @@ public class SearchRefundsResourceIT extends PaymentResourceITestBase {
 
         ledgerMockClient.respondWithSearchRefunds(refund1, refund2);
 
-        assertRefundsSearchResponse("ledger-only");
-    }
-
-    private void assertRefundsSearchResponse(String strategy) {
-        getRefundsSearchResponse(strategy)
+        getRefundsSearchResponse()
                 .statusCode(200)
                 .contentType(JSON)
                 .body("total", is(1))
@@ -100,9 +81,8 @@ public class SearchRefundsResourceIT extends PaymentResourceITestBase {
                 .body("_links.last_page.href", is("http://publicapi.url/v1/refunds?page=5"));
     }
 
-    private ValidatableResponse getRefundsSearchResponse(String strategy) {
+    private ValidatableResponse getRefundsSearchResponse() {
         return given().port(app.getLocalPort())
-                .header("X-Ledger", strategy)
                 .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
                 .get("/v1/refunds")
                 .then();
