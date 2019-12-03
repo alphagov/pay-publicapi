@@ -180,13 +180,13 @@ public class PaymentsResource {
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
-    public PaymentEventsResponse getPaymentEvents(@ApiParam(value = "accountId", hidden = true) 
+    public PaymentEventsResponse getPaymentEvents(@ApiParam(value = "accountId", hidden = true)
                                                   @Parameter(hidden = true) @Auth Account account,
                                                   @PathParam("paymentId")
                                                   @ApiParam(name = "paymentId", value = "Payment identifier", example = "hu20sqlact5260q2nanm0q8u93")
                                                   @Parameter(name = "paymentId", description = "Payment identifier", example = "hu20sqlact5260q2nanm0q8u93")
                                                           String paymentId,
-                                                  @ApiParam(hidden = true) @Parameter(hidden = true)  @HeaderParam("X-Ledger") String strategyName) {
+                                                  @ApiParam(hidden = true) @Parameter(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
 
         logger.info("Payment events request - payment_id={}", paymentId);
 
@@ -248,7 +248,7 @@ public class PaymentsResource {
                                    @QueryParam("email") String email,
                                    @ApiParam(value = "State of payments to be searched. Example=success", hidden = false, allowableValues = "created,started,submitted,success,failed,cancelled,error")
                                    @Parameter(description = "State of payments to be searched. Example=success", example = "success",
-                                           schema = @Schema(allowableValues = {"created","started","submitted","success","failed","cancelled","error"}))
+                                           schema = @Schema(allowableValues = {"created", "started", "submitted", "success", "failed", "cancelled", "error"}))
                                    @QueryParam("state") String state,
                                    @ApiParam(value = "Card brand used for payment. Example=master-card", hidden = false)
                                    @Parameter(description = "Card brand used for payment. Example=master-card")
@@ -279,7 +279,6 @@ public class PaymentsResource {
                                    @Parameter(description = "Last four digits of the card used to make payment", hidden = false)
 
                                    @QueryParam("last_digits_card_number") String lastDigitsCardNumber,
-                                   @Parameter(hidden = true) @ApiParam(hidden = true) @HeaderParam("X-Ledger") String strategyName,
                                    @Context UriInfo uriInfo) {
 
         logger.info("Payments search request - [ {} ]",
@@ -301,8 +300,7 @@ public class PaymentsResource {
                 .withLastDigitsCardNumber(lastDigitsCardNumber)
                 .build();
 
-        var strategy = new SearchPaymentsStrategy(configuration, strategyName, account, paymentSearchParams, paymentSearchService);
-        return strategy.validateAndExecute();
+        return paymentSearchService.searchLedgerPayments(account, paymentSearchParams);
     }
 
     @POST

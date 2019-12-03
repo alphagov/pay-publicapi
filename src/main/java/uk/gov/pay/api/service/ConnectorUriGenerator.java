@@ -28,10 +28,6 @@ public class ConnectorUriGenerator {
         return buildConnectorUri(format("/v1/api/accounts/%s/charges", account.getAccountId()));
     }
 
-    public String chargesURIWithParams(Account account, Map<String, String> queryParams) {
-        return buildConnectorUri(format("/v1/api/accounts/%s/charges", account.getAccountId()), queryParams);
-    }
-
     String chargeURI(Account account, String chargeId) {
         String path = format("/v1/api/accounts/%s/charges/%s", account.getAccountId(), chargeId); //TODO rename to /payments instead /charges
         return buildConnectorUri(account, path);
@@ -46,7 +42,7 @@ public class ConnectorUriGenerator {
         String path = format("/v1/api/accounts/%s/charges/%s/cancel", account.getAccountId(), paymentId);
         return buildConnectorUri(path, Maps.newHashMap());
     }
-    
+
     public String telephoneChargesURI(Account account) {
         return buildConnectorUri(format("/v1/api/accounts/%s/telephone-charges", account.getAccountId()));
     }
