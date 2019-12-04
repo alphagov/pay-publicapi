@@ -32,7 +32,7 @@ public class RefundForSearchRefundsResult {
     private Long amount;
 
     private RefundLinksForSearch links = new RefundLinksForSearch();
-    
+
     @JsonProperty("status")
     @ApiModelProperty(example = "success", allowableValues = "submitted,success,error")
     @Schema(example = "success", allowableValues = {"submitted", "success", "error"}, accessMode = READ_ONLY)
@@ -47,8 +47,8 @@ public class RefundForSearchRefundsResult {
         this.status = status;
         this.chargeId = chargeId;
         this.amount = amount;
-        this.links.addSelf(refundsURI.toString()); 
-        this.links.addPayment(paymentURI.toString()); 
+        this.links.addSelf(refundsURI.toString());
+        this.links.addPayment(paymentURI.toString());
     }
 
     public String getRefundId() {
@@ -81,29 +81,18 @@ public class RefundForSearchRefundsResult {
     public void setAmount(Long amount) {
         this.amount = amount;
     }
-    
+
     @JsonProperty("amount")
     @ApiModelProperty(example = "120")
     @Schema(example = "120", accessMode = READ_ONLY)
     public Long getAmount() {
         return amount;
     }
-    
+
     @ApiModelProperty(dataType = "uk.gov.pay.api.model.links.RefundLinksForSearch")
     @JsonProperty("_links")
     public RefundLinksForSearch getLinks() {
         return links;
-    }
-
-    public static RefundForSearchRefundsResult valueOf(RefundForSearchRefundsResult refundResult, URI paymentURI, URI refundsURI) {
-        return new RefundForSearchRefundsResult(
-                refundResult.getRefundId(),
-                refundResult.getCreatedDate(),
-                refundResult.getStatus(),
-                refundResult.getChargeId(),
-                refundResult.getAmount(),
-                paymentURI,
-                refundsURI);
     }
 
     public static RefundForSearchRefundsResult valueOf(RefundTransactionFromLedger refundResult, URI paymentURI, URI refundsURI) {

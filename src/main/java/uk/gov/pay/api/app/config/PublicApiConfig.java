@@ -33,9 +33,6 @@ public class PublicApiConfig extends Configuration {
     @NotNull
     private Boolean allowHttpForReturnUrl;
 
-    @NotNull
-    private Boolean alwaysUseFutureStrategy;
-
     private String apiKeyHmacSecret;
 
     @NotNull
@@ -107,7 +104,4 @@ public class PublicApiConfig extends Configuration {
         return redis;
     }
 
-    public Boolean getAlwaysUseFutureStrategy() {
-        return alwaysUseFutureStrategy;
-    }
 }
