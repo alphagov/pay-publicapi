@@ -1,6 +1,5 @@
 package uk.gov.pay.api.resources;
 
-import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.service.GetPaymentService;
@@ -11,8 +10,8 @@ public class GetOnePaymentStrategy extends LedgerOrConnectorStrategyTemplate<Pay
     private final String paymentId;
     private final GetPaymentService getPaymentService;
 
-    public GetOnePaymentStrategy(PublicApiConfig configuration, String strategy, Account account, String paymentId, GetPaymentService getPaymentService) {
-        super(configuration, strategy);
+    public GetOnePaymentStrategy(String strategy, Account account, String paymentId, GetPaymentService getPaymentService) {
+        super(strategy);
         this.account = account;
         this.paymentId = paymentId;
         this.getPaymentService = getPaymentService;

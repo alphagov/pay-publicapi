@@ -91,7 +91,6 @@ abstract public class ResourcesFilterITestBase {
             config("publicAuthUrl", "http://localhost:" + PUBLIC_AUTH_PORT + "/v1/auth"),
             config("redis.endpoint", redisDockerRule.getRedisUrl()),
             config("ledgerUrl", "http://localhost:" + LEDGER_PORT),
-            config("alwaysUseFutureStrategy", "true"),
             config("rateLimiter.noOfReq", "1"),
             config("rateLimiter.noOfReqForPost", "1")
     );

@@ -11,12 +11,10 @@ import java.util.List;
 public abstract class LedgerOrConnectorStrategyTemplate<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(LedgerOrConnectorStrategyTemplate.class);
-    private final Boolean shouldAlwaysUseFutureStrategy;
     private String strategy;
     private List<String> VALID_STRATEGIES = ImmutableList.of("ledger-only", "future-behaviour");
 
-    public LedgerOrConnectorStrategyTemplate(PublicApiConfig configuration, String strategy) {
-        this.shouldAlwaysUseFutureStrategy = configuration.getAlwaysUseFutureStrategy();
+    public LedgerOrConnectorStrategyTemplate(String strategy) {
         this.strategy = strategy;
     }
 
@@ -30,7 +28,7 @@ public abstract class LedgerOrConnectorStrategyTemplate<T> {
     public T validateAndExecute() {
         validate();
 
-        if (shouldAlwaysUseFutureStrategy || "future-behaviour".equals(strategy)) {
+        if ("future-behaviour".equals(strategy)) {
             return executeFutureBehaviourStrategy();
         } else if ("ledger-only".equals(strategy)) {
             return executeLedgerOnlyStrategy();
