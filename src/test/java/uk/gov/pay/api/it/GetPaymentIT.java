@@ -289,7 +289,7 @@ public class GetPaymentIT extends PaymentResourceITestBase {
                         getConnectorCharge()
                                 .withCardDetails(cd)
                                 .build()),
-                CONNECTOR_STRATEGY);
+                CONNECTOR_ONLY_STRATEGY);
     }
 
     @Test
@@ -353,7 +353,7 @@ public class GetPaymentIT extends PaymentResourceITestBase {
         String errorMessage = "backend-error-message";
         connectorMockClient.respondWhenGetCharge(GATEWAY_ACCOUNT_ID, paymentId, errorMessage, SC_NOT_ACCEPTABLE);
 
-        assertErrorPaymentResponse(getPaymentResponse(paymentId));
+        assertErrorPaymentResponse(getPaymentResponse(paymentId, CONNECTOR_ONLY_STRATEGY));
     }
 
     @Test
@@ -449,7 +449,7 @@ public class GetPaymentIT extends PaymentResourceITestBase {
         String errorMessage = "backend-error-message";
         connectorMockClient.respondWhenGetChargeEvents(GATEWAY_ACCOUNT_ID, paymentId, errorMessage, SC_NOT_ACCEPTABLE);
 
-        assertErrorEventsResponse(getPaymentEventsResponse(paymentId));
+        assertErrorEventsResponse(getPaymentEventsResponse(paymentId, CONNECTOR_ONLY_STRATEGY));
     }
 
     @Test

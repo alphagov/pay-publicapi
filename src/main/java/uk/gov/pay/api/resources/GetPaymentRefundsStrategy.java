@@ -24,12 +24,12 @@ public class GetPaymentRefundsStrategy extends LedgerOrConnectorStrategyTemplate
     }
 
     @Override
-    protected RefundsResponse executeFutureBehaviourStrategy() {
+    protected RefundsResponse executeDefaultStrategy() {
         return executeLedgerOnlyStrategy();
     }
 
     @Override
-    protected RefundsResponse executeDefaultStrategy() {
+    protected RefundsResponse executeConnectorOnlyStrategy() {
         return getPaymentRefundsService.getConnectorPaymentRefunds(account, paymentId);
     }
 }
