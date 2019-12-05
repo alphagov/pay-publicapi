@@ -23,12 +23,12 @@ public class GetOnePaymentStrategy extends LedgerOrConnectorStrategyTemplate<Pay
     }
 
     @Override
-    protected PaymentWithAllLinks executeFutureBehaviourStrategy() {
+    protected PaymentWithAllLinks executeDefaultStrategy() {
         return getPaymentService.getPayment(account, paymentId);
     }
 
     @Override
-    protected PaymentWithAllLinks executeDefaultStrategy() {
+    protected PaymentWithAllLinks executeConnectorOnlyStrategy() {
         return getPaymentService.getConnectorCharge(account, paymentId);
     }
 }

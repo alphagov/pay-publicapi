@@ -28,7 +28,7 @@ public class GetPaymentRefundsStrategyTest {
     private Account account = new Account("account-id", TokenPaymentType.CARD);
 
     @Test
-    @Parameters({"ledger-only", "future-behaviour"})
+    @Parameters({"ledger-only", "", "unknown"})
     public void validateAndExecuteShouldUseLedgerOnlyForListedStrategies(String strategy) {
         getPaymentRefundsStrategy = new GetPaymentRefundsStrategy(strategy, account, paymentId, mockGetPaymentRefundsService);
         getPaymentRefundsStrategy.validateAndExecute();
@@ -38,8 +38,8 @@ public class GetPaymentRefundsStrategyTest {
     }
 
     @Test
-    @Parameters({"", "unknown"})
-    public void validateAndExecuteShouldUseConnectorOnlyForDefaultOrUnknownStrategy(String strategy) {
+    @Parameters({"connector-only"})
+    public void validateAndExecuteShouldUseConnectorOnlyStrategy(String strategy) {
         getPaymentRefundsStrategy = new GetPaymentRefundsStrategy(strategy, account, paymentId, mockGetPaymentRefundsService);
 
         getPaymentRefundsStrategy.validateAndExecute();

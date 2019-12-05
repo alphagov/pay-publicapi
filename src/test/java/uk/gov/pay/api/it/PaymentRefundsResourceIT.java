@@ -122,7 +122,7 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
     public void getRefundById_returns500_whenConnectorRespondsWithResponseOtherThan200Or404() {
         connectorMockClient.respondRefundWithError(GATEWAY_ACCOUNT_ID, CHARGE_ID, REFUND_ID);
 
-        getPaymentRefundByIdResponse(CHARGE_ID, REFUND_ID)
+        getPaymentRefundByIdResponse(CHARGE_ID, REFUND_ID, CONNECTOR_ONLY_STRATEGY)
                 .statusCode(500)
                 .contentType(JSON)
                 .body("code", is("P0798"))
@@ -147,7 +147,7 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
 
         connectorMockClient.respondWithGetAllRefunds(GATEWAY_ACCOUNT_ID, CHARGE_ID, refund1, refund2);
 
-        assertRefundsResponse(getPaymentRefundsResponse(CHARGE_ID));
+        assertRefundsResponse(getPaymentRefundsResponse(CHARGE_ID, CONNECTOR_ONLY_STRATEGY));
     }
 
     @Test
@@ -199,7 +199,7 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
     public void getRefunds_shouldGetValidResponse_whenListReturnedIsEmpty() {
         connectorMockClient.respondWithGetAllRefunds(GATEWAY_ACCOUNT_ID, CHARGE_ID);
 
-        assertEmptyRefundsResponse(getPaymentRefundsResponse(CHARGE_ID));
+        assertEmptyRefundsResponse(getPaymentRefundsResponse(CHARGE_ID, CONNECTOR_ONLY_STRATEGY));
     }
 
     @Test

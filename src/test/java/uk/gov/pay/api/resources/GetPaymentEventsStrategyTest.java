@@ -40,8 +40,8 @@ public class GetPaymentEventsStrategyTest {
     }
 
     @Test
-    public void validateAndExecuteUsesFutureStrategyOnly() {
-        String strategy = "future-behaviour";
+    @Parameters({"", "unknown"})
+    public void validateAndExecuteUsesDefaultStrategy(String strategy) {
         getPaymentEventsStrategy = new GetPaymentEventsStrategy(strategy, mockAccountId, mockPaymentId, getPaymentEventsService);
         getPaymentEventsStrategy.validateAndExecute();
 
@@ -49,8 +49,9 @@ public class GetPaymentEventsStrategyTest {
     }
 
     @Test
-    @Parameters({"", "unknown"})
-    public void validateAndExecuteShouldUseConnectorOnlyStrategy(String strategy) {
+    
+    public void validateAndExecuteShouldUseConnectorOnlyStrategy() {
+        String strategy = "connector-only";
         getPaymentEventsStrategy = new GetPaymentEventsStrategy(strategy, mockAccountId, mockPaymentId, getPaymentEventsService);
 
         getPaymentEventsStrategy.validateAndExecute();

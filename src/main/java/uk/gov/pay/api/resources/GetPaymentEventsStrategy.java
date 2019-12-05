@@ -23,12 +23,12 @@ public class GetPaymentEventsStrategy extends LedgerOrConnectorStrategyTemplate<
     }
 
     @Override
-    protected PaymentEventsResponse executeFutureBehaviourStrategy() {
+    protected PaymentEventsResponse executeDefaultStrategy() {
         return getPaymentEventsService.getPaymentEvents(account, paymentId);
     }
 
     @Override
-    protected PaymentEventsResponse executeDefaultStrategy() {
+    protected PaymentEventsResponse executeConnectorOnlyStrategy() {
         return getPaymentEventsService.getPaymentEventsFromConnector(account, paymentId);
     }
 }
