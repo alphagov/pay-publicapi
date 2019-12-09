@@ -110,7 +110,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         environment.jersey().register(new InjectingValidationFeature(injector));
 
         environment.jersey().register(injector.getInstance(RateLimiterFilter.class));
-        environment.jersey().register(new LoggingMDCRequestFilter());
+        environment.jersey().register(injector.getInstance(LoggingMDCRequestFilter.class));
 
         environment.servlets().addFilter("ClearMdcValuesFilter", injector.getInstance(ClearMdcValuesFilter.class))
                 .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");
