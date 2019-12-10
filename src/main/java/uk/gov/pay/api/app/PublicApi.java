@@ -42,7 +42,7 @@ import uk.gov.pay.api.exception.mapper.SearchRefundsExceptionMapper;
 import uk.gov.pay.api.exception.mapper.ViolationExceptionMapper;
 import uk.gov.pay.api.filter.AuthorizationValidationFilter;
 import uk.gov.pay.api.filter.ClearMdcValuesFilter;
-import uk.gov.pay.api.filter.GatewayAccountIdFilter;
+import uk.gov.pay.api.filter.LoggingMDCRequestFilter;
 import uk.gov.pay.api.filter.RateLimiterFilter;
 import uk.gov.pay.api.healthcheck.Ping;
 import uk.gov.pay.api.ledger.resource.TransactionsResource;
@@ -110,7 +110,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         environment.jersey().register(new InjectingValidationFeature(injector));
 
         environment.jersey().register(injector.getInstance(RateLimiterFilter.class));
-        environment.jersey().register(new GatewayAccountIdFilter());
+        environment.jersey().register(new LoggingMDCRequestFilter());
 
         environment.servlets().addFilter("ClearMdcValuesFilter", injector.getInstance(ClearMdcValuesFilter.class))
                 .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");
