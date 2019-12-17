@@ -40,7 +40,7 @@ graphitePort: ${METRICS_PORT:-8092}
 jerseyClientConfig:
   disabledSecureConnection: ${DISABLE_INTERNAL_HTTPS:-false}
 
-rateLimiter:  # rate = noOfReq per perMillis
+rateLimiter:  # rate = noOfReq per second
   noOfReq: ${RATE_LIMITER_VALUE:-75}  # for requests except POST and across all publicapi instances.
   noOfReqForPost: ${RATE_LIMITER_VALUE_POST:-15} # for POST requests across all publicapi instances.
   elevatedAccounts: ${RATE_LIMITER_ELEVATED_ACCOUNTS}
