@@ -102,6 +102,7 @@ public class LedgerService {
         Response response = client
                 .target(ledgerUriGenerator.transactionsURIWithParams(paramsAsMap))
                 .request()
+                .accept(MediaType.APPLICATION_JSON_TYPE)
                 .get();
 
         if (response.getStatus() == SC_OK) {
