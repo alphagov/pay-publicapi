@@ -1,0 +1,12 @@
+dist: bionic
+language: java
+jdk:
+  - openjdk11
+before_install:
+  - rm ~/.m2/settings.xml || true
+  - ulimit -c unlimited -S
+cache:
+  directories:
+    - $HOME/.m2
+
+script: mvn clean verify
