@@ -5,6 +5,8 @@ server:
   adminConnectors:
     - type: http
       port: 0
+  requestLog:
+    appenders: []
 
 logging:
   level: INFO
