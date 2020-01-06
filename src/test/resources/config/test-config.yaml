@@ -9,10 +9,10 @@ server:
     appenders: []
 
 logging:
-  level: INFO
+  level: ERROR
   appenders:
     - type: logstash-console
-      threshold: ALL
+      threshold: ERROR
       target: stdout
       customFields:
         container: "publicapi"
