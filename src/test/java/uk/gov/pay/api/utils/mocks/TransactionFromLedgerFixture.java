@@ -18,7 +18,7 @@ public class TransactionFromLedgerFixture {
     private String transactionId;
     private String returnUrl;
     private String paymentProvider;
-    private List<PaymentConnectorResponseLink> links = new ArrayList<>();
+    private List<PaymentConnectorResponseLink> links;
     private RefundSummary refundSummary;
     private SettlementSummary settlementSummary;
     private CardDetails cardDetails;

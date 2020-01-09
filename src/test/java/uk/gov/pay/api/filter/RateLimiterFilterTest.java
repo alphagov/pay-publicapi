@@ -33,15 +33,12 @@ public class RateLimiterFilterTest {
     public static final String ACCOUNT_ID = "account-id";
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
-    private String authorization = "Bearer whateverAuthorizationToken";
     private RateLimiterFilter rateLimiterFilter;
     private RateLimiter rateLimiter;
     @Mock
     private ContainerRequestContext mockContainerRequestContext;
     @Mock
     private UriInfo uriInfo;
-    @Mock
-    private RateLimiterKey rateLimiterKey;
 
     @Before
     public void setup() {

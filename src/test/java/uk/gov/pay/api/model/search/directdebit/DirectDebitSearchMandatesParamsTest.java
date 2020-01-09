@@ -34,8 +34,8 @@ public class DirectDebitSearchMandatesParamsTest {
         assertThat(paramsAsMap, hasEntry("bank_statement_reference", "a bank statement reference"));
         assertThat(paramsAsMap, hasEntry("display_size", String.valueOf(10)));
         assertThat(paramsAsMap, hasEntry("email", "test@test.test"));
-        assertThat(paramsAsMap, hasEntry("from_date", yesterday.toString()));
-        assertThat(paramsAsMap, hasEntry("to_date", tomorrow.toString()));
+        assertThat(paramsAsMap, hasEntry("from_date", yesterday));
+        assertThat(paramsAsMap, hasEntry("to_date", tomorrow));
         assertThat(paramsAsMap, hasEntry("name", "test"));
         assertThat(paramsAsMap, hasEntry("page", String.valueOf(1)));
         assertThat(paramsAsMap, hasEntry("reference", "a reference"));
