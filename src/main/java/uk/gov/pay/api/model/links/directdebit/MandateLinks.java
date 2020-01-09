@@ -123,8 +123,7 @@ public class MandateLinks {
         }
 
         public MandateLinks build() {
-            MandateLinks mandateLinks = new MandateLinks(self, nextUrl, nextUrlPost, payments, events);
-            return mandateLinks;
+            return new MandateLinks(self, nextUrl, nextUrlPost, payments, events);
         }
     }
 }

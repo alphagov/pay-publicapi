@@ -9,7 +9,6 @@ import uk.gov.pay.api.it.PaymentResourceITestBase;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 
-import java.io.IOException;
 import java.util.Map;
 
 import static io.restassured.http.ContentType.JSON;
@@ -89,7 +88,7 @@ public class PaymentsResourceLanguageValidationIT extends PaymentResourceITestBa
     }
 
     @Test
-    public void createPayment_responseWith400_whenLanguageIsNull() throws IOException {
+    public void createPayment_responseWith400_whenLanguageIsNull() {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 9900,\n" +
@@ -109,7 +108,7 @@ public class PaymentsResourceLanguageValidationIT extends PaymentResourceITestBa
     }
 
     @Test
-    public void createPayment_responseWith400_whenLanguageHasNotAValidJsonValue() throws IOException {
+    public void createPayment_responseWith400_whenLanguageHasNotAValidJsonValue() {
         String payload = "{" +
                 "  \"amount\" : 9900," +
                 "  \"reference\" : \"Some reference\"," +
@@ -127,7 +126,7 @@ public class PaymentsResourceLanguageValidationIT extends PaymentResourceITestBa
     }
 
     @Test
-    public void createPayment_responseWith400_whenLanguageFieldIsNotExpectedJsonField() throws IOException {
+    public void createPayment_responseWith400_whenLanguageFieldIsNotExpectedJsonField() {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 9900,\n" +

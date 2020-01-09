@@ -227,8 +227,7 @@ class RequestJsonParser {
     }
 
     private static String validateSkipNullValueAndGetString(JsonNode jsonNode, PaymentError validationError) {
-        String value = validateSkipNullAndGetValue(jsonNode, validationError, JsonNode::isTextual, JsonNode::asText);
-        return value;
+        return validateSkipNullAndGetValue(jsonNode, validationError, JsonNode::isTextual, JsonNode::asText);
     }
     
     private static <T> T validateSkipNullAndGetValue(JsonNode jsonNode,

@@ -1,6 +1,7 @@
 package uk.gov.pay.api.filter;
 
 import com.google.common.io.BaseEncoding;
+import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 
@@ -68,7 +69,7 @@ public class AuthorizationValidationFilter implements Filter {
     private boolean tokenMatchesHmac(String token, String currentHmac) {
         final String hmacCalculatedFromToken = BaseEncoding.base32Hex()
                 .lowerCase().omitPadding()
-                .encode(HmacUtils.hmacSha1(apiKeyHmacSecret, token));
+                .encode(new HmacUtils(HmacAlgorithms.HMAC_SHA_1, apiKeyHmacSecret).hmac(token));
         return hmacCalculatedFromToken.equals(currentHmac);
     }
 }

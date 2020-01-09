@@ -11,6 +11,7 @@ import uk.gov.pay.api.it.PaymentResourceITestBase;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
@@ -192,7 +193,7 @@ public class PaymentResourceSearchValidationIT extends PaymentResourceITestBase 
                 .contentType(JSON).extract()
                 .body().asInputStream();
 
-        String json = IOUtils.toString(body, "UTF-8");
+        String json = IOUtils.toString(body, StandardCharsets.UTF_8);
 
         JsonAssert.with(json)
                 .assertThat("$.*", hasSize(2))
@@ -213,7 +214,7 @@ public class PaymentResourceSearchValidationIT extends PaymentResourceITestBase 
                 .contentType(JSON).extract()
                 .body().asInputStream();
 
-        String json = IOUtils.toString(body, "UTF-8");
+        String json = IOUtils.toString(body, StandardCharsets.UTF_8);
 
         JsonAssert.with(json)
                 .assertThat("$.*", hasSize(2))

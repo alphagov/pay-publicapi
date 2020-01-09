@@ -140,7 +140,7 @@ public class PaymentOutcomeValidatorTest {
 
         CreateTelephonePaymentRequest telephonePaymentRequest = builder
                 .withPaymentOutcome(null)
-                .build();;
+                .build();
 
         Set<ConstraintViolation<CreateTelephonePaymentRequest>> constraintViolations = validator.validate(telephonePaymentRequest);
 

@@ -34,18 +34,18 @@ public class DirectDebitEventSearchValidator {
     }
 
     private static void validateBeforeDate(String toDate, List<String> validationErrors) {
-        if (!validateDate(toDate)) {
+        if (isDateInvalid(toDate)) {
             validationErrors.add("from_date");
         }
     }
 
     private static void validateAfterDate(String fromDate, List<String> validationErrors) {
-        if (!validateDate(fromDate)) {
+        if (isDateInvalid(fromDate)) {
             validationErrors.add("to_date");
         }
     }
 
-    private static boolean validateDate(String value) {
-        return DateValidator.isValid(value);
+    private static boolean isDateInvalid(String value) {
+        return !DateValidator.isValid(value);
     }
 }

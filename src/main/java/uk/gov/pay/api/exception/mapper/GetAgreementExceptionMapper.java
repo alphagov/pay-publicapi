@@ -11,7 +11,6 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static uk.gov.pay.api.model.directdebit.mandates.MandateError.Code.GET_MANDATE_CONNECTOR_ERROR;
 import static uk.gov.pay.api.model.directdebit.mandates.MandateError.Code.GET_MANDATE_NOT_FOUND_ERROR;
-import static uk.gov.pay.api.model.directdebit.mandates.MandateError.aMandateError;
 
 public class GetAgreementExceptionMapper implements ExceptionMapper<GetMandateException> {
 

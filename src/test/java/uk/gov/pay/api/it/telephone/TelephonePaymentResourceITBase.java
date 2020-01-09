@@ -12,11 +12,8 @@ import org.junit.Rule;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.it.rule.RedisDockerRule;
-import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
-import uk.gov.pay.api.utils.mocks.ConnectorDDMockClient;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,8 +23,6 @@ import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
-import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
-import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 import static uk.gov.pay.commons.testing.port.PortFactory.findFreePort;
 
 public abstract class TelephonePaymentResourceITBase {

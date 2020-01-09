@@ -63,7 +63,7 @@ public class DirectDebitSearchMandatesParams {
     @Max(value = 500, message = "Must be less than or equal to {value}")
     private int displaySize;
 
-    public DirectDebitSearchMandatesParams() { };
+    public DirectDebitSearchMandatesParams() { }
 
     private DirectDebitSearchMandatesParams(DirectDebitSearchMandatesParamsBuilder builder) {
         this.reference = builder.reference;
@@ -123,8 +123,8 @@ public class DirectDebitSearchMandatesParams {
                 params.put("bank_statement_reference", bankStatementReference));
         this.getEmail().ifPresent(email -> params.put("email", email));
         this.getName().ifPresent(name -> params.put("name", name));
-        this.getFromDate().ifPresent(fromDate -> params.put("from_date", String.valueOf(fromDate)));
-        this.getToDate().ifPresent(toDate -> params.put("to_date", String.valueOf(toDate)));
+        this.getFromDate().ifPresent(fromDate -> params.put("from_date", fromDate));
+        this.getToDate().ifPresent(toDate -> params.put("to_date", toDate));
         this.getReference().ifPresent(reference -> params.put("reference", reference));
         this.getState().ifPresent(state -> params.put("state", state));
 
