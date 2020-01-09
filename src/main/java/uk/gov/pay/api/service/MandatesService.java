@@ -3,7 +3,6 @@ package uk.gov.pay.api.service;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateMandateException;
 import uk.gov.pay.api.exception.GetMandateException;
@@ -11,7 +10,6 @@ import uk.gov.pay.api.model.directdebit.mandates.CreateMandateRequest;
 import uk.gov.pay.api.model.directdebit.mandates.MandateConnectorRequest;
 import uk.gov.pay.api.model.directdebit.mandates.MandateConnectorResponse;
 import uk.gov.pay.api.model.directdebit.mandates.MandateResponse;
-import uk.gov.pay.api.model.links.directdebit.MandateLinks;
 import uk.gov.pay.api.service.directdebit.DirectDebitConnectorUriGenerator;
 
 import javax.inject.Inject;
@@ -19,8 +17,6 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import static uk.gov.pay.api.model.links.directdebit.MandateLinks.MandateLinksBuilder.aMandateLinks;
 
 public class MandatesService {
 

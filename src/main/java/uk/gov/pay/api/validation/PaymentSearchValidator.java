@@ -18,7 +18,7 @@ import static uk.gov.pay.api.model.CreateDirectDebitPaymentRequest.MANDATE_ID_MA
 import static uk.gov.pay.api.model.PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
-import static uk.gov.pay.api.validation.MaxLengthValidator.isValid;
+import static uk.gov.pay.api.validation.MaxLengthValidator.isInvalid;
 import static uk.gov.pay.api.validation.SearchValidator.validateDisplaySizeIfNotNull;
 import static uk.gov.pay.api.validation.SearchValidator.validateFromDate;
 import static uk.gov.pay.api.validation.SearchValidator.validatePageIfNotNull;
@@ -77,7 +77,7 @@ public class PaymentSearchValidator {
     }
 
     private static void validateMandateId(String mandate_id, List<String> validationErrors) {
-        if (!isValid(mandate_id, MANDATE_ID_MAX_LENGTH)) {
+        if (isInvalid(mandate_id, MANDATE_ID_MAX_LENGTH)) {
             validationErrors.add("mandate_id");
         }
     }
@@ -95,19 +95,19 @@ public class PaymentSearchValidator {
     }
 
     private static void validateReference(String reference, List<String> validationErrors) {
-        if (!isValid(reference, REFERENCE_MAX_LENGTH)) {
+        if (isInvalid(reference, REFERENCE_MAX_LENGTH)) {
             validationErrors.add("reference");
         }
     }
 
     private static void validateEmail(String email, List<String> validationErrors) {
-        if (!isValid(email, EMAIL_MAX_LENGTH)) {
+        if (isInvalid(email, EMAIL_MAX_LENGTH)) {
             validationErrors.add("email");
         }
     }
 
     private static void validateCardBrand(String cardBrand, List<String> validationErrors) {
-        if (!isValid(cardBrand, 20)) {
+        if (isInvalid(cardBrand, 20)) {
             validationErrors.add("card_brand");
         }
     }

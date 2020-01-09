@@ -7,7 +7,6 @@ import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.Charge;
-import uk.gov.pay.api.model.ChargeFromResponse;
 import uk.gov.pay.api.model.directdebit.mandates.DirectDebitPayment;
 import uk.gov.pay.api.model.Payment;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
@@ -130,12 +129,10 @@ public class PaymentWithAllLinks {
             URI paymentCancelUri,
             URI paymentRefundsUri,
             URI paymentsCaptureUri) {
-        switch (paymentType) {
-            case DIRECT_DEBIT:
-                return PaymentWithAllLinks.valueOf(paymentConnector, selfLink);
-            default:
-                return PaymentWithAllLinks.valueOf(paymentConnector, selfLink, paymentEventsUri, paymentCancelUri, paymentRefundsUri, paymentsCaptureUri);
+        if (paymentType == TokenPaymentType.DIRECT_DEBIT) {
+            return PaymentWithAllLinks.valueOf(paymentConnector, selfLink);
         }
+        return PaymentWithAllLinks.valueOf(paymentConnector, selfLink, paymentEventsUri, paymentCancelUri, paymentRefundsUri, paymentsCaptureUri);
     }
 
     @Override

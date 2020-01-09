@@ -2,7 +2,6 @@ package uk.gov.pay.api.utils.mocks;
 
 import uk.gov.pay.api.model.directdebit.mandates.MandateState;
 import uk.gov.pay.api.model.directdebit.mandates.Payer;
-import uk.gov.pay.api.utils.ChargeEventBuilder;
 
 public class DDConnectorResponseToGetMandateParams {
 

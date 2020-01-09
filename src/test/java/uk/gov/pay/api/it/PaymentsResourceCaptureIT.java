@@ -2,7 +2,6 @@ package uk.gov.pay.api.it;
 
 import com.jayway.jsonassert.JsonAssert;
 import io.restassured.response.ValidatableResponse;
-import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;

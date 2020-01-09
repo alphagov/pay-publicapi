@@ -7,7 +7,6 @@ import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 import static java.lang.String.format;
 

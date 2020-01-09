@@ -107,7 +107,7 @@ public class RestClientLoggingFilterTest {
         String endLogMessage = loggingEvents.get(1).getFormattedMessage();
         assertThat(endLogMessage, containsString(format("[%s] - %s to %s ended - total time ", requestId, requestMethod, requestUrl)));
         String[] timeTaken = StringUtils.substringsBetween(endLogMessage, "total time ", "ms");
-        assertTrue(NumberUtils.isNumber(timeTaken[0]));
+        assertTrue(NumberUtils.isCreatable(timeTaken[0]));
 
     }
 }

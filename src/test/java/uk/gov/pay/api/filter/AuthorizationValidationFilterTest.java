@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.pay.api.utils.ApiKeyGenerator.apiKeyValueOf;
 
@@ -62,7 +62,7 @@ public class AuthorizationValidationFilterTest {
 
         authorizationValidationFilter.doFilter(mockRequest, mockResponse, mockFilterChain);
 
-        verifyZeroInteractions(mockFilterChain);
+        verifyNoInteractions(mockFilterChain);
         verify(mockResponse).sendError(401, "Unauthorized");
     }
 
@@ -73,7 +73,7 @@ public class AuthorizationValidationFilterTest {
 
         authorizationValidationFilter.doFilter(mockRequest, mockResponse, mockFilterChain);
 
-        verifyZeroInteractions(mockFilterChain);
+        verifyNoInteractions(mockFilterChain);
         verify(mockResponse).sendError(401, "Unauthorized");
     }
 
@@ -87,7 +87,7 @@ public class AuthorizationValidationFilterTest {
 
         authorizationValidationFilter.doFilter(mockRequest, mockResponse, mockFilterChain);
 
-        verifyZeroInteractions(mockFilterChain);
+        verifyNoInteractions(mockFilterChain);
         verify(mockResponse).sendError(401, "Unauthorized");
     }
 
@@ -101,7 +101,7 @@ public class AuthorizationValidationFilterTest {
 
         authorizationValidationFilter.doFilter(mockRequest, mockResponse, mockFilterChain);
 
-        verifyZeroInteractions(mockFilterChain);
+        verifyNoInteractions(mockFilterChain);
         verify(mockResponse).sendError(401, "Unauthorized");
     }
 }

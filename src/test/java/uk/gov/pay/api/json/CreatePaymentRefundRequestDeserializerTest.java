@@ -17,7 +17,7 @@ import uk.gov.pay.api.validation.PaymentRefundRequestValidator;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.pay.api.matcher.BadRequestExceptionMatcher.aBadRequestExceptionWithError;
 import static uk.gov.pay.api.matcher.PaymentValidationExceptionMatcher.aValidationExceptionContaining;
 
@@ -123,6 +123,6 @@ public class CreatePaymentRefundRequestDeserializerTest {
 
     @After
     public void tearDown() {
-        verifyZeroInteractions(ctx);
+        verifyNoInteractions(ctx);
     }
 }

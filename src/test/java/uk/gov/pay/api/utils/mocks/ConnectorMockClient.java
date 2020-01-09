@@ -337,25 +337,21 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         String chargeId = chargeResponseFromConnector.getChargeId();
 
         var responseFromConnector = aCreateOrGetChargeResponseFromConnector(chargeResponseFromConnector)
-                .withLink(validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"));
+                .withLink(validGetLink(chargeLocation(gatewayAccountId, chargeId), "self"))
+                .withLink(validGetLink(chargeLocation(gatewayAccountId, chargeId) + "/refunds", "refunds"));
 
         if (AWAITING_CAPTURE_REQUEST == chargeResponseFromConnector.getState()) {
-
-            responseFromConnector.withLink(validGetLink(chargeLocation(gatewayAccountId, chargeId) + "/refunds", "refunds"))
+            responseFromConnector
                     .withLink(validPostLink(chargeLocation(gatewayAccountId, chargeId) + "/capture", "capture", "application/x-www-form-urlencoded", new HashMap<>()))
                     .build();
-
-            chargeResponseBody = buildChargeResponse(responseFromConnector.build());
-
         } else {
-
-            responseFromConnector.withLink(validGetLink(chargeLocation(gatewayAccountId, chargeId) + "/refunds", "refunds"))
+            responseFromConnector
                     .withLink(validGetLink(nextUrl(chargeId), "next_url"))
                     .withLink(validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap(chargeTokenId)))
                     .build();
-
-            chargeResponseBody = buildChargeResponse(responseFromConnector.build());
         }
+
+        chargeResponseBody = buildChargeResponse(responseFromConnector.build());
         whenGetCharge(gatewayAccountId, chargeId, aResponse()
                 .withStatus(OK_200)
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON)

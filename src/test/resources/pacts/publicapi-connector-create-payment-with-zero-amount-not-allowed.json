@@ -29,7 +29,7 @@
       "response": {
         "status": 422,
         "headers": {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         "body": {
           "error_identifier": "ZERO_AMOUNT_NOT_ALLOWED"

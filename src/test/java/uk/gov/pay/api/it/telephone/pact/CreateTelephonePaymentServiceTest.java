@@ -11,36 +11,21 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.exception.CreateChargeException;
-import uk.gov.pay.api.model.Address;
-import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.ChargeFromResponse;
-import uk.gov.pay.api.model.CreateCardPaymentRequestBuilder;
-import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.TokenPaymentType;
-import uk.gov.pay.api.model.links.Link;
-import uk.gov.pay.api.model.links.PaymentWithAllLinks;
-import uk.gov.pay.api.model.links.PostLink;
 import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
 import uk.gov.pay.api.model.telephone.PaymentOutcome;
 import uk.gov.pay.api.model.telephone.Supplemental;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.telephone.CreateTelephonePaymentService;
-import uk.gov.pay.commons.model.ErrorIdentifier;
-import uk.gov.pay.commons.model.SupportedLanguage;
-import uk.gov.pay.commons.model.charge.ExternalMetadata;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
