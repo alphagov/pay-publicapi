@@ -16,7 +16,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
@@ -46,9 +45,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import static java.lang.String.format;
@@ -56,36 +52,20 @@ import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.ACCEPTED;
 import static javax.ws.rs.core.UriBuilder.fromPath;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
-@Path(PaymentRefundsResource.PAYMENT_REFUNDS_PATH)
+@Path("/v1/payments/{paymentId}/refunds")
 @Tag(name = "Refunding card payments")
 @Api(tags = "Refunding card payments", value = "/refunds")
 @Produces({"application/json"})
 public class PaymentRefundsResource {
     private static final Logger logger = LoggerFactory.getLogger(PaymentRefundsResource.class);
 
-    private static final String API_VERSION_PATH = "/v1";
-    private static final String PATH_PAYMENT_KEY = "paymentId";
-    public static final String PATH_REFUND_KEY = "refundId";
-
-    private static final String PAYMENTS_ID_PLACEHOLDER = "{" + PATH_PAYMENT_KEY + "}";
-    public static final String PAYMENT_BY_ID_PATH = API_VERSION_PATH + "/payments/" + PAYMENTS_ID_PLACEHOLDER;
-    public static final String PAYMENT_REFUNDS_PATH = PAYMENT_BY_ID_PATH + "/refunds";
-    public static final String PAYMENT_REFUND_BY_ID_PATH = PAYMENT_REFUNDS_PATH + "/{refundId}";
-
-    private static final String CONNECTOR_ACCOUNT_RESOURCE = API_VERSION_PATH + "/api/accounts/%s";
-    private static final String CONNECTOR_CHARGES_RESOURCE = CONNECTOR_ACCOUNT_RESOURCE + "/charges";
-    private static final String CONNECTOR_CHARGE_RESOURCE = CONNECTOR_CHARGES_RESOURCE + "/%s";
-
-    private static final String CONNECTOR_CHARGE_REFUNDS_RESOURCE = CONNECTOR_CHARGE_RESOURCE + "/refunds";
-
     private final String baseUrl;
     private final Client client;
     private final String connectorUrl;
-    private GetPaymentRefundsService getPaymentRefundsService;
-    private GetPaymentRefundService getPaymentRefundService;
-    private ConnectorService connectorService;
+    private final GetPaymentRefundsService getPaymentRefundsService;
+    private final GetPaymentRefundService getPaymentRefundService;
+    private final ConnectorService connectorService;
 
     @Inject
     public PaymentRefundsResource(Client client, PublicApiConfig configuration,
@@ -134,7 +114,7 @@ public class PaymentRefundsResource {
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public RefundsResponse getRefunds(@Parameter(hidden = true) @ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                                      @PathParam(PATH_PAYMENT_KEY) String paymentId,
+                                      @PathParam("paymentId") String paymentId,
                                       @Parameter(hidden = true) @ApiParam(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
 
         logger.info("Get refunds for payment request - paymentId={} using strategy={}", paymentId, strategyName);
@@ -182,10 +162,10 @@ public class PaymentRefundsResource {
             @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
-    public RefundResponse getRefundById(@Parameter(hidden = true) @ApiParam(value = "accountId", hidden = true) 
-                                            @Auth Account account,
-                                        @PathParam(PATH_PAYMENT_KEY) String paymentId,
-                                        @PathParam(PATH_REFUND_KEY) String refundId,
+    public RefundResponse getRefundById(@Parameter(hidden = true) @ApiParam(value = "accountId", hidden = true)
+                                        @Auth Account account,
+                                        @PathParam("paymentId") String paymentId,
+                                        @PathParam("refundId") String refundId,
                                         @Parameter(hidden = true) @ApiParam(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
 
         logger.info("Payment refund request - paymentId={}, refundId={}", paymentId, refundId);
@@ -238,7 +218,7 @@ public class PaymentRefundsResource {
             @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
             @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
     public Response submitRefund(@Parameter(hidden = true) @ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                                 @ApiParam(value = "paymentId", required = true) @PathParam(PATH_PAYMENT_KEY) String paymentId,
+                                 @ApiParam(value = "paymentId", required = true) @PathParam("paymentId") String paymentId,
                                  @Parameter(required = true, description = "requestPayload")
                                  @ApiParam(value = "requestPayload", required = true) CreatePaymentRefundRequest requestPayload) {
 
@@ -256,7 +236,7 @@ public class PaymentRefundsResource {
                 payloadMap);
 
         Response connectorResponse = client
-                .target(getConnectorUrl(format(CONNECTOR_CHARGE_REFUNDS_RESOURCE, account.getAccountId(), paymentId)))
+                .target(getConnectorUrl(format("/v1/api/accounts/%s/charges/%s/refunds", account.getAccountId(), paymentId)))
                 .request()
                 .post(json(connectorPayload));
 
@@ -272,19 +252,6 @@ public class PaymentRefundsResource {
     }
 
     private String getConnectorUrl(String urlPath) {
-        return getConnectorUrl(urlPath, Collections.emptyList());
-    }
-
-    private String getConnectorUrl(String urlPath, List<Pair<String, String>> queryParams) {
-        UriBuilder builder =
-                fromPath(connectorUrl)
-                        .path(urlPath);
-
-        queryParams.stream().forEach(pair -> {
-            if (isNotBlank(pair.getRight())) {
-                builder.queryParam(pair.getKey(), pair.getValue());
-            }
-        });
-        return builder.toString();
+        return fromPath(connectorUrl).path(urlPath).toString();
     }
 }
