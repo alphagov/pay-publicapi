@@ -11,8 +11,6 @@ import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
-import static uk.gov.pay.api.resources.PaymentRefundsResource.PAYMENT_BY_ID_PATH;
-import static uk.gov.pay.api.resources.PaymentRefundsResource.PAYMENT_REFUND_BY_ID_PATH;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @Schema(name = "Refund")
@@ -74,11 +72,11 @@ public class RefundResponse {
     //todo: remove after full refactoring of PaymentRefundsResource (to use service layer) 
     public static RefundResponse valueOf(RefundFromConnector refundEntity, String paymentId, String baseUrl) {
         URI selfLink = UriBuilder.fromUri(baseUrl)
-                .path(PAYMENT_REFUND_BY_ID_PATH)
+                .path("/v1/payments/{paymentId}/refunds/{refundId}")
                 .build(paymentId, refundEntity.getRefundId());
 
         URI paymentLink = UriBuilder.fromUri(baseUrl)
-                .path(PAYMENT_BY_ID_PATH)
+                .path("/v1/payments/{paymentId}")
                 .build(paymentId);
 
         return new RefundResponse(
