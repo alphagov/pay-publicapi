@@ -39,7 +39,7 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        CreateCardPaymentRequest createPaymentRequest = (CreateCardPaymentRequest) parsePaymentRequest(jsonNode);
+        CreateCardPaymentRequest createPaymentRequest = parsePaymentRequest(jsonNode);
 
         assertThat(createPaymentRequest, is(notNullValue()));
         assertThat(createPaymentRequest.getAmount(), is(1000));
@@ -62,7 +62,7 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        CreateCardPaymentRequest createPaymentRequest = (CreateCardPaymentRequest) parsePaymentRequest(jsonNode);
+        CreateCardPaymentRequest createPaymentRequest = parsePaymentRequest(jsonNode);
 
         assertThat(createPaymentRequest, is(notNullValue()));
         assertThat(createPaymentRequest.getAmount(), is(1000));
@@ -338,7 +338,7 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        CreateCardPaymentRequest createPaymentRequest = (CreateCardPaymentRequest) parsePaymentRequest(jsonNode);
+        CreateCardPaymentRequest createPaymentRequest = parsePaymentRequest(jsonNode);
 
         assertThat(createPaymentRequest, is(notNullValue()));
         assertThat(createPaymentRequest.getAmount(), is(1000));
@@ -380,7 +380,7 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        CreateCardPaymentRequest createPaymentRequest = (CreateCardPaymentRequest) parsePaymentRequest(jsonNode);
+        CreateCardPaymentRequest createPaymentRequest = parsePaymentRequest(jsonNode);
 
         assertThat(createPaymentRequest, is(notNullValue()));
         assertThat(createPaymentRequest.getAmount(), is(1000));

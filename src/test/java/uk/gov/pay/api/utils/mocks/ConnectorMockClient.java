@@ -62,16 +62,6 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     private static final String CONNECTOR_MOCK_CHARGE_REFUNDS_PATH = CONNECTOR_MOCK_CHARGE_PATH + "/refunds";
     private static final String CONNECTOR_MOCK_SEARCH_REFUNDS_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/refunds";
     private static final String CONNECTOR_MOCK_CHARGE_REFUND_BY_ID_PATH = CONNECTOR_MOCK_CHARGE_REFUNDS_PATH + "/%s";
-    private static final String REFERENCE_KEY = "reference";
-    private static final String EMAIL_KEY = "email";
-    private static final String STATE_KEY = "state";
-    private static final String CARD_BRAND = "master-card";
-    private static final String CARD_BRAND_KEY = "card_brand";
-    private static final String CARDHOLDER_NAME_KEY = "cardholder_name";
-    public static final String FIRST_DIGITS_CARD_NUMBER_KEY = "first_digits_card_number";
-    public static final String LAST_DIGITS_CARD_NUMBER_KEY = "last_digits_card_number";
-    private static final String FROM_DATE_KEY = "from_date";
-    private static final String TO_DATE_KEY = "to_date";
     private static final DateFormat SDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     public ConnectorMockClient(WireMockClassRule connectorMock) {
@@ -309,13 +299,6 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withBody(buildGetRefundResponse(refundId, amount, refundAmountAvailable, status, createdDate)));
     }
 
-    public void respondOk_whenSearchCharges(String accountId, String expectedResponse) {
-        whenSearchCharges(accountId, aResponse()
-                .withStatus(OK_200)
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                .withBody(expectedResponse));
-    }
-
     public void respondNotFound_whenCreateCharge(String gatewayAccountId) {
         mockCreateCharge(gatewayAccountId, aResponse().withStatus(NOT_FOUND_404));
     }
@@ -384,27 +367,6 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .add("_embedded", refundList);
 
         whenGetAllRefunds(gatewayAccountId, chargeId, aResponse()
-                .withStatus(OK_200)
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                .withBody(jsonStringBuilder.build()));
-    }
-
-    public void respondWithSearchRefunds(String gatewayAccountId, PaymentRefundSearchJsonFixture... refunds) {
-
-        Map<String, Link> links = (ImmutableMap.of("first_page", new Link("http://server:port/first-link?page=1"),
-                "prev_page", new Link("http://server:port/prev-link?page=2"),
-                "self", new Link("http://server:port/self-link?page=3"),
-                "last_page", new Link("http://server:port/last-link?page=5"),
-                "next_page", new Link("http://server:port/next-link?page=4")));
-
-        JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
-                .add("total", 1)
-                .add("count", 1)
-                .add("page", 1)
-                .add("results", Arrays.asList(refunds))
-                .add("_links", links);
-
-        whenSearchRefunds(gatewayAccountId, aResponse()
                 .withStatus(OK_200)
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                 .withBody(jsonStringBuilder.build()));

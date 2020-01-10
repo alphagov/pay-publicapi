@@ -23,11 +23,11 @@ public class RateLimiterKey {
 
         final String pathType = PathHelper.getPathType(requestContext.getUriInfo().getPath(), method);
         if (!pathType.isBlank()) {
-            builder.append("-" + pathType);
+            builder.append("-").append(pathType);
         }
 
         final String keyType = builder.toString();
-        builder.append("-" + accountId);
+        builder.append("-").append(accountId);
 
         return new RateLimiterKey(builder.toString(), keyType, method);
     }

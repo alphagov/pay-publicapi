@@ -52,7 +52,7 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
-        CreateCardPaymentRequest paymentRequest = (CreateCardPaymentRequest) deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+        CreateCardPaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
 
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
@@ -75,7 +75,7 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "  \"language\": \"en\"\n" +
                 "}";
 
-        CreateCardPaymentRequest paymentRequest = (CreateCardPaymentRequest) deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+        CreateCardPaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
 
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
@@ -95,7 +95,7 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "  \"language\": \"cy\"\n" +
                 "}";
 
-        CreateCardPaymentRequest paymentRequest = (CreateCardPaymentRequest) deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+        CreateCardPaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
 
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
@@ -115,7 +115,7 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "  \"delayed_capture\": true\n" +
                 "}";
 
-        CreateCardPaymentRequest paymentRequest = (CreateCardPaymentRequest) deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+        CreateCardPaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
 
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
@@ -135,7 +135,7 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "  \"delayed_capture\": false\n" +
                 "}";
 
-        CreateCardPaymentRequest paymentRequest = (CreateCardPaymentRequest) deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+        CreateCardPaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
 
         assertThat(paymentRequest.getAmount(), is(27432));
         assertThat(paymentRequest.getReference(), is("Some reference"));
@@ -450,7 +450,7 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "\"country\": \"GB\"\n" +
                 "}" + "}" + "}";
 
-        CreateCardPaymentRequest paymentRequest = (CreateCardPaymentRequest) deserializer.deserialize(jsonFactory.createParser(payload), ctx);
+        CreateCardPaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(payload), ctx);
         assertThat(paymentRequest.getAmount(), is(1000));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
@@ -485,7 +485,7 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "\"cardholder_name\": \"J Bogs\"\n" +
                 "}" + "}";
 
-        CreateCardPaymentRequest paymentRequest = (CreateCardPaymentRequest) deserializer.deserialize(jsonFactory.createParser(payload), ctx);
+        CreateCardPaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(payload), ctx);
         assertThat(paymentRequest.getAmount(), is(1000));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
@@ -515,7 +515,7 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "\"country\": null\n" +
                 "}" + "}" + "}";
 
-        CreateCardPaymentRequest paymentRequest = (CreateCardPaymentRequest) deserializer.deserialize(jsonFactory.createParser(payload), ctx);
+        CreateCardPaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(payload), ctx);
         assertThat(paymentRequest.getAmount(), is(1000));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
@@ -551,7 +551,7 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "\"country\": \"\"\n" +
                 "}" + "}" + "}";
 
-        CreateCardPaymentRequest paymentRequest = (CreateCardPaymentRequest) deserializer.deserialize(jsonFactory.createParser(payload), ctx);
+        CreateCardPaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(payload), ctx);
         assertThat(paymentRequest.getAmount(), is(1000));
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));

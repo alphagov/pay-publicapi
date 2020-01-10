@@ -32,7 +32,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class RedisRateLimiterTest {
 
-    private static final String POST = "POST";
     private static final String accountId = "account-id";
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
