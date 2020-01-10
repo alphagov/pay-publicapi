@@ -4,7 +4,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.regex.Pattern;
 
-public class CardFirstSixDigitsValidator implements ConstraintValidator<ValidCardExpiryDate, String> {
+public class CardFirstSixDigitsValidator implements ConstraintValidator<ValidCardFirstSixDigits, String> {
 
     private Pattern pattern = Pattern.compile("\\d{6}");
 

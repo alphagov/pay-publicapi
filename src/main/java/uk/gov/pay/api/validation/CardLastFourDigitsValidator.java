@@ -4,7 +4,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.regex.Pattern;
 
-public class CardLastFourDigitsValidator implements ConstraintValidator<ValidCardExpiryDate, String> {
+public class CardLastFourDigitsValidator implements ConstraintValidator<ValidCardLastFourDigits, String> {
 
     private Pattern pattern = Pattern.compile("\\d{4}");
 
