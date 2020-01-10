@@ -20,7 +20,7 @@ public class DirectDebitConnectorUriGenerator {
 
     String chargesURI(Account account) {
         String chargePath = "/v1/api/accounts/%s/charges/collect";
-        return buildConnectorUri(account, format(chargePath, account.getAccountId()));
+        return buildConnectorUri(format(chargePath, account.getAccountId()));
     }
 
     public String singleMandateURI(Account account, String externalMandateId) {
@@ -28,19 +28,19 @@ public class DirectDebitConnectorUriGenerator {
     }
     
     public String mandatesURI(Account account) {
-        return buildConnectorUri(account, format("/v1/api/accounts/%s/mandates", account.getAccountId()));
+        return buildConnectorUri(format("/v1/api/accounts/%s/mandates", account.getAccountId()));
     }
 
     public String directDebitPaymentsURI(Account account, Map<String, String> queryParams) {
         String path = String.format("/v1/api/accounts/%s/payments", account.getAccountId());
-        return buildConnectorUri(account, path, queryParams);
+        return buildConnectorUri(path, queryParams);
     }
 
-    private String buildConnectorUri(Account account, String path) {
-        return buildConnectorUri(account, path, Collections.emptyMap());
+    private String buildConnectorUri(String path) {
+        return buildConnectorUri(path, Collections.emptyMap());
     }
 
-    private String buildConnectorUri(Account account, String path, Map<String, String> params) {
+    private String buildConnectorUri(String path, Map<String, String> params) {
         UriBuilder builder = UriBuilder.fromPath(configuration.getConnectorDDUrl()).path(path);
         params.entrySet().stream()
                 .filter(k -> k.getValue() != null)

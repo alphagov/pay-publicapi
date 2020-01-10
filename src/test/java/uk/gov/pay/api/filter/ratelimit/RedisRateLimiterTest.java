@@ -24,7 +24,6 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -46,6 +45,7 @@ public class RedisRateLimiterTest {
     @Captor
     ArgumentCaptor<LoggingEvent> loggingEventArgumentCaptor;
     private RedisRateLimiter redisRateLimiter;
+    @Mock
     private Appender<ILoggingEvent> mockAppender;
 
     @Before
@@ -53,7 +53,6 @@ public class RedisRateLimiterTest {
         when(jedisPool.getResource()).thenReturn(jedis);
 
         Logger root = (Logger) LoggerFactory.getLogger(RedisRateLimiter.class);
-        mockAppender = mock(Appender.class);
         root.setLevel(Level.INFO);
         root.addAppender(mockAppender);
     }

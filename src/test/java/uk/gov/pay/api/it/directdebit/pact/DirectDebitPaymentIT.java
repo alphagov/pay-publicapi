@@ -39,7 +39,6 @@ public class DirectDebitPaymentIT {
 
     //Must use same secret set int configured test-config.xml
     protected static final String API_KEY = ApiKeyGenerator.apiKeyValueOf("TEST_BEARER_TOKEN", "qwer9yuhgf");
-    protected static final String GATEWAY_ACCOUNT_ID = "GATEWAY_ACCOUNT_ID";
     protected static final String PAYMENTS_PATH = "/v1/directdebit/payments/";
 
     @Rule

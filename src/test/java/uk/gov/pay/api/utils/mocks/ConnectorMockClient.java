@@ -5,7 +5,6 @@ import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
 import uk.gov.pay.api.it.fixtures.PaymentRefundJsonFixture;
-import uk.gov.pay.api.it.fixtures.PaymentRefundSearchJsonFixture;
 import uk.gov.pay.api.it.fixtures.PaymentSingleResultBuilder;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetails;
@@ -35,7 +34,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
-import static javax.ws.rs.core.HttpHeaders.ACCEPT;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.HttpHeaders.LOCATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -60,7 +58,6 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     private static final String CONNECTOR_MOCK_CHARGE_EVENTS_PATH = CONNECTOR_MOCK_CHARGE_PATH + "/events";
     private static final String CONNECTOR_MOCK_CHARGE_REFUNDS_PATH = CONNECTOR_MOCK_CHARGE_PATH + "/refunds";
-    private static final String CONNECTOR_MOCK_SEARCH_REFUNDS_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/refunds";
     private static final String CONNECTOR_MOCK_CHARGE_REFUND_BY_ID_PATH = CONNECTOR_MOCK_CHARGE_REFUNDS_PATH + "/%s";
     private static final DateFormat SDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
@@ -456,19 +453,9 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .willReturn(response));
     }
 
-    private void whenSearchRefunds(String gatewayAccountId, ResponseDefinitionBuilder response) {
-        wireMockClassRule.stubFor(get(urlPathEqualTo(format(CONNECTOR_MOCK_SEARCH_REFUNDS_PATH, gatewayAccountId)))
-                .willReturn(response));
-    }
-
     private void whenGetChargeEvents(String gatewayAccountId, String chargeId, ResponseDefinitionBuilder response) {
         wireMockClassRule.stubFor(get(urlPathEqualTo(format(CONNECTOR_MOCK_CHARGE_EVENTS_PATH, gatewayAccountId, chargeId)))
                 .willReturn(response));
-    }
-
-    public void whenSearchCharges(String gatewayAccountId, ResponseDefinitionBuilder response) {
-        wireMockClassRule.stubFor(get(urlPathEqualTo(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId)))
-                .withHeader(ACCEPT, matching(APPLICATION_JSON)).willReturn(response));
     }
 
     private void whenCancelCharge(String paymentId, String accountId, ResponseDefinitionBuilder response) {

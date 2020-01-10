@@ -30,7 +30,6 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -46,6 +45,7 @@ public class RestClientLoggingFilterTest {
     @Mock
     private ClientResponseContext clientResponseContext;
 
+    @Mock
     private Appender<ILoggingEvent> mockAppender;
 
     @Captor
@@ -55,7 +55,6 @@ public class RestClientLoggingFilterTest {
     public void setup() {
         loggingFilter = new RestClientLoggingFilter();
         Logger root = (Logger) LoggerFactory.getLogger(RestClientLoggingFilter.class);
-        mockAppender = mock(Appender.class);
         root.addAppender(mockAppender);
     }
 
@@ -90,15 +89,15 @@ public class RestClientLoggingFilterTest {
 
         when(clientRequestContext.getUri()).thenReturn(requestUrl);
         when(clientRequestContext.getMethod()).thenReturn(requestMethod);
-        MultivaluedMap<String,Object> mockHeaders = new MultivaluedHashMap<>();
-        MultivaluedMap<String,String> mockHeaders2 = new MultivaluedHashMap<>();
+        MultivaluedMap<String, Object> mockHeaders = new MultivaluedHashMap<>();
+        MultivaluedMap<String, String> mockHeaders2 = new MultivaluedHashMap<>();
 
         when(clientRequestContext.getHeaders()).thenReturn(mockHeaders);
         when(clientResponseContext.getHeaders()).thenReturn(mockHeaders2);
         MDC.put(LoggingKeys.MDC_REQUEST_ID_KEY, requestId);
         loggingFilter.filter(clientRequestContext);
 
-        loggingFilter.filter(clientRequestContext,clientResponseContext);
+        loggingFilter.filter(clientRequestContext, clientResponseContext);
 
         verify(mockAppender, times(2)).doAppend(loggingEventArgumentCaptor.capture());
         List<LoggingEvent> loggingEvents = loggingEventArgumentCaptor.getAllValues();

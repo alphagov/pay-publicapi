@@ -20,8 +20,7 @@ public class SearchRefundsService {
     private PublicApiUriGenerator publicApiUriGenerator;
 
     @Inject
-    public SearchRefundsService(ConnectorService connectorService,
-                                LedgerService ledgerService,
+    public SearchRefundsService(LedgerService ledgerService,
                                 PublicApiUriGenerator publicApiUriGenerator,
                                 PaginationDecorator paginationDecorator) {
 

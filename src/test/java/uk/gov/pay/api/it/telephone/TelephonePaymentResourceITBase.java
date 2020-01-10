@@ -68,11 +68,8 @@ public abstract class TelephonePaymentResourceITBase {
             config("redis.endpoint", redisDockerRule.getRedisUrl())
     );
 
-    PublicApiConfig configuration;
-
     @Before
     public void setup() {
-        configuration = app.getConfiguration();
         connectorMock.resetAll();
         connectorDDMock.resetAll();
         publicAuthMock.resetAll();

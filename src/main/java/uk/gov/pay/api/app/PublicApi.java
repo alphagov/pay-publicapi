@@ -128,7 +128,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         */
         environment.jersey().property(CommonProperties.FEATURE_AUTO_DISCOVERY_DISABLE, Boolean.TRUE);
 
-        CachingAuthenticator<String, Account> cachingAuthenticator = new CachingAuthenticator(
+        CachingAuthenticator<String, Account> cachingAuthenticator = new CachingAuthenticator<>(
                 environment.metrics(),
                 injector.getInstance(AccountAuthenticator.class),
                 configuration.getAuthenticationCachePolicy());
