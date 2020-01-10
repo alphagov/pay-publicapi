@@ -13,6 +13,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.filter.RateLimiterKey;
@@ -30,7 +31,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -45,12 +45,13 @@ public class LocalRateLimiterTest {
 
     @Captor
     ArgumentCaptor<LoggingEvent> loggingEventArgumentCaptor;
+
+    @Mock
     private Appender<ILoggingEvent> mockAppender;
 
     @Before
     public void setup() {
         Logger root = (Logger) LoggerFactory.getLogger(LocalRateLimiter.class);
-        mockAppender = mock(Appender.class);
         root.setLevel(Level.INFO);
         root.addAppender(mockAppender);
     }

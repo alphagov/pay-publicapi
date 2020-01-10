@@ -8,8 +8,6 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
-import static java.lang.String.format;
-
 public class PublicApiUriGenerator {
 
     private final String baseUrl;
@@ -78,12 +76,6 @@ public class PublicApiUriGenerator {
                 .path("/v1/directdebit/payments/{paymentId}/events")
                 .build(paymentId);
     }
-    
-    public URI getDirectDebitMandateURI(String mandateId) {
-        return UriBuilder.fromUri(baseUrl)
-                .path("/v1/directdebit/mandates/{mandateId}")
-                .build(mandateId);
-    }
 
     public String convertHostToPublicAPI(String link) {
         URI originalUri = UriBuilder.fromUri(link).build();
@@ -99,9 +91,5 @@ public class PublicApiUriGenerator {
                 .path("/v1/directdebit/payments")
                 .queryParam("mandate_id", mandateId)
                 .build(mandateId);
-    }
-
-    public URI getMandateEventsURI(String mandateId) {
-        return UriBuilder.fromUri(baseUrl).path(format("/v1/directdebit/mandates/%s/events", mandateId)).build();
     }
 }

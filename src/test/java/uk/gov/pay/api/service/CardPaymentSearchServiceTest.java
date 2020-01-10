@@ -21,10 +21,10 @@ import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
 
-import static com.jayway.jsonassert.JsonAssert.collectionWithSize;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -66,7 +66,7 @@ public class CardPaymentSearchServiceTest {
                 .assertThat("count", is(1))
                 .assertThat("total", is(1))
                 .assertThat("page", is(1))
-                .assertThat("results", is(collectionWithSize(equalTo(1))))
+                .assertThat("results", hasSize(equalTo(1)))
                 .assertThat("results[0]", hasKey("amount"))
                 .assertThat("results[0]", hasKey("state"))
                 .assertThat("results[0]", hasKey("reference"))
@@ -93,7 +93,7 @@ public class CardPaymentSearchServiceTest {
                 .assertThat("count", is(1))
                 .assertThat("total", is(1))
                 .assertThat("page", is(1))
-                .assertThat("results", is(collectionWithSize(equalTo(1))))
+                .assertThat("results", hasSize(equalTo(1)))
                 .assertThat("results[0]", hasKey("amount"))
                 .assertThat("results[0]", hasKey("state"))
                 .assertThat("results[0]", hasKey("reference"))
@@ -120,7 +120,7 @@ public class CardPaymentSearchServiceTest {
                 .assertThat("count", is(1))
                 .assertThat("total", is(1))
                 .assertThat("page", is(1))
-                .assertThat("results", is(collectionWithSize(equalTo(1))))
+                .assertThat("results", hasSize(equalTo(1)))
                 .assertThat("results[0]", hasKey("amount"))
                 .assertThat("results[0]", hasKey("state"))
                 .assertThat("results[0]", hasKey("reference"))
@@ -147,7 +147,7 @@ public class CardPaymentSearchServiceTest {
                 .assertThat("count", is(1))
                 .assertThat("total", is(1))
                 .assertThat("page", is(1))
-                .assertThat("results", is(collectionWithSize(equalTo(1))))
+                .assertThat("results", hasSize(equalTo(1)))
                 .assertThat("results[0]", hasKey("amount"))
                 .assertThat("results[0]", hasKey("state"))
                 .assertThat("results[0]", hasKey("reference"))
@@ -173,7 +173,7 @@ public class CardPaymentSearchServiceTest {
                 .assertThat("count", is(1))
                 .assertThat("total", is(1))
                 .assertThat("page", is(1))
-                .assertThat("results", is(collectionWithSize(equalTo(1))))
+                .assertThat("results", hasSize(equalTo(1)))
                 .assertThat("results[0]", hasKey("amount"))
                 .assertThat("results[0]", hasKey("state"))
                 .assertThat("results[0]", hasKey("reference"))

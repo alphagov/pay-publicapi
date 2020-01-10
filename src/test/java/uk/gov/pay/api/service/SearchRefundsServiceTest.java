@@ -49,11 +49,9 @@ public class SearchRefundsServiceTest {
         when(mockConfiguration.getBaseUrl()).thenReturn("http://publicapi.test.localhost/");
 
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
-        ConnectorUriGenerator connectorUriGenerator = new ConnectorUriGenerator(mockConfiguration);
         LedgerUriGenerator ledgerUriGenerator = new LedgerUriGenerator(mockConfiguration);
 
         searchRefundsService = new SearchRefundsService(
-                new ConnectorService(client, connectorUriGenerator),
                 new LedgerService(client, ledgerUriGenerator),
                 new PublicApiUriGenerator(mockConfiguration),
                 new PaginationDecorator(mockConfiguration));

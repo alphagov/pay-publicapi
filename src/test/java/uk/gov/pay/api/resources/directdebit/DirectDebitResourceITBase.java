@@ -72,10 +72,6 @@ public class DirectDebitResourceITBase {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
     }
 
-    String paymentEventsLocationFor(String chargeId) {
-        return configuration.getBaseUrl() + "v1/directdebit/payments/" + chargeId + "/events";
-    }
-
     String paymentLocationFor(String chargeId) {
         return configuration.getBaseUrl() + "v1/directdebit/payments/" + chargeId;
     }
