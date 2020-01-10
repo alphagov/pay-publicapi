@@ -4,9 +4,9 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.HashSet;
 
-public class CardTypeValidator implements ConstraintValidator<ValidCardExpiryDate, String> {
+public class CardTypeValidator implements ConstraintValidator<ValidCardType, String> {
     
-    private final static HashSet<String> CARD_TYPES = new HashSet<>();
+    private static final HashSet<String> CARD_TYPES = new HashSet<>();
     
     static {
         CARD_TYPES.add("master-card");

@@ -2,7 +2,7 @@ package uk.gov.pay.api.app.config;
 
 import com.bendb.dropwizard.redis.JedisFactory;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.cache.CacheBuilderSpec;
+import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import io.dropwizard.Configuration;
 
 import javax.validation.Valid;
@@ -36,7 +36,7 @@ public class PublicApiConfig extends Configuration {
     private String apiKeyHmacSecret;
 
     @NotNull
-    private CacheBuilderSpec authenticationCachePolicy;
+    private CaffeineSpec authenticationCachePolicy;
 
     @Valid
     @NotNull
@@ -96,7 +96,7 @@ public class PublicApiConfig extends Configuration {
         return rateLimiterConfig;
     }
 
-    public CacheBuilderSpec getAuthenticationCachePolicy() {
+    public CaffeineSpec getAuthenticationCachePolicy() {
         return authenticationCachePolicy;
     }
 
