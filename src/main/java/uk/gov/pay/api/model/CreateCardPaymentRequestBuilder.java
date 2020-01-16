@@ -1,5 +1,6 @@
 package uk.gov.pay.api.model;
 
+import uk.gov.pay.commons.model.Source;
 import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.commons.model.charge.ExternalMetadata;
 
@@ -20,13 +21,15 @@ public class CreateCardPaymentRequestBuilder {
     private String postcode;
     private String country;
     private PrefilledCardholderDetails prefilledCardholderDetails;
-
-    public CreateCardPaymentRequest build() {
-        return new CreateCardPaymentRequest(this);
-    }
+    private Source source;
+    private Internal internal;
 
     public static CreateCardPaymentRequestBuilder builder() {
         return new CreateCardPaymentRequestBuilder();
+    }
+
+    public CreateCardPaymentRequest build() {
+        return new CreateCardPaymentRequest(this);
     }
 
     public CreateCardPaymentRequestBuilder amount(int amount) {
@@ -104,6 +107,11 @@ public class CreateCardPaymentRequestBuilder {
         return this;
     }
 
+    public CreateCardPaymentRequestBuilder source(Source source) {
+        this.source = source;
+        return this;
+    }
+
     public PrefilledCardholderDetails getPrefilledCardholderDetails() {
         if (cardholderName != null) {
             this.prefilledCardholderDetails = new PrefilledCardholderDetails();
@@ -177,5 +185,14 @@ public class CreateCardPaymentRequestBuilder {
 
     public String getCountry() {
         return country;
+    }
+
+    public Internal getInternal() {
+        if (source != null) {
+            this.internal = new Internal();
+            this.internal.setSource(source);
+        }
+
+        return internal;
     }
 }
