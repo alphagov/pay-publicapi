@@ -9,6 +9,7 @@ import uk.gov.pay.api.model.CreateCardPaymentRequestBuilder;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.PaymentError.Code;
+import uk.gov.pay.commons.model.Source;
 import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.commons.model.charge.ExternalMetadata;
 
@@ -28,6 +29,7 @@ import static uk.gov.pay.api.model.CreateCardPaymentRequest.AMOUNT_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.DELAYED_CAPTURE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.DESCRIPTION_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.EMAIL_FIELD_NAME;
+import static uk.gov.pay.api.model.CreateCardPaymentRequest.INTERNAL;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.LANGUAGE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.METADATA;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.PREFILLED_ADDRESS_CITY_FIELD_NAME;
@@ -40,12 +42,15 @@ import static uk.gov.pay.api.model.CreateCardPaymentRequest.PREFILLED_CARDHOLDER
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.PREFILLED_CARDHOLDER_NAME_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.REFERENCE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.RETURN_URL_FIELD_NAME;
+import static uk.gov.pay.api.model.CreateCardPaymentRequest.SOURCE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRefundRequest.REFUND_AMOUNT_AVAILABLE;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_MISSING_FIELD_ERROR;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_REFUND_MISSING_FIELD_ERROR;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_REFUND_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
+import static uk.gov.pay.commons.model.Source.CARD_API;
+import static uk.gov.pay.commons.model.Source.CARD_PAYMENT_LINK;
 
 class RequestJsonParser {
 
@@ -88,6 +93,8 @@ class RequestJsonParser {
         if (paymentRequest.has(METADATA)) {
             builder.metadata(validateAndGetMetadata(paymentRequest));
         }
+
+        builder.source(validateAndGetSource(paymentRequest));
 
         return builder.build();
     }
@@ -212,6 +219,30 @@ class RequestJsonParser {
                 builder.country(countryCode);
             }
         }
+    }
+
+    private static Source validateAndGetSource(JsonNode paymentRequest) {
+        if (paymentRequest.has(INTERNAL)) {
+            JsonNode internalNode = paymentRequest.get(INTERNAL);
+
+            if (internalNode.has(SOURCE_FIELD_NAME)) {
+                String errorMessage = "Accepted value is only CARD_PAYMENT_LINK";
+                PaymentError paymentError = aPaymentError(SOURCE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, errorMessage);
+                String sourceString = validateSkipNullValueAndGetString(internalNode.get(SOURCE_FIELD_NAME), paymentError);
+
+                try {
+                    Source source = Source.valueOf(sourceString);
+                    if (CARD_PAYMENT_LINK.equals(source)) {
+                        return source;
+                    }
+                    throw new BadRequestException(paymentError);
+                } catch (IllegalArgumentException e) {
+                    throw new WebApplicationException(Response.status(SC_UNPROCESSABLE_ENTITY).entity(paymentError).build());
+                }
+            }
+        }
+
+        return CARD_API;
     }
 
     private static <T> T validateAndGetValue(JsonNode jsonNode,

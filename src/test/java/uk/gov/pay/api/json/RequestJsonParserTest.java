@@ -20,6 +20,8 @@ import static org.junit.Assert.assertThat;
 import static uk.gov.pay.api.json.RequestJsonParser.parsePaymentRequest;
 import static uk.gov.pay.api.json.RequestJsonParser.parseRefundRequest;
 import static uk.gov.pay.api.matcher.BadRequestExceptionMatcher.aBadRequestExceptionWithError;
+import static uk.gov.pay.commons.model.Source.CARD_API;
+import static uk.gov.pay.commons.model.Source.CARD_PAYMENT_LINK;
 
 public class RequestJsonParserTest {
 
@@ -450,6 +452,76 @@ public class RequestJsonParserTest {
 
         expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: line1. Field must be a string"));
 
+        parsePaymentRequest(jsonNode);
+    }
+
+    @Test
+    public void parsePaymentRequest_shouldSetSourceToDefaultIfNotInPayload() throws Exception {
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 27432,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"language\": \"en\"\n" +
+                "}";
+
+        JsonNode jsonNode = objectMapper.readTree(payload);
+
+        CreateCardPaymentRequest paymentRequest = parsePaymentRequest(jsonNode);
+        assertThat(paymentRequest.getInternal().get().getSource().get(), is(CARD_API));
+    }
+
+    @Test
+    public void parsePaymentRequest_shouldParseSourceCorrectly() throws Exception {
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "\"internal\": {\n" +
+                "\"source\": \"CARD_PAYMENT_LINK\"\n" +
+                "}" + "}";
+
+        JsonNode jsonNode = objectMapper.readTree(payload);
+        CreateCardPaymentRequest paymentRequest = parsePaymentRequest(jsonNode);
+        assertThat(paymentRequest.getInternal().get().getSource().get(), is(CARD_PAYMENT_LINK));
+    }
+
+    @Test
+    public void parsePaymentRequest_shouldThrowValidationException_whenSourceIsInvalidType() throws Exception {
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "\"internal\": {\n" +
+                "\"source\": true\n" +
+                "}" + "}";
+
+        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: source. Accepted value is only CARD_PAYMENT_LINK"));
+
+        JsonNode jsonNode = objectMapper.readTree(payload);
+        parsePaymentRequest(jsonNode);
+    }
+
+    @Test
+    public void parsePaymentRequest_shouldThrowValidationException_whenSourceIsValidEnumTypeButNotAccepted() throws Exception {
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "\"internal\": {\n" +
+                "\"source\": \"CARD_EXTERNAL_TELEPHONE\"\n" +
+                "}" + "}";
+
+        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: source. Accepted value is only CARD_PAYMENT_LINK"));
+
+        JsonNode jsonNode = objectMapper.readTree(payload);
         parsePaymentRequest(jsonNode);
     }
 }

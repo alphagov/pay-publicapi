@@ -17,6 +17,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static java.lang.String.format;
 import static javax.ws.rs.HttpMethod.GET;
 import static javax.ws.rs.HttpMethod.POST;
+import static uk.gov.pay.commons.model.Source.CARD_API;
 
 public abstract class BaseConnectorMockClient {
 
@@ -24,7 +25,7 @@ public abstract class BaseConnectorMockClient {
     static String CONNECTOR_MOCK_CHARGES_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/charges";
     static String CONNECTOR_MOCK_TELEPHONE_CHARGES_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/telephone-charges";
     static String CONNECTOR_MOCK_CHARGE_PATH = CONNECTOR_MOCK_CHARGES_PATH + "/%s";
-    
+
     WireMockClassRule wireMockClassRule;
     Gson gson = new Gson();
     ObjectMapper objectMapper = new ObjectMapper();
@@ -63,7 +64,7 @@ public abstract class BaseConnectorMockClient {
         wireMockClassRule.stubFor(get(urlPathEqualTo(format(CONNECTOR_MOCK_CHARGE_PATH, gatewayAccountId, chargeId)))
                 .willReturn(response));
     }
-    
+
     String createChargePayload(CreateChargeRequestParams params) {
         JsonStringBuilder payload = new JsonStringBuilder()
                 .add("amount", params.getAmount())
@@ -73,7 +74,7 @@ public abstract class BaseConnectorMockClient {
 
         if (!params.getMetadata().isEmpty())
             payload.add("metadata", params.getMetadata());
-        
+
         if (params.getEmail() != null) {
             payload.add("email", params.getEmail());
         }
@@ -81,7 +82,7 @@ public abstract class BaseConnectorMockClient {
         if (params.getCardholderName().isPresent()) {
             payload.addToNestedMap("cardholder_name", params.getCardholderName().get(), "prefilled_cardholder_details");
         }
-        
+
         if (params.getAddressLine1().isPresent()) {
             payload.addToNestedMap("line1", params.getAddressLine1().get(), "prefilled_cardholder_details", "billing_address");
         }
@@ -101,6 +102,8 @@ public abstract class BaseConnectorMockClient {
         if (params.getAddressCountry().isPresent()) {
             payload.addToNestedMap("country", params.getAddressCountry().get(), "prefilled_cardholder_details", "billing_address");
         }
+
+        payload.add("source", params.getSource().orElse(CARD_API));
 
         return payload.build();
     }

@@ -34,6 +34,7 @@ import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 import static uk.gov.pay.api.utils.mocks.CreateChargeRequestParams.CreateChargeRequestParamsBuilder.aCreateChargeRequestParams;
 import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
+import static uk.gov.pay.commons.model.Source.CARD_PAYMENT_LINK;
 
 public class CreatePaymentIT extends PaymentResourceITestBase {
 
@@ -433,6 +434,27 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
         postPaymentResponse(SUCCESS_PAYLOAD).statusCode(503);
     }
 
+    @Test
+    public void createCardPaymentWithSource() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+
+        CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
+                .withAmount(100)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withReturnUrl(RETURN_URL)
+                .withReturnUrl(RETURN_URL)
+                .withSource(CARD_PAYMENT_LINK)
+                .build();
+        connectorMockClient.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
+
+        postPaymentResponse(paymentPayload(createChargeRequestParams))
+                .statusCode(201)
+                .contentType(JSON);
+
+        connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
+    }
+
     public static String paymentPayload(CreateChargeRequestParams params) {
         JsonStringBuilder payload = new JsonStringBuilder()
                 .add("amount", params.getAmount())
@@ -472,9 +494,12 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
             payload.addToNestedMap("country", params.getAddressCountry().get(), "prefilled_cardholder_details", "billing_address");
         }
 
+        params.getSource().ifPresent(source ->  {
+            payload.addToNestedMap("source", source, "internal");
+        });
+
         return payload.build();
     }
-
 
     protected ValidatableResponse postPaymentResponse(String payload) {
         return given().port(app.getLocalPort())

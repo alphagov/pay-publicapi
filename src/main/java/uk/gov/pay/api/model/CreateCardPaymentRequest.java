@@ -42,7 +42,9 @@ public class CreateCardPaymentRequest {
     public static final String PREFILLED_ADDRESS_POSTCODE_FIELD_NAME = "postcode";
     public static final String PREFILLED_ADDRESS_COUNTRY_FIELD_NAME = "country";
     public static final String DELAYED_CAPTURE_FIELD_NAME = "delayed_capture";
+    public static final String SOURCE_FIELD_NAME = "source";
     public static final String METADATA = "metadata";
+    public static final String INTERNAL = "internal";
     private static final String PREFILLED_CARDHOLDER_DETAILS = "prefilled_cardholder_details";
     private static final String BILLING_ADDRESS = "billing_address";
 
@@ -79,6 +81,8 @@ public class CreateCardPaymentRequest {
     @Schema(name = "metadata", example = "{\"property1\": \"value1\", \"property2\": \"value2\"}\"")
     private final ExternalMetadata metadata;
 
+    private final Internal internal;
+
     @Valid
     private final PrefilledCardholderDetails prefilledCardholderDetails;
     
@@ -92,6 +96,7 @@ public class CreateCardPaymentRequest {
         this.delayedCapture = builder.getDelayedCapture();
         this.metadata = builder.getMetadata();
         this.prefilledCardholderDetails = builder.getPrefilledCardholderDetails();
+        this.internal = builder.getInternal();
     }
 
     @ApiModelProperty(value = "amount in pence", required = true, allowableValues = "range[1, 10000000]", example = "12000")
@@ -161,6 +166,13 @@ public class CreateCardPaymentRequest {
         return Optional.ofNullable(metadata);
     }
 
+    @JsonProperty("internal")
+    @ApiModelProperty(hidden = true)
+    @Schema(hidden = true)
+    public Optional<Internal> getInternal() {
+        return Optional.ofNullable(internal);
+    }
+
     public String toConnectorPayload() {
         JsonStringBuilder request = new JsonStringBuilder()
                 .add("amount", this.getAmount())
@@ -171,6 +183,7 @@ public class CreateCardPaymentRequest {
         getDelayedCapture().ifPresent(delayedCapture -> request.add("delayed_capture", delayedCapture));
         getMetadata().ifPresent(metadata -> request.add("metadata", metadata.getMetadata()));
         getEmail().ifPresent(email -> request.add("email", email));
+        getInternal().flatMap(Internal::getSource).ifPresent(source -> request.add("source", source));
         
         getPrefilledCardholderDetails().ifPresent(prefilledDetails -> {
             prefilledDetails.getCardholderName().ifPresent(name -> request.addToMap(PREFILLED_CARDHOLDER_DETAILS, "cardholder_name", name));
@@ -196,6 +209,7 @@ public class CreateCardPaymentRequest {
         joiner.add("amount: ").add(String.valueOf(getAmount()));
         joiner.add("reference: ").add(getReference());
         joiner.add("return_url: ").add(returnUrl);
+        getInternal().flatMap(Internal::getSource).ifPresent(source -> joiner.add("source: ").add(source.toString()));
         getLanguage().ifPresent(value -> joiner.add("language: ").add(value.toString()));
         getDelayedCapture().ifPresent(value -> joiner.add("delayed_capture: ").add(value.toString()));
         getMetadata().ifPresent(value -> joiner.add("metadata: ").add(value.toString()));

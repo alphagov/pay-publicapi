@@ -24,6 +24,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.pay.api.matcher.BadRequestExceptionMatcher.aBadRequestExceptionWithError;
+import static uk.gov.pay.commons.model.Source.CARD_PAYMENT_LINK;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateCardPaymentRequestDeserializerTest {
@@ -609,6 +610,21 @@ public class CreateCardPaymentRequestDeserializerTest {
         assertThat(true, is(true));
     }
 
+    @Test
+    public void shouldDeserializeARequestAndSetSourceCorrectly() throws Exception {
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "\"internal\": {\n" +
+                "\"source\": \"CARD_PAYMENT_LINK\"\n" +
+                "}" + "}";
+
+        CreateCardPaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(payload), ctx);
+        assertThat(paymentRequest.getInternal().get().getSource().get(), is(CARD_PAYMENT_LINK));
+    }
 
     @After
     public void tearDown() {
