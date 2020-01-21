@@ -322,6 +322,31 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
                 .body("results[0].card_details.billing_address", is(nullValue()))
                 .body("results[0].card_details.first_digits_card_number", is("1234"));
     }
+    
+    @Test
+    public void shouldReturnEmptyArray_ifLedgerReturnsNoResult() {
+        String payments = aPaginatedPaymentSearchResult()
+                .withPage(1)
+                .withPayments(aSuccessfulSearchPayment()
+                        .withNumberOfResults(0)
+                        .getResults())
+                .build();
+
+        ledgerMockClient.respondOk_whenSearchCharges(payments);
+        
+        searchPayments(ImmutableMap.of(
+                "reference", "junk yard",
+                "email", TEST_EMAIL,
+                "state", TEST_STATE,
+                "from_date", TEST_FROM_DATE,
+                "to_date", TEST_TO_DATE))
+                .statusCode(200)
+                .contentType(JSON)
+                .body("results.size()", is(0))
+                .body("total", is(0))
+                .body("count", is(0))
+                .body("page", is(1));
+    }
 
     private Matcher<? super List<Map<String, Object>>> matchesState(final String state) {
         return new TypeSafeMatcher<>() {
