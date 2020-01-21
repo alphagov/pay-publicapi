@@ -1,0 +1,47 @@
+---
+applications:
+  - name: publicapi
+    buildpacks:
+      - java_buildpack
+    path: target/pay-publicapi-0.1-SNAPSHOT-allinone.jar
+    health-check-type: http
+    health-check-http-endpoint: '/healthcheck'
+    health-check-invocation-timeout: 5
+    memory: ((memory))
+    disk_quota: ((disk_quota))
+    env:
+      ADMIN_PORT: '9101'
+      DISABLE_INTERNAL_HTTPS: ((disable_internal_https))
+      ENVIRONMENT: ((space))
+      JAVA_OPTS: -Xms512m -Xmx1G
+      JBP_CONFIG_JAVA_MAIN: '{ arguments: "server /home/vcap/app/config/config.yaml" }'
+      JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 11.+ } }'
+      JPA_LOG_LEVEL: 'INFO'
+      JPA_SQL_LOG_LEVEL: 'INFO'
+
+      CONNECTOR_URL: ((connector_url))
+      CONNECTOR_DD_URL: ((connector_dd_url))
+      PUBLIC_AUTH_URL: ((public_auth_url))
+      LEDGER_URL: ((ledger_url))
+      PUBLIC_API_BASE: ((publicapi_route))
+
+      TOKEN_API_HMAC_SECRET: ((token_api_hmac_secret))
+
+      AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
+
+      RATE_LIMITER_VALUE: ((rate_limiter_value))
+      RATE_LIMITER_VALUE_POST: ((rate_limiter_value_post))
+      REDIS_URL: ((redis_url))
+      RATE_LIMITER_REQS_NODE: ((rate_limiter_reqs_node))
+      RATE_LIMITER_REQS_NODE_POST: ((rate_limiter_req_node_post))
+      RATE_LIMITER_ELEVATED_ACCOUNTS: ((rate_limiter_elevated_accounts))
+      RATE_LIMITER_ELEVATED_VALUE_GET: ((rate_limiter_elevated_value_get))
+      RATE_LIMITER_ELEVATED_VALUE_POST: ((rate_limiter_elevated_value_post))
+
+      # Provide via Sentry service
+      SENTRY_DSN: noop://localhost
+
+      RUN_APP: 'true'
+      RUN_MIGRATION: ((run_migration))
+    routes:
+      - route: ((publicapi_route))
