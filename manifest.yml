@@ -1,0 +1,45 @@
+---
+applications:
+  - name: publicapi
+    buildpacks:
+      - java_buildpack
+    path: target/pay-publicapi-0.1-SNAPSHOT-allinone.jar
+    health-check-type: http
+    health-check-http-endpoint: '/healthcheck'
+    health-check-invocation-timeout: 5
+    memory: ((memory))
+    disk_quota: ((disk_quota))
+    env:
+      ADMIN_PORT: '9101'
+      DISABLE_INTERNAL_HTTPS: ((disable_internal_https))
+      ENVIRONMENT: ((space))
+      JAVA_OPTS: -Xms512m -Xmx1G
+      JBP_CONFIG_JAVA_MAIN: '{ arguments: "server /home/vcap/app/config/config.yaml" }'
+      JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 11.+ } }'
+      JPA_LOG_LEVEL: 'INFO'
+      JPA_SQL_LOG_LEVEL: 'INFO'
+
+      CONNECTOR_URL: ((connector_url))
+      CONNECTOR_DD_URL: ((connector_dd_url))
+      PUBLIC_AUTH_URL: ((public_auth_url))
+      LEDGER_URL: ((ledger_url))
+      PUBLIC_API_BASE: ((publicapi_route))
+
+      TOKEN_API_HMAC_SECRET: ((token_api_hmac_secret))
+
+      # Provide via publicapi-db service
+      DB_HOST: postgres-((space)).apps.internal
+      DB_NAME: ((db_name))
+      DB_PASSWORD: ((db_password))
+      DB_USER: ((db_user))
+      DB_SSL_OPTION: ((db_ssl_option))
+
+      AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
+
+      # Provide via Sentry service
+      SENTRY_DSN: noop://localhost
+
+      RUN_APP: 'true'
+      RUN_MIGRATION: ((run_migration))
+    routes:
+      - route: ((publicapi_route))

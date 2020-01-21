@@ -1,0 +1,12 @@
+memory: 500M
+db_password: mysecretpassword
+db_user: products
+db_name: products
+db_ssl_option: ssl=none
+disk_quota: 500M
+disable_internal_https: 'true'
+run_migration: 'true'
+aws_access_key: x
+aws_secret_key: x
+token_api_hmac_secret: something
+
