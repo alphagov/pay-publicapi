@@ -5,6 +5,7 @@ import com.jayway.jsonassert.JsonAssert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -12,6 +13,7 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.exception.SearchPaymentsException;
 import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.search.PaginationDecorator;
@@ -23,6 +25,7 @@ import javax.ws.rs.core.Response;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.Mockito.when;
@@ -32,6 +35,9 @@ public class CardPaymentSearchServiceTest {
 
     @Rule
     public PactProviderRule ledgerRule = new PactProviderRule("ledger", this);
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Mock
     private PublicApiConfig configuration;
@@ -183,5 +189,20 @@ public class CardPaymentSearchServiceTest {
                 .assertThat("results[0].card_details", hasKey("last_digits_card_number"))
                 .assertThat("results[0].state", hasKey("status"))
                 .assertThat("results[0].state", hasKey("finished"));
+    }
+    
+    @Test
+    @PactVerification({"ledger"})
+    @Pacts(pacts = {"publicapi-ledger-search-payments-page-not-found"})
+    public void shouldReturn404WhenSearchingWithNonExistentPageNumber() {
+        Account account = new Account("123456", TokenPaymentType.CARD);
+        var searchParams = new PaymentSearchParams.Builder()
+                .withDisplaySize("500")
+                .withPageNumber("999")
+                .build();
+        
+        expectedException.expect(SearchPaymentsException.class);
+        expectedException.expect(hasProperty("errorStatus", is(404)));
+        paymentSearchService.searchLedgerPayments(account, searchParams);
     }
 }
