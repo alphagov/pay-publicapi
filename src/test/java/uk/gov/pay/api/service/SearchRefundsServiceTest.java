@@ -104,6 +104,20 @@ public class SearchRefundsServiceTest {
 
         assertThat(results.getLinks().getSelf().getHref(), is("http://publicapi.test.localhost/v1/refunds?from_date=2018-09-21T13%3A22%3A55Z&to_date=2018-10-23T13%3A24%3A55Z&display_size=500&page=1"));
     }
+    
+    @Test
+    @PactVerification({"ledger"})
+    @Pacts(pacts = {"publicapi-ledger-search-refunds-display-size-two"})
+    public void shouldSearchForAllExistingRefundsWithDisplaySizeTwo() {
+        String accountId = "777";
+        Account account = new Account(accountId, TokenPaymentType.CARD);
+        RefundsParams params = new RefundsParams(null, null, "1", "2");
+        SearchRefundsResults results = searchRefundsService.searchLedgerRefunds(account, params);
+        assertThat(results.getResults().size(), is(2));
+        assertThat(results.getCount(), is(2));
+        assertThat(results.getTotal(), is(2));
+        assertThat(results.getPage(), is(1));
+    }
 
     @Test
     @PactVerification({"ledger"})
@@ -116,7 +130,7 @@ public class SearchRefundsServiceTest {
         assertThat(results.getTotal(), is(0));
         assertThat(results.getPage(), is(1));
     }
-
+    
     @Test
     public void getSearchResponseFromLedger_shouldThrowRefundsValidationExceptionWhenParamsAreInvalid() {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
