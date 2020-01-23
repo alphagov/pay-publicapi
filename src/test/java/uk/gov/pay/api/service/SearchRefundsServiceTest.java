@@ -1,6 +1,7 @@
 package uk.gov.pay.api.service;
 
 import au.com.dius.pact.consumer.PactVerification;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -13,6 +14,7 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.RefundsValidationException;
+import uk.gov.pay.api.exception.SearchRefundsException;
 import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.search.PaginationDecorator;
@@ -25,6 +27,7 @@ import javax.ws.rs.client.Client;
 import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasProperty;
 import static org.mockito.Mockito.when;
 import static uk.gov.pay.api.matcher.RefundValidationExceptionMatcher.aValidationExceptionContaining;
 
@@ -104,7 +107,7 @@ public class SearchRefundsServiceTest {
 
         assertThat(results.getLinks().getSelf().getHref(), is("http://publicapi.test.localhost/v1/refunds?from_date=2018-09-21T13%3A22%3A55Z&to_date=2018-10-23T13%3A24%3A55Z&display_size=500&page=1"));
     }
-    
+
     @Test
     @PactVerification({"ledger"})
     @Pacts(pacts = {"publicapi-ledger-search-refunds-display-size-two"})
@@ -130,7 +133,19 @@ public class SearchRefundsServiceTest {
         assertThat(results.getTotal(), is(0));
         assertThat(results.getPage(), is(1));
     }
-    
+
+    @Test
+    @PactVerification({"ledger"})
+    @Pacts(pacts = {"publicapi-ledger-search-refunds-page-not-found"})
+    public void shouldReturn404WhenSearchingWithNonExistentPageNumber() {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        RefundsParams params = new RefundsParams(null, null, "999", "500");
+
+        expectedException.expect(SearchRefundsException.class);
+        expectedException.expect(hasProperty("errorStatus", Matchers.is(404)));
+        searchRefundsService.searchLedgerRefunds(account, params);
+    }
+
     @Test
     public void getSearchResponseFromLedger_shouldThrowRefundsValidationExceptionWhenParamsAreInvalid() {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
