@@ -100,6 +100,13 @@ public class LedgerMockClient {
                         .withBody(jsonStringBuilder.build())));
     }
 
+    public void respondWithSearchRefundsNotFound() {
+        ledgerMock.stubFor(get(urlPathEqualTo("/v1/transaction"))
+                .willReturn(aResponse()
+                        .withStatus(NOT_FOUND_404)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)));
+    }
+
     public void respondWithTransaction(String transactionId, TransactionFromLedgerFixture transaction) {
         try {
             var body = mapper.writeValueAsString(transaction);

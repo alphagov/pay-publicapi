@@ -81,6 +81,17 @@ public class SearchRefundsResourceIT extends PaymentResourceITestBase {
                 .body("_links.last_page.href", is("http://publicapi.url/v1/refunds?page=5"));
     }
 
+    @Test
+    public void searchRefunds_errorIfLedgerRespondsWith404() {
+        ledgerMockClient.respondWithSearchRefundsNotFound();
+        
+        getRefundsSearchResponse()
+                .statusCode(404)
+                .contentType(JSON)
+                .body("code", is ("P1100"))
+                .body("description", is("Page not found"));
+    }
+
     private ValidatableResponse getRefundsSearchResponse() {
         return given().port(app.getLocalPort())
                 .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
