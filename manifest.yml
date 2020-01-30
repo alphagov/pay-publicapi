@@ -19,9 +19,9 @@ applications:
       JPA_LOG_LEVEL: 'INFO'
       JPA_SQL_LOG_LEVEL: 'INFO'
 
-      CONNECTOR_URL: ((connector_url))
-      CONNECTOR_DD_URL: ((connector_dd_url))
-      PUBLIC_AUTH_URL: ((public_auth_url))
+      CONNECTOR_URL: ((card_connector_url))
+      CONNECTOR_DD_URL: ((direct_debit_connector_url))
+      PUBLIC_AUTH_URL: ((publicauth_url))
       LEDGER_URL: ((ledger_url))
       PUBLIC_API_BASE: ((publicapi_route))
 
