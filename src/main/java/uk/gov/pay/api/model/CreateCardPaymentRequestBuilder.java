@@ -23,6 +23,7 @@ public class CreateCardPaymentRequestBuilder {
     private PrefilledCardholderDetails prefilledCardholderDetails;
     private Source source;
     private Internal internal;
+    private boolean moto;
 
     public static CreateCardPaymentRequestBuilder builder() {
         return new CreateCardPaymentRequestBuilder();
@@ -31,7 +32,12 @@ public class CreateCardPaymentRequestBuilder {
     public CreateCardPaymentRequest build() {
         return new CreateCardPaymentRequest(this);
     }
-
+    
+    public CreateCardPaymentRequestBuilder moto(boolean moto) {
+        this.moto = moto;
+        return this;
+    }
+    
     public CreateCardPaymentRequestBuilder amount(int amount) {
         this.amount = amount;
         return this;
@@ -129,6 +135,10 @@ public class CreateCardPaymentRequestBuilder {
 
     public ExternalMetadata getMetadata() {
         return metadata;
+    }
+
+    public boolean isMoto() {
+        return moto;
     }
 
     public int getAmount() {

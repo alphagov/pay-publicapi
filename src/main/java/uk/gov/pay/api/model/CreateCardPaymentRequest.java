@@ -48,6 +48,9 @@ public class CreateCardPaymentRequest {
     private static final String PREFILLED_CARDHOLDER_DETAILS = "prefilled_cardholder_details";
     private static final String BILLING_ADDRESS = "billing_address";
 
+    @JsonProperty("moto")
+    private final boolean moto;
+
     // Even though the minimum is 0, this is only allowed for accounts this is enabled for and is a hidden feature
     // so the validation error message will always state that the minimum is 1 for consistency.
     @JsonProperty("amount")
@@ -97,6 +100,11 @@ public class CreateCardPaymentRequest {
         this.metadata = builder.getMetadata();
         this.prefilledCardholderDetails = builder.getPrefilledCardholderDetails();
         this.internal = builder.getInternal();
+        this.moto = builder.isMoto();
+    }
+
+    public boolean isMoto() {
+        return moto;
     }
 
     @ApiModelProperty(value = "amount in pence", required = true, allowableValues = "range[1, 10000000]", example = "12000")
@@ -195,6 +203,10 @@ public class CreateCardPaymentRequest {
                 request.addToNestedMap("country", address.getCountry(), PREFILLED_CARDHOLDER_DETAILS, BILLING_ADDRESS);
             });
         });
+        
+        if (isMoto()) {
+            request.add("moto", true);
+        }
         
         return request.build();
     }
