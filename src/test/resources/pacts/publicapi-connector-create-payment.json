@@ -23,7 +23,25 @@
           "amount": 100,
           "reference": "a reference",
           "description": "a description",
-          "return_url": "https://somewhere.gov.uk/rainbow/1"
+          "return_url": "https://somewhere.gov.uk/rainbow/1",
+          "email": "joe.bogs@example.org",
+          "language": "cy",
+          "prefilled_cardholder_details": {
+            "cardholder_name": "J. Bogs",
+            "billing_address": {
+              "line1": "address line 1",
+              "line2": "address line 2",
+              "postcode": "AB1 CD2",
+              "city": "address city",
+              "country": "GB"
+            }
+          },
+          "delayed_capture": true,
+          "metadata": {
+            "ledger_code": 123,
+            "fund_code": "ISIN122038",
+            "cancellable": false
+          }
         }
       },
       "response": {
@@ -44,8 +62,24 @@
           "return_url": "https://somewhere.gov.uk/rainbow/1",
           "payment_provider": "Sandbox",
           "created_date": "2016-01-01T12:00:00Z",
-          "language": "en",
-          "delayed_capture": false,
+          "language": "cy",
+          "delayed_capture": true,
+          "email": "joe.bogs@example.org",
+          "card_details": {
+            "cardholder_name": "J. Bogs",
+            "billing_address": {
+              "line1": "address line 1",
+              "line2": "address line 2",
+              "postcode": "AB1 CD2",
+              "city": "address city",
+              "country": "GB"
+            }
+          },
+          "metadata": {
+            "ledger_code": 123,
+            "fund_code": "ISIN122038",
+            "cancellable": false
+          },
           "links": [
             {
               "href": "http://connector.service.backend/v1/api/accounts/123456/charges/ch_ab2341da231434l",

@@ -47,46 +47,24 @@ public class CreatePaymentServiceTest {
     @Mock
     private PublicApiConfig configuration;
 
+    private Account account;
+
     @Before
     public void setup() {
-        when(configuration.getConnectorUrl()).thenReturn(connectorRule.getUrl()); // We will actually send real requests here, which will be intercepted by pact        
-
+        when(configuration.getConnectorUrl()).thenReturn(connectorRule.getUrl()); // We will actually send real requests here, which will be intercepted by pact
         when(configuration.getBaseUrl()).thenReturn("http://publicapi.test.localhost/");
 
         PublicApiUriGenerator publicApiUriGenerator = new PublicApiUriGenerator(configuration);
         ConnectorUriGenerator connectorUriGenerator = new ConnectorUriGenerator(configuration);
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
-
-        createPaymentService = new CreatePaymentService(client,
-                publicApiUriGenerator, connectorUriGenerator);
+        createPaymentService = new CreatePaymentService(client, publicApiUriGenerator, connectorUriGenerator);
+        account = new Account("123456", TokenPaymentType.CARD);
     }
 
     @Test
     @PactVerification({"connector"})
-    @Pacts(pacts = {"publicapi-connector-create-payment-with-metadata"})
-    public void testCreatePaymentWithMetadata() {
-        Account account = new Account("123456", TokenPaymentType.CARD);
-        Map<String, Object> metadata = Map.of(
-                "ledger_code", 123, 
-                "fund_code", "ISIN122038", 
-                "cancellable", false);
-        var requestPayload = CreateCardPaymentRequestBuilder.builder()
-                .amount(100)
-                .returnUrl("https://somewhere.gov.uk/rainbow/1")
-                .reference("a reference")
-                .description("a description")
-                .metadata(new ExternalMetadata(metadata))
-                .build();
-
-        PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
-        CardPayment payment = (CardPayment) paymentResponse.getPayment();
-        assertThat(payment.getMetadata().getMetadata(), is(metadata));
-    }
-    
-    @Test
-    @PactVerification({"connector"})
-    @Pacts(pacts = {"publicapi-connector-create-payment"})
-    public void testCreatePayment() {
+    @Pacts(pacts = {"publicapi-connector-create-payment-with-minimum-fields"})
+    public void testCreatePaymentWithMinimumFields() {
         Account account = new Account("123456", TokenPaymentType.CARD);
         var requestPayload = CreateCardPaymentRequestBuilder.builder()
                 .amount(100)
@@ -114,82 +92,23 @@ public class CreatePaymentServiceTest {
         PostLink expectedLink = new PostLink("http://frontend_connector/charge/", "POST", "application/x-www-form-urlencoded", Collections.singletonMap("chargeTokenId", "token_1234567asdf"));
         assertThat(paymentResponse.getLinks().getNextUrlPost(), is(expectedLink));
     }
-
+    
     @Test
     @PactVerification({"connector"})
-    @Pacts(pacts = {"publicapi-connector-create-payment-with-delayed-capture-true"})
-    public void testCreatePaymentWithDelayedCaptureEqualsTrue() {
-        Account account = new Account("123456", TokenPaymentType.CARD);
+    @Pacts(pacts = {"publicapi-connector-create-payment"})
+    public void testCreatePayment() {
+        Map<String, Object> metadata = Map.of(
+                "ledger_code", 123,
+                "fund_code", "ISIN122038",
+                "cancellable", false);
         var requestPayload = CreateCardPaymentRequestBuilder.builder()
                 .amount(100)
                 .returnUrl("https://somewhere.gov.uk/rainbow/1")
                 .reference("a reference")
                 .description("a description")
+                .metadata(new ExternalMetadata(metadata))
                 .delayedCapture(Boolean.TRUE)
-                .build();
-
-        PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
-        CardPayment payment = (CardPayment) paymentResponse.getPayment();
-
-        assertThat(payment.getPaymentId(), is("ch_ab2341da231434l"));
-        assertThat(payment.getAmount(), is(100L));
-        assertThat(payment.getReference(), is("a reference"));
-        assertThat(payment.getDescription(), is("a description"));
-        assertThat(payment.getEmail(), is(Optional.empty()));
-        assertThat(payment.getState(), is(new PaymentState("created", false)));
-        assertThat(payment.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(payment.getPaymentProvider(), is("Sandbox"));
-        assertThat(payment.getCreatedDate(), is("2016-01-01T12:00:00Z"));
-        assertThat(payment.getLanguage(), is(SupportedLanguage.ENGLISH));
-        assertThat(payment.getDelayedCapture(), is(true));
-        assertThat(paymentResponse.getLinks().getSelf(), is(new Link("http://publicapi.test.localhost/v1/payments/ch_ab2341da231434l", "GET")));
-        assertThat(paymentResponse.getLinks().getNextUrl(), is(new Link("http://frontend_connector/charge/token_1234567asdf", "GET")));
-        PostLink expectedLink = new PostLink("http://frontend_connector/charge/", "POST", "application/x-www-form-urlencoded", Collections.singletonMap("chargeTokenId", "token_1234567asdf"));
-        assertThat(paymentResponse.getLinks().getNextUrlPost(), is(expectedLink));
-    }
-
-    @Test
-    @PactVerification({"connector"})
-    @Pacts(pacts = {"publicapi-connector-create-payment-with-language-welsh"})
-    public void testCreatePaymentWithWelshLanguage() {
-        Account account = new Account("123456", TokenPaymentType.CARD);
-        var requestPayload = CreateCardPaymentRequestBuilder.builder()
-                .amount(100)
-                .returnUrl("https://somewhere.gov.uk/rainbow/1")
-                .reference("a reference")
-                .description("a description")
                 .language(SupportedLanguage.WELSH)
-                .build();
-
-        PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
-        CardPayment payment = (CardPayment) paymentResponse.getPayment();
-
-        assertThat(payment.getPaymentId(), is("ch_ab2341da231434l"));
-        assertThat(payment.getAmount(), is(100L));
-        assertThat(payment.getReference(), is("a reference"));
-        assertThat(payment.getDescription(), is("a description"));
-        assertThat(payment.getEmail(), is(Optional.empty()));
-        assertThat(payment.getState(), is(new PaymentState("created", false)));
-        assertThat(payment.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(payment.getPaymentProvider(), is("Sandbox"));
-        assertThat(payment.getCreatedDate(), is("2016-01-01T12:00:00Z"));
-        assertThat(payment.getLanguage(), is(SupportedLanguage.WELSH));
-        assertThat(paymentResponse.getLinks().getSelf(), is(new Link("http://publicapi.test.localhost/v1/payments/ch_ab2341da231434l", "GET")));
-        assertThat(paymentResponse.getLinks().getNextUrl(), is(new Link("http://frontend_connector/charge/token_1234567asdf", "GET")));
-        PostLink expectedLink = new PostLink("http://frontend_connector/charge/", "POST", "application/x-www-form-urlencoded", Collections.singletonMap("chargeTokenId", "token_1234567asdf"));
-        assertThat(paymentResponse.getLinks().getNextUrlPost(), is(expectedLink));
-    }
-
-    @Test
-    @PactVerification({"connector"})
-    @Pacts(pacts = {"publicapi-connector-create-payment-with-prefilled-cardholder-details"})
-    public void testCreatePaymentWithPrefilledCardholderDetails() {
-        Account account = new Account("123456", TokenPaymentType.CARD);
-        var createPaymentRequest = CreateCardPaymentRequestBuilder.builder()
-                .amount(100)
-                .returnUrl("https://somewhere.gov.uk/rainbow/1")
-                .reference("a reference")
-                .description("a description")
                 .email("joe.bogs@example.org")
                 .cardholderName("J. Bogs")
                 .addressLine1("address line 1")
@@ -198,13 +117,25 @@ public class CreatePaymentServiceTest {
                 .postcode("AB1 CD2")
                 .country("GB")
                 .build();
-        PaymentWithAllLinks paymentResponse = createPaymentService.create(account, createPaymentRequest);
+
+        PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
         CardPayment payment = (CardPayment) paymentResponse.getPayment();
 
         assertThat(payment.getPaymentId(), is("ch_ab2341da231434l"));
         assertThat(payment.getAmount(), is(100L));
         assertThat(payment.getReference(), is("a reference"));
         assertThat(payment.getDescription(), is("a description"));
+        assertThat(payment.getState(), is(new PaymentState("created", false)));
+        assertThat(payment.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(payment.getPaymentProvider(), is("Sandbox"));
+        assertThat(payment.getCreatedDate(), is("2016-01-01T12:00:00Z"));
+        assertThat(paymentResponse.getLinks().getSelf(), is(new Link("http://publicapi.test.localhost/v1/payments/ch_ab2341da231434l", "GET")));
+        assertThat(paymentResponse.getLinks().getNextUrl(), is(new Link("http://frontend_connector/charge/token_1234567asdf", "GET")));
+        PostLink expectedLink = new PostLink("http://frontend_connector/charge/", "POST", "application/x-www-form-urlencoded", Collections.singletonMap("chargeTokenId", "token_1234567asdf"));
+        assertThat(paymentResponse.getLinks().getNextUrlPost(), is(expectedLink));
+        assertThat(payment.getMetadata().getMetadata(), is(metadata));
+        assertThat(payment.getDelayedCapture(), is(true));
+        assertThat(payment.getLanguage(), is(SupportedLanguage.WELSH));
         assertThat(payment.getEmail().isPresent(), is(true));
         assertThat(payment.getEmail().get(), is("joe.bogs@example.org"));
         assertThat(payment.getCardDetails().isPresent(), is(true));
@@ -221,8 +152,7 @@ public class CreatePaymentServiceTest {
     @Test
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-create-payment-with-zero-amount-not-allowed"})
-    public void testCreatePaymentWithZeroAmountWhenZeroAmountNotAllowedForAccount() {
-        Account account = new Account("123456", TokenPaymentType.CARD);
+    public void creating_payment_with_zero_amount_when_not_allowed_for_account_should_return_422() {
         var requestPayload = CreateCardPaymentRequestBuilder.builder()
                 .amount(0)
                 .returnUrl("https://somewhere.gov.uk/rainbow/1")

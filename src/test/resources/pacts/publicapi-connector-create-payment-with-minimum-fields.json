@@ -7,7 +7,7 @@
   },
   "interactions": [
     {
-      "description": "a create charge request with prefilled cardholder details",
+      "description": "a create charge request",
       "providerStates": [
         {
           "name": "a gateway account with external id exists",
@@ -23,18 +23,7 @@
           "amount": 100,
           "reference": "a reference",
           "description": "a description",
-          "return_url": "https://somewhere.gov.uk/rainbow/1",
-          "email": "joe.bogs@example.org",
-          "prefilled_cardholder_details": {
-            "cardholder_name": "J. Bogs",
-            "billing_address": {
-              "line1": "address line 1",
-              "line2": "address line 2",
-              "postcode": "AB1 CD2",
-              "city": "address city",
-              "country": "GB"
-            }
-          }
+          "return_url": "https://somewhere.gov.uk/rainbow/1"
         }
       },
       "response": {
@@ -54,20 +43,9 @@
           },
           "return_url": "https://somewhere.gov.uk/rainbow/1",
           "payment_provider": "Sandbox",
-          "created_date": "2019-05-03T13:38:00Z",
+          "created_date": "2016-01-01T12:00:00Z",
           "language": "en",
           "delayed_capture": false,
-          "email": "joe.bogs@example.org",
-          "card_details": {
-            "cardholder_name": "J. Bogs",
-            "billing_address": {
-              "line1": "address line 1",
-              "line2": "address line 2",
-              "postcode": "AB1 CD2",
-              "city": "address city",
-              "country": "GB"
-            }
-          },
           "links": [
             {
               "href": "http://connector.service.backend/v1/api/accounts/123456/charges/ch_ab2341da231434l",
@@ -163,24 +141,6 @@
             },
             "$.created_date": {
               "matchers": [{ "date": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" }]
-            },
-            "$.prefilled_cardholder_details.cardholder_name": {
-              "matchers": [{"match": "type"}]
-            },
-            "$.prefilled_cardholder_details.billing_address.line1": {
-              "matchers": [{"match": "type"}]
-            },
-            "$.prefilled_cardholder_details.billing_address.line2": {
-              "matchers": [{"match": "type"}]
-            },
-            "$.prefilled_cardholder_details.billing_address.postcode": {
-              "matchers": [{"match": "type"}]
-            },
-            "$.prefilled_cardholder_details.billing_address.city": {
-              "matchers": [{"match": "type"}]
-            },
-            "$.prefilled_cardholder_details.billing_address.country": {
-              "matchers": [{"match": "type"}]
             }
           }
         }
