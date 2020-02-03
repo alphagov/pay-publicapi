@@ -163,6 +163,24 @@ public class RequestJsonParserTest {
     }
     
     @Test
+    public void parsePaymentRequest_whenMotoFieldIsNotABoolean() throws Exception {
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"moto\": \"true\"\n" +
+                "}";
+
+        JsonNode jsonNode = objectMapper.readTree(payload);
+
+        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: moto. Must be true or false"));
+
+        parsePaymentRequest(jsonNode);
+    }
+
+    @Test
     public void parsePaymentRequest_whenReturnUrlIsNotAString_shouldOverrideFormattingErrorMessage() throws Exception {
         // language=JSON
         String payload = "{\n" +
