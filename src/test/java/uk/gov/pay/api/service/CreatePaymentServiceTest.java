@@ -63,6 +63,38 @@ public class CreatePaymentServiceTest {
 
     @Test
     @PactVerification({"connector"})
+    @Pacts(pacts = {"publicapi-connector-create-payment-with-minimum-fields"})
+    public void testCreatePaymentWithMinimumFields() {
+        Account account = new Account("123456", TokenPaymentType.CARD);
+        var requestPayload = CreateCardPaymentRequestBuilder.builder()
+                .amount(100)
+                .returnUrl("https://somewhere.gov.uk/rainbow/1")
+                .reference("a reference")
+                .description("a description")
+                .build();
+
+        PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
+        CardPayment payment = (CardPayment) paymentResponse.getPayment();
+
+        assertThat(payment.getPaymentId(), is("ch_ab2341da231434l"));
+        assertThat(payment.getAmount(), is(100L));
+        assertThat(payment.getReference(), is("a reference"));
+        assertThat(payment.getDescription(), is("a description"));
+        assertThat(payment.getEmail(), is(Optional.empty()));
+        assertThat(payment.getState(), is(new PaymentState("created", false)));
+        assertThat(payment.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(payment.getPaymentProvider(), is("Sandbox"));
+        assertThat(payment.getCreatedDate(), is("2016-01-01T12:00:00Z"));
+        assertThat(payment.getLanguage(), is(SupportedLanguage.ENGLISH));
+        assertThat(payment.getDelayedCapture(), is(false));
+        assertThat(paymentResponse.getLinks().getSelf(), is(new Link("http://publicapi.test.localhost/v1/payments/ch_ab2341da231434l", "GET")));
+        assertThat(paymentResponse.getLinks().getNextUrl(), is(new Link("http://frontend_connector/charge/token_1234567asdf", "GET")));
+        PostLink expectedLink = new PostLink("http://frontend_connector/charge/", "POST", "application/x-www-form-urlencoded", Collections.singletonMap("chargeTokenId", "token_1234567asdf"));
+        assertThat(paymentResponse.getLinks().getNextUrlPost(), is(expectedLink));
+    }
+    
+    @Test
+    @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-create-payment"})
     public void testCreatePayment() {
         Map<String, Object> metadata = Map.of(

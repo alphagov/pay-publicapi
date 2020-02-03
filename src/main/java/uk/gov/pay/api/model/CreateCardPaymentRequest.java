@@ -47,10 +47,7 @@ public class CreateCardPaymentRequest {
     public static final String INTERNAL = "internal";
     private static final String PREFILLED_CARDHOLDER_DETAILS = "prefilled_cardholder_details";
     private static final String BILLING_ADDRESS = "billing_address";
-
-    @JsonProperty("moto")
-    private final boolean moto;
-
+    
     // Even though the minimum is 0, this is only allowed for accounts this is enabled for and is a hidden feature
     // so the validation error message will always state that the minimum is 1 for consistency.
     @JsonProperty("amount")
@@ -83,6 +80,9 @@ public class CreateCardPaymentRequest {
     @ApiModelProperty(name = "metadata", dataType = "Map[String,String]")
     @Schema(name = "metadata", example = "{\"property1\": \"value1\", \"property2\": \"value2\"}\"")
     private final ExternalMetadata metadata;
+
+    @JsonProperty("moto")
+    private final boolean moto;
 
     private final Internal internal;
 
