@@ -29,28 +29,32 @@ public class CreateChargeExceptionMapper implements ExceptionMapper<CreateCharge
         PaymentError paymentError;
         int statusCode = HttpStatus.INTERNAL_SERVER_ERROR_500;
 
-        if (exception.getErrorIdentifier() == ErrorIdentifier.MANDATE_ID_INVALID) {
-            statusCode = HttpStatus.CONFLICT_409;
-            paymentError = aPaymentError(CREATE_PAYMENT_MANDATE_ID_INVALID);
-        } else if (exception.getErrorStatus() == NOT_FOUND.getStatusCode()) {
+        if (exception.getErrorStatus() == NOT_FOUND.getStatusCode()) {
             paymentError = aPaymentError(CREATE_PAYMENT_ACCOUNT_ERROR);
-        } else if (exception.getErrorIdentifier() == ErrorIdentifier.ZERO_AMOUNT_NOT_ALLOWED) {
-            statusCode = HttpStatus.UNPROCESSABLE_ENTITY_422;
-            paymentError = aPaymentError("amount", CREATE_PAYMENT_VALIDATION_ERROR,
-                    "Must be greater than or equal to 1");
-        } else if (exception.getErrorIdentifier() == ErrorIdentifier.MANDATE_STATE_INVALID) {
-            statusCode = HttpStatus.CONFLICT_409;
-            paymentError = aPaymentError(CREATE_PAYMENT_MANDATE_STATE_INVALID);
         } else {
-            paymentError = aPaymentError(CREATE_PAYMENT_CONNECTOR_ERROR);
-            LOGGER.info("Connector invalid response was {}.\n Returning http status {} with error body {}",
-                    exception.getMessage(), INTERNAL_SERVER_ERROR, paymentError);
+            ErrorIdentifier errorIdentifier = exception.getErrorIdentifier();
+            switch (errorIdentifier) {
+                case MANDATE_ID_INVALID:
+                    statusCode = HttpStatus.CONFLICT_409;
+                    paymentError = aPaymentError(CREATE_PAYMENT_MANDATE_ID_INVALID);
+                    break;
+                case ZERO_AMOUNT_NOT_ALLOWED:
+                    statusCode = HttpStatus.UNPROCESSABLE_ENTITY_422;
+                    paymentError = aPaymentError("amount", CREATE_PAYMENT_VALIDATION_ERROR,
+                            "Must be greater than or equal to 1");
+                    break;
+                case MANDATE_STATE_INVALID:
+                    statusCode = HttpStatus.CONFLICT_409;
+                    paymentError = aPaymentError(CREATE_PAYMENT_MANDATE_STATE_INVALID);
+                    break;
+                default:
+                    paymentError = aPaymentError(CREATE_PAYMENT_CONNECTOR_ERROR);
+                    LOGGER.info("Connector invalid response was {}.\n Returning http status {} with error body {}",
+                            exception.getMessage(), INTERNAL_SERVER_ERROR, paymentError);
+
+            }
         }
 
-
-        return Response
-                .status(statusCode)
-                .entity(paymentError)
-                .build();
+        return Response.status(statusCode).entity(paymentError).build();
     }
 }
