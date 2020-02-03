@@ -113,6 +113,7 @@ public abstract class BaseConnectorMockClient {
     }
 
     public void verifyCreateChargeConnectorRequest(String gatewayAccountId, String payload) {
+        wireMockClassRule.getAllServeEvents();
         wireMockClassRule.verify(1,
                 postRequestedFor(urlEqualTo(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId)))
                         .withRequestBody(equalToJson(payload, true, true)));

@@ -454,6 +454,29 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
     }
 
     @Test
+    public void createPayment_responseWith422_whenMototNotAllowed() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+
+        connectorMockClient.respondMotoPaymentNotAllowed(GATEWAY_ACCOUNT_ID);
+
+        String createMotoPaymentPayload = paymentPayload(aCreateChargeRequestParams()
+                .withAmount(AMOUNT)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withReturnUrl(RETURN_URL)
+                .withMoto(true)
+                .build());
+        
+        postPaymentResponse(createMotoPaymentPayload)
+                .statusCode(422)
+                .contentType(JSON)
+                .body("code", is("P0196"))
+                .body("description", is("MOTO payments are not enabled for this account. Please contact support if you would like to process MOTO payments"));
+
+        connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createMotoPaymentPayload);
+    }
+    
+    @Test
     public void createPayment_responseWith422_whenZeroAmountNotAllowed() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 

@@ -16,6 +16,7 @@ import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_ACCOUNT_ERRO
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_CONNECTOR_ERROR;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_MANDATE_ID_INVALID;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_MANDATE_STATE_INVALID;
+import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_MOTO_NOT_ENABLED;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 
@@ -42,6 +43,10 @@ public class CreateChargeExceptionMapper implements ExceptionMapper<CreateCharge
                     statusCode = HttpStatus.UNPROCESSABLE_ENTITY_422;
                     paymentError = aPaymentError("amount", CREATE_PAYMENT_VALIDATION_ERROR,
                             "Must be greater than or equal to 1");
+                    break;
+                case MOTO_NOT_ALLOWED:
+                    statusCode = HttpStatus.UNPROCESSABLE_ENTITY_422;
+                    paymentError = aPaymentError(CREATE_PAYMENT_MOTO_NOT_ENABLED);
                     break;
                 case MANDATE_STATE_INVALID:
                     statusCode = HttpStatus.CONFLICT_409;
