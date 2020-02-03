@@ -38,6 +38,9 @@ public class CardPayment extends Payment {
     @JsonProperty("delayed_capture")
     @ApiModelProperty(name = "delayed_capture", access = "delayed_capture")
     private final boolean delayedCapture;
+    
+    @JsonProperty("moto")
+    private final boolean moto;
 
     @JsonProperty("corporate_card_surcharge")
     private final Long corporateCardSurcharge;
@@ -76,7 +79,7 @@ public class CardPayment extends Payment {
     public CardPayment(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                        String reference, String email, String paymentProvider, String createdDate,
                        RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
-                       SupportedLanguage language, boolean delayedCapture, Long corporateCardSurcharge, Long totalAmount,
+                       SupportedLanguage language, boolean delayedCapture, boolean moto, Long corporateCardSurcharge, Long totalAmount,
                        String providerId, ExternalMetadata metadata, Long fee, Long netAmount) {
         super(chargeId, amount, description, reference, paymentProvider, createdDate);
         this.state = state;
@@ -88,6 +91,7 @@ public class CardPayment extends Payment {
         this.paymentType = CARD.getFriendlyName();
         this.language = language;
         this.delayedCapture = delayedCapture;
+        this.moto = moto;
         this.corporateCardSurcharge = corporateCardSurcharge;
         this.totalAmount = totalAmount;
         this.fee = fee;
@@ -141,6 +145,8 @@ public class CardPayment extends Payment {
     public boolean getDelayedCapture() {
         return delayedCapture;
     }
+    
+    public boolean getMoto() { return moto; }
 
     @ApiModelProperty(example = "250")
     @Schema(example = "250", accessMode = READ_ONLY)
@@ -206,6 +212,7 @@ public class CardPayment extends Payment {
                 ", reference='" + reference + '\'' +
                 ", language='" + language.toString() + '\'' +
                 ", delayedCapture=" + delayedCapture +
+                ", moto=" + moto +
                 ", createdDate='" + createdDate + '\'' +
                 '}';
     }

@@ -32,6 +32,7 @@ import static uk.gov.pay.api.model.CreateCardPaymentRequest.EMAIL_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.INTERNAL;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.LANGUAGE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.METADATA;
+import static uk.gov.pay.api.model.CreateCardPaymentRequest.MOTO_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.PREFILLED_ADDRESS_CITY_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.PREFILLED_ADDRESS_COUNTRY_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.PREFILLED_ADDRESS_LINE1_FIELD_NAME;
@@ -71,6 +72,10 @@ class RequestJsonParser {
                 .description(validateAndGetDescription(paymentRequest))
                 .returnUrl(validateAndGetReturnUrl(paymentRequest));
 
+        if(paymentRequest.has(MOTO_FIELD_NAME)) {
+            builder.moto(validateAndGetMoto(paymentRequest));
+        }
+        
         if (paymentRequest.has(LANGUAGE_FIELD_NAME)) {
             builder.language(validateAndGetLanguage(paymentRequest));
         }
@@ -142,6 +147,15 @@ class RequestJsonParser {
                 paymentRequest.get(DELAYED_CAPTURE_FIELD_NAME),
                 aPaymentError(DELAYED_CAPTURE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be true or false"),
                 aPaymentError(DELAYED_CAPTURE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be true or false"),
+                JsonNode::isBoolean,
+                JsonNode::booleanValue);
+    }
+
+    private static Boolean validateAndGetMoto(JsonNode paymentRequest) {
+        return validateAndGetValue(
+                paymentRequest.get(MOTO_FIELD_NAME),
+                aPaymentError(MOTO_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be true or false"),
+                aPaymentError(MOTO_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be true or false"),
                 JsonNode::isBoolean,
                 JsonNode::booleanValue);
     }

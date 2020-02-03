@@ -27,13 +27,13 @@ public class PaymentForSearchResult extends CardPayment {
 
     public PaymentForSearchResult(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                                   String reference, String email, String paymentProvider, String createdDate, SupportedLanguage language,
-                                  boolean delayedCapture, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
+                                  boolean delayedCapture, boolean moto, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
                                   List<PaymentConnectorResponseLink> links, URI selfLink, URI paymentEventsLink, URI paymentCancelLink, URI paymentRefundsLink, URI paymentCaptureUri,
                                   Long corporateCardSurcharge, Long totalAmount, String providerId, ExternalMetadata externalMetadata,
                                   Long fee, Long netAmount) {
         
         super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider,
-                createdDate, refundSummary, settlementSummary, cardDetails, language, delayedCapture, corporateCardSurcharge, totalAmount, providerId, externalMetadata,
+                createdDate, refundSummary, settlementSummary, cardDetails, language, delayedCapture, moto, corporateCardSurcharge, totalAmount, providerId, externalMetadata,
                 fee, netAmount);
         this.links.addSelf(selfLink.toString());
         this.links.addEvents(paymentEventsLink.toString());
@@ -67,6 +67,7 @@ public class PaymentForSearchResult extends CardPayment {
                 paymentResult.getCreatedDate(),
                 paymentResult.getLanguage(),
                 paymentResult.getDelayedCapture(),
+                paymentResult.isMoto(),
                 paymentResult.getRefundSummary(),
                 paymentResult.getSettlementSummary(),
                 paymentResult.getCardDetails(),

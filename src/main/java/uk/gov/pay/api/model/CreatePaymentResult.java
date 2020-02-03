@@ -64,6 +64,9 @@ public class CreatePaymentResult {
     @ApiModelProperty(name = "delayed_capture", access = "delayed_capture")
     @Schema(name = "delayed_capture")
     private boolean delayedCapture;
+    
+    @JsonProperty
+    private boolean moto;
 
     @JsonProperty("refund_summary")
     private RefundSummary refundSummary;

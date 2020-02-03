@@ -13,6 +13,7 @@ public class CreateChargeRequestParams {
     private final int amount;
     private final String returnUrl, description, reference;
     private final Map<String, Object> metadata;
+    private final Boolean moto;
     private final String email;
     private final String cardholderName;
     private final String addressLine1;
@@ -29,6 +30,7 @@ public class CreateChargeRequestParams {
         this.description = builder.description;
         this.reference = builder.reference;
         this.metadata = builder.metadata;
+        this.moto = builder.moto;
         this.email = builder.email;
         this.cardholderName = builder.cardholderName;
         this.addressLine1 = builder.addressLine1;
@@ -58,6 +60,10 @@ public class CreateChargeRequestParams {
 
     public Map<String, Object> getMetadata() {
         return metadata;
+    }
+
+    public Boolean isMoto() {
+        return moto;
     }
 
     public String getEmail() {
@@ -102,6 +108,7 @@ public class CreateChargeRequestParams {
         private String description;
         private String reference;
         private Map<String, Object> metadata = Map.of();
+        private Boolean moto;
         private String email;
         private String cardholderName;
         private String addressLine1;
@@ -141,6 +148,11 @@ public class CreateChargeRequestParams {
 
         public CreateChargeRequestParamsBuilder withMetadata(Map<String, Object> metadata) {
             this.metadata = metadata;
+            return this;
+        }
+
+        public CreateChargeRequestParamsBuilder withMoto(Boolean moto) {
+            this.moto = moto;
             return this;
         }
         

@@ -53,6 +53,8 @@ public class TransactionResponse {
 
     @JsonProperty(value = "delayed_capture")
     private boolean delayedCapture;
+    
+    private boolean moto;
 
     @JsonProperty("corporate_card_surcharge")
     private Long corporateCardSurcharge;
@@ -109,6 +111,10 @@ public class TransactionResponse {
 
     public boolean getDelayedCapture() {
         return delayedCapture;
+    }
+
+    public boolean isMoto() {
+        return moto;
     }
 
     public Long getCorporateCardSurcharge() {

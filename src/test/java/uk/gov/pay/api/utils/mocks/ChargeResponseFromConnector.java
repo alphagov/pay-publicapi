@@ -20,6 +20,7 @@ public class ChargeResponseFromConnector {
     private final SupportedLanguage language;
     private final PaymentOutcome paymentOutcome;
     private final boolean delayedCapture; 
+    private final boolean moto;
     private final RefundSummary refundSummary; 
     private final SettlementSummary settlementSummary; 
     private final CardDetails cardDetails;
@@ -108,6 +109,10 @@ public class ChargeResponseFromConnector {
         return delayedCapture;
     }
 
+    public boolean isMoto() {
+        return moto;
+    }
+
     public RefundSummary getRefundSummary() {
         return refundSummary;
     }
@@ -155,6 +160,7 @@ public class ChargeResponseFromConnector {
         this.language = builder.language;
         this.paymentOutcome = builder.paymentOutcome;
         this.delayedCapture = builder.delayedCapture;
+        this.moto = builder.moto;
         this.corporateCardSurcharge = builder.corporateCardSurcharge;
         this.totalAmount = builder.totalAmount;
         this.refundSummary = builder.refundSummary;
@@ -173,6 +179,7 @@ public class ChargeResponseFromConnector {
         private PaymentOutcome paymentOutcome;
         private SupportedLanguage language;
         private Boolean delayedCapture;
+        private boolean moto;
         private RefundSummary refundSummary;
         private SettlementSummary settlementSummary;
         private CardDetails cardDetails;
@@ -202,6 +209,7 @@ public class ChargeResponseFromConnector {
                     .withCreatedDate(responseFromConnector.createdDate)
                     .withLanguage(responseFromConnector.language)
                     .withDelayedCapture(responseFromConnector.delayedCapture)
+                    .withMoto(responseFromConnector.moto)
                     .withCorporateCardSurcharge(responseFromConnector.corporateCardSurcharge)
                     .withTotalAmount(responseFromConnector.totalAmount)
                     .withRefundSummary(responseFromConnector.refundSummary)
@@ -299,6 +307,11 @@ public class ChargeResponseFromConnector {
 
         public ChargeResponseFromConnectorBuilder withDelayedCapture(boolean delayedCapture) {
             this.delayedCapture = delayedCapture;
+            return this;
+        }
+
+        public ChargeResponseFromConnectorBuilder withMoto(boolean moto) {
+            this.moto = moto;
             return this;
         }
 

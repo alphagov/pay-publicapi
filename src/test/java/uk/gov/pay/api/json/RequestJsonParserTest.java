@@ -51,7 +51,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_withReturnUrlAndLanguageAndDelayedCapture_shouldParseSuccessfully() throws Exception {
+    public void parsePaymentRequest_withReturnUrlAndLanguageAndDelayedCaptureAndMoto_shouldParseSuccessfully() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -59,7 +59,8 @@ public class RequestJsonParserTest {
                 "  \"description\": \"Some description\",\n" +
                 "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
                 "  \"language\": \"en\",\n" +
-                "  \"delayed_capture\": true\n" +
+                "  \"delayed_capture\": true,\n" +
+                "  \"moto\": true\n" +
                 "}";
 
         JsonNode jsonNode = objectMapper.readTree(payload);
@@ -73,6 +74,7 @@ public class RequestJsonParserTest {
         assertThat(createPaymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(createPaymentRequest.getLanguage(), is(Optional.of(SupportedLanguage.ENGLISH)));
         assertThat(createPaymentRequest.getDelayedCapture(), is(Optional.of(true)));
+        assertThat(createPaymentRequest.getMoto(),is(Optional.of(true)));
     }
 
     @Test
@@ -159,7 +161,7 @@ public class RequestJsonParserTest {
 
         parsePaymentRequest(jsonNode);
     }
-
+    
     @Test
     public void parsePaymentRequest_whenReturnUrlIsNotAString_shouldOverrideFormattingErrorMessage() throws Exception {
         // language=JSON
