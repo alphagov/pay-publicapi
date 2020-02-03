@@ -167,4 +167,24 @@ public class CreatePaymentServiceTest {
             assertThat(e.getErrorIdentifier(), is(ErrorIdentifier.ZERO_AMOUNT_NOT_ALLOWED));
         }
     }
+    
+    @Test
+    @PactVerification({"connector"})
+    @Pacts(pacts = {"publicapi-connector-create-payment-with-moto-not-allowed"})
+    public void creating_payment_with_moto_when_not_allowed_for_account_should_return_422() {
+        var requestPayload = CreateCardPaymentRequestBuilder.builder()
+                .amount(100)
+                .returnUrl("https://somewhere.gov.uk/rainbow/1")
+                .reference("a reference")
+                .description("a description")
+                .moto(true)
+                .build();
+
+        try {
+            createPaymentService.create(account, requestPayload);
+            fail("Expected CreateChargeException to be thrown");
+        } catch (CreateChargeException e) {
+            assertThat(e.getErrorIdentifier(), is(ErrorIdentifier.MOTO_NOT_ALLOWED));
+        }
+    }
 }
