@@ -37,6 +37,7 @@
             }
           },
           "delayed_capture": true,
+          "moto": true,
           "metadata": {
             "ledger_code": 123,
             "fund_code": "ISIN122038",
@@ -64,6 +65,7 @@
           "created_date": "2016-01-01T12:00:00Z",
           "language": "cy",
           "delayed_capture": true,
+          "moto": true,
           "email": "joe.bogs@example.org",
           "card_details": {
             "cardholder_name": "J. Bogs",
