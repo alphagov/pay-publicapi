@@ -150,11 +150,6 @@ public class CreateChargeRequestParams {
             this.metadata = metadata;
             return this;
         }
-
-        public CreateChargeRequestParamsBuilder withMoto(Boolean moto) {
-            this.moto = moto;
-            return this;
-        }
         
         public CreateChargeRequestParamsBuilder withEmail(String email) {
             this.email = email;
@@ -203,6 +198,11 @@ public class CreateChargeRequestParams {
 
         public CreateChargeRequestParamsBuilder withSource(Source source) {
             this.source = source;
+            return this;
+        }
+
+        public CreateChargeRequestParamsBuilder withMoto(boolean moto) {
+            this.moto = moto;
             return this;
         }
     }
