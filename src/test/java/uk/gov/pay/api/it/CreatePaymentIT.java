@@ -317,54 +317,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
 
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, params);
     }
-
-    @Test
-    public void createMOTOPayment() {
-        int minimumAmount = 1;
-
-        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-
-        connectorMockClient.respondOk_whenCreateCharge(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
-                .withAmount(minimumAmount)
-                .withChargeId(CHARGE_ID)
-                .withState(CREATED)
-                .withReturnUrl(RETURN_URL)
-                .withDescription(DESCRIPTION)
-                .withReference(REFERENCE)
-                .withPaymentProvider(PAYMENT_PROVIDER)
-                .withGatewayTransactionId(GATEWAY_TRANSACTION_ID)
-                .withCreatedDate(CREATED_DATE)
-                .withLanguage(SupportedLanguage.ENGLISH)
-                .withDelayedCapture(false)
-                .withMoto(true)
-                .withRefundSummary(REFUND_SUMMARY)
-                .withCardDetails(CARD_DETAILS)
-                .build());
-
-        CreateChargeRequestParams params = aCreateChargeRequestParams()
-                .withAmount(minimumAmount)
-                .withDescription(DESCRIPTION)
-                .withReference(REFERENCE)
-                .withReturnUrl(RETURN_URL)
-                .withMoto(true)
-                .build();
-        
-        postPaymentResponse(paymentPayload(params))
-                .statusCode(201)
-                .contentType(JSON)
-                .body("payment_id", is(CHARGE_ID))
-                .body("amount", is(minimumAmount))
-                .body("reference", is(REFERENCE))
-                .body("description", is(DESCRIPTION))
-                .body("return_url", is(RETURN_URL))
-                .body("moto", is(true))
-                .body("payment_provider", is(PAYMENT_PROVIDER))
-                .body("created_date", is(CREATED_DATE));
-
-        connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, params);
-    }
     
-
     @Test
     public void createMOTOPayment() {
         int amount = 1;

@@ -105,13 +105,44 @@ public class GetPaymentIT extends PaymentResourceITestBase {
         assertCommonPaymentFields(response);
         assertPaymentWithMetadata(response);
     }
-
+    
     private void assertPaymentWithMetadata(ValidatableResponse response) {
         response
                 .body("metadata.reconciled", is(true))
                 .body("metadata.ledger_code", is(123))
                 .body("metadata.fuh", is("fuh you"))
                 .body("metadata.surcharge", is(1.23f));
+    }
+
+    @Test
+    public void getPaymentWithMotoThroughConnector() {
+        connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+                getConnectorCharge()
+                        .withMoto(true)
+                        .build());
+
+        ValidatableResponse response = getPaymentResponse(CHARGE_ID);
+
+        assertCommonPaymentFields(response);
+        assertConnectorOnlyPaymentFields(response);
+        assertPaymentWithMoto(response);
+    }
+
+    @Test
+    public void getPaymentWithMotoThroughLedger() {
+        ledgerMockClient.respondWithTransaction(CHARGE_ID,
+                getLedgerTransaction()
+                        .withMoto(true)
+                        .build());
+
+        ValidatableResponse response = getPaymentResponse(CHARGE_ID, LEDGER_ONLY_STRATEGY);
+
+        assertCommonPaymentFields(response);
+        assertPaymentWithMoto(response);
+    }
+
+    private void assertPaymentWithMoto(ValidatableResponse response) {
+        response.body("moto", is(true));
     }
 
     @Test
@@ -618,6 +649,7 @@ public class GetPaymentIT extends PaymentResourceITestBase {
                 .withCreatedDate(CREATED_DATE)
                 .withLanguage(SupportedLanguage.ENGLISH)
                 .withDelayedCapture(true)
+                .withMoto(false)
                 .withRefundSummary(REFUND_SUMMARY)
                 .withSettlementSummary(SETTLEMENT_SUMMARY)
                 .withCardDetails(CARD_DETAILS)
@@ -637,6 +669,7 @@ public class GetPaymentIT extends PaymentResourceITestBase {
                 .withCreatedDate(CREATED_DATE)
                 .withLanguage(SupportedLanguage.ENGLISH)
                 .withDelayedCapture(true)
+                .withMoto(false)
                 .withRefundSummary(REFUND_SUMMARY)
                 .withSettlementSummary(SETTLEMENT_SUMMARY)
                 .withCardDetails(CARD_DETAILS)

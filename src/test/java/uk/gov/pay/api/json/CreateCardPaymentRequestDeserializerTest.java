@@ -3,6 +3,9 @@ package uk.gov.pay.api.json;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+import junitparams.converters.Nullable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -10,7 +13,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CreateCardPaymentRequest;
@@ -26,9 +30,12 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.pay.api.matcher.BadRequestExceptionMatcher.aBadRequestExceptionWithError;
 import static uk.gov.pay.commons.model.Source.CARD_PAYMENT_LINK;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(JUnitParamsRunner.class)
 public class CreateCardPaymentRequestDeserializerTest {
 
+    @Rule
+    public MockitoRule mockitoRule = MockitoJUnit.rule();
+    
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
@@ -145,15 +152,16 @@ public class CreateCardPaymentRequestDeserializerTest {
         assertThat(paymentRequest.getDelayedCapture(), is(Optional.of(Boolean.FALSE)));
     }
 
+    @Parameters({"true", "false"})
     @Test
-    public void deserialize_shouldDeserializeARequestWithMotoEqualsTrueSuccessfully() throws Exception {
+    public void deserialize_shouldDeserializeARequestWithMotoFieldSuccessfully(String value) throws Exception {
         // language=JSON
         String validJson = "{\n" +
                 "  \"amount\": 27432,\n" +
                 "  \"reference\": \"Some reference\",\n" +
                 "  \"description\": \"Some description\",\n" +
                 "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "  \"moto\": true\n" +
+                "  \"moto\":" + value + "\n" +
                 "}";
 
         CreateCardPaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
@@ -162,27 +170,7 @@ public class CreateCardPaymentRequestDeserializerTest {
         assertThat(paymentRequest.getReference(), is("Some reference"));
         assertThat(paymentRequest.getDescription(), is("Some description"));
         assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(paymentRequest.getMoto(), is(Optional.of(Boolean.TRUE)));
-    }
-
-    @Test
-    public void deserialize_shouldDeserializeARequestWithMotoEqualsFalseSuccessfully() throws Exception {
-        // language=JSON
-        String validJson = "{\n" +
-                "  \"amount\": 27432,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "  \"moto\": false\n" +
-                "}";
-
-        CreateCardPaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
-
-        assertThat(paymentRequest.getAmount(), is(27432));
-        assertThat(paymentRequest.getReference(), is("Some reference"));
-        assertThat(paymentRequest.getDescription(), is("Some description"));
-        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(paymentRequest.getMoto(), is(Optional.of(Boolean.FALSE)));
+        assertThat(paymentRequest.getMoto(), is(Optional.of(Boolean.parseBoolean(value))));
     }
 
     @Test
@@ -473,53 +461,22 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_whenMotoIsNotABoolean() throws Exception {
+    @Parameters({"null", "\"true\"", "0"})
+    public void deserialize_shouldThrowValidationException_whenMotoIsNotABoolean(@Nullable String value) throws Exception {
         // language=JSON
         String json = "{\n" +
                 "  \"amount\": 1337,\n" +
                 "  \"reference\": \"Some reference\",\n" +
                 "  \"description\": \"Some description\",\n" +
                 "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "  \"moto\": \"true\"\n" +
+                "  \"moto\": " + value + "\n" +
                 "}";
 
         expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: moto. Must be true or false"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }
-
-    @Test
-    public void deserialize_shouldThrowValidationException_whenMotoIsNullValue() throws Exception {
-        // language=JSON
-        String json = "{\n" +
-                "  \"amount\": 1337,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "  \"moto\": null\n" +
-                "}";
-
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: moto. Must be true or false"));
-
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
-    }
-
-    @Test
-    public void deserialize_shouldThrowValidationException_whenMotoIsNumeric() throws Exception {
-        // language=JSON
-        String json = "{\n" +
-                "  \"amount\": 1337,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "  \"moto\": 0\n" +
-                "}";
-
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: moto. Must be true or false"));
-
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
-    }
-
+    
     @Test
     public void shouldDeserializeARequestWithPrefilledCardholderDetailsSuccessfully() throws Exception {
         // language=JSON
