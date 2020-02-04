@@ -78,9 +78,10 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withLanguage(responseFromConnector.getLanguage())
                 .withPaymentProvider(responseFromConnector.getPaymentProvider())
                 .withDelayedCapture(responseFromConnector.isDelayedCapture())
+                .withMoto(responseFromConnector.isMoto())
                 .withLinks(responseFromConnector.getLinks())
                 .withSettlementSummary(responseFromConnector.getSettlementSummary());
-
+        
         ofNullable(responseFromConnector.getCardDetails()).ifPresent(resultBuilder::withCardDetails);
         ofNullable(responseFromConnector.getRefundSummary()).ifPresent(resultBuilder::withRefundSummary);
         ofNullable(responseFromConnector.getGatewayTransactionId()).ifPresent(resultBuilder::withGatewayTransactionId);
@@ -89,7 +90,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         ofNullable(responseFromConnector.getFee()).ifPresent(resultBuilder::withFee);
         ofNullable(responseFromConnector.getNetAmount()).ifPresent(resultBuilder::withNetAmount);
         responseFromConnector.getMetadata().ifPresent(resultBuilder::withMetadata);
-
+        
         return resultBuilder.build();
     }
 
@@ -276,7 +277,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withLink(validGetLink(chargeLocation(gatewayAccountId, responseFromConnector.getChargeId()), "self"))
                 .withLink(validGetLink(nextUrl(chargeTokenId), "next_url"))
                 .withLink(validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap(chargeTokenId))).build();
-
+        
         mockCreateCharge(gatewayAccountId,
                 aResponse().withStatus(CREATED_201)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)

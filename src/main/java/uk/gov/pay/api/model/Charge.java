@@ -35,6 +35,8 @@ public class Charge {
     private SupportedLanguage language;
 
     private boolean delayedCapture;
+    
+    private boolean moto;
 
     private Long corporateCardSurcharge;
 
@@ -52,7 +54,7 @@ public class Charge {
 
     public Charge(String chargeId, Long amount, PaymentState state, String returnUrl, String description,
                   String reference, String email, String paymentProvider, String createdDate,
-                  SupportedLanguage language, boolean delayedCapture, RefundSummary refundSummary,
+                  SupportedLanguage language, boolean delayedCapture, boolean moto, RefundSummary refundSummary,
                   SettlementSummary settlementSummary, CardDetails cardDetails,
                   List<PaymentConnectorResponseLink> links, Long corporateCardSurcharge, Long totalAmount,
                   String gatewayTransactionId, ExternalMetadata metadata, Long fee, Long netAmount) {
@@ -67,6 +69,7 @@ public class Charge {
         this.createdDate = createdDate;
         this.language = language;
         this.delayedCapture = delayedCapture;
+        this.moto = moto;
         this.refundSummary = refundSummary;
         this.settlementSummary = settlementSummary;
         this.cardDetails = cardDetails;
@@ -92,6 +95,7 @@ public class Charge {
                 chargeFromResponse.getCreatedDate(),
                 chargeFromResponse.getLanguage(),
                 chargeFromResponse.getDelayedCapture(),
+                chargeFromResponse.isMoto(),
                 chargeFromResponse.getRefundSummary(),
                 chargeFromResponse.getSettlementSummary(),
                 chargeFromResponse.getCardDetails(),
@@ -118,6 +122,7 @@ public class Charge {
                 transactionResponse.getCreatedDate(),
                 transactionResponse.getLanguage(),
                 transactionResponse.getDelayedCapture(),
+                transactionResponse.isMoto(),
                 transactionResponse.getRefundSummary(),
                 transactionResponse.getSettlementSummary(),
                 transactionResponse.getCardDetails(),
@@ -169,6 +174,10 @@ public class Charge {
 
     public boolean getDelayedCapture() {
         return delayedCapture;
+    }
+
+    public boolean isMoto() {
+        return moto;
     }
 
     public Long getCorporateCardSurcharge() {

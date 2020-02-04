@@ -40,6 +40,11 @@ public class PaymentSingleResultBuilder extends PaymentResultBuilder {
         return this;
     }
 
+    public PaymentSingleResultBuilder withMoto(boolean moto) {
+        this.moto = moto;
+        return this;
+    }
+
     public PaymentSingleResultBuilder withCorporateCardSurcharge(Long surcharge) {
         this.corporateCardSurcharge = surcharge;
         return this;

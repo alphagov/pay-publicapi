@@ -29,6 +29,7 @@ public class TransactionFromLedgerFixture {
     private String email;
     private String language;
     private boolean delayedCapture;
+    private boolean moto;
     private Long corporateCardSurcharge;
     private Long totalAmount;
     private Long fee;
@@ -81,6 +82,10 @@ public class TransactionFromLedgerFixture {
         return delayedCapture;
     }
 
+    public boolean isMoto() {
+        return moto;
+    }
+
     public Long getCorporateCardSurcharge() {
         return corporateCardSurcharge;
     }
@@ -121,6 +126,7 @@ public class TransactionFromLedgerFixture {
         this.email = builder.email;
         this.language = builder.language;
         this.delayedCapture = builder.delayedCapture;
+        this.moto = builder.moto;
         this.corporateCardSurcharge = builder.corporateCardSurcharge;
         this.totalAmount = builder.totalAmount;
         this.fee = builder.fee;
@@ -161,6 +167,7 @@ public class TransactionFromLedgerFixture {
         private String email;
         private String language;
         private boolean delayedCapture;
+        private boolean moto;
         private Long corporateCardSurcharge;
         private Long totalAmount;
         private Long fee;
@@ -248,6 +255,11 @@ public class TransactionFromLedgerFixture {
 
         public TransactionFromLedgerBuilder withDelayedCapture(boolean delayedCapture) {
             this.delayedCapture = delayedCapture;
+            return this;
+        }
+        
+        public TransactionFromLedgerBuilder withMoto(boolean moto) {
+            this.moto = moto;
             return this;
         }
 

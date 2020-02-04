@@ -112,6 +112,7 @@ public abstract class PaymentResultBuilder {
                 return_url, payment_provider, language;
         public long amount;
         public boolean delayed_capture;
+        public boolean moto;
         public RefundSummary refund_summary;
         public SettlementSummary settlement_summary;
         public CardDetails card_details = new CardDetails();
@@ -153,6 +154,7 @@ public abstract class PaymentResultBuilder {
     protected String email = null;
     protected String language = SupportedLanguage.ENGLISH.toString();
     protected Boolean delayedCapture;
+    protected boolean moto;
     protected TestPaymentState state;
     protected String fromDate = null;
     protected String toDate = null;
@@ -200,6 +202,7 @@ public abstract class PaymentResultBuilder {
         payment.payment_provider = paymentProvider == null ? DEFAULT_PAYMENT_PROVIDER : paymentProvider;
         payment.language = SupportedLanguage.ENGLISH.toString();
         payment.delayed_capture = delayedCapture == null ? false : delayedCapture;
+        payment.moto = moto;
         payment.card_details.card_brand = cardDetails == null ? DEFAULT_CARD_BRAND_LABEL : cardDetails.card_brand;
         payment.card_details = cardDetails == null ? new CardDetails() : cardDetails;
         payment.refund_summary = refundSummary == null ? 

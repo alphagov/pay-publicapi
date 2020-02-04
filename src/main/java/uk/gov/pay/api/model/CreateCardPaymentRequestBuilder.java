@@ -13,6 +13,7 @@ public class CreateCardPaymentRequestBuilder {
     private String agreementId;
     private SupportedLanguage language;
     private Boolean delayedCapture;
+    private Boolean moto;
     private String email;
     private String cardholderName;
     private String addressLine1;
@@ -23,7 +24,6 @@ public class CreateCardPaymentRequestBuilder {
     private PrefilledCardholderDetails prefilledCardholderDetails;
     private Source source;
     private Internal internal;
-    private boolean moto;
 
     public static CreateCardPaymentRequestBuilder builder() {
         return new CreateCardPaymentRequestBuilder();
@@ -31,11 +31,6 @@ public class CreateCardPaymentRequestBuilder {
 
     public CreateCardPaymentRequest build() {
         return new CreateCardPaymentRequest(this);
-    }
-    
-    public CreateCardPaymentRequestBuilder moto(boolean moto) {
-        this.moto = moto;
-        return this;
     }
     
     public CreateCardPaymentRequestBuilder amount(int amount) {
@@ -70,6 +65,11 @@ public class CreateCardPaymentRequestBuilder {
 
     public CreateCardPaymentRequestBuilder delayedCapture(Boolean delayedCapture) {
         this.delayedCapture = delayedCapture;
+        return this;
+    }
+
+    public CreateCardPaymentRequestBuilder moto(Boolean moto) {
+        this.moto = moto;
         return this;
     }
 
@@ -137,7 +137,7 @@ public class CreateCardPaymentRequestBuilder {
         return metadata;
     }
 
-    public boolean isMoto() {
+    public Boolean isMoto() {
         return moto;
     }
 
@@ -168,7 +168,7 @@ public class CreateCardPaymentRequestBuilder {
     public Boolean getDelayedCapture() {
         return delayedCapture;
     }
-
+    
     public String getEmail() {
         return email;
     }

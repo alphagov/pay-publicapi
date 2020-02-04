@@ -43,12 +43,12 @@ public class PaymentWithAllLinks {
 
     public PaymentWithAllLinks(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                                String reference, String email, String paymentProvider, String createdDate, SupportedLanguage language,
-                               boolean delayedCapture, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
+                               boolean delayedCapture, boolean moto, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
                                List<PaymentConnectorResponseLink> paymentConnectorResponseLinks, URI selfLink, URI paymentEventsUri, URI paymentCancelUri,
                                URI paymentRefundsUri, URI paymentCaptureUri, Long corporateCardSurcharge, Long totalAmount, String providerId, ExternalMetadata metadata,
                                Long fee, Long netAmount) {
         this.payment = new CardPayment(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate,
-                refundSummary, settlementSummary, cardDetails, language, delayedCapture, corporateCardSurcharge, totalAmount, providerId, metadata, fee, netAmount);
+                refundSummary, settlementSummary, cardDetails, language, delayedCapture, moto, corporateCardSurcharge, totalAmount, providerId, metadata, fee, netAmount);
         this.links.addSelf(selfLink.toString());
         this.links.addKnownLinksValueOf(paymentConnectorResponseLinks);
         this.links.addEvents(paymentEventsUri.toString());
@@ -104,6 +104,7 @@ public class PaymentWithAllLinks {
                 paymentConnector.getCreatedDate(),
                 paymentConnector.getLanguage(),
                 paymentConnector.getDelayedCapture(),
+                paymentConnector.isMoto(),
                 paymentConnector.getRefundSummary(),
                 paymentConnector.getSettlementSummary(),
                 paymentConnector.getCardDetails(),

@@ -24,10 +24,10 @@ public class GetPaymentResult extends CardPayment {
     public GetPaymentResult(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                             String reference, String email, String paymentProvider, String createdDate,
                             RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
-                            SupportedLanguage language, boolean delayedCapture, Long corporateCardSurcharge,
+                            SupportedLanguage language, boolean delayedCapture, boolean moto, Long corporateCardSurcharge,
                             Long totalAmount, String providerId, Long fee, Long netAmount) {
         super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate,
-                refundSummary, settlementSummary, cardDetails, language, delayedCapture, corporateCardSurcharge,
+                refundSummary, settlementSummary, cardDetails, language, delayedCapture, moto, corporateCardSurcharge,
                 totalAmount, providerId, null, fee, netAmount);
     }
 }

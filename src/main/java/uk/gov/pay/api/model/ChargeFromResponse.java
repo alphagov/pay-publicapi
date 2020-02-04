@@ -53,6 +53,8 @@ public class ChargeFromResponse {
     
     private boolean delayedCapture;
     
+    private boolean moto;
+    
     private Long corporateCardSurcharge;
     
     private Long totalAmount;
@@ -120,6 +122,10 @@ public class ChargeFromResponse {
 
     public boolean getDelayedCapture() {
         return delayedCapture;
+    }
+
+    public boolean isMoto() {
+        return moto;
     }
 
     public Long getCorporateCardSurcharge() {

@@ -121,6 +121,7 @@ public class PaymentsResourceCreatePaymentTest {
                 "2018-01-01T11:12:13Z",
                 SupportedLanguage.ENGLISH,
                 false,
+                false,
                 new RefundSummary(),
                 new SettlementSummary(),
                 new CardDetails("9876", "482393", "Anne Onymous", "12/20", cardholderAddress, "visa", null),

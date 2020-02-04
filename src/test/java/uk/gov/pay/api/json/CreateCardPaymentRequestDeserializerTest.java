@@ -146,6 +146,46 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
+    public void deserialize_shouldDeserializeARequestWithMotoEqualsTrueSuccessfully() throws Exception {
+        // language=JSON
+        String validJson = "{\n" +
+                "  \"amount\": 27432,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"moto\": true\n" +
+                "}";
+
+        CreateCardPaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+
+        assertThat(paymentRequest.getAmount(), is(27432));
+        assertThat(paymentRequest.getReference(), is("Some reference"));
+        assertThat(paymentRequest.getDescription(), is("Some description"));
+        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentRequest.getMoto(), is(Optional.of(Boolean.TRUE)));
+    }
+
+    @Test
+    public void deserialize_shouldDeserializeARequestWithMotoEqualsFalseSuccessfully() throws Exception {
+        // language=JSON
+        String validJson = "{\n" +
+                "  \"amount\": 27432,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"moto\": false\n" +
+                "}";
+
+        CreateCardPaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+
+        assertThat(paymentRequest.getAmount(), is(27432));
+        assertThat(paymentRequest.getReference(), is("Some reference"));
+        assertThat(paymentRequest.getDescription(), is("Some description"));
+        assertThat(paymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentRequest.getMoto(), is(Optional.of(Boolean.FALSE)));
+    }
+
+    @Test
     public void deserialize_shouldThrowBadRequestException_whenJsonIsNotWellFormed() throws Exception {
         String invalidJson = "{" +
                 "  \"amount\" : " +
@@ -428,6 +468,54 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "}";
 
         expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: delayed_capture. Must be true or false"));
+
+        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+    }
+
+    @Test
+    public void deserialize_shouldThrowValidationException_whenMotoIsNotABoolean() throws Exception {
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 1337,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"moto\": \"true\"\n" +
+                "}";
+
+        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: moto. Must be true or false"));
+
+        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+    }
+
+    @Test
+    public void deserialize_shouldThrowValidationException_whenMotoIsNullValue() throws Exception {
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 1337,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"moto\": null\n" +
+                "}";
+
+        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: moto. Must be true or false"));
+
+        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+    }
+
+    @Test
+    public void deserialize_shouldThrowValidationException_whenMotoIsNumeric() throws Exception {
+        // language=JSON
+        String json = "{\n" +
+                "  \"amount\": 1337,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"moto\": 0\n" +
+                "}";
+
+        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: moto. Must be true or false"));
 
         deserializer.deserialize(jsonFactory.createParser(json), ctx);
     }

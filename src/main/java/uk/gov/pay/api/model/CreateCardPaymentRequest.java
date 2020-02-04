@@ -42,6 +42,7 @@ public class CreateCardPaymentRequest {
     public static final String PREFILLED_ADDRESS_POSTCODE_FIELD_NAME = "postcode";
     public static final String PREFILLED_ADDRESS_COUNTRY_FIELD_NAME = "country";
     public static final String DELAYED_CAPTURE_FIELD_NAME = "delayed_capture";
+    public static final String MOTO_FIELD_NAME = "moto";
     public static final String SOURCE_FIELD_NAME = "source";
     public static final String METADATA = "metadata";
     public static final String INTERNAL = "internal";
@@ -76,14 +77,13 @@ public class CreateCardPaymentRequest {
     private final String returnUrl;
 
     private final Boolean delayedCapture;
+    
+    private final Boolean moto;
 
     @ApiModelProperty(name = "metadata", dataType = "Map[String,String]")
     @Schema(name = "metadata", example = "{\"property1\": \"value1\", \"property2\": \"value2\"}\"")
     private final ExternalMetadata metadata;
-
-    @JsonProperty("moto")
-    private final boolean moto;
-
+    
     private final Internal internal;
 
     @Valid
@@ -97,16 +97,12 @@ public class CreateCardPaymentRequest {
         this.email = builder.getEmail();
         this.returnUrl = builder.getReturnUrl();
         this.delayedCapture = builder.getDelayedCapture();
+        this.moto = builder.isMoto();
         this.metadata = builder.getMetadata();
         this.prefilledCardholderDetails = builder.getPrefilledCardholderDetails();
         this.internal = builder.getInternal();
-        this.moto = builder.isMoto();
     }
-
-    public boolean isMoto() {
-        return moto;
-    }
-
+    
     @ApiModelProperty(value = "amount in pence", required = true, allowableValues = "range[1, 10000000]", example = "12000")
     @Schema(description = "amount in pence", required = true, minimum = "1", maximum = "10000000", example = "12000")
     public int getAmount() {
@@ -159,6 +155,11 @@ public class CreateCardPaymentRequest {
         return Optional.ofNullable(delayedCapture);
     }
 
+    @JsonProperty(MOTO_FIELD_NAME)
+    public Optional<Boolean> getMoto() {
+        return Optional.ofNullable(moto);
+    }
+
     @JsonProperty("metadata")
     @ApiModelProperty(value = "Additional metadata - up to 10 name/value pairs - on the payment. " +
             "Each key must be between 1 and 30 characters long. " +
@@ -186,9 +187,10 @@ public class CreateCardPaymentRequest {
                 .add("amount", this.getAmount())
                 .add("reference", this.getReference())
                 .add("description", this.getDescription())
-                .add("return_url", this.returnUrl);
+                .add("return_url", this.getReturnUrl());
         getLanguage().ifPresent(language -> request.add("language", language.toString()));
         getDelayedCapture().ifPresent(delayedCapture -> request.add("delayed_capture", delayedCapture));
+        getMoto().ifPresent(moto -> request.add("moto", moto));
         getMetadata().ifPresent(metadata -> request.add("metadata", metadata.getMetadata()));
         getEmail().ifPresent(email -> request.add("email", email));
         getInternal().flatMap(Internal::getSource).ifPresent(source -> request.add("source", source));
@@ -203,10 +205,6 @@ public class CreateCardPaymentRequest {
                 request.addToNestedMap("country", address.getCountry(), PREFILLED_CARDHOLDER_DETAILS, BILLING_ADDRESS);
             });
         });
-        
-        if (isMoto()) {
-            request.add("moto", true);
-        }
         
         return request.build();
     }
@@ -224,6 +222,7 @@ public class CreateCardPaymentRequest {
         getInternal().flatMap(Internal::getSource).ifPresent(source -> joiner.add("source: ").add(source.toString()));
         getLanguage().ifPresent(value -> joiner.add("language: ").add(value.toString()));
         getDelayedCapture().ifPresent(value -> joiner.add("delayed_capture: ").add(value.toString()));
+        getMoto().ifPresent(value -> joiner.add("moto: ").add(value.toString()));
         getMetadata().ifPresent(value -> joiner.add("metadata: ").add(value.toString()));
         return joiner.toString();
     }
