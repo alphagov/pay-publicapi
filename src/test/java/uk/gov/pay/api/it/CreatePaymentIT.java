@@ -317,7 +317,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
 
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, params);
     }
-
+    
     @Test
     public void createMOTOPayment() {
         int amount = 1;
