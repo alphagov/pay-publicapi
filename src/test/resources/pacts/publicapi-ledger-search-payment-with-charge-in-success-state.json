@@ -7,7 +7,7 @@
   },
   "interactions": [
     {
-      "description": "search payments",
+      "description": "search payment in success state",
       "providerStates": [
         {
           "name": "a payment with success state exists",

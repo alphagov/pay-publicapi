@@ -7,7 +7,7 @@
   },
   "interactions": [
     {
-      "description": "search payments",
+      "description": "search payment with first digits card number",
       "providerStates": [
         {
           "name": "a payment with success state exists",
