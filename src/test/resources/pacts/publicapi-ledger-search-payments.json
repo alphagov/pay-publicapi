@@ -65,7 +65,8 @@
                 },
                 "card_brand": ""
               },
-              "delayed_capture": false
+              "delayed_capture": false,
+              "moto": false
             }
           ],
           "_links": {
