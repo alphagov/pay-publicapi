@@ -1,0 +1,7 @@
+env_vars:
+  CONNECTOR_URL: '."user-provided"[0].credentials.card_connector_url'
+  CONNECTOR_DD_URL: '."user-provided"[0].credentials.directdebit_connector_url'
+  PUBLIC_AUTH_URL: '."user-provided"[0].credentials.publicauth_url'
+  LEDGER_URL: '."user-provided"[0].credentials.ledger_url'
+  PUBLIC_API_BASE: '."user-provided"[0].credentials.publicapi_url'
+
