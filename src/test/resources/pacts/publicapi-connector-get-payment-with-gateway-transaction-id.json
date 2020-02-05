@@ -63,7 +63,8 @@
             "capture_submit_time": null,
             "captured_date": null
           },
-          "delayed_capture": false
+          "delayed_capture": false,
+          "moto": false
         },
         "matchingRules": {
           "body": {

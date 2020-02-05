@@ -99,6 +99,7 @@ public class GetPaymentServiceTest {
         assertThat(payment.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(payment.getPaymentProvider(), is("sandbox"));
         assertThat(payment.getCreatedDate(), is("2018-09-07T13:12:02.121Z"));
+        assertThat(payment.getMoto(), is (false));
         assertThat(payment.getDelayedCapture(), is(true));
         assertThat(payment.getCorporateCardSurcharge(), is(Optional.empty()));
         assertThat(payment.getTotalAmount(), is(Optional.empty()));
