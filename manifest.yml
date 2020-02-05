@@ -2,6 +2,7 @@
 applications:
   - name: publicapi
     buildpacks:
+      - https://github.com/alphagov/env-map-buildpack.git#v2
       - java_buildpack
     path: target/pay-publicapi-0.1-SNAPSHOT-allinone.jar
     health-check-type: http
@@ -9,7 +10,10 @@ applications:
     health-check-invocation-timeout: 5
     memory: ((memory))
     disk_quota: ((disk_quota))
+    services:
+      - app-catalog
     env:
+      ENV_MAP_BP_USE_APP_PROFILE_DIR: true
       ADMIN_PORT: '9101'
       DISABLE_INTERNAL_HTTPS: ((disable_internal_https))
       ENVIRONMENT: ((space))
@@ -19,11 +23,12 @@ applications:
       JPA_LOG_LEVEL: 'INFO'
       JPA_SQL_LOG_LEVEL: 'INFO'
 
-      CONNECTOR_URL: ((card_connector_url))
-      CONNECTOR_DD_URL: ((direct_debit_connector_url))
-      PUBLIC_AUTH_URL: ((publicauth_url))
-      LEDGER_URL: ((ledger_url))
-      PUBLIC_API_BASE: ((publicapi_route))
+      # Provided by the app-catalog service 
+      CONNECTOR_URL: ""
+      CONNECTOR_DD_URL: ""
+      PUBLIC_AUTH_URL: ""
+      LEDGER_URL: ""
+      PUBLIC_API_BASE: ""
 
       TOKEN_API_HMAC_SECRET: ((token_api_hmac_secret))
 
