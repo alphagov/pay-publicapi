@@ -7,7 +7,7 @@
   },
   "interactions": [
     {
-      "description": "a create charge request with zero amount when zero amount is not allowed",
+      "description": "a create charge request when gateway account has moto disabled",
       "providerStates": [
         {
           "name": "a gateway account with external id exists",
