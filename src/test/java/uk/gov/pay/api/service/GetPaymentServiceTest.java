@@ -70,17 +70,7 @@ public class GetPaymentServiceTest {
         assertThat(payment.getMetadata(), is(notNullValue()));
         assertThat(payment.getMetadata().getMetadata().isEmpty(), is(false));
     }
-
-    @Test
-    @PactVerification({"connector"})
-    @Pacts(pacts = {"publicapi-connector-get-payment-with-gateway-transaction-id"})
-    public void providerIdIsAvailableWhenPaymentIsSubmitted() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
-        PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, "ch_999abc456def");
-        CardPayment payment = (CardPayment) paymentResponse.getPayment();
-        assertThat(payment.getProviderId(), is("gateway-tx-123456"));
-    }
-
+    
     @Test
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-get-payment-with-delayed-capture-true"})
@@ -133,10 +123,15 @@ public class GetPaymentServiceTest {
 
     @Test
     @PactVerification({"connector"})
-    @Pacts(pacts = {"publicapi-connector-get-payment-with-awaiting-capture-request-state"})
-    public void testGetPaymentWithChargeInAwaitingCaptureRequest() {
+    @Pacts(pacts = {"publicapi-connector-get-payment"})
+    public void testGetPaymentWithCharge() {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
         PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID);
+        
+        CardPayment payment = (CardPayment) paymentResponse.getPayment();
+
+        assertThat(payment.getProviderId(), is("gateway-tx-123456"));
+        
         assertThat(paymentResponse.getLinks().getCapture().getHref(),
                 containsString("v1/payments/" + CHARGE_ID + "/capture"));
         assertThat(paymentResponse.getLinks().getCapture().getMethod(), is("POST"));

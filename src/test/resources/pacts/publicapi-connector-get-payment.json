@@ -7,13 +7,14 @@
   },
   "interactions": [
     {
-      "description": "get one charge in awaiting capture request status",
+      "description": "get charge",
       "providerStates": [
         {
-          "name": "a charge with delayed capture true and awaiting capture request status exists",
+          "name": "a charge exists",
           "params": {
             "gateway_account_id": "123456",
-            "charge_id": "ch_123abc456def"
+            "charge_id": "ch_123abc456def",
+            "gateway_transaction_id": "gateway-tx-123456"
           }
         }
       ],
@@ -53,6 +54,7 @@
             }
           ],
           "charge_id": "ch_123abc456def",
+          "gateway_transaction_id": "gateway-tx-123456",
           "return_url": "https://somewhere.gov.uk/rainbow/1",
           "payment_provider": "sandbox",
           "created_date": "2018-10-16T10:46:02.121Z",
