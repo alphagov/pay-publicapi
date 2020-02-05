@@ -87,6 +87,7 @@ public class CreatePaymentServiceTest {
         assertThat(payment.getCreatedDate(), is("2016-01-01T12:00:00Z"));
         assertThat(payment.getLanguage(), is(SupportedLanguage.ENGLISH));
         assertThat(payment.getDelayedCapture(), is(false));
+        assertThat(payment.getMoto(), is(false));
         assertThat(paymentResponse.getLinks().getSelf(), is(new Link("http://publicapi.test.localhost/v1/payments/ch_ab2341da231434l", "GET")));
         assertThat(paymentResponse.getLinks().getNextUrl(), is(new Link("http://frontend_connector/charge/token_1234567asdf", "GET")));
         PostLink expectedLink = new PostLink("http://frontend_connector/charge/", "POST", "application/x-www-form-urlencoded", Collections.singletonMap("chargeTokenId", "token_1234567asdf"));
@@ -108,6 +109,7 @@ public class CreatePaymentServiceTest {
                 .description("a description")
                 .metadata(new ExternalMetadata(metadata))
                 .delayedCapture(Boolean.TRUE)
+                .moto(Boolean.TRUE)
                 .language(SupportedLanguage.WELSH)
                 .email("joe.bogs@example.org")
                 .cardholderName("J. Bogs")

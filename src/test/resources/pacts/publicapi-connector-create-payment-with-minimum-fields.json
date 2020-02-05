@@ -7,7 +7,7 @@
   },
   "interactions": [
     {
-      "description": "a create charge request",
+      "description": "a create charge request with minimum fields",
       "providerStates": [
         {
           "name": "a gateway account with external id exists",
@@ -46,6 +46,7 @@
           "created_date": "2016-01-01T12:00:00Z",
           "language": "en",
           "delayed_capture": false,
+          "moto": false,
           "links": [
             {
               "href": "http://connector.service.backend/v1/api/accounts/123456/charges/ch_ab2341da231434l",
