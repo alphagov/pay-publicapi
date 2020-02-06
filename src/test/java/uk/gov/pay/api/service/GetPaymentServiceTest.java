@@ -107,20 +107,7 @@ public class GetPaymentServiceTest {
         )));
         assertThat(paymentResponse.getLinks().getCapture(), is(nullValue()));
     }
-
-    @Test
-    @PactVerification({"connector"})
-    @Pacts(pacts = {"publicapi-connector-get-payment-with-corporate-surcharge"})
-    public void testGetPaymentWithCorporateCardSurcharge() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
-
-        PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID);
-        CardPayment payment = (CardPayment) paymentResponse.getPayment();
-        assertThat(payment.getCorporateCardSurcharge().get(), is(250L));
-        assertThat(payment.getTotalAmount().get(), is(2250L));
-        assertThat(paymentResponse.getLinks().getCapture(), is(nullValue()));
-    }
-
+    
     @Test
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-get-payment"})
@@ -131,7 +118,8 @@ public class GetPaymentServiceTest {
         CardPayment payment = (CardPayment) paymentResponse.getPayment();
 
         assertThat(payment.getProviderId(), is("gateway-tx-123456"));
-        
+        assertThat(payment.getCorporateCardSurcharge().get(), is(250L));
+        assertThat(payment.getTotalAmount().get(), is(350L));
         assertThat(paymentResponse.getLinks().getCapture().getHref(),
                 containsString("v1/payments/" + CHARGE_ID + "/capture"));
         assertThat(paymentResponse.getLinks().getCapture().getMethod(), is("POST"));
