@@ -7,7 +7,7 @@
   },
   "interactions": [
     {
-      "description": "search payments",
+      "description": "search payment in success state",
       "providerStates": [
         {
           "name": "a payment with success state exists",
@@ -84,13 +84,13 @@
           ],
           "_links": {
             "self": {
-              "href": "http://ledger.service.backend/v1/transaction?account_id=123456&state=SUCCESS&transaction_type=PAYMENT&page=1&display_size=500"
+              "href": "http://ledger.service.backend/v1/transaction?account_id=123456&state=success&transaction_type=PAYMENT&page=1&display_size=500"
             },
             "last_page": {
-              "href": "http://ledger.service.backend/v1/transaction?account_id=123456&state=SUCCESS&transaction_type=PAYMENT&page=1&display_size=500"
+              "href": "http://ledger.service.backend/v1/transaction?account_id=123456&state=success&transaction_type=PAYMENT&page=1&display_size=500"
             },
             "first_page": {
-              "href": "http://ledger.service.backend/v1/transaction?account_id=123456&state=SUCCESS&transaction_type=PAYMENT&page=1&display_size=500"
+              "href": "http://ledger.service.backend/v1/transaction?account_id=123456&state=success&transaction_type=PAYMENT&page=1&display_size=500"
             }
           }
         },
@@ -99,21 +99,21 @@
             "$._links.self.href": {
               "matchers": [
                 {
-                  "regex": "http.*:\/\/.*\/v1\/transaction\\?account_id=123456&state=SUCCESS&transaction_type=PAYMENT&page=1&display_size=500"
+                  "regex": "http.*:\/\/.*\/v1\/transaction\\?account_id=123456&state=success&transaction_type=PAYMENT&page=1&display_size=500"
                 }
               ]
             },
             "$._links.last_page.href": {
               "matchers": [
                 {
-                  "regex": "http.*:\/\/.*\/v1\/transaction\\?account_id=123456&state=SUCCESS&transaction_type=PAYMENT&page=1&display_size=500"
+                  "regex": "http.*:\/\/.*\/v1\/transaction\\?account_id=123456&state=success&transaction_type=PAYMENT&page=1&display_size=500"
                 }
               ]
             },
             "$._links.first_page.href": {
               "matchers": [
                 {
-                  "regex": "http.*:\/\/.*\/v1\/transaction\\?account_id=123456&state=SUCCESS&transaction_type=PAYMENT&page=1&display_size=500"
+                  "regex": "http.*:\/\/.*\/v1\/transaction\\?account_id=123456&state=success&transaction_type=PAYMENT&page=1&display_size=500"
                 }
               ]
             },
