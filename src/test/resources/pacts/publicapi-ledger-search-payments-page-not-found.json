@@ -10,7 +10,7 @@
       "description": "Search payments with a page number that does not exist",
       "providerStates": [
         {
-          "name": "a transaction with created state exist",
+          "name": "a payment transaction exists",
           "params": {
             "transaction_external_id": "charge97837509646393e3C",
             "gateway_account_id": "123456"
