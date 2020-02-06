@@ -14,7 +14,8 @@
           "params": {
             "gateway_account_id": "123456",
             "charge_id": "ch_123abc456def",
-            "gateway_transaction_id": "gateway-tx-123456"
+            "gateway_transaction_id": "gateway-tx-123456",
+            "account_id": "123456"
           }
         }
       ],
@@ -58,10 +59,12 @@
           "return_url": "https://somewhere.gov.uk/rainbow/1",
           "payment_provider": "sandbox",
           "created_date": "2018-10-16T10:46:02.121Z",
+          "corporate_card_surcharge": 250,
+          "total_amount": 350,
           "refund_summary": {
             "status": "unavailable",
             "user_external_id": null,
-            "amount_available": 100,
+            "amount_available": 350,
             "amount_submitted": 0
           },
           "settlement_summary": {
