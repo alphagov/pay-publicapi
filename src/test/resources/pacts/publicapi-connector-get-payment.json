@@ -15,24 +15,14 @@
             "gateway_account_id": "123456",
             "charge_id": "ch_123abc456def",
             "gateway_transaction_id": "gateway-tx-123456",
-            "account_id": "123456"
+            "account_id": "123456",
+            "metadata": "{\"ledger_code\":123, \"some_key\":\"key\"}"
           }
         }
       ],
       "request": {
         "method": "GET",
-        "path": "/v1/api/accounts/123456/charges/ch_123abc456def",
-        "query": {
-          "account_id": [
-            "123456"
-          ],
-          "transaction_type": [
-            "PAYMENT"
-          ],
-          "status_version": [
-            "1"
-          ]
-        }
+        "path": "/v1/api/accounts/123456/charges/ch_123abc456def"
       },
       "response": {
         "status": 200,
@@ -40,6 +30,10 @@
           "Content-Type": "application/json"
         },
         "body": {
+          "metadata": {
+            "ledger_code": 123,
+            "some_key": "key"
+          },
           "amount": 100,
           "state": {
             "finished": false,

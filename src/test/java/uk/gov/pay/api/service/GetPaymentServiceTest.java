@@ -59,17 +59,6 @@ public class GetPaymentServiceTest {
                 new ConnectorService(client, connectorUriGenerator),
                 new LedgerService(client, ledgerUriGenerator));
     }
-
-    @Test
-    @PactVerification({"connector"})
-    @Pacts(pacts = {"publicapi-connector-get-payment-with-metadata"})
-    public void testGetPaymentWithMetadata() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
-        PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, "ch_999abc456def");
-        CardPayment payment = (CardPayment) paymentResponse.getPayment();
-        assertThat(payment.getMetadata(), is(notNullValue()));
-        assertThat(payment.getMetadata().getMetadata().isEmpty(), is(false));
-    }
     
     @Test
     @PactVerification({"connector"})
@@ -123,6 +112,8 @@ public class GetPaymentServiceTest {
         assertThat(paymentResponse.getLinks().getCapture().getHref(),
                 containsString("v1/payments/" + CHARGE_ID + "/capture"));
         assertThat(paymentResponse.getLinks().getCapture().getMethod(), is("POST"));
+        assertThat(payment.getMetadata(), is(notNullValue()));
+        assertThat(payment.getMetadata().getMetadata().isEmpty(), is(false));
         assertThat(paymentResponse.getLinks().getNextUrl(), is(nullValue()));
         assertThat(paymentResponse.getLinks().getNextUrlPost(), is(nullValue()));
     }
