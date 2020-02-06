@@ -109,6 +109,8 @@ public class GetPaymentServiceTest {
         assertThat(payment.getProviderId(), is("gateway-tx-123456"));
         assertThat(payment.getCorporateCardSurcharge().get(), is(250L));
         assertThat(payment.getTotalAmount().get(), is(350L));
+        assertThat(payment.getFee().get(), is(5L));
+        assertThat(payment.getNetAmount().get(), is(345L));
         assertThat(paymentResponse.getLinks().getCapture().getHref(),
                 containsString("v1/payments/" + CHARGE_ID + "/capture"));
         assertThat(paymentResponse.getLinks().getCapture().getMethod(), is("POST"));
@@ -116,21 +118,5 @@ public class GetPaymentServiceTest {
         assertThat(payment.getMetadata().getMetadata().isEmpty(), is(false));
         assertThat(paymentResponse.getLinks().getNextUrl(), is(nullValue()));
         assertThat(paymentResponse.getLinks().getNextUrlPost(), is(nullValue()));
-    }
-
-    @Test
-    @PactVerification({"connector"})
-    @Pacts(pacts = {"publicapi-connector-get-payment-with-fee-and-net-amount"})
-    public void testGetPaymentWithFeeAndNetAmount() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
-
-        PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID);
-        CardPayment payment = (CardPayment) paymentResponse.getPayment();
-
-        assertThat(payment.getPaymentId(), is(CHARGE_ID));
-        assertThat(payment.getPaymentProvider(), is("sandbox"));
-        assertThat(payment.getAmount(), is(100L));
-        assertThat(payment.getFee().get(), is(5L));
-        assertThat(payment.getNetAmount().get(), is(95L));
     }
 }
