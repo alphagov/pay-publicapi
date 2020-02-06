@@ -21,7 +21,18 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/v1/api/accounts/123456/charges/ch_123abc456def"
+        "path": "/v1/api/accounts/123456/charges/ch_123abc456def",
+        "query": {
+          "account_id": [
+            "123456"
+          ],
+          "transaction_type": [
+            "PAYMENT"
+          ],
+          "status_version": [
+            "1"
+          ]
+        }
       },
       "response": {
         "status": 200,
