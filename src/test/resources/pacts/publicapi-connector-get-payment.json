@@ -15,7 +15,8 @@
             "gateway_account_id": "123456",
             "charge_id": "ch_123abc456def",
             "gateway_transaction_id": "gateway-tx-123456",
-            "account_id": "123456"
+            "account_id": "123456",
+            "metadata": "{\"ledger_code\":123, \"some_key\":\"key\"}"
           }
         }
       ],
@@ -29,6 +30,10 @@
           "Content-Type": "application/json"
         },
         "body": {
+          "metadata": {
+            "ledger_code": 123,
+            "some_key": "key"
+          },
           "amount": 100,
           "state": {
             "finished": false,
