@@ -35,6 +35,8 @@
             "some_key": "key"
           },
           "amount": 100,
+          "fee": 5,
+          "net_amount": 345,
           "state": {
             "finished": false,
             "status": "capturable"
