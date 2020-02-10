@@ -28,7 +28,7 @@ applications:
       CONNECTOR_DD_URL: ""
       PUBLIC_AUTH_URL: ""
       LEDGER_URL: ""
-      PUBLIC_API_BASE: ""
+      PUBLICAPI_BASE: ""
 
       TOKEN_API_HMAC_SECRET: ((token_api_hmac_secret))
 
