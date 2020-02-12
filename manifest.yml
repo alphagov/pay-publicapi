@@ -12,6 +12,7 @@ applications:
     disk_quota: ((disk_quota))
     services:
       - app-catalog
+      - publicapi-secret-service
     env:
       ENV_MAP_BP_USE_APP_PROFILE_DIR: true
       ADMIN_PORT: '9101'
