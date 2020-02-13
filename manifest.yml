@@ -12,6 +12,7 @@ applications:
     disk_quota: ((disk_quota))
     services:
       - app-catalog
+      - publicapi-secret-service
     env:
       ENV_MAP_BP_USE_APP_PROFILE_DIR: true
       ADMIN_PORT: '9101'
@@ -30,21 +31,19 @@ applications:
       LEDGER_URL: ""
       PUBLICAPI_BASE: ""
 
-      TOKEN_API_HMAC_SECRET: ((token_api_hmac_secret))
+      # Provided by the publicapi-secret-service
+      TOKEN_API_HMAC_SECRET: ""
+      RATE_LIMITER_VALUE: ""
+      RATE_LIMITER_VALUE_POST: ""
+      RATE_LIMITER_REQS_NODE: ""
+      RATE_LIMITER_REQS_NODE_POST: ""
+      RATE_LIMITER_ELEVATED_ACCOUNTS: ""
+      RATE_LIMITER_ELEVATED_VALUE_GET: ""
+      RATE_LIMITER_ELEVATED_VALUE_POST: ""
+      SENTRY_DSN: ""
 
       AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
-
-      RATE_LIMITER_VALUE: ((rate_limiter_value))
-      RATE_LIMITER_VALUE_POST: ((rate_limiter_value_post))
       REDIS_URL: ((redis_url))
-      RATE_LIMITER_REQS_NODE: ((rate_limiter_reqs_node))
-      RATE_LIMITER_REQS_NODE_POST: ((rate_limiter_req_node_post))
-      RATE_LIMITER_ELEVATED_ACCOUNTS: ((rate_limiter_elevated_accounts))
-      RATE_LIMITER_ELEVATED_VALUE_GET: ((rate_limiter_elevated_value_get))
-      RATE_LIMITER_ELEVATED_VALUE_POST: ((rate_limiter_elevated_value_post))
-
-      # Provide via Sentry service
-      SENTRY_DSN: noop://localhost
 
       RUN_APP: 'true'
       RUN_MIGRATION: ((run_migration))
