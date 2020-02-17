@@ -21,19 +21,20 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateRefundException;
-import uk.gov.pay.api.model.Charge;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.RefundFromConnector;
 import uk.gov.pay.api.model.RefundResponse;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.RefundsResponse;
+import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.search.card.RefundForSearchResult;
 import uk.gov.pay.api.model.search.card.RefundResult;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
 import uk.gov.pay.api.service.ConnectorService;
 import uk.gov.pay.api.service.GetPaymentRefundService;
 import uk.gov.pay.api.service.GetPaymentRefundsService;
+import uk.gov.pay.api.service.GetPaymentService;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -66,17 +67,19 @@ public class PaymentRefundsResource {
     private final GetPaymentRefundsService getPaymentRefundsService;
     private final GetPaymentRefundService getPaymentRefundService;
     private final ConnectorService connectorService;
+    private final GetPaymentService getPaymentService;
 
     @Inject
     public PaymentRefundsResource(Client client, PublicApiConfig configuration,
                                   GetPaymentRefundsService getPaymentRefundsService,
-                                  GetPaymentRefundService getPaymentRefundService, ConnectorService connectorService) {
+                                  GetPaymentRefundService getPaymentRefundService, ConnectorService connectorService, GetPaymentService getPaymentService) {
         this.client = client;
         this.baseUrl = configuration.getBaseUrl();
         this.connectorUrl = configuration.getConnectorUrl();
         this.getPaymentRefundsService = getPaymentRefundsService;
         this.getPaymentRefundService = getPaymentRefundService;
         this.connectorService = connectorService;
+        this.getPaymentService = getPaymentService;
     }
 
     @GET
@@ -221,13 +224,15 @@ public class PaymentRefundsResource {
                                  @ApiParam(value = "paymentId", required = true) @PathParam("paymentId") String paymentId,
                                  @Parameter(required = true, description = "requestPayload")
                                  @ApiParam(value = "requestPayload", required = true) CreatePaymentRefundRequest requestPayload) {
+        var strategy = new GetOnePaymentStrategy("", account, paymentId, getPaymentService);
 
         logger.info("Create a refund for payment request - paymentId={}", paymentId);
 
         Integer refundAmountAvailable = requestPayload.getRefundAmountAvailable()
-                .orElseGet(() -> Optional.ofNullable(connectorService.getCharge(account, paymentId))
-                        .map(Charge::getRefundSummary)
-                        .map(RefundSummary::getAmountAvailable)
+                .orElseGet(() -> Optional.of((CardPayment) strategy.validateAndExecute().getPayment())
+                        .map(p -> p.getRefundSummary()
+                                .map(RefundSummary::getAmountAvailable)
+                                .orElse(0L))
                         .map(Long::intValue)
                         .orElse(0));
 
