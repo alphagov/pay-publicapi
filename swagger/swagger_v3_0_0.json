@@ -1069,71 +1069,6 @@
         } ]
       }
     },
-    "/v1/directdebit/payments/{paymentId}" : {
-      "get" : {
-        "tags" : [ "Direct Debit" ],
-        "summary" : "Find Direct Debit payment by ID",
-        "description" : "Return information about the Direct Debit payment. The Authorisation token needs to be specified in the 'Authorization' header as 'Authorization: Bearer YOUR_API_KEY_HERE'",
-        "operationId" : "Get a Direct Debit payment",
-        "parameters" : [ {
-          "name" : "paymentId",
-          "in" : "path",
-          "description" : "Payment identifier",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/DirectDebitPayment"
-                }
-              }
-            }
-          },
-          "401" : {
-            "description" : "Credentials are required to access this resource"
-          },
-          "404" : {
-            "description" : "Not found",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/PaymentError"
-                }
-              }
-            }
-          },
-          "429" : {
-            "description" : "Too many requests",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500" : {
-            "description" : "Downstream system error",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/PaymentError"
-                }
-              }
-            }
-          }
-        },
-        "security" : [ {
-          "BearerAuth" : [ ]
-        } ]
-      }
-    },
     "/v1/directdebit/payments" : {
       "get" : {
         "tags" : [ "Direct Debit" ],
@@ -1290,6 +1225,71 @@
           },
           "422" : {
             "description" : "Invalid parameters: amount, reference, description, mandate id. See Public API documentation for the correct data formats",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          },
+          "429" : {
+            "description" : "Too many requests",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Downstream system error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PaymentError"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/v1/directdebit/payments/{paymentId}" : {
+      "get" : {
+        "tags" : [ "Direct Debit" ],
+        "summary" : "Find Direct Debit payment by ID",
+        "description" : "Return information about the Direct Debit payment. The Authorisation token needs to be specified in the 'Authorization' header as 'Authorization: Bearer YOUR_API_KEY_HERE'",
+        "operationId" : "Get a Direct Debit payment",
+        "parameters" : [ {
+          "name" : "paymentId",
+          "in" : "path",
+          "description" : "Payment identifier",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/DirectDebitPayment"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "404" : {
+            "description" : "Not found",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -1894,6 +1894,9 @@
             "readOnly" : true,
             "example" : false
           },
+          "moto" : {
+            "type" : "boolean"
+          },
           "corporate_card_surcharge" : {
             "type" : "integer",
             "format" : "int64",
@@ -2162,6 +2165,9 @@
             "readOnly" : true,
             "example" : false
           },
+          "moto" : {
+            "type" : "boolean"
+          },
           "corporate_card_surcharge" : {
             "type" : "integer",
             "format" : "int64",
@@ -2303,6 +2309,9 @@
           "delayed_capture" : {
             "type" : "boolean"
           },
+          "moto" : {
+            "type" : "boolean"
+          },
           "_links" : {
             "$ref" : "#/components/schemas/PaymentLinks"
           },
@@ -2375,6 +2384,11 @@
           "delayed_capture" : {
             "type" : "boolean",
             "description" : "delayed capture flag",
+            "example" : false
+          },
+          "moto" : {
+            "type" : "boolean",
+            "description" : "Mail Order / Telephone Order (MOTO) payment flag",
             "example" : false
           },
           "metadata" : {
@@ -2522,6 +2536,42 @@
           }
         }
       },
+      "CreateDirectDebitPaymentRequest" : {
+        "required" : [ "amount", "description", "reference" ],
+        "type" : "object",
+        "properties" : {
+          "amount" : {
+            "maximum" : 10000000,
+            "minimum" : 100,
+            "type" : "integer",
+            "description" : "amount in pence",
+            "format" : "int32",
+            "example" : 12000
+          },
+          "reference" : {
+            "maxLength" : 255,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "payment reference",
+            "example" : "12345"
+          },
+          "description" : {
+            "maxLength" : 255,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "payment description",
+            "example" : "New passport application"
+          },
+          "mandate_id" : {
+            "maxLength" : 26,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "ID of the mandates being used to collect the payment",
+            "example" : "33890b55-b9ea-4e2f-90fd-77ae0e9009e2"
+          }
+        },
+        "description" : "The Direct Debit Payment Request Payload"
+      },
       "DirectDebitConnectorPaymentResponse" : {
         "type" : "object",
         "properties" : {
@@ -2604,42 +2654,6 @@
             "$ref" : "#/components/schemas/SearchNavigationLinks"
           }
         }
-      },
-      "CreateDirectDebitPaymentRequest" : {
-        "required" : [ "amount", "description", "reference" ],
-        "type" : "object",
-        "properties" : {
-          "amount" : {
-            "maximum" : 10000000,
-            "minimum" : 100,
-            "type" : "integer",
-            "description" : "amount in pence",
-            "format" : "int32",
-            "example" : 12000
-          },
-          "reference" : {
-            "maxLength" : 255,
-            "minLength" : 0,
-            "type" : "string",
-            "description" : "payment reference",
-            "example" : "12345"
-          },
-          "description" : {
-            "maxLength" : 255,
-            "minLength" : 0,
-            "type" : "string",
-            "description" : "payment description",
-            "example" : "New passport application"
-          },
-          "mandate_id" : {
-            "maxLength" : 26,
-            "minLength" : 0,
-            "type" : "string",
-            "description" : "ID of the mandates being used to collect the payment",
-            "example" : "33890b55-b9ea-4e2f-90fd-77ae0e9009e2"
-          }
-        },
-        "description" : "The Direct Debit Payment Request Payload"
       }
     },
     "securitySchemes" : {
