@@ -1158,6 +1158,12 @@
           "description" : "delayed capture flag",
           "readOnly" : true
         },
+        "moto" : {
+          "type" : "boolean",
+          "example" : false,
+          "description" : "Mail Order / Telephone Order (MOTO) payment flag",
+          "readOnly" : true
+        },
         "metadata" : {
           "type" : "object",
           "example" : "{\"ledger_code\":\"123\", \"reconciled\": true}",
@@ -1286,6 +1292,9 @@
           "example" : "2016-01-21T17:15:00Z"
         },
         "delayed_capture" : {
+          "type" : "boolean"
+        },
+        "moto" : {
           "type" : "boolean"
         },
         "_links" : {
@@ -1552,6 +1561,10 @@
           "description" : "delayed capture flag",
           "readOnly" : true
         },
+        "moto" : {
+          "type" : "boolean",
+          "readOnly" : true
+        },
         "corporate_card_surcharge" : {
           "type" : "integer",
           "format" : "int64",
@@ -1813,6 +1826,10 @@
           "type" : "boolean",
           "example" : false,
           "description" : "delayed capture flag",
+          "readOnly" : true
+        },
+        "moto" : {
+          "type" : "boolean",
           "readOnly" : true
         },
         "corporate_card_surcharge" : {

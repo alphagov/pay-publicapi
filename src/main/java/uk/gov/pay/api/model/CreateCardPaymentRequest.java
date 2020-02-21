@@ -141,14 +141,14 @@ public class CreateCardPaymentRequest {
         return returnUrl;
     }
 
-    @ApiModelProperty(value = "prefilled_cardholder_details", required = false)
+    @ApiModelProperty(value = "prefilled_cardholder_details")
     @Schema(description = "prefilled_cardholder_details")
     @JsonProperty(CreateCardPaymentRequest.PREFILLED_CARDHOLDER_DETAILS_FIELD_NAME)
     public Optional<PrefilledCardholderDetails> getPrefilledCardholderDetails() {
         return Optional.ofNullable(prefilledCardholderDetails);
     }
 
-    @ApiModelProperty(value = "delayed capture flag", required = false, example = "false")
+    @ApiModelProperty(value = "delayed capture flag", example = "false")
     @Schema(description = "delayed capture flag", example = "false")
     @JsonProperty(DELAYED_CAPTURE_FIELD_NAME)
     public Optional<Boolean> getDelayedCapture() {
@@ -156,6 +156,8 @@ public class CreateCardPaymentRequest {
     }
 
     @JsonProperty(MOTO_FIELD_NAME)
+    @ApiModelProperty(value = "Mail Order / Telephone Order (MOTO) payment flag", example = "false")
+    @Schema(description = "Mail Order / Telephone Order (MOTO) payment flag", example = "false")
     public Optional<Boolean> getMoto() {
         return Optional.ofNullable(moto);
     }
