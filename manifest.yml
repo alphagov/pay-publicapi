@@ -43,7 +43,7 @@ applications:
       SENTRY_DSN: ""
 
       AWS_XRAY_CONTEXT_MISSING: LOG_ERROR
-      REDIS_URL: ""
+      REDIS_URL: "none"
 
       RUN_APP: 'true'
       RUN_MIGRATION: ((run_migration))
