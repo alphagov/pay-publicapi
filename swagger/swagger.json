@@ -1563,6 +1563,8 @@
         },
         "moto" : {
           "type" : "boolean",
+          "example" : false,
+          "description" : "Mail Order / Telephone Order (MOTO) payment flag",
           "readOnly" : true
         },
         "corporate_card_surcharge" : {
@@ -1830,6 +1832,8 @@
         },
         "moto" : {
           "type" : "boolean",
+          "example" : false,
+          "description" : "Mail Order / Telephone Order (MOTO) payment flag",
           "readOnly" : true
         },
         "corporate_card_surcharge" : {
