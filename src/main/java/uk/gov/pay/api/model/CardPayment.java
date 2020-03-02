@@ -36,7 +36,6 @@ public class CardPayment extends Payment {
     private final SupportedLanguage language;
 
     @JsonProperty("delayed_capture")
-    @ApiModelProperty(name = "delayed_capture", access = "delayed_capture")
     private final boolean delayedCapture;
     
     @JsonProperty("moto")
@@ -145,7 +144,9 @@ public class CardPayment extends Payment {
     public boolean getDelayedCapture() {
         return delayedCapture;
     }
-    
+
+    @ApiModelProperty(value = "Mail Order / Telephone Order (MOTO) payment flag", example = "false")
+    @Schema(description = "Mail Order / Telephone Order (MOTO) payment flag", example = "false")
     public boolean getMoto() { return moto; }
 
     @ApiModelProperty(example = "250")
