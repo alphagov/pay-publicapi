@@ -1257,27 +1257,32 @@
         "amount" : {
           "type" : "integer",
           "format" : "int64",
-          "example" : 1200
+          "example" : 1200,
+          "description" : "The amount in pence."
         },
         "state" : {
           "$ref" : "#/definitions/PaymentState"
         },
         "description" : {
           "type" : "string",
-          "example" : "Your Service Description"
+          "example" : "New passport application",
+          "description" : "The human-readable description you gave the payment."
         },
         "reference" : {
           "type" : "string",
-          "example" : "your-reference"
+          "example" : "12345",
+          "description" : "The reference number you associated with this payment."
         },
         "language" : {
           "type" : "string",
           "example" : "en",
+          "description" : "Which language your users will see on the payment pages when they make a payment.",
           "enum" : [ "en", "cy" ]
         },
         "payment_id" : {
           "type" : "string",
-          "example" : "hu20sqlact5260q2nanm0q8u93"
+          "example" : "hu20sqlact5260q2nanm0q8u93",
+          "description" : "The unique identifier of the payment."
         },
         "payment_provider" : {
           "type" : "string",
@@ -1285,34 +1290,44 @@
         },
         "return_url" : {
           "type" : "string",
-          "example" : "http://your.service.domain/your-reference"
+          "example" : "https://service-name.gov.uk/transactions/12345",
+          "description" : "An HTTPS URL on your site that your user will be sent back to once they have completed their payment attempt on GOV.UK Pay."
         },
         "created_date" : {
           "type" : "string",
-          "example" : "2016-01-21T17:15:00Z"
+          "example" : "2016-01-21T17:15:00Z",
+          "description" : "The date you created the payment."
         },
         "delayed_capture" : {
-          "type" : "boolean"
+          "type" : "boolean",
+          "example" : false,
+          "description" : "Whether to [delay capturing](https://docs.payments.service.gov.uk/optional_features/delayed_capture/) this payment."
         },
         "moto" : {
-          "type" : "boolean"
+          "type" : "boolean",
+          "example" : false,
+          "description" : "Mail Order / Telephone Order (MOTO) payment flag."
         },
         "_links" : {
+          "description" : "API endpoints related to the payment.",
           "$ref" : "#/definitions/PaymentLinks"
         },
         "provider_id" : {
           "type" : "string",
-          "example" : "null"
+          "example" : "null",
+          "description" : "The reference number the payment gateway associated with the payment."
         },
         "metadata" : {
           "type" : "object",
+          "description" : "[Custom metadata](https://docs.payments.service.gov.uk/optional_features/custom_metadata/) you added to the payment.",
           "additionalProperties" : {
             "type" : "string"
           }
         },
         "email" : {
           "type" : "string",
-          "example" : "citizen@example.org"
+          "example" : "citizen@example.org",
+          "description" : "The email address of your user."
         },
         "refund_summary" : {
           "$ref" : "#/definitions/RefundSummary"
