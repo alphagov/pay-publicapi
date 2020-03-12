@@ -328,7 +328,7 @@
         <dependency>
             <groupId>com.bendb.dropwizard</groupId>
             <artifactId>dropwizard-redis</artifactId>
-            <version>1.3.5-1</version>
+            <version>2.0.2-0</version>
         </dependency>
         <dependency>
             <groupId>javax.xml.bind</groupId>
