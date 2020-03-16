@@ -30,6 +30,8 @@ applications:
       PUBLIC_AUTH_URL: ""
       LEDGER_URL: ""
       PUBLICAPI_BASE: ""
+      METRICS_HOST: ""
+      METRICS_PORT: ""
 
       # Provided by the publicapi-secret-service
       TOKEN_API_HMAC_SECRET: ""
