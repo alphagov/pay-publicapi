@@ -12,7 +12,7 @@
         <guice.version>4.2.3</guice.version>
         <guava.version>28.2-jre</guava.version>
         <wiremock.version>2.26.3</wiremock.version>
-        <swagger.jersey2.version>1.6.0</swagger.jersey2.version>
+        <swagger.jersey2.version>1.6.1</swagger.jersey2.version>
         <hamcrest.version>2.2</hamcrest.version>
         <jackson.version>2.10.3</jackson.version>
         <logback.version>1.2.3</logback.version>
