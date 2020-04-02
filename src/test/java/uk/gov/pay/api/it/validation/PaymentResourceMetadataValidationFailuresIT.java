@@ -20,7 +20,8 @@ import java.util.Map;
 
 import static io.restassured.http.ContentType.JSON;
 import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.it.CreatePaymentIT.paymentPayload;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
@@ -137,11 +138,11 @@ public class PaymentResourceMetadataValidationFailuresIT extends PaymentResource
         var descriptions = asList(jsonBody.get("description").asText()
                 .replace("Invalid attribute value: metadata. ", "")
                 .split("\\. "));
-        assertThat(descriptions).containsExactlyInAnyOrder(
+        assertThat(descriptions, hasItems(
                 "Values must be no greater than 50 characters long",
                 "Keys must be between 1 and 30 characters long",
                 "Values must be of type String, Boolean or Number"
-        );
+        ));
     }
 
     private void assertMetadataValidationError(CreateChargeRequestParams createChargeRequestParams, String message) {
