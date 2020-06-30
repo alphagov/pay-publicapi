@@ -4,7 +4,6 @@ import au.com.dius.pact.consumer.PactVerification;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -30,15 +29,13 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.pay.api.matcher.BadRequestExceptionMatcher.aBadRequestExceptionWithError;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TransactionSearchServiceTest {
-
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     @Mock
     private PublicApiConfig mockPublicApiConfiguration;
@@ -66,11 +63,12 @@ public class TransactionSearchServiceTest {
 
     @Test
     public void shouldThrowBadRequestException() {
-        expectedException.expect(BadRequestException.class);
-        expectedException.expect(aBadRequestExceptionWithError("P0401", "Invalid parameters: not_supported. See Public API documentation for the correct data formats"));
         TransactionSearchParams searchParams = mock(TransactionSearchParams.class);
         when(searchParams.getQueryMap()).thenReturn(Map.of("not_supported", "hello"));
-        transactionSearchService.doSearch(new Account("1", TokenPaymentType.CARD), searchParams);
+        BadRequestException badRequestException = assertThrows(BadRequestException.class,
+                () -> transactionSearchService.doSearch(new Account("1", TokenPaymentType.CARD), searchParams));
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0401",
+                "Invalid parameters: not_supported. See Public API documentation for the correct data formats"));
     }
 
     @Test
@@ -96,29 +94,28 @@ public class TransactionSearchServiceTest {
         assertThat(payment.getPaymentProvider(), is("sandbox"));
         assertThat(payment.getCreatedDate(), is("2018-09-22T10:13:16.067Z"));
         assertThat(payment.getDelayedCapture(), is(false));
-        
+
         assertThat(payment.getCardDetails().get().getCardHolderName(), is("J. Smith"));
         assertThat(payment.getCardDetails().get().getCardBrand(), is(""));
-        
+
         Address address = payment.getCardDetails().get().getBillingAddress().get();
         assertThat(address.getLine1(), is("line1"));
         assertThat(address.getLine2(), is("line2"));
         assertThat(address.getPostcode(), is("AB1 2CD"));
         assertThat(address.getCity(), is("London"));
         assertThat(address.getCountry(), is("GB"));
-        
+
         assertThat(payment.getLinks().getSelf().getHref(), containsString("v1/payments/" + CHARGE_ID));
         assertThat(payment.getLinks().getSelf().getMethod(), is("GET"));
         assertThat(payment.getLinks().getRefunds().getHref(), containsString("v1/payments/" + CHARGE_ID + "/refunds"));
         assertThat(payment.getLinks().getRefunds().getMethod(), is("GET"));
-        
+
         assertThat(searchResults.getCount(), is(1));
         assertThat(searchResults.getTotal(), is(1));
         assertThat(searchResults.getPage(), is(1));
-        
+
         assertThat(searchResults.getLinks().getSelf().getHref(), containsString("/v1/transactions?display_size=500&page=1"));
         assertThat(searchResults.getLinks().getFirstPage().getHref(), containsString("/v1/transactions?display_size=500&page=1"));
         assertThat(searchResults.getLinks().getLastPage().getHref(), containsString("/v1/transactions?display_size=500&page=1"));
-        
     }
 }

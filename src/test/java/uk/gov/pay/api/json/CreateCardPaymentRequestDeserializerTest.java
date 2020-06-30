@@ -10,7 +10,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -26,6 +25,7 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.pay.api.matcher.BadRequestExceptionMatcher.aBadRequestExceptionWithError;
 import static uk.gov.pay.commons.model.Source.CARD_PAYMENT_LINK;
@@ -35,9 +35,6 @@ public class CreateCardPaymentRequestDeserializerTest {
 
     @Rule
     public MockitoRule mockitoRule = MockitoJUnit.rule();
-    
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     @Mock
     private DeserializationContext ctx;
@@ -182,10 +179,10 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "  \"return_url\" : \"https://somewhere.gov.uk/rainbow/1\"" +
                 "}";
 
-        expectedException.expect(BadRequestException.class);
-        expectedException.expect(aBadRequestExceptionWithError("P0197", "Unable to parse JSON"));
+        BadRequestException badRequestException = assertThrows(BadRequestException.class,
+                () -> deserializer.deserialize(jsonFactory.createParser(invalidJson), ctx));
 
-        deserializer.deserialize(jsonFactory.createParser(invalidJson), ctx);
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0197", "Unable to parse JSON"));
     }
 
     @Test
@@ -197,9 +194,10 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: amount"));
+        BadRequestException badRequestException = assertThrows(BadRequestException.class,
+                () -> deserializer.deserialize(jsonFactory.createParser(json), ctx));
 
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: amount"));
     }
 
     @Test
@@ -212,9 +210,10 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: amount"));
+        BadRequestException badRequestException = assertThrows(BadRequestException.class,
+                () -> deserializer.deserialize(jsonFactory.createParser(json), ctx));
 
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: amount"));
     }
 
     @Test
@@ -227,9 +226,11 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: amount. Must be a valid numeric format"));
+        BadRequestException badRequestException = assertThrows(BadRequestException.class,
+                () -> deserializer.deserialize(jsonFactory.createParser(json), ctx));
 
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
+                "Invalid attribute value: amount. Must be a valid numeric format"));
     }
 
     @Test
@@ -242,9 +243,11 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "  \"return_url\": 1\n" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: return_url. Must be a valid URL format"));
+        BadRequestException badRequestException = assertThrows(BadRequestException.class,
+                () -> deserializer.deserialize(jsonFactory.createParser(json), ctx));
 
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
+                "Invalid attribute value: return_url. Must be a valid URL format"));
     }
 
     @Test
@@ -256,9 +259,11 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "  \"description\": \"Some description\"\n" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: return_url"));
+        BadRequestException badRequestException = assertThrows(BadRequestException.class,
+                () -> deserializer.deserialize(jsonFactory.createParser(json), ctx));
 
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0101",
+                "Missing mandatory attribute: return_url"));
     }
 
     @Test
@@ -271,9 +276,11 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "  \"return_url\": null\n" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: return_url"));
+        BadRequestException badRequestException = assertThrows(BadRequestException.class,
+                () -> deserializer.deserialize(jsonFactory.createParser(json), ctx));
 
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0101",
+                "Missing mandatory attribute: return_url"));
     }
 
     @Test
@@ -285,9 +292,11 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: reference"));
+        BadRequestException badRequestException = assertThrows(BadRequestException.class,
+                () -> deserializer.deserialize(jsonFactory.createParser(json), ctx));
 
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0101",
+                "Missing mandatory attribute: reference"));
     }
 
     @Test
@@ -300,9 +309,11 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: reference"));
+        BadRequestException badRequestException = assertThrows(BadRequestException.class,
+                () -> deserializer.deserialize(jsonFactory.createParser(json), ctx));
 
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0101",
+                "Missing mandatory attribute: reference"));
     }
 
     @Test
@@ -315,9 +326,11 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: reference. Must be a valid string format"));
+        BadRequestException badRequestException = assertThrows(BadRequestException.class,
+                () -> deserializer.deserialize(jsonFactory.createParser(json), ctx));
 
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
+                "Invalid attribute value: reference. Must be a valid string format"));
     }
 
     @Test
@@ -329,9 +342,11 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: description"));
+        BadRequestException badRequestException = assertThrows(BadRequestException.class,
+                () -> deserializer.deserialize(jsonFactory.createParser(json), ctx));
 
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0101",
+                "Missing mandatory attribute: description"));
     }
 
     @Test
@@ -344,9 +359,11 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: description"));
+        BadRequestException badRequestException = assertThrows(BadRequestException.class,
+                () -> deserializer.deserialize(jsonFactory.createParser(json), ctx));
 
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0101",
+                "Missing mandatory attribute: description"));
     }
 
     @Test
@@ -359,9 +376,11 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: description. Must be a valid string format"));
+        BadRequestException badRequestException = assertThrows(BadRequestException.class,
+                () -> deserializer.deserialize(jsonFactory.createParser(json), ctx));
 
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
+                "Invalid attribute value: description. Must be a valid string format"));
     }
 
     @Test
@@ -375,9 +394,11 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "  \"language\": 1234\n" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: language. Must be \"en\" or \"cy\""));
+        BadRequestException badRequestException = assertThrows(BadRequestException.class,
+                () -> deserializer.deserialize(jsonFactory.createParser(json), ctx));
 
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
+                "Invalid attribute value: language. Must be \"en\" or \"cy\""));
     }
 
     @Test
@@ -391,9 +412,11 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "  \"language\": null\n" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: language. Must be \"en\" or \"cy\""));
+        BadRequestException badRequestException = assertThrows(BadRequestException.class,
+                () -> deserializer.deserialize(jsonFactory.createParser(json), ctx));
 
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
+                "Invalid attribute value: language. Must be \"en\" or \"cy\""));
     }
 
     @Test
@@ -407,9 +430,11 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "  \"language\": \"\"\n" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: language. Must be \"en\" or \"cy\""));
+        BadRequestException badRequestException = assertThrows(BadRequestException.class,
+                () -> deserializer.deserialize(jsonFactory.createParser(json), ctx));
 
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
+                "Invalid attribute value: language. Must be \"en\" or \"cy\""));
     }
 
     @Test
@@ -423,9 +448,11 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "  \"delayed_capture\": \"true\"\n" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: delayed_capture. Must be true or false"));
+        BadRequestException badRequestException = assertThrows(BadRequestException.class,
+                () -> deserializer.deserialize(jsonFactory.createParser(json), ctx));
 
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
+                "Invalid attribute value: delayed_capture. Must be true or false"));
     }
 
     @Test
@@ -439,9 +466,11 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "  \"delayed_capture\": null\n" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: delayed_capture. Must be true or false"));
+        BadRequestException badRequestException = assertThrows(BadRequestException.class,
+                () -> deserializer.deserialize(jsonFactory.createParser(json), ctx));
 
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
+                "Invalid attribute value: delayed_capture. Must be true or false"));
     }
 
     @Test
@@ -455,9 +484,11 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "  \"delayed_capture\": 0\n" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: delayed_capture. Must be true or false"));
+        BadRequestException badRequestException = assertThrows(BadRequestException.class,
+                () -> deserializer.deserialize(jsonFactory.createParser(json), ctx));
 
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
+                "Invalid attribute value: delayed_capture. Must be true or false"));
     }
 
     @Test
@@ -472,11 +503,13 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "  \"moto\": " + value + "\n" +
                 "}";
 
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: moto. Must be true or false"));
+        BadRequestException badRequestException = assertThrows(BadRequestException.class,
+                () -> deserializer.deserialize(jsonFactory.createParser(json), ctx));
 
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
+                "Invalid attribute value: moto. Must be true or false"));
     }
-    
+
     @Test
     public void shouldDeserializeARequestWithPrefilledCardholderDetailsSuccessfully() throws Exception {
         // language=JSON
@@ -634,9 +667,11 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "\"country\": null\n" +
                 "}" + "}" + "}";
 
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: line1. Field must be a string"));
+        BadRequestException badRequestException = assertThrows(BadRequestException.class,
+                () -> deserializer.deserialize(jsonFactory.createParser(json), ctx));
 
-        deserializer.deserialize(jsonFactory.createParser(json), ctx);
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
+                "Invalid attribute value: line1. Field must be a string"));
     }
 
     @Test

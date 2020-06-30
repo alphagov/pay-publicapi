@@ -5,11 +5,9 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
-import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -33,8 +31,6 @@ import static org.mockito.Mockito.when;
 public class RedisRateLimiterTest {
 
     private static final String accountId = "account-id";
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
     @Mock
     private RateLimitManager rateLimitManager;
     @Mock
@@ -99,6 +95,5 @@ public class RedisRateLimiterTest {
             assertEquals("RedisRateLimiter - Rate limit exceeded for account [account-id] and method [POST] - count: 3, rate allowed: 2",
                     loggingEvents.get(0).getFormattedMessage());
         });
-
     }
 }
