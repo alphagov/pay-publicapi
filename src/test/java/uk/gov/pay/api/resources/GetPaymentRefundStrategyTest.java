@@ -1,12 +1,10 @@
 package uk.gov.pay.api.resources;
 
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.service.GetPaymentRefundService;
@@ -15,11 +13,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-@RunWith(JUnitParamsRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class GetPaymentRefundStrategyTest {
-
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule();
 
     private GetPaymentRefundService mockGetPaymentRefundService = mock(GetPaymentRefundService.class);
     private GetPaymentRefundStrategy getPaymentRefundStrategy;
@@ -39,8 +34,8 @@ public class GetPaymentRefundStrategyTest {
         verify(mockGetPaymentRefundService, never()).getPaymentRefund(account, paymentId, refundId);
     }
 
-    @Test
-    @Parameters({"", "unknown"})
+    @ParameterizedTest
+    @ValueSource(strings = {"", "unknown"})
     public void validateAndExecuteUsesDefaultStrategy(String strategy) {
         getPaymentRefundStrategy = new GetPaymentRefundStrategy(strategy, account, paymentId, refundId, mockGetPaymentRefundService);
         getPaymentRefundStrategy.validateAndExecute();

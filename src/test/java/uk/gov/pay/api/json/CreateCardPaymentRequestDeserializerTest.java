@@ -3,17 +3,13 @@ package uk.gov.pay.api.json;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import junitparams.converters.Nullable;
 import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CreateCardPaymentRequest;
@@ -30,11 +26,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.pay.api.matcher.BadRequestExceptionMatcher.aBadRequestExceptionWithError;
 import static uk.gov.pay.commons.model.Source.CARD_PAYMENT_LINK;
 
-@RunWith(JUnitParamsRunner.class)
 public class CreateCardPaymentRequestDeserializerTest {
-
-    @Rule
-    public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Mock
     private DeserializationContext ctx;
@@ -42,7 +34,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     private JsonFactory jsonFactory = new JsonFactory(new ObjectMapper());
     private CreateCardPaymentRequestDeserializer deserializer;
 
-    @Before
+    @BeforeEach
     public void setup() {
         deserializer = new CreateCardPaymentRequestDeserializer();
     }
@@ -149,8 +141,8 @@ public class CreateCardPaymentRequestDeserializerTest {
         assertThat(paymentRequest.getDelayedCapture(), is(Optional.of(Boolean.FALSE)));
     }
 
-    @Parameters({"true", "false"})
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = {"true", "false"})
     public void deserialize_shouldDeserializeARequestWithMotoFieldSuccessfully(String value) throws Exception {
         // language=JSON
         String validJson = "{\n" +
@@ -491,8 +483,8 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "Invalid attribute value: delayed_capture. Must be true or false"));
     }
 
-    @Test
-    @Parameters({"null", "\"true\"", "0"})
+    @ParameterizedTest
+    @ValueSource(strings = {"null", "\"true\"", "0"})
     public void deserialize_shouldThrowValidationException_whenMotoIsNotABoolean(@Nullable String value) throws Exception {
         // language=JSON
         String json = "{\n" +

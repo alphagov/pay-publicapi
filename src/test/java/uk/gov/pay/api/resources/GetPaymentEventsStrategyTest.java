@@ -1,13 +1,11 @@
 package uk.gov.pay.api.resources;
 
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.service.GetPaymentEventsService;
@@ -15,11 +13,8 @@ import uk.gov.pay.api.service.GetPaymentEventsService;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-@RunWith(JUnitParamsRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class GetPaymentEventsStrategyTest {
-
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule();
 
     @Mock
     private GetPaymentEventsService getPaymentEventsService;
@@ -39,8 +34,8 @@ public class GetPaymentEventsStrategyTest {
         verify(getPaymentEventsService, never()).getPaymentEvents(mockAccountId, mockPaymentId);
     }
 
-    @Test
-    @Parameters({"", "unknown"})
+    @ParameterizedTest
+    @ValueSource(strings = {"", "unknown"})
     public void validateAndExecuteUsesDefaultStrategy(String strategy) {
         getPaymentEventsStrategy = new GetPaymentEventsStrategy(strategy, mockAccountId, mockPaymentId, getPaymentEventsService);
         getPaymentEventsStrategy.validateAndExecute();
@@ -49,7 +44,6 @@ public class GetPaymentEventsStrategyTest {
     }
 
     @Test
-    
     public void validateAndExecuteShouldUseConnectorOnlyStrategy() {
         String strategy = "connector-only";
         getPaymentEventsStrategy = new GetPaymentEventsStrategy(strategy, mockAccountId, mockPaymentId, getPaymentEventsService);
