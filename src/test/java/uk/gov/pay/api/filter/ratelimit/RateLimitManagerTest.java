@@ -1,7 +1,6 @@
 package uk.gov.pay.api.filter.ratelimit;
 
 import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,7 +17,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
-
 @RunWith(JUnitParamsRunner.class)
 public class RateLimitManagerTest {
 
@@ -28,7 +26,6 @@ public class RateLimitManagerTest {
     @Mock
     private RateLimiterConfig rateLimiterConfig;
 
-    
     private RateLimitManager rateLimitManager;
     
     @Before

@@ -1,10 +1,10 @@
 package uk.gov.pay.api.exception.mapper;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.pay.api.exception.ConnectorResponseErrorException.ConnectorErrorResponse;
 import uk.gov.pay.api.exception.CreateChargeException;
 import uk.gov.pay.api.model.PaymentError;
@@ -12,24 +12,23 @@ import uk.gov.pay.commons.model.ErrorIdentifier;
 
 import javax.ws.rs.core.Response;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_MANDATE_ID_INVALID;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_MANDATE_STATE_INVALID;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class CreateChargeExceptionMapperTest {
-
 
     @Mock
     private Response mockResponse = mock(Response.class);
 
     private CreateChargeExceptionMapper mapper;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         mapper = new CreateChargeExceptionMapper();
     }

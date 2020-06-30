@@ -2,9 +2,8 @@ package uk.gov.pay.api.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
+import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CreateCardPaymentRequest;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
@@ -13,10 +12,11 @@ import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.util.Optional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static uk.gov.pay.api.json.RequestJsonParser.parsePaymentRequest;
 import static uk.gov.pay.api.json.RequestJsonParser.parseRefundRequest;
 import static uk.gov.pay.api.matcher.BadRequestExceptionMatcher.aBadRequestExceptionWithError;
@@ -25,8 +25,6 @@ import static uk.gov.pay.commons.model.Source.CARD_PAYMENT_LINK;
 
 public class RequestJsonParserTest {
 
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
@@ -74,7 +72,7 @@ public class RequestJsonParserTest {
         assertThat(createPaymentRequest.getReturnUrl(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(createPaymentRequest.getLanguage(), is(Optional.of(SupportedLanguage.ENGLISH)));
         assertThat(createPaymentRequest.getDelayedCapture(), is(Optional.of(true)));
-        assertThat(createPaymentRequest.getMoto(),is(Optional.of(true)));
+        assertThat(createPaymentRequest.getMoto(), is(Optional.of(true)));
     }
 
     @Test
@@ -104,9 +102,9 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: reference. Must be a valid string format"));
-
-        parsePaymentRequest(jsonNode);
+        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parsePaymentRequest(jsonNode));
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
+                "Invalid attribute value: reference. Must be a valid string format"));
     }
 
     @Test
@@ -121,9 +119,9 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: description. Must be a valid string format"));
-
-        parsePaymentRequest(jsonNode);
+        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parsePaymentRequest(jsonNode));
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
+                "Invalid attribute value: description. Must be a valid string format"));
     }
 
     @Test
@@ -139,9 +137,9 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: language. Must be \"en\" or \"cy\""));
-
-        parsePaymentRequest(jsonNode);
+        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parsePaymentRequest(jsonNode));
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
+                "Invalid attribute value: language. Must be \"en\" or \"cy\""));
     }
 
     @Test
@@ -157,11 +155,11 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: delayed_capture. Must be true or false"));
-
-        parsePaymentRequest(jsonNode);
+        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parsePaymentRequest(jsonNode));
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
+                "Invalid attribute value: delayed_capture. Must be true or false"));
     }
-    
+
     @Test
     public void parsePaymentRequest_whenReturnUrlIsNotAString_shouldOverrideFormattingErrorMessage() throws Exception {
         // language=JSON
@@ -174,9 +172,9 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: return_url. Must be a valid URL format"));
-
-        parsePaymentRequest(jsonNode);
+        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parsePaymentRequest(jsonNode));
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
+                "Invalid attribute value: return_url. Must be a valid URL format"));
     }
 
     @Test
@@ -191,9 +189,9 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: reference"));
-
-        parsePaymentRequest(jsonNode);
+        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parsePaymentRequest(jsonNode));
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0101",
+                "Missing mandatory attribute: reference"));
     }
 
     @Test
@@ -208,9 +206,9 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: description"));
-
-        parsePaymentRequest(jsonNode);
+        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parsePaymentRequest(jsonNode));
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0101",
+                "Missing mandatory attribute: description"));
     }
 
     @Test
@@ -226,9 +224,9 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: language. Must be \"en\" or \"cy\""));
-
-        parsePaymentRequest(jsonNode);
+        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parsePaymentRequest(jsonNode));
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
+                "Invalid attribute value: language. Must be \"en\" or \"cy\""));
     }
 
     @Test
@@ -240,9 +238,9 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        expectedException.expect(aBadRequestExceptionWithError("P0601", "Missing mandatory attribute: amount"));
-
-        parseRefundRequest(jsonNode);
+        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parseRefundRequest(jsonNode));
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0601",
+                "Missing mandatory attribute: amount"));
     }
 
     @Test
@@ -256,9 +254,9 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: amount"));
-
-        parsePaymentRequest(jsonNode);
+        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parsePaymentRequest(jsonNode));
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0101",
+                "Missing mandatory attribute: amount"));
     }
 
     @Test
@@ -272,9 +270,9 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: reference"));
-
-        parsePaymentRequest(jsonNode);
+        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parsePaymentRequest(jsonNode));
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0101",
+                "Missing mandatory attribute: reference"));
     }
 
     @Test
@@ -288,9 +286,9 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: description"));
-
-        parsePaymentRequest(jsonNode);
+        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parsePaymentRequest(jsonNode));
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0101",
+                "Missing mandatory attribute: description"));
     }
 
     @Test
@@ -300,9 +298,9 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        expectedException.expect(aBadRequestExceptionWithError("P0601", "Missing mandatory attribute: amount"));
-
-        parseRefundRequest(jsonNode);
+        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parseRefundRequest(jsonNode));
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0601",
+                "Missing mandatory attribute: amount"));
     }
 
     @Test
@@ -316,9 +314,9 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        expectedException.expect(aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: return_url"));
-
-        parsePaymentRequest(jsonNode);
+        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parsePaymentRequest(jsonNode));
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0101",
+                "Missing mandatory attribute: return_url"));
     }
 
     @Test
@@ -426,9 +424,9 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: email. Field must be a string"));
-
-        parsePaymentRequest(jsonNode);
+        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parsePaymentRequest(jsonNode));
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
+                "Invalid attribute value: email. Field must be a string"));
     }
 
     @Test
@@ -452,9 +450,9 @@ public class RequestJsonParserTest {
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: line1. Field must be a string"));
-
-        parsePaymentRequest(jsonNode);
+        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parsePaymentRequest(jsonNode));
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
+                "Invalid attribute value: line1. Field must be a string"));
     }
 
     @Test
@@ -503,10 +501,11 @@ public class RequestJsonParserTest {
                 "\"source\": true\n" +
                 "}" + "}";
 
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: source. Accepted value is only CARD_PAYMENT_LINK"));
-
         JsonNode jsonNode = objectMapper.readTree(payload);
-        parsePaymentRequest(jsonNode);
+
+        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parsePaymentRequest(jsonNode));
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
+                "Invalid attribute value: source. Accepted value is only CARD_PAYMENT_LINK"));
     }
 
     @Test
@@ -521,9 +520,10 @@ public class RequestJsonParserTest {
                 "\"source\": \"CARD_EXTERNAL_TELEPHONE\"\n" +
                 "}" + "}";
 
-        expectedException.expect(aBadRequestExceptionWithError("P0102", "Invalid attribute value: source. Accepted value is only CARD_PAYMENT_LINK"));
-
         JsonNode jsonNode = objectMapper.readTree(payload);
-        parsePaymentRequest(jsonNode);
+
+        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parsePaymentRequest(jsonNode));
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
+                "Invalid attribute value: source. Accepted value is only CARD_PAYMENT_LINK"));
     }
 }

@@ -1,18 +1,17 @@
 package uk.gov.pay.api.service;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PublicApiUriGeneratorTest {
-
 
     @Mock
     PublicApiConfig publicApiConfig;
@@ -20,7 +19,7 @@ public class PublicApiUriGeneratorTest {
     PublicApiUriGenerator publicApiUriGenerator;
     private String publicApiTestBaseUrl = "http://publicapi.test";
     
-    @Before
+    @BeforeEach
     public void setUp() {
         when(publicApiConfig.getBaseUrl()).thenReturn(publicApiTestBaseUrl);
         publicApiUriGenerator = new PublicApiUriGenerator(publicApiConfig);

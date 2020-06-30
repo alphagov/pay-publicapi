@@ -1,12 +1,12 @@
 package uk.gov.pay.api.validation;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static uk.gov.pay.api.validation.URLValidator.SECURITY_DISABLED;
 import static uk.gov.pay.api.validation.URLValidator.SECURITY_ENABLED;
 import static uk.gov.pay.api.validation.URLValidator.urlValidatorValueOf;

@@ -38,9 +38,8 @@ public class GetPaymentRefundsStrategyTest {
     }
 
     @Test
-    @Parameters({"connector-only"})
-    public void validateAndExecuteShouldUseConnectorOnlyStrategy(String strategy) {
-        getPaymentRefundsStrategy = new GetPaymentRefundsStrategy(strategy, account, paymentId, mockGetPaymentRefundsService);
+    public void validateAndExecuteShouldUseConnectorOnlyStrategy() {
+        getPaymentRefundsStrategy = new GetPaymentRefundsStrategy("connector-only", account, paymentId, mockGetPaymentRefundsService);
 
         getPaymentRefundsStrategy.validateAndExecute();
 

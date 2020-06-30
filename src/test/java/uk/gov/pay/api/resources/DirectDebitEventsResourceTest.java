@@ -1,10 +1,10 @@
 package uk.gov.pay.api.resources;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.DirectDebitEventService;
 
@@ -14,8 +14,7 @@ import java.util.Optional;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DirectDebitEventsResourceTest {
 
     @Mock
@@ -26,8 +25,7 @@ public class DirectDebitEventsResourceTest {
 
     private DirectDebitEventsResource directDebitEventsResource;
 
-
-    @Before
+    @BeforeEach
     public void setUp() {
         directDebitEventsResource = new DirectDebitEventsResource(connectorUriGenerator, directDebitEventService);
     }

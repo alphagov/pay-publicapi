@@ -1,10 +1,10 @@
 package uk.gov.pay.api.service;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 
@@ -13,12 +13,12 @@ import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ConnectorUriGeneratorTest {
     @Mock
     private PublicApiConfig mockPublicApiConfig;
@@ -29,7 +29,7 @@ public class ConnectorUriGeneratorTest {
 
     private final String chargeId = "charge_id_123";
 
-    @Before
+    @BeforeEach
     public void setUp() {
         connectorUriGenerator = new ConnectorUriGenerator(mockPublicApiConfig);
         when(mockPublicApiConfig.getConnectorUrl()).thenReturn("https://bla.test");

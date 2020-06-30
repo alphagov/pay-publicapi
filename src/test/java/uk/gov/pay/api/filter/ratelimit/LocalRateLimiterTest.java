@@ -6,15 +6,15 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.filter.RateLimiterKey;
 
@@ -31,10 +31,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class LocalRateLimiterTest {
 
     private static final String POST = "POST";
@@ -49,7 +50,7 @@ public class LocalRateLimiterTest {
     @Mock
     private Appender<ILoggingEvent> mockAppender;
 
-    @Before
+    @BeforeEach
     public void setup() {
         Logger root = (Logger) LoggerFactory.getLogger(LocalRateLimiter.class);
         root.setLevel(Level.INFO);
@@ -66,23 +67,20 @@ public class LocalRateLimiterTest {
         localRateLimiter.checkRateOf(accountId, rateLimiterKey);
     }
 
-    @Test(expected = RateLimitException.class)
+    @Test
     public void rateLimiterSetTo_1CallPer300Millis_shouldAFailWhen2ConsecutiveCallsWithSameKeysAreMade() throws RateLimitException {
         String key = "key2";
         var rateLimiterKey = new RateLimiterKey(key, "key-type", POST);
         localRateLimiter = new LocalRateLimiter(1, 1, 300);
 
-        try {
+        localRateLimiter.checkRateOf(accountId, rateLimiterKey);
+        assertThrows(RateLimitException.class, () -> {
             localRateLimiter.checkRateOf(accountId, rateLimiterKey);
-            localRateLimiter.checkRateOf(accountId, rateLimiterKey);
-        } catch (RateLimitException e) {
             verify(mockAppender, times(1)).doAppend(loggingEventArgumentCaptor.capture());
             List<LoggingEvent> loggingEvents = loggingEventArgumentCaptor.getAllValues();
             assertEquals("LocalRateLimiter - Rate limit exceeded for account [account-id] and method [POST] - count: 2, rate allowed: 1",
                     loggingEvents.get(0).getFormattedMessage());
-
-            throw e;
-        }
+        });
     }
 
     @Test

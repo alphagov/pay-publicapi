@@ -12,8 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsIterableContaining.hasItem;
-import static org.junit.Assert.assertThat;
 import static uk.gov.pay.api.it.fixtures.PaginatedTransactionSearchResultFixture.aPaginatedTransactionSearchResult;
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.aSuccessfulSearchPayment;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
