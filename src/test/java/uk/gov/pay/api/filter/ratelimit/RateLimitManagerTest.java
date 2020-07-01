@@ -1,13 +1,10 @@
 package uk.gov.pay.api.filter.ratelimit;
 
-import junitparams.JUnitParamsRunner;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.pay.api.app.config.RateLimiterConfig;
 import uk.gov.pay.api.filter.RateLimiterKey;
 
@@ -17,18 +14,15 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
-@RunWith(JUnitParamsRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class RateLimitManagerTest {
 
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule();
-    
     @Mock
     private RateLimiterConfig rateLimiterConfig;
 
     private RateLimitManager rateLimitManager;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         when(rateLimiterConfig.getElevatedAccounts()).thenReturn(List.of("1"));
     }

@@ -1,26 +1,31 @@
 package uk.gov.pay.api.utils;
 
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-@RunWith(JUnitParamsRunner.class)
 public class PathHelperTest {
 
-    @Test
-    @Parameters({
-            "/v1/payments,POST,create_payment",
-            "/v1/payments/,POST,create_payment",
-            "/v1/payments/paymentId/capture,POST,capture_payment",
-            "/v1/payments/paymentId/capture/,POST,capture_payment",
-            "/v1/payments/paymentId/cancel,POST,",
-            "/v1/payments,GET,"
-    })
+    @ParameterizedTest
+    @MethodSource("rateLimitParams")
     public void returnsPathType(String path, String method, String pathType) {
         assertThat(PathHelper.getPathType(path, method), is(pathType));
+    }
+
+    static Stream<Arguments> rateLimitParams() {
+        return Stream.of(
+                arguments("/v1/payments", "POST", "create_payment"),
+                arguments("/v1/payments/", "POST", "create_payment"),
+                arguments("/v1/payments/paymentId/capture", "POST", "capture_payment"),
+                arguments("/v1/payments/paymentId/capture/", "POST", "capture_payment"),
+                arguments("/v1/payments/paymentId/cancel", "POST", ""),
+                arguments("/v1/payments", "GET", "")
+        );
     }
 }
