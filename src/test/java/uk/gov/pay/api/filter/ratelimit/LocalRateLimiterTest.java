@@ -6,11 +6,9 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
-import org.junit.Rule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -40,8 +38,6 @@ public class LocalRateLimiterTest {
 
     private static final String POST = "POST";
     private static final String accountId = "account-id";
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
     LocalRateLimiter localRateLimiter;
 
     @Captor

@@ -5,7 +5,6 @@ import com.jayway.jsonassert.JsonAssert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -23,11 +22,13 @@ import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -35,9 +36,6 @@ public class CardPaymentSearchServiceTest {
 
     @Rule
     public PactProviderRule ledgerRule = new PactProviderRule("ledger", this);
-
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     @Mock
     private PublicApiConfig configuration;
@@ -56,7 +54,7 @@ public class CardPaymentSearchServiceTest {
                 new PaginationDecorator(configuration),
                 new LedgerService(client, ledgerUriGenerator));
     }
-    
+
     @Test
     @PactVerification({"ledger"})
     @Pacts(pacts = {"publicapi-ledger-search-payment-by-first-digits-card-number"})
@@ -163,7 +161,7 @@ public class CardPaymentSearchServiceTest {
                 .assertThat("results[0].state", hasKey("status"))
                 .assertThat("results[0].state", hasKey("finished"));
     }
-    
+
     @Test
     @PactVerification({"ledger"})
     @Pacts(pacts = {"publicapi-ledger-search-payments-page-not-found"})
@@ -173,9 +171,10 @@ public class CardPaymentSearchServiceTest {
                 .withDisplaySize("500")
                 .withPageNumber("999")
                 .build();
+
+        SearchPaymentsException searchPaymentsException = assertThrows(SearchPaymentsException.class,
+                () -> paymentSearchService.searchLedgerPayments(account, searchParams));
         
-        expectedException.expect(SearchPaymentsException.class);
-        expectedException.expect(hasProperty("errorStatus", is(404)));
-        paymentSearchService.searchLedgerPayments(account, searchParams);
+        assertThat(searchPaymentsException, hasProperty("errorStatus", is(404)));
     }
 }

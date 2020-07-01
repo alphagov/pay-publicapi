@@ -1,11 +1,9 @@
 package uk.gov.pay.api.service;
 
 import au.com.dius.pact.consumer.PactVerification;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -28,14 +26,13 @@ import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasProperty;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.when;
 import static uk.gov.pay.api.matcher.RefundValidationExceptionMatcher.aValidationExceptionContaining;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SearchRefundsServiceTest {
 
-    @Rule
-    public final ExpectedException expectedException = ExpectedException.none();
     @Rule
     public PactProviderRule connectorRule = new PactProviderRule("connector", this);
     @Rule
@@ -66,12 +63,13 @@ public class SearchRefundsServiceTest {
         String invalid = "invalid_param";
         RefundsParams params = new RefundsParams(null, null, invalid, invalid);
 
-        expectedException.expect(RefundsValidationException.class);
-        expectedException.expect(aValidationExceptionContaining(
+        RefundsValidationException refundsValidationException = assertThrows(RefundsValidationException.class,
+                () -> searchRefundsService.searchLedgerRefunds(account, params));
+
+        assertThat(refundsValidationException, aValidationExceptionContaining(
                 "P1101",
                 format("Invalid parameters: %s. See Public API documentation for the correct data formats",
                         "page, display_size")));
-        searchRefundsService.searchLedgerRefunds(account, params);
     }
 
     @Test
@@ -141,9 +139,10 @@ public class SearchRefundsServiceTest {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
         RefundsParams params = new RefundsParams(null, null, "999", "500");
 
-        expectedException.expect(SearchRefundsException.class);
-        expectedException.expect(hasProperty("errorStatus", Matchers.is(404)));
-        searchRefundsService.searchLedgerRefunds(account, params);
+        SearchRefundsException searchRefundsException = assertThrows(SearchRefundsException.class,
+                () -> searchRefundsService.searchLedgerRefunds(account, params));
+
+        assertThat(searchRefundsException, hasProperty("errorStatus", is(404)));
     }
 
     @Test
@@ -152,11 +151,12 @@ public class SearchRefundsServiceTest {
         String invalid = "invalid_param";
         RefundsParams params = new RefundsParams(null, null, invalid, invalid);
 
-        expectedException.expect(RefundsValidationException.class);
-        expectedException.expect(aValidationExceptionContaining(
+        RefundsValidationException refundsValidationException = assertThrows(RefundsValidationException.class,
+                () -> searchRefundsService.searchLedgerRefunds(account, params));
+
+        assertThat(refundsValidationException, aValidationExceptionContaining(
                 "P1101",
                 format("Invalid parameters: %s. See Public API documentation for the correct data formats",
                         "page, display_size")));
-        searchRefundsService.searchLedgerRefunds(account, params);
     }
 }
