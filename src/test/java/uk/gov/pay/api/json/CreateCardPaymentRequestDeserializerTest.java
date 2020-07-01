@@ -23,9 +23,9 @@ import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.util.Optional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.pay.api.matcher.BadRequestExceptionMatcher.aBadRequestExceptionWithError;
 import static uk.gov.pay.commons.model.Source.CARD_PAYMENT_LINK;

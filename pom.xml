@@ -18,6 +18,7 @@
         <logback.version>1.2.3</logback.version>
         <docker-client.version>8.16.0</docker-client.version>
         <pay-java-commons.version>1.0.20200601131959</pay-java-commons.version>
+        <junit5.version>5.6.2</junit5.version>
         <pact.version>3.6.15</pact.version>
         <swagger.lib.version>2.1.3</swagger.lib.version>
         <PACT_BROKER_URL/>
@@ -150,8 +151,20 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit5.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>${junit5.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
+            <artifactId>mockito-junit-jupiter</artifactId>
             <version>3.3.3</version>
             <scope>test</scope>
         </dependency>

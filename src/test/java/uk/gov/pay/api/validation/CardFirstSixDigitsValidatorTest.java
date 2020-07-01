@@ -1,7 +1,7 @@
 package uk.gov.pay.api.validation;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
 import uk.gov.pay.api.model.telephone.PaymentOutcome;
 
@@ -20,7 +20,7 @@ public class CardFirstSixDigitsValidatorTest {
 
     private static Validator validator;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpValidator() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();

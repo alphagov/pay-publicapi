@@ -1,6 +1,6 @@
 package uk.gov.pay.api.model.search.directdebit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.ZonedDateTime;
 

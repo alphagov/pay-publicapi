@@ -1,6 +1,6 @@
 package uk.gov.pay.api.model.directdebit.mandates;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.pay.api.model.directdebit.mandates.MandateError.Code;
 
 import static org.hamcrest.MatcherAssert.assertThat;

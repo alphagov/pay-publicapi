@@ -17,8 +17,8 @@ import uk.gov.pay.api.model.directdebit.mandates.DirectDebitPayment;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)

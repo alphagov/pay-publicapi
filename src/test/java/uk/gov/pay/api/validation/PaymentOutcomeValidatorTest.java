@@ -1,7 +1,7 @@
 package uk.gov.pay.api.validation;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
 import uk.gov.pay.api.model.telephone.PaymentOutcome;
 import uk.gov.pay.api.model.telephone.Supplemental;
@@ -10,7 +10,6 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -22,7 +21,7 @@ public class PaymentOutcomeValidatorTest {
 
     private static Validator validator;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpValidator() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();

@@ -24,9 +24,9 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
 import java.util.Collections;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)

@@ -21,8 +21,8 @@ import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
 import javax.ws.rs.client.Client;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.pay.api.model.search.directdebit.DirectDebitSearchMandatesParams.DirectDebitSearchMandatesParamsBuilder.aDirectDebitSearchMandatesParams;
 

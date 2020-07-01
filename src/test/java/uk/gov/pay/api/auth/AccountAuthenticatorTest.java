@@ -3,9 +3,8 @@ package uk.gov.pay.api.auth;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 
 import javax.ws.rs.ServiceUnavailableException;
@@ -21,7 +20,9 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.OK;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
@@ -36,7 +37,7 @@ public class AccountAuthenticatorTest {
     private final String bearerToken = "aaa";
     private final String accountId = "accountId";
 
-    @Before
+    @BeforeEach
     public void setup() {
         Client publicAuthMock = mock(Client.class);
         WebTarget mockTarget = mock(WebTarget.class);
@@ -62,9 +63,9 @@ public class AccountAuthenticatorTest {
         when(mockResponse.getStatus()).thenReturn(OK.getStatusCode());
         when(mockResponse.readEntity(JsonNode.class)).thenReturn(response);
         Optional<Account> maybeAccount = accountAuthenticator.authenticate(bearerToken);
-        Assert.assertThat(maybeAccount.get().getName(), is(accountId));
-        Assert.assertThat(maybeAccount.get().getAccountId(), is(accountId));
-        Assert.assertThat(maybeAccount.get().getPaymentType(), is(DIRECT_DEBIT));
+        assertThat(maybeAccount.get().getName(), is(accountId));
+        assertThat(maybeAccount.get().getAccountId(), is(accountId));
+        assertThat(maybeAccount.get().getPaymentType(), is(DIRECT_DEBIT));
     }
 
     @Test
@@ -76,20 +77,20 @@ public class AccountAuthenticatorTest {
         when(mockResponse.getStatus()).thenReturn(OK.getStatusCode());
         when(mockResponse.readEntity(JsonNode.class)).thenReturn(response);
         Optional<Account> maybeAccount = accountAuthenticator.authenticate(bearerToken);
-        Assert.assertThat(maybeAccount.get().getName(), is(accountId));
-        Assert.assertThat(maybeAccount.get().getPaymentType(), is(CARD));
+        assertThat(maybeAccount.get().getName(), is(accountId));
+        assertThat(maybeAccount.get().getPaymentType(), is(CARD));
     }
 
     @Test
     public void shouldNotReturnAccount_ifUnauthorised() {
         when(mockResponse.getStatus()).thenReturn(UNAUTHORIZED.getStatusCode());
         Optional<Account> maybeAccount = accountAuthenticator.authenticate(bearerToken);
-        Assert.assertThat(maybeAccount.isPresent(), is(false));
+        assertThat(maybeAccount.isPresent(), is(false));
     }
 
-    @Test(expected = ServiceUnavailableException.class)
+    @Test
     public void shouldThrow_ifUnknownResponse() {
         when(mockResponse.getStatus()).thenReturn(NOT_FOUND.getStatusCode());
-        accountAuthenticator.authenticate(bearerToken);
+        assertThrows(ServiceUnavailableException.class, () -> accountAuthenticator.authenticate(bearerToken));
     }
 }
