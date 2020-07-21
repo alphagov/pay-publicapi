@@ -160,10 +160,6 @@ pipeline {
            when { branch 'master' }
            steps { runSmokeTest('smoke-card') }
          }
-         stage('Direct Debit Smoke Test') {
-           when { branch 'master' }
-           steps { runSmokeTest("smoke-directdebit") }
-         }
        }
      }
      stage('Pact Tag') {
