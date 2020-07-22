@@ -5,7 +5,7 @@ pipeline {
 
   parameters {
     booleanParam(defaultValue: false, description: '', name: 'runEndToEndTestsOnPR')
-    string(defaultValue: 'card,directdebit,products,zap', description: 'The tests to run', name: 'E2E_TESTS')
+    string(defaultValue: 'card,products,zap', description: 'The tests to run', name: 'E2E_TESTS')
   }
 
   options {
@@ -154,17 +154,8 @@ pipeline {
        }
      }
      stage('Smoke Tests') {
-       failFast true
-       parallel {
-         stage('Card Smoke Test') {
-           when { branch 'master' }
-           steps { runSmokeTest('smoke-card') }
-         }
-         stage('Direct Debit Smoke Test') {
-           when { branch 'master' }
-           steps { runSmokeTest("smoke-directdebit") }
-         }
-       }
+         when { branch 'master' }
+         steps { runSmokeTest('smoke-card') }
      }
      stage('Pact Tag') {
        when {
