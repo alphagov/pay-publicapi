@@ -1,5 +1,6 @@
 package uk.gov.pay.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 @ApiModel(value="SettlementSummary", description = "A structure representing information about a settlement")
 @Schema(name = "SettlementSummary", description = "A structure representing information about a settlement")
 public class SettlementSummary {

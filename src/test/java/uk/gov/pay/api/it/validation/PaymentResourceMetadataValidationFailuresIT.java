@@ -3,7 +3,6 @@ package uk.gov.pay.api.it.validation;
 import com.fasterxml.jackson.databind.JsonNode;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
-import junitparams.converters.Nullable;
 import org.apache.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,13 +12,17 @@ import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.CreateChargeRequestParams;
 import uk.gov.pay.api.utils.mocks.CreateChargeRequestParams.CreateChargeRequestParamsBuilder;
+import uk.gov.pay.commons.model.charge.ExternalMetadata;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 import static io.restassured.http.ContentType.JSON;
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toUnmodifiableMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.core.Is.is;
@@ -35,6 +38,10 @@ public class PaymentResourceMetadataValidationFailuresIT extends PaymentResource
                 .withDescription("DESCRIPTION")
                 .withReference("REFERENCE")
                 .withReturnUrl("https://somewhere.gov.uk/rainbow/1");
+    
+    private static final  String TOO_LONG_KEY = IntStream.rangeClosed(1, ExternalMetadata.MAX_KEY_LENGTH + 1).mapToObj(i -> "k").collect(joining());
+    private static final String TOO_LONG_VALUE = IntStream.rangeClosed(1, ExternalMetadata.MAX_VALUE_LENGTH + 1).mapToObj(i -> "v").collect(joining());
+
 
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
     
@@ -45,7 +52,6 @@ public class PaymentResourceMetadataValidationFailuresIT extends PaymentResource
 
     @Test
     public void valueIsNotAStringBooleanOrNumber() {
-
         CreateChargeRequestParams createChargeRequestParams = createChargeRequestParamsBuilder
                 .withMetadata(Map.of("foo", List.of("cake", "chocolate"), "bar", Map.of("a", "b")))
                 .build();
@@ -55,53 +61,53 @@ public class PaymentResourceMetadataValidationFailuresIT extends PaymentResource
     }
 
     @Test
-    @Parameters({"", " ", "keyMoreThanThirtyCharskeyMoreThanThirtyCharskeyMoreThanThirtyChars"})
+    @Parameters({"", " "})
     public void keyIsInvalid(String key) {
-        
         var createChargeRequestParams = createChargeRequestParamsBuilder.withMetadata(Map.of(key, "boo")).build();
 
         assertMetadataValidationError(createChargeRequestParams, 
-                "Invalid attribute value: metadata. Keys must be between 1 and 30 characters long");
+                "Invalid attribute value: metadata. Keys must be between " + ExternalMetadata.MIN_KEY_LENGTH + " and "
+                        + ExternalMetadata.MAX_KEY_LENGTH + " characters long");
+    }
+
+    @Test
+    public void keyIsTooLong() {
+        var createChargeRequestParams = createChargeRequestParamsBuilder.withMetadata(Map.of(TOO_LONG_KEY, "boo")).build();
+
+        assertMetadataValidationError(createChargeRequestParams,
+                "Invalid attribute value: metadata. Keys must be between " + ExternalMetadata.MIN_KEY_LENGTH + " and "
+                        + ExternalMetadata.MAX_KEY_LENGTH + " characters long");
     }
     
     @Test
-    @Parameters({
-            "null, Must not have null values", 
-            "valueMoreThanFiftyCharsvalueMoreThanFiftyCharsvalueMoreThanFiftyCharsvalueMoreThanFiftyChars, Values must be no greater than 50 characters long"})
-    public void valueIsInvalid(@Nullable String value, String expectedMessage) {
-        
-        Map<String, Object> metadata = new HashMap<>() {{ put("key", value); }};
+    public void valueIsNull() {
+        Map<String, Object> metadata = new HashMap<>() {{ put("key", null); }};
         var createChargeRequestParams = createChargeRequestParamsBuilder.withMetadata(metadata).build();
-        assertMetadataValidationError(createChargeRequestParams, "Invalid attribute value: metadata. " + expectedMessage);
+
+        assertMetadataValidationError(createChargeRequestParams, "Invalid attribute value: metadata. Must not have null values");
     }
 
     @Test
-    public void moreThan10Keys() {
-        
-        Map<String, Object> metadata = new HashMap<>() {{
-            put("reconciled", true);
-            put("ledger_code", 123);
-            put("fuh", "fuh you");
-            put("reconciled1", true);
-            put("ledger_code1", 123);
-            put("fuh1", "fuh you");
-            put("reconciled2", true);
-            put("ledger_code2", 123);
-            put("fuh2", "fuh you");
-            put("reconciled3", true);
-            put("ledger_code3", 123);
-            put("fuh3", "fuh you");
-        }};
+    public void valueIsTooLong() {
+        var createChargeRequestParams = createChargeRequestParamsBuilder.withMetadata(Map.of("key", TOO_LONG_VALUE)).build();
+
+        assertMetadataValidationError(createChargeRequestParams,
+                "Invalid attribute value: metadata. Values must be no greater than " + ExternalMetadata.MAX_VALUE_LENGTH + " characters long");
+    }
+
+    @Test
+    public void moreThanMaxKeyValuePairs() {
+        Map<String, Object> metadata = IntStream.rangeClosed(1, ExternalMetadata.MAX_KEY_VALUE_PAIRS + 1)
+                .boxed().collect(toUnmodifiableMap(i -> "key " + i, i -> "value " + i));
 
         var createChargeRequestParams = createChargeRequestParamsBuilder.withMetadata(metadata).build();
-        
+
         assertMetadataValidationError(createChargeRequestParams, 
-                "Invalid attribute value: metadata. Cannot have more than 10 key-value pairs");
+                "Invalid attribute value: metadata. Cannot have more than " + ExternalMetadata.MAX_KEY_VALUE_PAIRS + " key-value pairs");
     }
     
     @Test
     public void metadataIsNotAnObject() {
-        
         var createChargeRequestParams = createChargeRequestParamsBuilder.build();
         
         JsonStringBuilder payload = new JsonStringBuilder()
@@ -121,10 +127,11 @@ public class PaymentResourceMetadataValidationFailuresIT extends PaymentResource
 
     @Test
     public void testMultipleValidationErrors() {
-
-        var metadata = Map.of("key", "valueMoreThanFiftyCharsvalueMoreThanFiftyCharsvalueMoreThanFiftyCharsvalueMoreThanFiftyChars",
-                "keyMoreThanThirtyCharskeyMoreThanThirtyCharskeyMoreThanThirtyChars", "fuh",
-                "badKey", List.of("cake", "chocolate"));
+        var metadata = Map.of(
+                "key", TOO_LONG_VALUE,
+                TOO_LONG_KEY, "fuh",
+                "keyForBadValue", List.of("cake", "chocolate")
+        );
 
         var createChargeRequestParams = createChargeRequestParamsBuilder.withMetadata(metadata).build();
 
@@ -139,8 +146,8 @@ public class PaymentResourceMetadataValidationFailuresIT extends PaymentResource
                 .replace("Invalid attribute value: metadata. ", "")
                 .split("\\. "));
         assertThat(descriptions, hasItems(
-                "Values must be no greater than 50 characters long",
-                "Keys must be between 1 and 30 characters long",
+                "Values must be no greater than " + ExternalMetadata.MAX_VALUE_LENGTH + " characters long",
+                "Keys must be between " + ExternalMetadata.MIN_KEY_LENGTH + " and " + ExternalMetadata.MAX_KEY_LENGTH + " characters long",
                 "Values must be of type String, Boolean or Number"
         ));
     }
