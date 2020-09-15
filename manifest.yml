@@ -24,9 +24,13 @@ applications:
       JPA_LOG_LEVEL: 'INFO'
       JPA_SQL_LOG_LEVEL: 'INFO'
 
+      # We are no deploying DDConnector into PaaS but for now Publicapi
+      # still requires the url. This is a dummy value so that Publicapi will
+      # start. This can be removed as part of removing DD from Publicapi.
+      CONNECTOR_DD_URL: "http://localhost:9999"
+
       # Provided by the app-catalog service 
       CONNECTOR_URL: ""
-      CONNECTOR_DD_URL: ""
       PUBLIC_AUTH_URL: ""
       LEDGER_URL: ""
       PUBLICAPI_BASE: ""
