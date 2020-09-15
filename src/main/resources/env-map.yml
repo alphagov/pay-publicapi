@@ -1,6 +1,5 @@
 env_vars:
   CONNECTOR_URL:                        '.[][] | select(.name == "app-catalog")              | .credentials.card_connector_url'
-  CONNECTOR_DD_URL:                     '.[][] | select(.name == "app-catalog")              | .credentials.directdebit_connector_url'
   PUBLIC_AUTH_URL:                      '.[][] | select(.name == "app-catalog")              | .credentials.publicauth_api_path_url'
   LEDGER_URL:                           '.[][] | select(.name == "app-catalog")              | .credentials.ledger_url'
   PUBLICAPI_BASE:                       '.[][] | select(.name == "app-catalog")              | .credentials.publicapi_url'
