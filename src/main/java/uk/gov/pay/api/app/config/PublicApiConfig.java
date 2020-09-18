@@ -1,6 +1,5 @@
 package uk.gov.pay.api.app.config;
 
-import com.bendb.dropwizard.redis.JedisFactory;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import io.dropwizard.Configuration;
@@ -45,7 +44,7 @@ public class PublicApiConfig extends Configuration {
 
     @NotNull
     @JsonProperty
-    private JedisFactory redis;
+    private RedisConfiguration redis;
 
     @Valid
     @NotNull
@@ -100,7 +99,7 @@ public class PublicApiConfig extends Configuration {
         return authenticationCachePolicy;
     }
 
-    public JedisFactory getJedisFactory() {
+    public RedisConfiguration getRedisConfiguration() {
         return redis;
     }
 

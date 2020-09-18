@@ -1,7 +1,5 @@
 package uk.gov.pay.api.app;
 
-import com.bendb.dropwizard.redis.JedisBundle;
-import com.bendb.dropwizard.redis.JedisFactory;
 import com.codahale.metrics.graphite.GraphiteReporter;
 import com.codahale.metrics.graphite.GraphiteSender;
 import com.codahale.metrics.graphite.GraphiteUDP;
@@ -80,12 +78,6 @@ public class PublicApi extends Application<PublicApiConfig> {
                         new EnvironmentVariableSubstitutor(false)
                 )
         );
-        bootstrap.addBundle(new JedisBundle<PublicApiConfig>() {
-            @Override
-            public JedisFactory getJedisFactory(PublicApiConfig configuration) {
-                return configuration.getJedisFactory();
-            }
-        });
         bootstrap.getObjectMapper().getSubtypeResolver().registerSubtypes(LogstashConsoleAppenderFactory.class);
         bootstrap.getObjectMapper().getSubtypeResolver().registerSubtypes(GovUkPayDropwizardRequestJsonLogLayoutFactory.class);
     }

@@ -80,7 +80,6 @@ public class ResourcesFilterLocalRateLimiterIT {
             , resourceFilePath("config/test-config.yaml")
             , config("connectorUrl", "http://localhost:" + CONNECTOR_PORT)
             , config("publicAuthUrl", "http://localhost:" + PUBLIC_AUTH_PORT + "/v1/auth")
-            , config("redis.endpoint", "http://path:6379")
     );
 
     @Before

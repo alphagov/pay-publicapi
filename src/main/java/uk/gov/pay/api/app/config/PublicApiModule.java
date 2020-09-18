@@ -8,13 +8,13 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import io.dropwizard.setup.Environment;
+import io.lettuce.core.RedisClient;
 import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.filter.ratelimit.LocalRateLimiter;
-import uk.gov.pay.api.filter.ratelimit.RateLimiter;
-import uk.gov.pay.api.filter.ratelimit.RedisRateLimiter;
 import uk.gov.pay.api.filter.ratelimit.RateLimitManager;
-import uk.gov.pay.api.json.CreatePaymentRefundRequestDeserializer;
+import uk.gov.pay.api.filter.ratelimit.RedisRateLimiter;
 import uk.gov.pay.api.json.CreateCardPaymentRequestDeserializer;
+import uk.gov.pay.api.json.CreatePaymentRefundRequestDeserializer;
 import uk.gov.pay.api.json.StringDeserializer;
 import uk.gov.pay.api.model.CreateCardPaymentRequest;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
@@ -22,6 +22,7 @@ import uk.gov.pay.api.validation.PaymentRefundRequestValidator;
 import uk.gov.pay.api.validation.URLValidator;
 
 import javax.ws.rs.client.Client;
+import java.time.Duration;
 
 import static uk.gov.pay.api.validation.URLValidator.urlValidatorValueOf;
 
@@ -68,17 +69,9 @@ public class PublicApiModule extends AbstractModule {
 
         return objectMapper;
     }
-
+    
     @Provides
-    public RateLimiter provideRateLimiter() {
-
-        LocalRateLimiter localRateLimiter = getLocalRateLimiter();
-        RedisRateLimiter redisRateLimiter = getRedisRateLimiter();
-
-        return new RateLimiter(localRateLimiter, redisRateLimiter);
-    }
-
-    private LocalRateLimiter getLocalRateLimiter() {
+    public LocalRateLimiter getLocalRateLimiter() {
         return new LocalRateLimiter(
                 configuration.getRateLimiterConfig().getNoOfReqPerNode(),
                 configuration.getRateLimiterConfig().getNoOfReqForPostPerNode(),
@@ -86,12 +79,11 @@ public class PublicApiModule extends AbstractModule {
         );
     }
 
-    private RedisRateLimiter getRedisRateLimiter() {
+    @Provides
+    public RedisRateLimiter getRedisRateLimiter() {
         var rateLimitManager = new RateLimitManager(configuration.getRateLimiterConfig());
-        return new RedisRateLimiter(rateLimitManager,
-                configuration.getRateLimiterConfig().getPerMillis(),
-                configuration.getJedisFactory().build(environment));
+        RedisClient client = RedisClient.create(configuration.getRedisConfiguration().getUrl());
+        client.setDefaultTimeout(Duration.ofMillis(configuration.getRedisConfiguration().getTimeout()));
+        return new RedisRateLimiter(rateLimitManager, configuration.getRateLimiterConfig().getPerMillis(), client);
     }
-
-
 }

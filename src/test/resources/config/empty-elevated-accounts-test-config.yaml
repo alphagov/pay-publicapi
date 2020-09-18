@@ -40,7 +40,7 @@ rateLimiter:
 redis:
   endpoint: localhost:6379
   ssl: false
-  timeout: 100
+  timeout: 100ms
 
 allowHttpForReturnUrl: false
 
