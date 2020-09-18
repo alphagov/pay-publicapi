@@ -70,7 +70,7 @@ public abstract class PaymentResourceITestBase {
             config("connectorDDUrl", "http://localhost:" + CONNECTOR_DD_PORT),
             config("publicAuthUrl", "http://localhost:" + PUBLIC_AUTH_PORT + "/v1/auth"),
             config("ledgerUrl", "http://localhost:" + LEDGER_PORT),
-            config("redis.endpoint", redisDockerRule.getRedisUrl())
+            config("redis.node.node", redisDockerRule.getRedisUrl())
     );
 
     PublicApiConfig configuration;

@@ -2,10 +2,9 @@ package uk.gov.pay.api.filter.ratelimit;
 
 import com.google.inject.Inject;
 import com.google.inject.OutOfScopeException;
+import io.lettuce.core.api.StatefulRedisConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
 import uk.gov.pay.api.filter.RateLimiterKey;
 
 import java.time.LocalDateTime;
@@ -16,13 +15,13 @@ public class RedisRateLimiter {
 
     private RateLimitManager rateLimitManager;
     private final int perMillis;
-    private JedisPool jedisPool;
+    private StatefulRedisConnection redisConnection;
 
     @Inject
-    public RedisRateLimiter(RateLimitManager rateLimitManager, int perMillis, JedisPool jedisPool) {
+    public RedisRateLimiter(RateLimitManager rateLimitManager, int perMillis, StatefulRedisConnection redisConnection) {
         this.rateLimitManager = rateLimitManager;
         this.perMillis = perMillis;
-        this.jedisPool = jedisPool;
+        this.redisConnection = redisConnection;
     }
 
     /**
@@ -52,20 +51,12 @@ public class RedisRateLimiter {
 
     synchronized private Long updateAllowance(String key) {
         String derivedKey = getKeyForWindow(key);
-        
-        try (Jedis jedis = getResource()) {
-            Long count = jedis.incr(derivedKey);
-            
-            if (count == 1) {
-                jedis.expire(derivedKey, perMillis / 1000);
-            }
-            return count;
+
+        Long count = redisConnection.sync().incr(derivedKey);
+        if (count == 1L) {
+            redisConnection.sync().expire(derivedKey, perMillis / 1000);
         }
-
-    }
-
-    private Jedis getResource() {
-        return jedisPool.getResource();
+        return count;
     }
 
     /**

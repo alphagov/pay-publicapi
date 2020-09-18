@@ -51,12 +51,20 @@ rateLimiter:  # rate = noOfReq per perMillis
   perMillis: ${RATE_LIMITER_PER_MILLIS:-1000}
 
 redis:
-  # The redis server's address; required.
-  endpoint: ${REDIS_URL:-localhost:6379}
-  # Enables SSL connection. (default: false)  ???
-  ssl: false
-  # The configured timeout (in milliseconds) for redis connections in the connection pool.  (default: 2000)
-  timeout: 2000
+  type: basic
+  name: publicapi-rate-limiting
+  node:
+    type: redis
+    node: ${REDIS_URL:-localhost:6379}
+    ssl: false
+    timeout: 2s
+  redisCodec:
+    type: string
+  clientResources:
+    type: default
+    commandLatencyCollector:
+      type: default
+      enabled: false
 
 allowHttpForReturnUrl: ${ALLOW_HTTP_FOR_RETURN_URL:-false}
 

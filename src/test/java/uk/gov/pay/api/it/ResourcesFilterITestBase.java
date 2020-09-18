@@ -89,7 +89,7 @@ abstract public class ResourcesFilterITestBase {
             config("connectorUrl", "http://localhost:" + CONNECTOR_PORT),
             config("connectorDDUrl", "http://localhost"),
             config("publicAuthUrl", "http://localhost:" + PUBLIC_AUTH_PORT + "/v1/auth"),
-            config("redis.endpoint", redisDockerRule.getRedisUrl()),
+            config("redis.node.node", redisDockerRule.getRedisUrl()),
             config("ledgerUrl", "http://localhost:" + LEDGER_PORT),
             config("rateLimiter.noOfReq", "1"),
             config("rateLimiter.noOfReqForPost", "1")

@@ -40,9 +40,20 @@ rateLimiter:
   noOfPostReqForElevatedAccounts: 1000
 
 redis:
-  endpoint: localhost:6379
-  ssl: false
-  timeout: 100
+  type: basic
+  name: publicapi-rate-limiting
+  node:
+    type: redis
+    node: localhost:6379
+    ssl: false
+    timeout: 100ms
+  redisCodec:
+    type: string
+  clientResources:
+    type: default
+    commandLatencyCollector:
+      type: default
+      enabled: false
 
 allowHttpForReturnUrl: false
 

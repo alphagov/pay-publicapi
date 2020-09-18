@@ -8,13 +8,14 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import io.dropwizard.setup.Environment;
+import io.lettuce.core.api.StatefulRedisConnection;
 import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.filter.ratelimit.LocalRateLimiter;
+import uk.gov.pay.api.filter.ratelimit.RateLimitManager;
 import uk.gov.pay.api.filter.ratelimit.RateLimiter;
 import uk.gov.pay.api.filter.ratelimit.RedisRateLimiter;
-import uk.gov.pay.api.filter.ratelimit.RateLimitManager;
-import uk.gov.pay.api.json.CreatePaymentRefundRequestDeserializer;
 import uk.gov.pay.api.json.CreateCardPaymentRequestDeserializer;
+import uk.gov.pay.api.json.CreatePaymentRefundRequestDeserializer;
 import uk.gov.pay.api.json.StringDeserializer;
 import uk.gov.pay.api.model.CreateCardPaymentRequest;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
@@ -29,10 +30,14 @@ public class PublicApiModule extends AbstractModule {
 
     private final PublicApiConfig configuration;
     private final Environment environment;
+    private final StatefulRedisConnection<String, String> statefulRedisConnection;
 
-    public PublicApiModule(final PublicApiConfig configuration, final Environment environment) {
+    public PublicApiModule(PublicApiConfig configuration, 
+                           Environment environment, 
+                           StatefulRedisConnection<String, String> statefulRedisConnection) {
         this.configuration = configuration;
         this.environment = environment;
+        this.statefulRedisConnection = statefulRedisConnection;
     }
 
     @Override
@@ -53,8 +58,8 @@ public class PublicApiModule extends AbstractModule {
     public ObjectMapper provideObjectMapper() {
         ObjectMapper objectMapper = environment.getObjectMapper();
 
-        CreateCardPaymentRequestDeserializer cardPaymentRequestDeserializer = new CreateCardPaymentRequestDeserializer();
-        CreatePaymentRefundRequestDeserializer paymentRefundRequestDeserializer = new CreatePaymentRefundRequestDeserializer(new PaymentRefundRequestValidator());
+        var cardPaymentRequestDeserializer = new CreateCardPaymentRequestDeserializer();
+        var paymentRefundRequestDeserializer = new CreatePaymentRefundRequestDeserializer(new PaymentRefundRequestValidator());
         StringDeserializer stringDeserializer = new StringDeserializer(); 
 
         SimpleModule publicApiDeserializationModule = new SimpleModule("publicApiDeserializationModule");
@@ -88,10 +93,9 @@ public class PublicApiModule extends AbstractModule {
 
     private RedisRateLimiter getRedisRateLimiter() {
         var rateLimitManager = new RateLimitManager(configuration.getRateLimiterConfig());
-        return new RedisRateLimiter(rateLimitManager,
+        return new RedisRateLimiter(
+                rateLimitManager, 
                 configuration.getRateLimiterConfig().getPerMillis(),
-                configuration.getJedisFactory().build(environment));
+                statefulRedisConnection);
     }
-
-
 }

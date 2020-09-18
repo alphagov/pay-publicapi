@@ -1,7 +1,5 @@
 package uk.gov.pay.api.app;
 
-import com.bendb.dropwizard.redis.JedisBundle;
-import com.bendb.dropwizard.redis.JedisFactory;
 import com.codahale.metrics.graphite.GraphiteReporter;
 import com.codahale.metrics.graphite.GraphiteSender;
 import com.codahale.metrics.graphite.GraphiteUDP;
@@ -15,6 +13,8 @@ import io.dropwizard.auth.oauth.OAuthCredentialAuthFilter;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
+import io.dropwizard.redis.RedisClientBundle;
+import io.dropwizard.redis.RedisClientFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.glassfish.jersey.CommonProperties;
@@ -72,6 +72,13 @@ public class PublicApi extends Application<PublicApiConfig> {
     private static final String SERVICE_METRICS_NODE = "publicapi";
     private static final int GRAPHITE_SENDING_PERIOD_SECONDS = 10;
 
+    private final RedisClientBundle<String, String, PublicApiConfig> redis = new RedisClientBundle<>() {
+        @Override
+        public RedisClientFactory<String, String> getRedisClientFactory(PublicApiConfig configuration) {
+            return configuration.getRedisClientFactory();
+        }
+    };
+
     @Override
     public void initialize(Bootstrap<PublicApiConfig> bootstrap) {
         bootstrap.setConfigurationSourceProvider(
@@ -80,12 +87,7 @@ public class PublicApi extends Application<PublicApiConfig> {
                         new EnvironmentVariableSubstitutor(false)
                 )
         );
-        bootstrap.addBundle(new JedisBundle<PublicApiConfig>() {
-            @Override
-            public JedisFactory getJedisFactory(PublicApiConfig configuration) {
-                return configuration.getJedisFactory();
-            }
-        });
+        bootstrap.addBundle(redis);
         bootstrap.getObjectMapper().getSubtypeResolver().registerSubtypes(LogstashConsoleAppenderFactory.class);
         bootstrap.getObjectMapper().getSubtypeResolver().registerSubtypes(GovUkPayDropwizardRequestJsonLogLayoutFactory.class);
     }
@@ -94,7 +96,7 @@ public class PublicApi extends Application<PublicApiConfig> {
     public void run(PublicApiConfig configuration, Environment environment) {
         initialiseSSLSocketFactory();
 
-        final Injector injector = Guice.createInjector(new PublicApiModule(configuration, environment));
+        final Injector injector = Guice.createInjector(new PublicApiModule(configuration, environment, redis.getConnection()));
 
         environment.healthChecks().register("ping", new Ping());
 
@@ -147,7 +149,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         initialiseMetrics(configuration, environment);
 
         //health check removed as redis is not a mandatory dependency
-        environment.healthChecks().unregister("redis");
+        environment.healthChecks().unregister("publicapi-rate-limiting");
     }
 
     /**
