@@ -21,11 +21,14 @@ public class SettlementSummary {
     @JsonProperty("captured_date")
     private String capturedDate;
 
+    private String settledDate;
+
     public SettlementSummary() {}
 
-    public SettlementSummary(String captureSubmitTime, String capturedDate) {
+    public SettlementSummary(String captureSubmitTime, String capturedDate, String settledDate) {
         this.captureSubmitTime = captureSubmitTime;
         this.capturedDate = capturedDate;
+        this.settledDate = settledDate;
     }
 
     @ApiModelProperty(value = "Date and time capture request has been submitted (may be null if capture request was not immediately acknowledged by payment gateway)", example = "2016-01-21T17:15:000Z")
@@ -39,5 +42,13 @@ public class SettlementSummary {
     @Schema(description = "Date of the capture event", example = "2016-01-21", accessMode = READ_ONLY)
     public String getCapturedDate() {
         return capturedDate;
+    }
+
+    @JsonProperty("settled_date")
+    @ApiModelProperty(value = "The date that the transaction was settled, for example paid into or refunded from the service's account", example = "2016-01-21", hidden = true)
+    @Schema(description = "The date that the transaction was settled, for example paid into or refunded from the service's account", example = "2016-01-21",
+            accessMode = READ_ONLY, hidden = true)
+    public String getSettledDate() {
+        return settledDate;
     }
 }

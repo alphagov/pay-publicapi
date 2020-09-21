@@ -20,6 +20,7 @@ public abstract class PaymentResultBuilder {
     public static final String DEFAULT_CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(ZonedDateTime.now());
     public static final String DEFAULT_CAPTURE_SUBMIT_TIME = ISO_INSTANT_MILLISECOND_PRECISION.format(ZonedDateTime.now());
     public static final String DEFAULT_CAPTURED_DATE = DateTimeUtils.toLocalDateString(ZonedDateTime.now());
+    public static final String DEFAULT_SETTLED_DATE = DateTimeUtils.toLocalDateString(ZonedDateTime.now());
     public static final String DEFAULT_RETURN_URL = "http://example.com/service";
     public static final int DEFAULT_AMOUNT = 10000;
     public static final String DEFAULT_PAYMENT_PROVIDER = "worldpay";
@@ -92,12 +93,14 @@ public abstract class PaymentResultBuilder {
     protected static class SettlementSummary {
         public String capture_submit_time;
         public String captured_date;
+        public String settled_date;
         
         public SettlementSummary() {}
         
         public SettlementSummary(uk.gov.pay.api.model.SettlementSummary settlementSummary) {
             this.capture_submit_time = settlementSummary.getCaptureSubmitTime();
             this.captured_date = settlementSummary.getCapturedDate();
+            this.settled_date = settlementSummary.getSettledDate();
         }
         
         public SettlementSummary(String captureSubmitTime, String capturedDate) {

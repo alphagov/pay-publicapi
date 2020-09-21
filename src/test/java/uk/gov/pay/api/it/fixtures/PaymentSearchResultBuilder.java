@@ -92,6 +92,11 @@ public class PaymentSearchResultBuilder extends PaymentResultBuilder {
         return this;
     }
 
+    public PaymentSearchResultBuilder withSettlementSummary(uk.gov.pay.api.model.SettlementSummary settlementSummary) {
+        this.settlementSummary = new SettlementSummary(settlementSummary);
+        return this;
+    }
+
     public List<TestPayment> getResults() {
         List<TestPayment> results = newArrayList();
         for (int i = 0; i < noOfResults; i++) {

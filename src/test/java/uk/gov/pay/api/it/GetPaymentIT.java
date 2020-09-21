@@ -46,7 +46,11 @@ public class GetPaymentIT extends PaymentResourceITestBase {
 
     private static final ZonedDateTime CAPTURED_DATE = ZonedDateTime.parse("2016-01-02T14:03:00Z");
     private static final ZonedDateTime CAPTURE_SUBMIT_TIME = ZonedDateTime.parse("2016-01-02T15:02:00Z");
-    private static final SettlementSummary SETTLEMENT_SUMMARY = new SettlementSummary(ISO_INSTANT_MILLISECOND_PRECISION.format(CAPTURE_SUBMIT_TIME), DateTimeUtils.toLocalDateString(CAPTURED_DATE));
+    private static final ZonedDateTime SETTLED_DATE = ZonedDateTime.parse("2016-01-06T15:02:00Z");
+    private static final SettlementSummary SETTLEMENT_SUMMARY_CONNECTOR = new SettlementSummary(ISO_INSTANT_MILLISECOND_PRECISION.format(CAPTURE_SUBMIT_TIME),
+            DateTimeUtils.toLocalDateString(CAPTURED_DATE), null);
+    private static final SettlementSummary SETTLEMENT_SUMMARY_LEDGER = new SettlementSummary(ISO_INSTANT_MILLISECOND_PRECISION.format(CAPTURE_SUBMIT_TIME),
+            DateTimeUtils.toLocalDateString(CAPTURED_DATE), DateTimeUtils.toLocalDateString(SETTLED_DATE));
     private static final int AMOUNT = 9999999;
     private static final Long FEE = 5L;
     private static final Long NET_AMOUNT = 9999994L;
@@ -164,6 +168,9 @@ public class GetPaymentIT extends PaymentResourceITestBase {
 
         assertCommonPaymentFields(response);
         response.body("metadata", is(nullValue()));
+        response.body("settlement_summary.settled_date", is(DateTimeUtils.toLocalDateString(SETTLED_DATE)));
+        response.body("settlement_summary.captured_date", is(DateTimeUtils.toLocalDateString(CAPTURED_DATE)));
+        response.body("settlement_summary.capture_submit_time", is(ISO_INSTANT_MILLISECOND_PRECISION.format(CAPTURE_SUBMIT_TIME)));
     }
 
     private void assertCommonPaymentFields(ValidatableResponse paymentResponse) {
@@ -287,7 +294,7 @@ public class GetPaymentIT extends PaymentResourceITestBase {
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 getConnectorCharge()
                         .withState(CREATED)
-                        .withSettlementSummary(new SettlementSummary(null, null))
+                        .withSettlementSummary(new SettlementSummary(null, null, null))
                         .build());
 
         assertPaymentWithoutSettlementSummary(getPaymentResponse(CHARGE_ID));
@@ -298,7 +305,7 @@ public class GetPaymentIT extends PaymentResourceITestBase {
         ledgerMockClient.respondWithTransaction(CHARGE_ID,
                 getLedgerTransaction()
                         .withState(CREATED)
-                        .withSettlementSummary(new SettlementSummary(null, null))
+                        .withSettlementSummary(new SettlementSummary(null, null, null))
                         .build());
 
         assertPaymentWithoutSettlementSummary(getPaymentResponse(CHARGE_ID, LEDGER_ONLY_STRATEGY));
@@ -651,7 +658,7 @@ public class GetPaymentIT extends PaymentResourceITestBase {
                 .withDelayedCapture(true)
                 .withMoto(false)
                 .withRefundSummary(REFUND_SUMMARY)
-                .withSettlementSummary(SETTLEMENT_SUMMARY)
+                .withSettlementSummary(SETTLEMENT_SUMMARY_CONNECTOR)
                 .withCardDetails(CARD_DETAILS)
                 .withGatewayTransactionId(GATEWAY_TRANSACTION_ID);
     }
@@ -671,7 +678,7 @@ public class GetPaymentIT extends PaymentResourceITestBase {
                 .withDelayedCapture(true)
                 .withMoto(false)
                 .withRefundSummary(REFUND_SUMMARY)
-                .withSettlementSummary(SETTLEMENT_SUMMARY)
+                .withSettlementSummary(SETTLEMENT_SUMMARY_LEDGER)
                 .withCardDetails(CARD_DETAILS)
                 .withGatewayTransactionId(GATEWAY_TRANSACTION_ID);
     }
