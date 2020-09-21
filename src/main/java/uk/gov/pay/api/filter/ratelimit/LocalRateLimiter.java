@@ -4,12 +4,16 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.api.app.config.RateLimiterConfig;
 import uk.gov.pay.api.filter.RateLimiterKey;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.ws.rs.HttpMethod;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+@Singleton
 public class LocalRateLimiter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalRateLimiter.class);
@@ -20,12 +24,11 @@ public class LocalRateLimiter {
 
     private final Cache<String, RateLimit> cache;
 
-
-    public LocalRateLimiter(int noOfReqPerNode, int noOfReqForPostPerNode, int perMillis) {
-        this.noOfReqPerNode = noOfReqPerNode;
-        this.noOfReqForPostPerNode = noOfReqForPostPerNode;
-        this.perMillis = perMillis;
-
+    @Inject
+    public LocalRateLimiter(RateLimiterConfig rateLimiterConfig) {
+        this.noOfReqPerNode = rateLimiterConfig.getNoOfReqPerNode();
+        this.noOfReqForPostPerNode = rateLimiterConfig.getNoOfReqForPostPerNode();
+        this.perMillis = rateLimiterConfig.getPerMillis();
         this.cache = CacheBuilder.newBuilder()
                 .expireAfterAccess(perMillis, TimeUnit.MILLISECONDS)
                 .build();

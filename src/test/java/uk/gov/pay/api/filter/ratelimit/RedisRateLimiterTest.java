@@ -5,6 +5,8 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
+import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.api.sync.RedisCommands;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,9 +15,9 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
+import uk.gov.pay.api.app.config.RateLimiterConfig;
 import uk.gov.pay.api.filter.RateLimiterKey;
+import uk.gov.pay.api.managed.RedisClientManager;
 
 import java.util.List;
 
@@ -31,23 +33,35 @@ import static org.mockito.Mockito.when;
 public class RedisRateLimiterTest {
 
     private static final String accountId = "account-id";
+    
     @Mock
-    private RateLimitManager rateLimitManager;
+    private RedisClientManager redisClientManager;
+    
     @Mock
-    JedisPool jedisPool;
+    private StatefulRedisConnection statefulRedisConnection;
+    
     @Mock
-    Jedis jedis;
+    private RedisCommands redisCommands;
+    
     @Mock
     private RateLimiterKey rateLimiterKey;
+    
+    @Mock
+    private RateLimiterConfig rateLimiterConfig;
+    
     @Captor
     ArgumentCaptor<LoggingEvent> loggingEventArgumentCaptor;
+    
     private RedisRateLimiter redisRateLimiter;
+    
     @Mock
     private Appender<ILoggingEvent> mockAppender;
 
     @BeforeEach
     public void setup() {
-        when(jedisPool.getResource()).thenReturn(jedis);
+        when(statefulRedisConnection.sync()).thenReturn(redisCommands);
+        when(redisClientManager.getRedisConnection()).thenReturn(statefulRedisConnection);
+        when(rateLimiterConfig.getPerMillis()).thenReturn(1000);
 
         Logger root = (Logger) LoggerFactory.getLogger(RedisRateLimiter.class);
         root.setLevel(Level.INFO);
@@ -56,21 +70,21 @@ public class RedisRateLimiterTest {
 
     @Test
     public void rateLimiterSetTo_1CallPerSecond_shouldAllowSingleCall() throws Exception {
+        when(rateLimiterConfig.getNoOfReq()).thenReturn(1);
         when(rateLimiterKey.getKey()).thenReturn("Key1");
-        when(rateLimitManager.getAllowedNumberOfRequests(any(), any())).thenReturn(1);
-        redisRateLimiter = new RedisRateLimiter(rateLimitManager, 1000, jedisPool);
+        redisRateLimiter = new RedisRateLimiter(rateLimiterConfig, redisClientManager);
 
-        when(jedis.incr(anyString())).thenReturn(1L, 2L);
+        when(redisCommands.incr(anyString())).thenReturn(1L, 2L);
         redisRateLimiter.checkRateOf(accountId, rateLimiterKey);
     }
 
     @Test
     public void rateLimiterSetTo_2CallsPerSecond_shouldAllow2ConsecutiveCallsWithSameKeys() throws Exception {
+        when(rateLimiterConfig.getNoOfReq()).thenReturn(2);
         when(rateLimiterKey.getKey()).thenReturn("Key2");
-        when(rateLimitManager.getAllowedNumberOfRequests(any(), any())).thenReturn(2);
-        redisRateLimiter = new RedisRateLimiter(rateLimitManager, 1000, jedisPool);
+        redisRateLimiter = new RedisRateLimiter(rateLimiterConfig, redisClientManager);
 
-        when(jedis.incr(anyString())).thenReturn(1L, 2L, 3L);
+        when(redisCommands.incr(anyString())).thenReturn(1L, 2L, 3L);
 
         redisRateLimiter.checkRateOf(accountId, rateLimiterKey);
         redisRateLimiter.checkRateOf(accountId, rateLimiterKey);
@@ -78,12 +92,12 @@ public class RedisRateLimiterTest {
 
     @Test
     public void rateLimiterSetTo_2CallsPerSecond_shouldFailWhen3ConsecutiveCallsWithSameKeysAreMade() throws RedisException, RateLimitException {
+        when(rateLimiterConfig.getNoOfReq()).thenReturn(2);
         when(rateLimiterKey.getKey()).thenReturn("Key3");
         when(rateLimiterKey.getKeyType()).thenReturn("POST");
-        when(rateLimitManager.getAllowedNumberOfRequests(any(), any())).thenReturn(2);
-        redisRateLimiter = new RedisRateLimiter(rateLimitManager, 1000, jedisPool);
+        redisRateLimiter = new RedisRateLimiter(rateLimiterConfig, redisClientManager);
 
-        when(jedis.incr(anyString())).thenReturn(1L, 2L, 3L);
+        when(redisCommands.incr(anyString())).thenReturn(1L, 2L, 3L);
 
         redisRateLimiter.checkRateOf(accountId, rateLimiterKey);
         redisRateLimiter.checkRateOf(accountId, rateLimiterKey);

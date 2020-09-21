@@ -9,15 +9,17 @@ import com.spotify.docker.client.messages.ContainerInfo;
 import com.spotify.docker.client.messages.HostConfig;
 import com.spotify.docker.client.messages.LogConfig;
 import com.spotify.docker.client.messages.PortBinding;
+import io.lettuce.core.RedisClient;
+import io.lettuce.core.api.StatefulRedisConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.Jedis;
 
 import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static java.lang.Integer.parseInt;
+import static java.lang.String.format;
 
 class RedisContainer {
 
@@ -28,6 +30,7 @@ class RedisContainer {
     private DockerClient docker;
     private String host;
     private volatile boolean stopped = false;
+    private static StatefulRedisConnection<String, String> redisConnection;
 
     private static final int DB_TIMEOUT_SEC = 10;
     private static final String REDIS_IMAGE = "redis:latest";
@@ -100,7 +103,9 @@ class RedisContainer {
     }
 
     private boolean checkRedisConnection() {
-        try (Jedis ignored = new Jedis(host, port)) {
+        RedisClient redisClient = RedisClient.create(format("redis://%s:%s", host, port));
+        try {
+            redisConnection = redisClient.connect();
             return true;
         } catch (Exception except) {
             return false;
@@ -126,11 +131,9 @@ class RedisContainer {
     }
 
     public void clearRedisCache() {
-        Jedis jedis = new Jedis(host, port);
-        String response = jedis.flushAll();
+        String response = redisConnection.sync().flushall();
         if (!response.equals("OK")) {
             logger.warn("Unexpected response from redis flushAll command: " + response);
         }
-        jedis.disconnect();
     }
 }

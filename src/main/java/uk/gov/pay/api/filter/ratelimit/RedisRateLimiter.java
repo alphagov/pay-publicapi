@@ -4,25 +4,27 @@ import com.google.inject.Inject;
 import com.google.inject.OutOfScopeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
+import uk.gov.pay.api.app.config.RateLimiterConfig;
 import uk.gov.pay.api.filter.RateLimiterKey;
+import uk.gov.pay.api.managed.RedisClientManager;
 
+import javax.inject.Singleton;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
 
+@Singleton
 public class RedisRateLimiter {
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisRateLimiter.class);
 
     private RateLimitManager rateLimitManager;
     private final int perMillis;
-    private JedisPool jedisPool;
+    private RedisClientManager redisClientManager;
 
     @Inject
-    public RedisRateLimiter(RateLimitManager rateLimitManager, int perMillis, JedisPool jedisPool) {
-        this.rateLimitManager = rateLimitManager;
-        this.perMillis = perMillis;
-        this.jedisPool = jedisPool;
+    public RedisRateLimiter(RateLimiterConfig rateLimiterConfig, RedisClientManager redisClientManager) {
+        this.rateLimitManager = new RateLimitManager(rateLimiterConfig);
+        this.perMillis = rateLimiterConfig.getPerMillis();
+        this.redisClientManager = redisClientManager;
     }
 
     /**
@@ -36,6 +38,7 @@ public class RedisRateLimiter {
         try {
             count = updateAllowance(key.getKey());
         } catch (Exception e) {
+            LOGGER.info("Failed to update allowance. Cause of error: " + e.getMessage());
             // Exception possible if redis is unavailable or perMillis is too high        
             throw new RedisException();
         }
@@ -52,20 +55,13 @@ public class RedisRateLimiter {
 
     synchronized private Long updateAllowance(String key) {
         String derivedKey = getKeyForWindow(key);
+        Long count = redisClientManager.getRedisConnection().sync().incr(derivedKey);
         
-        try (Jedis jedis = getResource()) {
-            Long count = jedis.incr(derivedKey);
-            
-            if (count == 1) {
-                jedis.expire(derivedKey, perMillis / 1000);
-            }
-            return count;
+        if (count == 1) {
+            redisClientManager.getRedisConnection().sync().expire(derivedKey, perMillis / 1000);
         }
-
-    }
-
-    private Jedis getResource() {
-        return jedisPool.getResource();
+        
+        return count;
     }
 
     /**
@@ -95,5 +91,4 @@ public class RedisRateLimiter {
 
         return key + window;
     }
-
 }

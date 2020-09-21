@@ -1,7 +1,5 @@
 package uk.gov.pay.api.app;
 
-import com.bendb.dropwizard.redis.JedisBundle;
-import com.bendb.dropwizard.redis.JedisFactory;
 import com.codahale.metrics.graphite.GraphiteReporter;
 import com.codahale.metrics.graphite.GraphiteSender;
 import com.codahale.metrics.graphite.GraphiteUDP;
@@ -46,6 +44,7 @@ import uk.gov.pay.api.filter.LoggingMDCRequestFilter;
 import uk.gov.pay.api.filter.RateLimiterFilter;
 import uk.gov.pay.api.healthcheck.Ping;
 import uk.gov.pay.api.ledger.resource.TransactionsResource;
+import uk.gov.pay.api.managed.RedisClientManager;
 import uk.gov.pay.api.resources.DirectDebitEventsResource;
 import uk.gov.pay.api.resources.HealthCheckResource;
 import uk.gov.pay.api.resources.MandatesResource;
@@ -80,12 +79,6 @@ public class PublicApi extends Application<PublicApiConfig> {
                         new EnvironmentVariableSubstitutor(false)
                 )
         );
-        bootstrap.addBundle(new JedisBundle<PublicApiConfig>() {
-            @Override
-            public JedisFactory getJedisFactory(PublicApiConfig configuration) {
-                return configuration.getJedisFactory();
-            }
-        });
         bootstrap.getObjectMapper().getSubtypeResolver().registerSubtypes(LogstashConsoleAppenderFactory.class);
         bootstrap.getObjectMapper().getSubtypeResolver().registerSubtypes(GovUkPayDropwizardRequestJsonLogLayoutFactory.class);
     }
@@ -146,8 +139,7 @@ public class PublicApi extends Application<PublicApiConfig> {
 
         initialiseMetrics(configuration, environment);
 
-        //health check removed as redis is not a mandatory dependency
-        environment.healthChecks().unregister("redis");
+        environment.lifecycle().manage(injector.getInstance(RedisClientManager.class));
     }
 
     /**
