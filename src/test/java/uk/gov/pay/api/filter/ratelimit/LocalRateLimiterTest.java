@@ -14,6 +14,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.api.app.config.RateLimiterConfig;
 import uk.gov.pay.api.filter.RateLimiterKey;
 
 import java.util.Arrays;
@@ -32,6 +33,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class LocalRateLimiterTest {
@@ -45,6 +47,9 @@ public class LocalRateLimiterTest {
 
     @Mock
     private Appender<ILoggingEvent> mockAppender;
+    
+    @Mock
+    private RateLimiterConfig rateLimiterConfig;
 
     @BeforeEach
     public void setup() {
@@ -55,9 +60,13 @@ public class LocalRateLimiterTest {
 
     @Test
     public void rateLimiterSetTo_2CallsPerSecond_shouldAllow2ConsecutiveCallsWithSameKeys() throws Exception {
+        when(rateLimiterConfig.getNoOfReqPerNode()).thenReturn(2);
+        when(rateLimiterConfig.getNoOfReqForPostPerNode()).thenReturn(2);
+        when(rateLimiterConfig.getPerMillis()).thenReturn(1000);
+        
         String key = "key1";
         var rateLimiterKey = new RateLimiterKey(key, "key-type", POST);
-        localRateLimiter = new LocalRateLimiter(2, 2, 1000);
+        localRateLimiter = new LocalRateLimiter(rateLimiterConfig);
 
         localRateLimiter.checkRateOf(accountId, rateLimiterKey);
         localRateLimiter.checkRateOf(accountId, rateLimiterKey);
@@ -65,9 +74,13 @@ public class LocalRateLimiterTest {
 
     @Test
     public void rateLimiterSetTo_1CallPer300Millis_shouldAFailWhen2ConsecutiveCallsWithSameKeysAreMade() throws RateLimitException {
+        when(rateLimiterConfig.getNoOfReqPerNode()).thenReturn(1);
+        when(rateLimiterConfig.getNoOfReqForPostPerNode()).thenReturn(1);
+        when(rateLimiterConfig.getPerMillis()).thenReturn(300);
+        
         String key = "key2";
         var rateLimiterKey = new RateLimiterKey(key, "key-type", POST);
-        localRateLimiter = new LocalRateLimiter(1, 1, 300);
+        localRateLimiter = new LocalRateLimiter(rateLimiterConfig);
 
         localRateLimiter.checkRateOf(accountId, rateLimiterKey);
         assertThrows(RateLimitException.class, () -> {
@@ -81,9 +94,13 @@ public class LocalRateLimiterTest {
 
     @Test
     public void rateLimiterSetTo_3CallsPerSecond_shouldAllowMakingOnly3CallsWithSameKey() throws Exception {
+        when(rateLimiterConfig.getNoOfReqPerNode()).thenReturn(3);
+        when(rateLimiterConfig.getNoOfReqForPostPerNode()).thenReturn(3);
+        when(rateLimiterConfig.getPerMillis()).thenReturn(1000);
+        
         String key = "key3";
         var rateLimiterKey = new RateLimiterKey(key, "key-type", POST);
-        localRateLimiter = new LocalRateLimiter(3, 3, 1000);
+        localRateLimiter = new LocalRateLimiter(rateLimiterConfig);
 
         ExecutorService executor = Executors.newFixedThreadPool(3);
 

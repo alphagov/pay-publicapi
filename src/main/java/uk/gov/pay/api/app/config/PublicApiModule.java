@@ -69,15 +69,6 @@ public class PublicApiModule extends AbstractModule {
 
         return objectMapper;
     }
-    
-    @Provides
-    public LocalRateLimiter getLocalRateLimiter() {
-        return new LocalRateLimiter(
-                configuration.getRateLimiterConfig().getNoOfReqPerNode(),
-                configuration.getRateLimiterConfig().getNoOfReqForPostPerNode(),
-                configuration.getRateLimiterConfig().getPerMillis()
-        );
-    }
 
     @Provides
     public RateLimiterConfig getRateLimiterConfig() {
