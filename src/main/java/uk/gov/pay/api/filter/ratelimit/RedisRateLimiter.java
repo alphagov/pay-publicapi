@@ -9,15 +9,18 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.RateLimiterConfig;
 import uk.gov.pay.api.filter.RateLimiterKey;
 
+import javax.inject.Singleton;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
 
+@Singleton
 public class RedisRateLimiter {
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisRateLimiter.class);
 
     private RateLimitManager rateLimitManager;
     private final int perMillis;
     private RedisClient redisClient;
+    private StatefulRedisConnection<String, String> statefulRedisConnection;
 
     @Inject
     public RedisRateLimiter(RateLimiterConfig rateLimiterConfig, RedisClient redisClient) {
@@ -37,6 +40,7 @@ public class RedisRateLimiter {
         try {
             count = updateAllowance(key.getKey());
         } catch (Exception e) {
+            LOGGER.info("Failed to update allowance. Cause of error: " + e.getMessage());
             // Exception possible if redis is unavailable or perMillis is too high        
             throw new RedisException();
         }
@@ -53,11 +57,15 @@ public class RedisRateLimiter {
 
     synchronized private Long updateAllowance(String key) {
         String derivedKey = getKeyForWindow(key);
-        StatefulRedisConnection<String, String> connection = redisClient.connect();
-        Long count = connection.sync().incr(derivedKey);
+        
+        if (statefulRedisConnection == null) {
+            statefulRedisConnection = redisClient.connect();
+        }
+        
+        Long count = statefulRedisConnection.sync().incr(derivedKey);
         
         if (count == 1) {
-            connection.sync().expire(derivedKey, perMillis / 1000);
+            statefulRedisConnection.sync().expire(derivedKey, perMillis / 1000);
         }
         
         return count;
@@ -91,4 +99,9 @@ public class RedisRateLimiter {
         return key + window;
     }
 
+    public void closeRedisConnection() {
+        if (statefulRedisConnection != null) {
+            statefulRedisConnection.close();
+        }
+    }
 }

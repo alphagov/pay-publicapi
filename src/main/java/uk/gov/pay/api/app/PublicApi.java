@@ -43,9 +43,10 @@ import uk.gov.pay.api.filter.AuthorizationValidationFilter;
 import uk.gov.pay.api.filter.ClearMdcValuesFilter;
 import uk.gov.pay.api.filter.LoggingMDCRequestFilter;
 import uk.gov.pay.api.filter.RateLimiterFilter;
+import uk.gov.pay.api.filter.ratelimit.RedisRateLimiter;
 import uk.gov.pay.api.healthcheck.Ping;
 import uk.gov.pay.api.ledger.resource.TransactionsResource;
-import uk.gov.pay.api.managed.LettuceClientManager;
+import uk.gov.pay.api.managed.RedisClientManager;
 import uk.gov.pay.api.resources.DirectDebitEventsResource;
 import uk.gov.pay.api.resources.HealthCheckResource;
 import uk.gov.pay.api.resources.MandatesResource;
@@ -140,7 +141,10 @@ public class PublicApi extends Application<PublicApiConfig> {
 
         initialiseMetrics(configuration, environment);
 
-        environment.lifecycle().manage(new LettuceClientManager(injector.getInstance(RedisClient.class)));
+        var lettuceClientManager = new RedisClientManager(
+                injector.getInstance(RedisClient.class), 
+                injector.getInstance(RedisRateLimiter.class));
+        environment.lifecycle().manage(lettuceClientManager);
     }
 
     /**
