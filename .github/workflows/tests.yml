@@ -27,12 +27,12 @@ jobs:
           java-version: '11'
       - name: build pay-publicapi
         run: |
-          pushd $GITHUB_WORKSPACE/../component
+          pushd $GITHUB_WORKSPACE/component
           ./build-local.sh
           popd
       - name: run tests
         run: |
-          pushd $GITHUB_WORKSPACE/../scripts
+          pushd $GITHUB_WORKSPACE/scripts
           export tag_publicapi=local
           docker login --username alphagovpaydevci --password-stdin <<< "${{ secrets.alphagovpaydevci_docker_token }}"
           ./setup-dev.sh
