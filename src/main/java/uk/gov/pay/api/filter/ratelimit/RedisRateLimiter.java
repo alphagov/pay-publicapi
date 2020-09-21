@@ -2,12 +2,11 @@ package uk.gov.pay.api.filter.ratelimit;
 
 import com.google.inject.Inject;
 import com.google.inject.OutOfScopeException;
-import io.lettuce.core.RedisClient;
-import io.lettuce.core.api.StatefulRedisConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.RateLimiterConfig;
 import uk.gov.pay.api.filter.RateLimiterKey;
+import uk.gov.pay.api.managed.RedisClientManager;
 
 import javax.inject.Singleton;
 import java.time.LocalDateTime;
@@ -19,14 +18,13 @@ public class RedisRateLimiter {
 
     private RateLimitManager rateLimitManager;
     private final int perMillis;
-    private RedisClient redisClient;
-    private StatefulRedisConnection<String, String> statefulRedisConnection;
+    private RedisClientManager redisClientManager;
 
     @Inject
-    public RedisRateLimiter(RateLimiterConfig rateLimiterConfig, RedisClient redisClient) {
+    public RedisRateLimiter(RateLimiterConfig rateLimiterConfig, RedisClientManager redisClientManager) {
         this.rateLimitManager = new RateLimitManager(rateLimiterConfig);
         this.perMillis = rateLimiterConfig.getPerMillis();
-        this.redisClient = redisClient;
+        this.redisClientManager = redisClientManager;
     }
 
     /**
@@ -57,15 +55,10 @@ public class RedisRateLimiter {
 
     synchronized private Long updateAllowance(String key) {
         String derivedKey = getKeyForWindow(key);
-        
-        if (statefulRedisConnection == null) {
-            statefulRedisConnection = redisClient.connect();
-        }
-        
-        Long count = statefulRedisConnection.sync().incr(derivedKey);
+        Long count = redisClientManager.getRedisConnection().sync().incr(derivedKey);
         
         if (count == 1) {
-            statefulRedisConnection.sync().expire(derivedKey, perMillis / 1000);
+            redisClientManager.getRedisConnection().sync().expire(derivedKey, perMillis / 1000);
         }
         
         return count;
@@ -97,11 +90,5 @@ public class RedisRateLimiter {
         }
 
         return key + window;
-    }
-
-    public void closeRedisConnection() {
-        if (statefulRedisConnection != null) {
-            statefulRedisConnection.close();
-        }
     }
 }

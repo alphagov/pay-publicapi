@@ -15,7 +15,6 @@ import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import io.lettuce.core.RedisClient;
 import org.glassfish.jersey.CommonProperties;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.PublicApiModule;
@@ -43,7 +42,6 @@ import uk.gov.pay.api.filter.AuthorizationValidationFilter;
 import uk.gov.pay.api.filter.ClearMdcValuesFilter;
 import uk.gov.pay.api.filter.LoggingMDCRequestFilter;
 import uk.gov.pay.api.filter.RateLimiterFilter;
-import uk.gov.pay.api.filter.ratelimit.RedisRateLimiter;
 import uk.gov.pay.api.healthcheck.Ping;
 import uk.gov.pay.api.ledger.resource.TransactionsResource;
 import uk.gov.pay.api.managed.RedisClientManager;
@@ -141,10 +139,7 @@ public class PublicApi extends Application<PublicApiConfig> {
 
         initialiseMetrics(configuration, environment);
 
-        var lettuceClientManager = new RedisClientManager(
-                injector.getInstance(RedisClient.class), 
-                injector.getInstance(RedisRateLimiter.class));
-        environment.lifecycle().manage(lettuceClientManager);
+        environment.lifecycle().manage(injector.getInstance(RedisClientManager.class));
     }
 
     /**

@@ -2,15 +2,26 @@ package uk.gov.pay.api.managed;
 
 import io.dropwizard.lifecycle.Managed;
 import io.lettuce.core.RedisClient;
-import uk.gov.pay.api.filter.ratelimit.RedisRateLimiter;
+import io.lettuce.core.api.StatefulRedisConnection;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class RedisClientManager implements Managed {
     private RedisClient redisClient;
-    private RedisRateLimiter redisRateLimiter;
+    private StatefulRedisConnection<String, String> statefulRedisConnection;
 
-    public RedisClientManager(RedisClient redisClient, RedisRateLimiter redisRateLimiter) {
+    @Inject
+    public RedisClientManager(RedisClient redisClient) {
         this.redisClient = redisClient;
-        this.redisRateLimiter = redisRateLimiter;
+    }
+    
+    public StatefulRedisConnection getRedisConnection() {
+        if (statefulRedisConnection == null) {
+            statefulRedisConnection = redisClient.connect();
+        }
+        return statefulRedisConnection;
     }
 
     @Override
@@ -18,7 +29,9 @@ public class RedisClientManager implements Managed {
 
     @Override
     public void stop() throws Exception {
-        redisRateLimiter.closeRedisConnection();
+        if (statefulRedisConnection != null) {
+            statefulRedisConnection.close();
+        }
         redisClient.shutdown();
     }
 }

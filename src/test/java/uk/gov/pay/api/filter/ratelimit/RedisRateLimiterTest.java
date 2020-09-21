@@ -5,7 +5,6 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
-import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.RateLimiterConfig;
 import uk.gov.pay.api.filter.RateLimiterKey;
+import uk.gov.pay.api.managed.RedisClientManager;
 
 import java.util.List;
 
@@ -35,10 +35,7 @@ public class RedisRateLimiterTest {
     private static final String accountId = "account-id";
     
     @Mock
-    private RateLimitManager rateLimitManager;
-    
-    @Mock
-    private RedisClient redisClient;
+    private RedisClientManager redisClientManager;
     
     @Mock
     private StatefulRedisConnection statefulRedisConnection;
@@ -63,7 +60,7 @@ public class RedisRateLimiterTest {
     @BeforeEach
     public void setup() {
         when(statefulRedisConnection.sync()).thenReturn(redisCommands);
-        when(redisClient.connect()).thenReturn(statefulRedisConnection);
+        when(redisClientManager.getRedisConnection()).thenReturn(statefulRedisConnection);
         when(rateLimiterConfig.getPerMillis()).thenReturn(1000);
 
         Logger root = (Logger) LoggerFactory.getLogger(RedisRateLimiter.class);
@@ -75,7 +72,7 @@ public class RedisRateLimiterTest {
     public void rateLimiterSetTo_1CallPerSecond_shouldAllowSingleCall() throws Exception {
         when(rateLimiterConfig.getNoOfReq()).thenReturn(1);
         when(rateLimiterKey.getKey()).thenReturn("Key1");
-        redisRateLimiter = new RedisRateLimiter(rateLimiterConfig, redisClient);
+        redisRateLimiter = new RedisRateLimiter(rateLimiterConfig, redisClientManager);
 
         when(redisCommands.incr(anyString())).thenReturn(1L, 2L);
         redisRateLimiter.checkRateOf(accountId, rateLimiterKey);
@@ -85,7 +82,7 @@ public class RedisRateLimiterTest {
     public void rateLimiterSetTo_2CallsPerSecond_shouldAllow2ConsecutiveCallsWithSameKeys() throws Exception {
         when(rateLimiterConfig.getNoOfReq()).thenReturn(2);
         when(rateLimiterKey.getKey()).thenReturn("Key2");
-        redisRateLimiter = new RedisRateLimiter(rateLimiterConfig, redisClient);
+        redisRateLimiter = new RedisRateLimiter(rateLimiterConfig, redisClientManager);
 
         when(redisCommands.incr(anyString())).thenReturn(1L, 2L, 3L);
 
@@ -98,7 +95,7 @@ public class RedisRateLimiterTest {
         when(rateLimiterConfig.getNoOfReq()).thenReturn(2);
         when(rateLimiterKey.getKey()).thenReturn("Key3");
         when(rateLimiterKey.getKeyType()).thenReturn("POST");
-        redisRateLimiter = new RedisRateLimiter(rateLimiterConfig, redisClient);
+        redisRateLimiter = new RedisRateLimiter(rateLimiterConfig, redisClientManager);
 
         when(redisCommands.incr(anyString())).thenReturn(1L, 2L, 3L);
 
