@@ -80,10 +80,15 @@ public class PublicApiModule extends AbstractModule {
     }
 
     @Provides
-    public RedisRateLimiter getRedisRateLimiter() {
-        var rateLimitManager = new RateLimitManager(configuration.getRateLimiterConfig());
+    public RateLimiterConfig getRateLimiterConfig() {
+        return configuration.getRateLimiterConfig();
+    }
+    
+    @Provides
+    @Singleton
+    public RedisClient getRedisClient() {
         RedisClient client = RedisClient.create(configuration.getRedisConfiguration().getUrl());
         client.setDefaultTimeout(Duration.ofMillis(configuration.getRedisConfiguration().getTimeout()));
-        return new RedisRateLimiter(rateLimitManager, configuration.getRateLimiterConfig().getPerMillis(), client);
+        return client;
     }
 }

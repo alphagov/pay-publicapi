@@ -15,6 +15,7 @@ import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.lettuce.core.RedisClient;
 import org.glassfish.jersey.CommonProperties;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.PublicApiModule;
@@ -44,6 +45,7 @@ import uk.gov.pay.api.filter.LoggingMDCRequestFilter;
 import uk.gov.pay.api.filter.RateLimiterFilter;
 import uk.gov.pay.api.healthcheck.Ping;
 import uk.gov.pay.api.ledger.resource.TransactionsResource;
+import uk.gov.pay.api.managed.LettuceClientManager;
 import uk.gov.pay.api.resources.DirectDebitEventsResource;
 import uk.gov.pay.api.resources.HealthCheckResource;
 import uk.gov.pay.api.resources.MandatesResource;
@@ -138,8 +140,7 @@ public class PublicApi extends Application<PublicApiConfig> {
 
         initialiseMetrics(configuration, environment);
 
-        //health check removed as redis is not a mandatory dependency
-        environment.healthChecks().unregister("redis");
+        environment.lifecycle().manage(new LettuceClientManager(injector.getInstance(RedisClient.class)));
     }
 
     /**

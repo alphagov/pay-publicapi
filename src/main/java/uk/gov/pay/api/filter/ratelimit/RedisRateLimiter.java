@@ -6,6 +6,7 @@ import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.api.app.config.RateLimiterConfig;
 import uk.gov.pay.api.filter.RateLimiterKey;
 
 import java.time.LocalDateTime;
@@ -19,9 +20,9 @@ public class RedisRateLimiter {
     private RedisClient redisClient;
 
     @Inject
-    public RedisRateLimiter(RateLimitManager rateLimitManager, int perMillis, RedisClient redisClient) {
-        this.rateLimitManager = rateLimitManager;
-        this.perMillis = perMillis;
+    public RedisRateLimiter(RateLimiterConfig rateLimiterConfig, RedisClient redisClient) {
+        this.rateLimitManager = new RateLimitManager(rateLimiterConfig);
+        this.perMillis = rateLimiterConfig.getPerMillis();
         this.redisClient = redisClient;
     }
 
