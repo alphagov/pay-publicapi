@@ -2,6 +2,7 @@ package uk.gov.pay.api.utils.mocks;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import uk.gov.pay.api.model.SettlementSummary;
 import uk.gov.pay.api.model.ledger.TransactionState;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
@@ -11,6 +12,7 @@ public class RefundTransactionFromLedgerFixture {
     private final String createdDate;
     private final String transactionId;
     private final String parentTransactionId;
+    private final SettlementSummary settlementSummary;
 
     public RefundTransactionFromLedgerFixture(RefundTransactionFromLedgerBuilder builder) {
         this.amount = builder.amount;
@@ -18,6 +20,7 @@ public class RefundTransactionFromLedgerFixture {
         this.createdDate = builder.createdDate;
         this.transactionId = builder.transactionId;
         this.parentTransactionId = builder.parentTransactionId;
+        this.settlementSummary = builder.settlementSummary;
     }
 
     public Long getAmount() {
@@ -40,12 +43,17 @@ public class RefundTransactionFromLedgerFixture {
         return parentTransactionId;
     }
 
+    public SettlementSummary getSettlementSummary() {
+        return settlementSummary;
+    }
+
     public static final class RefundTransactionFromLedgerBuilder {
         private Long amount;
         private TransactionState state;
         private String createdDate;
         private String transactionId;
         private String parentTransactionId;
+        private SettlementSummary settlementSummary = new SettlementSummary();
 
         private RefundTransactionFromLedgerBuilder() {
         }
@@ -81,6 +89,11 @@ public class RefundTransactionFromLedgerFixture {
 
         public RefundTransactionFromLedgerFixture build() {
             return new RefundTransactionFromLedgerFixture(this);
+        }
+
+        public RefundTransactionFromLedgerBuilder withSettlementSummary(String settledDate) {
+            this.settlementSummary = new SettlementSummary(null, null, settledDate);
+            return this;
         }
     }
 }

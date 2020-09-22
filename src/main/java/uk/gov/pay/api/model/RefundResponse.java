@@ -26,6 +26,8 @@ public class RefundResponse {
     private RefundLinksForSearch links;
     @Schema(example = "success", allowableValues = {"submitted", "success", "error"}, accessMode = READ_ONLY)
     private String status;
+    @Schema(hidden = true)
+    private SettlementSummary settlementSummary;
 
     private RefundResponse(RefundFromConnector refund, URI selfLink, URI paymentLink) {
         this.refundId = refund.getRefundId();
@@ -33,6 +35,7 @@ public class RefundResponse {
         this.status = refund.getStatus();
         this.createdDate = refund.getCreatedDate();
         this.links = new RefundLinksForSearch();
+        this.settlementSummary = new SettlementSummary();
 
         links.addSelf(selfLink.toString());
         links.addPayment(paymentLink.toString());
@@ -43,6 +46,7 @@ public class RefundResponse {
         this.amount = refund.getAmount();
         this.status = refund.getState().getStatus();
         this.createdDate = refund.getCreatedDate();
+        this.settlementSummary = refund.getSettlementSummary();
         this.links = new RefundLinksForSearch();
 
         links.addSelf(selfLink.toString());
@@ -106,5 +110,9 @@ public class RefundResponse {
 
     public RefundLinksForSearch getLinks() {
         return links;
+    }
+
+    public SettlementSummary getSettlementSummary() {
+        return settlementSummary;
     }
 }
