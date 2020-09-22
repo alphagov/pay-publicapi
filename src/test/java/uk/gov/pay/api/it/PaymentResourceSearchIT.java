@@ -11,6 +11,7 @@ import org.junit.Test;
 import uk.gov.pay.api.it.fixtures.PaymentNavigationLinksFixture;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetails;
+import uk.gov.pay.api.model.SettlementSummary;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.LedgerMockClient;
 import uk.gov.pay.commons.validation.DateTimeUtils;
@@ -40,6 +41,7 @@ import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.DEFAULT_CAPT
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.DEFAULT_CREATED_DATE;
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.DEFAULT_PAYMENT_PROVIDER;
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.DEFAULT_RETURN_URL;
+import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.DEFAULT_SETTLED_DATE;
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.aSuccessfulSearchPayment;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 
@@ -346,6 +348,25 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
                 .body("total", is(0))
                 .body("count", is(0))
                 .body("page", is(1));
+    }
+
+    @Test
+    public void shouldReturnSettledDate_whenLedgerReturnsSettledDateInSettlementSummary() {
+        String payments = aPaginatedPaymentSearchResult()
+                .withPage(1)
+                .withPayments(aSuccessfulSearchPayment()
+                        .withSettlementSummary(new SettlementSummary(DEFAULT_CAPTURE_SUBMIT_TIME,
+                                DEFAULT_CAPTURED_DATE, DEFAULT_SETTLED_DATE))
+                        .withNumberOfResults(1)
+                        .getResults())
+                .build();
+        ledgerMockClient.respondOk_whenSearchCharges(payments);
+
+        searchPayments(Map.of()).statusCode(200)
+                .contentType(JSON).log().body()
+                .body("results[0].settlement_summary.settled_date", is(DEFAULT_SETTLED_DATE))
+                .body("results[0].settlement_summary.captured_date", is(DEFAULT_CAPTURED_DATE))
+                .body("results[0].settlement_summary.capture_submit_time", is(DEFAULT_CAPTURE_SUBMIT_TIME));
     }
 
     private Matcher<? super List<Map<String, Object>>> matchesState(final String state) {
