@@ -3,6 +3,7 @@ package uk.gov.pay.api.model.ledger;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import uk.gov.pay.api.model.SettlementSummary;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -16,6 +17,7 @@ public class RefundTransactionFromLedger {
     String transactionId;
     String parentTransactionId;
     TransactionState state;
+    SettlementSummary settlementSummary;
 
     public Long getAmount() {
         return amount;
@@ -47,5 +49,9 @@ public class RefundTransactionFromLedger {
 
     public TransactionState getState() {
         return state;
+    }
+
+    public SettlementSummary getSettlementSummary() {
+        return settlementSummary;
     }
 }

@@ -30,6 +30,8 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.ACCEPTED;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
@@ -60,7 +62,8 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
     public void getRefundByIdThroughConnector_shouldGetValidResponse() {
         connectorMockClient.respondWithGetRefundById(GATEWAY_ACCOUNT_ID, CHARGE_ID, REFUND_ID, AMOUNT, REFUND_AMOUNT_AVAILABLE, "available", CREATED_DATE);
 
-        assertSingleRefund(getPaymentRefundByIdResponse(CHARGE_ID, REFUND_ID));
+        assertSingleRefund(getPaymentRefundByIdResponse(CHARGE_ID, REFUND_ID))
+        .body("$", hasKey("settlement_summary"));
     }
 
     @Test
@@ -73,11 +76,27 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
                 .withCreatedDate(CREATED_DATE)
                 .build());
 
-        assertSingleRefund(getPaymentRefundByIdResponse(CHARGE_ID, REFUND_ID, "ledger-only"));
+        assertSingleRefund(getPaymentRefundByIdResponse(CHARGE_ID, REFUND_ID, "ledger-only"))
+        .body("$", hasKey("settlement_summary"));
     }
 
-    private void assertSingleRefund(ValidatableResponse paymentRefundByIdResponse) {
-        paymentRefundByIdResponse
+    @Test
+    public void getRefundByIdThroughLedger_shouldGetSettlementSummary() {
+        ledgerMockClient.respondWithRefund(REFUND_ID, aRefundTransactionFromLedgerFixture()
+                .withAmount((long) AMOUNT)
+                .withState(new TransactionState("available", false))
+                .withParentTransactionId(CHARGE_ID)
+                .withTransactionId(REFUND_ID)
+                .withCreatedDate(CREATED_DATE)
+                .withSettlementSummary(ISO_INSTANT_MILLISECOND_PRECISION.format(TIMESTAMP))
+                .build());
+
+        ValidatableResponse response = getPaymentRefundByIdResponse(CHARGE_ID, REFUND_ID, "ledger-only");
+        response.body("settlement_summary.settled_date", is(ISO_INSTANT_MILLISECOND_PRECISION.format(TIMESTAMP)));
+    }
+
+    private ValidatableResponse assertSingleRefund(ValidatableResponse paymentRefundByIdResponse) {
+        return paymentRefundByIdResponse
                 .statusCode(200)
                 .contentType(JSON)
                 .body("refund_id", is(REFUND_ID))
@@ -85,7 +104,8 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
                 .body("status", is("available"))
                 .body("created_date", is(CREATED_DATE))
                 .body("_links.self.href", is(paymentRefundLocationFor(CHARGE_ID, REFUND_ID)))
-                .body("_links.payment.href", is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)));
+                .body("_links.payment.href", is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)))
+                .body("settlement_summary", not(hasKey("settled_date")));
     }
 
     @Test
@@ -169,6 +189,34 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
         ledgerMockClient.respondWithGetAllRefunds(CHARGE_ID, refund1, refund2);
 
         assertRefundsResponse(getPaymentRefundsResponse(CHARGE_ID, "ledger-only"));
+    }
+
+    @Test
+    public void getRefundsThroughLedger_shouldGetSettlementSummary() {
+        RefundTransactionFromLedgerFixture refund1 = aRefundTransactionFromLedgerFixture()
+                .withAmount(100L)
+                .withCreatedDate(CREATED_DATE)
+                .withTransactionId("100")
+                .withState(new TransactionState("available", false))
+                .withSettlementSummary(CREATED_DATE)
+                .build();
+
+        RefundTransactionFromLedgerFixture refund2 = aRefundTransactionFromLedgerFixture()
+                .withAmount(300L)
+                .withCreatedDate(CREATED_DATE)
+                .withTransactionId("300")
+                .withState(new TransactionState("pending", false))
+                .build();
+
+        ledgerMockClient.respondWithGetAllRefunds(CHARGE_ID, refund1, refund2);
+
+        getPaymentRefundsResponse(CHARGE_ID, "ledger-only")
+                .statusCode(200)
+                .contentType(JSON)
+                .body("_embedded.refunds[0].settlement_summary.settled_date", is(CREATED_DATE))
+                .body("_embedded.refunds[1].settlement_summary", not(hasKey("settled_date")));
+
+
     }
 
     private void assertRefundsResponse(ValidatableResponse paymentRefundsResponse) {
