@@ -150,4 +150,16 @@ public class GetPaymentServiceLedgerTest {
         assertThat(payment.getFee().get(), is(5L));
         assertThat(payment.getNetAmount().get(), is(95L));
     }
+
+    @Test
+    @PactVerification({"ledger"})
+    @Pacts(pacts = {"publicapi-ledger-get-payment-with-settled-date"})
+    public void testGetPaymentWithSettledDate() {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+
+        PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, "ch_123abc456settlement");
+        CardPayment payment = (CardPayment) paymentResponse.getPayment();
+        assertThat(payment.getSettlementSummary().isPresent(), is(true));
+        assertThat(payment.getSettlementSummary().get().getSettledDate(), is("2020-09-19"));
+    }
 }
