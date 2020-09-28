@@ -14,4 +14,6 @@ public class SearchConstants {
     public static final String TO_DATE_KEY = "to_date";
     public static final String PAGE = "page";
     public static final String DISPLAY_SIZE = "display_size";
+    public static final String FROM_SETTLED_DATE = "from_settled_date";
+    public static final String TO_SETTLED_DATE = "to_settled_date";
 }

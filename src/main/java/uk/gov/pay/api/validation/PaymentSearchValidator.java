@@ -21,8 +21,10 @@ import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 import static uk.gov.pay.api.validation.MaxLengthValidator.isInvalid;
 import static uk.gov.pay.api.validation.SearchValidator.validateDisplaySizeIfNotNull;
 import static uk.gov.pay.api.validation.SearchValidator.validateFromDate;
+import static uk.gov.pay.api.validation.SearchValidator.validateFromSettledDate;
 import static uk.gov.pay.api.validation.SearchValidator.validatePageIfNotNull;
 import static uk.gov.pay.api.validation.SearchValidator.validateToDate;
+import static uk.gov.pay.api.validation.SearchValidator.validateToSettledDate;
 
 
 public class PaymentSearchValidator {
@@ -40,7 +42,9 @@ public class PaymentSearchValidator {
         validateSearchParameters(account, searchParams.getState(), searchParams.getReference(),
                 searchParams.getEmail(), searchParams.getCardBrand(), searchParams.getFromDate(),
                 searchParams.getToDate(), searchParams.getPageNumber(), searchParams.getDisplaySize(),
-                searchParams.getAgreementId(), searchParams.getFirstDigitsCardNumber(), searchParams.getLastDigitsCardNumber());
+                searchParams.getAgreementId(), searchParams.getFirstDigitsCardNumber(),
+                searchParams.getLastDigitsCardNumber(), searchParams.getFromSettledDate(),
+                searchParams.getToSettledDate());
     }
 
     public static void validateSearchParameters(Account account,
@@ -54,7 +58,9 @@ public class PaymentSearchValidator {
                                                 String displaySize,
                                                 String mandate_id,
                                                 String firstDigitsCardNumber,
-                                                String lastDigitsCardNumber) {
+                                                String lastDigitsCardNumber,
+                                                String fromSettledDate,
+                                                String toSettledDate) {
         List<String> validationErrors = new LinkedList<>();
         try {
             validateState(account, state, validationErrors);
@@ -68,6 +74,8 @@ public class PaymentSearchValidator {
             validateMandateId(mandate_id, validationErrors);
             validateFirstDigitsCardNumber(firstDigitsCardNumber, validationErrors);
             validateLastDigitsCardNumber(lastDigitsCardNumber, validationErrors);
+            validateFromSettledDate(fromSettledDate, validationErrors);
+            validateToSettledDate(toSettledDate, validationErrors);
         } catch (Exception e) {
             throw new PaymentValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", "), e.getMessage()));
         }

@@ -72,7 +72,8 @@ public class TransactionSearchService {
         validateSearchParameters(null, searchParams.getState(), searchParams.getReference(),
                 searchParams.getEmail(), searchParams.getCardBrand(), searchParams.getFromDate(),
                 searchParams.getToDate(), searchParams.getPageNumber(), searchParams.getDisplaySize(),
-                null, searchParams.getFirstDigitsCardNumber(), searchParams.getLastDigitsCardNumber());
+                null, searchParams.getFirstDigitsCardNumber(), searchParams.getLastDigitsCardNumber(),
+                searchParams.getFromSettledDate(), searchParams.getToSettledDate());
         validateSupportedSearchParams(searchParams.getQueryMap());
 
         searchParams.setAccountId(account.getAccountId());

@@ -1,5 +1,6 @@
 package uk.gov.pay.api.validation;
 
+import uk.gov.pay.commons.validation.DateTimeUtils;
 import uk.gov.pay.commons.validation.DateValidator;
 
 import java.util.List;
@@ -29,6 +30,18 @@ class SearchValidator {
     static void validateFromDate(String fromDate, List<String> validationErrors) {
         if (!DateValidator.isValid(fromDate)) {
             validationErrors.add("from_date");
+        }
+    }
+
+    static void validateFromSettledDate(String fromSettledDate, List<String> validationErrors) {
+        if (isNotBlank(fromSettledDate) && !DateTimeUtils.fromLocalDateOnlyString(fromSettledDate).isPresent()) {
+            validationErrors.add("from_settled_date");
+        }
+    }
+
+    static void validateToSettledDate(String toSettledDate, List<String> validationErrors) {
+        if (isNotBlank(toSettledDate) && !DateTimeUtils.fromLocalDateOnlyString(toSettledDate).isPresent()) {
+            validationErrors.add("to_settled_date");
         }
     }
 }
