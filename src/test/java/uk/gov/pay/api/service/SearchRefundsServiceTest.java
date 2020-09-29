@@ -159,4 +159,19 @@ public class SearchRefundsServiceTest {
                 format("Invalid parameters: %s. See Public API documentation for the correct data formats",
                         "page, display_size")));
     }
+
+    @Test
+    @PactVerification({"ledger"})
+    @Pacts(pacts = {"publicapi-ledger-search-refunds_with_settled_dates"})
+    public void shouldReturnARefundWhenSearchingWithSettledDates() {
+        String accountId = "123456";
+        Account account = new Account(accountId, TokenPaymentType.CARD);
+        RefundsParams params = new RefundsParams(null, null, "1", "500", "2020-09-19", "2020-09-20");
+        SearchRefundsResults results = searchRefundsService.searchLedgerRefunds(account, params);
+        assertThat(results.getResults().size(), is(1));
+        assertThat(results.getCount(), is(1));
+        assertThat(results.getTotal(), is(1));
+        assertThat(results.getPage(), is(1));
+        assertThat(results.getResults().get(0).getSettlementSummary().getSettledDate(), is("2020-09-19"));
+    }
 }

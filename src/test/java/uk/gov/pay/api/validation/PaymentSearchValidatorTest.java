@@ -22,7 +22,8 @@ public class PaymentSearchValidatorTest {
     public void validateParams_shouldSuccessValidation() {
         PaymentSearchValidator.validateSearchParameters(account, "success", "ref", SUCCESSFUL_TEST_EMAIL,
                 "", "2016-01-25T13:23:55Z", "2016-01-25T13:23:55Z",
-                "1", "1", "", "424242", "4242");
+                "1", "1", "", "424242", "4242",
+                "2020-09-25", "2020-09-25");
     }
 
     @Test
@@ -30,7 +31,8 @@ public class PaymentSearchValidatorTest {
         PaymentValidationException paymentValidationException = assertThrows(PaymentValidationException.class,
                 () -> PaymentSearchValidator.validateSearchParameters(account, "success", randomAlphanumeric(500),
                         SUCCESSFUL_TEST_EMAIL, "", "2016-01-25T13:23:55Z", "2016-01-25T13:23:55Z",
-                        "1", "1", "", "424242", "4242"));
+                        "1", "1", "", "424242", "4242",
+                        "2020-09-25", "2020-09-25"));
         assertThat(paymentValidationException, aValidationExceptionContaining("P0401", "Invalid parameters: reference. See Public API documentation for the correct data formats"));
     }
 
@@ -39,7 +41,8 @@ public class PaymentSearchValidatorTest {
         PaymentValidationException paymentValidationException = assertThrows(PaymentValidationException.class,
                 () -> PaymentSearchValidator.validateSearchParameters(account, "success", "ref", UNSUCCESSFUL_TEST_EMAIL,
                         "", "2016-01-25T13:23:55Z", "2016-01-25T13:23:55Z",
-                        "1", "1", "", "424242", "4242"));
+                        "1", "1", "", "424242", "4242",
+                        "2020-09-25", "2020-09-25"));
         assertThat(paymentValidationException, aValidationExceptionContaining("P0401", "Invalid parameters: email. See Public API documentation for the correct data formats"));
     }
 
@@ -48,7 +51,8 @@ public class PaymentSearchValidatorTest {
         PaymentValidationException paymentValidationException = assertThrows(PaymentValidationException.class,
                 () -> PaymentSearchValidator.validateSearchParameters(account, "invalid", "ref", SUCCESSFUL_TEST_EMAIL,
                         "", "2016-01-25T13:23:55Z", "2016-01-25T13:23:55Z", "1",
-                        "1", "", "424242", "4242"));
+                        "1", "", "424242", "4242",
+                        "2020-09-25", "2020-09-25"));
         assertThat(paymentValidationException, aValidationExceptionContaining("P0401", "Invalid parameters: state. See Public API documentation for the correct data formats"));
     }
 
@@ -57,7 +61,8 @@ public class PaymentSearchValidatorTest {
         PaymentValidationException paymentValidationException = assertThrows(PaymentValidationException.class,
                 () -> PaymentSearchValidator.validateSearchParameters(account, "success", "ref", SUCCESSFUL_TEST_EMAIL,
                         "", "2016-01-25T13:23:55Z", "2016-01-25T13-23:55Z",
-                        "1", "1", "", "424242", "4242"));
+                        "1", "1", "", "424242", "4242",
+                        "2020-09-25", "2020-09-25"));
         assertThat(paymentValidationException, aValidationExceptionContaining("P0401", "Invalid parameters: to_date. See Public API documentation for the correct data formats"));
     }
 
@@ -66,7 +71,8 @@ public class PaymentSearchValidatorTest {
         PaymentValidationException paymentValidationException = assertThrows(PaymentValidationException.class,
                 () -> PaymentSearchValidator.validateSearchParameters(account, "success", "ref", SUCCESSFUL_TEST_EMAIL,
                         "", "2016-01-25T13-23:55Z", "2016-01-25T13:23:55Z",
-                        "1", "1", "", "424242", "4242"));
+                        "1", "1", "", "424242", "4242",
+                        "2020-09-25", "2020-09-25"));
         assertThat(paymentValidationException,
                 aValidationExceptionContaining("P0401", "Invalid parameters: from_date. See Public API documentation for the correct data formats"));
     }
@@ -76,7 +82,8 @@ public class PaymentSearchValidatorTest {
         PaymentValidationException paymentValidationException = assertThrows(PaymentValidationException.class,
                 () -> PaymentSearchValidator.validateSearchParameters(account, "invalid", randomAlphanumeric(500), UNSUCCESSFUL_TEST_EMAIL,
                         "", "2016-01-25T13-23:55Z", "2016-01-25T13-23:55Z",
-                        "-1", "-1", INVALID_LENGTH_AGREEMENT, "424242", "4242"));
+                        "-1", "-1", INVALID_LENGTH_AGREEMENT,
+                        "424242", "4242", "2020-09-25", "2020-09-25"));
         assertThat(paymentValidationException, aValidationExceptionContaining("P0401", "Invalid parameters: state, reference, email, from_date, to_date, page, display_size, mandate_id. See Public API documentation for the correct data formats"));
     }
 
@@ -85,7 +92,8 @@ public class PaymentSearchValidatorTest {
         PaymentValidationException paymentValidationException = assertThrows(PaymentValidationException.class,
                 () -> PaymentSearchValidator.validateSearchParameters(account, "invalid", randomAlphanumeric(500), UNSUCCESSFUL_TEST_EMAIL,
                         "", "2016-01-25T13-23:55Z", "2016-01-25T13-23:55Z",
-                        "0", "0", "", "424242", "4242"));
+                        "0", "0", "", "424242", "4242",
+                        "2020-09-25", "2020-09-25"));
         assertThat(paymentValidationException, aValidationExceptionContaining("P0401", "Invalid parameters: state, reference, email, from_date, to_date, page, display_size. See Public API documentation for the correct data formats"));
     }
 
@@ -94,7 +102,8 @@ public class PaymentSearchValidatorTest {
         PaymentValidationException paymentValidationException = assertThrows(PaymentValidationException.class,
                 () -> PaymentSearchValidator.validateSearchParameters(account, "invalid", randomAlphanumeric(500), UNSUCCESSFUL_TEST_EMAIL,
                         "", "2016-01-25T13-23:55Z", "2016-01-25T13-23:55Z",
-                        String.valueOf(Integer.MAX_VALUE + 1), String.valueOf(Integer.MAX_VALUE + 1), "", "424242", "4242"));
+                        String.valueOf(Integer.MAX_VALUE + 1), String.valueOf(Integer.MAX_VALUE + 1), "", "424242", "4242",
+                        "2020-09-25", "2020-09-25"));
         assertThat(paymentValidationException, aValidationExceptionContaining("P0401",
                 "Invalid parameters: state, reference, email, from_date, to_date, page, display_size. See Public API documentation for the correct data formats"));
     }
@@ -104,7 +113,7 @@ public class PaymentSearchValidatorTest {
         PaymentValidationException paymentValidationException = assertThrows(PaymentValidationException.class,
                 () -> PaymentSearchValidator.validateSearchParameters(account, "invalid", randomAlphanumeric(500), UNSUCCESSFUL_TEST_EMAIL,
                         "", "2016-01-25T13-23:55Z", "2016-01-25T13-23:55Z",
-                        null, null, "", "424242", "4242"));
+                        null, null, "", "424242", "4242", "2020-09-25", "2020-09-25"));
         assertThat(paymentValidationException,
                 aValidationExceptionContaining("P0401", "Invalid parameters: state, reference, email, from_date, to_date. See Public API documentation for the correct data formats"));
     }
@@ -114,7 +123,8 @@ public class PaymentSearchValidatorTest {
         PaymentValidationException paymentValidationException = assertThrows(PaymentValidationException.class,
                 () -> PaymentSearchValidator.validateSearchParameters(account, "invalid", randomAlphanumeric(500), UNSUCCESSFUL_TEST_EMAIL,
                         "", "2016-01-25T13-23:55Z", "2016-01-25T13-23:55Z",
-                        "0", "501", "", "424242", "4242"));
+                        "0", "501", "", "424242", "4242",
+                        "2020-09-25", "2020-09-25"));
         assertThat(paymentValidationException,
                 aValidationExceptionContaining("P0401", "Invalid parameters: state, reference, email, from_date, to_date, page, display_size. See Public API documentation for the correct data formats"));
     }
@@ -124,7 +134,8 @@ public class PaymentSearchValidatorTest {
         PaymentValidationException paymentValidationException = assertThrows(PaymentValidationException.class,
                 () -> PaymentSearchValidator.validateSearchParameters(account, "invalid", randomAlphanumeric(500), UNSUCCESSFUL_TEST_EMAIL,
                         "", "2016-01-25T13-23:55Z", "2016-01-25T13-23:55Z",
-                        "non-numeric-page", "non-numeric-size", "", "424242", "4242"));
+                        "non-numeric-page", "non-numeric-size", "", "424242", "4242",
+                        "2020-09-25", "2020-09-25"));
         assertThat(paymentValidationException,
                 aValidationExceptionContaining("P0401", "Invalid parameters: state, reference, email, from_date, to_date, page, display_size. See Public API documentation for the correct data formats"));
     }
@@ -134,7 +145,8 @@ public class PaymentSearchValidatorTest {
         PaymentValidationException paymentValidationException = assertThrows(PaymentValidationException.class,
                 () -> PaymentSearchValidator.validateSearchParameters(account, "success", "ref", SUCCESSFUL_TEST_EMAIL,
                         UNSUCCESSFUL_TEST_CARD_BRAND, "2016-01-25T13:23:55Z", "2016-01-25T13:23:55Z",
-                        "1", "1", "", "424242", "4242"));
+                        "1", "1", "", "424242", "4242",
+                        "2020-09-25", "2020-09-25"));
         assertThat(paymentValidationException,
                 aValidationExceptionContaining("P0401", "Invalid parameters: card_brand. See Public API documentation for the correct data formats"));
     }
@@ -144,7 +156,7 @@ public class PaymentSearchValidatorTest {
         PaymentValidationException paymentValidationException = assertThrows(PaymentValidationException.class,
                 () -> PaymentSearchValidator.validateSearchParameters(account, "", "", "",
                         "", "", "",
-                        "", "", INVALID_LENGTH_AGREEMENT, "424242", "4242"));
+                        "", "", INVALID_LENGTH_AGREEMENT, "424242", "4242", null, null));
         assertThat(paymentValidationException,
                 aValidationExceptionContaining("P0401", "Invalid parameters: mandate_id. See Public API documentation for the correct data formats"));
     }
@@ -154,7 +166,8 @@ public class PaymentSearchValidatorTest {
         PaymentValidationException paymentValidationException = assertThrows(PaymentValidationException.class,
                 () -> PaymentSearchValidator.validateSearchParameters(account, "pending", "", "",
                         "", "", "",
-                        "", "", "", "424242", "4242"));
+                        "", "", "", "424242",
+                        "4242", "2020-09-25", "2020-09-25"));
         assertThat(paymentValidationException,
                 aValidationExceptionContaining("P0401", "Invalid parameters: state. See Public API documentation for the correct data formats"));
     }
@@ -165,7 +178,7 @@ public class PaymentSearchValidatorTest {
                 () -> PaymentSearchValidator.validateSearchParameters(new Account("an account", TokenPaymentType.DIRECT_DEBIT),
                         "created", "", "",
                         "", "", "",
-                        "", "", "", "", ""));
+                        "", "", "", "", "", "", ""));
         assertThat(paymentValidationException,
                 aValidationExceptionContaining("P0401", "Invalid parameters: state. See Public API documentation for the correct data formats"));
     }
@@ -176,7 +189,7 @@ public class PaymentSearchValidatorTest {
                 () -> PaymentSearchValidator.validateSearchParameters(account,
                         "created", "", "",
                         "", "", "",
-                        "", "", "", "424", ""));
+                        "", "", "", "424", "", "", ""));
         assertThat(paymentValidationException, aValidationExceptionContaining("P0401",
                 "Invalid parameters: first_digits_card_number. See Public API documentation for the correct data formats"));
     }
@@ -187,7 +200,7 @@ public class PaymentSearchValidatorTest {
                 () -> PaymentSearchValidator.validateSearchParameters(account,
                         "", "", "",
                         "", "", "",
-                        "", "", "", "42424b", ""));
+                        "", "", "", "42424b", "", "", ""));
         assertThat(paymentValidationException, aValidationExceptionContaining("P0401",
                 "Invalid parameters: first_digits_card_number. See Public API documentation for the correct data formats"));
     }
@@ -198,7 +211,7 @@ public class PaymentSearchValidatorTest {
                 () -> PaymentSearchValidator.validateSearchParameters(account,
                         "", "", "",
                         "", "", "",
-                        "", "", "", "-42422", ""));
+                        "", "", "", "-42422", "", "", ""));
         assertThat(paymentValidationException, aValidationExceptionContaining("P0401",
                 "Invalid parameters: first_digits_card_number. See Public API documentation for the correct data formats"));
     }
@@ -209,7 +222,7 @@ public class PaymentSearchValidatorTest {
                 () -> PaymentSearchValidator.validateSearchParameters(account,
                         "", "", "",
                         "", "", "",
-                        "", "", "", "१२३१२३", ""));
+                        "", "", "", "१२३१२३", "", "", ""));
         assertThat(paymentValidationException, aValidationExceptionContaining("P0401",
                 "Invalid parameters: first_digits_card_number. See Public API documentation for the correct data formats"));
     }
@@ -220,7 +233,7 @@ public class PaymentSearchValidatorTest {
                 () -> PaymentSearchValidator.validateSearchParameters(account,
                         "", "", "",
                         "", "", "",
-                        "", "", "", "", "422"));
+                        "", "", "", "", "422", "", ""));
         assertThat(paymentValidationException, aValidationExceptionContaining("P0401",
                 "Invalid parameters: last_digits_card_number. See Public API documentation for the correct data formats"));
     }
@@ -231,7 +244,9 @@ public class PaymentSearchValidatorTest {
                 () -> PaymentSearchValidator.validateSearchParameters(account,
                         "", "", "",
                         "", "", "",
-                        "", "", "", "", "422a"));
+                        "", "", "",
+                        "", "422a",
+                        "", ""));
         assertThat(paymentValidationException, aValidationExceptionContaining("P0401",
                 "Invalid parameters: last_digits_card_number. See Public API documentation for the correct data formats"));
     }
@@ -242,7 +257,9 @@ public class PaymentSearchValidatorTest {
                 () -> PaymentSearchValidator.validateSearchParameters(account,
                         "", "", "",
                         "", "", "",
-                        "", "", "", "", "-433"));
+                        "", "", "",
+                        "", "-433",
+                        "", ""));
         assertThat(paymentValidationException, aValidationExceptionContaining("P0401",
                 "Invalid parameters: last_digits_card_number. See Public API documentation for the correct data formats"));
     }
@@ -253,7 +270,20 @@ public class PaymentSearchValidatorTest {
                 () -> PaymentSearchValidator.validateSearchParameters(account,
                         "", "", "",
                         "", "", "",
-                        "", "", "", "", "१२३२"));
+                        "", "", "",
+                        "", "१२३२",
+                        "", ""));
         assertThat(paymentValidationException, aValidationExceptionContaining("P0401", "Invalid parameters: last_digits_card_number. See Public API documentation for the correct data formats"));
+    }
+
+    @Test
+    public void validateDateParams_shouldGiveAnError_forNonISO_8601Dates() {
+        PaymentValidationException paymentValidationException = assertThrows(PaymentValidationException.class,
+                () -> PaymentSearchValidator.validateSearchParameters(account,
+                        "", "", "",
+                        "", "", "",
+                        "", "", "", "", "",
+                        "2020.09.25", "2020-09-25T10:35:00"));
+        assertThat(paymentValidationException, aValidationExceptionContaining("P0401", "Invalid parameters: from_settled_date, to_settled_date. See Public API documentation for the correct data formats"));
     }
 }

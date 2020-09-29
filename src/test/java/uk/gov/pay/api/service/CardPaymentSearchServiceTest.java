@@ -177,4 +177,26 @@ public class CardPaymentSearchServiceTest {
         
         assertThat(searchPaymentsException, hasProperty("errorStatus", is(404)));
     }
+
+    @Test
+    @PactVerification({"ledger"})
+    @Pacts(pacts = ("publicapi-ledger-search-payments-with-settled_dates"))
+    public void shouldReturnAPaymentWhenSearchedBySettledDates() {
+        String accountId = "123456";
+        Account account = new Account(accountId, TokenPaymentType.CARD);
+        var searchParams = new PaymentSearchParams.Builder()
+                .withFromSettledDate("2020-09-19")
+                .withToSettledDate("2020-09-20")
+                .withDisplaySize("500")
+                .withPageNumber("1")
+                .build();
+        Response response = paymentSearchService.searchLedgerPayments(account, searchParams);
+        JsonAssert.with(response.getEntity().toString())
+                .assertThat("count", is(1))
+                .assertThat("total", is(1))
+                .assertThat("page", is(1))
+                .assertThat("results", hasSize(equalTo(1)))
+                .assertThat("results[0].settlement_summary", hasKey("settled_date"))
+                .assertThat("results[0].settlement_summary.settled_date", is("2020-09-19"));
+    }
 }

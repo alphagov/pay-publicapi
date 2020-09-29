@@ -269,17 +269,22 @@ public class PaymentsResource {
                                    @QueryParam("cardholder_name") String cardHolderName,
                                    @ApiParam(value = "First six digits of the card used to make payment")
                                    @Parameter(description = "First six digits of the card used to make payment")
-
                                    @QueryParam("first_digits_card_number") String firstDigitsCardNumber,
                                    @ApiParam(value = "Last four digits of the card used to make payment", hidden = false)
                                    @Parameter(description = "Last four digits of the card used to make payment", hidden = false)
-
                                    @QueryParam("last_digits_card_number") String lastDigitsCardNumber,
+                                   @ApiParam(hidden = true)
+                                   @QueryParam("from_settled_date") String fromSettledDate,
+                                   @ApiParam(hidden = true)
+                                   @QueryParam("to_settled_date") String toSettledDate,
                                    @Context UriInfo uriInfo) {
 
         logger.info("Payments search request - [ {} ]",
-                format("reference:%s, email: %s, status: %s, card_brand %s, fromDate: %s, toDate: %s, page: %s, display_size: %s, agreement_id: %s, cardholder_name: %s, first_digits_card_number: %s, last_digits_card_number: %s",
-                        reference, email, state, cardBrand, fromDate, toDate, pageNumber, displaySize, agreementId, cardHolderName, firstDigitsCardNumber, lastDigitsCardNumber));
+                format("reference:%s, email: %s, status: %s, card_brand %s, fromDate: %s, toDate: %s, page: %s, " +
+                                "display_size: %s, agreement_id: %s, cardholder_name: %s, first_digits_card_number: %s, " +
+                                "last_digits_card_number: %s, from_settled_date: %s, to_settled_date: %s",
+                        reference, email, state, cardBrand, fromDate, toDate, pageNumber, displaySize, agreementId,
+                        cardHolderName, firstDigitsCardNumber, lastDigitsCardNumber, fromSettledDate, toSettledDate));
 
         var paymentSearchParams = new PaymentSearchParams.Builder()
                 .withReference(reference)
@@ -294,6 +299,8 @@ public class PaymentsResource {
                 .withCardHolderName(cardHolderName)
                 .withFirstDigitsCardNumber(firstDigitsCardNumber)
                 .withLastDigitsCardNumber(lastDigitsCardNumber)
+                .withFromSettledDate(fromSettledDate)
+                .withToSettledDate(toSettledDate)
                 .build();
 
         return paymentSearchService.searchLedgerPayments(account, paymentSearchParams);

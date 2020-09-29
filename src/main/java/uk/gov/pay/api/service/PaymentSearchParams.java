@@ -18,6 +18,8 @@ public class PaymentSearchParams {
     public static final String TO_DATE_KEY = "to_date";
     public static final String PAGE = "page";
     public static final String DISPLAY_SIZE = "display_size";
+    public static final String FROM_SETTLED_DATE = "from_settled_date";
+    public static final String TO_SETTLED_DATE = "to_settled_date";
 
     private String reference;
     private String email;
@@ -31,6 +33,8 @@ public class PaymentSearchParams {
     private String cardHolderName;
     private String firstDigitsCardNumber;
     private String lastDigitsCardNumber;
+    private String fromSettledDate;
+    private String toSettledDate;
 
     public PaymentSearchParams(Builder builder) {
         this.reference = builder.reference;
@@ -45,6 +49,8 @@ public class PaymentSearchParams {
         this.cardHolderName = builder.cardHolderName;
         this.firstDigitsCardNumber = builder.firstDigitsCardNumber;
         this.lastDigitsCardNumber = builder.lastDigitsCardNumber;
+        this.fromSettledDate = builder.fromSettledDate;
+        this.toSettledDate = builder.toSettledDate;
     }
 
     public Map<String, String> getParamsAsMap() {
@@ -60,6 +66,8 @@ public class PaymentSearchParams {
         params.put(TO_DATE_KEY, toDate);
         params.put(PAGE, pageNumber);
         params.put(DISPLAY_SIZE, displaySize);
+        params.put(FROM_SETTLED_DATE, fromSettledDate);
+        params.put(TO_SETTLED_DATE, toSettledDate);
 
         return params;
     }
@@ -108,6 +116,14 @@ public class PaymentSearchParams {
         return lastDigitsCardNumber;
     }
 
+    public String getFromSettledDate() {
+        return fromSettledDate;
+    }
+
+    public String getToSettledDate() {
+        return toSettledDate;
+    }
+
     public static class Builder {
         private String reference;
         private String email;
@@ -121,6 +137,8 @@ public class PaymentSearchParams {
         private String cardHolderName;
         private String firstDigitsCardNumber;
         private String lastDigitsCardNumber;
+        private String fromSettledDate;
+        private String toSettledDate;
 
         public Builder() {
         }
@@ -191,6 +209,16 @@ public class PaymentSearchParams {
 
         public Builder withLastDigitsCardNumber(String lastDigitsCardNumber) {
             this.lastDigitsCardNumber = lastDigitsCardNumber;
+            return this;
+        }
+
+        public Builder withFromSettledDate(String fromSettledDate) {
+            this.fromSettledDate = fromSettledDate;
+            return this;
+        }
+
+        public Builder withToSettledDate(String toSettledDate) {
+            this.toSettledDate = toSettledDate;
             return this;
         }
     }
