@@ -1,11 +1,13 @@
 package uk.gov.pay.api.model.search.card;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.pay.api.model.links.SearchNavigationLinks;
 import uk.gov.pay.api.model.search.SearchPagination;
 
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PaymentSearchResponse<T> implements SearchPagination {
 
     @JsonProperty("total")

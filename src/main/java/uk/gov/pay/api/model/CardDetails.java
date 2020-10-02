@@ -1,5 +1,6 @@
 package uk.gov.pay.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
@@ -14,6 +15,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 @JsonInclude(ALWAYS)
 @ApiModel(value = "CardDetails", description = "A structure representing the payment card")
 @Schema(name = "CardDetails", description = "A structure representing the payment card")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CardDetails {
 
     @JsonProperty("last_digits_card_number")
