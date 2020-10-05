@@ -29,6 +29,7 @@ In order to work around this issue we could either:
 2. use lettuce-core directly
 
 | Option  | Pros | Cons |
+|---------|---------|---------|
 | adapt   | use common component; metrics instrumentation | Hard to do? |
 | use lettuce-core directly | simpler; not hard; we don't need the extra features of dropwizard-redis; we don't need healthchecks because redis is optional | |
 
