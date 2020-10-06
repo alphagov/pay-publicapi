@@ -48,6 +48,7 @@ public class SearchRefundsResourceIT extends PaymentResourceITestBase {
                 .withAmount(300L)
                 .withCreatedDate(CREATED_DATE)
                 .withTransactionId("300")
+                .withSettlementSummary("2020-10-06")
                 .withParentTransactionId(CHARGE_ID)
                 .withState(new TransactionState("pending", false))
                 .build();
@@ -72,6 +73,7 @@ public class SearchRefundsResourceIT extends PaymentResourceITestBase {
                 .body("results[1].payment_id", is("ch_ab2341da231434l"))
                 .body("results[1].amount", is(300))
                 .body("results[1].status", is("pending"))
+                .body("results[1].settlement_summary.settled_date", is("2020-10-06"))
                 .body("results[1]._links.self.href", is(paymentRefundLocationFor(CHARGE_ID, "300")))
                 .body("results[1]._links.payment.href", is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)))
                 .body("_links.first_page.href", is("http://publicapi.url/v1/refunds?page=1"))

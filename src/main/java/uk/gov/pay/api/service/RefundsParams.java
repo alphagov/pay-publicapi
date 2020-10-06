@@ -22,11 +22,8 @@ public class RefundsParams {
     private String fromSettledDate;
     private String toSettledDate;
 
-    public RefundsParams(String fromDate, String toDate, String page, String displaySize) {
-        this(fromDate, toDate, page, displaySize, null, null);
-    }
-
-    public RefundsParams(String fromDate, String toDate, String page, String displaySize, String fromSettledDate, String toSettledDate) {
+    public RefundsParams(String fromDate, String toDate, String page,
+                         String displaySize, String fromSettledDate, String toSettledDate) {
         this.fromDate = fromDate;
         this.toDate = toDate;
         this.page = page;
@@ -61,5 +58,13 @@ public class RefundsParams {
 
     public String getToDate() {
         return toDate;
+    }
+
+    public String getFromSettledDate() {
+        return fromSettledDate;
+    }
+
+    public String getToSettledDate() {
+        return toSettledDate;
     }
 }
