@@ -61,7 +61,7 @@ public class SearchRefundsServiceTest {
     public void getSearchResponse_shouldThrowRefundsValidationExceptionWhenParamsAreInvalid() {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
         String invalid = "invalid_param";
-        RefundsParams params = new RefundsParams(null, null, invalid, invalid);
+        RefundsParams params = new RefundsParams(null, null, invalid, invalid, null, null);
 
         RefundsValidationException refundsValidationException = assertThrows(RefundsValidationException.class,
                 () -> searchRefundsService.searchLedgerRefunds(account, params));
@@ -76,7 +76,7 @@ public class SearchRefundsServiceTest {
     @PactVerification({"ledger"})
     @Pacts(pacts = {"publicapi-ledger-search-refunds"})
     public void getAllRefundsShouldReturnFromLedger() {
-        RefundsParams params = new RefundsParams("2018-09-21T13:22:55Z", "2018-10-23T13:24:55Z", "1", "500");
+        RefundsParams params = new RefundsParams("2018-09-21T13:22:55Z", "2018-10-23T13:24:55Z", "1", "500", null, null);
         String accountId = "777";
         String refundId1 = "111111";
         String refundId2 = "222222";
@@ -112,7 +112,7 @@ public class SearchRefundsServiceTest {
     public void shouldSearchForAllExistingRefundsWithDisplaySizeTwo() {
         String accountId = "777";
         Account account = new Account(accountId, TokenPaymentType.CARD);
-        RefundsParams params = new RefundsParams(null, null, "1", "2");
+        RefundsParams params = new RefundsParams(null, null, "1", "2", null, null);
         SearchRefundsResults results = searchRefundsService.searchLedgerRefunds(account, params);
         assertThat(results.getResults().size(), is(2));
         assertThat(results.getCount(), is(2));
@@ -125,7 +125,7 @@ public class SearchRefundsServiceTest {
     @Pacts(pacts = {"publicapi-ledger-search-refunds-with-page-and-display-when-no-refunds-exist"})
     public void getAllRefundsShouldReturnNoRefundsFromLedgerWhenThereAreNone() {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
-        RefundsParams params = new RefundsParams(null, null, "1", "1");
+        RefundsParams params = new RefundsParams(null, null, "1", "1", null, null);
         SearchRefundsResults results = searchRefundsService.searchLedgerRefunds(account, params);
         assertThat(results.getCount(), is(0));
         assertThat(results.getTotal(), is(0));
@@ -137,7 +137,7 @@ public class SearchRefundsServiceTest {
     @Pacts(pacts = {"publicapi-ledger-search-refunds-page-not-found"})
     public void shouldReturn404WhenSearchingWithNonExistentPageNumber() {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
-        RefundsParams params = new RefundsParams(null, null, "999", "500");
+        RefundsParams params = new RefundsParams(null, null, "999", "500", null, null);
 
         SearchRefundsException searchRefundsException = assertThrows(SearchRefundsException.class,
                 () -> searchRefundsService.searchLedgerRefunds(account, params));
@@ -149,7 +149,7 @@ public class SearchRefundsServiceTest {
     public void getSearchResponseFromLedger_shouldThrowRefundsValidationExceptionWhenParamsAreInvalid() {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
         String invalid = "invalid_param";
-        RefundsParams params = new RefundsParams(null, null, invalid, invalid);
+        RefundsParams params = new RefundsParams(null, null, invalid, invalid, null, null);
 
         RefundsValidationException refundsValidationException = assertThrows(RefundsValidationException.class,
                 () -> searchRefundsService.searchLedgerRefunds(account, params));

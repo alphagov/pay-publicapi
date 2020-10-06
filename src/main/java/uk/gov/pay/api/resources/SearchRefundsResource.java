@@ -91,6 +91,10 @@ public class SearchRefundsResource {
                                   @ApiParam(value = "To date of refunds to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z", hidden = false)
                                   @QueryParam("to_date") String toDate,
                                   @Parameter(description = "Page number requested for the search, should be a positive integer (optional, defaults to 1)")
+                                  @ApiParam(hidden = true)
+                                  @QueryParam("from_settled_date") String fromSettledDate,
+                                  @ApiParam(hidden = true)
+                                  @QueryParam("to_settled_date") String toSettledDate,
                                   @ApiParam(value = "Page number requested for the search, should be a positive integer (optional, defaults to 1)", hidden = false)
                                   @QueryParam("page") String pageNumber,
                                   @Parameter(description = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)", hidden = false)
@@ -98,10 +102,12 @@ public class SearchRefundsResource {
                                   @QueryParam("display_size") String displaySize) {
 
         logger.info("Refunds search request - [ {} ]",
-                format("from_date: %s, to_date: %s, page: %s, display_size: %s",
-                        fromDate, toDate, pageNumber, displaySize));
+                format("from_date: %s, to_date: %s, page: %s, display_size: %s," +
+                                "from_settled_date: %s, to_settled_date: %s",
+                        fromDate, toDate, pageNumber, displaySize, fromSettledDate, toSettledDate));
 
-        RefundsParams refundsParams = new RefundsParams(fromDate, toDate, pageNumber, displaySize);
+        RefundsParams refundsParams = new RefundsParams(fromDate, toDate, pageNumber, displaySize,
+                fromSettledDate, toSettledDate);
 
         return searchRefundsService.searchLedgerRefunds(account, refundsParams);
     }
