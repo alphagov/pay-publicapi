@@ -273,9 +273,11 @@ public class PaymentsResource {
                                    @ApiParam(value = "Last four digits of the card used to make payment", hidden = false)
                                    @Parameter(description = "Last four digits of the card used to make payment", hidden = false)
                                    @QueryParam("last_digits_card_number") String lastDigitsCardNumber,
-                                   @ApiParam(hidden = true)
+                                   @Parameter(description = "From settled date of payment to be searched (this date is inclusive). Example=2015-08-13")
+                                   @ApiParam("From settled date of payment to be searched (this date is inclusive). Example=2015-08-13")
                                    @QueryParam("from_settled_date") String fromSettledDate,
-                                   @ApiParam(hidden = true)
+                                   @Parameter(description = "To settled date of payment to be searched (this date is inclusive). Example=2015-08-14")
+                                   @ApiParam("To settled date of payment to be searched (this date is inclusive). Example=2015-08-14")
                                    @QueryParam("to_settled_date") String toSettledDate,
                                    @Context UriInfo uriInfo) {
 

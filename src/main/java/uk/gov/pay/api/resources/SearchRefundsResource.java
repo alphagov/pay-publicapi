@@ -90,11 +90,13 @@ public class SearchRefundsResource {
                                   @Parameter(description = "To date of refunds to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z")
                                   @ApiParam(value = "To date of refunds to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z", hidden = false)
                                   @QueryParam("to_date") String toDate,
-                                  @Parameter(description = "Page number requested for the search, should be a positive integer (optional, defaults to 1)")
-                                  @ApiParam(hidden = true)
+                                  @Parameter(description = "From settled date of refund to be searched (this date is inclusive). Example=2015-08-13")
+                                  @ApiParam("From settled date of refund to be searched (this date is inclusive). Example=2015-08-13")
                                   @QueryParam("from_settled_date") String fromSettledDate,
-                                  @ApiParam(hidden = true)
+                                  @Parameter(description = "To settled date of refund to be searched (this date is inclusive). Example=2015-08-13")
+                                  @ApiParam("To settled date of refund to be searched (this date is inclusive). Example=2015-08-13")
                                   @QueryParam("to_settled_date") String toSettledDate,
+                                  @Parameter(description = "Page number requested for the search, should be a positive integer (optional, defaults to 1)")
                                   @ApiParam(value = "Page number requested for the search, should be a positive integer (optional, defaults to 1)", hidden = false)
                                   @QueryParam("page") String pageNumber,
                                   @Parameter(description = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)", hidden = false)

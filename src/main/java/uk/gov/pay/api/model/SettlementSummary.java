@@ -21,6 +21,7 @@ public class SettlementSummary {
     @JsonProperty("captured_date")
     private String capturedDate;
 
+    @JsonProperty("settled_date")
     private String settledDate;
 
     public SettlementSummary() {}
@@ -31,23 +32,22 @@ public class SettlementSummary {
         this.settledDate = settledDate;
     }
 
-    @ApiModelProperty(value = "Date and time capture request has been submitted (may be null if capture request was not immediately acknowledged by payment gateway)", example = "2016-01-21T17:15:000Z")
-    @Schema(description = "Date and time capture request has been submitted (may be null if capture request was not immediately acknowledged by payment gateway)", 
+    @ApiModelProperty(value = "Date and time capture request has been submitted. May be null if capture request was not immediately acknowledged by payment gateway. Not applicable for refunds.", example = "2016-01-21T17:15:000Z")
+    @Schema(description = "Date and time capture request has been submitted. May be null if capture request was not immediately acknowledged by payment gateway. Not applicable for refunds.",
             example = "2016-01-21T17:15:000Z", accessMode = READ_ONLY)
     public String getCaptureSubmitTime() {
         return captureSubmitTime;
     }
 
-    @ApiModelProperty(value = "Date of the capture event", example = "2016-01-21")
-    @Schema(description = "Date of the capture event", example = "2016-01-21", accessMode = READ_ONLY)
+    @ApiModelProperty(value = "Date of the capture event. Not applicable for refunds.", example = "2016-01-21")
+    @Schema(description = "Date of the capture event. Not applicable for refunds.", example = "2016-01-21", accessMode = READ_ONLY)
     public String getCapturedDate() {
         return capturedDate;
     }
 
-    @JsonProperty("settled_date")
-    @ApiModelProperty(value = "The date that the transaction was settled, for example paid into or refunded from the service's account", example = "2016-01-21", hidden = true)
-    @Schema(description = "The date that the transaction was settled, for example paid into or refunded from the service's account", example = "2016-01-21",
-            accessMode = READ_ONLY, hidden = true)
+    @ApiModelProperty(value = "The date that the transaction was settled, for example paid into or refunded from the service's account.", example = "2016-01-21")
+    @Schema(description = "The date that the transaction was settled, for example paid into or refunded from the service's account.", example = "2016-01-21",
+            accessMode = READ_ONLY)
     public String getSettledDate() {
         return settledDate;
     }
