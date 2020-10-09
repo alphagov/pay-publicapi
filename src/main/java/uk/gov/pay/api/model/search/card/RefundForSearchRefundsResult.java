@@ -101,9 +101,9 @@ public class RefundForSearchRefundsResult {
         return links;
     }
 
-    @ApiModelProperty(hidden = true, dataType = "uk.gov.pay.api.model.SettlementSummary")
+    @ApiModelProperty(dataType = "uk.gov.pay.api.model.SettlementSummary")
     @JsonProperty("settlement_summary")
-    @Schema(hidden = true)
+    @Schema(accessMode = READ_ONLY)
     public SettlementSummary getSettlementSummary() {
         return settlementSummary;
     }

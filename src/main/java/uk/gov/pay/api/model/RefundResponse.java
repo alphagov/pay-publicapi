@@ -26,7 +26,7 @@ public class RefundResponse {
     private RefundLinksForSearch links;
     @Schema(example = "success", allowableValues = {"submitted", "success", "error"}, accessMode = READ_ONLY)
     private String status;
-    @Schema(hidden = true)
+    @Schema(accessMode = READ_ONLY)
     private SettlementSummary settlementSummary;
 
     private RefundResponse(RefundFromConnector refund, URI selfLink, URI paymentLink) {
