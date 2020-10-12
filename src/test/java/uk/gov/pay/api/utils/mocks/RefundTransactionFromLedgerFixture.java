@@ -2,7 +2,7 @@ package uk.gov.pay.api.utils.mocks;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import uk.gov.pay.api.model.SettlementSummary;
+import uk.gov.pay.api.model.RefundSettlementSummary;
 import uk.gov.pay.api.model.ledger.TransactionState;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
@@ -12,7 +12,7 @@ public class RefundTransactionFromLedgerFixture {
     private final String createdDate;
     private final String transactionId;
     private final String parentTransactionId;
-    private final SettlementSummary settlementSummary;
+    private final RefundSettlementSummary settlementSummary;
 
     public RefundTransactionFromLedgerFixture(RefundTransactionFromLedgerBuilder builder) {
         this.amount = builder.amount;
@@ -43,7 +43,7 @@ public class RefundTransactionFromLedgerFixture {
         return parentTransactionId;
     }
 
-    public SettlementSummary getSettlementSummary() {
+    public RefundSettlementSummary getSettlementSummary() {
         return settlementSummary;
     }
 
@@ -53,7 +53,7 @@ public class RefundTransactionFromLedgerFixture {
         private String createdDate;
         private String transactionId;
         private String parentTransactionId;
-        private SettlementSummary settlementSummary = new SettlementSummary();
+        private RefundSettlementSummary settlementSummary = new RefundSettlementSummary();
 
         private RefundTransactionFromLedgerBuilder() {
         }
@@ -92,7 +92,7 @@ public class RefundTransactionFromLedgerFixture {
         }
 
         public RefundTransactionFromLedgerBuilder withSettlementSummary(String settledDate) {
-            this.settlementSummary = new SettlementSummary(null, null, settledDate);
+            this.settlementSummary = new RefundSettlementSummary(settledDate);
             return this;
         }
     }

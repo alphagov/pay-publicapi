@@ -31,8 +31,8 @@ public class ChargeFromResponse {
     private List<PaymentConnectorResponseLink> links = new ArrayList<>();
     
     private RefundSummary refundSummary;
-    
-    private SettlementSummary settlementSummary;
+
+    private PaymentSettlementSummary settlementSummary;
     
     private CardDetails cardDetails;
 
@@ -191,7 +191,7 @@ public class ChargeFromResponse {
         return refundSummary;
     }
 
-    public SettlementSummary getSettlementSummary() {
+    public PaymentSettlementSummary getSettlementSummary() {
         return settlementSummary;
     }
 

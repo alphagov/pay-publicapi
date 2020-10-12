@@ -2,6 +2,7 @@ package uk.gov.pay.api.it.fixtures;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.gson.Gson;
+import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
@@ -112,7 +113,7 @@ public class PaymentSingleResultBuilder extends PaymentResultBuilder {
         return this;
     }
     
-    public PaymentSingleResultBuilder withSettlementSummary(uk.gov.pay.api.model.SettlementSummary settlementSummary) {
+    public PaymentSingleResultBuilder withSettlementSummary(PaymentSettlementSummary settlementSummary) {
         this.settlementSummary = settlementSummary == null ? new SettlementSummary() : new SettlementSummary(settlementSummary);
         return this;
     }

@@ -1,9 +1,9 @@
 package uk.gov.pay.api.utils.mocks;
 
 import uk.gov.pay.api.model.CardDetails;
+import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
-import uk.gov.pay.api.model.SettlementSummary;
 import uk.gov.pay.api.model.telephone.PaymentOutcome;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
@@ -22,7 +22,7 @@ public class ChargeResponseFromConnector {
     private final boolean delayedCapture; 
     private final boolean moto;
     private final RefundSummary refundSummary; 
-    private final SettlementSummary settlementSummary; 
+    private final PaymentSettlementSummary settlementSummary;
     private final CardDetails cardDetails;
     private final List<Map<?, ?>> links;
     private final Optional<Map<String, Object>> metadata;
@@ -117,7 +117,7 @@ public class ChargeResponseFromConnector {
         return refundSummary;
     }
 
-    public SettlementSummary getSettlementSummary() {
+    public PaymentSettlementSummary getSettlementSummary() {
         return settlementSummary;
     }
 
@@ -181,7 +181,7 @@ public class ChargeResponseFromConnector {
         private Boolean delayedCapture;
         private boolean moto;
         private RefundSummary refundSummary;
-        private SettlementSummary settlementSummary;
+        private PaymentSettlementSummary settlementSummary;
         private CardDetails cardDetails;
         private List<Map<?, ?>> links = new ArrayList<>();
         private Map<String, Object> metadata = Map.of();
@@ -330,7 +330,7 @@ public class ChargeResponseFromConnector {
             return this;
         }
 
-        public ChargeResponseFromConnectorBuilder withSettlementSummary(SettlementSummary settlementSummary) {
+        public ChargeResponseFromConnectorBuilder withSettlementSummary(PaymentSettlementSummary settlementSummary) {
             this.settlementSummary = settlementSummary;
             return this;
         }

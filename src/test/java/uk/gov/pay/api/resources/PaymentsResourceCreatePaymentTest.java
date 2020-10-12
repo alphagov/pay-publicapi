@@ -14,7 +14,7 @@ import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.CreateCardPaymentRequestBuilder;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
-import uk.gov.pay.api.model.SettlementSummary;
+import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.service.CancelPaymentService;
@@ -123,7 +123,7 @@ public class PaymentsResourceCreatePaymentTest {
                 false,
                 false,
                 new RefundSummary(),
-                new SettlementSummary(),
+                new PaymentSettlementSummary(),
                 new CardDetails("9876", "482393", "Anne Onymous", "12/20", cardholderAddress, "visa", null),
                 Collections.emptyList(),
                 URI.create(paymentUri),

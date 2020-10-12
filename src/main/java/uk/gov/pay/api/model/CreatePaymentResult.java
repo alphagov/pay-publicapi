@@ -75,7 +75,7 @@ public class CreatePaymentResult {
     private RefundSummary refundSummary;
 
     @JsonProperty("settlement_summary")
-    private SettlementSummary settlementSummary;
+    private PaymentSettlementSummary settlementSummary;
 
     @JsonProperty
     @ApiModelProperty(name = LINKS_JSON_ATTRIBUTE, value = "API endpoints related to the payment.")

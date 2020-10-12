@@ -7,9 +7,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
+import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
-import uk.gov.pay.api.model.SettlementSummary;
 import uk.gov.pay.api.model.TransactionResponse;
 import uk.gov.pay.api.model.links.PaymentLinksForSearch;
 import uk.gov.pay.commons.model.SupportedLanguage;
@@ -27,7 +27,7 @@ public class PaymentForSearchResult extends CardPayment {
 
     public PaymentForSearchResult(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                                   String reference, String email, String paymentProvider, String createdDate, SupportedLanguage language,
-                                  boolean delayedCapture, boolean moto, RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
+                                  boolean delayedCapture, boolean moto, RefundSummary refundSummary, PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
                                   List<PaymentConnectorResponseLink> links, URI selfLink, URI paymentEventsLink, URI paymentCancelLink, URI paymentRefundsLink, URI paymentCaptureUri,
                                   Long corporateCardSurcharge, Long totalAmount, String providerId, ExternalMetadata externalMetadata,
                                   Long fee, Long netAmount) {

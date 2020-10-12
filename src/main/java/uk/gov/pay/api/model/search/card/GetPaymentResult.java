@@ -5,9 +5,9 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.CardPayment;
+import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
-import uk.gov.pay.api.model.SettlementSummary;
 import uk.gov.pay.api.model.links.PaymentLinks;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
@@ -23,7 +23,7 @@ public class GetPaymentResult extends CardPayment {
 
     public GetPaymentResult(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                             String reference, String email, String paymentProvider, String createdDate,
-                            RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
+                            RefundSummary refundSummary, PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
                             SupportedLanguage language, boolean delayedCapture, boolean moto, Long corporateCardSurcharge,
                             Long totalAmount, String providerId, Long fee, Long netAmount) {
         super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate,

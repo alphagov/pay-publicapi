@@ -11,7 +11,7 @@ import org.junit.Test;
 import uk.gov.pay.api.it.fixtures.PaymentNavigationLinksFixture;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetails;
-import uk.gov.pay.api.model.SettlementSummary;
+import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.LedgerMockClient;
 import uk.gov.pay.commons.validation.DateTimeUtils;
@@ -355,7 +355,7 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
         String payments = aPaginatedPaymentSearchResult()
                 .withPage(1)
                 .withPayments(aSuccessfulSearchPayment()
-                        .withSettlementSummary(new SettlementSummary(DEFAULT_CAPTURE_SUBMIT_TIME,
+                        .withSettlementSummary(new PaymentSettlementSummary(DEFAULT_CAPTURE_SUBMIT_TIME,
                                 DEFAULT_CAPTURED_DATE, DEFAULT_SETTLED_DATE))
                         .withNumberOfResults(1)
                         .getResults())
