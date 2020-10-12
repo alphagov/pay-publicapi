@@ -1,8 +1,11 @@
 package uk.gov.pay.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.Map;
 import java.util.Objects;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PaymentConnectorResponseLink {
 
     private String rel;
