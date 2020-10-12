@@ -6,7 +6,7 @@ import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
-import uk.gov.pay.api.model.SettlementSummary;
+import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.commons.model.SupportedLanguage;
 
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ public class TransactionFromLedgerFixture {
     private String paymentProvider;
     private List<PaymentConnectorResponseLink> links;
     private RefundSummary refundSummary;
-    private SettlementSummary settlementSummary;
+    private PaymentSettlementSummary settlementSummary;
     private CardDetails cardDetails;
     private Long amount;
     private PaymentState state;
@@ -54,7 +54,7 @@ public class TransactionFromLedgerFixture {
         return refundSummary;
     }
 
-    public SettlementSummary getSettlementSummary() {
+    public PaymentSettlementSummary getSettlementSummary() {
         return settlementSummary;
     }
 
@@ -158,7 +158,7 @@ public class TransactionFromLedgerFixture {
         private String paymentProvider;
         private List<PaymentConnectorResponseLink> links = new ArrayList<>();
         private RefundSummary refundSummary;
-        private SettlementSummary settlementSummary;
+        private PaymentSettlementSummary settlementSummary;
         private CardDetails cardDetails;
         private Long amount;
         private PaymentState state;
@@ -223,7 +223,7 @@ public class TransactionFromLedgerFixture {
             return this;
         }
 
-        public TransactionFromLedgerBuilder withSettlementSummary(SettlementSummary settlementSummary) {
+        public TransactionFromLedgerBuilder withSettlementSummary(PaymentSettlementSummary settlementSummary) {
             this.settlementSummary = settlementSummary;
             return this;
         }

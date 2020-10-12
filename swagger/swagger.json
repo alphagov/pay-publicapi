@@ -1357,7 +1357,7 @@
           "$ref" : "#/definitions/RefundSummary"
         },
         "settlement_summary" : {
-          "$ref" : "#/definitions/SettlementSummary"
+          "$ref" : "#/definitions/PaymentSettlementSummary"
         },
         "card_details" : {
           "$ref" : "#/definitions/CardDetails"
@@ -1588,7 +1588,7 @@
         },
         "settlement_summary" : {
           "readOnly" : true,
-          "$ref" : "#/definitions/SettlementSummary"
+          "$ref" : "#/definitions/PaymentSettlementSummary"
         },
         "card_details" : {
           "readOnly" : true,
@@ -1857,7 +1857,7 @@
         },
         "settlement_summary" : {
           "readOnly" : true,
-          "$ref" : "#/definitions/SettlementSummary"
+          "$ref" : "#/definitions/PaymentSettlementSummary"
         },
         "card_details" : {
           "readOnly" : true,
@@ -2135,6 +2135,30 @@
         }
       }
     },
+    "PaymentSettlementSummary" : {
+      "type" : "object",
+      "properties" : {
+        "capture_submit_time" : {
+          "type" : "string",
+          "example" : "2016-01-21T17:15:000Z",
+          "description" : "Date and time capture request has been submitted. May be null if capture request was not immediately acknowledged by payment gateway.",
+          "readOnly" : true
+        },
+        "captured_date" : {
+          "type" : "string",
+          "example" : "2016-01-21",
+          "description" : "Date of the capture event.",
+          "readOnly" : true
+        },
+        "settled_date" : {
+          "type" : "string",
+          "example" : "2016-01-21",
+          "description" : "The date that the transaction was paid into the service's account.",
+          "readOnly" : true
+        }
+      },
+      "description" : "A structure representing information about a settlement"
+    },
     "PaymentState" : {
       "type" : "object",
       "properties" : {
@@ -2238,7 +2262,7 @@
         },
         "settlement_summary" : {
           "readOnly" : true,
-          "$ref" : "#/definitions/SettlementSummary"
+          "$ref" : "#/definitions/RefundSettlementSummary"
         }
       }
     },
@@ -2273,7 +2297,7 @@
         },
         "settlement_summary" : {
           "readOnly" : true,
-          "$ref" : "#/definitions/SettlementSummary"
+          "$ref" : "#/definitions/RefundSettlementSummary"
         }
       }
     },
@@ -2357,6 +2381,18 @@
         }
       }
     },
+    "RefundSettlementSummary" : {
+      "type" : "object",
+      "properties" : {
+        "settled_date" : {
+          "type" : "string",
+          "example" : "2016-01-21",
+          "description" : "The date that the transaction was refunded from the service's account.",
+          "readOnly" : true
+        }
+      },
+      "description" : "A structure representing information about a settlement for refunds"
+    },
     "RefundSummary" : {
       "type" : "object",
       "properties" : {
@@ -2437,30 +2473,6 @@
         }
       },
       "description" : "Links to navigate through pages"
-    },
-    "SettlementSummary" : {
-      "type" : "object",
-      "properties" : {
-        "capture_submit_time" : {
-          "type" : "string",
-          "example" : "2016-01-21T17:15:000Z",
-          "description" : "Date and time capture request has been submitted. May be null if capture request was not immediately acknowledged by payment gateway. Not applicable for refunds.",
-          "readOnly" : true
-        },
-        "captured_date" : {
-          "type" : "string",
-          "example" : "2016-01-21",
-          "description" : "Date of the capture event. Not applicable for refunds.",
-          "readOnly" : true
-        },
-        "settled_date" : {
-          "type" : "string",
-          "example" : "2016-01-21",
-          "description" : "The date that the transaction was settled, for example paid into or refunded from the service's account.",
-          "readOnly" : true
-        }
-      },
-      "description" : "A structure representing information about a settlement"
     }
   }
 }

@@ -18,7 +18,7 @@ public class Charge {
 
     private RefundSummary refundSummary;
 
-    private SettlementSummary settlementSummary;
+    private PaymentSettlementSummary settlementSummary;
 
     private CardDetails cardDetails;
 
@@ -55,7 +55,7 @@ public class Charge {
     public Charge(String chargeId, Long amount, PaymentState state, String returnUrl, String description,
                   String reference, String email, String paymentProvider, String createdDate,
                   SupportedLanguage language, boolean delayedCapture, boolean moto, RefundSummary refundSummary,
-                  SettlementSummary settlementSummary, CardDetails cardDetails,
+                  PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
                   List<PaymentConnectorResponseLink> links, Long corporateCardSurcharge, Long totalAmount,
                   String gatewayTransactionId, ExternalMetadata metadata, Long fee, Long netAmount) {
         this.chargeId = chargeId;
@@ -216,7 +216,7 @@ public class Charge {
         return refundSummary;
     }
 
-    public SettlementSummary getSettlementSummary() {
+    public PaymentSettlementSummary getSettlementSummary() {
         return settlementSummary;
     }
 

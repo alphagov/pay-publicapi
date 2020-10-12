@@ -1,5 +1,6 @@
 package uk.gov.pay.api.it.fixtures;
 
+import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.commons.model.SupportedLanguage;
 import uk.gov.pay.commons.validation.DateTimeUtils;
 
@@ -97,10 +98,10 @@ public abstract class PaymentResultBuilder {
         
         public SettlementSummary() {}
         
-        public SettlementSummary(uk.gov.pay.api.model.SettlementSummary settlementSummary) {
-            this.capture_submit_time = settlementSummary.getCaptureSubmitTime();
-            this.captured_date = settlementSummary.getCapturedDate();
-            this.settled_date = settlementSummary.getSettledDate();
+        public SettlementSummary(PaymentSettlementSummary paymentSettlementSummary) {
+            this.capture_submit_time = paymentSettlementSummary.getCaptureSubmitTime();
+            this.captured_date = paymentSettlementSummary.getCapturedDate();
+            this.settled_date = paymentSettlementSummary.getSettledDate();
         }
         
         public SettlementSummary(String captureSubmitTime, String capturedDate) {

@@ -33,7 +33,7 @@ public class TransactionResponse {
     private RefundSummary refundSummary;
 
     @JsonProperty(value = "settlement_summary")
-    private SettlementSummary settlementSummary;
+    private PaymentSettlementSummary settlementSummary;
 
     @JsonProperty(value = "card_details")
     private CardDetails cardDetails;
@@ -160,7 +160,7 @@ public class TransactionResponse {
         return refundSummary;
     }
 
-    public SettlementSummary getSettlementSummary() {
+    public PaymentSettlementSummary getSettlementSummary() {
         return settlementSummary;
     }
 

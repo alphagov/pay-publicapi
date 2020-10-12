@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import uk.gov.pay.api.model.SettlementSummary;
+import uk.gov.pay.api.model.RefundSettlementSummary;
 import uk.gov.pay.api.model.ledger.RefundTransactionFromLedger;
 import uk.gov.pay.api.model.links.RefundLinksForSearch;
 
@@ -38,15 +38,16 @@ public class RefundForSearchRefundsResult {
     @ApiModelProperty(example = "success", allowableValues = "submitted,success,error")
     @Schema(example = "success", allowableValues = {"submitted", "success", "error"}, accessMode = READ_ONLY)
     private String status;
-    
-    private SettlementSummary settlementSummary;
+
+    @Schema(accessMode = READ_ONLY)
+    private RefundSettlementSummary settlementSummary;
 
     public RefundForSearchRefundsResult() {
     }
 
     public RefundForSearchRefundsResult(String refundId, String createdDate, String status,
                                         String chargeId, Long amount, URI paymentURI, URI refundsURI,
-                                        SettlementSummary settlementSummary) {
+                                        RefundSettlementSummary settlementSummary) {
         this.refundId = refundId;
         this.createdDate = createdDate;
         this.status = status;
@@ -101,10 +102,10 @@ public class RefundForSearchRefundsResult {
         return links;
     }
 
-    @ApiModelProperty(dataType = "uk.gov.pay.api.model.SettlementSummary")
+    @ApiModelProperty(dataType = "uk.gov.pay.api.model.RefundSettlementSummary")
     @JsonProperty("settlement_summary")
     @Schema(accessMode = READ_ONLY)
-    public SettlementSummary getSettlementSummary() {
+    public RefundSettlementSummary getSettlementSummary() {
         return settlementSummary;
     }
 

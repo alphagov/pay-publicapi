@@ -26,7 +26,7 @@ public class CardPayment extends Payment {
     private final RefundSummary refundSummary;
 
     @JsonProperty("settlement_summary")
-    private final SettlementSummary settlementSummary;
+    private final PaymentSettlementSummary settlementSummary;
 
     @JsonProperty("card_details")
     private final CardDetails cardDetails;
@@ -77,7 +77,7 @@ public class CardPayment extends Payment {
 
     public CardPayment(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                        String reference, String email, String paymentProvider, String createdDate,
-                       RefundSummary refundSummary, SettlementSummary settlementSummary, CardDetails cardDetails,
+                       RefundSummary refundSummary, PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
                        SupportedLanguage language, boolean delayedCapture, boolean moto, Long corporateCardSurcharge, Long totalAmount,
                        String providerId, ExternalMetadata metadata, Long fee, Long netAmount) {
         super(chargeId, amount, description, reference, paymentProvider, createdDate);
@@ -123,8 +123,8 @@ public class CardPayment extends Payment {
         return Optional.ofNullable(refundSummary);
     }
 
-    @ApiModelProperty(dataType = "uk.gov.pay.api.model.SettlementSummary")
-    public Optional<SettlementSummary> getSettlementSummary() {
+    @ApiModelProperty(dataType = "uk.gov.pay.api.model.PaymentSettlementSummary")
+    public Optional<PaymentSettlementSummary> getSettlementSummary() {
         return Optional.ofNullable(settlementSummary);
     }
 

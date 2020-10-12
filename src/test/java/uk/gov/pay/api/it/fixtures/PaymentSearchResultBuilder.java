@@ -3,6 +3,7 @@ package uk.gov.pay.api.it.fixtures;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import uk.gov.pay.api.model.PaymentSettlementSummary;
 
 import java.util.List;
 import java.util.Map;
@@ -92,7 +93,7 @@ public class PaymentSearchResultBuilder extends PaymentResultBuilder {
         return this;
     }
 
-    public PaymentSearchResultBuilder withSettlementSummary(uk.gov.pay.api.model.SettlementSummary settlementSummary) {
+    public PaymentSearchResultBuilder withSettlementSummary(PaymentSettlementSummary settlementSummary) {
         this.settlementSummary = new SettlementSummary(settlementSummary);
         return this;
     }
