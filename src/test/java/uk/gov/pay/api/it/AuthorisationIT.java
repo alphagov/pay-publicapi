@@ -1,27 +1,17 @@
 package uk.gov.pay.api.it;
 
-import io.dropwizard.testing.junit.DropwizardAppRule;
 import org.apache.http.HttpStatus;
-import org.junit.Rule;
 import org.junit.Test;
-import uk.gov.pay.api.app.PublicApi;
-import uk.gov.pay.api.app.config.PublicApiConfig;
+import uk.gov.pay.api.utils.PublicAuthMockClient;
 
-import static io.dropwizard.testing.ConfigOverride.config;
-import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
+import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static uk.gov.pay.api.utils.Payloads.aSuccessfulPaymentPayload;
 
-public class AuthorisationIT {
-
-    @Rule
-    public DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
-            PublicApi.class,
-            resourceFilePath("config/test-config.yaml"),
-            config("connectorUrl", "http://localhost"),
-            config("connectorDDUrl", "http://localhost"),
-            config("publicAuthUrl", "http://localhost"));
+public class AuthorisationIT extends PaymentResourceITestBase {
+    
+    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
 
     @Test
     public void shouldRefuseAuthorisationIfTokenIsNotPresent() {
@@ -32,5 +22,19 @@ public class AuthorisationIT {
                 .post("/v1/payments/")
                 .then()
                 .statusCode(HttpStatus.SC_UNAUTHORIZED);
+    }
+
+    @Test
+    public void shouldReturn500IfPublicAuthReturnsInvalidTokenPaymentType() {
+        publicAuthMockClient.respondWithInvalidTokenType(API_KEY, "1");
+        
+        given().port(app.getLocalPort())
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
+                .body(aSuccessfulPaymentPayload())
+                .accept(JSON)
+                .contentType(JSON)
+                .post("/v1/payments/")
+                .then()
+                .statusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
     }
 }

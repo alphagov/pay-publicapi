@@ -1,17 +1,30 @@
 package uk.gov.pay.api.filter;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.core.Appender;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -31,9 +44,17 @@ public class AuthorizationValidationFilterTest {
     private HttpServletResponse mockResponse;
     @Mock
     private FilterChain mockFilterChain;
+    @Mock
+    private Appender<ILoggingEvent> mockAppender;
+    @Captor
+    ArgumentCaptor<LoggingEvent> loggingEventArgumentCaptor;
 
     @BeforeEach
     public void setup() {
+        Logger logger = (Logger) LoggerFactory.getLogger(AuthorizationValidationFilter.class);
+        logger.setLevel(Level.WARN);
+        logger.addAppender(mockAppender);
+        
         when(mockConfiguration.getApiKeyHmacSecret()).thenReturn(SECRET_KEY);
         
         authorizationValidationFilter = new AuthorizationValidationFilter(mockConfiguration);
@@ -64,6 +85,11 @@ public class AuthorizationValidationFilterTest {
 
         verifyNoInteractions(mockFilterChain);
         verify(mockResponse).sendError(401, "Unauthorized");
+
+        verify(mockAppender).doAppend(loggingEventArgumentCaptor.capture());
+        List<LoggingEvent> logEvents = loggingEventArgumentCaptor.getAllValues();
+        assertThat(logEvents, hasSize(1));
+        assertThat(logEvents.get(0).getFormattedMessage(), is("Attempt to authenticate using an API key with an invalid checksum"));
     }
 
     @Test
