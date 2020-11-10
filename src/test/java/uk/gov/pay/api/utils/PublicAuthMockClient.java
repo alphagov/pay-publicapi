@@ -10,6 +10,7 @@ import static javax.ws.rs.core.HttpHeaders.ACCEPT;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static uk.gov.pay.commons.model.ErrorIdentifier.AUTH_TOKEN_INVALID;
 
 public class PublicAuthMockClient {
 
@@ -21,7 +22,10 @@ public class PublicAuthMockClient {
 
     public void respondUnauthorised() {
         publicAuthClassRule.stubFor(get("/v1/auth").withHeader(ACCEPT, matching(APPLICATION_JSON))
-                .willReturn(aResponse().withStatus(401)));
+                .willReturn(aResponse()
+                        .withStatus(401)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withBody("{\"error_identifier\" : \"" + AUTH_TOKEN_INVALID + "\"}")));
     }
 
     public void mapBearerTokenToAccountId(String bearerToken, String gatewayAccountId) {
@@ -32,8 +36,24 @@ public class PublicAuthMockClient {
         publicAuthClassRule.stubFor(get("/v1/auth")
                 .withHeader(ACCEPT, matching(APPLICATION_JSON))
                 .withHeader(AUTHORIZATION, matching("Bearer " + bearerToken))
-                .willReturn(aResponse().withStatus(200).withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withBody("{\"account_id\" : \"" + gatewayAccountId + "\", \"token_type\" : \"" + tokenType.toString() + "\"}")));
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withBody("{\"account_id\" : \"" + gatewayAccountId + "\", " +
+                                "\"token_link\" : \"a-token-link\", " +
+                                "\"token_type\" : \"" + tokenType.toString() + "\"}")));
+    }
+
+    public void respondWithInvalidTokenType(String bearerToken, String gatewayAccountId) {
+        publicAuthClassRule.stubFor(get("/v1/auth")
+                .withHeader(ACCEPT, matching(APPLICATION_JSON))
+                .withHeader(AUTHORIZATION, matching("Bearer " + bearerToken))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withBody("{\"account_id\" : \"" + gatewayAccountId + "\", " +
+                                "\"token_link\" : \"a-token-link\", " +
+                                "\"token_type\" : \"AN_UNKNOWN_TYPE\"}")));
     }
 
     public void respondWithError() {

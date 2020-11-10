@@ -3,6 +3,8 @@ package uk.gov.pay.api.filter;
 import com.google.common.io.BaseEncoding;
 import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 
 import javax.inject.Inject;
@@ -17,9 +19,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+import static net.logstash.logback.argument.StructuredArguments.kv;
 
 public class AuthorizationValidationFilter implements Filter {
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthorizationValidationFilter.class);
+    
     private static final int HMAC_SHA1_LENGTH = 32;
     private static final String BEARER_PREFIX = "Bearer ";
 
@@ -31,31 +36,32 @@ public class AuthorizationValidationFilter implements Filter {
     }
 
     @Override
-    public void init(FilterConfig filterConfig) {}
+    public void init(FilterConfig filterConfig) {
+    }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
         final String authorization = ((HttpServletRequest) request).getHeader("Authorization");
 
-        if (isValidAuthorizationHeader(authorization)) {
+        if (isValidAuthorizationHeader(authorization, request)) {
             chain.doFilter(request, response);
-
         } else {
             ((HttpServletResponse) response).sendError(UNAUTHORIZED.getStatusCode(), UNAUTHORIZED.getReasonPhrase());
         }
     }
 
     @Override
-    public void destroy() {}
-
-    private boolean isValidAuthorizationHeader(String authorization) {
-        return authorization!= null
-                && authorization.startsWith(BEARER_PREFIX)
-                && isValidTokenIntegrity(authorization.substring(BEARER_PREFIX.length()));
+    public void destroy() {
     }
 
-    private boolean isValidTokenIntegrity(String apiKey) {
+    private boolean isValidAuthorizationHeader(String authorization, ServletRequest request) {
+        return authorization != null
+                && authorization.startsWith(BEARER_PREFIX)
+                && isValidTokenIntegrity(authorization.substring(BEARER_PREFIX.length()), request);
+    }
+
+    private boolean isValidTokenIntegrity(String apiKey, ServletRequest request) {
         boolean isValid = false;
         if (apiKey.length() >= HMAC_SHA1_LENGTH + 1) {
             int initHmacIndex = apiKey.length() - HMAC_SHA1_LENGTH;
@@ -63,6 +69,12 @@ public class AuthorizationValidationFilter implements Filter {
             String tokenFromApiKey = apiKey.substring(0, initHmacIndex);
             isValid = tokenMatchesHmac(tokenFromApiKey, hmacFromApiKey);
         }
+        
+        if (!isValid) {
+            logger.warn("Attempt to authenticate using an API key with an invalid checksum",
+                    kv("remote_address", request.getRemoteAddr()));
+        }
+
         return isValid;
     }
 
