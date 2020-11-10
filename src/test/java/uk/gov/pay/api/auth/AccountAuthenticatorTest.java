@@ -136,7 +136,7 @@ public class AccountAuthenticatorTest {
         verify(mockAppender).doAppend(loggingEventArgumentCaptor.capture());
         List<LoggingEvent> logEvents = loggingEventArgumentCaptor.getAllValues();
         assertThat(logEvents, hasSize(1));
-        assertThat(logEvents.get(0).getFormattedMessage(), is("Attempt to authenticate using invalid API with valid checksum"));
+        assertThat(logEvents.get(0).getFormattedMessage(), is("Attempt to authenticate using invalid API key with valid checksum"));
     }
 
     @Test
