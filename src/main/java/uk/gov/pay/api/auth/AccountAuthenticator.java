@@ -53,7 +53,7 @@ public class AccountAuthenticator implements Authenticator<String, Account> {
                 String tokenLink = unauthorisedResponse.get("token_link").asText();
                 logger.warn(format("Attempt to authenticate using revoked API key with token_link %s", tokenLink), kv("token_link", tokenLink));
             } else {
-                logger.warn("Attempt to authenticate using invalid API with valid checksum");
+                logger.warn("Attempt to authenticate using invalid API key with valid checksum");
             }
             response.close();
             return Optional.empty();
