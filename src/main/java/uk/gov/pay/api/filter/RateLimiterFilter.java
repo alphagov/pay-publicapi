@@ -31,7 +31,7 @@ import static uk.gov.pay.api.resources.error.ApiErrorResponse.anApiErrorResponse
  * 429 Too Many Requests will be returned when rate limit is reached.
  */
 @Provider
-@Priority(Priorities.USER)
+@Priority(Priorities.USER + 1000)
 public class RateLimiterFilter implements ContainerRequestFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RateLimiterFilter.class);
