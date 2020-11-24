@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class CancelPaymentServiceTest {
 
-    private final Account ACCOUNT = new Account("123456", TokenPaymentType.CARD);
+    private final Account ACCOUNT = new Account("123456", TokenPaymentType.CARD, "a-token-link");
     
     private CancelPaymentService cancelPaymentService;
     

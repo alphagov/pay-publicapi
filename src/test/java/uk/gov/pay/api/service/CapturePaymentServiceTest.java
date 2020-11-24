@@ -49,7 +49,7 @@ public class CapturePaymentServiceTest {
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-capture-payment-with-delayed-capture-true-and-awaiting-capture-request-status"})
     public void testCapturePayment() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "a-token-link");
 
         Response capturePaymentResponse = capturePaymentService.capture(account, CHARGE_ID);
 

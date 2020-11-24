@@ -58,14 +58,14 @@ public class CreatePaymentServiceTest {
         ConnectorUriGenerator connectorUriGenerator = new ConnectorUriGenerator(configuration);
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
         createPaymentService = new CreatePaymentService(client, publicApiUriGenerator, connectorUriGenerator);
-        account = new Account("123456", TokenPaymentType.CARD);
+        account = new Account("123456", TokenPaymentType.CARD, "a-token-link");
     }
 
     @Test
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-create-payment-with-minimum-fields"})
     public void testCreatePaymentWithMinimumFields() {
-        Account account = new Account("123456", TokenPaymentType.CARD);
+        Account account = new Account("123456", TokenPaymentType.CARD, "a-token-link");
         var requestPayload = CreateCardPaymentRequestBuilder.builder()
                 .amount(100)
                 .returnUrl("https://somewhere.gov.uk/rainbow/1")

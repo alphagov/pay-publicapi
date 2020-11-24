@@ -66,7 +66,7 @@ public class TransactionSearchServiceTest {
         TransactionSearchParams searchParams = mock(TransactionSearchParams.class);
         when(searchParams.getQueryMap()).thenReturn(Map.of("not_supported", "hello"));
         BadRequestException badRequestException = assertThrows(BadRequestException.class,
-                () -> transactionSearchService.doSearch(new Account("1", TokenPaymentType.CARD), searchParams));
+                () -> transactionSearchService.doSearch(new Account("1", TokenPaymentType.CARD, "a-token-link"), searchParams));
         assertThat(badRequestException, aBadRequestExceptionWithError("P0401",
                 "Invalid parameters: not_supported. See Public API documentation for the correct data formats"));
     }
@@ -75,7 +75,7 @@ public class TransactionSearchServiceTest {
     @PactVerification({"ledger"})
     @Pacts(pacts = {"publicapi-ledger-search-transaction"})
     public void testSearchTransaction() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "a-token-link");
         TransactionSearchParams searchParams = new TransactionSearchParams();
 
         TransactionSearchResults searchResults = transactionSearchService.doSearch(account,

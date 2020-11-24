@@ -58,7 +58,7 @@ public class MandatesServiceTest {
     @PactVerification({"direct-debit-connector"})
     @Pacts(pacts = {"publicapi-direct-debit-connector-create-mandate"})
     public void shouldCreateAMandateSuccessfully() {
-        Account account = new Account("7959d395-e720-4081-9e8a-a534cf76460a", TokenPaymentType.DIRECT_DEBIT);
+        Account account = new Account("7959d395-e720-4081-9e8a-a534cf76460a", TokenPaymentType.DIRECT_DEBIT, "a-token-link");
         MandateConnectorRequest mandateConnectorRequest = new MandateConnectorRequest(
                 "https://example.com/return",
                 SERVICE_REFERENCE,
@@ -101,7 +101,7 @@ public class MandatesServiceTest {
     @PactVerification({"direct-debit-connector"})
     @Pacts(pacts = {"publicapi-direct-debit-connector-get-mandate"})
     public void shouldGetAMandateSuccessfully() {
-        Account account = new Account("9ddfcc27-acf5-43f9-92d5-52247540714c", TokenPaymentType.DIRECT_DEBIT);
+        Account account = new Account("9ddfcc27-acf5-43f9-92d5-52247540714c", TokenPaymentType.DIRECT_DEBIT, "a-token-link");
         Response response = mandatesService.getMandate(account, MANDATE_ID);
         MandateConnectorResponse mandateConnectorResponse = response.readEntity(MandateConnectorResponse.class);
 

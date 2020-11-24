@@ -55,7 +55,7 @@ public class DirectDebitPaymentSearchServiceTest {
     @PactVerification({"direct-debit-connector"})
     @Pacts(pacts = {"publicapi-direct-debit-connector-search-by-mandate-three-results"})
     public void doSearchShouldReturnADirectDebitSearchResponseWithThreePayments() {
-        Account account = new Account("2po9ycynwq8yxdgg2qwq9e9qpyrtre", TokenPaymentType.DIRECT_DEBIT);
+        Account account = new Account("2po9ycynwq8yxdgg2qwq9e9qpyrtre", TokenPaymentType.DIRECT_DEBIT, "a-token-link");
         String mandateId = "jkdjsvd8f78ffkwfek2q";
         
         var searchParams =  aDirectDebitSearchPaymentsParams()

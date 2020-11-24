@@ -25,7 +25,7 @@ public class ConnectorUriGeneratorTest {
 
     private ConnectorUriGenerator connectorUriGenerator;
 
-    private final Account cardAccount = new Account("accountId", CARD);
+    private final Account cardAccount = new Account("accountId", CARD, "a-token-link");
 
     private final String chargeId = "charge_id_123";
 

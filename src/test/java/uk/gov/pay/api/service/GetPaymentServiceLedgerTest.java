@@ -38,6 +38,7 @@ import static uk.gov.pay.commons.testing.port.PortFactory.findFreePort;
 public class GetPaymentServiceLedgerTest {
 
     private static final String ACCOUNT_ID = "123456";
+    private static final String tokenLink = "a-token-link";
     private static final String CHARGE_ID_NON_EXISTENT_IN_CONNECTOR = "ch_123abc456xyz";
     private static final int CONNECTOR_PORT = findFreePort();
 
@@ -75,7 +76,7 @@ public class GetPaymentServiceLedgerTest {
     @PactVerification({"ledger"})
     @Pacts(pacts = {"publicapi-ledger-get-payment-with-metadata"})
     public void testGetPaymentWithMetadataFromLedger() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, tokenLink);
         PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID_NON_EXISTENT_IN_CONNECTOR);
         CardPayment payment = (CardPayment) paymentResponse.getPayment();
         assertThat(payment.getMetadata(), is(notNullValue()));
@@ -86,7 +87,7 @@ public class GetPaymentServiceLedgerTest {
     @PactVerification({"ledger"})
     @Pacts(pacts = {"publicapi-ledger-get-payment-with-gateway-transaction-id"})
     public void providerIdIsAvailableWhenPaymentIsSubmitted_Ledger() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, tokenLink);
         PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID_NON_EXISTENT_IN_CONNECTOR);
         CardPayment payment = (CardPayment) paymentResponse.getPayment();
         assertThat(payment.getProviderId(), is("gateway-tx-123456"));
@@ -96,7 +97,7 @@ public class GetPaymentServiceLedgerTest {
     @PactVerification({"ledger"})
     @Pacts(pacts = {"publicapi-ledger-get-payment-with-delayed-capture-true"})
     public void testGetPaymentFromLedger() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, tokenLink);
 
         PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID_NON_EXISTENT_IN_CONNECTOR);
         CardPayment payment = (CardPayment) paymentResponse.getPayment();
@@ -126,7 +127,7 @@ public class GetPaymentServiceLedgerTest {
     @PactVerification({"ledger"})
     @Pacts(pacts = {"publicapi-ledger-get-payment-with-corporate-surcharge"})
     public void testGetPaymentWithCorporateCardSurchargeFromLedger() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, tokenLink);
 
         PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID_NON_EXISTENT_IN_CONNECTOR);
         CardPayment payment = (CardPayment) paymentResponse.getPayment();
@@ -139,7 +140,7 @@ public class GetPaymentServiceLedgerTest {
     @PactVerification({"ledger"})
     @Pacts(pacts = {"publicapi-ledger-get-payment-with-fee-and-net-amount"})
     public void testGetPaymentWithFeeAndNetAmountFromLedger() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, tokenLink);
 
         PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID_NON_EXISTENT_IN_CONNECTOR);
         CardPayment payment = (CardPayment) paymentResponse.getPayment();
@@ -155,7 +156,7 @@ public class GetPaymentServiceLedgerTest {
     @PactVerification({"ledger"})
     @Pacts(pacts = {"publicapi-ledger-get-payment-with-settled-date"})
     public void testGetPaymentWithSettledDate() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, tokenLink);
 
         PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, "ch_123abc456settlement");
         CardPayment payment = (CardPayment) paymentResponse.getPayment();

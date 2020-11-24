@@ -51,7 +51,8 @@ public class CachingAuthenticatorIT {
 
     @Before
     public void setup() throws Exception {
-        stubPublicAuthV1ApiAuth(publicAuthRule, new Account(accountId, CARD), bearerToken);
+        String tokenLink = "some-token-link";
+        stubPublicAuthV1ApiAuth(publicAuthRule, new Account(accountId, CARD, tokenLink), bearerToken);
         setUpMockForConnector();
     }
     

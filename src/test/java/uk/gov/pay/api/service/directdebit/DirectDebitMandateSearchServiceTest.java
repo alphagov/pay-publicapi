@@ -55,7 +55,7 @@ public class DirectDebitMandateSearchServiceTest {
     @PactVerification({"direct-debit-connector"})
     @Pacts(pacts = {"publicapi-direct-debit-connector-search-mandates"})
     public void shouldGetMandateSearchResponseFromDirectDebitConnector() {
-        Account account = new Account("9ddfcc27-acf5-43f9-92d5-52247540714c", TokenPaymentType.DIRECT_DEBIT);
+        Account account = new Account("9ddfcc27-acf5-43f9-92d5-52247540714c", TokenPaymentType.DIRECT_DEBIT, "a-token-link");
         String expectedBankStatementReference = "410104";
         var expectedMandateLinks = new PaymentConnectorResponseLink(
                 "self",

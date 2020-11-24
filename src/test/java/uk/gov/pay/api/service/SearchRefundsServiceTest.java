@@ -42,6 +42,7 @@ public class SearchRefundsServiceTest {
 
     private SearchRefundsService searchRefundsService;
     private String ACCOUNT_ID = "888";
+    private static final String tokenLink = "a-token-link";
 
     @Before
     public void setUp() {
@@ -59,7 +60,7 @@ public class SearchRefundsServiceTest {
 
     @Test
     public void getSearchResponse_shouldThrowRefundsValidationExceptionWhenParamsAreInvalid() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, tokenLink);
         String invalid = "invalid_param";
         RefundsParams params = new RefundsParams(null, null, invalid, invalid, null, null);
 
@@ -80,7 +81,7 @@ public class SearchRefundsServiceTest {
         String accountId = "777";
         String refundId1 = "111111";
         String refundId2 = "222222";
-        Account account = new Account(accountId, TokenPaymentType.CARD);
+        Account account = new Account(accountId, TokenPaymentType.CARD, tokenLink);
         SearchRefundsResults results = searchRefundsService.searchLedgerRefunds(account, params);
 
         assertThat(results.getResults().size(), is(2));
@@ -111,7 +112,7 @@ public class SearchRefundsServiceTest {
     @Pacts(pacts = {"publicapi-ledger-search-refunds-display-size-two"})
     public void shouldSearchForAllExistingRefundsWithDisplaySizeTwo() {
         String accountId = "777";
-        Account account = new Account(accountId, TokenPaymentType.CARD);
+        Account account = new Account(accountId, TokenPaymentType.CARD, tokenLink);
         RefundsParams params = new RefundsParams(null, null, "1", "2", null, null);
         SearchRefundsResults results = searchRefundsService.searchLedgerRefunds(account, params);
         assertThat(results.getResults().size(), is(2));
@@ -124,7 +125,7 @@ public class SearchRefundsServiceTest {
     @PactVerification({"ledger"})
     @Pacts(pacts = {"publicapi-ledger-search-refunds-with-page-and-display-when-no-refunds-exist"})
     public void getAllRefundsShouldReturnNoRefundsFromLedgerWhenThereAreNone() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, tokenLink);
         RefundsParams params = new RefundsParams(null, null, "1", "1", null, null);
         SearchRefundsResults results = searchRefundsService.searchLedgerRefunds(account, params);
         assertThat(results.getCount(), is(0));
@@ -136,7 +137,7 @@ public class SearchRefundsServiceTest {
     @PactVerification({"ledger"})
     @Pacts(pacts = {"publicapi-ledger-search-refunds-page-not-found"})
     public void shouldReturn404WhenSearchingWithNonExistentPageNumber() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, tokenLink);
         RefundsParams params = new RefundsParams(null, null, "999", "500", null, null);
 
         SearchRefundsException searchRefundsException = assertThrows(SearchRefundsException.class,
@@ -147,7 +148,7 @@ public class SearchRefundsServiceTest {
 
     @Test
     public void getSearchResponseFromLedger_shouldThrowRefundsValidationExceptionWhenParamsAreInvalid() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, tokenLink);
         String invalid = "invalid_param";
         RefundsParams params = new RefundsParams(null, null, invalid, invalid, null, null);
 
@@ -165,7 +166,7 @@ public class SearchRefundsServiceTest {
     @Pacts(pacts = {"publicapi-ledger-search-refunds_with_settled_dates"})
     public void shouldReturnARefundWhenSearchingWithSettledDates() {
         String accountId = "123456";
-        Account account = new Account(accountId, TokenPaymentType.CARD);
+        Account account = new Account(accountId, TokenPaymentType.CARD, tokenLink);
         RefundsParams params = new RefundsParams(null, null, "1", "500", "2020-09-19", "2020-09-20");
         SearchRefundsResults results = searchRefundsService.searchLedgerRefunds(account, params);
         assertThat(results.getResults().size(), is(1));

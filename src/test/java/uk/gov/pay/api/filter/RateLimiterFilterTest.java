@@ -42,7 +42,7 @@ public class RateLimiterFilterTest {
         rateLimiter = mock(RateLimiter.class);
         rateLimiterFilter = new RateLimiterFilter(rateLimiter, new ObjectMapper());
 
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "some-token-link");
         SecurityContext mockSecurityContext = mock(SecurityContext.class);
         when(mockSecurityContext.getUserPrincipal()).thenReturn(account);
 
