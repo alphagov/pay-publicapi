@@ -1,8 +1,16 @@
 package uk.gov.pay.api.it;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.core.Appender;
 import com.google.common.collect.ImmutableMap;
 import io.restassured.response.ValidatableResponse;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.slf4j.LoggerFactory;
+import uk.gov.pay.api.filter.RateLimiterFilter;
 import uk.gov.pay.api.it.fixtures.PaymentNavigationLinksFixture;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 import uk.gov.pay.api.utils.mocks.LedgerMockClient;
@@ -13,7 +21,11 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsIterableContaining.hasItem;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static uk.gov.pay.api.it.fixtures.PaginatedTransactionSearchResultFixture.aPaginatedTransactionSearchResult;
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.aSuccessfulSearchPayment;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
@@ -22,9 +34,14 @@ public class ResourcesFilterRateLimiterIT extends ResourcesFilterITestBase {
 
     private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
     private LedgerMockClient ledgerMockClient = new LedgerMockClient(ledgerMock);
-    
+    ArgumentCaptor<LoggingEvent> loggingEventArgumentCaptor = ArgumentCaptor.forClass(LoggingEvent.class);
+    private Appender<ILoggingEvent> mockAppender = mock(Appender.class);
+
     @Test
     public void createPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
+        Logger logger = (Logger) LoggerFactory.getLogger(RateLimiterFilter.class);
+        logger.setLevel(Level.INFO);
+        logger.addAppender(mockAppender);
 
         connectorMockClient.respondOk_whenCreateCharge("token_1234567asdf", GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
                 .withAmount(AMOUNT)
@@ -50,6 +67,12 @@ public class ResourcesFilterRateLimiterIT extends ResourcesFilterITestBase {
 
         assertThat(finishedTasks, hasItem(aResponse(201)));
         assertThat(finishedTasks, hasItem(anErrorResponse()));
+
+        verify(mockAppender, atLeastOnce()).doAppend(loggingEventArgumentCaptor.capture());
+        List<LoggingEvent> logEvents = loggingEventArgumentCaptor.getAllValues();
+
+        // ensure api token link is in log MDC when requests are rate limited
+        assertThat(logEvents.get(0).getMDCPropertyMap().get("token_link"), is("a-token-link"));
     }
 
     @Test
