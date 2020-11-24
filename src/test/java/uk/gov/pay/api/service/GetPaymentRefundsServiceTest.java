@@ -59,7 +59,7 @@ public class GetPaymentRefundsServiceTest {
     @PactVerification("ledger")
     @Pacts(pacts = {"publicapi-ledger-get-payment-refunds"})
     public void shouldReturnRefundsForPaymentCorrectlyFromLedger() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "a-token-link");
         RefundsResponse response = getPaymentRefundsService.getLedgerTransactionTransactions(account, "ch_123abc456xyz");
         assertThat(response.getPaymentId(), is("ch_123abc456xyz"));
         assertThat(response.getLinks().getSelf().getHref(), is("http://publicapi.test.localhost/v1/payments/ch_123abc456xyz/refunds"));
@@ -87,7 +87,7 @@ public class GetPaymentRefundsServiceTest {
     @PactVerification("connector")
     @Pacts(pacts = {"publicapi-connector-get-payment-refunds"})
     public void shouldReturnRefundsForPaymentCorrectlyFromConnector() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "a-token-link");
         RefundsResponse response = getPaymentRefundsService.getConnectorPaymentRefunds(account, "charge8133029783750222");
         assertThat(response.getPaymentId(), is("charge8133029783750222"));
         assertThat(response.getLinks().getSelf().getHref(), is("http://publicapi.test.localhost/v1/payments/charge8133029783750222/refunds"));

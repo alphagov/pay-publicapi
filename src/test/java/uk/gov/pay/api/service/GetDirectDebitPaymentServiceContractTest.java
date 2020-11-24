@@ -46,7 +46,7 @@ public class GetDirectDebitPaymentServiceContractTest {
     @PactVerification("direct-debit-connector")
     @Pacts(pacts = {"publicapi-direct-debit-connector-get-directdebit-payment"}, publish = false)
     public void doGetShouldReturnValidDirectDebitPayment(){
-        Account account = new Account("123456", TokenPaymentType.DIRECT_DEBIT);
+        Account account = new Account("123456", TokenPaymentType.DIRECT_DEBIT, "a-token-link");
         
         DirectDebitPayment payment = getDirectDebitPaymentService
                 .getDirectDebitPayment(account, "ch_123abc456def");

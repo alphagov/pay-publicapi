@@ -58,7 +58,7 @@ public class GetPaymentEventsServiceTest {
     @PactVerification("connector")
     @Pacts(pacts = {"publicapi-connector-get-payment-events"})
     public void shouldReturnPaymentEventsWhenCallingConnector() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "a-token-link");
         PaymentEventsResponse paymentEventsResponse = getPaymentEventsService.getPaymentEventsFromConnector(account, "abc123");
         assertThat(paymentEventsResponse.getPaymentId(), is("abc123"));
         assertThat(paymentEventsResponse.getLinks().getSelf().getHref(), is("http://publicapi.test.localhost/v1/payments/abc123/events"));
@@ -81,7 +81,7 @@ public class GetPaymentEventsServiceTest {
     @PactVerification("ledger")
     @Pacts(pacts = {"publicapi-ledger-get-payment-events"})
     public void shouldReturnPaymentEventsWhenCallingLedger() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "a-token-link");
         PaymentEventsResponse paymentEventsResponse = getPaymentEventsService.getPaymentEventsFromLedger(account, "abc123");
         assertThat(paymentEventsResponse.getPaymentId(), is("abc123"));
         assertThat(paymentEventsResponse.getLinks().getSelf().getHref(), is("http://publicapi.test.localhost/v1/payments/abc123/events"));

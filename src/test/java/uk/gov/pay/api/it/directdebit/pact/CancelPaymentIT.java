@@ -45,7 +45,7 @@ public class CancelPaymentIT {
 
     @Before
     public void setup() throws Exception {
-        stubPublicAuthV1ApiAuth(publicAuth, new Account("123456", CARD), API_KEY);
+        stubPublicAuthV1ApiAuth(publicAuth, new Account("123456", CARD, "a-token-link"), API_KEY);
     }
 
     @Test

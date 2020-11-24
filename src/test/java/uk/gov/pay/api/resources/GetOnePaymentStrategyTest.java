@@ -21,7 +21,7 @@ public class GetOnePaymentStrategyTest {
 
     private GetOnePaymentStrategy getOnePaymentStrategy;
     private String mockPaymentId = "some-payment-id";
-    private Account mockAccountId = new Account("some-account-id", TokenPaymentType.CARD);
+    private Account mockAccountId = new Account("some-account-id", TokenPaymentType.CARD, "a-token-link");
 
     @Test
     public void validateAndExecuteUsesLedgerOnlyStrategy() {

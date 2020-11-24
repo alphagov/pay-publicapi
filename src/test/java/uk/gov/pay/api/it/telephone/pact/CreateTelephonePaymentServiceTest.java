@@ -54,7 +54,7 @@ public class CreateTelephonePaymentServiceTest {
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-create-telephone-payment-notification"})
     public void testCreatePaymentWithMetadata() {
-        Account account = new Account("123456", TokenPaymentType.CARD);
+        Account account = new Account("123456", TokenPaymentType.CARD, "a-token-link");
         var createTelephonePaymentNotification =builder
                 .withAmount(12000)
                 .withReference("MRPC12345")

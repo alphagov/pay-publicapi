@@ -45,7 +45,7 @@ public class AccountAuthenticator implements Authenticator<String, Account> {
             AuthResponse authResponse = response.readEntity(AuthResponse.class);
             logger.info(format("Successfully authenticated using API key with token_link %s", authResponse.getTokenLink()),
                     kv("token_link", authResponse.getTokenLink()));
-            return Optional.of(new Account(authResponse.getAccountId(), authResponse.getTokenType()));
+            return Optional.of(new Account(authResponse.getAccountId(), authResponse.getTokenType(), authResponse.getTokenLink()));
         } else if (response.getStatus() == UNAUTHORIZED.getStatusCode()) {
             JsonNode unauthorisedResponse = response.readEntity(JsonNode.class);
             ErrorIdentifier errorIdentifier = ErrorIdentifier.valueOf(unauthorisedResponse.get("error_identifier").asText());

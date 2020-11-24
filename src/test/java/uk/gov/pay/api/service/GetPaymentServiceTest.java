@@ -64,7 +64,7 @@ public class GetPaymentServiceTest {
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-get-payment-with-delayed-capture-true"})
     public void testGetPayment() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "a-token-link");
 
         PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID);
         CardPayment payment = (CardPayment) paymentResponse.getPayment();
@@ -101,7 +101,7 @@ public class GetPaymentServiceTest {
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-get-payment"})
     public void testGetPaymentWithCharge() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "a-token-link");
         PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID);
         
         CardPayment payment = (CardPayment) paymentResponse.getPayment();

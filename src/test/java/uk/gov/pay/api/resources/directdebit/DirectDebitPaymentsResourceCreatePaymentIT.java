@@ -36,7 +36,7 @@ public class DirectDebitPaymentsResourceCreatePaymentIT extends DirectDebitResou
 
     @Test
     public void createPayment_success() throws JsonProcessingException {
-        final Account account = new Account(GATEWAY_ACCOUNT_ID, TokenPaymentType.DIRECT_DEBIT);
+        final Account account = new Account(GATEWAY_ACCOUNT_ID, TokenPaymentType.DIRECT_DEBIT, "a-token-link");
         final String status = "created";
 
         DirectDebitConnectorPaymentResponse connectorResponse = aDirectDebitConnectorPaymentResponse()
@@ -78,7 +78,7 @@ public class DirectDebitPaymentsResourceCreatePaymentIT extends DirectDebitResou
 
     @Test
     public void createPayment_successWhenDescriptionNotPresent() throws JsonProcessingException {
-        final Account account = new Account(GATEWAY_ACCOUNT_ID, TokenPaymentType.DIRECT_DEBIT);
+        final Account account = new Account(GATEWAY_ACCOUNT_ID, TokenPaymentType.DIRECT_DEBIT, "a-token-link");
         final String status = "created";
 
         DirectDebitConnectorPaymentResponse connectorResponse = aDirectDebitConnectorPaymentResponse()

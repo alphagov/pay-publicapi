@@ -21,7 +21,7 @@ public class GetPaymentRefundStrategyTest {
 
     private String paymentId = "payment-id";
     private String refundId = "refund-id";
-    private Account account = new Account("account-id", TokenPaymentType.CARD);
+    private Account account = new Account("account-id", TokenPaymentType.CARD, "a-token-link");
 
     @Test
     public void validateAndExecuteUsesLedgerOnlyStrategy() {

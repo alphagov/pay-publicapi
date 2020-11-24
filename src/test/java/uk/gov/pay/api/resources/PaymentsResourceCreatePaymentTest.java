@@ -87,7 +87,7 @@ public class PaymentsResourceCreatePaymentTest {
 
     @Test
     public void createNewPayment_withCardPayment_invokesCreatePaymentService() {
-        final Account account = new Account("foo", TokenPaymentType.CARD);
+        final Account account = new Account("foo", TokenPaymentType.CARD, "a-token-link");
         final var createPaymentRequest = CreateCardPaymentRequestBuilder.builder()
                 .amount(100)
                 .returnUrl("https://somewhere.test")

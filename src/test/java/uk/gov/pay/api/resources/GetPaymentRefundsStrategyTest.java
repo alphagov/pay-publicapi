@@ -20,7 +20,7 @@ public class GetPaymentRefundsStrategyTest {
     private GetPaymentRefundsStrategy getPaymentRefundsStrategy;
 
     private String paymentId = "payment-id";
-    private Account account = new Account("account-id", TokenPaymentType.CARD);
+    private Account account = new Account("account-id", TokenPaymentType.CARD, "a-token-link");
 
     @ParameterizedTest
     @ValueSource(strings = {"ledger-only", "", "unknown"})

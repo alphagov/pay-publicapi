@@ -40,6 +40,7 @@ public class CardPaymentSearchServiceTest {
     @Mock
     private PublicApiConfig configuration;
     private PaymentSearchService paymentSearchService;
+    private static final String tokenLink = "a-token-link";
 
     @Before
     public void setUp() {
@@ -59,7 +60,7 @@ public class CardPaymentSearchServiceTest {
     @PactVerification({"ledger"})
     @Pacts(pacts = {"publicapi-ledger-search-payment-by-first-digits-card-number"})
     public void searchShouldReturnAResponseWithOneTransaction_whenFilteringByFirstDigitsCardNumberFromLedger() {
-        Account account = new Account("123456", TokenPaymentType.CARD);
+        Account account = new Account("123456", TokenPaymentType.CARD, tokenLink);
         var searchParams = new PaymentSearchParams.Builder()
                 .withFirstDigitsCardNumber("424242")
                 .withPageNumber("1")
@@ -86,7 +87,7 @@ public class CardPaymentSearchServiceTest {
     @PactVerification({"ledger"})
     @Pacts(pacts = {"publicapi-ledger-search-payment-by-last-digits-card-number"})
     public void searchShouldReturnAResponseWithOneTransaction_whenFilteringByLastDigitsCardNumberFromLedger() {
-        Account account = new Account("123456", TokenPaymentType.CARD);
+        Account account = new Account("123456", TokenPaymentType.CARD, tokenLink);
         var searchParams = new PaymentSearchParams.Builder()
                 .withLastDigitsCardNumber("4242")
                 .withPageNumber("1")
@@ -113,7 +114,7 @@ public class CardPaymentSearchServiceTest {
     @PactVerification({"ledger"})
     @Pacts(pacts = {"publicapi-ledger-search-payment-with-charge-in-success-state"})
     public void searchShouldReturnAResponseWithOneTransaction_whenFilteringByStateFromLedger() {
-        Account account = new Account("123456", TokenPaymentType.CARD);
+        Account account = new Account("123456", TokenPaymentType.CARD, tokenLink);
         var searchParams = new PaymentSearchParams.Builder()
                 .withState("success")
                 .withPageNumber("1")
@@ -140,7 +141,7 @@ public class CardPaymentSearchServiceTest {
     @PactVerification({"ledger"})
     @Pacts(pacts = {"publicapi-ledger-search-payments"})
     public void ledgerSearchShouldReturnAResponseWithOneTransaction() {
-        Account account = new Account("123456", TokenPaymentType.CARD);
+        Account account = new Account("123456", TokenPaymentType.CARD, tokenLink);
         var searchParams = new PaymentSearchParams.Builder()
                 .withCardHolderName("j.doe@example.org")
                 .build();
@@ -166,7 +167,7 @@ public class CardPaymentSearchServiceTest {
     @PactVerification({"ledger"})
     @Pacts(pacts = {"publicapi-ledger-search-payments-page-not-found"})
     public void shouldReturn404WhenSearchingWithNonExistentPageNumber() {
-        Account account = new Account("123456", TokenPaymentType.CARD);
+        Account account = new Account("123456", TokenPaymentType.CARD, tokenLink);
         var searchParams = new PaymentSearchParams.Builder()
                 .withDisplaySize("500")
                 .withPageNumber("999")
@@ -183,7 +184,7 @@ public class CardPaymentSearchServiceTest {
     @Pacts(pacts = ("publicapi-ledger-search-payments-with-settled_dates"))
     public void shouldReturnAPaymentWhenSearchedBySettledDates() {
         String accountId = "123456";
-        Account account = new Account(accountId, TokenPaymentType.CARD);
+        Account account = new Account(accountId, TokenPaymentType.CARD, tokenLink);
         var searchParams = new PaymentSearchParams.Builder()
                 .withFromSettledDate("2020-09-19")
                 .withToSettledDate("2020-09-20")

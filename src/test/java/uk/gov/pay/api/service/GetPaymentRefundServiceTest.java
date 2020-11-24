@@ -59,7 +59,7 @@ public class GetPaymentRefundServiceTest {
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-get-payment-refund"})
     public void testGetPayment() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "a-token-link");
 
         RefundResponse refund = getPaymentService.getConnectorPaymentRefund(account, CHARGE_ID, REFUND_ID);
 
@@ -75,7 +75,7 @@ public class GetPaymentRefundServiceTest {
     @PactVerification({"ledger"})
     @Pacts(pacts = {"publicapi-ledger-get-payment-refund"})
     public void testGetLedgerPaymentRefund() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD);
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "a-token-link");
 
         RefundResponse refund = getPaymentService.getLedgerPaymentRefund(account, CHARGE_ID, REFUND_ID);
 

@@ -16,7 +16,7 @@ public class PaymentSearchValidatorTest {
     private static final String UNSUCCESSFUL_TEST_EMAIL = randomAlphanumeric(255) + "@mail.fake";
     private static final String UNSUCCESSFUL_TEST_CARD_BRAND = "123456789012345678901";
     private static final String INVALID_LENGTH_AGREEMENT = randomAlphanumeric(27);
-    private Account account = new Account("an account", TokenPaymentType.CARD);
+    private Account account = new Account("an account", TokenPaymentType.CARD, "a-token-link");
 
     @Test
     public void validateParams_shouldSuccessValidation() {
@@ -175,7 +175,7 @@ public class PaymentSearchValidatorTest {
     @Test
     public void validateParams_shouldGiveAnError_forInvalidDirectDebitState() {
         PaymentValidationException paymentValidationException = assertThrows(PaymentValidationException.class,
-                () -> PaymentSearchValidator.validateSearchParameters(new Account("an account", TokenPaymentType.DIRECT_DEBIT),
+                () -> PaymentSearchValidator.validateSearchParameters(new Account("an account", TokenPaymentType.DIRECT_DEBIT, "a-token-link"),
                         "created", "", "",
                         "", "", "",
                         "", "", "", "", "", "", ""));
