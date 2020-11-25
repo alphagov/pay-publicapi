@@ -26,7 +26,7 @@ public class LoggingMDCRequestFilter implements ContainerRequestFilter {
     public void filter(ContainerRequestContext requestContext) {
         Optional<Account> mayBeAccount = getAccount(requestContext);
         MDC.put(GATEWAY_ACCOUNT_ID, mayBeAccount.map(Account::getName).orElse(EMPTY));
-        MDC.put("token_link", mayBeAccount.map(Account::getTokenLink).orElse(EMPTY));
+        mayBeAccount.ifPresent(account -> MDC.put("token_link", account.getTokenLink()));
 
         String clientAddress = getClientAddress(requestContext);
         MDC.put(REMOTE_ADDRESS, clientAddress);
