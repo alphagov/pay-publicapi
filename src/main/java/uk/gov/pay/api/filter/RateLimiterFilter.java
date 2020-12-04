@@ -62,6 +62,10 @@ public class RateLimiterFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
+        if ("healthcheck".equals(requestContext.getUriInfo().getPath())) {
+            return;
+        }
+
         String accountId = getAccountId(requestContext);
         RateLimiterKey key = RateLimiterKey.from(requestContext, accountId);
         try {
