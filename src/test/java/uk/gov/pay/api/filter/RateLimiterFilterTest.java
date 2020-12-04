@@ -20,9 +20,11 @@ import javax.ws.rs.core.UriInfo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -35,26 +37,24 @@ public class RateLimiterFilterTest {
     @Mock
     private ContainerRequestContext mockContainerRequestContext;
     @Mock
-    private UriInfo uriInfo;
+    private UriInfo mockUriInfo;
 
     @BeforeEach
     public void setup() {
         rateLimiter = mock(RateLimiter.class);
         rateLimiterFilter = new RateLimiterFilter(rateLimiter, new ObjectMapper());
 
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "some-token-link");
-        SecurityContext mockSecurityContext = mock(SecurityContext.class);
-        when(mockSecurityContext.getUserPrincipal()).thenReturn(account);
-
-        when(mockContainerRequestContext.getSecurityContext()).thenReturn(mockSecurityContext);
-
-        when(mockContainerRequestContext.getMethod()).thenReturn("GET");
-        when(mockContainerRequestContext.getUriInfo()).thenReturn(uriInfo);
-        when(uriInfo.getPath()).thenReturn("");
+        when(mockContainerRequestContext.getUriInfo()).thenReturn(mockUriInfo);
+        when(mockUriInfo.getPath()).thenReturn("");
     }
 
     @Test
     public void shouldCheckRateLimitsWhenFilterIsInvoked() throws Exception {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "some-token-link");
+        SecurityContext mockSecurityContext = mock(SecurityContext.class);
+        when(mockSecurityContext.getUserPrincipal()).thenReturn(account);
+        when(mockContainerRequestContext.getSecurityContext()).thenReturn(mockSecurityContext);
+        when(mockContainerRequestContext.getMethod()).thenReturn("GET");
         when(mockContainerRequestContext.getMethod()).thenReturn("POST");
 
         rateLimiterFilter.filter(mockContainerRequestContext);
@@ -64,6 +64,11 @@ public class RateLimiterFilterTest {
 
     @Test
     public void shouldSendErrorResponse_whenRateLimitExceeded() throws Exception {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "some-token-link");
+        SecurityContext mockSecurityContext = mock(SecurityContext.class);
+        when(mockSecurityContext.getUserPrincipal()).thenReturn(account);
+        when(mockContainerRequestContext.getSecurityContext()).thenReturn(mockSecurityContext);
+        when(mockContainerRequestContext.getMethod()).thenReturn("GET");
         doThrow(RateLimitException.class).when(rateLimiter).checkRateOf(eq("account-id"), any());
 
         WebApplicationException webApplicationException = assertThrows(WebApplicationException.class,
@@ -74,5 +79,12 @@ public class RateLimiterFilterTest {
         assertEquals("application/json", response.getHeaderString("Content-Type"));
         assertEquals("utf-8", response.getHeaderString("Content-Encoding"));
         assertEquals("{\"code\":\"P0900\",\"description\":\"Too many requests\"}", response.getEntity());
+    }
+
+    @Test
+    public void shouldNotCheckRateLimit_on_healthcheck() throws Exception {
+        when(mockUriInfo.getPath()).thenReturn(("healthcheck"));
+        rateLimiterFilter.filter(mockContainerRequestContext);
+        verify(rateLimiter, never()).checkRateOf(anyString(), any());
     }
 }
