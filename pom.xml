@@ -20,7 +20,7 @@
         <pay-java-commons.version>1.0.20201130170501</pay-java-commons.version>
         <junit5.version>5.7.0</junit5.version>
         <pact.version>3.6.15</pact.version>
-        <swagger.lib.version>2.1.5</swagger.lib.version>
+        <swagger.lib.version>2.1.6</swagger.lib.version>
         <PACT_BROKER_URL/>
         <PACT_BROKER_USERNAME/>
         <PACT_BROKER_PASSWORD/>
