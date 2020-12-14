@@ -22,6 +22,7 @@ public class ClearMdcValuesFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        MDC.clear();
         try {
             chain.doFilter(request, response);
         } finally {
