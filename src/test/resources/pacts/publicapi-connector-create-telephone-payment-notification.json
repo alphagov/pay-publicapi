@@ -14,6 +14,12 @@
           "params": {
             "gateway_account_id": "123456"
           }
+        },
+        {
+          "name": "a gateway account has telephone payment notifications enabled",
+          "params": {
+            "gateway_account_id": "123456"
+          }
         }
       ],
       "request": {
