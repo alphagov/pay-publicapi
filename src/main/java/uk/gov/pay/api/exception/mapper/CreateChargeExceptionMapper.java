@@ -18,6 +18,7 @@ import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_MANDATE_ID_I
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_MANDATE_STATE_INVALID;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_MOTO_NOT_ENABLED;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
+import static uk.gov.pay.api.model.PaymentError.Code.RESOURCE_ACCESS_FORBIDDEN;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 
 public class CreateChargeExceptionMapper implements ExceptionMapper<CreateChargeException> {
@@ -51,6 +52,10 @@ public class CreateChargeExceptionMapper implements ExceptionMapper<CreateCharge
                 case MANDATE_STATE_INVALID:
                     statusCode = HttpStatus.CONFLICT_409;
                     paymentError = aPaymentError(CREATE_PAYMENT_MANDATE_STATE_INVALID);
+                    break;
+                case TELEPHONE_PAYMENT_NOTIFICATIONS_NOT_ALLOWED:
+                    statusCode = HttpStatus.FORBIDDEN_403;
+                    paymentError = aPaymentError(RESOURCE_ACCESS_FORBIDDEN);
                     break;
                 default:
                     paymentError = aPaymentError(CREATE_PAYMENT_CONNECTOR_ERROR);

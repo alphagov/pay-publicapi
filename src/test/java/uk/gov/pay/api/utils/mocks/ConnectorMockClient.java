@@ -40,6 +40,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.eclipse.jetty.http.HttpStatus.ACCEPTED_202;
 import static org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
 import static org.eclipse.jetty.http.HttpStatus.CREATED_201;
+import static org.eclipse.jetty.http.HttpStatus.FORBIDDEN_403;
 import static org.eclipse.jetty.http.HttpStatus.INTERNAL_SERVER_ERROR_500;
 import static org.eclipse.jetty.http.HttpStatus.NOT_FOUND_404;
 import static org.eclipse.jetty.http.HttpStatus.NO_CONTENT_204;
@@ -53,6 +54,7 @@ import static uk.gov.pay.commons.model.ErrorIdentifier.GENERIC;
 import static uk.gov.pay.commons.model.ErrorIdentifier.MOTO_NOT_ALLOWED;
 import static uk.gov.pay.commons.model.ErrorIdentifier.REFUND_AMOUNT_AVAILABLE_MISMATCH;
 import static uk.gov.pay.commons.model.ErrorIdentifier.REFUND_NOT_AVAILABLE;
+import static uk.gov.pay.commons.model.ErrorIdentifier.TELEPHONE_PAYMENT_NOTIFICATIONS_NOT_ALLOWED;
 import static uk.gov.pay.commons.model.ErrorIdentifier.ZERO_AMOUNT_NOT_ALLOWED;
 
 public class ConnectorMockClient extends BaseConnectorMockClient {
@@ -316,6 +318,10 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     public void respondMotoPaymentNotAllowed(String gatewayAccountId) {
         mockCreateCharge(gatewayAccountId, withStatusAndErrorMessage(UNPROCESSABLE_ENTITY_422, "anything", MOTO_NOT_ALLOWED));
+    }
+
+    public void respondTelephoneNotificationsNotEnabled(String gatewayAccountId) {
+        mockCreateTelephoneCharge(gatewayAccountId, withStatusAndErrorMessage(FORBIDDEN_403, "anything", TELEPHONE_PAYMENT_NOTIFICATIONS_NOT_ALLOWED));
     }
 
     public void respondWithChargeFound(String chargeTokenId, String gatewayAccountId, ChargeResponseFromConnector chargeResponseFromConnector) {
