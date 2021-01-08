@@ -1,6 +1,7 @@
 package uk.gov.pay.api.service.telephone;
 
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpStatus;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateChargeException;
@@ -28,19 +29,16 @@ public class CreateTelephonePaymentService {
         this.connectorUriGenerator = connectorUriGenerator;
     }
     
-    public Response getConnectorResponse(Account account, CreateTelephonePaymentRequest createTelephonePaymentRequest) {
+    public Pair<TelephonePaymentResponse, Integer> create(Account account, CreateTelephonePaymentRequest createTelephonePaymentRequest) {
         Response connectorResponse = createTelephoneCharge(account, createTelephonePaymentRequest);
 
         if (!createdSuccessfully(connectorResponse)) {
             throw new CreateChargeException(connectorResponse);
         }
-        return connectorResponse;
-    }
-    
-    public TelephonePaymentResponse create(Response connectorResponse) {
 
         ChargeFromResponse chargeFromResponse = connectorResponse.readEntity(ChargeFromResponse.class);
-        return TelephonePaymentResponse.from(chargeFromResponse);
+        TelephonePaymentResponse telephonePaymentResponse = TelephonePaymentResponse.from(chargeFromResponse);
+        return Pair.of(telephonePaymentResponse, connectorResponse.getStatus());
     }
 
     private boolean createdSuccessfully(Response connectorResponse) {

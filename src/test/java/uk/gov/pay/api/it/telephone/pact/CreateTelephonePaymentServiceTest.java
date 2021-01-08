@@ -1,6 +1,7 @@
 package uk.gov.pay.api.it.telephone.pact;
 
 import au.com.dius.pact.consumer.PactVerification;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,6 +17,7 @@ import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
 import uk.gov.pay.api.model.telephone.PaymentOutcome;
 import uk.gov.pay.api.model.telephone.Supplemental;
+import uk.gov.pay.api.model.telephone.TelephonePaymentResponse;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.telephone.CreateTelephonePaymentService;
 import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
@@ -23,6 +25,8 @@ import uk.gov.pay.commons.testing.pact.consumers.Pacts;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
+
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -73,28 +77,30 @@ public class CreateTelephonePaymentServiceTest {
                 .withFirstSixDigits("654321")
                 .withTelephoneNumber("+447700900796")
                 .build();
-        Response connectorResponse = createTelephonePaymentService.getConnectorResponse(account, createTelephonePaymentNotification);
-        ChargeFromResponse chargeFromResponse = connectorResponse.readEntity(ChargeFromResponse.class);
+        Pair<TelephonePaymentResponse, Integer> responseAndStatusCode = createTelephonePaymentService.create(account, createTelephonePaymentNotification);
+        TelephonePaymentResponse telephonePaymentResponse = responseAndStatusCode.getLeft();
+        int statusCode = responseAndStatusCode.getRight();
+        
+        assertThat(statusCode, is(201));
 
-        assertThat(chargeFromResponse.getAmount(), is(12000L));
-        assertThat(chargeFromResponse.getReference(), is("MRPC12345"));
-        assertThat(chargeFromResponse.getDescription(), is("New passport application"));
-        assertThat(chargeFromResponse.getCreatedDate(), is("2018-02-21T16:04:25.000Z"));
-        assertThat(chargeFromResponse.getAuthorisedDate(), is("2018-02-21T16:05:33.000Z"));
-        assertThat(chargeFromResponse.getProcessorId(), is("183f2j8923j8"));
-        assertThat(chargeFromResponse.getProviderId(), is("17498-8412u9-1273891239"));
-        assertThat(chargeFromResponse.getAuthCode(), is("auth12345"));
-        assertThat(chargeFromResponse.getPaymentOutcome().getStatus(), is("failed"));
-        assertThat(chargeFromResponse.getPaymentOutcome().getCode().get(), is("P0010"));
-        assertThat(chargeFromResponse.getPaymentOutcome().getSupplemental().get().getErrorCode().get(), is("ECKOH01234"));
-        assertThat(chargeFromResponse.getPaymentOutcome().getSupplemental().get().getErrorMessage().get(), is("textual message describing error code"));
-        assertThat(chargeFromResponse.getCardDetails().getCardBrand(), is("master-card"));
-        assertThat(chargeFromResponse.getCardDetails().getCardHolderName(), is("J Doe"));
-        assertThat(chargeFromResponse.getCardDetails().getExpiryDate(), is("02/19"));
-        assertThat(chargeFromResponse.getCardDetails().getLastDigitsCardNumber(), is("1234"));
-        assertThat(chargeFromResponse.getCardDetails().getFirstDigitsCardNumber(), is("654321"));
-        assertThat(chargeFromResponse.getCardDetails().getBillingAddress().isPresent(), is(false));
-        assertThat(chargeFromResponse.getEmail(), is("j.doe@example.com"));
-        assertThat(chargeFromResponse.getTelephoneNumber(), is("+447700900796"));
+        assertThat(telephonePaymentResponse.getAmount(), is(12000L));
+        assertThat(telephonePaymentResponse.getReference(), is("MRPC12345"));
+        assertThat(telephonePaymentResponse.getDescription(), is("New passport application"));
+        assertThat(telephonePaymentResponse.getCreatedDate(), is(Optional.of("2018-02-21T16:04:25.000Z")));
+        assertThat(telephonePaymentResponse.getAuthorisedDate(), is(Optional.of("2018-02-21T16:05:33.000Z")));
+        assertThat(telephonePaymentResponse.getProcessorId(), is("183f2j8923j8"));
+        assertThat(telephonePaymentResponse.getProviderId(), is("17498-8412u9-1273891239"));
+        assertThat(telephonePaymentResponse.getAuthCode(), is(Optional.of("auth12345")));
+        assertThat(telephonePaymentResponse.getPaymentOutcome().getStatus(), is("failed"));
+        assertThat(telephonePaymentResponse.getPaymentOutcome().getCode().get(), is("P0010"));
+        assertThat(telephonePaymentResponse.getPaymentOutcome().getSupplemental().get().getErrorCode().get(), is("ECKOH01234"));
+        assertThat(telephonePaymentResponse.getPaymentOutcome().getSupplemental().get().getErrorMessage().get(), is("textual message describing error code"));
+        assertThat(telephonePaymentResponse.getCardType(), is("master-card"));
+        assertThat(telephonePaymentResponse.getNameOnCard(), is(Optional.of("J Doe")));
+        assertThat(telephonePaymentResponse.getCardExpiry(), is("02/19"));
+        assertThat(telephonePaymentResponse.getLastFourDigits(), is("1234"));
+        assertThat(telephonePaymentResponse.getFirstSixDigits(), is("654321"));
+        assertThat(telephonePaymentResponse.getEmailAddress(), is(Optional.of("j.doe@example.com")));
+        assertThat(telephonePaymentResponse.getTelephoneNumber(), is(Optional.of("+447700900796")));
     }
 }

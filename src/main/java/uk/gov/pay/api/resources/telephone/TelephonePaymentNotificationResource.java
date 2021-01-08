@@ -3,6 +3,7 @@ package uk.gov.pay.api.resources.telephone;
 import com.codahale.metrics.annotation.Timed;
 import io.dropwizard.auth.Auth;
 import io.swagger.annotations.Api;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.auth.Account;
@@ -40,12 +41,11 @@ public class TelephonePaymentNotificationResource {
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     public Response newPayment(@Auth Account account, @Valid CreateTelephonePaymentRequest createTelephonePaymentRequest) {
+        Pair<TelephonePaymentResponse, Integer> responseAndStatusCode = createTelephonePaymentService.create(account, createTelephonePaymentRequest);
+        var response = responseAndStatusCode.getLeft();
+        var statusCode = responseAndStatusCode.getRight();
 
-        Response connectorResponse = createTelephonePaymentService.getConnectorResponse(account, createTelephonePaymentRequest);
-        TelephonePaymentResponse telephonePaymentResponse = createTelephonePaymentService
-                .create(connectorResponse);
-
-        return Response.status(connectorResponse.getStatus()).entity(telephonePaymentResponse).build();
+        return Response.status(statusCode).entity(response).build();
     }
 }
 
