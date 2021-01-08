@@ -146,4 +146,15 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .body("state.status", is("success"))
                 .body("state.finished", is(true));
     }
+
+    @Test
+    public void telephonePaymentNotificationsNotEnabledForAccount_shouldRespondWith403() {
+        connectorMockClient.respondTelephoneNotificationsNotEnabled(GATEWAY_ACCOUNT_ID);
+
+        postPaymentResponse(toJson(requestBody))
+                .statusCode(403)
+                .contentType(JSON)
+                .body("code", is("P0930"))
+                .body("description", is("Access to this resource is not enabled for this account. Please contact support."));
+    }
 }
