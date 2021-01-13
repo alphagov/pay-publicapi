@@ -14,7 +14,7 @@
         <wiremock.version>2.27.2</wiremock.version>
         <swagger.jersey2.version>1.6.2</swagger.jersey2.version>
         <hamcrest.version>2.2</hamcrest.version>
-        <jackson.version>2.12.0</jackson.version>
+        <jackson.version>2.12.1</jackson.version>
         <logback.version>1.2.3</logback.version>
         <docker-client.version>8.16.0</docker-client.version>
         <pay-java-commons.version>1.0.20210107154625</pay-java-commons.version>
