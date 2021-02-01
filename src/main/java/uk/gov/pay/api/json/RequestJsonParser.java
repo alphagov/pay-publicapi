@@ -18,6 +18,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -50,10 +51,13 @@ import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_REFUND_MISSI
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_REFUND_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
+import static uk.gov.pay.commons.model.Source.CARD_AGENT_INITIATED_MOTO;
 import static uk.gov.pay.commons.model.Source.CARD_API;
 import static uk.gov.pay.commons.model.Source.CARD_PAYMENT_LINK;
 
 class RequestJsonParser {
+
+    private static final Set<Source> ALLOWED_SOURCES = EnumSet.of(CARD_PAYMENT_LINK, CARD_AGENT_INITIATED_MOTO);
 
     private static ObjectMapper objectMapper = new ObjectMapper();
     private static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
@@ -240,13 +244,13 @@ class RequestJsonParser {
             JsonNode internalNode = paymentRequest.get(INTERNAL);
 
             if (internalNode.has(SOURCE_FIELD_NAME)) {
-                String errorMessage = "Accepted value is only CARD_PAYMENT_LINK";
+                String errorMessage = "Accepted values are only CARD_PAYMENT_LINK, CARD_AGENT_INITIATED_MOTO";
                 PaymentError paymentError = aPaymentError(SOURCE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, errorMessage);
                 String sourceString = validateSkipNullValueAndGetString(internalNode.get(SOURCE_FIELD_NAME), paymentError);
 
                 try {
                     Source source = Source.valueOf(sourceString);
-                    if (CARD_PAYMENT_LINK.equals(source)) {
+                    if (ALLOWED_SOURCES.contains(source)) {
                         return source;
                     }
                     throw new BadRequestException(paymentError);

@@ -20,6 +20,7 @@ import static org.junit.Assert.assertThrows;
 import static uk.gov.pay.api.json.RequestJsonParser.parsePaymentRequest;
 import static uk.gov.pay.api.json.RequestJsonParser.parseRefundRequest;
 import static uk.gov.pay.api.matcher.BadRequestExceptionMatcher.aBadRequestExceptionWithError;
+import static uk.gov.pay.commons.model.Source.CARD_AGENT_INITIATED_MOTO;
 import static uk.gov.pay.commons.model.Source.CARD_API;
 import static uk.gov.pay.commons.model.Source.CARD_PAYMENT_LINK;
 
@@ -473,7 +474,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_shouldParseSourceCorrectly() throws Exception {
+    public void parsePaymentRequest_shouldParseCardPaymentLinkSourceCorrectly() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -487,6 +488,23 @@ public class RequestJsonParserTest {
         JsonNode jsonNode = objectMapper.readTree(payload);
         CreateCardPaymentRequest paymentRequest = parsePaymentRequest(jsonNode);
         assertThat(paymentRequest.getInternal().get().getSource().get(), is(CARD_PAYMENT_LINK));
+    }
+
+    @Test
+    public void parsePaymentRequest_shouldCardAgentInitiatedMotoSourceCorrectly() throws Exception {
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "\"internal\": {\n" +
+                "\"source\": \"CARD_AGENT_INITIATED_MOTO\"\n" +
+                "}" + "}";
+
+        JsonNode jsonNode = objectMapper.readTree(payload);
+        CreateCardPaymentRequest paymentRequest = parsePaymentRequest(jsonNode);
+        assertThat(paymentRequest.getInternal().get().getSource().get(), is(CARD_AGENT_INITIATED_MOTO));
     }
 
     @Test
@@ -505,7 +523,7 @@ public class RequestJsonParserTest {
 
         BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parsePaymentRequest(jsonNode));
         assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
-                "Invalid attribute value: source. Accepted value is only CARD_PAYMENT_LINK"));
+                "Invalid attribute value: source. Accepted values are only CARD_PAYMENT_LINK, CARD_AGENT_INITIATED_MOTO"));
     }
 
     @Test
@@ -524,6 +542,6 @@ public class RequestJsonParserTest {
 
         BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parsePaymentRequest(jsonNode));
         assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
-                "Invalid attribute value: source. Accepted value is only CARD_PAYMENT_LINK"));
+                "Invalid attribute value: source. Accepted values are only CARD_PAYMENT_LINK, CARD_AGENT_INITIATED_MOTO"));
     }
 }
