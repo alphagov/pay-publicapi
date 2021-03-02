@@ -1,4 +1,4 @@
-package uk.gov.pay.api.it.directdebit.pact;
+package uk.gov.pay.api.it;
 
 import au.com.dius.pact.consumer.PactVerification;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
@@ -40,7 +40,6 @@ public class CancelPaymentIT {
             PublicApi.class,
             resourceFilePath("config/test-config.yaml"),
             config("connectorUrl", "http://localhost:" + connector.getConfig().getPort()),
-            config("connectorDDUrl", "http://localhost"),
             config("publicAuthUrl", "http://localhost:" + publicAuthPort + "/v1/api/auth"));
 
     @Before
