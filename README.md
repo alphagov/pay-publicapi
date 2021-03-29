@@ -43,10 +43,7 @@ values:
 
 Read our  [developer documentation](https://docs.payments.service.gov.uk/#gov-uk-pay-documentation) for guidance on using the API.
 
-For more detailed information you can use our:
-
-- [API browser](https://govukpay-api-browser.cloudapps.digital/#gov-uk-pay-api)
-- [Swagger file](https://github.com/alphagov/pay-publicapi/blob/master/swagger/swagger.json)
+For more detailed information you can use our [swagger file](https://github.com/alphagov/pay-publicapi/blob/master/swagger/swagger.json)
 
 ## Dependencies
 
