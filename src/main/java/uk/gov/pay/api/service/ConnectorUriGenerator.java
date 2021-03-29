@@ -14,7 +14,7 @@ import java.util.Optional;
 
 import static java.lang.String.format;
 import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
-import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
+import static uk.gov.service.payments.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public class ConnectorUriGenerator {
     private final PublicApiConfig configuration;

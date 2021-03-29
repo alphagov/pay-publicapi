@@ -23,7 +23,7 @@ import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
-import static uk.gov.pay.commons.testing.port.PortFactory.findFreePort;
+import static uk.gov.service.payments.commons.testing.port.PortFactory.findFreePort;
 
 public abstract class TelephonePaymentResourceITBase {
     //Must use same secret set in test-config.xml's apiKeyHmacSecret

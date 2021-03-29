@@ -19,9 +19,9 @@ import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.search.card.PaymentForSearchResult;
 import uk.gov.pay.api.service.PaymentUriGenerator;
-import uk.gov.pay.commons.model.SupportedLanguage;
-import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
-import uk.gov.pay.commons.testing.pact.consumers.Pacts;
+import uk.gov.service.payments.commons.model.SupportedLanguage;
+import uk.gov.service.payments.commons.testing.pact.consumers.PactProviderRule;
+import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
 
 import javax.ws.rs.client.Client;
 import java.util.Map;

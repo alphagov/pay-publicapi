@@ -1,7 +1,7 @@
 package uk.gov.pay.api.validation;
 
 import uk.gov.pay.api.exception.PaymentValidationException;
-import uk.gov.pay.commons.validation.DateValidator;
+import uk.gov.service.payments.commons.validation.DateValidator;
 
 import java.util.LinkedList;
 import java.util.List;

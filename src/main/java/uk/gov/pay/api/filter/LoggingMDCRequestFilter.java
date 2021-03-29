@@ -12,11 +12,11 @@ import java.security.Principal;
 import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static uk.gov.pay.logging.LoggingKeys.GATEWAY_ACCOUNT_ID;
-import static uk.gov.pay.logging.LoggingKeys.MANDATE_EXTERNAL_ID;
-import static uk.gov.pay.logging.LoggingKeys.PAYMENT_EXTERNAL_ID;
-import static uk.gov.pay.logging.LoggingKeys.REFUND_EXTERNAL_ID;
-import static uk.gov.pay.logging.LoggingKeys.REMOTE_ADDRESS;
+import static uk.gov.service.payments.logging.LoggingKeys.GATEWAY_ACCOUNT_ID;
+import static uk.gov.service.payments.logging.LoggingKeys.MANDATE_EXTERNAL_ID;
+import static uk.gov.service.payments.logging.LoggingKeys.PAYMENT_EXTERNAL_ID;
+import static uk.gov.service.payments.logging.LoggingKeys.REFUND_EXTERNAL_ID;
+import static uk.gov.service.payments.logging.LoggingKeys.REMOTE_ADDRESS;
 
 @Provider
 @Priority(Priorities.USER)

@@ -1,7 +1,7 @@
 package uk.gov.pay.api.validation;
 
-import uk.gov.pay.commons.validation.DateTimeUtils;
-import uk.gov.pay.commons.validation.DateValidator;
+import uk.gov.service.payments.commons.validation.DateTimeUtils;
+import uk.gov.service.payments.commons.validation.DateValidator;
 
 import java.util.List;
 

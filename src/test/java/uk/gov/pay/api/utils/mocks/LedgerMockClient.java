@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
 import uk.gov.pay.api.model.links.Link;
 import uk.gov.pay.api.utils.JsonStringBuilder;
-import uk.gov.pay.commons.model.ErrorIdentifier;
+import uk.gov.service.payments.commons.model.ErrorIdentifier;
 
 import java.util.Arrays;
 import java.util.HashMap;

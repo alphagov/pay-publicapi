@@ -1,8 +1,8 @@
 package uk.gov.pay.api.it.fixtures;
 
 import uk.gov.pay.api.model.PaymentSettlementSummary;
-import uk.gov.pay.commons.model.SupportedLanguage;
-import uk.gov.pay.commons.validation.DateTimeUtils;
+import uk.gov.service.payments.commons.model.SupportedLanguage;
+import uk.gov.service.payments.commons.validation.DateTimeUtils;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Random;
 
 import static java.util.UUID.randomUUID;
-import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
+import static uk.gov.service.payments.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public abstract class PaymentResultBuilder {
 

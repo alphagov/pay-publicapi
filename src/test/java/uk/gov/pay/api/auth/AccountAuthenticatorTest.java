@@ -40,8 +40,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
-import static uk.gov.pay.commons.model.ErrorIdentifier.AUTH_TOKEN_INVALID;
-import static uk.gov.pay.commons.model.ErrorIdentifier.AUTH_TOKEN_REVOKED;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.AUTH_TOKEN_INVALID;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.AUTH_TOKEN_REVOKED;
 
 @ExtendWith(MockitoExtension.class)
 public class AccountAuthenticatorTest {

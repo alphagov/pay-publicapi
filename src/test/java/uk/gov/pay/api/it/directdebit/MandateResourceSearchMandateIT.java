@@ -28,7 +28,7 @@ import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 import static uk.gov.pay.api.model.directdebit.mandates.MandateConnectorResponse.MandateConnectorResponseBuilder.aMandateConnectorResponse;
 import static uk.gov.pay.api.model.search.directdebit.MandateSearchConnectorResponse.SearchMandateConnectorResponseBuilder.aSearchMandateConnectorResponse;
 import static uk.gov.pay.api.utils.Urls.mandateLocationFor;
-import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
+import static uk.gov.service.payments.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public class MandateResourceSearchMandateIT extends PaymentResourceITestBase {
 

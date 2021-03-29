@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.exception.CreateMandateException;
 import uk.gov.pay.api.model.directdebit.mandates.MandateError;
 import uk.gov.pay.api.model.directdebit.mandates.MandateError.Code;
-import uk.gov.pay.commons.model.ErrorIdentifier;
+import uk.gov.service.payments.commons.model.ErrorIdentifier;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;

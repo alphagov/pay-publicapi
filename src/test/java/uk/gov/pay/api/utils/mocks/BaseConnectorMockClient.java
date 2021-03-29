@@ -17,7 +17,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static java.lang.String.format;
 import static javax.ws.rs.HttpMethod.GET;
 import static javax.ws.rs.HttpMethod.POST;
-import static uk.gov.pay.commons.model.Source.CARD_API;
+import static uk.gov.service.payments.commons.model.Source.CARD_API;
 
 public abstract class BaseConnectorMockClient {
 
