@@ -12,7 +12,7 @@ import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.CreateChargeRequestParams;
 import uk.gov.pay.api.utils.mocks.CreateChargeRequestParams.CreateChargeRequestParamsBuilder;
-import uk.gov.pay.commons.model.charge.ExternalMetadata;
+import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
 
 import java.util.HashMap;
 import java.util.List;

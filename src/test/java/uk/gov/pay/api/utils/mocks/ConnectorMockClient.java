@@ -12,8 +12,8 @@ import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.links.Link;
 import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
 import uk.gov.pay.api.utils.JsonStringBuilder;
-import uk.gov.pay.commons.model.ErrorIdentifier;
-import uk.gov.pay.commons.model.SupportedLanguage;
+import uk.gov.service.payments.commons.model.ErrorIdentifier;
+import uk.gov.service.payments.commons.model.SupportedLanguage;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -50,12 +50,12 @@ import static org.eclipse.jetty.http.HttpStatus.UNPROCESSABLE_ENTITY_422;
 import static uk.gov.pay.api.it.GetPaymentIT.AWAITING_CAPTURE_REQUEST;
 import static uk.gov.pay.api.it.fixtures.PaymentSingleResultBuilder.aSuccessfulSinglePayment;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
-import static uk.gov.pay.commons.model.ErrorIdentifier.GENERIC;
-import static uk.gov.pay.commons.model.ErrorIdentifier.MOTO_NOT_ALLOWED;
-import static uk.gov.pay.commons.model.ErrorIdentifier.REFUND_AMOUNT_AVAILABLE_MISMATCH;
-import static uk.gov.pay.commons.model.ErrorIdentifier.REFUND_NOT_AVAILABLE;
-import static uk.gov.pay.commons.model.ErrorIdentifier.TELEPHONE_PAYMENT_NOTIFICATIONS_NOT_ALLOWED;
-import static uk.gov.pay.commons.model.ErrorIdentifier.ZERO_AMOUNT_NOT_ALLOWED;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.GENERIC;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.MOTO_NOT_ALLOWED;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.REFUND_AMOUNT_AVAILABLE_MISMATCH;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.REFUND_NOT_AVAILABLE;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.TELEPHONE_PAYMENT_NOTIFICATIONS_NOT_ALLOWED;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.ZERO_AMOUNT_NOT_ALLOWED;
 
 public class ConnectorMockClient extends BaseConnectorMockClient {
 

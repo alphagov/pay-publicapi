@@ -13,7 +13,7 @@ import uk.gov.pay.api.model.directdebit.mandates.MandateConnectorRequest;
 import uk.gov.pay.api.model.directdebit.mandates.MandateState;
 import uk.gov.pay.api.model.search.directdebit.MandateSearchConnectorResponse;
 import uk.gov.pay.api.utils.JsonStringBuilder;
-import uk.gov.pay.commons.model.ErrorIdentifier;
+import uk.gov.service.payments.commons.model.ErrorIdentifier;
 
 import java.util.List;
 import java.util.Map;
@@ -37,8 +37,8 @@ import static org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
 import static org.eclipse.jetty.http.HttpStatus.CREATED_201;
 import static org.eclipse.jetty.http.HttpStatus.FORBIDDEN_403;
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
-import static uk.gov.pay.commons.model.ErrorIdentifier.GENERIC;
-import static uk.gov.pay.commons.model.ErrorIdentifier.GO_CARDLESS_ACCOUNT_NOT_LINKED;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.GENERIC;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.GO_CARDLESS_ACCOUNT_NOT_LINKED;
 
 public class ConnectorDDMockClient extends BaseConnectorMockClient {
 

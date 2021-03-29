@@ -9,9 +9,9 @@ import uk.gov.pay.api.model.CreateCardPaymentRequestBuilder;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.PaymentError.Code;
-import uk.gov.pay.commons.model.Source;
-import uk.gov.pay.commons.model.SupportedLanguage;
-import uk.gov.pay.commons.model.charge.ExternalMetadata;
+import uk.gov.service.payments.commons.model.Source;
+import uk.gov.service.payments.commons.model.SupportedLanguage;
+import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -51,9 +51,9 @@ import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_REFUND_MISSI
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_REFUND_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
-import static uk.gov.pay.commons.model.Source.CARD_AGENT_INITIATED_MOTO;
-import static uk.gov.pay.commons.model.Source.CARD_API;
-import static uk.gov.pay.commons.model.Source.CARD_PAYMENT_LINK;
+import static uk.gov.service.payments.commons.model.Source.CARD_AGENT_INITIATED_MOTO;
+import static uk.gov.service.payments.commons.model.Source.CARD_API;
+import static uk.gov.service.payments.commons.model.Source.CARD_PAYMENT_LINK;
 
 class RequestJsonParser {
 

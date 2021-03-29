@@ -26,7 +26,7 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.utils.WiremockStubbing.stubPublicAuthV1ApiAuth;
-import static uk.gov.pay.commons.testing.port.PortFactory.findFreePort;
+import static uk.gov.service.payments.commons.testing.port.PortFactory.findFreePort;
 
 public class CachingAuthenticatorIT {
     

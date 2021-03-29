@@ -34,7 +34,7 @@ import static uk.gov.pay.api.it.fixtures.PaymentResultBuilder.DEFAULT_CREATED_DA
 import static uk.gov.pay.api.it.fixtures.PaymentResultBuilder.DEFAULT_RETURN_URL;
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.aSuccessfulSearchPayment;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
-import static uk.gov.pay.commons.testing.port.PortFactory.findFreePort;
+import static uk.gov.service.payments.commons.testing.port.PortFactory.findFreePort;
 
 public class TransactionsResourceIT {
 

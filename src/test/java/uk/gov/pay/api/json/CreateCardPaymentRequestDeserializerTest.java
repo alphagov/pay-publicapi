@@ -14,7 +14,7 @@ import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CreateCardPaymentRequest;
 import uk.gov.pay.api.model.PrefilledCardholderDetails;
-import uk.gov.pay.commons.model.SupportedLanguage;
+import uk.gov.service.payments.commons.model.SupportedLanguage;
 
 import java.util.Optional;
 
@@ -24,7 +24,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.pay.api.matcher.BadRequestExceptionMatcher.aBadRequestExceptionWithError;
-import static uk.gov.pay.commons.model.Source.CARD_PAYMENT_LINK;
+import static uk.gov.service.payments.commons.model.Source.CARD_PAYMENT_LINK;
 
 public class CreateCardPaymentRequestDeserializerTest {
 

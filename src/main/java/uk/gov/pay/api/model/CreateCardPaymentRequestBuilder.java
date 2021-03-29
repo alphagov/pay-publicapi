@@ -1,8 +1,8 @@
 package uk.gov.pay.api.model;
 
-import uk.gov.pay.commons.model.Source;
-import uk.gov.pay.commons.model.SupportedLanguage;
-import uk.gov.pay.commons.model.charge.ExternalMetadata;
+import uk.gov.service.payments.commons.model.Source;
+import uk.gov.service.payments.commons.model.SupportedLanguage;
+import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
 
 public class CreateCardPaymentRequestBuilder {
     private ExternalMetadata metadata;

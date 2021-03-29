@@ -11,7 +11,7 @@ import org.junit.runner.RunWith;
 import uk.gov.pay.api.model.directdebit.mandates.MandateConnectorRequest;
 import uk.gov.pay.api.model.directdebit.mandates.MandateState;
 import uk.gov.pay.api.resources.directdebit.DirectDebitResourceITBase;
-import uk.gov.pay.commons.validation.DateTimeUtils;
+import uk.gov.service.payments.commons.validation.DateTimeUtils;
 
 import javax.ws.rs.core.HttpHeaders;
 import java.time.ZonedDateTime;
@@ -28,8 +28,8 @@ import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 import static uk.gov.pay.api.utils.Urls.directDebitFrontendSecureUrl;
 import static uk.gov.pay.api.utils.Urls.mandateLocationFor;
 import static uk.gov.pay.api.utils.mocks.CreateMandateRequestParams.CreateMandateRequestParamsBuilder.aCreateMandateRequestParams;
-import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
-import static uk.gov.pay.commons.testing.matchers.HamcrestMatchers.optionalMatcher;
+import static uk.gov.service.payments.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
+import static uk.gov.service.payments.commons.testing.matchers.HamcrestMatchers.optionalMatcher;
 
 @RunWith(JUnitParamsRunner.class)
 public class CreateMandateIT extends DirectDebitResourceITBase {

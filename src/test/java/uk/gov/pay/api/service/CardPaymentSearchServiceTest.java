@@ -16,8 +16,8 @@ import uk.gov.pay.api.exception.SearchPaymentsException;
 import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.search.PaginationDecorator;
-import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
-import uk.gov.pay.commons.testing.pact.consumers.Pacts;
+import uk.gov.service.payments.commons.testing.pact.consumers.PactProviderRule;
+import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;

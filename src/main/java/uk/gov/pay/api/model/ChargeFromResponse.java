@@ -8,14 +8,13 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import uk.gov.pay.api.model.telephone.PaymentOutcome;
 import uk.gov.pay.api.utils.CustomSupportedLanguageDeserializer;
-import uk.gov.pay.commons.api.json.ExternalMetadataDeserialiser;
-import uk.gov.pay.commons.model.SupportedLanguage;
-import uk.gov.pay.commons.model.charge.ExternalMetadata;
+import uk.gov.service.payments.commons.api.json.ExternalMetadataDeserialiser;
+import uk.gov.service.payments.commons.model.SupportedLanguage;
+import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)

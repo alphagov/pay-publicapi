@@ -12,8 +12,8 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.TokenPaymentType;
-import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
-import uk.gov.pay.commons.testing.pact.consumers.Pacts;
+import uk.gov.service.payments.commons.testing.pact.consumers.PactProviderRule;
+import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;

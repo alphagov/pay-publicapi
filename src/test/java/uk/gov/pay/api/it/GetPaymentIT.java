@@ -15,8 +15,8 @@ import uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 import uk.gov.pay.api.utils.mocks.LedgerMockClient;
 import uk.gov.pay.api.utils.mocks.TransactionFromLedgerFixture;
-import uk.gov.pay.commons.model.SupportedLanguage;
-import uk.gov.pay.commons.validation.DateTimeUtils;
+import uk.gov.service.payments.commons.model.SupportedLanguage;
+import uk.gov.service.payments.commons.validation.DateTimeUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,7 +40,7 @@ import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 import static uk.gov.pay.api.utils.mocks.TransactionEventFixture.TransactionEventFixtureBuilder.aTransactionEventFixture;
 import static uk.gov.pay.api.utils.mocks.TransactionFromLedgerFixture.TransactionFromLedgerBuilder.aTransactionFromLedgerFixture;
-import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
+import static uk.gov.service.payments.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public class GetPaymentIT extends PaymentResourceITestBase {
 

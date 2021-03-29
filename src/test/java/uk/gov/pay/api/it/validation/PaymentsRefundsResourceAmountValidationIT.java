@@ -10,7 +10,7 @@ import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
-import uk.gov.pay.commons.model.SupportedLanguage;
+import uk.gov.service.payments.commons.model.SupportedLanguage;
 
 import java.io.IOException;
 import java.io.InputStream;

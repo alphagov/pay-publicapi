@@ -12,7 +12,6 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.model.ChargeFromResponse;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
 import uk.gov.pay.api.model.telephone.PaymentOutcome;
@@ -20,12 +19,10 @@ import uk.gov.pay.api.model.telephone.Supplemental;
 import uk.gov.pay.api.model.telephone.TelephonePaymentResponse;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.telephone.CreateTelephonePaymentService;
-import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
-import uk.gov.pay.commons.testing.pact.consumers.Pacts;
+import uk.gov.service.payments.commons.testing.pact.consumers.PactProviderRule;
+import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
 
 import javax.ws.rs.client.Client;
-import javax.ws.rs.core.Response;
-
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;

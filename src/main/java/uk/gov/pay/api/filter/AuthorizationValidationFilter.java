@@ -21,7 +21,7 @@ import java.util.Optional;
 
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static net.logstash.logback.argument.StructuredArguments.kv;
-import static uk.gov.pay.logging.LoggingKeys.REMOTE_ADDRESS;
+import static uk.gov.service.payments.logging.LoggingKeys.REMOTE_ADDRESS;
 
 public class AuthorizationValidationFilter implements Filter {
 

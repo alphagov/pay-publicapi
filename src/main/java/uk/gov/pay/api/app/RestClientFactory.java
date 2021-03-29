@@ -1,7 +1,7 @@
 package uk.gov.pay.api.app;
 
 import uk.gov.pay.api.app.config.RestClientConfig;
-import uk.gov.pay.logging.RestClientLoggingFilter;
+import uk.gov.service.payments.logging.RestClientLoggingFilter;
 
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.client.Client;

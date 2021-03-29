@@ -11,8 +11,8 @@ import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
-import uk.gov.pay.commons.testing.pact.consumers.PactProviderRule;
-import uk.gov.pay.commons.testing.pact.consumers.Pacts;
+import uk.gov.service.payments.commons.testing.pact.consumers.PactProviderRule;
+import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
 
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
@@ -21,7 +21,7 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.Matchers.is;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.utils.WiremockStubbing.stubPublicAuthV1ApiAuth;
-import static uk.gov.pay.commons.testing.port.PortFactory.findFreePort;
+import static uk.gov.service.payments.commons.testing.port.PortFactory.findFreePort;
 
 public class CancelPaymentIT {
 

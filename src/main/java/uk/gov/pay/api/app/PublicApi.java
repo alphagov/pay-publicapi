@@ -56,9 +56,9 @@ import uk.gov.pay.api.resources.directdebit.DirectDebitPaymentsResource;
 import uk.gov.pay.api.resources.telephone.TelephonePaymentNotificationResource;
 import uk.gov.pay.api.validation.InjectingValidationFeature;
 import uk.gov.pay.api.validation.ReturnUrlValidator;
-import uk.gov.pay.logging.GovUkPayDropwizardRequestJsonLogLayoutFactory;
-import uk.gov.pay.logging.LoggingFilter;
-import uk.gov.pay.logging.LogstashConsoleAppenderFactory;
+import uk.gov.service.payments.logging.GovUkPayDropwizardRequestJsonLogLayoutFactory;
+import uk.gov.service.payments.logging.LoggingFilter;
+import uk.gov.service.payments.logging.LogstashConsoleAppenderFactory;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.util.concurrent.TimeUnit;

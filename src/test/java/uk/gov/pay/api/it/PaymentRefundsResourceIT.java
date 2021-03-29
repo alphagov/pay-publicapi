@@ -14,8 +14,8 @@ import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 import uk.gov.pay.api.utils.mocks.LedgerMockClient;
 import uk.gov.pay.api.utils.mocks.RefundTransactionFromLedgerFixture;
-import uk.gov.pay.commons.model.SupportedLanguage;
-import uk.gov.pay.commons.validation.DateTimeUtils;
+import uk.gov.service.payments.commons.model.SupportedLanguage;
+import uk.gov.service.payments.commons.validation.DateTimeUtils;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 import static uk.gov.pay.api.utils.mocks.RefundTransactionFromLedgerFixture.RefundTransactionFromLedgerBuilder.aRefundTransactionFromLedgerFixture;
-import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
+import static uk.gov.service.payments.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
 

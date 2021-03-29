@@ -7,7 +7,7 @@ import uk.gov.pay.api.model.directdebit.mandates.Payer;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorDDMockClient;
 import uk.gov.pay.api.utils.mocks.DDConnectorResponseToGetMandateParams;
-import uk.gov.pay.commons.validation.DateTimeUtils;
+import uk.gov.service.payments.commons.validation.DateTimeUtils;
 
 import java.time.ZonedDateTime;
 
@@ -19,7 +19,7 @@ import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 import static uk.gov.pay.api.utils.Urls.directDebitFrontendSecureUrl;
 import static uk.gov.pay.api.utils.Urls.mandateLocationFor;
 import static uk.gov.pay.api.utils.mocks.DDConnectorResponseToGetMandateParams.DDConnectorResponseToGetMandateParamsBuilder.aDDConnectorResponseToGetMandateParams;
-import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
+import static uk.gov.service.payments.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public class MandateResourceGetMandateIT extends PaymentResourceITestBase {
 

@@ -20,7 +20,7 @@ import uk.gov.pay.api.utils.ApiKeyGenerator;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
-import uk.gov.pay.commons.validation.DateTimeUtils;
+import uk.gov.service.payments.commons.validation.DateTimeUtils;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -37,8 +37,8 @@ import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.eclipse.jetty.http.HttpStatus.TOO_MANY_REQUESTS_429;
 import static org.junit.Assert.fail;
-import static uk.gov.pay.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
-import static uk.gov.pay.commons.testing.port.PortFactory.findFreePort;
+import static uk.gov.service.payments.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
+import static uk.gov.service.payments.commons.testing.port.PortFactory.findFreePort;
 
 abstract public class ResourcesFilterITestBase {
 

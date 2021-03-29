@@ -14,7 +14,7 @@ import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.LedgerMockClient;
-import uk.gov.pay.commons.validation.DateTimeUtils;
+import uk.gov.service.payments.commons.validation.DateTimeUtils;
 
 import java.io.InputStream;
 import java.time.ZonedDateTime;
