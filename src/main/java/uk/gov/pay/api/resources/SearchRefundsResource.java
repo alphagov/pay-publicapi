@@ -2,12 +2,6 @@ package uk.gov.pay.api.resources;
 
 import com.codahale.metrics.annotation.Timed;
 import io.dropwizard.auth.Auth;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -33,7 +27,6 @@ import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/")
-@Api(tags = "Refunding card payments", value = "/")
 @Tag(name = "Refunding card payments")
 @Produces({"application/json"})
 public class SearchRefundsResource {
@@ -67,40 +60,19 @@ public class SearchRefundsResource {
                             content = @Content(schema = @Schema(implementation = RefundError.class))),
             }
     )
-    @ApiOperation(
-            nickname = "Search refunds",
-            value = "Search refunds",
-            notes = "Search refunds by 'from' and 'to' date. " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
-            responseContainer = "List",
-            authorizations = {@Authorization("Authorization")},
-            code = 200)
-
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = SearchRefundsResults.class),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 422, message = "Invalid parameters. See Public API documentation for the correct data formats", response = RefundError.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = RefundError.class)})
-    public SearchRefundsResults searchRefunds(@Parameter(hidden = true) @ApiParam(value = "accountId", hidden = true)
+    public SearchRefundsResults searchRefunds(@Parameter(hidden = true)
                                   @Auth Account account,
                                   @Parameter(description = "From date of refunds to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z")
-                                  @ApiParam(value = "From date of refunds to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z", hidden = false)
                                   @QueryParam("from_date") String fromDate,
                                   @Parameter(description = "To date of refunds to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z")
-                                  @ApiParam(value = "To date of refunds to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z", hidden = false)
                                   @QueryParam("to_date") String toDate,
                                   @Parameter(description = "From settled date of refund to be searched (this date is inclusive). Example=2015-08-13")
-                                  @ApiParam("From settled date of refund to be searched (this date is inclusive). Example=2015-08-13")
                                   @QueryParam("from_settled_date") String fromSettledDate,
                                   @Parameter(description = "To settled date of refund to be searched (this date is inclusive). Example=2015-08-13")
-                                  @ApiParam("To settled date of refund to be searched (this date is inclusive). Example=2015-08-13")
                                   @QueryParam("to_settled_date") String toSettledDate,
                                   @Parameter(description = "Page number requested for the search, should be a positive integer (optional, defaults to 1)")
-                                  @ApiParam(value = "Page number requested for the search, should be a positive integer (optional, defaults to 1)", hidden = false)
                                   @QueryParam("page") String pageNumber,
                                   @Parameter(description = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)", hidden = false)
-                                  @ApiParam(value = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)", hidden = false)
                                   @QueryParam("display_size") String displaySize) {
 
         logger.info("Refunds search request - [ {} ]",

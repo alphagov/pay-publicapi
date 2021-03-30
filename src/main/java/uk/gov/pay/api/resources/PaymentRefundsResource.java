@@ -4,12 +4,6 @@ import com.codahale.metrics.annotation.Timed;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
 import io.dropwizard.auth.Auth;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -56,7 +50,6 @@ import static javax.ws.rs.core.UriBuilder.fromPath;
 
 @Path("/v1/payments/{paymentId}/refunds")
 @Tag(name = "Refunding card payments")
-@Api(tags = "Refunding card payments", value = "/refunds")
 @Produces({"application/json"})
 public class PaymentRefundsResource {
     private static final Logger logger = LoggerFactory.getLogger(PaymentRefundsResource.class);
@@ -102,23 +95,9 @@ public class PaymentRefundsResource {
                             content = @Content(schema = @Schema(implementation = PaymentError.class)))
             }
     )
-    @ApiOperation(
-            response = RefundForSearchResult.class,
-            nickname = "Get all refunds for a payment",
-            value = "Get all refunds for a payment",
-            notes = "Return refunds for a payment. " +
-                    "The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
-            code = 200,
-            authorizations = {@Authorization("Authorization")})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
-    public RefundsResponse getRefunds(@Parameter(hidden = true) @ApiParam(value = "accountId", hidden = true) @Auth Account account,
+    public RefundsResponse getRefunds(@Parameter(hidden = true) @Auth Account account,
                                       @PathParam("paymentId") String paymentId,
-                                      @Parameter(hidden = true) @ApiParam(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
+                                      @Parameter(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
 
         logger.info("Get refunds for payment request - paymentId={} using strategy={}", paymentId, strategyName);
 
@@ -151,25 +130,11 @@ public class PaymentRefundsResource {
             }
     )
     @Produces(APPLICATION_JSON)
-    @ApiOperation(response = RefundResult.class,
-            nickname = "Get a payment refund",
-            value = "Find payment refund by ID",
-            notes = "Return payment refund information by Refund ID " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
-            code = 200,
-            authorizations = {@Authorization("Authorization")})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
-    public RefundResponse getRefundById(@Parameter(hidden = true) @ApiParam(value = "accountId", hidden = true)
+    public RefundResponse getRefundById(@Parameter(hidden = true)
                                         @Auth Account account,
                                         @PathParam("paymentId") String paymentId,
                                         @PathParam("refundId") String refundId,
-                                        @Parameter(hidden = true) @ApiParam(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
+                                        @Parameter(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
 
         logger.info("Payment refund request - paymentId={}, refundId={}", paymentId, refundId);
 
@@ -204,26 +169,10 @@ public class PaymentRefundsResource {
                             content = @Content(schema = @Schema(implementation = PaymentError.class)))
             }
     )
-    @ApiOperation(
-            response = RefundResult.class,
-            nickname = "Submit a refund for a payment",
-            value = "Submit a refund for a payment",
-            notes = "Return issued refund information. " +
-                    "The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
-            code = 202,
-            authorizations = {@Authorization("Authorization")}
-    )
-    @ApiResponses(value = {
-            @ApiResponse(code = 202, message = "ACCEPTED"),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 404, message = "Not found", response = PaymentError.class),
-            @ApiResponse(code = 412, message = "Refund amount available mismatch"),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
-    public Response submitRefund(@Parameter(hidden = true) @ApiParam(value = "accountId", hidden = true) @Auth Account account,
-                                 @ApiParam(value = "paymentId", required = true) @PathParam("paymentId") String paymentId,
+    public Response submitRefund(@Parameter(hidden = true) @Auth Account account,
+                                 @PathParam("paymentId") String paymentId,
                                  @Parameter(required = true, description = "requestPayload")
-                                 @ApiParam(value = "requestPayload", required = true) CreatePaymentRefundRequest requestPayload) {
+                                 CreatePaymentRefundRequest requestPayload) {
         var strategy = new GetOnePaymentStrategy("", account, paymentId, getPaymentService);
 
         logger.info("Create a refund for payment request - paymentId={}", paymentId);
