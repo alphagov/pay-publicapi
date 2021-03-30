@@ -1,8 +1,6 @@
 package uk.gov.pay.api.model.links;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 
@@ -11,7 +9,6 @@ import java.util.List;
 import static javax.ws.rs.HttpMethod.GET;
 import static javax.ws.rs.HttpMethod.POST;
 
-@ApiModel(value = "PaymentLinks", description = "links for payment")
 @Schema(name = "PaymentLinks", description = "links for payment")
 public class PaymentLinks {
 
@@ -44,37 +41,30 @@ public class PaymentLinks {
     @JsonProperty(value = CAPTURE)
     private PostLink capture;
 
-    @ApiModelProperty(value = SELF, dataType = "uk.gov.pay.api.model.links.Link")
     public Link getSelf() {
         return self;
     }
 
-    @ApiModelProperty(value = NEXT_URL, dataType = "uk.gov.pay.api.model.links.Link")
     public Link getNextUrl() {
         return nextUrl;
     }
 
-    @ApiModelProperty(value = NEXT_URL_POST, dataType = "uk.gov.pay.api.model.links.PostLink")
     public PostLink getNextUrlPost() {
         return nextUrlPost;
     }
 
-    @ApiModelProperty(value = EVENTS, dataType = "uk.gov.pay.api.model.links.Link")
     public Link getEvents() {
         return events;
     }
 
-    @ApiModelProperty(value = REFUNDS, dataType = "uk.gov.pay.api.model.links.Link")
     public Link getRefunds() {
         return refunds;
     }
 
-    @ApiModelProperty(value = CANCEL, dataType = "uk.gov.pay.api.model.links.PostLink")
     public PostLink getCancel() {
         return cancel;
     }
 
-    @ApiModelProperty(value = CAPTURE, dataType = "uk.gov.pay.api.model.links.PostLink")
     public PostLink getCapture() {
         return capture;
     }

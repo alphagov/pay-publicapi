@@ -2,7 +2,6 @@ package uk.gov.pay.api.model.directdebit.mandates;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModel;
 import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.api.model.DirectDebitPaymentState;
 import uk.gov.pay.api.model.Payment;
@@ -18,9 +17,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 import static uk.gov.pay.api.model.directdebit.DirectDebitPaymentLinks.DirectDebitPaymentLinksBuilder.aDirectDebitPaymentLinks;
 import static uk.gov.pay.api.model.directdebit.mandates.DirectDebitPayment.DirectDebitPaymentBuilder.aDirectDebitPayment;
 
-
 @JsonInclude(value = JsonInclude.Include.NON_NULL)
-@ApiModel(value = "DirectDebitPayment")
 @Schema(description = "DirectDebitPayment")
 public class DirectDebitPayment extends Payment {
 

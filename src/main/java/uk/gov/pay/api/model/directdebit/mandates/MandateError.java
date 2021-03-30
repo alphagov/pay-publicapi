@@ -1,15 +1,12 @@
 package uk.gov.pay.api.model.directdebit.mandates;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static com.google.common.collect.ObjectArrays.concat;
 import static java.lang.String.format;
 
-@ApiModel(value = "MandateError", description = "A Mandate Error response")
 @Schema(name = "MandateError", description = "A Mandate Error response")
 @JsonInclude(NON_NULL)
 public class MandateError {
@@ -66,19 +63,16 @@ public class MandateError {
         this.description = format(code.getFormat(), concat(fieldName, parameters));
     }
 
-    @ApiModelProperty(example = "return_url")
     @Schema(example = "return_url")
     public String getField() {
         return field;
     }
 
-    @ApiModelProperty(example = "P0102")
     @Schema(example = "P0102")
     public String getCode() {
         return code.value();
     }
 
-    @ApiModelProperty(example = "Invalid attribute value: return_url. Must be a valid url.")
     @Schema(example = "Invalid attribute value: return_url. Must be a valid url.")
     public String getDescription() {
         return description;

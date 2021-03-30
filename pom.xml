@@ -12,7 +12,6 @@
         <guice.version>5.0.1</guice.version>
         <guava.version>29.0-jre</guava.version>
         <wiremock.version>2.27.2</wiremock.version>
-        <swagger.jersey2.version>1.6.2</swagger.jersey2.version>
         <hamcrest.version>2.2</hamcrest.version>
         <jackson.version>2.12.2</jackson.version>
         <logback.version>1.2.3</logback.version>
@@ -228,19 +227,6 @@
             <scope>test</scope>
         </dependency>
         <!-- swagger -->
-        <!-- the excluded dependencies are already pulled by io.dropwizard:dropwizard-jersey transitively -->
-        <dependency>
-            <groupId>io.swagger</groupId>
-            <artifactId>swagger-jersey2-jaxrs</artifactId>
-            <version>${swagger.jersey2.version}</version>
-            <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.glassfish.jersey.containers</groupId>
-                    <artifactId>jersey-container-servlet-core</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations</artifactId>

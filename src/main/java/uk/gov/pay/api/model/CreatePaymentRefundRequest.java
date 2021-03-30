@@ -1,15 +1,12 @@
 package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Optional;
 
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 
-@ApiModel(value = "PaymentRefundRequest", description = "The Payment Refund Request Payload")
 @Schema(name = "PaymentRefundRequest", description = "The Payment Refund Request Payload")
 public class CreatePaymentRefundRequest {
 
@@ -32,7 +29,6 @@ public class CreatePaymentRefundRequest {
         this.refundAmountAvailable = refundAmountAvailable;
     }
 
-    @ApiModelProperty(value = "Amount in pence. Can't be more than the available amount for refunds", required = true, allowableValues = "range[1, 10000000]", example = "150000")
     public int getAmount() {
         return amount;
     }
@@ -42,7 +38,6 @@ public class CreatePaymentRefundRequest {
      *
      * @return
      */
-    @ApiModelProperty(value = "Amount in pence. Total amount still available before issuing the refund", required = false, allowableValues = "range[1, 10000000]", example = "200000")
     public Optional<Integer> getRefundAmountAvailable() {
         return Optional.ofNullable(refundAmountAvailable);
     }

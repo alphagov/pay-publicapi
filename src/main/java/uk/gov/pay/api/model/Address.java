@@ -3,8 +3,6 @@ package uk.gov.pay.api.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.validation.constraints.Size;
@@ -14,7 +12,6 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(NON_NULL)
-@ApiModel(value = "Address", description = "A structure representing the billing address of a card")
 @Schema(name = "Address", description = "A structure representing the billing address of a card")
 public class Address {
 
@@ -44,31 +41,26 @@ public class Address {
         this.country = country;
     }
 
-    @ApiModelProperty(example = "address line 1")
     @Schema(example = "address line 1")
     public String getLine1() {
         return line1;
     }
 
-    @ApiModelProperty(example = "address line 2")
     @Schema(example = "address line 2")
     public String getLine2() {
         return line2;
     }
 
-    @ApiModelProperty(example = "AB1 2CD")
     @Schema(example = "AB1 2CD")
     public String getPostcode() {
         return postcode;
     }
 
-    @ApiModelProperty(example = "address city")
     @Schema(example = "address city")
     public String getCity() {
         return city;
     }
 
-    @ApiModelProperty(example = "GB")
     @Schema(example = "GB")
     public String getCountry() {
         return country;
