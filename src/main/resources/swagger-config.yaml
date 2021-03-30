@@ -3,6 +3,7 @@ resourceClasses:
   - uk.gov.pay.api.resources.PaymentRefundsResource
   - uk.gov.pay.api.resources.SearchRefundsResource
 readAllResources: false
+sortOutput: true
 openAPI:
   info:
     description: 'GOV.UK Pay API'
