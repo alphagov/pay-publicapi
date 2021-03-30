@@ -12,7 +12,6 @@ openAPI:
     - url: 'https://publicapi.payments.service.gov.uk'
   tags:
     - name: Card payments
-    - name: Direct Debit
     - name: Refunding card payments
 
   components:
