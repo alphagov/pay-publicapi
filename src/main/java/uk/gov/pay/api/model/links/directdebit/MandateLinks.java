@@ -1,8 +1,6 @@
 package uk.gov.pay.api.model.links.directdebit;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.links.Link;
@@ -13,7 +11,6 @@ import java.util.List;
 
 import static javax.ws.rs.HttpMethod.GET;
 
-@ApiModel(value = "MandateLinks", description = "payment, events, self and next links of a Mandate")
 @Schema(name = "MandateLinks", description = "payment, events, self and next links of a Mandate")
 public class MandateLinks {
 
@@ -35,35 +32,29 @@ public class MandateLinks {
     @JsonProperty(PAYMENTS)
     private final Link payments;
     
-    @ApiModelProperty(hidden = true)
     @Schema(hidden = true)
     @JsonProperty(EVENTS)
     private final Link events;
 
-    @ApiModelProperty(value = SELF, dataType = "uk.gov.pay.api.model.links.Link")
     @Schema(name = SELF, description = "A link related to mandate")
     public Link getSelf() {
         return self;
     }
 
-    @ApiModelProperty(value = NEXT_URL, dataType = "uk.gov.pay.api.model.links.Link")
     @Schema(name = NEXT_URL, description = "A link related to mandate")
     public Link getNextUrl() {
         return nextUrl;
     }
 
-    @ApiModelProperty(value = NEXT_URL_POST, dataType = "uk.gov.pay.api.model.links.PostLink")
     public PostLink getNextUrlPost() {
         return nextUrlPost;
     }
 
-    @ApiModelProperty(value = PAYMENTS, dataType = "uk.gov.pay.api.model.links.Link")
     @Schema(name = PAYMENTS, description = "A link related to payments")
     public Link getPayments() {
         return payments;
     }
 
-    @ApiModelProperty(value = EVENTS, dataType = "uk.gov.pay.api.model.links.Link", hidden = true)
     @Schema(hidden = true)
     public Link getEvents() {
         return events;

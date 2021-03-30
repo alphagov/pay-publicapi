@@ -2,18 +2,16 @@ package uk.gov.pay.api.model.links;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.Charge;
-import uk.gov.pay.api.model.directdebit.mandates.DirectDebitPayment;
 import uk.gov.pay.api.model.Payment;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
+import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
-import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.TokenPaymentType;
+import uk.gov.pay.api.model.directdebit.mandates.DirectDebitPayment;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
 
@@ -22,7 +20,6 @@ import java.util.List;
 
 import static uk.gov.pay.api.model.Payment.LINKS_JSON_ATTRIBUTE;
 
-@ApiModel
 public class PaymentWithAllLinks {
 
     @JsonUnwrapped
@@ -31,12 +28,10 @@ public class PaymentWithAllLinks {
     @JsonProperty(LINKS_JSON_ATTRIBUTE)
     private PaymentLinks links = new PaymentLinks();
 
-    @ApiModelProperty(name = LINKS_JSON_ATTRIBUTE, dataType = "uk.gov.pay.api.model.links.PaymentLinks")
     public PaymentLinks getLinks() {
         return links;
     }
 
-    @ApiModelProperty // don't name this property (so it is generated in docs unwrapped)
     public Payment getPayment() {
         return payment;
     }

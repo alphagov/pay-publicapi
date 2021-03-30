@@ -1,8 +1,6 @@
 package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.hibernate.validator.constraints.Length;
 import uk.gov.pay.api.utils.JsonStringBuilder;
@@ -17,7 +15,6 @@ import javax.validation.constraints.Size;
 import java.util.Optional;
 import java.util.StringJoiner;
 
-@ApiModel(description = "The Payment Request Payload")
 @Schema(description = "The Payment Request Payload")
 public class CreateCardPaymentRequest {
 
@@ -80,7 +77,6 @@ public class CreateCardPaymentRequest {
     
     private final Boolean moto;
 
-    @ApiModelProperty(name = "metadata", dataType = "Map[String,String]")
     @Schema(name = "metadata", example = "{\"property1\": \"value1\", \"property2\": \"value2\"}\"")
     private final ExternalMetadata metadata;
     
@@ -103,52 +99,44 @@ public class CreateCardPaymentRequest {
         this.internal = builder.getInternal();
     }
     
-    @ApiModelProperty(value = "amount in pence", required = true, allowableValues = "range[1, 10000000]", example = "12000")
     @Schema(description = "amount in pence", required = true, minimum = "1", maximum = "10000000", example = "12000")
     public int getAmount() {
         return amount;
     }
 
-    @ApiModelProperty(value = "payment reference", required = true, example = "12345")
     @Schema(description = "payment reference", required = true, example = "12345")
     public String getReference() {
         return reference;
     }
 
-    @ApiModelProperty(value = "payment description", required = true, example = "New passport application")
     @Schema(description = "payment description", required = true, example = "New passport application")
     public String getDescription() {
         return description;
     }
 
-    @ApiModelProperty(value = "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages", required = false, example = "en", allowableValues = "en,cy")
     @Schema(description = "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages", example = "en")
     @JsonProperty(LANGUAGE_FIELD_NAME)
     public Optional<SupportedLanguage> getLanguage() {
         return Optional.ofNullable(language);
     }
 
-    @ApiModelProperty(value = "email", required = false, example = "Joe.Bogs@example.org")
     @Schema(name = "email", example = "Joe.Bogs@example.org", description = "email")
     @JsonProperty(EMAIL_FIELD_NAME)
     public Optional<String> getEmail() {
         return Optional.ofNullable(email);
     }
     
-    @ApiModelProperty(value = "service return url", required = true, example = "https://service-name.gov.uk/transactions/12345")
     @Schema(description = "service return url", required = true, example = "https://service-name.gov.uk/transactions/12345")
     public String getReturnUrl() {
         return returnUrl;
     }
 
-    @ApiModelProperty(value = "prefilled_cardholder_details")
     @Schema(description = "prefilled_cardholder_details")
     @JsonProperty(CreateCardPaymentRequest.PREFILLED_CARDHOLDER_DETAILS_FIELD_NAME)
     public Optional<PrefilledCardholderDetails> getPrefilledCardholderDetails() {
         return Optional.ofNullable(prefilledCardholderDetails);
     }
 
-    @ApiModelProperty(value = "delayed capture flag", example = "false")
     @Schema(description = "delayed capture flag", example = "false")
     @JsonProperty(DELAYED_CAPTURE_FIELD_NAME)
     public Optional<Boolean> getDelayedCapture() {
@@ -156,18 +144,12 @@ public class CreateCardPaymentRequest {
     }
 
     @JsonProperty(MOTO_FIELD_NAME)
-    @ApiModelProperty(value = "Mail Order / Telephone Order (MOTO) payment flag", example = "false")
     @Schema(description = "Mail Order / Telephone Order (MOTO) payment flag", example = "false")
     public Optional<Boolean> getMoto() {
         return Optional.ofNullable(moto);
     }
 
     @JsonProperty("metadata")
-    @ApiModelProperty(value = "Additional metadata - up to 10 name/value pairs - on the payment. " +
-            "Each key must be between 1 and 30 characters long. " +
-            "The value, if a string, must be no greater than 50 characters long. " +
-            "Other permissible value types: boolean, number.",
-            dataType = "java.util.Map", example = "{\"ledger_code\":\"123\", \"reconciled\": true}")
     @Schema(description = "Additional metadata - up to 10 name/value pairs - on the payment. " +
             "Each key must be between 1 and 30 characters long. " +
             "The value, if a string, must be no greater than 50 characters long. " +
@@ -178,7 +160,6 @@ public class CreateCardPaymentRequest {
     }
 
     @JsonProperty("internal")
-    @ApiModelProperty(hidden = true)
     @Schema(hidden = true)
     public Optional<Internal> getInternal() {
         return Optional.ofNullable(internal);

@@ -4,7 +4,6 @@ import com.codahale.metrics.annotation.Timed;
 import io.dropwizard.auth.Auth;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.links.directdebit.DirectDebitEventsResponse;
-import uk.gov.pay.api.resources.error.ApiErrorResponse;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.DirectDebitEventService;
 import uk.gov.pay.api.validation.DirectDebitEventSearchValidator;
@@ -16,7 +15,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;

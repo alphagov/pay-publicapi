@@ -2,14 +2,11 @@ package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.api.model.links.PaymentEventLink;
 
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 
-@ApiModel(value="PaymentEvent", description = "A List of Payment Events information")
 @Schema(name = "PaymentEvent", description = "A List of Payment Events information")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PaymentEventResponse {
@@ -40,25 +37,21 @@ public class PaymentEventResponse {
         this.paymentLink = new PaymentEventLink(paymentLink);
     }
 
-    @ApiModelProperty(example = "hu20sqlact5260q2nanm0q8u93")
     @Schema(example = "hu20sqlact5260q2nanm0q8u93", accessMode = READ_ONLY)
     public String getPaymentId() {
         return paymentId;
     }
 
-    @ApiModelProperty(value = "state", dataType = "uk.gov.pay.api.model.PaymentState")
     @Schema(description = "state")
     public PaymentState getState() {
         return state;
     }
 
-    @ApiModelProperty(value = "updated",example = "2017-01-10T16:44:48.646Z")
     @Schema(description = "updated", example = "2017-01-10T16:44:48.646Z", accessMode = READ_ONLY)
     public String getUpdated() {
         return updated;
     }
 
-    @ApiModelProperty(dataType = "uk.gov.pay.api.model.links.PaymentEventLink")
     public PaymentEventLink getPaymentLink() {
         return paymentLink;
     }

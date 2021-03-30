@@ -1,8 +1,6 @@
 package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.api.model.links.PaymentLinksForEvents;
 
@@ -12,7 +10,6 @@ import java.util.stream.Collectors;
 
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 
-@ApiModel(value="PaymentEvents", description = "A List of Payment Events information")
 @Schema(name = "PaymentEvents", description = "A List of Payment Events information")
 public class PaymentEventsResponse {
     @JsonProperty("payment_id")
@@ -47,7 +44,6 @@ public class PaymentEventsResponse {
         return new PaymentEventsResponse(transactionEvents.getTransactionId(), events, paymentLinksForEvents);
     }
 
-    @ApiModelProperty(example = "hu20sqlact5260q2nanm0q8u93")
     @Schema(example = "hu20sqlact5260q2nanm0q8u93", accessMode = READ_ONLY)
     public String getPaymentId() {
         return paymentId;

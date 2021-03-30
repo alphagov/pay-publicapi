@@ -1,6 +1,5 @@
 package uk.gov.pay.api.model.search.directdebit;
 
-import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.service.payments.commons.validation.ValidDate;
@@ -35,27 +34,23 @@ public class DirectDebitSearchMandatesParams {
     @QueryParam("name")
     private String name;
 
-    @ApiParam(value = "From date of mandates to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z")
     @Parameter(description = "From date of mandates to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z")
     @QueryParam("from_date")
     @ValidDate()
     private String fromDate;
 
     @QueryParam("to_date")
-    @ApiParam(value = "To date of mandates to be searched (this date is exclusive). Example=2015-08-13T12:35:00Z")
     @Parameter(description = "To date of mandates to be searched (this date is exclusive). Example=2015-08-13T12:35:00Z")
     @ValidDate()
     private String toDate;
 
     @QueryParam("page")
-    @ApiParam(value = "Page number requested for the search, should be a positive integer (optional, defaults to 1)")
     @Parameter(description = "Page number requested for the search, should be a positive integer (optional, defaults to 1)", schema = @Schema(minimum = "1"))
     @DefaultValue("1")
     @Min(value = 1, message = "Must be greater than or equal to {value}")
     private int page;
 
     @QueryParam("display_size")
-    @ApiParam(value = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)")
     @Parameter(description = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)",
      schema = @Schema(minimum = "1", maximum = "500"))
     @DefaultValue("500")

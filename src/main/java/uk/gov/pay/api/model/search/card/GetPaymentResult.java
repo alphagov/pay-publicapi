@@ -1,8 +1,6 @@
 package uk.gov.pay.api.model.search.card;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
@@ -14,11 +12,9 @@ import uk.gov.service.payments.commons.model.SupportedLanguage;
 /**
  * Defines swagger specs for Get payment
  */
-@ApiModel
 public class GetPaymentResult extends CardPayment {
 
     @JsonProperty(LINKS_JSON_ATTRIBUTE)
-    @ApiModelProperty(name = LINKS_JSON_ATTRIBUTE, dataType = "uk.gov.pay.api.model.links.PaymentLinks")
     private PaymentLinks links;
 
     public GetPaymentResult(String chargeId, long amount, PaymentState state, String returnUrl, String description,

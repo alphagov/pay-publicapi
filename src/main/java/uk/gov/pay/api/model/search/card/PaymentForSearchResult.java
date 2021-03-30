@@ -1,8 +1,6 @@
 package uk.gov.pay.api.model.search.card;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.CardPayment;
@@ -18,7 +16,6 @@ import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
 import java.net.URI;
 import java.util.List;
 
-@ApiModel(value = "PaymentDetailForSearch")
 @Schema(name = "PaymentDetailForSearch")
 public class PaymentForSearchResult extends CardPayment {
 
@@ -85,7 +82,6 @@ public class PaymentForSearchResult extends CardPayment {
                 paymentResult.getNetAmount());
     }
 
-    @ApiModelProperty(name = LINKS_JSON_ATTRIBUTE, dataType = "uk.gov.pay.api.model.links.PaymentLinksForSearch")
     public PaymentLinksForSearch getLinks() {
         return links;
     }

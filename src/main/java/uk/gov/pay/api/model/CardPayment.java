@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.service.payments.commons.api.json.ExternalMetadataSerialiser;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
@@ -18,7 +16,6 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 
 @JsonInclude(value = JsonInclude.Include.NON_EMPTY)
-@ApiModel(value = "CardPayment")
 @Schema(name = "CardPayment")
 public class CardPayment extends Payment {
 
@@ -32,7 +29,6 @@ public class CardPayment extends Payment {
     private final CardDetails cardDetails;
 
     @JsonSerialize(using = ToStringSerializer.class)
-    @ApiModelProperty(name = "language", access = "language")
     private final SupportedLanguage language;
 
     @JsonProperty("delayed_capture")
@@ -54,12 +50,10 @@ public class CardPayment extends Payment {
     private final Long netAmount;
 
     @JsonProperty("provider_id")
-    @ApiModelProperty(example = "reference-from-payment-gateway")
     @Schema(example = "reference-from-payment-gateway", accessMode = READ_ONLY)
     private final String providerId;
 
     @JsonSerialize(using = ExternalMetadataSerialiser.class)
-    @ApiModelProperty(name = "metadata", dataType = "Map[String,String]")
     @Schema(name = "metadata", example = "{\"property1\": \"value1\", \"property2\": \"value2\"}\"")
     private final ExternalMetadata metadata;
 
@@ -105,7 +99,6 @@ public class CardPayment extends Payment {
      *
      * @return
      */
-    @ApiModelProperty(value = "Card Brand", example = "Visa", notes = "Deprecated. Please use card_details.card_brand instead")
     @Schema(description = "Card Brand. Deprecated, please use card_details.card_brand instead", example = "Visa",
             accessMode = READ_ONLY, deprecated = true)
     @JsonProperty("card_brand")
@@ -118,51 +111,42 @@ public class CardPayment extends Payment {
         return metadata;
     }
 
-    @ApiModelProperty(dataType = "uk.gov.pay.api.model.RefundSummary")
     public Optional<RefundSummary> getRefundSummary() {
         return Optional.ofNullable(refundSummary);
     }
 
-    @ApiModelProperty(dataType = "uk.gov.pay.api.model.PaymentSettlementSummary")
     public Optional<PaymentSettlementSummary> getSettlementSummary() {
         return Optional.ofNullable(settlementSummary);
     }
 
-    @ApiModelProperty(dataType = "uk.gov.pay.api.model.CardDetails")
     public Optional<CardDetails> getCardDetails() {
         return Optional.ofNullable(cardDetails);
     }
 
-    @ApiModelProperty(example = "en", allowableValues = "en,cy")
     @Schema(name = "language", example = "en")
     public SupportedLanguage getLanguage() {
         return language;
     }
 
-    @ApiModelProperty(value = "delayed capture flag", example = "false")
     @Schema(description = "delayed capture flag", example = "false", accessMode = READ_ONLY)
     public boolean getDelayedCapture() {
         return delayedCapture;
     }
 
-    @ApiModelProperty(value = "Mail Order / Telephone Order (MOTO) payment flag", example = "false")
     @Schema(description = "Mail Order / Telephone Order (MOTO) payment flag", example = "false")
     public boolean getMoto() { return moto; }
 
-    @ApiModelProperty(example = "250")
     @Schema(example = "250", accessMode = READ_ONLY)
     public Optional<Long> getCorporateCardSurcharge() {
         return Optional.ofNullable(corporateCardSurcharge);
     }
 
-    @ApiModelProperty(example = "5", value = "processing fee taken by the GOV.UK Pay platform, in pence. Only available depending on payment service provider")
     @Schema(example = "5", description = "processing fee taken by the GOV.UK Pay platform, in pence. Only available depending on payment service provider",
             accessMode = READ_ONLY)
     public Optional<Long> getFee() {
         return Optional.ofNullable(fee);
     }
 
-    @ApiModelProperty(example = "1195", value = "amount including all surcharges and less all fees, in pence. Only available depending on payment service provider")
     @Schema(example = "1195", 
             description = "amount including all surcharges and less all fees, in pence. Only available depending on payment service provider",
             accessMode = READ_ONLY)
@@ -170,7 +154,6 @@ public class CardPayment extends Payment {
         return Optional.ofNullable(netAmount);
     }
 
-    @ApiModelProperty(example = "1450")
     @Schema(example = "1450", accessMode = READ_ONLY)
     public Optional<Long> getTotalAmount() {
         return Optional.ofNullable(totalAmount);
@@ -180,19 +163,16 @@ public class CardPayment extends Payment {
         return providerId;
     }
 
-    @ApiModelProperty(example = "http://your.service.domain/your-reference")
     @Schema(example = "http://your.service.domain/your-reference", accessMode = READ_ONLY)
     public Optional<String> getReturnUrl() {
         return Optional.ofNullable(returnUrl);
     }
 
-    @ApiModelProperty(example = "your email")
     @Schema(example = "your email")
     public Optional<String> getEmail() {
         return Optional.ofNullable(email);
     }
 
-    @ApiModelProperty(dataType = "uk.gov.pay.api.model.PaymentState")
     public PaymentState getState() {
         return state;
     }
