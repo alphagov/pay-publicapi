@@ -1,19 +1,19 @@
 package uk.gov.pay.api.utils.mocks;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
+import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
-import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class TransactionFromLedgerFixture {
     private String transactionId;
     private String returnUrl;

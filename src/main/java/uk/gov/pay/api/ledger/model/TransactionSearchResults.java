@@ -1,7 +1,7 @@
 package uk.gov.pay.api.ledger.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import uk.gov.pay.api.model.links.SearchNavigationLinks;
 import uk.gov.pay.api.model.search.SearchPagination;
@@ -9,7 +9,7 @@ import uk.gov.pay.api.model.search.card.PaymentForSearchResult;
 
 import java.util.List;
 
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class TransactionSearchResults implements SearchPagination {
 
     private int total;

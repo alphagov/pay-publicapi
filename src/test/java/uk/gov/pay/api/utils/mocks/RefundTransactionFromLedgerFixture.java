@@ -1,11 +1,11 @@
 package uk.gov.pay.api.utils.mocks;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import uk.gov.pay.api.model.RefundSettlementSummary;
 import uk.gov.pay.api.model.ledger.TransactionState;
 
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class RefundTransactionFromLedgerFixture {
     private final Long amount;
     private final TransactionState state;
