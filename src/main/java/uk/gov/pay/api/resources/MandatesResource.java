@@ -2,12 +2,6 @@ package uk.gov.pay.api.resources;
 
 import com.codahale.metrics.annotation.Timed;
 import io.dropwizard.auth.Auth;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -44,7 +38,6 @@ import java.net.URI;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/")
-@Api(tags = "Direct Debit", value = "/v1/directdebit/mandates")
 @Tag(name = "Direct Debit")
 @Produces({"application/json"})
 public class MandatesResource {
@@ -85,21 +78,7 @@ public class MandatesResource {
                             content = @Content(schema = @Schema(implementation = MandateError.class)))
             }
     )
-    @ApiOperation(
-            nickname = "Get a mandate",
-            value = "Find mandate by ID",
-            notes = "Return information about the mandate. " +
-                    "The Authorisation token needs to be specified in the 'Authorization' header " +
-                    "as 'Authorization: Bearer YOUR_API_KEY_HERE'",
-            authorizations = {@Authorization("Authorization")})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = MandateResponse.class),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 404, message = "Not found", response = MandateError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = MandateError.class)})
-    public Response getMandate(@ApiParam(value = "accountId", hidden = true) 
-                               @Parameter(hidden = true) @Auth Account account,
+    public Response getMandate(@Parameter(hidden = true) @Auth Account account,
                                @Parameter(required = true, description = "mandateId") @PathParam("mandateId") String mandateId) {
         LOGGER.info("Mandate get request - [ {} ]", mandateId);
         MandateResponse getMandateResponse = mandateService.get(account, mandateId);
@@ -133,21 +112,7 @@ public class MandatesResource {
                             content = @Content(schema = @Schema(implementation = MandateError.class)))
             }
     )
-    @ApiOperation(
-            nickname = "Search mandates",
-            value = "Search mandates",
-            notes = "Searches for mandates with the parameters provided. " +
-                    "The Authorisation token needs to be specified in the 'Authorization' header " +
-                    "as 'Authorization: Bearer YOUR_API_KEY_HERE'",
-            authorizations = {@Authorization("Authorization")})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = SearchMandateResponse.class),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 404, message = "Not found", response = MandateError.class),
-            @ApiResponse(code = 422, message = "Invalid parameters: from_date, to_date, state, page, display_size. See Public API documentation for the correct data formats", response = PaymentError.class),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = MandateError.class)})
-    public Response searchMandates(@ApiParam(value = "accountId", hidden = true) @Parameter(hidden = true) @Auth Account account,
+    public Response searchMandates(@Parameter(hidden = true) @Auth Account account,
                                    @Valid @BeanParam DirectDebitSearchMandatesParams mandateSearchParams) {
         LOGGER.info("Mandate search request - [ {} ]", mandateSearchParams.toString());
         SearchMandateResponse searchMandatesResponse = mandateSearchService.search(account, mandateSearchParams);
@@ -180,22 +145,7 @@ public class MandatesResource {
                             content = @Content(schema = @Schema(implementation = PaymentError.class)))
             }
     )
-    @ApiOperation(
-            nickname = "Create a mandate",
-            value = "Create a new mandate",
-            notes = "Create a new mandate for the account associated to the Authorisation token. " +
-                    "The Authorisation token needs to be specified in the 'Authorization' header " +
-                    "as 'Authorization: Bearer YOUR_API_KEY_HERE'",
-            code = 201,
-            authorizations = {@Authorization("Authorization")})
-    @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Created", response = MandateResponse.class),
-            @ApiResponse(code = 400, message = "Bad request", response = PaymentError.class),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class),
-            @ApiResponse(code = 500, message = "Downstream system error", response = PaymentError.class)})
-    public Response createMandate(@ApiParam(value = "accountId", hidden = true) @Parameter(hidden = true) @Auth Account account,
-                                  @ApiParam(value = "requestPayload", required = true)
+    public Response createMandate(@Parameter(hidden = true) @Auth Account account,
                                   @Parameter(required = true, description = "requestPayload")
                                   @Valid CreateMandateRequest createMandateRequest) {
         LOGGER.info("Mandate create request - [ {} ]", createMandateRequest);

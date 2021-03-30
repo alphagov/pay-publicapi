@@ -2,11 +2,6 @@ package uk.gov.pay.api.resources;
 
 import com.codahale.metrics.annotation.Timed;
 import io.dropwizard.auth.Auth;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.links.directdebit.DirectDebitEventsResponse;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
@@ -28,7 +23,6 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.eclipse.jetty.util.StringUtil.isBlank;
 
 @Path("/")
-@Api(value = "/", description = "Public Api Endpoint to get Direct Debit Events")
 @Produces({"application/json"})
 public class DirectDebitEventsResource {
 
@@ -45,24 +39,13 @@ public class DirectDebitEventsResource {
     @Timed
     @Path("/v1/events")
     @Produces(APPLICATION_JSON)
-    @ApiOperation(
-            value = "Get Direct Debit events",
-            notes = "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OK", response = List.class),
-            @ApiResponse(code = 401, message = "Credentials are required to access this resource"),
-            @ApiResponse(code = 429, message = "Too many requests", response = ApiErrorResponse.class)})
     public Response getDirectDebitEvents(
-            @ApiParam(value = "accountId", hidden = true) @Auth Account account,
+            @Auth Account account,
             @QueryParam("to_date") String toDate,
             @QueryParam("from_date") String fromDate,
-            @ApiParam(value = "Defaults to a maximum of 500", hidden = false)
             @QueryParam("display_size") Integer displaySize,
             @QueryParam("page") Integer page,
-            @ApiParam(value = "ID of associated mandate", hidden = false)
             @QueryParam("agreement_id") String agreementId,
-            @ApiParam(value = "ID of associated payment", hidden = false)
             @QueryParam("payment_id") String paymentId
     ) {
 

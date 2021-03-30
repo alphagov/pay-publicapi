@@ -2,7 +2,6 @@ package uk.gov.pay.api.resources.telephone;
 
 import com.codahale.metrics.annotation.Timed;
 import io.dropwizard.auth.Auth;
-import io.swagger.annotations.Api;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +21,6 @@ import javax.ws.rs.core.Response;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/")
-@Api(value = "/", description = "Public Api Endpoints to receive Telephone Payments")
 public class TelephonePaymentNotificationResource {
 
     private static final Logger logger = LoggerFactory.getLogger(TelephonePaymentNotificationResource.class);
