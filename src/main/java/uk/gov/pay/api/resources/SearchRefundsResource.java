@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
@@ -52,11 +53,11 @@ public class SearchRefundsResource {
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             responses = {
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = SearchRefundsResults.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Credentials are required to access this resource"),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "422", description = "Invalid parameters. See Public API documentation for the correct data formats",
+                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = SearchRefundsResults.class))),
+                    @ApiResponse(responseCode = "401", description = "Credentials are required to access this resource"),
+                    @ApiResponse(responseCode = "422", description = "Invalid parameters. See Public API documentation for the correct data formats",
                             content = @Content(schema = @Schema(implementation = RefundError.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Downstream system error",
+                    @ApiResponse(responseCode = "500", description = "Downstream system error",
                             content = @Content(schema = @Schema(implementation = RefundError.class))),
             }
     )

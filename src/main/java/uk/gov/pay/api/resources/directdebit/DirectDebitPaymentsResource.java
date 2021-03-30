@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
@@ -71,18 +72,18 @@ public class DirectDebitPaymentsResource {
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             responses = {
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Created",
+                    @ApiResponse(responseCode = "201", description = "Created",
                             content = @Content(schema = @Schema(implementation = DirectDebitPayment.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Bad request",
+                    @ApiResponse(responseCode = "400", description = "Bad request",
                             content = @Content(schema = @Schema(implementation = PaymentError.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", 
+                    @ApiResponse(responseCode = "401", 
                             description = "Credentials are required to access this resource"),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "422", 
+                    @ApiResponse(responseCode = "422", 
                             description = "Invalid parameters: amount, reference, description, mandate id. See Public API documentation for the correct data formats",
                             content = @Content(schema = @Schema(implementation = PaymentError.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "429", description = "Too many requests",
+                    @ApiResponse(responseCode = "429", description = "Too many requests",
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Downstream system error",
+                    @ApiResponse(responseCode = "500", description = "Downstream system error",
                             content = @Content(schema = @Schema(implementation = PaymentError.class)))
             }
     )
@@ -105,16 +106,16 @@ public class DirectDebitPaymentsResource {
                     "The Authorisation token needs to be specified in the 'Authorization' header " +
                     "as 'Authorization: Bearer YOUR_API_KEY_HERE'",
             responses = {
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK",
+                    @ApiResponse(responseCode = "200", description = "OK",
                             content = @Content(schema = @Schema(implementation = DirectDebitSearchResponse.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401",
+                    @ApiResponse(responseCode = "401",
                             description = "Credentials are required to access this resource"),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "422",
+                    @ApiResponse(responseCode = "422",
                             description = "Invalid parameter. See Public API documentation for the correct data formats",
                             content = @Content(schema = @Schema(implementation = PaymentError.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "429", description = "Too many requests",
+                    @ApiResponse(responseCode = "429", description = "Too many requests",
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Downstream system error",
+                    @ApiResponse(responseCode = "500", description = "Downstream system error",
                             content = @Content(schema = @Schema(implementation = PaymentError.class)))
             }
     )
@@ -139,15 +140,15 @@ public class DirectDebitPaymentsResource {
                     "The Authorisation token needs to be specified in the 'Authorization' header " +
                     "as 'Authorization: Bearer YOUR_API_KEY_HERE'",
             responses = {
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK",
+                    @ApiResponse(responseCode = "200", description = "OK",
                             content = @Content(schema = @Schema(implementation = DirectDebitPayment.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401",
+                    @ApiResponse(responseCode = "401",
                             description = "Credentials are required to access this resource"),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not found",
+                    @ApiResponse(responseCode = "404", description = "Not found",
                             content = @Content(schema = @Schema(implementation = PaymentError.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "429", description = "Too many requests",
+                    @ApiResponse(responseCode = "429", description = "Too many requests",
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Downstream system error",
+                    @ApiResponse(responseCode = "500", description = "Downstream system error",
                             content = @Content(schema = @Schema(implementation = PaymentError.class)))
             }
     )

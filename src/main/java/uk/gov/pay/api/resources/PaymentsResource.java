@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.http.HttpStatus;
@@ -90,15 +91,15 @@ public class PaymentsResource {
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             responses = {
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK",
+                    @ApiResponse(responseCode = "200", description = "OK",
                             content = @Content(schema = @Schema(implementation = GetPaymentResult.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401",
+                    @ApiResponse(responseCode = "401",
                             description = "Credentials are required to access this resource"),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not found",
+                    @ApiResponse(responseCode = "404", description = "Not found",
                             content = @Content(schema = @Schema(implementation = PaymentError.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "429", description = "Too many requests",
+                    @ApiResponse(responseCode = "429", description = "Too many requests",
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Downstream system error",
+                    @ApiResponse(responseCode = "500", description = "Downstream system error",
                             content = @Content(schema = @Schema(implementation = PaymentError.class)))
             }
     )
@@ -128,15 +129,15 @@ public class PaymentsResource {
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             responses = {
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK",
+                    @ApiResponse(responseCode = "200", description = "OK",
                             content = @Content(schema = @Schema(implementation = PaymentEventsResponse.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401",
+                    @ApiResponse(responseCode = "401",
                             description = "Credentials are required to access this resource"),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not found",
+                    @ApiResponse(responseCode = "404", description = "Not found",
                             content = @Content(schema = @Schema(implementation = PaymentError.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "429", description = "Too many requests",
+                    @ApiResponse(responseCode = "429", description = "Too many requests",
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Downstream system error",
+                    @ApiResponse(responseCode = "500", description = "Downstream system error",
                             content = @Content(schema = @Schema(implementation = PaymentError.class)))
             }
     )
@@ -167,16 +168,16 @@ public class PaymentsResource {
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             responses = {
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK",
+                    @ApiResponse(responseCode = "200", description = "OK",
                             content = @Content(schema = @Schema(implementation = PaymentSearchResults.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401",
+                    @ApiResponse(responseCode = "401",
                             description = "Credentials are required to access this resource"),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "422",
+                    @ApiResponse(responseCode = "422",
                             description = "Invalid parameters: from_date, to_date, status, display_size. See Public API documentation for the correct data formats",
                             content = @Content(schema = @Schema(implementation = PaymentError.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "429", description = "Too many requests",
+                    @ApiResponse(responseCode = "429", description = "Too many requests",
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Downstream system error",
+                    @ApiResponse(responseCode = "500", description = "Downstream system error",
                             content = @Content(schema = @Schema(implementation = PaymentError.class)))
             }
     )
@@ -252,18 +253,18 @@ public class PaymentsResource {
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             responses = {
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Created",
+                    @ApiResponse(responseCode = "201", description = "Created",
                             content = @Content(schema = @Schema(implementation = CreatePaymentResult.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Bad request",
+                    @ApiResponse(responseCode = "400", description = "Bad request",
                             content = @Content(schema = @Schema(implementation = PaymentError.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401",
+                    @ApiResponse(responseCode = "401",
                             description = "Credentials are required to access this resource"),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "422",
+                    @ApiResponse(responseCode = "422",
                             description = "Invalid attribute value: description. Must be less than or equal to 255 characters length",
                             content = @Content(schema = @Schema(implementation = PaymentError.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "429", description = "Too many requests",
+                    @ApiResponse(responseCode = "429", description = "Too many requests",
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Downstream system error",
+                    @ApiResponse(responseCode = "500", description = "Downstream system error",
                             content = @Content(schema = @Schema(implementation = PaymentError.class)))
             }
     )
@@ -295,18 +296,18 @@ public class PaymentsResource {
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be cancelled if it's in " +
                     "a state that isn't finished.",
             responses = {
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "204", description = "No Content"),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Cancellation of payment failed",
+                    @ApiResponse(responseCode = "204", description = "No Content"),
+                    @ApiResponse(responseCode = "400", description = "Cancellation of payment failed",
                             content = @Content(schema = @Schema(implementation = PaymentError.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401",
+                    @ApiResponse(responseCode = "401",
                             description = "Credentials are required to access this resource"),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not found",
+                    @ApiResponse(responseCode = "404", description = "Not found",
                             content = @Content(schema = @Schema(implementation = PaymentError.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "409", description = "Conflict",
+                    @ApiResponse(responseCode = "409", description = "Conflict",
                             content = @Content(schema = @Schema(implementation = PaymentError.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "429", description = "Too many requests",
+                    @ApiResponse(responseCode = "429", description = "Too many requests",
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Downstream system error",
+                    @ApiResponse(responseCode = "500", description = "Downstream system error",
                             content = @Content(schema = @Schema(implementation = PaymentError.class)))
             }
     )
@@ -332,18 +333,18 @@ public class PaymentsResource {
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be captured if it's in " +
                     "'submitted' state",
             responses = {
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "204", description = "No Content"),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Capture of payment failed",
+                    @ApiResponse(responseCode = "204", description = "No Content"),
+                    @ApiResponse(responseCode = "400", description = "Capture of payment failed",
                             content = @Content(schema = @Schema(implementation = PaymentError.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401",
+                    @ApiResponse(responseCode = "401",
                             description = "Credentials are required to access this resource"),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not found",
+                    @ApiResponse(responseCode = "404", description = "Not found",
                             content = @Content(schema = @Schema(implementation = PaymentError.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "409", description = "Conflict",
+                    @ApiResponse(responseCode = "409", description = "Conflict",
                             content = @Content(schema = @Schema(implementation = PaymentError.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "429", description = "Too many requests",
+                    @ApiResponse(responseCode = "429", description = "Too many requests",
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Downstream system error",
+                    @ApiResponse(responseCode = "500", description = "Downstream system error",
                             content = @Content(schema = @Schema(implementation = PaymentError.class)))
             }
     )
