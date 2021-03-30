@@ -1,7 +1,7 @@
 {
   "swagger" : "2.0",
   "info" : {
-    "description" : "GOV.UK Pay API",
+    "description" : "GOV.UK Pay API (This version is no longer maintained. See openapi/publicapi_spec.json for latest API specification)",
     "version" : "1.0.3",
     "title" : "GOV.UK Pay API"
   },

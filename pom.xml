@@ -487,8 +487,8 @@
                 <artifactId>swagger-maven-plugin</artifactId>
                 <version>${swagger.lib.version}</version>
                 <configuration>
-                    <outputPath>swagger</outputPath>
-                    <outputFileName>swagger_v3_0_0</outputFileName>
+                    <outputPath>openapi</outputPath>
+                    <outputFileName>publicapi_spec</outputFileName>
                     <outputFormat>JSON</outputFormat>
                     <prettyPrint>true</prettyPrint>
                     <configurationFilePath>${basedir}/src/main/resources/swagger-config.yaml
