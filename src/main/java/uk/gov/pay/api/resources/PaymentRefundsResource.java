@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
@@ -84,14 +85,14 @@ public class PaymentRefundsResource {
             description = "Return refunds for a payment. " +
                     "The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
             responses = {
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK",
+                    @ApiResponse(responseCode = "200", description = "OK",
                             content = @Content(schema = @Schema(implementation = RefundForSearchResult.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Credentials are required to access this resource"),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not found",
+                    @ApiResponse(responseCode = "401", description = "Credentials are required to access this resource"),
+                    @ApiResponse(responseCode = "404", description = "Not found",
                             content = @Content(schema = @Schema(implementation = PaymentError.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "429", description = "Too many requests",
+                    @ApiResponse(responseCode = "429", description = "Too many requests",
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Downstream system error",
+                    @ApiResponse(responseCode = "500", description = "Downstream system error",
                             content = @Content(schema = @Schema(implementation = PaymentError.class)))
             }
     )
@@ -118,14 +119,14 @@ public class PaymentRefundsResource {
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             responses = {
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "OK",
+                    @ApiResponse(responseCode = "200", description = "OK",
                             content = @Content(schema = @Schema(implementation = RefundResult.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Credentials are required to access this resource"),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not found",
+                    @ApiResponse(responseCode = "401", description = "Credentials are required to access this resource"),
+                    @ApiResponse(responseCode = "404", description = "Not found",
                             content = @Content(schema = @Schema(implementation = PaymentError.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "429", description = "Too many requests",
+                    @ApiResponse(responseCode = "429", description = "Too many requests",
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Downstream system error",
+                    @ApiResponse(responseCode = "500", description = "Downstream system error",
                             content = @Content(schema = @Schema(implementation = PaymentError.class)))
             }
     )
@@ -156,16 +157,16 @@ public class PaymentRefundsResource {
             description = "Return issued refund information. " +
                     "The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
             responses = {
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "successful operation",
+                    @ApiResponse(responseCode = "200", description = "successful operation",
                             content = @Content(schema = @Schema(implementation = RefundResult.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "202", description = "ACCEPTED"),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Credentials are required to access this resource"),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Not found",
+                    @ApiResponse(responseCode = "202", description = "ACCEPTED"),
+                    @ApiResponse(responseCode = "401", description = "Credentials are required to access this resource"),
+                    @ApiResponse(responseCode = "404", description = "Not found",
                             content = @Content(schema = @Schema(implementation = PaymentError.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "412", description = "Refund amount available mismatch"),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "429", description = "Too many requests",
+                    @ApiResponse(responseCode = "412", description = "Refund amount available mismatch"),
+                    @ApiResponse(responseCode = "429", description = "Too many requests",
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Downstream system error",
+                    @ApiResponse(responseCode = "500", description = "Downstream system error",
                             content = @Content(schema = @Schema(implementation = PaymentError.class)))
             }
     )

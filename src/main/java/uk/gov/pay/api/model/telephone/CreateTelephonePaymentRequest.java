@@ -1,7 +1,7 @@
 package uk.gov.pay.api.model.telephone;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.api.validation.ValidCardExpiryDate;
@@ -17,7 +17,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Optional;
 
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class CreateTelephonePaymentRequest {
 
     public static final int REFERENCE_MAX_LENGTH = 255;

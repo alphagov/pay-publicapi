@@ -1,7 +1,7 @@
 package uk.gov.pay.api.model.search.card;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.api.model.links.SearchNavigationLinks;
@@ -10,7 +10,7 @@ import uk.gov.pay.api.model.search.SearchPagination;
 import java.util.List;
 
 @Schema(name = "RefundSearchResults")
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class SearchRefundsResults implements SearchPagination {
 
     @Schema(example = "100")

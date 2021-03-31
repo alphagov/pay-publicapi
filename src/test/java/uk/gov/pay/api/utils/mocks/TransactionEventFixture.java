@@ -1,10 +1,10 @@
 package uk.gov.pay.api.utils.mocks;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import uk.gov.pay.api.model.PaymentState;
 
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class TransactionEventFixture {
     private PaymentState state;
     private String timestamp;
