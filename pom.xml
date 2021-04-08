@@ -70,6 +70,11 @@
             <version>${dropwizard.version}</version>
         </dependency>
         <dependency>
+            <groupId>io.dropwizard</groupId>
+            <artifactId>dropwizard-json-logging</artifactId>
+            <version>${dropwizard.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
             <version>${guice.version}</version>
