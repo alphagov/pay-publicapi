@@ -322,7 +322,7 @@
         <dependency>
             <groupId>io.lettuce</groupId>
             <artifactId>lettuce-core</artifactId>
-            <version>6.1.1.RELEASE</version>
+            <version>6.1.2.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>javax.xml.bind</groupId>
