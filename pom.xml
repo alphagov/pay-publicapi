@@ -16,7 +16,7 @@
         <jackson.version>2.12.3</jackson.version>
         <logback.version>1.2.3</logback.version>
         <docker-client.version>8.16.0</docker-client.version>
-        <pay-java-commons.version>1.0.20210630100406</pay-java-commons.version>
+        <pay-java-commons.version>1.0.20210705090548</pay-java-commons.version>
         <junit5.version>5.7.2</junit5.version>
         <pact.version>3.6.15</pact.version>
         <swagger.lib.version>2.1.10</swagger.lib.version>
