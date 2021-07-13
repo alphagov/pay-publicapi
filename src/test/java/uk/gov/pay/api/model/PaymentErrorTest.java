@@ -8,8 +8,7 @@ import static org.hamcrest.core.Is.is;
 public class PaymentErrorTest {
 
     @Test
-    public void shouldGetExpectedValuesWhenToStringIsCalled() {
-
+    void shouldGetExpectedValuesWhenToStringIsCalled() {
         PaymentError paymentError = PaymentError.aPaymentError(PaymentError.Code.CREATE_PAYMENT_ACCOUNT_ERROR);
         assertThat(paymentError.toString(), is("PaymentError{field=null, code=P0199, name=CREATE_PAYMENT_ACCOUNT_ERROR, description='There is an error with this account. Please contact support'}"));
     }
