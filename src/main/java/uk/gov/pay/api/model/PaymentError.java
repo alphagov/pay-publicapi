@@ -63,7 +63,8 @@ public class PaymentError {
 
         TOO_MANY_REQUESTS_ERROR("P0900", "Too many requests"),
         REQUEST_DENIED_ERROR("P0920", "Request blocked by security rules. Please consult API documentation for more information."),
-        RESOURCE_ACCESS_FORBIDDEN("P0930", "Access to this resource is not enabled for this account. Please contact support.");
+        RESOURCE_ACCESS_FORBIDDEN("P0930", "Access to this resource is not enabled for this account. Please contact support."),
+        ACCOUNT_NOT_LINKED_WITH_PSP("P0940", "Account is not fully configured. Please refer to documentation to setup your account or contact support.");
 
         private String value;
         private String format;

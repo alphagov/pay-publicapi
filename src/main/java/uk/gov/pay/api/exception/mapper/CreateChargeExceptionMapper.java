@@ -12,6 +12,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static uk.gov.pay.api.model.PaymentError.Code.ACCOUNT_NOT_LINKED_WITH_PSP;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_ACCOUNT_ERROR;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_CONNECTOR_ERROR;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_MANDATE_ID_INVALID;
@@ -56,6 +57,10 @@ public class CreateChargeExceptionMapper implements ExceptionMapper<CreateCharge
                 case TELEPHONE_PAYMENT_NOTIFICATIONS_NOT_ALLOWED:
                     statusCode = HttpStatus.FORBIDDEN_403;
                     paymentError = aPaymentError(RESOURCE_ACCESS_FORBIDDEN);
+                    break;
+                case ACCOUNT_NOT_LINKED_WITH_PSP:
+                    statusCode = HttpStatus.FORBIDDEN_403;
+                    paymentError = aPaymentError(ACCOUNT_NOT_LINKED_WITH_PSP);
                     break;
                 default:
                     paymentError = aPaymentError(CREATE_PAYMENT_CONNECTOR_ERROR);

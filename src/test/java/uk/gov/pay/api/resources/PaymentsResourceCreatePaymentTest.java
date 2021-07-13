@@ -7,28 +7,24 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.CreateCardPaymentRequestBuilder;
+import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
-import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.service.CancelPaymentService;
 import uk.gov.pay.api.service.CapturePaymentService;
-import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.CreatePaymentService;
-import uk.gov.pay.api.service.GetDirectDebitPaymentService;
 import uk.gov.pay.api.service.GetPaymentEventsService;
 import uk.gov.pay.api.service.GetPaymentService;
 import uk.gov.pay.api.service.PaymentSearchService;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 
-import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.Collections;
@@ -46,9 +42,6 @@ public class PaymentsResourceCreatePaymentTest {
     private PaymentsResource paymentsResource;
 
     @Mock
-    private Client client;
-
-    @Mock
     private CreatePaymentService createPaymentService;
 
     @Mock
@@ -56,9 +49,6 @@ public class PaymentsResourceCreatePaymentTest {
 
     @Mock
     private PublicApiUriGenerator publicApiUriGenerator;
-
-    @Mock
-    private ConnectorUriGenerator connectorUriGenerator;
 
     @Mock
     private GetPaymentService getPaymentService;
@@ -72,23 +62,17 @@ public class PaymentsResourceCreatePaymentTest {
     @Mock
     private GetPaymentEventsService getPaymentEventsService;
 
-    @Mock
-    private PublicApiConfig configuration;
-
-    @Mock
-    private GetDirectDebitPaymentService getDirectDebitPaymentService;
-
-    private final String paymentUri = "https://my.link/v1/payments/abc123";
+    private final String PAYMENT_URI = "https://my.link/v1/payments/abc123";
 
     @BeforeEach
     public void setup() {
-        when(publicApiUriGenerator.getPaymentURI(anyString())).thenReturn(URI.create(paymentUri));
+        when(publicApiUriGenerator.getPaymentURI(anyString())).thenReturn(URI.create(PAYMENT_URI));
     }
 
     @Test
-    public void createNewPayment_withCardPayment_invokesCreatePaymentService() {
-        final Account account = new Account("foo", TokenPaymentType.CARD, "a-token-link");
-        final var createPaymentRequest = CreateCardPaymentRequestBuilder.builder()
+    void createNewPayment_withCardPayment_invokesCreatePaymentService() {
+        Account account = new Account("foo", TokenPaymentType.CARD, "a-token-link");
+        var createPaymentRequest = CreateCardPaymentRequestBuilder.builder()
                 .amount(100)
                 .returnUrl("https://somewhere.test")
                 .reference("my_ref")
@@ -99,10 +83,10 @@ public class PaymentsResourceCreatePaymentTest {
 
         when(createPaymentService.create(account, createPaymentRequest)).thenReturn(injectedResponse);
 
-        final Response newPayment = paymentsResource.createNewPayment(account, createPaymentRequest);
+        Response newPayment = paymentsResource.createNewPayment(account, createPaymentRequest);
 
         assertThat(newPayment.getStatus(), is(201));
-        assertThat(newPayment.getLocation(), is(URI.create(paymentUri)));
+        assertThat(newPayment.getLocation(), is(URI.create(PAYMENT_URI)));
         assertThat(newPayment.getEntity(), sameInstance(injectedResponse));
     }
 
@@ -126,11 +110,11 @@ public class PaymentsResourceCreatePaymentTest {
                 new PaymentSettlementSummary(),
                 new CardDetails("9876", "482393", "Anne Onymous", "12/20", cardholderAddress, "visa", null),
                 Collections.emptyList(),
-                URI.create(paymentUri),
-                URI.create(paymentUri + "/events"),
-                URI.create(paymentUri + "/cancel"),
-                URI.create(paymentUri + "/refunds"),
-                URI.create(paymentUri + "/capture"),
+                URI.create(PAYMENT_URI),
+                URI.create(PAYMENT_URI + "/events"),
+                URI.create(PAYMENT_URI + "/cancel"),
+                URI.create(PAYMENT_URI + "/refunds"),
+                URI.create(PAYMENT_URI + "/capture"),
                 null,
                 null,
                 "providerId",

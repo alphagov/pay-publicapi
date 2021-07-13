@@ -50,6 +50,7 @@ import static org.eclipse.jetty.http.HttpStatus.UNPROCESSABLE_ENTITY_422;
 import static uk.gov.pay.api.it.GetPaymentIT.AWAITING_CAPTURE_REQUEST;
 import static uk.gov.pay.api.it.fixtures.PaymentSingleResultBuilder.aSuccessfulSinglePayment;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.ACCOUNT_NOT_LINKED_WITH_PSP;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.GENERIC;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.MOTO_NOT_ALLOWED;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.REFUND_AMOUNT_AVAILABLE_MISMATCH;
@@ -322,6 +323,10 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     public void respondTelephoneNotificationsNotEnabled(String gatewayAccountId) {
         mockCreateTelephoneCharge(gatewayAccountId, withStatusAndErrorMessage(FORBIDDEN_403, "anything", TELEPHONE_PAYMENT_NOTIFICATIONS_NOT_ALLOWED));
+    }
+
+    public void respondGatewayAccountCredentialNotConfigured(String gatewayAccountId) {
+        mockCreateCharge(gatewayAccountId, withStatusAndErrorMessage(BAD_REQUEST_400, "Payment provider details are not configured on this account", ACCOUNT_NOT_LINKED_WITH_PSP));
     }
 
     public void respondWithChargeFound(String chargeTokenId, String gatewayAccountId, ChargeResponseFromConnector chargeResponseFromConnector) {

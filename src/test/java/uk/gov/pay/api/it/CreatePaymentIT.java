@@ -499,6 +499,19 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
     }
 
     @Test
+    public void createPayment_Returns403_WhenGatewayAccountCredentialsNotFullyConfigured() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMockClient.respondGatewayAccountCredentialNotConfigured(GATEWAY_ACCOUNT_ID);
+        postPaymentResponse(SUCCESS_PAYLOAD)
+                .statusCode(403)
+                .contentType(JSON)
+                .body("code", is("P0940"))
+                .body("description", is("Account is not fully configured. Please refer to documentation to setup your account or contact support."));
+
+        connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, SUCCESS_PAYLOAD);
+    }
+
+    @Test
     public void createPayment_Returns_WhenPublicAuthInaccessible() {
         publicAuthMockClient.respondWithError();
         postPaymentResponse(SUCCESS_PAYLOAD).statusCode(503);
