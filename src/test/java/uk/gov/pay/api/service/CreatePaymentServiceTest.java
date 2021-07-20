@@ -189,4 +189,24 @@ public class CreatePaymentServiceTest {
             assertThat(e.getErrorIdentifier(), is(ErrorIdentifier.MOTO_NOT_ALLOWED));
         }
     }
+
+    @Test
+    @PactVerification({"connector"})
+    @Pacts(pacts = {"publicapi-connector-create-payment-with-credentials-in-created-not-allowed"})
+    public void shouldThrowExceptionWithIdentifierAccountNotLinkedToPSP_IfGatewayAccountCredentialIsNotConfiguredInConnector() {
+        Account account = new Account("444", TokenPaymentType.CARD, "a-token-link");
+        var requestPayload = CreateCardPaymentRequestBuilder.builder()
+                .amount(100)
+                .returnUrl("https://somewhere.gov.uk/rainbow/1")
+                .reference("a reference")
+                .description("a description")
+                .build();
+
+        try {
+            createPaymentService.create(account, requestPayload);
+            fail("Expected CreateChargeException to be thrown");
+        } catch (CreateChargeException e) {
+            assertThat(e.getErrorIdentifier(), is(ErrorIdentifier.ACCOUNT_NOT_LINKED_WITH_PSP));
+        }
+    }
 }
