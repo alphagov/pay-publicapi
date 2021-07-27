@@ -14,7 +14,7 @@
         <wiremock.version>2.29.1</wiremock.version>
         <hamcrest.version>2.2</hamcrest.version>
         <jackson.version>2.12.4</jackson.version>
-        <logback.version>1.2.4</logback.version>
+        <logback.version>1.2.5</logback.version>
         <docker-client.version>8.16.0</docker-client.version>
         <pay-java-commons.version>1.0.20210721142941</pay-java-commons.version>
         <junit5.version>5.7.2</junit5.version>
