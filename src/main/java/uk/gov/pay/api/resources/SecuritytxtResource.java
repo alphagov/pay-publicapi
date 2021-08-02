@@ -2,8 +2,10 @@ package uk.gov.pay.api.resources;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Response;
 import java.net.URI;
+import java.util.Date;
 
 @Path("/")
 public class SecuritytxtResource {
@@ -24,7 +26,7 @@ public class SecuritytxtResource {
     }
 
     private static Response redirectToCabinetOfficeSecuritytxt() {
-        return Response.temporaryRedirect(CABINET_OFFICE_SECURITY_TXT).build();
+        return Response.temporaryRedirect(CABINET_OFFICE_SECURITY_TXT).cacheControl(CacheControl.valueOf("no-cache")).expires(new Date()).build();
     }
 
 }
