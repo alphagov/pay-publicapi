@@ -179,7 +179,9 @@ public class CardPayment extends Payment {
 
     @Override
     public String toString() {
-        // Some services put PII in the description, so don’t include it in the stringification
+        // Don't include:
+        // description - some services include PII
+        // reference - can come from user input for payment links, in the past they have mistakenly entered card numbers
         return "Card Payment{" +
                 "paymentId='" + super.paymentId + '\'' +
                 ", paymentProvider='" + paymentProvider + '\'' +
@@ -190,7 +192,6 @@ public class CardPayment extends Payment {
                 ", corporateCardSurcharge='" + corporateCardSurcharge + '\'' +
                 ", state='" + state + '\'' +
                 ", returnUrl='" + returnUrl + '\'' +
-                ", reference='" + reference + '\'' +
                 ", language='" + language.toString() + '\'' +
                 ", delayedCapture=" + delayedCapture +
                 ", moto=" + moto +

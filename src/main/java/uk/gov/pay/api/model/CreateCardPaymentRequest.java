@@ -197,16 +197,17 @@ public class CreateCardPaymentRequest {
      */
     @Override
     public String toString() {
-        // Some services put PII in the description, so don’t include it in the stringification
+        // Don't include:
+        // description - some services include PII
+        // reference - can come from user input for payment links, in the past they have mistakenly entered card numbers
         StringJoiner joiner = new StringJoiner(", ", "{", "}");
-        joiner.add("amount: ").add(String.valueOf(getAmount()));
-        joiner.add("reference: ").add(getReference());
-        joiner.add("return_url: ").add(returnUrl);
-        getInternal().flatMap(Internal::getSource).ifPresent(source -> joiner.add("source: ").add(source.toString()));
-        getLanguage().ifPresent(value -> joiner.add("language: ").add(value.toString()));
-        getDelayedCapture().ifPresent(value -> joiner.add("delayed_capture: ").add(value.toString()));
-        getMoto().ifPresent(value -> joiner.add("moto: ").add(value.toString()));
-        getMetadata().ifPresent(value -> joiner.add("metadata: ").add(value.toString()));
+        joiner.add("amount: " + getAmount());
+        joiner.add("return_url: " + returnUrl);
+        getInternal().flatMap(Internal::getSource).ifPresent(source -> joiner.add("source: " + source));
+        getLanguage().ifPresent(value -> joiner.add("language: " + value));
+        getDelayedCapture().ifPresent(value -> joiner.add("delayed_capture: " + value));
+        getMoto().ifPresent(value -> joiner.add("moto: " + value));
+        getMetadata().ifPresent(value -> joiner.add("metadata: " + value));
         return joiner.toString();
     }
 }
