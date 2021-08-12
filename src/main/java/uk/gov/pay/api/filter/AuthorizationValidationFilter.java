@@ -17,6 +17,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.Optional;
 
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
@@ -87,6 +89,6 @@ public class AuthorizationValidationFilter implements Filter {
         final String hmacCalculatedFromToken = BaseEncoding.base32Hex()
                 .lowerCase().omitPadding()
                 .encode(new HmacUtils(HmacAlgorithms.HMAC_SHA_1, apiKeyHmacSecret).hmac(token));
-        return hmacCalculatedFromToken.equals(currentHmac);
+        return MessageDigest.isEqual(hmacCalculatedFromToken.getBytes(StandardCharsets.UTF_8), currentHmac.getBytes(StandardCharsets.UTF_8));
     }
 }
