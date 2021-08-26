@@ -49,6 +49,10 @@ rateLimiter:  # rate = noOfReq per perMillis
   noOfReqPerNode: ${RATE_LIMITER_VALUE_PER_NODE:-25}  # per public api instance, if Redis is unavailable
   noOfReqForPostPerNode: ${RATE_LIMITER_VALUE_PER_NODE_POST:-5}  # per public api instance, if Redis is unavailable
   perMillis: ${RATE_LIMITER_PER_MILLIS:-1000}
+  lowTrafficAccounts: ${RATE_LIMITER_LOW_TRAFFIC_ACCOUNTS}
+  noOfReqForLowTrafficAccounts: ${RATE_LIMITER_LOW_TRAFFIC_VALUE_GET:-4500}
+  noOfPostReqForLowTrafficAccounts: ${RATE_LIMITER_LOW_TRAFFIC_VALUE_POST:-1}
+  intervalInMillisForLowTrafficAccounts: ${RATE_LIMITER_LOW_TRAFFIC_PER_MILLIS:-60000}
 
 redis:
   endpoint: ${REDIS_URL:-localhost:6379}

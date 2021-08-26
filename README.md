@@ -28,16 +28,20 @@ rate limit state in Redis (see `REDIS_URL` above). The rate-limiting behaviour
 can be tuned via the following environment variables which all have default
 values:
 
-| Variable                           | Default      |  Description                               |
-| ---------------------------------- | ------------ | ------------------------------------------ |
-| `RATE_LIMITER_VALUE`               | Default 75   | Number of non-`POST` requests allowed per `RATE_LIMITER_PER_MILLIS` milliseconds |
-| `RATE_LIMITER_VALUE_POST`          | Default 15   | Number of `POST` requests allowed per `RATE_LIMITER_PER_MILLIS` milliseconds |
-| `RATE_LIMITER_ELEVATED_ACCOUNTS`   | N/A          | Comma-separated list of accounts to which `..._ELEVATED_...` limits apply (example: `1,2,3`) |
-| `RATE_LIMITER_ELEVATED_VALUE_GET`  | Default 100  | Number of non-`POST` requests allowed per `RATE_LIMITER_PER_MILLIS` milliseconds (for `RATE_LIMITER_ELEVATED_ACCOUNTS`) |
-| `RATE_LIMITER_ELEVATED_VALUE_POST` | Default 40   | Number of `POST` requests allowed per `RATE_LIMITER_PER_MILLIS` milliseconds (for `RATE_LIMITER_ELEVATED_ACCOUNTS`) |
-| `RATE_LIMITER_VALUE_PER_NODE`      | Default 25   | Number of non-`POST` requests allowed per `RATE_LIMITER_PER_MILLIS` milliseconds for a given client |
-| `RATE_LIMITER_VALUE_PER_NODE_POST` | Default 5    | Number of `POST` requests allowed per `RATE_LIMITER_PER_MILLIS` milliseconds for a given client |
-| `RATE_LIMITER_PER_MILLIS`          | Default 1000 | Rate limiter time window |
+| Variable                             | Default      |  Description                               |
+| ----------------------------------   | ------------ | ------------------------------------------ |
+| `RATE_LIMITER_VALUE`                 | Default 75   | Number of non-`POST` requests allowed per `RATE_LIMITER_PER_MILLIS` milliseconds |
+| `RATE_LIMITER_VALUE_POST`            | Default 15   | Number of `POST` requests allowed per `RATE_LIMITER_PER_MILLIS` milliseconds |
+| `RATE_LIMITER_ELEVATED_ACCOUNTS`     | N/A          | Comma-separated list of accounts to which `..._ELEVATED_...` limits apply (example: `1,2,3`) |
+| `RATE_LIMITER_ELEVATED_VALUE_GET`    | Default 100  | Number of non-`POST` requests allowed per `RATE_LIMITER_PER_MILLIS` milliseconds (for `RATE_LIMITER_ELEVATED_ACCOUNTS`) |
+| `RATE_LIMITER_ELEVATED_VALUE_POST`   | Default 40   | Number of `POST` requests allowed per `RATE_LIMITER_PER_MILLIS` milliseconds (for `RATE_LIMITER_ELEVATED_ACCOUNTS`) |
+| `RATE_LIMITER_VALUE_PER_NODE`        | Default 25   | Number of non-`POST` requests allowed per `RATE_LIMITER_PER_MILLIS` milliseconds for a given client |
+| `RATE_LIMITER_VALUE_PER_NODE_POST`   | Default 5    | Number of `POST` requests allowed per `RATE_LIMITER_PER_MILLIS` milliseconds for a given client |
+| `RATE_LIMITER_PER_MILLIS`            | Default 1000 | Rate limiter time window |
+| `RATE_LIMITER_LOW_TRAFFIC_ACCOUNTS`  | N/A          | Comma-separated list of accounts to which `..._LOW_TRAFFIC_...` limits apply (example: `5,6,7`) |
+| `RATE_LIMITER_LOW_TRAFFIC_VALUE_GET` | Default 4500 | Number of non-`POST` requests allowed per `RATE_LIMITER_LOW_TRAFFIC_PER_MILLIS` in milliseconds for a given account (for `RATE_LIMITER_LOW_TRAFFIC_ACCOUNTS`) |
+| `RATE_LIMITER_LOW_TRAFFIC_VALUE_POST`| Default 1    | Number of `POST` requests allowed per `RATE_LIMITER_LOW_TRAFFIC_PER_MILLIS` in milliseconds (for `RATE_LIMITER_LOW_TRAFFIC_ACCOUNTS`) |
+| `RATE_LIMITER_LOW_TRAFFIC_PER_MILLIS`| Default 60000| rate limit internal per `RATE_LIMITER_LOW_TRAFFIC_PER_MILLIS` (in milliseconds) for `RATE_LIMITER_LOW_TRAFFIC_ACCOUNTS`  |
 
 ## API specification
 

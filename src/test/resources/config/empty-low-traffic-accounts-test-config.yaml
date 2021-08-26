@@ -5,14 +5,12 @@ server:
   adminConnectors:
     - type: http
       port: 0
-  requestLog:
-    appenders: []
 
 logging:
-  level: ERROR
+  level: INFO
   appenders:
     - type: logstash-console
-      threshold: ERROR
+      threshold: ALL
       target: stdout
       customFields:
         container: "publicapi"
@@ -35,13 +33,13 @@ rateLimiter:
   noOfReqForPost: 1000
   noOfReqPerNode: 1
   noOfReqForPostPerNode: 1
-  elevatedAccounts: 1, 2, 3
+  elevatedAccounts: 3
   noOfReqForElevatedAccounts: 1000
   noOfPostReqForElevatedAccounts: 1000
   lowTrafficAccounts:
-  noOfReqForLowTrafficAccounts: 1
-  noOfPostReqForLowTrafficAccounts: 1
-  intervalInMillisForLowTrafficAccounts: 1000
+  noOfReqForLowTrafficAccounts: 4500
+  noOfPostReqForLowTrafficAccounts: 2
+  intervalInMillisForLowTrafficAccounts: 60000
 
 redis:
   endpoint: localhost:6379
