@@ -13,7 +13,7 @@
         <guava.version>30.1.1-jre</guava.version>
         <wiremock.version>2.30.1</wiremock.version>
         <hamcrest.version>2.2</hamcrest.version>
-        <jackson.version>2.12.4</jackson.version>
+        <jackson.version>2.12.5</jackson.version>
         <logback.version>1.2.5</logback.version>
         <docker-client.version>8.16.0</docker-client.version>
         <pay-java-commons.version>1.0.20210823095154</pay-java-commons.version>
