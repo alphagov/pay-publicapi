@@ -1,6 +1,5 @@
 package uk.gov.pay.api.filter.ratelimit;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -21,11 +20,6 @@ public class RateLimitManagerTest {
     private RateLimiterConfig rateLimiterConfig;
 
     private RateLimitManager rateLimitManager;
-    
-    @BeforeEach
-    public void setUp() {
-        when(rateLimiterConfig.getElevatedAccounts()).thenReturn(List.of("1"));
-    }
 
     @Test
     public void returnsNumberOfAllowedRequestsForNoAccount() {
@@ -39,6 +33,7 @@ public class RateLimitManagerTest {
     @Test
     public void returnsNumberOfAllowedRequestsForPostForAccount1() {
         var rateLimiterKey = new RateLimiterKey("path", "key-type", "POST");
+        when(rateLimiterConfig.getElevatedAccounts()).thenReturn(List.of("1"));
         when(rateLimiterConfig.getNoOfPostReqForElevatedAccounts()).thenReturn(4);
 
         rateLimitManager = new RateLimitManager(rateLimiterConfig);
@@ -48,6 +43,7 @@ public class RateLimitManagerTest {
     @Test
     public void returnsNumberOfAllowedRequestsForGetForAccount1() {
         var rateLimiterKey = new RateLimiterKey("path", "key-type", "GET");
+        when(rateLimiterConfig.getElevatedAccounts()).thenReturn(List.of("1"));
         when(rateLimiterConfig.getNoOfReqForElevatedAccounts()).thenReturn(3);
 
         rateLimitManager = new RateLimitManager(rateLimiterConfig);
@@ -71,4 +67,42 @@ public class RateLimitManagerTest {
         rateLimitManager = new RateLimitManager(rateLimiterConfig);
         assertThat(rateLimitManager.getAllowedNumberOfRequests(rateLimiterKey, "2"), is(1));
     }
+
+    @Test
+    public void shouldReturnNumberOfAllowedPostRequestsCorrectlyForLowTrafficAccounts() {
+        var rateLimiterKey = new RateLimiterKey("path", "key-type", "POST");
+        when(rateLimiterConfig.getLowTrafficAccounts()).thenReturn(List.of("10"));
+        when(rateLimiterConfig.getNoOfPostReqForLowTrafficAccounts()).thenReturn(7);
+
+        rateLimitManager = new RateLimitManager(rateLimiterConfig);
+        assertThat(rateLimitManager.getAllowedNumberOfRequests(rateLimiterKey, "10"), is(7));
+    }
+
+    @Test
+    public void shouldReturnNumberOfAllowedGetRequestsCorrectlyForLowTrafficAccounts() {
+        var rateLimiterKey = new RateLimiterKey("path", "key-type", "GET");
+        when(rateLimiterConfig.getLowTrafficAccounts()).thenReturn(List.of("10"));
+        when(rateLimiterConfig.getNoOfReqForLowTrafficAccounts()).thenReturn(100);
+
+        rateLimitManager = new RateLimitManager(rateLimiterConfig);
+        assertThat(rateLimitManager.getAllowedNumberOfRequests(rateLimiterKey, "10"), is(100));
+    }
+
+    @Test
+    public void shouldReturnRateLimitIntervalCorrectlyForLowTrafficAccounts() {
+        when(rateLimiterConfig.getLowTrafficAccounts()).thenReturn(List.of("10"));
+        when(rateLimiterConfig.getIntervalInMillisForLowTrafficAccounts()).thenReturn(54000);
+
+        rateLimitManager = new RateLimitManager(rateLimiterConfig);
+        assertThat(rateLimitManager.getRateLimitInterval("10"), is(54000));
+    }
+
+    @Test
+    public void shouldReturnRateLimitIntervalCorrectlyForElevatedAndStandardRateLimiting() {
+        when(rateLimiterConfig.getPerMillis()).thenReturn(10000);
+
+        rateLimitManager = new RateLimitManager(rateLimiterConfig);
+        assertThat(rateLimitManager.getRateLimitInterval("12345"), is(10000));
+    }
+
 }

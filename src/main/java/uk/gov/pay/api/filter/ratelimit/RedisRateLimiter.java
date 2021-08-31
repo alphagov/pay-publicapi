@@ -17,13 +17,11 @@ public class RedisRateLimiter {
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisRateLimiter.class);
 
     private RateLimitManager rateLimitManager;
-    private final int perMillis;
     private RedisClientManager redisClientManager;
 
     @Inject
     public RedisRateLimiter(RateLimiterConfig rateLimiterConfig, RedisClientManager redisClientManager) {
         this.rateLimitManager = new RateLimitManager(rateLimiterConfig);
-        this.perMillis = rateLimiterConfig.getPerMillis();
         this.redisClientManager = redisClientManager;
     }
 
@@ -36,7 +34,8 @@ public class RedisRateLimiter {
         Long count;
 
         try {
-            count = updateAllowance(key.getKey());
+            int rateLimitInterval = rateLimitManager.getRateLimitInterval(accountId);
+            count = updateAllowance(key.getKey(), rateLimitInterval);
         } catch (Exception e) {
             LOGGER.info("Failed to update allowance. Cause of error: " + e.getMessage());
             // Exception possible if redis is unavailable or perMillis is too high        
@@ -53,14 +52,14 @@ public class RedisRateLimiter {
         }
     }
 
-    synchronized private Long updateAllowance(String key) {
-        String derivedKey = getKeyForWindow(key);
+    synchronized private Long updateAllowance(String key, int rateLimitInterval) {
+        String derivedKey = getKeyForWindow(key, rateLimitInterval);
         Long count = redisClientManager.getRedisConnection().sync().incr(derivedKey);
-        
+
         if (count == 1) {
-            redisClientManager.getRedisConnection().sync().expire(derivedKey, perMillis / 1000);
+            redisClientManager.getRedisConnection().sync().expire(derivedKey, rateLimitInterval / 1000);
         }
-        
+
         return count;
     }
 
@@ -71,22 +70,25 @@ public class RedisRateLimiter {
      * Depends on perMillis
      * <p>
      * - perMillis < 1000 : Window considered for milliseconds
-     * - perMillis >=1000 && <=60000 : Window considered for seconds(s)
+     * - perMillis >=1000 && <60000 : Window considered for seconds(s)
+     * - perMillis >=60000 && <3600000 : Window considered for minute(s)
      *
      * @return new key based on perMillis (works for second/minute/hour windows only)
      */
-    private String getKeyForWindow(String key) throws OutOfScopeException {
+    private String getKeyForWindow(String key, int rateLimitInterval) throws OutOfScopeException {
 
         LocalDateTime now = LocalDateTime.now();
 
         int window;
 
-        if (perMillis >= 1 && perMillis < 1000) {
-            window = (now.get(ChronoField.MILLI_OF_DAY) / perMillis) + 1;
-        } else if (perMillis >= 1000 && perMillis <= 60000) {
-            window = now.get(ChronoField.SECOND_OF_MINUTE) / (perMillis / 1000);
+        if (rateLimitInterval >= 1 && rateLimitInterval < 1000) {
+            window = (now.get(ChronoField.MILLI_OF_DAY) / rateLimitInterval) + 1;
+        } else if (rateLimitInterval >= 1000 && rateLimitInterval < 60000) {
+            window = now.get(ChronoField.SECOND_OF_MINUTE) / (rateLimitInterval / 1000);
+        } else if (rateLimitInterval >= 60000 && rateLimitInterval < 3600000) {
+            window = now.get(ChronoField.MINUTE_OF_HOUR) / (rateLimitInterval / 1000);
         } else {
-            throw new OutOfScopeException("perMillis specified is not currently supported");
+            throw new OutOfScopeException("Rate limit interval specified is not currently supported");
         }
 
         return key + window;
