@@ -36,6 +36,10 @@ rateLimiter:
   elevatedAccounts:
   noOfReqForElevatedAccounts: 1000
   noOfPostReqForElevatedAccounts: 1000
+  lowTrafficAccounts:
+  noOfReqForLowTrafficAccounts: 1
+  noOfPostReqForLowTrafficAccounts: 1
+  intervalInMillisForLowTrafficAccounts: 1000
 
 redis:
   endpoint: localhost:6379

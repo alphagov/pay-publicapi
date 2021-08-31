@@ -38,6 +38,20 @@ public class RateLimiterConfig extends Configuration {
     @Max(60000)
     private int perMillis;
 
+    @Valid
+    @JsonDeserialize(converter = StringToListConverter.class)
+    private List<String> lowTrafficAccounts;
+
+    @Min(1)
+    private int noOfReqForLowTrafficAccounts;
+
+    @Min(1)
+    private int noOfPostReqForLowTrafficAccounts;
+
+    @Min(1000)
+    @Max(3_599_999)
+    private int intervalInMillisForLowTrafficAccounts;
+
     public int getNoOfReq() {
         return noOfReq;
     }
@@ -68,5 +82,21 @@ public class RateLimiterConfig extends Configuration {
 
     public List<String> getElevatedAccounts() {
         return Optional.ofNullable(elevatedAccounts).orElse(Collections.emptyList());
+    }
+
+    public List<String> getLowTrafficAccounts() {
+        return Optional.ofNullable(lowTrafficAccounts).orElse(Collections.emptyList());
+    }
+
+    public int getNoOfReqForLowTrafficAccounts() {
+        return noOfReqForLowTrafficAccounts;
+    }
+
+    public int getNoOfPostReqForLowTrafficAccounts() {
+        return noOfPostReqForLowTrafficAccounts;
+    }
+
+    public int getIntervalInMillisForLowTrafficAccounts() {
+        return intervalInMillisForLowTrafficAccounts;
     }
 }
