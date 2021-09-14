@@ -2,6 +2,7 @@ package uk.gov.pay.api.model.links;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import uk.gov.pay.api.model.AuthorisationSummary;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.Charge;
@@ -41,9 +42,10 @@ public class PaymentWithAllLinks {
                                boolean delayedCapture, boolean moto, RefundSummary refundSummary, PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
                                List<PaymentConnectorResponseLink> paymentConnectorResponseLinks, URI selfLink, URI paymentEventsUri, URI paymentCancelUri,
                                URI paymentRefundsUri, URI paymentCaptureUri, Long corporateCardSurcharge, Long totalAmount, String providerId, ExternalMetadata metadata,
-                               Long fee, Long netAmount) {
+                               Long fee, Long netAmount, AuthorisationSummary authorisationSummary) {
         this.payment = new CardPayment(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate,
-                refundSummary, settlementSummary, cardDetails, language, delayedCapture, moto, corporateCardSurcharge, totalAmount, providerId, metadata, fee, netAmount);
+                refundSummary, settlementSummary, cardDetails, language, delayedCapture, moto, corporateCardSurcharge, totalAmount,
+                providerId, metadata, fee, netAmount, authorisationSummary);
         this.links.addSelf(selfLink.toString());
         this.links.addKnownLinksValueOf(paymentConnectorResponseLinks);
         this.links.addEvents(paymentEventsUri.toString());
@@ -114,7 +116,8 @@ public class PaymentWithAllLinks {
                 paymentConnector.getGatewayTransactionId(),
                 paymentConnector.getMetadata().orElse(null),
                 paymentConnector.getFee(),
-                paymentConnector.getNetAmount());
+                paymentConnector.getNetAmount(),
+                paymentConnector.getAuthorisationSummary());
     }
 
     public static PaymentWithAllLinks getPaymentWithLinks(

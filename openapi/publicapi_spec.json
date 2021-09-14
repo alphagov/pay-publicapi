@@ -869,6 +869,15 @@
           }
         }
       },
+      "AuthorisationSummary" : {
+        "type" : "object",
+        "description" : "Object containing information about the authentication of the payment.",
+        "properties" : {
+          "three_d_secure" : {
+            "$ref" : "#/components/schemas/ThreeDSecure"
+          }
+        }
+      },
       "CardDetails" : {
         "type" : "object",
         "description" : "A structure representing the payment card",
@@ -1106,6 +1115,9 @@
             "format" : "int64",
             "example" : 1200
           },
+          "authorisation_summary" : {
+            "$ref" : "#/components/schemas/AuthorisationSummary"
+          },
           "card_brand" : {
             "type" : "string",
             "deprecated" : true,
@@ -1235,6 +1247,9 @@
             "type" : "integer",
             "format" : "int64",
             "example" : 1200
+          },
+          "authorisation_summary" : {
+            "$ref" : "#/components/schemas/AuthorisationSummary"
           },
           "card_brand" : {
             "type" : "string",
@@ -1827,6 +1842,16 @@
           },
           "self" : {
             "$ref" : "#/components/schemas/Link"
+          }
+        }
+      },
+      "ThreeDSecure" : {
+        "type" : "object",
+        "description" : "Object containing information about the 3D Secure authentication of the payment.",
+        "properties" : {
+          "required" : {
+            "type" : "boolean",
+            "description" : "Flag indicating whether the payment required 3D Secure authentication."
           }
         }
       }

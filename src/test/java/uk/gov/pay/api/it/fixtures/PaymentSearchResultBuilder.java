@@ -98,6 +98,11 @@ public class PaymentSearchResultBuilder extends PaymentResultBuilder {
         return this;
     }
 
+    public PaymentSearchResultBuilder withAuthorisationSummary(uk.gov.pay.api.model.AuthorisationSummary authorisationSummary) {
+        this.authorisationSummary = authorisationSummary == null ? null : new AuthorisationSummary(authorisationSummary.getThreeDSecure());
+        return this;
+    }
+
     public List<TestPayment> getResults() {
         List<TestPayment> results = newArrayList();
         for (int i = 0; i < noOfResults; i++) {

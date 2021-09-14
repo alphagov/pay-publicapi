@@ -5,10 +5,12 @@ import io.restassured.response.ValidatableResponse;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.api.model.Address;
+import uk.gov.pay.api.model.AuthorisationSummary;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
+import uk.gov.pay.api.model.ThreeDSecure;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector;
@@ -34,6 +36,7 @@ import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
@@ -147,6 +150,12 @@ public class GetPaymentIT extends PaymentResourceITestBase {
 
     private void assertPaymentWithMoto(ValidatableResponse response) {
         response.body("moto", is(true));
+    }
+
+    private void assertPaymentWithAuthorisationSummary(ValidatableResponse response) {
+        response.body("authorisation_summary", is(notNullValue()));
+        response.body("authorisation_summary.three_d_secure", is(notNullValue()));
+        response.body("authorisation_summary.three_d_secure.required", is(true));
     }
 
     @Test
@@ -641,6 +650,49 @@ public class GetPaymentIT extends PaymentResourceITestBase {
                 .contentType(JSON)
                 .body("_links.capture.href", is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID) + "/capture"))
                 .body("_links.capture.method", is("POST"));
+    }
+
+    @Test
+    public void getPaymentWithAuthorisationSummaryThroughLedger() {
+        AuthorisationSummary authorisationSummary = new AuthorisationSummary(new ThreeDSecure(true));
+        ledgerMockClient.respondWithTransaction(CHARGE_ID,
+                getLedgerTransaction()
+                        .withAuthorisationSummary(authorisationSummary)
+                        .build());
+
+        ValidatableResponse response = getPaymentResponse(CHARGE_ID, LEDGER_ONLY_STRATEGY);
+
+        assertCommonPaymentFields(response);
+        assertPaymentWithAuthorisationSummary(response);
+    }
+
+    @Test
+    public void getPaymentWithAuthorisationSummaryThroughConnector() {
+        AuthorisationSummary authorisationSummary = new AuthorisationSummary(new ThreeDSecure(true));
+        connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+                getConnectorCharge()
+                        .withAuthorisationSummary(authorisationSummary)
+                        .build());
+
+        ValidatableResponse response = getPaymentResponse(CHARGE_ID);
+
+        assertCommonPaymentFields(response);
+        assertConnectorOnlyPaymentFields(response);
+        assertPaymentWithAuthorisationSummary(response);
+    }
+
+    @Test
+    public void getPaymentWithNoAuthorisationSummaryThroughConnector() {
+        AuthorisationSummary authorisationSummary = new AuthorisationSummary(new ThreeDSecure(true));
+        connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+                getConnectorCharge()
+                        .build());
+
+        ValidatableResponse response = getPaymentResponse(CHARGE_ID);
+
+        assertCommonPaymentFields(response);
+        assertConnectorOnlyPaymentFields(response);
+        response.body("authorisation_summary", is(nullValue()));
     }
 
     private ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder getConnectorCharge() {

@@ -68,12 +68,15 @@ public class CardPayment extends Payment {
     @JsonIgnore
     protected String paymentType;
 
+    @JsonProperty("authorisation_summary")
+    private AuthorisationSummary authorisationSummary;
+
 
     public CardPayment(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                        String reference, String email, String paymentProvider, String createdDate,
                        RefundSummary refundSummary, PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
                        SupportedLanguage language, boolean delayedCapture, boolean moto, Long corporateCardSurcharge, Long totalAmount,
-                       String providerId, ExternalMetadata metadata, Long fee, Long netAmount) {
+                       String providerId, ExternalMetadata metadata, Long fee, Long netAmount, AuthorisationSummary authorisationSummary) {
         super(chargeId, amount, description, reference, paymentProvider, createdDate);
         this.state = state;
         this.refundSummary = refundSummary;
@@ -91,6 +94,7 @@ public class CardPayment extends Payment {
         this.netAmount = netAmount;
         this.email = email;
         this.returnUrl = returnUrl;
+        this.authorisationSummary = authorisationSummary;
     }
 
     /**

@@ -1,6 +1,7 @@
 package uk.gov.pay.api.model.search.card;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import uk.gov.pay.api.model.AuthorisationSummary;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
@@ -21,9 +22,9 @@ public class GetPaymentResult extends CardPayment {
                             String reference, String email, String paymentProvider, String createdDate,
                             RefundSummary refundSummary, PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
                             SupportedLanguage language, boolean delayedCapture, boolean moto, Long corporateCardSurcharge,
-                            Long totalAmount, String providerId, Long fee, Long netAmount) {
+                            Long totalAmount, String providerId, Long fee, Long netAmount, AuthorisationSummary authorisationSummary) {
         super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate,
                 refundSummary, settlementSummary, cardDetails, language, delayedCapture, moto, corporateCardSurcharge,
-                totalAmount, providerId, null, fee, netAmount);
+                totalAmount, providerId, null, fee, netAmount, authorisationSummary);
     }
 }

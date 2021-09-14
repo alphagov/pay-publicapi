@@ -79,6 +79,8 @@ public class ChargeFromResponse {
     @JsonDeserialize(using = ExternalMetadataDeserialiser.class)
     private ExternalMetadata metadata;
 
+    private AuthorisationSummary authorisationSummary;
+
     public Optional<ExternalMetadata> getMetadata() {
         return Optional.ofNullable(metadata);
     }
@@ -201,4 +203,8 @@ public class ChargeFromResponse {
     public String getGatewayTransactionId() {
         return gatewayTransactionId;
     }
+
+    public AuthorisationSummary getAuthorisationSummary() {
+        return authorisationSummary;
+    };
 }

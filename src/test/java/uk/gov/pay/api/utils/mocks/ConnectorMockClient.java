@@ -93,6 +93,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         ofNullable(responseFromConnector.getTotalAmount()).ifPresent(resultBuilder::withTotalAmount);
         ofNullable(responseFromConnector.getFee()).ifPresent(resultBuilder::withFee);
         ofNullable(responseFromConnector.getNetAmount()).ifPresent(resultBuilder::withNetAmount);
+        ofNullable(responseFromConnector.getAuthorisationSummary()).ifPresent(resultBuilder::withAuthorisationSummary);
         responseFromConnector.getMetadata().ifPresent(resultBuilder::withMetadata);
         
         return resultBuilder.build();

@@ -2,6 +2,7 @@ package uk.gov.pay.api.utils.mocks;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import uk.gov.pay.api.model.AuthorisationSummary;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
@@ -37,6 +38,7 @@ public class TransactionFromLedgerFixture {
     private String createdDate;
     private String gatewayTransactionId;
     private Map<String, Object> metadata;
+    private AuthorisationSummary authorisationSummary;
 
     public String getReturnUrl() {
         return returnUrl;
@@ -110,6 +112,10 @@ public class TransactionFromLedgerFixture {
         return metadata;
     }
 
+    public AuthorisationSummary getAuthorisationSummary() {
+        return authorisationSummary;
+    }
+
     public TransactionFromLedgerFixture(TransactionFromLedgerBuilder builder) {
         this.amount = builder.amount;
         this.state = builder.state;
@@ -133,6 +139,7 @@ public class TransactionFromLedgerFixture {
         this.netAmount = builder.netAmount;
         this.gatewayTransactionId = builder.gatewayTransactionId;
         this.metadata = builder.metadata;
+        this.authorisationSummary = builder.authorisationSummary;
     }
 
     public Long getAmount() {
@@ -175,6 +182,7 @@ public class TransactionFromLedgerFixture {
         private String createdDate;
         private String gatewayTransactionId;
         private Map<String, Object> metadata;
+        private AuthorisationSummary authorisationSummary;
 
         private TransactionFromLedgerBuilder() {
         }
@@ -290,6 +298,11 @@ public class TransactionFromLedgerFixture {
 
         public TransactionFromLedgerBuilder withMetadata(Map<String, Object> metadata) {
             this.metadata = metadata;
+            return this;
+        }
+
+        public TransactionFromLedgerBuilder withAuthorisationSummary(AuthorisationSummary authorisationSummary) {
+            this.authorisationSummary = authorisationSummary;
             return this;
         }
 

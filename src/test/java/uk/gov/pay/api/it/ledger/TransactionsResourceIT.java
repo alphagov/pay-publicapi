@@ -13,7 +13,9 @@ import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.it.fixtures.PaymentNavigationLinksFixture;
 import uk.gov.pay.api.model.Address;
+import uk.gov.pay.api.model.AuthorisationSummary;
 import uk.gov.pay.api.model.CardDetails;
+import uk.gov.pay.api.model.ThreeDSecure;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.LedgerMockClient;
@@ -27,6 +29,7 @@ import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.emptyString;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.it.fixtures.PaginatedTransactionSearchResultFixture.aPaginatedTransactionSearchResult;
 import static uk.gov.pay.api.it.fixtures.PaymentResultBuilder.DEFAULT_AMOUNT;
@@ -90,6 +93,7 @@ public class TransactionsResourceIT {
                         .withCardDetails(cardDetails)
                         .withNumberOfResults(2)
                         .withEmail("j.doe@example.org")
+                        .withAuthorisationSummary(new AuthorisationSummary(new ThreeDSecure(true)))
                         .getResults())
                 .build();
         ledgerMockClient.respondOk_whenSearchCharges(transactions);
@@ -125,6 +129,9 @@ public class TransactionsResourceIT {
                 .body("results[0].card_details.billing_address.postcode", is("AB1 CD2"))
                 .body("results[0].card_details.billing_address.country", is("GB"))
                 .body("results[0].card_details.card_brand", is(emptyString()))
+                .body("results[0].authorisation_summary", is(notNullValue()))
+                .body("results[0].authorisation_summary.three_d_secure", is(notNullValue()))
+                .body("results[0].authorisation_summary.three_d_secure.required", is(true))
                 .body("_links.self.href", is(expectedChargesLocationFor("?reference=reference&display_size=500&page=1")))
                 .body("_links.first_page.href", is(expectedChargesLocationFor("?reference=reference&display_size=500&page=1")))
                 .body("_links.last_page.href", is(expectedChargesLocationFor("?reference=reference&display_size=500&page=1")));
