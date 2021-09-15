@@ -79,7 +79,13 @@
             "captured_date": null
           },
           "delayed_capture": true,
-          "moto": false
+          "moto": false,
+          "authorisation_summary": {
+            "three_d_secure": {
+              "required": true,
+              "version": "2.1.0"
+            }
+          }
         },
         "matchingRules": {
           "body": {

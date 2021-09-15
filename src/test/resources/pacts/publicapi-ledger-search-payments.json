@@ -67,7 +67,13 @@
                 "card_brand": ""
               },
               "delayed_capture": false,
-              "moto": false
+              "moto": false,
+              "authorisation_summary": {
+                "three_d_secure": {
+                  "required": true,
+                  "version": "2.1.0"
+                }
+              }
             }
           ],
           "_links": {

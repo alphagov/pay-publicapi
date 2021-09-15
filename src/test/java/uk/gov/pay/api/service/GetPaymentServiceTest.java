@@ -118,5 +118,6 @@ public class GetPaymentServiceTest {
         assertThat(payment.getMetadata().getMetadata().isEmpty(), is(false));
         assertThat(paymentResponse.getLinks().getNextUrl(), is(nullValue()));
         assertThat(paymentResponse.getLinks().getNextUrlPost(), is(nullValue()));
+        assertThat(payment.getAuthorisationSummary().getThreeDSecure().isRequired(), is(true));
     }
 }
