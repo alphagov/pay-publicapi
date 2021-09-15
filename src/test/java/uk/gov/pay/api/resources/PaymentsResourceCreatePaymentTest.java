@@ -119,6 +119,8 @@ public class PaymentsResourceCreatePaymentTest {
                 null,
                 "providerId",
                 null,
-                null, null);
+                null,
+                null,
+                null);
     }
 }

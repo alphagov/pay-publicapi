@@ -1,5 +1,6 @@
 package uk.gov.pay.api.utils.mocks;
 
+import uk.gov.pay.api.model.AuthorisationSummary;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
@@ -28,6 +29,7 @@ public class ChargeResponseFromConnector {
     private final Optional<Map<String, Object>> metadata;
     private final Long fee;
     private final Long netAmount;
+    private final AuthorisationSummary authorisationSummary;
 
     public Long getAmount() {
         return amount;
@@ -141,6 +143,10 @@ public class ChargeResponseFromConnector {
         return netAmount;
     }
 
+    public AuthorisationSummary getAuthorisationSummary() {
+        return authorisationSummary;
+    }
+
     private ChargeResponseFromConnector(ChargeResponseFromConnectorBuilder builder) {
         this.amount = builder.amount;
         this.chargeId = builder.chargeId;
@@ -170,6 +176,7 @@ public class ChargeResponseFromConnector {
         this.metadata = builder.metadata == null || builder.metadata.isEmpty() ? Optional.empty() : Optional.of(builder.metadata);
         this.fee = builder.fee;
         this.netAmount = builder.netAmount;
+        this.authorisationSummary = builder.authorisationSummary;
     }
 
     public static final class ChargeResponseFromConnectorBuilder {
@@ -187,6 +194,7 @@ public class ChargeResponseFromConnector {
         private Map<String, Object> metadata = Map.of();
         private Long fee = null;
         private Long netAmount = null;
+        private AuthorisationSummary authorisationSummary = null;
 
         private ChargeResponseFromConnectorBuilder() {
         }
@@ -217,7 +225,8 @@ public class ChargeResponseFromConnector {
                     .withCardDetails(responseFromConnector.cardDetails)
                     .withMetadata(responseFromConnector.metadata.orElse(null))
                     .withNetAmount(responseFromConnector.getNetAmount())
-                    .withFee(responseFromConnector.getFee());
+                    .withFee(responseFromConnector.getFee())
+                    .withAuthorisationSummary(responseFromConnector.getAuthorisationSummary());
         }
 
         public ChargeResponseFromConnectorBuilder withAmount(long amount) {
@@ -367,6 +376,11 @@ public class ChargeResponseFromConnector {
         
         public ChargeResponseFromConnectorBuilder withNetAmount(Long netAmount) {
             this.netAmount = netAmount;
+            return this;
+        }
+
+        public ChargeResponseFromConnectorBuilder withAuthorisationSummary(AuthorisationSummary authorisationSummary) {
+            this.authorisationSummary = authorisationSummary;
             return this;
         }
     }

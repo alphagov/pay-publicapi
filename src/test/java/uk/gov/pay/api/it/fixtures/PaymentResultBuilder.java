@@ -110,6 +110,22 @@ public abstract class PaymentResultBuilder {
         }
     }
 
+    protected static class AuthorisationSummary {
+        public ThreeDSecure three_d_secure;
+
+        public AuthorisationSummary(uk.gov.pay.api.model.ThreeDSecure threeDSecure) {
+            this.three_d_secure = new ThreeDSecure(threeDSecure);
+        }
+    }
+
+    protected static class ThreeDSecure {
+        public boolean required;
+
+        public ThreeDSecure(uk.gov.pay.api.model.ThreeDSecure threeDSecure) {
+            this.required = threeDSecure.isRequired();
+        }
+    }
+
     protected static class TestPayment {
         public TestPaymentState state;
         public String charge_id, transaction_id, description, reference, email, created_date, gateway_transaction_id,
@@ -123,6 +139,7 @@ public abstract class PaymentResultBuilder {
         public Long corporate_card_surcharge, total_amount, fee, net_amount;
         public List<Map<?,?>> links;
         public Map<String, ?> metadata;
+        public AuthorisationSummary authorisation_summary;
     }
 
     protected static class TestPaymentState {
@@ -177,6 +194,7 @@ public abstract class PaymentResultBuilder {
     protected SettlementSummary settlementSummary;
     protected String gatewayTransactionId;
     protected Map<String, Object> metadata;
+    protected AuthorisationSummary authorisationSummary;
 
     public abstract String build();
     
@@ -219,6 +237,7 @@ public abstract class PaymentResultBuilder {
         payment.net_amount = netAmount;
         payment.links = links ;
         payment.metadata = metadata;
+        payment.authorisation_summary = authorisationSummary;
 
         return payment;
     }

@@ -132,4 +132,9 @@ public class PaymentSingleResultBuilder extends PaymentResultBuilder {
         this.metadata = metadata;
         return this;
     }
+
+    public PaymentSingleResultBuilder withAuthorisationSummary(uk.gov.pay.api.model.AuthorisationSummary authorisationSummary) {
+        this.authorisationSummary = authorisationSummary == null ? null : new AuthorisationSummary(authorisationSummary.getThreeDSecure());
+        return this;
+    }
 }

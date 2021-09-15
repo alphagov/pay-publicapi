@@ -2,6 +2,7 @@ package uk.gov.pay.api.model.search.card;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import uk.gov.pay.api.model.AuthorisationSummary;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
@@ -27,11 +28,11 @@ public class PaymentForSearchResult extends CardPayment {
                                   boolean delayedCapture, boolean moto, RefundSummary refundSummary, PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
                                   List<PaymentConnectorResponseLink> links, URI selfLink, URI paymentEventsLink, URI paymentCancelLink, URI paymentRefundsLink, URI paymentCaptureUri,
                                   Long corporateCardSurcharge, Long totalAmount, String providerId, ExternalMetadata externalMetadata,
-                                  Long fee, Long netAmount) {
+                                  Long fee, Long netAmount, AuthorisationSummary authorisationSummary) {
         
         super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider,
                 createdDate, refundSummary, settlementSummary, cardDetails, language, delayedCapture, moto, corporateCardSurcharge, totalAmount, providerId, externalMetadata,
-                fee, netAmount);
+                fee, netAmount, authorisationSummary);
         this.links.addSelf(selfLink.toString());
         this.links.addEvents(paymentEventsLink.toString());
         this.links.addRefunds(paymentRefundsLink.toString());
@@ -79,7 +80,8 @@ public class PaymentForSearchResult extends CardPayment {
                 paymentResult.getGatewayTransactionId(),
                 paymentResult.getMetadata().orElse(null),
                 paymentResult.getFee(),
-                paymentResult.getNetAmount());
+                paymentResult.getNetAmount(),
+                paymentResult.getAuthorisationSummary());
     }
 
     public PaymentLinksForSearch getLinks() {

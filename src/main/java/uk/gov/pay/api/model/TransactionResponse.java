@@ -77,6 +77,9 @@ public class TransactionResponse {
     @JsonDeserialize(using = ExternalMetadataDeserialiser.class)
     private ExternalMetadata metadata;
 
+    @JsonProperty("authorisation_summary")
+    private AuthorisationSummary authorisationSummary;
+
     public Optional<ExternalMetadata> getMetadata() {
         return Optional.ofNullable(metadata);
     }
@@ -174,5 +177,9 @@ public class TransactionResponse {
 
     public String getTransactionId() {
         return transactionId;
+    }
+
+    public AuthorisationSummary getAuthorisationSummary() {
+        return authorisationSummary;
     }
 }

@@ -52,12 +52,15 @@ public class Charge {
 
     private ExternalMetadata metadata;
 
+    private AuthorisationSummary authorisationSummary;
+
     public Charge(String chargeId, Long amount, PaymentState state, String returnUrl, String description,
                   String reference, String email, String paymentProvider, String createdDate,
                   SupportedLanguage language, boolean delayedCapture, boolean moto, RefundSummary refundSummary,
                   PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
                   List<PaymentConnectorResponseLink> links, Long corporateCardSurcharge, Long totalAmount,
-                  String gatewayTransactionId, ExternalMetadata metadata, Long fee, Long netAmount) {
+                  String gatewayTransactionId, ExternalMetadata metadata, Long fee, Long netAmount,
+                  AuthorisationSummary authorisationSummary) {
         this.chargeId = chargeId;
         this.amount = amount;
         this.state = state;
@@ -80,6 +83,7 @@ public class Charge {
         this.metadata = metadata;
         this.fee = fee;
         this.netAmount = netAmount;
+        this.authorisationSummary = authorisationSummary;
     }
 
     public static Charge from(ChargeFromResponse chargeFromResponse) {
@@ -105,7 +109,8 @@ public class Charge {
                 chargeFromResponse.getGatewayTransactionId(),
                 chargeFromResponse.getMetadata().orElse(null),
                 chargeFromResponse.getFee(),
-                chargeFromResponse.getNetAmount()
+                chargeFromResponse.getNetAmount(),
+                chargeFromResponse.getAuthorisationSummary()
         );
     }
 
@@ -132,7 +137,8 @@ public class Charge {
                 transactionResponse.getGatewayTransactionId(),
                 transactionResponse.getMetadata().orElse(null),
                 transactionResponse.getFee(),
-                transactionResponse.getNetAmount()
+                transactionResponse.getNetAmount(),
+                transactionResponse.getAuthorisationSummary()
         );
     }
 
@@ -226,5 +232,9 @@ public class Charge {
 
     public String getGatewayTransactionId() {
         return gatewayTransactionId;
+    }
+
+    public AuthorisationSummary getAuthorisationSummary() {
+        return authorisationSummary;
     }
 }
