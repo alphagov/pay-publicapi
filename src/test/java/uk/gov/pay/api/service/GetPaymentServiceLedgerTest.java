@@ -163,4 +163,15 @@ public class GetPaymentServiceLedgerTest {
         assertThat(payment.getSettlementSummary().isPresent(), is(true));
         assertThat(payment.getSettlementSummary().get().getSettledDate(), is("2020-09-19"));
     }
+
+    @Test
+    @PactVerification({"ledger"})
+    @Pacts(pacts = {"publicapi-ledger-get-payment-with-authorisation-summary"})
+    public void testGetPaymentWithAuthorisationSummaryFromLedger() {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, tokenLink);
+
+        PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID_NON_EXISTENT_IN_CONNECTOR);
+        CardPayment payment = (CardPayment) paymentResponse.getPayment();
+        assertThat(payment.getAuthorisationSummary().getThreeDSecure().isRequired(), is(true));
+    }
 }

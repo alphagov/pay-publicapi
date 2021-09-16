@@ -181,6 +181,11 @@ public class CardPayment extends Payment {
         return state;
     }
 
+    @Schema(description = "Object containing information about the authentication of the payment.")
+    public AuthorisationSummary getAuthorisationSummary() {
+        return authorisationSummary;
+    }
+
     @Override
     public String toString() {
         // Don't include:

@@ -160,7 +160,10 @@ public class CardPaymentSearchServiceTest {
                 .assertThat("results[0].card_details", hasKey("first_digits_card_number"))
                 .assertThat("results[0].card_details", hasKey("last_digits_card_number"))
                 .assertThat("results[0].state", hasKey("status"))
-                .assertThat("results[0].state", hasKey("finished"));
+                .assertThat("results[0].state", hasKey("finished"))
+                .assertThat("results[0]", hasKey("authorisation_summary"))
+                .assertThat("results[0].authorisation_summary", hasKey("three_d_secure"))
+                .assertThat("results[0].authorisation_summary.three_d_secure.required", is(true));
     }
 
     @Test
