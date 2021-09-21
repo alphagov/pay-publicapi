@@ -144,14 +144,6 @@ pipeline {
         }
       }
     }
-     stage('Deploy') {
-       when {
-         branch 'master'
-       }
-       steps {
-         deployEcs("publicapi")
-       }
-     }
      stage('Smoke Tests') {
          when { branch 'master' }
          steps { runSmokeTest('smoke-card') }
