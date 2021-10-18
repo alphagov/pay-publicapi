@@ -87,7 +87,6 @@ abstract public class ResourcesFilterITestBase {
             PublicApi.class,
             resourceFilePath("config/test-config.yaml"),
             config("connectorUrl", "http://localhost:" + CONNECTOR_PORT),
-            config("connectorDDUrl", "http://localhost"),
             config("publicAuthUrl", "http://localhost:" + PUBLIC_AUTH_PORT + "/v1/auth"),
             config("redis.endpoint", redisDockerRule.getRedisUrl()),
             config("ledgerUrl", "http://localhost:" + LEDGER_PORT),

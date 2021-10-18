@@ -45,16 +45,12 @@ public abstract class PaymentResourceITestBase {
     }
 
     private static final int CONNECTOR_PORT = findFreePort();
-    private static final int CONNECTOR_DD_PORT = findFreePort();
     private static final int PUBLIC_AUTH_PORT = findFreePort();
     private static final int LEDGER_PORT = findFreePort();
     private static final Gson GSON = new GsonBuilder().create();
 
     @ClassRule
     public static WireMockClassRule connectorMock = new WireMockClassRule(CONNECTOR_PORT);
-
-    @ClassRule
-    public static WireMockClassRule connectorDDMock = new WireMockClassRule(CONNECTOR_DD_PORT);
 
     @ClassRule
     public static WireMockClassRule publicAuthMock = new WireMockClassRule(PUBLIC_AUTH_PORT);
@@ -67,7 +63,6 @@ public abstract class PaymentResourceITestBase {
             PublicApi.class,
             resourceFilePath("config/test-config.yaml"),
             config("connectorUrl", "http://localhost:" + CONNECTOR_PORT),
-            config("connectorDDUrl", "http://localhost:" + CONNECTOR_DD_PORT),
             config("publicAuthUrl", "http://localhost:" + PUBLIC_AUTH_PORT + "/v1/auth"),
             config("ledgerUrl", "http://localhost:" + LEDGER_PORT),
             config("redis.endpoint", redisDockerRule.getRedisUrl())
@@ -79,7 +74,6 @@ public abstract class PaymentResourceITestBase {
     public void setup() {
         configuration = app.getConfiguration();
         connectorMock.resetAll();
-        connectorDDMock.resetAll();
         publicAuthMock.resetAll();
         ledgerMock.resetAll();
     }

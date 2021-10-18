@@ -21,6 +21,7 @@ import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
+import static java.lang.String.format;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.utils.mocks.CreateChargeRequestParams.CreateChargeRequestParamsBuilder.aCreateChargeRequestParams;
@@ -57,7 +58,6 @@ public class CreatePaymentWithHttpReturnUrlIT {
             PublicApi.class,
             resourceFilePath("config/test-config.yaml"),
             config("connectorUrl", "http://localhost:" + CONNECTOR_PORT),
-            config("connectorDDUrl", "http://unused"),
             config("publicAuthUrl", "http://localhost:" + PUBLIC_AUTH_PORT + "/v1/auth"),
             config("redis.endpoint", redisDockerRule.getRedisUrl()),
             config("allowHttpForReturnUrl", "true")

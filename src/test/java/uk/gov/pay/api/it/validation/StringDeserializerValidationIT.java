@@ -6,7 +6,7 @@ import org.apache.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import uk.gov.pay.api.it.PaymentResourceITestBase;
+import uk.gov.pay.api.it.telephone.TelephonePaymentResourceITBase;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 
 import static io.restassured.RestAssured.given;
@@ -17,7 +17,7 @@ import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 
 @RunWith(JUnitParamsRunner.class)
-public class StringDeserializerValidationIT extends PaymentResourceITestBase {
+public class StringDeserializerValidationIT extends TelephonePaymentResourceITBase {
 
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
 
@@ -31,8 +31,10 @@ public class StringDeserializerValidationIT extends PaymentResourceITestBase {
     public void shouldFailForConversions(String value) {
 
         String payload = format("{" +
+                "  \"amount\" : 100," +
+                "  \"description\" : \"desc\"," +
                 "  \"reference\" : %s," +
-                "  \"return_url\" : \"https://example.com\"" +
+                "  \"processor_id\" : \"1PROC\"" +
                 "}", value);
 
         given().port(app.getLocalPort())
@@ -40,7 +42,7 @@ public class StringDeserializerValidationIT extends PaymentResourceITestBase {
                 .accept(JSON)
                 .contentType(JSON)
                 .header(AUTHORIZATION, "Bearer " + API_KEY)
-                .post("/v1/directdebit/mandates")
+                .post("/v1/payment_notification/")
                 .then()
                 .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
                 .body("size()", is(3))

@@ -17,7 +17,6 @@ logging:
 
 baseUrl: http://publicapi.url/
 connectorUrl: http://connector_card.url/
-connectorDDUrl: http://connector_direct_debit.url/
 publicAuthUrl: http://publicauth.url/v1/auth
 ledgerUrl: http://ledger.url/
 
@@ -48,7 +47,7 @@ redis:
 
 allowHttpForReturnUrl: false
 
-apiKeyHmacSecret: qwer9yuhgf
+apiKeyHmacSecret: qwer9yuhgf #pragma: allowlist secret
 
 # Caching authenticator.
 authenticationCachePolicy: expireAfterWrite=3s

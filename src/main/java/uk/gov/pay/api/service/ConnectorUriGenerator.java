@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.lang.String.format;
-import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 import static uk.gov.service.payments.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public class ConnectorUriGenerator {
@@ -30,12 +29,12 @@ public class ConnectorUriGenerator {
 
     String chargeURI(Account account, String chargeId) {
         String path = format("/v1/api/accounts/%s/charges/%s", account.getAccountId(), chargeId); //TODO rename to /payments instead /charges
-        return buildConnectorUri(account, path);
+        return buildConnectorUri(path);
     }
 
     public String chargeEventsURI(Account account, String paymentId) {
         String path = format("/v1/api/accounts/%s/charges/%s/events", account.getAccountId(), paymentId);
-        return buildConnectorUri(account, path);
+        return buildConnectorUri(path);
     }
 
     String cancelURI(Account account, String paymentId) {
@@ -64,7 +63,7 @@ public class ConnectorUriGenerator {
         params.put("page", Optional.ofNullable(page).orElse(1).toString());
         params.put("display_size", Optional.ofNullable(displaySize).orElse(500).toString());
 
-        return buildConnectorUri(account, "/v1/events", params);
+        return buildConnectorUri("/v1/events", params);
     }
 
     String captureURI(Account account, String chargeId) {
@@ -81,23 +80,7 @@ public class ConnectorUriGenerator {
         String path = format("/v1/api/accounts/%s/charges/%s/refunds/%s", accountId, chargeId, refundId);
         return buildConnectorUri(path);
     }
-
-    // TODO: remove when direct debit endpoints entirely split out
-    @Deprecated
-    private String buildConnectorUri(Account account, String path) {
-        return buildConnectorUri(account, path, Collections.emptyMap());
-    }
-
-    // TODO: remove when direct debit endpoints entirely split out
-    @Deprecated
-    private String buildConnectorUri(Account account, String path, Map<String, String> params) {
-        UriBuilder builder = UriBuilder.fromPath(connectorBaseUrlForAccount(account)).path(path);
-        params.entrySet().stream()
-                .filter(k -> k.getValue() != null)
-                .forEach(k -> builder.queryParam(k.getKey(), k.getValue()));
-        return builder.toString();
-    }
-
+    
     private String buildConnectorUri(String path) {
         return buildConnectorUri(path, Collections.emptyMap());
     }
@@ -108,13 +91,5 @@ public class ConnectorUriGenerator {
                 .filter(k -> k.getValue() != null)
                 .forEach(k -> builder.queryParam(k.getKey(), k.getValue()));
         return builder.toString();
-    }
-
-    private String connectorBaseUrlForAccount(Account account) {
-        return isDirectDebitAccount(account) ? configuration.getConnectorDDUrl() : configuration.getConnectorUrl();
-    }
-
-    private boolean isDirectDebitAccount(Account account) {
-        return account.getPaymentType().equals(DIRECT_DEBIT);
     }
 }
