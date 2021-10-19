@@ -45,15 +45,11 @@ public abstract class TelephonePaymentResourceITBase {
     }
 
     private static final int CONNECTOR_PORT = findFreePort();
-    private static final int CONNECTOR_DD_PORT = findFreePort();
     private static final int PUBLIC_AUTH_PORT = findFreePort();
     private static final Gson GSON = new GsonBuilder().serializeNulls().create();
 
     @ClassRule
     public static WireMockClassRule connectorMock = new WireMockClassRule(CONNECTOR_PORT);
-
-    @ClassRule
-    public static WireMockClassRule connectorDDMock = new WireMockClassRule(CONNECTOR_DD_PORT);
 
     @ClassRule
     public static WireMockClassRule publicAuthMock = new WireMockClassRule(PUBLIC_AUTH_PORT);
@@ -63,7 +59,6 @@ public abstract class TelephonePaymentResourceITBase {
             PublicApi.class,
             resourceFilePath("config/test-config.yaml"),
             config("connectorUrl", "http://localhost:" + CONNECTOR_PORT),
-            config("connectorDDUrl", "http://localhost:" + CONNECTOR_DD_PORT),
             config("publicAuthUrl", "http://localhost:" + PUBLIC_AUTH_PORT + "/v1/auth"),
             config("redis.endpoint", redisDockerRule.getRedisUrl())
     );
@@ -71,7 +66,6 @@ public abstract class TelephonePaymentResourceITBase {
     @Before
     public void setup() {
         connectorMock.resetAll();
-        connectorDDMock.resetAll();
         publicAuthMock.resetAll();
     }
     
