@@ -48,7 +48,6 @@ import static uk.gov.pay.api.common.SearchConstants.STATE_KEY;
 import static uk.gov.pay.api.common.SearchConstants.TO_DATE_KEY;
 import static uk.gov.pay.api.validation.PaymentSearchValidator.validateSearchParameters;
 
-
 public class TransactionSearchService {
 
     private final String baseUrl;
@@ -69,7 +68,7 @@ public class TransactionSearchService {
     }
 
     public TransactionSearchResults doSearch(Account account, TransactionSearchParams searchParams) {
-        validateSearchParameters(null, searchParams.getState(), searchParams.getReference(),
+        validateSearchParameters(searchParams.getState(), searchParams.getReference(),
                 searchParams.getEmail(), searchParams.getCardBrand(), searchParams.getFromDate(),
                 searchParams.getToDate(), searchParams.getPageNumber(), searchParams.getDisplaySize(),
                 null, searchParams.getFirstDigitsCardNumber(), searchParams.getLastDigitsCardNumber(),

@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import uk.gov.pay.api.it.telephone.TelephonePaymentResourceITBase;
+import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 
 import static io.restassured.RestAssured.given;
@@ -14,7 +15,6 @@ import static io.restassured.http.ContentType.JSON;
 import static java.lang.String.format;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.core.Is.is;
-import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 
 @RunWith(JUnitParamsRunner.class)
 public class StringDeserializerValidationIT extends TelephonePaymentResourceITBase {
@@ -23,7 +23,7 @@ public class StringDeserializerValidationIT extends TelephonePaymentResourceITBa
 
     @Before
     public void setup() {
-        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, DIRECT_DEBIT);
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, TokenPaymentType.CARD);
     }
     
     @Test

@@ -32,7 +32,7 @@ public class PaymentSearchService {
     }
 
     public Response searchLedgerPayments(Account account, PaymentSearchParams searchParams) {
-        validateSearchParameters(account, searchParams);
+        validateSearchParameters(searchParams);
 
         PaymentSearchResponse<TransactionResponse> paymentSearchResponse =
                 ledgerService.searchPayments(account, searchParams.getParamsAsMap());

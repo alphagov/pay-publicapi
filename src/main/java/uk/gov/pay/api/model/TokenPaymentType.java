@@ -2,7 +2,7 @@ package uk.gov.pay.api.model;
 
 //to be shared between Public Auth and Public Api
 public enum TokenPaymentType {
-    CARD("Card Payment"), DIRECT_DEBIT("Direct Debit Payment");
+    CARD("Card Payment");
 
     private String friendlyName;
 
