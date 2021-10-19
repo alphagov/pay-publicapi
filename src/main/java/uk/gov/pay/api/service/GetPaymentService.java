@@ -25,13 +25,13 @@ public class GetPaymentService {
     public PaymentWithAllLinks getConnectorCharge(Account account, String paymentId) {
         Charge charge = connectorService.getCharge(account, paymentId);
 
-        return getPaymentWithAllLinks(account, charge);
+        return getPaymentWithAllLinks(charge);
     }
     
     public PaymentWithAllLinks getLedgerTransaction(Account account, String paymentId) {
         Charge charge = ledgerService.getPaymentTransaction(account, paymentId);
         
-        return getPaymentWithAllLinks(account, charge);
+        return getPaymentWithAllLinks(charge);
     }
 
     public PaymentWithAllLinks getPayment(Account account, String paymentId) {
@@ -42,11 +42,10 @@ public class GetPaymentService {
         }
     }
 
-    private PaymentWithAllLinks getPaymentWithAllLinks(Account account, Charge chargeFromResponse) {
+    private PaymentWithAllLinks getPaymentWithAllLinks(Charge chargeFromResponse) {
         URI paymentURI = publicApiUriGenerator.getPaymentURI(chargeFromResponse.getChargeId());
 
         return PaymentWithAllLinks.getPaymentWithLinks(
-                account.getPaymentType(),
                 chargeFromResponse,
                 paymentURI,
                 publicApiUriGenerator.getPaymentEventsURI(chargeFromResponse.getChargeId()),

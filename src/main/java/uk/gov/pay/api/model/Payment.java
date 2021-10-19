@@ -3,12 +3,11 @@ package uk.gov.pay.api.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import uk.gov.pay.api.model.directdebit.mandates.DirectDebitPayment;
 
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 
 @JsonInclude(value = JsonInclude.Include.NON_EMPTY)
-@Schema(name = "Payment", subTypes = {CardPayment.class, DirectDebitPayment.class})
+@Schema(name = "Payment", subTypes = {CardPayment.class})
 public abstract class Payment {
     public static final String LINKS_JSON_ATTRIBUTE = "_links";
 

@@ -37,12 +37,11 @@ public class CreatePaymentService {
         }
 
         ChargeFromResponse chargeFromResponse = connectorResponse.readEntity(ChargeFromResponse.class);
-        return buildResponseModel(account, Charge.from(chargeFromResponse));
+        return buildResponseModel(Charge.from(chargeFromResponse));
     }
 
-    private PaymentWithAllLinks buildResponseModel(Account account, Charge chargeFromResponse) {
+    private PaymentWithAllLinks buildResponseModel(Charge chargeFromResponse) {
         return PaymentWithAllLinks.getPaymentWithLinks(
-                account.getPaymentType(),
                 chargeFromResponse,
                 publicApiUriGenerator.getPaymentURI(chargeFromResponse.getChargeId()),
                 publicApiUriGenerator.getPaymentEventsURI(chargeFromResponse.getChargeId()),

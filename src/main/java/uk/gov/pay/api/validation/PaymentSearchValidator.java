@@ -1,6 +1,5 @@
 package uk.gov.pay.api.validation;
 
-import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.PaymentValidationException;
 import uk.gov.pay.api.service.PaymentSearchParams;
 
@@ -17,7 +16,6 @@ import static uk.gov.pay.api.model.CreateCardPaymentRequest.REFERENCE_MAX_LENGTH
 import static uk.gov.pay.api.model.CreateDirectDebitPaymentRequest.MANDATE_ID_MAX_LENGTH;
 import static uk.gov.pay.api.model.PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
-import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
 import static uk.gov.pay.api.validation.MaxLengthValidator.isInvalid;
 import static uk.gov.pay.api.validation.SearchValidator.validateDisplaySizeIfNotNull;
 import static uk.gov.pay.api.validation.SearchValidator.validateFromDate;
@@ -35,11 +33,8 @@ public class PaymentSearchValidator {
     private static final Set<String> VALID_CARD_PAYMENT_STATES =
             new HashSet<>(Arrays.asList("created", "started", "submitted", "success", "failed", "cancelled", "error"));
 
-    private static final Set<String> VALID_DIRECT_DEBIT_STATES =
-            new HashSet<>(Arrays.asList("started", "pending", "success", "failed", "cancelled"));
-
-    public static void validateSearchParameters(Account account, PaymentSearchParams searchParams) {
-        validateSearchParameters(account, searchParams.getState(), searchParams.getReference(),
+    public static void validateSearchParameters(PaymentSearchParams searchParams) {
+        validateSearchParameters(searchParams.getState(), searchParams.getReference(),
                 searchParams.getEmail(), searchParams.getCardBrand(), searchParams.getFromDate(),
                 searchParams.getToDate(), searchParams.getPageNumber(), searchParams.getDisplaySize(),
                 searchParams.getAgreementId(), searchParams.getFirstDigitsCardNumber(),
@@ -47,8 +42,7 @@ public class PaymentSearchValidator {
                 searchParams.getToSettledDate());
     }
 
-    public static void validateSearchParameters(Account account,
-                                                String state,
+    public static void validateSearchParameters(String state,
                                                 String reference,
                                                 String email,
                                                 String cardBrand,
@@ -63,7 +57,7 @@ public class PaymentSearchValidator {
                                                 String toSettledDate) {
         List<String> validationErrors = new LinkedList<>();
         try {
-            validateState(account, state, validationErrors);
+            validateState(state, validationErrors);
             validateReference(reference, validationErrors);
             validateEmail(email, validationErrors);
             validateCardBrand(cardBrand, validationErrors);
@@ -120,19 +114,13 @@ public class PaymentSearchValidator {
         }
     }
 
-    private static void validateState(Account account, String state, List<String> validationErrors) {
-        if (!validateState(account, state)) {
+    private static void validateState(String state, List<String> validationErrors) {
+        if (!validateState(state)) {
             validationErrors.add("state");
         }
     }
 
-    private static boolean validateState(Account account, String state) {
-        return isBlank(state) ||
-                (isDirectDebitAccount(account) ? VALID_DIRECT_DEBIT_STATES.contains(state) :
-                        VALID_CARD_PAYMENT_STATES.contains(state));
-    }
-
-    private static boolean isDirectDebitAccount(Account account) {
-        return account.getPaymentType().equals(DIRECT_DEBIT);
+    private static boolean validateState(String state) {
+        return isBlank(state) || VALID_CARD_PAYMENT_STATES.contains(state);
     }
 }

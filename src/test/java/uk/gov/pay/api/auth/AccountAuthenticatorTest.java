@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
+import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.publicauth.AuthResponse;
 
 import javax.ws.rs.ServiceUnavailableException;
@@ -39,7 +40,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.pay.api.model.TokenPaymentType.DIRECT_DEBIT;
+import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.AUTH_TOKEN_INVALID;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.AUTH_TOKEN_REVOKED;
 
@@ -90,13 +91,13 @@ public class AccountAuthenticatorTest {
 
     @Test
     public void shouldReturnValidAccount() {
-        AuthResponse authResponse = new AuthResponse(accountId, "a-token-link", DIRECT_DEBIT);
+        AuthResponse authResponse = new AuthResponse(accountId, "a-token-link", CARD);
         when(mockResponse.getStatus()).thenReturn(OK.getStatusCode());
         when(mockResponse.readEntity(AuthResponse.class)).thenReturn(authResponse);
         Optional<Account> maybeAccount = accountAuthenticator.authenticate(bearerToken);
         assertThat(maybeAccount.get().getName(), is(accountId));
         assertThat(maybeAccount.get().getAccountId(), is(accountId));
-        assertThat(maybeAccount.get().getPaymentType(), is(DIRECT_DEBIT));
+        assertThat(maybeAccount.get().getPaymentType(), is(CARD));
         
         verify(mockAppender).doAppend(loggingEventArgumentCaptor.capture());
         List<LoggingEvent> logEvents = loggingEventArgumentCaptor.getAllValues();
