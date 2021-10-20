@@ -230,7 +230,6 @@ public class PaymentsResource {
                 .withToDate(toDate)
                 .withPageNumber(pageNumber)
                 .withDisplaySize(displaySize)
-                .withAgreementId(agreementId)
                 .withCardHolderName(cardHolderName)
                 .withFirstDigitsCardNumber(firstDigitsCardNumber)
                 .withLastDigitsCardNumber(lastDigitsCardNumber)
