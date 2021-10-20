@@ -81,7 +81,7 @@ public class CardDetails {
         return cardBrand;
     }
 
-    @Schema(description = "The card type, `debit` or `credit` or `null` if not able to determine", allowableValues = {"debit","credit","null"}, example = "debit", accessMode = READ_ONLY)
+    @Schema(description = "The card type, `credit` or `null` if not able to determine", allowableValues = {"credit","null"}, example = "credit", accessMode = READ_ONLY)
     public String getCardType() {
         return cardType;
     }

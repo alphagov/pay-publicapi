@@ -73,25 +73,13 @@ public class ConnectorUriGeneratorTest {
 
     @Test
     public void buildEventsURIFromBeforeParameter() {
-        String uri = connectorUriGenerator.eventsURI(cardAccount, Optional.of(ZonedDateTime.parse("2018-03-13T10:00:05.000Z")), Optional.empty(), null, null, null, null);
+        String uri = connectorUriGenerator.eventsURI(Optional.of(ZonedDateTime.parse("2018-03-13T10:00:05.000Z")), Optional.empty(), null, null, null);
         assertThat(URLDecoder.decode(uri, StandardCharsets.UTF_8), is("https://bla.test/v1/events?to_date=2018-03-13T10:00:05.000Z&page=1&display_size=500"));
     }
 
     @Test
     public void buildEventsURIFromAfterParameter() {
-        String uri = connectorUriGenerator.eventsURI(cardAccount, Optional.empty(), Optional.of(ZonedDateTime.parse("2018-03-13T10:00:05.000Z")), null, null, null, null);
+        String uri = connectorUriGenerator.eventsURI(Optional.empty(), Optional.of(ZonedDateTime.parse("2018-03-13T10:00:05.000Z")), null, null, null);
         assertThat(URLDecoder.decode(uri, StandardCharsets.UTF_8), is("https://bla.test/v1/events?from_date=2018-03-13T10:00:05.000Z&page=1&display_size=500"));
-    }
-
-    @Test
-    public void buildEventsURIFromAgreementIdParameter() {
-        String uri = connectorUriGenerator.eventsURI(cardAccount, Optional.empty(), Optional.empty(), null, null, "1", null);
-        assertThat(uri, is("https://bla.test/v1/events?mandate_external_id=1&page=1&display_size=500"));
-    }
-
-    @Test
-    public void buildEventsURIFromAllParameters() {
-        String uri = connectorUriGenerator.eventsURI(cardAccount, Optional.of(ZonedDateTime.parse("2018-03-13T10:00:05.000Z")), Optional.of(ZonedDateTime.parse("2018-03-13T10:00:05Z")), 1, 300, "1", "2");
-        assertThat(URLDecoder.decode(uri, StandardCharsets.UTF_8), is("https://bla.test/v1/events?to_date=2018-03-13T10:00:05.000Z&from_date=2018-03-13T10:00:05.000Z&mandate_external_id=1&payment_external_id=2&page=1&display_size=300"));
     }
 }

@@ -10,7 +10,6 @@ public class CreateCardPaymentRequestBuilder {
     private String returnUrl;
     private String reference;
     private String description;
-    private String agreementId;
     private SupportedLanguage language;
     private Boolean delayedCapture;
     private Boolean moto;
@@ -52,12 +51,7 @@ public class CreateCardPaymentRequestBuilder {
         this.description = description;
         return this;
     }
-
-    public CreateCardPaymentRequestBuilder mandateId(String agreementId) {
-        this.agreementId = agreementId;
-        return this;
-    }
-
+    
     public CreateCardPaymentRequestBuilder language(SupportedLanguage language) {
         this.language = language;
         return this;
@@ -156,11 +150,7 @@ public class CreateCardPaymentRequestBuilder {
     public String getDescription() {
         return description;
     }
-
-    public String getMandateId() {
-        return agreementId;
-    }
-
+    
     public SupportedLanguage getLanguage() {
         return language;
     }

@@ -13,7 +13,6 @@ import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.service.payments.logging.LoggingKeys.GATEWAY_ACCOUNT_ID;
-import static uk.gov.service.payments.logging.LoggingKeys.MANDATE_EXTERNAL_ID;
 import static uk.gov.service.payments.logging.LoggingKeys.PAYMENT_EXTERNAL_ID;
 import static uk.gov.service.payments.logging.LoggingKeys.REFUND_EXTERNAL_ID;
 import static uk.gov.service.payments.logging.LoggingKeys.REMOTE_ADDRESS;
@@ -33,8 +32,6 @@ public class LoggingMDCRequestFilter implements ContainerRequestFilter {
 
         getPathParameterFromRequest("paymentId", requestContext)
                 .ifPresent(paymentId -> MDC.put(PAYMENT_EXTERNAL_ID, paymentId));
-        getPathParameterFromRequest("mandateId", requestContext)
-                .ifPresent(mandateId -> MDC.put(MANDATE_EXTERNAL_ID, mandateId));
         getPathParameterFromRequest("refundId", requestContext)
                 .ifPresent(refundId -> MDC.put(REFUND_EXTERNAL_ID, refundId));
     }

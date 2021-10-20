@@ -46,16 +46,13 @@ public class ConnectorUriGenerator {
         return buildConnectorUri(format("/v1/api/accounts/%s/telephone-charges", account.getAccountId()));
     }
 
-    public String eventsURI(Account account, Optional<ZonedDateTime> toDate, Optional<ZonedDateTime> fromDate, Integer page, Integer displaySize, String agreementId, String paymentId) {
+    public String eventsURI(Optional<ZonedDateTime> toDate, Optional<ZonedDateTime> fromDate, Integer page, Integer displaySize, String paymentId) {
 
         Map<String, String> params = new LinkedHashMap<>();
 
         toDate.map(ISO_INSTANT_MILLISECOND_PRECISION::format).ifPresent(formattedDate -> params.put("to_date", formattedDate));
 
         fromDate.map(ISO_INSTANT_MILLISECOND_PRECISION::format).ifPresent(formattedDate -> params.put("from_date", formattedDate));
-
-        if (agreementId != null)
-            params.put("mandate_external_id", agreementId);
 
         if (paymentId != null)
             params.put("payment_external_id", paymentId);

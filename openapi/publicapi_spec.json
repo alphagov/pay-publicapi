@@ -892,9 +892,9 @@
           },
           "card_type" : {
             "type" : "string",
-            "description" : "The card type, `debit` or `credit` or `null` if not able to determine",
-            "enum" : [ "debit", "credit", "null" ],
-            "example" : "debit",
+            "description" : "The card type, `credit` or `null` if not able to determine",
+            "enum" : [ "credit", "null" ],
+            "example" : "credit",
             "readOnly" : true
           },
           "cardholder_name" : {

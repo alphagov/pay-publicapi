@@ -200,8 +200,6 @@ public class PaymentsResource {
                                    @QueryParam("page") String pageNumber,
                                    @Parameter(description = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)")
                                    @QueryParam("display_size") String displaySize,
-                                   @Parameter(hidden = true)
-                                   @QueryParam("agreement_id") String agreementId,
                                    @Parameter(description = "Name on card used to make payment")
                                    @QueryParam("cardholder_name") String cardHolderName,
                                    @Parameter(description = "First six digits of the card used to make payment")
@@ -216,9 +214,9 @@ public class PaymentsResource {
 
         logger.info("Payments search request - [ {} ]",
                 format("reference:%s, email: %s, status: %s, card_brand %s, fromDate: %s, toDate: %s, page: %s, " +
-                                "display_size: %s, agreement_id: %s, cardholder_name: %s, first_digits_card_number: %s, " +
+                                "display_size: %s, cardholder_name: %s, first_digits_card_number: %s, " +
                                 "last_digits_card_number: %s, from_settled_date: %s, to_settled_date: %s",
-                        reference, email, state, cardBrand, fromDate, toDate, pageNumber, displaySize, agreementId,
+                        reference, email, state, cardBrand, fromDate, toDate, pageNumber, displaySize,
                         cardHolderName, firstDigitsCardNumber, lastDigitsCardNumber, fromSettledDate, toSettledDate));
 
         var paymentSearchParams = new PaymentSearchParams.Builder()
