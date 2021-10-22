@@ -248,7 +248,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withCreatedDate(SDF.format(new Date()))
                 .withLanguage(SupportedLanguage.ENGLISH)
                 .withDelayedCapture(false)
-                .withCardDetails(new CardDetails("1234", "123456", "Mr. Payment", "12/19", null, "Mastercard", "credit"))
+                .withCardDetails(new CardDetails("1234", "123456", "Mr. Payment", "12/19", null, "Mastercard", "debit"))
                 .withLink(validGetLink(chargeLocation(gatewayAccountId, "chargeId"), "self"))
                 .withLink(validGetLink(nextUrl("chargeTokenId"), "next_url"))
                 .withLink(validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap("chargeTokenId")));

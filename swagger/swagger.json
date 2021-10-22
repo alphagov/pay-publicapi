@@ -718,10 +718,10 @@
         },
         "card_type" : {
           "type" : "string",
-          "example" : "credit",
-          "description" : "The card type, `credit` or `null` if not able to determine",
+          "example" : "debit",
+          "description" : "The card type, `debit` or `credit` or `null` if not able to determine",
           "readOnly" : true,
-          "enum" : [ "credit", "null" ]
+          "enum" : [ "debit", "credit", "null" ]
         }
       },
       "description" : "A structure representing the payment card"
