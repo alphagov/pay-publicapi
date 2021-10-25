@@ -1,11 +1,8 @@
 package uk.gov.pay.api.exception.mapper;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.pay.api.exception.ConnectorResponseErrorException.ConnectorErrorResponse;
@@ -17,10 +14,7 @@ import javax.ws.rs.core.Response;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
-import static uk.gov.pay.api.model.PaymentError.Code.RESOURCE_ACCESS_FORBIDDEN;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,12 +23,7 @@ public class CreateChargeExceptionMapperTest {
     @Mock
     private Response mockResponse;
 
-    private CreateChargeExceptionMapper mapper;
-    
-    @BeforeEach
-    public void setUp() {
-        mapper = new CreateChargeExceptionMapper();
-    }
+    private CreateChargeExceptionMapper mapper = new CreateChargeExceptionMapper();
     
     @ParameterizedTest
     @CsvSource({
@@ -42,7 +31,7 @@ public class CreateChargeExceptionMapperTest {
             "ACCOUNT_NOT_LINKED_WITH_PSP, ACCOUNT_NOT_LINKED_WITH_PSP, 403",
             "MOTO_NOT_ALLOWED, CREATE_PAYMENT_MOTO_NOT_ENABLED, 422",
     })
-    public void shouldThrow409_whenMandateIdInvalid(String errorIdentifier, String paymentError, int expectedStatusCode) {
+    public void testExceptionMapping(String errorIdentifier, String paymentError, int expectedStatusCode) {
         when(mockResponse.readEntity(ConnectorErrorResponse.class))
                 .thenReturn(new ConnectorErrorResponse(ErrorIdentifier.valueOf(errorIdentifier), null, null));
 

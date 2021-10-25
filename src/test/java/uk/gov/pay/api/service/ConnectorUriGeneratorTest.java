@@ -8,11 +8,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.time.ZonedDateTime;
-import java.util.Optional;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
@@ -69,17 +64,5 @@ public class ConnectorUriGeneratorTest {
     public void shouldGenerateTheRightEventsURI() {
         String uri = connectorUriGenerator.chargeEventsURI(cardAccount, chargeId);
         assertThat(uri, is("https://bla.test/v1/api/accounts/accountId/charges/" + chargeId + "/events"));
-    }
-
-    @Test
-    public void buildEventsURIFromBeforeParameter() {
-        String uri = connectorUriGenerator.eventsURI(Optional.of(ZonedDateTime.parse("2018-03-13T10:00:05.000Z")), Optional.empty(), null, null, null);
-        assertThat(URLDecoder.decode(uri, StandardCharsets.UTF_8), is("https://bla.test/v1/events?to_date=2018-03-13T10:00:05.000Z&page=1&display_size=500"));
-    }
-
-    @Test
-    public void buildEventsURIFromAfterParameter() {
-        String uri = connectorUriGenerator.eventsURI(Optional.empty(), Optional.of(ZonedDateTime.parse("2018-03-13T10:00:05.000Z")), null, null, null);
-        assertThat(URLDecoder.decode(uri, StandardCharsets.UTF_8), is("https://bla.test/v1/events?from_date=2018-03-13T10:00:05.000Z&page=1&display_size=500"));
     }
 }
