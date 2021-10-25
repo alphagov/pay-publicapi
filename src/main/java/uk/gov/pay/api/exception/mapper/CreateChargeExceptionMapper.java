@@ -15,8 +15,6 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static uk.gov.pay.api.model.PaymentError.Code.ACCOUNT_NOT_LINKED_WITH_PSP;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_ACCOUNT_ERROR;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_CONNECTOR_ERROR;
-import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_MANDATE_ID_INVALID;
-import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_MANDATE_STATE_INVALID;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_MOTO_NOT_ENABLED;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.Code.RESOURCE_ACCESS_FORBIDDEN;
@@ -37,10 +35,6 @@ public class CreateChargeExceptionMapper implements ExceptionMapper<CreateCharge
         } else {
             ErrorIdentifier errorIdentifier = exception.getErrorIdentifier();
             switch (errorIdentifier) {
-                case MANDATE_ID_INVALID:
-                    statusCode = HttpStatus.CONFLICT_409;
-                    paymentError = aPaymentError(CREATE_PAYMENT_MANDATE_ID_INVALID);
-                    break;
                 case ZERO_AMOUNT_NOT_ALLOWED:
                     statusCode = HttpStatus.UNPROCESSABLE_ENTITY_422;
                     paymentError = aPaymentError("amount", CREATE_PAYMENT_VALIDATION_ERROR,
@@ -49,10 +43,6 @@ public class CreateChargeExceptionMapper implements ExceptionMapper<CreateCharge
                 case MOTO_NOT_ALLOWED:
                     statusCode = HttpStatus.UNPROCESSABLE_ENTITY_422;
                     paymentError = aPaymentError(CREATE_PAYMENT_MOTO_NOT_ENABLED);
-                    break;
-                case MANDATE_STATE_INVALID:
-                    statusCode = HttpStatus.CONFLICT_409;
-                    paymentError = aPaymentError(CREATE_PAYMENT_MANDATE_STATE_INVALID);
                     break;
                 case TELEPHONE_PAYMENT_NOTIFICATIONS_NOT_ALLOWED:
                     statusCode = HttpStatus.FORBIDDEN_403;

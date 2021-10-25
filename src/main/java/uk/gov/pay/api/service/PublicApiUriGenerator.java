@@ -45,36 +45,11 @@ public class PublicApiUriGenerator {
                 .path("/v1/payments/{paymentId}/refunds")
                 .build(chargeId);
     }
-
-    public URI getSearchMandatesURIWithQueryOf(String query) {
-        return UriBuilder.fromUri(baseUrl)
-                .replaceQuery(query)
-                .path("/v1/directdebit/mandates")
-                .build();
-    }
-
-    public URI getMandateURI(String mandateId) {
-        return UriBuilder.fromUri(baseUrl)
-                .path("/v1/directdebit/mandates/{mandateId}")
-                .build(mandateId);
-    }
     
     public URI getPaymentCaptureURI(String chargeId) {
         return UriBuilder.fromUri(baseUrl)
                 .path("/v1/payments/{paymentId}/capture")
                 .build(chargeId);
-    }
-    
-    public URI getDirectDebitPaymentURI(String paymentId) {
-        return UriBuilder.fromUri(baseUrl)
-                .path("/v1/directdebit/payments/{paymentId}")
-                .build(paymentId);
-    }
-
-    public URI getDirectDebitPaymentEventsURI(String paymentId) {
-        return UriBuilder.fromUri(baseUrl)
-                .path("/v1/directdebit/payments/{paymentId}/events")
-                .build(paymentId);
     }
 
     public String convertHostToPublicAPI(String link) {
@@ -84,12 +59,5 @@ public class PublicApiUriGenerator {
                 .replaceQuery(originalUri.getQuery())
                 .build();
         return URLDecoder.decode(newUri.toString(), StandardCharsets.UTF_8);
-    }
-
-    public URI getMandatePaymentsURI(String mandateId) {
-        return UriBuilder.fromUri(baseUrl)
-                .path("/v1/directdebit/payments")
-                .queryParam("mandate_id", mandateId)
-                .build(mandateId);
     }
 }

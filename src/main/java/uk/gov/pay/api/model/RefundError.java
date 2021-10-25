@@ -14,7 +14,6 @@ public class RefundError {
     public enum Code {
 
         SEARCH_REFUNDS_VALIDATION_ERROR("P1101", "Invalid parameters: %s. See Public API documentation for the correct data formats"),
-        SEARCH_REFUNDS_DIRECT_DEBIT_ERROR("P1102","Searching all refunds is not currently supported for Direct Debit accounts."),
         SEARCH_REFUNDS_NOT_FOUND("P1100", "Page not found"),
         SEARCH_REFUNDS_CONNECTOR_ERROR("P1898", "Downstream system error");
 

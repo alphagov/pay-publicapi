@@ -29,7 +29,6 @@ public class PaymentSearchParams {
     private String toDate;
     private String pageNumber;
     private String displaySize;
-    private String agreementId;
     private String cardHolderName;
     private String firstDigitsCardNumber;
     private String lastDigitsCardNumber;
@@ -45,7 +44,6 @@ public class PaymentSearchParams {
         this.toDate = builder.toDate;
         this.pageNumber = builder.pageNumber;
         this.displaySize = builder.displaySize;
-        this.agreementId = builder.agreementId;
         this.cardHolderName = builder.cardHolderName;
         this.firstDigitsCardNumber = builder.firstDigitsCardNumber;
         this.lastDigitsCardNumber = builder.lastDigitsCardNumber;
@@ -103,11 +101,7 @@ public class PaymentSearchParams {
     public String getDisplaySize() {
         return displaySize;
     }
-
-    public String getAgreementId() {
-        return agreementId;
-    }
-
+    
     public String getFirstDigitsCardNumber() {
         return firstDigitsCardNumber;
     }
@@ -133,7 +127,6 @@ public class PaymentSearchParams {
         private String toDate;
         private String pageNumber;
         private String displaySize;
-        private String agreementId;
         private String cardHolderName;
         private String firstDigitsCardNumber;
         private String lastDigitsCardNumber;
@@ -189,11 +182,6 @@ public class PaymentSearchParams {
 
         public Builder withDisplaySize(String displaySize) {
             this.displaySize = displaySize;
-            return this;
-        }
-
-        public Builder withAgreementId(String agreementId) {
-            this.agreementId = agreementId;
             return this;
         }
 

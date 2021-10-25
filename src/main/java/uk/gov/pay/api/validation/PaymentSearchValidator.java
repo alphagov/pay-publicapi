@@ -13,7 +13,6 @@ import static org.apache.commons.lang3.StringUtils.join;
 import static org.eclipse.jetty.util.StringUtil.isBlank;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.EMAIL_MAX_LENGTH;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.REFERENCE_MAX_LENGTH;
-import static uk.gov.pay.api.model.CreateDirectDebitPaymentRequest.MANDATE_ID_MAX_LENGTH;
 import static uk.gov.pay.api.model.PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 import static uk.gov.pay.api.validation.MaxLengthValidator.isInvalid;
@@ -37,7 +36,7 @@ public class PaymentSearchValidator {
         validateSearchParameters(searchParams.getState(), searchParams.getReference(),
                 searchParams.getEmail(), searchParams.getCardBrand(), searchParams.getFromDate(),
                 searchParams.getToDate(), searchParams.getPageNumber(), searchParams.getDisplaySize(),
-                searchParams.getAgreementId(), searchParams.getFirstDigitsCardNumber(),
+                searchParams.getFirstDigitsCardNumber(),
                 searchParams.getLastDigitsCardNumber(), searchParams.getFromSettledDate(),
                 searchParams.getToSettledDate());
     }
@@ -50,7 +49,6 @@ public class PaymentSearchValidator {
                                                 String toDate,
                                                 String pageNumber,
                                                 String displaySize,
-                                                String mandate_id,
                                                 String firstDigitsCardNumber,
                                                 String lastDigitsCardNumber,
                                                 String fromSettledDate,
@@ -65,7 +63,6 @@ public class PaymentSearchValidator {
             validateToDate(toDate, validationErrors);
             validatePageIfNotNull(pageNumber, validationErrors);
             validateDisplaySizeIfNotNull(displaySize, validationErrors);
-            validateMandateId(mandate_id, validationErrors);
             validateFirstDigitsCardNumber(firstDigitsCardNumber, validationErrors);
             validateLastDigitsCardNumber(lastDigitsCardNumber, validationErrors);
             validateFromSettledDate(fromSettledDate, validationErrors);
@@ -77,13 +74,7 @@ public class PaymentSearchValidator {
             throw new PaymentValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", ")));
         }
     }
-
-    private static void validateMandateId(String mandate_id, List<String> validationErrors) {
-        if (isInvalid(mandate_id, MANDATE_ID_MAX_LENGTH)) {
-            validationErrors.add("mandate_id");
-        }
-    }
-
+    
     private static void validateFirstDigitsCardNumber(String firstDigitsCardNumber, List<String> validationErrors) {
         if (!ExactLengthOrEmptyValidator.isValid(firstDigitsCardNumber, FIRST_DIGITS_CARD_NUMBER_LENGTH) || !NumericValidator.isValidOrNull(firstDigitsCardNumber)) {
             validationErrors.add("first_digits_card_number");
