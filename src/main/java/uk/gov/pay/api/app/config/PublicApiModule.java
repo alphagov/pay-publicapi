@@ -8,11 +8,10 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import io.dropwizard.setup.Environment;
+import io.lettuce.core.ClientOptions;
 import io.lettuce.core.RedisClient;
+import io.lettuce.core.SocketOptions;
 import uk.gov.pay.api.app.RestClientFactory;
-import uk.gov.pay.api.filter.ratelimit.LocalRateLimiter;
-import uk.gov.pay.api.filter.ratelimit.RateLimitManager;
-import uk.gov.pay.api.filter.ratelimit.RedisRateLimiter;
 import uk.gov.pay.api.json.CreateCardPaymentRequestDeserializer;
 import uk.gov.pay.api.json.CreatePaymentRefundRequestDeserializer;
 import uk.gov.pay.api.json.StringDeserializer;
@@ -79,7 +78,16 @@ public class PublicApiModule extends AbstractModule {
     @Singleton
     public RedisClient getRedisClient() {
         RedisClient client = RedisClient.create(configuration.getRedisConfiguration().getUrl());
-        client.setDefaultTimeout(Duration.ofMillis(configuration.getRedisConfiguration().getTimeout()));
+        SocketOptions socketOptions = SocketOptions
+                .builder()
+                .connectTimeout(Duration.ofMillis(configuration.getRedisConfiguration().getConnectTimeout()))
+                .build();
+        ClientOptions clientOptions = ClientOptions
+                .builder()
+                .socketOptions(socketOptions)
+                .build();
+        client.setOptions(clientOptions);
+        client.setDefaultTimeout(Duration.ofMillis(configuration.getRedisConfiguration().getCommandTimeout()));
         return client;
     }
 }

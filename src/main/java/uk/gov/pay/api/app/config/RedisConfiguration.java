@@ -20,14 +20,22 @@ public class RedisConfiguration {
     private boolean ssl;
     
     @Valid
-    @JsonProperty("timeout")
-    private Duration timeout;
+    @JsonProperty("commandTimeout")
+    private Duration commandTimeout;
+
+    @Valid
+    @JsonProperty("connectTimeout")
+    private Duration connectTimeout;
 
     public String getUrl() {
         return format("%s://%s", ssl ? "rediss" : "redis", endpoint);
     }
 
-    public Long getTimeout() {
-        return timeout.toMilliseconds();
+    public Long getCommandTimeout() {
+        return commandTimeout.toMilliseconds();
+    }
+
+    public Long getConnectTimeout() {
+        return connectTimeout.toMilliseconds();
     }
 }

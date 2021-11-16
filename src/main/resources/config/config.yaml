@@ -56,7 +56,8 @@ rateLimiter:  # rate = noOfReq per perMillis
 redis:
   endpoint: ${REDIS_URL:-localhost:6379}
   ssl: false
-  timeout: 2s
+  commandTimeout: ${REDIS_COMMAND_TIMEOUT:-250ms}
+  connectTimeout: ${REDIS_CONNECT_TIMEOUT:-500ms}
 
 allowHttpForReturnUrl: ${ALLOW_HTTP_FOR_RETURN_URL:-false}
 
