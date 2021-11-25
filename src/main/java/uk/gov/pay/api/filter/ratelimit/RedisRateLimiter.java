@@ -28,7 +28,7 @@ public class RedisRateLimiter {
     /**
      * @throws RateLimitException
      */
-    synchronized void checkRateOf(String accountId, RateLimiterKey key)
+    void checkRateOf(String accountId, RateLimiterKey key)
             throws RedisException, RateLimitException {
 
         Long count;
@@ -52,7 +52,7 @@ public class RedisRateLimiter {
         }
     }
 
-    synchronized private Long updateAllowance(String key, int rateLimitInterval) {
+    private Long updateAllowance(String key, int rateLimitInterval) {
         String derivedKey = getKeyForWindow(key, rateLimitInterval);
         Long count = redisClientManager.getRedisConnection().sync().incr(derivedKey);
         redisClientManager.getRedisConnection().sync().expire(derivedKey, rateLimitInterval / 1000);
