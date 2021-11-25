@@ -5,14 +5,20 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import io.dropwizard.logging.ConsoleAppenderFactory;
+import io.dropwizard.setup.Environment;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.internal.matchers.Any;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.RateLimiterConfig;
@@ -48,6 +54,9 @@ public class RedisRateLimiterTest {
     @Mock
     private RateLimiterConfig rateLimiterConfig;
 
+    @Mock
+    private Environment mockEnvironment;
+    
     @Captor
     ArgumentCaptor<LoggingEvent> loggingEventArgumentCaptor;
 
@@ -55,11 +64,16 @@ public class RedisRateLimiterTest {
 
     @Mock
     private Appender<ILoggingEvent> mockAppender;
-
+    
+    @Mock 
+    private MetricRegistry mockMetricsRegistry;
+    
     @BeforeEach
     public void setup() {
         when(statefulRedisConnection.sync()).thenReturn(redisCommands);
         when(redisClientManager.getRedisConnection()).thenReturn(statefulRedisConnection);
+        when(mockEnvironment.metrics()).thenReturn(mockMetricsRegistry);
+        when(mockMetricsRegistry.timer(ArgumentMatchers.any())).thenReturn(new Timer());
 
         Logger root = (Logger) LoggerFactory.getLogger(RedisRateLimiter.class);
         root.setLevel(Level.INFO);
@@ -71,10 +85,21 @@ public class RedisRateLimiterTest {
         when(rateLimiterConfig.getNoOfReq()).thenReturn(1);
         when(rateLimiterKey.getKey()).thenReturn("Key1");
         when(rateLimiterConfig.getPerMillis()).thenReturn(1000);
-        redisRateLimiter = new RedisRateLimiter(rateLimiterConfig, redisClientManager);
+        redisRateLimiter = new RedisRateLimiter(rateLimiterConfig, redisClientManager, mockEnvironment);
 
         when(redisCommands.incr(anyString())).thenReturn(1L, 2L);
         redisRateLimiter.checkRateOf(accountId, rateLimiterKey);
+    }
+    
+    @Test(expected = RedisException.class)
+    public void propagatesError_whenRedisThrows() throws Exception {
+        when(rateLimiterConfig.getNoOfReq()).thenReturn(1);
+        when(rateLimiterKey.getKey()).thenReturn("Key1");
+        when(rateLimiterConfig.getPerMillis()).thenReturn(1000);
+        when(statefulRedisConnection.sync()).thenThrow(new io.lettuce.core.RedisException("Test exception"));
+        redisRateLimiter = new RedisRateLimiter(rateLimiterConfig, redisClientManager, mockEnvironment);
+
+        redisRateLimiter.checkRateOf(accountId, rateLimiterKey)
     }
 
     @Test
@@ -82,7 +107,7 @@ public class RedisRateLimiterTest {
         when(rateLimiterConfig.getNoOfReq()).thenReturn(2);
         when(rateLimiterKey.getKey()).thenReturn("Key2");
         when(rateLimiterConfig.getPerMillis()).thenReturn(1000);
-        redisRateLimiter = new RedisRateLimiter(rateLimiterConfig, redisClientManager);
+        redisRateLimiter = new RedisRateLimiter(rateLimiterConfig, redisClientManager, mockEnvironment);
 
         when(redisCommands.incr(anyString())).thenReturn(1L, 2L, 3L);
 
@@ -96,7 +121,7 @@ public class RedisRateLimiterTest {
         when(rateLimiterKey.getKey()).thenReturn("Key3");
         when(rateLimiterKey.getKeyType()).thenReturn("POST");
         when(rateLimiterConfig.getPerMillis()).thenReturn(1000);
-        redisRateLimiter = new RedisRateLimiter(rateLimiterConfig, redisClientManager);
+        redisRateLimiter = new RedisRateLimiter(rateLimiterConfig, redisClientManager, mockEnvironment);
 
         when(redisCommands.incr(anyString())).thenReturn(1L, 2L, 3L);
 
@@ -120,7 +145,7 @@ public class RedisRateLimiterTest {
         when(rateLimiterKey.getMethod()).thenReturn("POST");
         when(rateLimiterKey.getKeyType()).thenReturn("POST-capture-account1");
 
-        redisRateLimiter = new RedisRateLimiter(rateLimiterConfig, redisClientManager);
+        redisRateLimiter = new RedisRateLimiter(rateLimiterConfig, redisClientManager, mockEnvironment);
 
         when(redisCommands.incr(anyString())).thenReturn(1L, 2L, 3L, 4L);
 
@@ -132,6 +157,7 @@ public class RedisRateLimiterTest {
             redisRateLimiter.checkRateOf(accountId, rateLimiterKey);
         });
     }
+    
     @Test
     public void shouldRateLimitGetRequestsForLowTrafficAccountsCorrectly() throws RedisException, RateLimitException {
         when(rateLimiterConfig.getLowTrafficAccounts()).thenReturn(List.of(accountId));
@@ -140,7 +166,7 @@ public class RedisRateLimiterTest {
         when(rateLimiterKey.getMethod()).thenReturn("GET");
         when(rateLimiterKey.getKeyType()).thenReturn("GET-account1");
 
-        redisRateLimiter = new RedisRateLimiter(rateLimiterConfig, redisClientManager);
+        redisRateLimiter = new RedisRateLimiter(rateLimiterConfig, redisClientManager, mockEnvironment);
 
         when(redisCommands.incr(anyString())).thenReturn(1L, 2L);
 

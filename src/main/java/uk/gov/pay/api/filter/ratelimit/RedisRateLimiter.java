@@ -1,7 +1,10 @@
 package uk.gov.pay.api.filter.ratelimit;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.google.inject.Inject;
 import com.google.inject.OutOfScopeException;
+import io.dropwizard.setup.Environment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.RateLimiterConfig;
@@ -11,18 +14,25 @@ import uk.gov.pay.api.managed.RedisClientManager;
 import javax.inject.Singleton;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
+import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
 @Singleton
 public class RedisRateLimiter {
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisRateLimiter.class);
+    private final MetricRegistry metricsRegistry;
 
     private RateLimitManager rateLimitManager;
     private RedisClientManager redisClientManager;
+    private final Environment environment;
 
     @Inject
-    public RedisRateLimiter(RateLimiterConfig rateLimiterConfig, RedisClientManager redisClientManager) {
+    public RedisRateLimiter(RateLimiterConfig rateLimiterConfig, RedisClientManager redisClientManager, Environment environment) {
         this.rateLimitManager = new RateLimitManager(rateLimiterConfig);
         this.redisClientManager = redisClientManager;
+        this.environment = environment;
+        this.metricsRegistry = environment.metrics();
+        
     }
 
     /**
@@ -31,15 +41,18 @@ public class RedisRateLimiter {
     synchronized void checkRateOf(String accountId, RateLimiterKey key)
             throws RedisException, RateLimitException {
 
-        Long count;
+        Long count = null;
 
         try {
             int rateLimitInterval = rateLimitManager.getRateLimitInterval(accountId);
             count = updateAllowance(key.getKey(), rateLimitInterval);
-        } catch (Exception e) {
+        } catch (io.lettuce.core.RedisException e) {
             LOGGER.info("Failed to update allowance. Cause of error: " + e.getMessage());
             // Exception possible if redis is unavailable or perMillis is too high        
             throw new RedisException();
+        }
+        catch (Exception e) {
+            LOGGER.error("Failed to update allowance due to unexpected error", e);
         }
 
         if (count != null) {
@@ -51,16 +64,22 @@ public class RedisRateLimiter {
             }
         }
     }
+    
+    
 
-    synchronized private Long updateAllowance(String key, int rateLimitInterval) {
+    synchronized private Long updateAllowance(String key, int rateLimitInterval) throws Exception {
         String derivedKey = getKeyForWindow(key, rateLimitInterval);
-        Long count = redisClientManager.getRedisConnection().sync().incr(derivedKey);
+        Long count = time("redis.incr", () -> redisClientManager.getRedisConnection().sync().incr(derivedKey));
 
         if (count == 1) {
-            redisClientManager.getRedisConnection().sync().expire(derivedKey, rateLimitInterval / 1000);
+            time("redis.expire", () -> redisClientManager.getRedisConnection().sync().expire(derivedKey, rateLimitInterval / 1000));
         }
 
         return count;
+    }
+
+    private <T> T time(String metricName, Callable<T> callable) throws Exception {
+        return this.metricsRegistry.timer(metricName).time(callable);
     }
 
     /**
