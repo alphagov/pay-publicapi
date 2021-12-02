@@ -1,7 +1,9 @@
 package uk.gov.pay.api.filter.ratelimit;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Inject;
 import com.google.inject.OutOfScopeException;
+import io.dropwizard.setup.Environment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.RateLimiterConfig;
@@ -11,18 +13,21 @@ import uk.gov.pay.api.managed.RedisClientManager;
 import javax.inject.Singleton;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
+import java.util.concurrent.Callable;
 
 @Singleton
 public class RedisRateLimiter {
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisRateLimiter.class);
+    private final MetricRegistry metricsRegistry;
 
     private RateLimitManager rateLimitManager;
     private RedisClientManager redisClientManager;
 
     @Inject
-    public RedisRateLimiter(RateLimiterConfig rateLimiterConfig, RedisClientManager redisClientManager) {
+    public RedisRateLimiter(RateLimiterConfig rateLimiterConfig, RedisClientManager redisClientManager, Environment environment) {
         this.rateLimitManager = new RateLimitManager(rateLimiterConfig);
         this.redisClientManager = redisClientManager;
+        this.metricsRegistry = environment.metrics();
     }
 
     /**
@@ -52,11 +57,15 @@ public class RedisRateLimiter {
         }
     }
 
-    private Long updateAllowance(String key, int rateLimitInterval) {
+    private Long updateAllowance(String key, int rateLimitInterval) throws Exception {
         String derivedKey = getKeyForWindow(key, rateLimitInterval);
-        Long count = redisClientManager.getRedisConnection().sync().incr(derivedKey);
-        redisClientManager.getRedisConnection().sync().expire(derivedKey, rateLimitInterval / 1000);
+        Long count = time("redis.incr_nanoseconds", () -> redisClientManager.getRedisConnection().sync().incr(derivedKey));
+        time("redis.expire_nanoseconds", () -> redisClientManager.getRedisConnection().sync().expire(derivedKey, rateLimitInterval / 1000));
         return count;
+    }
+
+    private <T> T time(String metricName, Callable<T> callable) throws Exception {
+        return this.metricsRegistry.timer(metricName).time(callable);
     }
 
     /**
