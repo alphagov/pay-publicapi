@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:jre-11.0.13_8-alpine@sha256:382c823ee787c3f2c25bb737c1b91bce97ec815f4f9dbb019aeceb2f4a99395d
+FROM adoptopenjdk/openjdk11:jre-11.0.13_8-alpine@sha256:11fbd5c356040b8ec7921ac858b535aba92a027cc55ba427b20e3ef3d2d5caac
 
 RUN ["apk", "--no-cache", "upgrade"]
 
