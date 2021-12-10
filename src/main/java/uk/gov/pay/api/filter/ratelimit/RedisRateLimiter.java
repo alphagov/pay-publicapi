@@ -59,8 +59,8 @@ public class RedisRateLimiter {
 
     private Long updateAllowance(String key, int rateLimitInterval) throws Exception {
         String derivedKey = getKeyForWindow(key, rateLimitInterval);
-        Long count = time("redis.incr_nanoseconds", () -> redisClientManager.getRedisConnection().sync().incr(derivedKey));
-        time("redis.expire_nanoseconds", () -> redisClientManager.getRedisConnection().sync().expire(derivedKey, rateLimitInterval / 1000));
+        Long count = time("redis.incr", () -> redisClientManager.getRedisConnection().sync().incr(derivedKey));
+        time("redis.expire", () -> redisClientManager.getRedisConnection().sync().expire(derivedKey, rateLimitInterval / 1000));
         return count;
     }
 
