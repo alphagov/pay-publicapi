@@ -8,7 +8,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <dropwizard.version>2.0.26</dropwizard.version>
+        <dropwizard.version>2.0.27</dropwizard.version>
         <guice.version>5.0.1</guice.version>
         <guava.version>31.0.1-jre</guava.version>
         <wiremock.version>2.32.0</wiremock.version>
