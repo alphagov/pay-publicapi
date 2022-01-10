@@ -7,7 +7,7 @@
   },
   "interactions": [
     {
-      "description": "get charge",
+      "description": "get a delayed capture charge with metadata that is in a capturable status",
       "providerStates": [
         {
           "name": "a charge exists",
@@ -35,8 +35,6 @@
             "some_key": "key"
           },
           "amount": 100,
-          "fee": 5,
-          "net_amount": 345,
           "state": {
             "finished": false,
             "status": "capturable"
