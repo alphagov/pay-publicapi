@@ -20,8 +20,14 @@ updates:
   - dependencies
   - govuk-pay
   - java
-- package-ecosystem: "github-actions"
+- package-ecosystem: github-actions
   directory: "/"
   schedule:
-    interval: "daily"
+    interval: daily
     time: "03:00"
+  open-pull-requests-limit: 10
+  labels:
+  - dependencies
+  - govuk-pay
+  - github_actions
+
