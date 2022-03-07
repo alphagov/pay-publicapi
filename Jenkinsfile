@@ -114,22 +114,6 @@ pipeline {
             }
         }
     }
-    stage('Tests') {
-      failFast true
-      stages {
-        stage('End-to-End Tests') {
-            when {
-                anyOf {
-                  branch 'master'
-                  environment name: 'RUN_END_TO_END_ON_PR', value: 'true'
-                }
-            }
-            steps {
-                runAppE2E("publicapi", "${env.E2E_TESTS}")
-            }
-        }
-      }
-    }
     stage('Docker Tag') {
       steps {
         script {
