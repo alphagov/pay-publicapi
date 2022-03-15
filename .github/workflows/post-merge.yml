@@ -1,0 +1,13 @@
+name: Post Merge
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    uses: ./.github/workflows/run-tests.yml

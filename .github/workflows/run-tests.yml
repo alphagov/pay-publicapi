@@ -1,17 +1,15 @@
 name: Github Actions Tests
 
 on:
-  push:
-    branches:
-      - master
+  workflow_call:
   pull_request:
 
 permissions:
   contents: read
 
 jobs:
-  unit-tests:
-    name: Unit tests
+  integration-tests:
+    name: Unit and Integration tests
     runs-on: ubuntu-18.04
 
     steps:
@@ -27,5 +25,8 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Run unit tests
-        run: mvn clean test
+      - name: Pull docker image dependencies
+        run: |
+          docker pull redis:latest
+      - name: Run unit and integration tests
+        run: mvn clean verify
