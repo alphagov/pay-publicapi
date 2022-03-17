@@ -1,7 +1,6 @@
 name: Post Merge
 
 on:
-  pull_request:
   push:
     branches:
       - master
