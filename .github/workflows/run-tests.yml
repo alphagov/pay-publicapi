@@ -25,6 +25,11 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
+      - name: Cache pacts directory
+        uses: actions/cache@937d24475381cd9c75ae6db12cb4e79714b926ed
+        with:
+          path: target/pacts
+          key: ${{ runner.os }}-build-id-${{ github.head_ref }}-${{ github.sha }}-pacts
       - name: Pull docker image dependencies
         run: |
           docker pull redis:latest
