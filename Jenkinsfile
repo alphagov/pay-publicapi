@@ -60,24 +60,6 @@ pipeline {
         }
       }
     }
-    stage('Contract Tests') {
-        steps {
-            script {
-                env.PACT_TAG = gitBranchName()
-            }
-            ws('contract-tests-wp') {
-                runPactProviderTests("pay-connector", "${env.PACT_TAG}", "publicapi")
-                runPactProviderTests("pay-ledger", "${env.PACT_TAG}", "publicapi")
-            }
-        }
-        post {
-            always {
-                ws('contract-tests-wp') {
-                    deleteDir()
-                }
-            }
-        }
-    }
     stage('Docker Tag') {
       steps {
         script {
