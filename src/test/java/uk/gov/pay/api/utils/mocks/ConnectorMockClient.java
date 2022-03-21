@@ -52,6 +52,7 @@ import static uk.gov.pay.api.it.fixtures.PaymentSingleResultBuilder.aSuccessfulS
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.ACCOUNT_NOT_LINKED_WITH_PSP;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.GENERIC;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.AGREEMENT_NOT_FOUND;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.MOTO_NOT_ALLOWED;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.REFUND_AMOUNT_AVAILABLE_MISMATCH;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.REFUND_NOT_AVAILABLE;
@@ -308,6 +309,10 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     public void respondBadRequest_whenCreateCharge(String gatewayAccountId, String errorMsg) {
         mockCreateCharge(gatewayAccountId, withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg, GENERIC));
+    }
+
+    public void respondBadRequest_whenCreateChargeWithAgreementNotFound(String gatewayAccountId, String agreementId, String errorMsg) {
+        mockCreateCharge(gatewayAccountId, withStatusAndErrorMessage(NOT_FOUND_404, format(errorMsg, agreementId), AGREEMENT_NOT_FOUND));
     }
 
     public void respondPreconditionFailed_whenCreateRefund(String gatewayAccountId, String errorMsg, String chargeId) {

@@ -29,7 +29,7 @@ public class CreateChargeExceptionMapperTest {
     @CsvSource({
             "TELEPHONE_PAYMENT_NOTIFICATIONS_NOT_ALLOWED, RESOURCE_ACCESS_FORBIDDEN, 403",
             "ACCOUNT_NOT_LINKED_WITH_PSP, ACCOUNT_NOT_LINKED_WITH_PSP, 403",
-            "MOTO_NOT_ALLOWED, CREATE_PAYMENT_MOTO_NOT_ENABLED, 422",
+            "MOTO_NOT_ALLOWED, CREATE_PAYMENT_MOTO_NOT_ENABLED, 422"
     })
     public void testExceptionMapping(String errorIdentifier, String paymentError, int expectedStatusCode) {
         when(mockResponse.readEntity(ConnectorErrorResponse.class))

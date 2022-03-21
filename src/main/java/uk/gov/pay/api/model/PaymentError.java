@@ -13,6 +13,8 @@ public class PaymentError {
 
     public enum Code {
 
+        CREATE_PAYMENT_AGREEMENT_ID_ERROR("P0103", "Invalid attribute value: set_up_agreement. Agreement ID does not exist"),
+
         CREATE_PAYMENT_ACCOUNT_ERROR("P0199", "There is an error with this account. Please contact support"),
         CREATE_PAYMENT_CONNECTOR_ERROR("P0198", "Downstream system error"),
         CREATE_PAYMENT_PARSING_ERROR("P0197", "Unable to parse JSON"),

@@ -81,6 +81,9 @@ public class CreateCardPaymentRequest {
     private final ExternalMetadata metadata;
     
     private final Internal internal;
+    
+    @JsonProperty("set_up_agreement")
+    private String setUpAgreement;
 
     @Valid
     private final PrefilledCardholderDetails prefilledCardholderDetails;
@@ -165,6 +168,13 @@ public class CreateCardPaymentRequest {
         return Optional.ofNullable(internal);
     }
 
+
+    @JsonProperty("set_up_agreement")
+    @Schema(description = "agreement ID", required = false, example = "abcefghjklmnop1234567890", hidden = true)
+    public Optional<String> getSetUpAgreement() {
+        return Optional.ofNullable(setUpAgreement);
+    }
+
     public String toConnectorPayload() {
         JsonStringBuilder request = new JsonStringBuilder()
                 .add("amount", this.getAmount())
@@ -189,6 +199,11 @@ public class CreateCardPaymentRequest {
             });
         });
         
+        getSetUpAgreement().ifPresent(setUpAgreement -> {
+            request.add("agreement_id", this.getSetUpAgreement())
+                    .add("save_payment_instrument_to_agreement", true);
+        });
+
         return request.build();
     }
 
@@ -208,6 +223,7 @@ public class CreateCardPaymentRequest {
         getDelayedCapture().ifPresent(value -> joiner.add("delayed_capture: " + value));
         getMoto().ifPresent(value -> joiner.add("moto: " + value));
         getMetadata().ifPresent(value -> joiner.add("metadata: " + value));
+        getSetUpAgreement().ifPresent(value -> joiner.add("set_up_agreement: " + value));
         return joiner.toString();
     }
 }

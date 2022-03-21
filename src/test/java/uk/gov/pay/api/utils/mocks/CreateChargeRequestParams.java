@@ -23,6 +23,8 @@ public class CreateChargeRequestParams {
     private final String addressCountry;
     private final SupportedLanguage language;
     private final Source source;
+    private String agreementId;
+    private boolean savePaymentInstrumentToAgreement;
 
     private CreateChargeRequestParams(CreateChargeRequestParamsBuilder builder) {
         this.amount = builder.amount;
@@ -40,6 +42,8 @@ public class CreateChargeRequestParams {
         this.addressCountry = builder.addressCountry;
         this.language = builder.language;
         this.source = builder.source;
+        this.agreementId = builder.agreementId;
+        this.savePaymentInstrumentToAgreement = builder.savePaymentInstrumentToAgreement;
     }
 
     public int getAmount() {
@@ -102,6 +106,14 @@ public class CreateChargeRequestParams {
         return Optional.ofNullable(source);
     }
 
+    public String getAgreementId() {
+        return agreementId;
+    }
+
+    public boolean isSavePaymentInstrumentToAgreement() {
+        return savePaymentInstrumentToAgreement;
+    }
+
     public static final class CreateChargeRequestParamsBuilder {
         private Integer amount;
         private String returnUrl;
@@ -118,6 +130,8 @@ public class CreateChargeRequestParams {
         private String addressCountry;
         private SupportedLanguage language;
         private Source source;
+        public String agreementId;
+        public boolean savePaymentInstrumentToAgreement;
 
         private CreateChargeRequestParamsBuilder() {
         }
@@ -203,6 +217,16 @@ public class CreateChargeRequestParams {
 
         public CreateChargeRequestParamsBuilder withMoto(boolean moto) {
             this.moto = moto;
+            return this;
+        }
+
+        public CreateChargeRequestParamsBuilder withAgreementId(String agreementId) {
+            this.agreementId = agreementId;
+            return this;
+        }
+
+        public CreateChargeRequestParamsBuilder withSavePaymentInstrumentToAgreement(boolean savePaymentInstrumentToAgreement) {
+            this.savePaymentInstrumentToAgreement = savePaymentInstrumentToAgreement;
             return this;
         }
     }
