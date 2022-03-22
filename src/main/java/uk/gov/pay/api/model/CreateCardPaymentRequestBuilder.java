@@ -23,6 +23,7 @@ public class CreateCardPaymentRequestBuilder {
     private PrefilledCardholderDetails prefilledCardholderDetails;
     private Source source;
     private Internal internal;
+    private String setUpAgreement;
 
     public static CreateCardPaymentRequestBuilder builder() {
         return new CreateCardPaymentRequestBuilder();
@@ -194,5 +195,13 @@ public class CreateCardPaymentRequestBuilder {
         }
 
         return internal;
+    }
+
+    public void setUpAgreement(String setUpAgreement) {
+        this.setUpAgreement = setUpAgreement;
+    }
+
+    public String getSetUpAgreement() {
+        return setUpAgreement;
     }
 }

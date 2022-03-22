@@ -26,25 +26,7 @@ import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.http.HttpStatus.SC_UNPROCESSABLE_ENTITY;
-import static uk.gov.pay.api.model.CreateCardPaymentRequest.AMOUNT_FIELD_NAME;
-import static uk.gov.pay.api.model.CreateCardPaymentRequest.DELAYED_CAPTURE_FIELD_NAME;
-import static uk.gov.pay.api.model.CreateCardPaymentRequest.DESCRIPTION_FIELD_NAME;
-import static uk.gov.pay.api.model.CreateCardPaymentRequest.EMAIL_FIELD_NAME;
-import static uk.gov.pay.api.model.CreateCardPaymentRequest.INTERNAL;
-import static uk.gov.pay.api.model.CreateCardPaymentRequest.LANGUAGE_FIELD_NAME;
-import static uk.gov.pay.api.model.CreateCardPaymentRequest.METADATA;
-import static uk.gov.pay.api.model.CreateCardPaymentRequest.MOTO_FIELD_NAME;
-import static uk.gov.pay.api.model.CreateCardPaymentRequest.PREFILLED_ADDRESS_CITY_FIELD_NAME;
-import static uk.gov.pay.api.model.CreateCardPaymentRequest.PREFILLED_ADDRESS_COUNTRY_FIELD_NAME;
-import static uk.gov.pay.api.model.CreateCardPaymentRequest.PREFILLED_ADDRESS_LINE1_FIELD_NAME;
-import static uk.gov.pay.api.model.CreateCardPaymentRequest.PREFILLED_ADDRESS_LINE2_FIELD_NAME;
-import static uk.gov.pay.api.model.CreateCardPaymentRequest.PREFILLED_ADDRESS_POSTCODE_FIELD_NAME;
-import static uk.gov.pay.api.model.CreateCardPaymentRequest.PREFILLED_BILLING_ADDRESS_FIELD_NAME;
-import static uk.gov.pay.api.model.CreateCardPaymentRequest.PREFILLED_CARDHOLDER_DETAILS_FIELD_NAME;
-import static uk.gov.pay.api.model.CreateCardPaymentRequest.PREFILLED_CARDHOLDER_NAME_FIELD_NAME;
-import static uk.gov.pay.api.model.CreateCardPaymentRequest.REFERENCE_FIELD_NAME;
-import static uk.gov.pay.api.model.CreateCardPaymentRequest.RETURN_URL_FIELD_NAME;
-import static uk.gov.pay.api.model.CreateCardPaymentRequest.SOURCE_FIELD_NAME;
+import static uk.gov.pay.api.model.CreateCardPaymentRequest.*;
 import static uk.gov.pay.api.model.CreatePaymentRefundRequest.REFUND_AMOUNT_AVAILABLE;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_MISSING_FIELD_ERROR;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_REFUND_MISSING_FIELD_ERROR;
@@ -79,7 +61,11 @@ class RequestJsonParser {
         if(paymentRequest.has(MOTO_FIELD_NAME)) {
             builder.moto(validateAndGetMoto(paymentRequest));
         }
-        
+
+        if(paymentRequest.has(SET_UP_AGREEMENT_FIELD_NAME)) {
+            builder.setUpAgreement(validateAndGetSetUpAgreement(paymentRequest));
+        }
+
         if (paymentRequest.has(LANGUAGE_FIELD_NAME)) {
             builder.language(validateAndGetLanguage(paymentRequest));
         }
@@ -162,6 +148,15 @@ class RequestJsonParser {
                 aPaymentError(MOTO_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be true or false"),
                 JsonNode::isBoolean,
                 JsonNode::booleanValue);
+    }
+
+    private static String validateAndGetSetUpAgreement(JsonNode paymentRequest) {
+        return //validateAndGetValue(
+                paymentRequest.get(SET_UP_AGREEMENT_FIELD_NAME).textValue();
+                //aPaymentError(MOTO_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be true or false"),
+                //aPaymentError(MOTO_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be true or false"),
+                //JsonNode::isBoolean,
+                //JsonNode::booleanValue);
     }
 
     private static Integer validateAndGetAmount(JsonNode paymentRequest, Code validationError, Code missingError) {

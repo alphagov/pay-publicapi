@@ -122,8 +122,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .withDescription(DESCRIPTION)
                 .withReference(REFERENCE)
                 .withReturnUrl(RETURN_URL)
-                .withAgreementId("12345678901234567890123456")
-                .withSavePaymentInstrumentToAgreement(true)
+                .withSetUpAgreement("12345678901234567890123456")
                 .build();
         connectorMockClient.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
 
@@ -144,9 +143,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .withDescription(DESCRIPTION)
                 .withReference(REFERENCE)
                 .withReturnUrl(RETURN_URL)
-                .withAgreementId("12345678901234567890123456")
-                .withSavePaymentInstrumentToAgreement(true)
-                .withMetadata(Map.of("reconciled", true, "ledger_code", 123, "fuh", "fuh you"))
+                .withSetUpAgreement("12345678901234567890123456")
                 .build();
         connectorMockClient.respondBadRequest_whenCreateChargeWithAgreementNotFound(GATEWAY_ACCOUNT_ID, "12345678901234567890123456", "Agreement with ID [%s] not found.");
         
@@ -638,12 +635,8 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
             payload.addToNestedMap("source", source, "internal");
         });
 
-        if (params.getAgreementId() != null) {
-            payload.add("agreement_id", params.getAgreementId());
-        }
-
-        if (params.isSavePaymentInstrumentToAgreement()) {
-            payload.add("save_payment_instrument_to_agreement", true);
+        if (params.getSetUpAgreement() != null) {
+            payload.add("set_up_agreement", params.getSetUpAgreement());
         }
 
         return payload.build();

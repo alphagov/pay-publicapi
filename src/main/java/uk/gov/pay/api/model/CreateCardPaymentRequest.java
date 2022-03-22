@@ -40,6 +40,7 @@ public class CreateCardPaymentRequest {
     public static final String PREFILLED_ADDRESS_COUNTRY_FIELD_NAME = "country";
     public static final String DELAYED_CAPTURE_FIELD_NAME = "delayed_capture";
     public static final String MOTO_FIELD_NAME = "moto";
+    public static final String SET_UP_AGREEMENT_FIELD_NAME = "set_up_agreement";
     public static final String SOURCE_FIELD_NAME = "source";
     public static final String METADATA = "metadata";
     public static final String INTERNAL = "internal";
@@ -100,6 +101,7 @@ public class CreateCardPaymentRequest {
         this.metadata = builder.getMetadata();
         this.prefilledCardholderDetails = builder.getPrefilledCardholderDetails();
         this.internal = builder.getInternal();
+        this.setUpAgreement = builder.getSetUpAgreement();
     }
     
     @Schema(description = "amount in pence", required = true, minimum = "1", maximum = "10000000", example = "12000")
@@ -171,8 +173,8 @@ public class CreateCardPaymentRequest {
 
     @JsonProperty("set_up_agreement")
     @Schema(description = "agreement ID", required = false, example = "abcefghjklmnop1234567890", hidden = true)
-    public Optional<String> getSetUpAgreement() {
-        return Optional.ofNullable(setUpAgreement);
+    public String getSetUpAgreement() {
+        return setUpAgreement;
     }
 
     public String toConnectorPayload() {
@@ -199,10 +201,10 @@ public class CreateCardPaymentRequest {
             });
         });
         
-        getSetUpAgreement().ifPresent(setUpAgreement -> {
+        if (this.getSetUpAgreement() != null) {
             request.add("agreement_id", this.getSetUpAgreement())
                     .add("save_payment_instrument_to_agreement", true);
-        });
+        }
 
         return request.build();
     }
@@ -223,7 +225,11 @@ public class CreateCardPaymentRequest {
         getDelayedCapture().ifPresent(value -> joiner.add("delayed_capture: " + value));
         getMoto().ifPresent(value -> joiner.add("moto: " + value));
         getMetadata().ifPresent(value -> joiner.add("metadata: " + value));
-        getSetUpAgreement().ifPresent(value -> joiner.add("set_up_agreement: " + value));
+        
+        if (this.getSetUpAgreement() != null) {
+            joiner.add("set_up_agreement: " + this.getSetUpAgreement());
+        }
+        
         return joiner.toString();
     }
 }
