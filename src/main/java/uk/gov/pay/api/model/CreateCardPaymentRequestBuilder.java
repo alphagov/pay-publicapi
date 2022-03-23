@@ -24,6 +24,8 @@ public class CreateCardPaymentRequestBuilder {
     private Source source;
     private Internal internal;
     private String setUpAgreement;
+    private AuthMode authMode;
+    private String agreementId;
 
     public static CreateCardPaymentRequestBuilder builder() {
         return new CreateCardPaymentRequestBuilder();
@@ -102,6 +104,11 @@ public class CreateCardPaymentRequestBuilder {
         this.postcode = postcode;
         return this;
     }
+    
+    public CreateCardPaymentRequestBuilder agreementId(String agreementId) {
+        this.agreementId = agreementId;
+        return this;
+    }
 
     public CreateCardPaymentRequestBuilder country(String country) {
         this.country = country;
@@ -110,6 +117,11 @@ public class CreateCardPaymentRequestBuilder {
 
     public CreateCardPaymentRequestBuilder source(Source source) {
         this.source = source;
+        return this;
+    }
+    
+    public CreateCardPaymentRequestBuilder authMode(AuthMode authMode) {
+        this.authMode = authMode;
         return this;
     }
 
@@ -203,5 +215,13 @@ public class CreateCardPaymentRequestBuilder {
 
     public String getSetUpAgreement() {
         return setUpAgreement;
+    }
+
+    public AuthMode getAuthMode() {
+        return authMode;
+    }
+
+    public String getAgreementId() {
+        return agreementId;
     }
 }

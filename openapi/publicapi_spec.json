@@ -892,9 +892,9 @@
           },
           "card_type" : {
             "type" : "string",
-            "description" : "The card type, `credit` or `null` if not able to determine",
-            "enum" : [ "credit", "null" ],
-            "example" : "credit",
+            "description" : "The card type, `debit` or `credit` or `null` if not able to determine",
+            "enum" : [ "debit", "credit", "null" ],
+            "example" : "debit",
             "readOnly" : true
           },
           "cardholder_name" : {
@@ -923,6 +923,9 @@
         "type" : "object",
         "description" : "The Payment Request Payload",
         "properties" : {
+          "agreement_id" : {
+            "type" : "string"
+          },
           "amount" : {
             "type" : "integer",
             "format" : "int32",
@@ -930,6 +933,10 @@
             "example" : 12000,
             "maximum" : 10000000,
             "minimum" : 0
+          },
+          "auth_mode" : {
+            "type" : "string",
+            "enum" : [ "WEB", "API" ]
           },
           "delayed_capture" : {
             "type" : "boolean",

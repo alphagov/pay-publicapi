@@ -46,7 +46,8 @@ public class CreateCardPaymentRequestDeserializerTest {
                 "  \"amount\": 27432,\n" +
                 "  \"reference\": \"Some reference\",\n" +
                 "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"auth_mode\": \"API\"\n" + 
                 "}";
 
         CreateCardPaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);

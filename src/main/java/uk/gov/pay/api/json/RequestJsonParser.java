@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.pay.api.exception.BadRequestException;
-import uk.gov.pay.api.model.CreateCardPaymentRequest;
-import uk.gov.pay.api.model.CreateCardPaymentRequestBuilder;
-import uk.gov.pay.api.model.CreatePaymentRefundRequest;
-import uk.gov.pay.api.model.PaymentError;
+import uk.gov.pay.api.model.*;
 import uk.gov.pay.api.model.PaymentError.Code;
 import uk.gov.service.payments.commons.model.Source;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
@@ -61,6 +58,16 @@ class RequestJsonParser {
         if(paymentRequest.has(MOTO_FIELD_NAME)) {
             builder.moto(validateAndGetMoto(paymentRequest));
         }
+        
+        if(paymentRequest.has(AUTH_MODE_FIELD_NAME)) {
+            var value = AuthMode.from(validateAndGetAuthMode(paymentRequest)).orElse(AuthMode.WEB);
+            builder.authMode(value);
+        }
+        
+        if(paymentRequest.has(AGREEMENT_ID_FIELD_NAME)) {
+            builder.agreementId(validateSkipNullValueAndGetString(paymentRequest.get(AGREEMENT_ID_FIELD_NAME),
+                    aPaymentError(EMAIL_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string")));
+        }
 
         if(paymentRequest.has(SET_UP_AGREEMENT_FIELD_NAME)) {
             builder.setUpAgreement(validateAndGetSetUpAgreement(paymentRequest));
@@ -93,12 +100,24 @@ class RequestJsonParser {
 
         return builder.build();
     }
+    
+    private static String validateAndGetAuthMode(JsonNode paymentRequest) {
+        return validateSkipNullValueAndGetString(paymentRequest.get(AUTH_MODE_FIELD_NAME),
+                aPaymentError(AUTH_MODE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
+    }
 
     private static String validateAndGetReturnUrl(JsonNode paymentRequest) {
-        return validateAndGetString(
-                paymentRequest.get(RETURN_URL_FIELD_NAME),
-                aPaymentError(RETURN_URL_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid URL format"),
-                aPaymentError(RETURN_URL_FIELD_NAME, CREATE_PAYMENT_MISSING_FIELD_ERROR));
+        var value = validateAndGetAuthMode(paymentRequest);
+    
+        if (value != null && value.equals("API")) {
+            return validateSkipNullValueAndGetString(paymentRequest.get(RETURN_URL_FIELD_NAME),
+                    aPaymentError(RETURN_URL_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
+        } else {
+            return validateAndGetString(
+                    paymentRequest.get(RETURN_URL_FIELD_NAME),
+                    aPaymentError(RETURN_URL_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid URL format"),
+                    aPaymentError(RETURN_URL_FIELD_NAME, CREATE_PAYMENT_MISSING_FIELD_ERROR));    
+        }
     }
 
     private static SupportedLanguage validateAndGetLanguage(JsonNode paymentRequest) {

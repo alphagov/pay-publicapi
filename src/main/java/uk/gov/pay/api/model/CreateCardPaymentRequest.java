@@ -1,6 +1,7 @@
 package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.hibernate.validator.constraints.Length;
 import uk.gov.pay.api.utils.JsonStringBuilder;
@@ -29,6 +30,8 @@ public class CreateCardPaymentRequest {
     public static final int AMOUNT_MIN_VALUE = 0;
     public static final int DESCRIPTION_MAX_LENGTH = 255;
     public static final String RETURN_URL_FIELD_NAME = "return_url";
+    public static final String AUTH_MODE_FIELD_NAME = "auth_mode";
+    public static final String AGREEMENT_ID_FIELD_NAME = "agreement_id";
     public static final int URL_MAX_LENGTH = 2000;
     public static final String PREFILLED_CARDHOLDER_DETAILS_FIELD_NAME = "prefilled_cardholder_details";
     public static final String PREFILLED_CARDHOLDER_NAME_FIELD_NAME = "cardholder_name";
@@ -86,7 +89,14 @@ public class CreateCardPaymentRequest {
     @JsonProperty("set_up_agreement")
     @Size(min=26, max=26, message = "Field [set_up_agreement] length must be 26")
     private String setUpAgreement;
-
+    
+    @JsonProperty("auth_mode")
+    @JsonDeserialize(using = AuthModeDeserialiser.class)
+    private AuthMode authMode;
+    
+    @JsonProperty("agreement_id")
+    private String agreementId; 
+    
     @Valid
     private final PrefilledCardholderDetails prefilledCardholderDetails;
     
@@ -103,6 +113,8 @@ public class CreateCardPaymentRequest {
         this.prefilledCardholderDetails = builder.getPrefilledCardholderDetails();
         this.internal = builder.getInternal();
         this.setUpAgreement = builder.getSetUpAgreement();
+        this.authMode = builder.getAuthMode();
+        this.agreementId = builder.getAgreementId();
     }
     
     @Schema(description = "amount in pence", required = true, minimum = "1", maximum = "10000000", example = "12000")
@@ -190,6 +202,13 @@ public class CreateCardPaymentRequest {
         getMetadata().ifPresent(metadata -> request.add("metadata", metadata.getMetadata()));
         getEmail().ifPresent(email -> request.add("email", email));
         getInternal().flatMap(Internal::getSource).ifPresent(source -> request.add("source", source));
+        getAuthMode().ifPresent(authMode -> {
+            request.add("auth_mode", authMode);
+            if (authMode == AuthMode.API) {
+                getAgreementId().ifPresent(agreementId -> request.add("agreement_id", agreementId));
+            }
+        });
+        
         
         getPrefilledCardholderDetails().ifPresent(prefilledDetails -> {
             prefilledDetails.getCardholderName().ifPresent(name -> request.addToMap(PREFILLED_CARDHOLDER_DETAILS, "cardholder_name", name));
@@ -232,5 +251,13 @@ public class CreateCardPaymentRequest {
         }
         
         return joiner.toString();
+    }
+
+    public Optional<AuthMode> getAuthMode() {
+        return Optional.ofNullable(authMode);
+    }
+
+    public Optional<String> getAgreementId() {
+        return Optional.ofNullable(agreementId);
     }
 }
