@@ -84,8 +84,11 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withPaymentProvider(responseFromConnector.getPaymentProvider())
                 .withDelayedCapture(responseFromConnector.isDelayedCapture())
                 .withMoto(responseFromConnector.isMoto())
+                .withAgreementId(responseFromConnector.getAgreementId())
+                .withSavePaymentInstrumentToAgreement(responseFromConnector.isSavePaymentInstrumentToAgreement())
                 .withLinks(responseFromConnector.getLinks())
                 .withSettlementSummary(responseFromConnector.getSettlementSummary());
+        
         
         ofNullable(responseFromConnector.getCardDetails()).ifPresent(resultBuilder::withCardDetails);
         ofNullable(responseFromConnector.getRefundSummary()).ifPresent(resultBuilder::withRefundSummary);
@@ -253,6 +256,11 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withLink(validGetLink(chargeLocation(gatewayAccountId, "chargeId"), "self"))
                 .withLink(validGetLink(nextUrl("chargeTokenId"), "next_url"))
                 .withLink(validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap("chargeTokenId")));
+
+        if (requestParams.getSetUpAgreement() != null) {
+            responseFromConnector.withAgreementId(requestParams.getSetUpAgreement())
+                    .withSavePaymentInstrumentToAgreement(requestParams.getSetUpAgreement() != null);
+        }
 
         if (!requestParams.getMetadata().isEmpty())
             responseFromConnector.withMetadata(requestParams.getMetadata());

@@ -140,6 +140,8 @@ public abstract class PaymentResultBuilder {
         public List<Map<?,?>> links;
         public Map<String, ?> metadata;
         public AuthorisationSummary authorisation_summary;
+        public String agreementId;
+        public boolean savePaymentInstrumentToAgreement;
     }
 
     protected static class TestPaymentState {
@@ -176,6 +178,8 @@ public abstract class PaymentResultBuilder {
     protected String language = SupportedLanguage.ENGLISH.toString();
     protected Boolean delayedCapture;
     protected boolean moto;
+    protected String agreementId;
+    protected boolean savePaymentInstrumentToAgreement;
     protected TestPaymentState state;
     protected String fromDate = null;
     protected String toDate = null;
@@ -225,6 +229,8 @@ public abstract class PaymentResultBuilder {
         payment.language = SupportedLanguage.ENGLISH.toString();
         payment.delayed_capture = delayedCapture == null ? false : delayedCapture;
         payment.moto = moto;
+        payment.agreementId = agreementId;
+        payment.savePaymentInstrumentToAgreement = savePaymentInstrumentToAgreement;
         payment.card_details.card_brand = cardDetails == null ? DEFAULT_CARD_BRAND_LABEL : cardDetails.card_brand;
         payment.card_details = cardDetails == null ? new CardDetails() : cardDetails;
         payment.refund_summary = refundSummary == null ? 

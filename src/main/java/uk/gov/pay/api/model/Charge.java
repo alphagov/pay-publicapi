@@ -38,6 +38,10 @@ public class Charge {
     
     private boolean moto;
 
+    private String agreementId;
+
+    private boolean savePaymentInstrumentToAgreement;
+
     private Long corporateCardSurcharge;
 
     private Long totalAmount;
@@ -86,6 +90,33 @@ public class Charge {
         this.authorisationSummary = authorisationSummary;
     }
 
+    public Charge(String chargeId, Long amount, PaymentState state, String returnUrl, String description,
+                  String reference, String email, String paymentProvider, String createdDate,
+                  SupportedLanguage language, boolean delayedCapture, boolean moto, RefundSummary refundSummary,
+                  PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
+                  List<PaymentConnectorResponseLink> links, Long corporateCardSurcharge, Long totalAmount,
+                  String gatewayTransactionId, ExternalMetadata metadata, Long fee, Long netAmount,
+                  AuthorisationSummary authorisationSummary, String agreementId, boolean savePaymentInstrumentToAgreement) {
+        this(chargeId, amount, state, returnUrl,description, reference, email, paymentProvider, 
+        createdDate,
+        language,
+        delayedCapture,
+        moto,
+        refundSummary,
+        settlementSummary,
+        cardDetails,
+        links,
+        corporateCardSurcharge,
+        totalAmount,
+        gatewayTransactionId,
+        metadata,
+        fee,
+        netAmount,
+        authorisationSummary);
+        this.agreementId = agreementId;
+        this.savePaymentInstrumentToAgreement = savePaymentInstrumentToAgreement;
+    }
+
     public static Charge from(ChargeFromResponse chargeFromResponse) {
         return new Charge(
                 chargeFromResponse.getChargeId(),
@@ -110,7 +141,9 @@ public class Charge {
                 chargeFromResponse.getMetadata().orElse(null),
                 chargeFromResponse.getFee(),
                 chargeFromResponse.getNetAmount(),
-                chargeFromResponse.getAuthorisationSummary()
+                chargeFromResponse.getAuthorisationSummary(),
+                "12345678901234567890123456", //chargeFromResponse.getAgreementId(),
+                true //chargeFromResponse.isSavePaymentInstrumentToAgreement()
         );
     }
 
@@ -236,5 +269,13 @@ public class Charge {
 
     public AuthorisationSummary getAuthorisationSummary() {
         return authorisationSummary;
+    }
+
+    public String getAgreementId() {
+        return agreementId;
+    }
+
+    public boolean isSavePaymentInstrumentToAgreement() {
+        return savePaymentInstrumentToAgreement;
     }
 }

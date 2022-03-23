@@ -47,6 +47,12 @@ public class ChargeFromResponse {
     
     private String telephoneNumber;
 
+    @JsonProperty("agreement_id")
+    private String agreementId;
+
+    @JsonProperty("save_payment_instrument_to_agreement")
+    private boolean savePaymentInstrumentToAgreement;
+
     @JsonDeserialize(using = CustomSupportedLanguageDeserializer.class)
     private SupportedLanguage language;
     
@@ -127,6 +133,14 @@ public class ChargeFromResponse {
 
     public boolean isMoto() {
         return moto;
+    }
+
+    public String getAgreementId() {
+        return agreementId;
+    }
+
+    public boolean isSavePaymentInstrumentToAgreement() {
+        return savePaymentInstrumentToAgreement;
     }
 
     public Long getCorporateCardSurcharge() {

@@ -1,8 +1,10 @@
 package uk.gov.pay.api.it;
 
 import com.jayway.jsonassert.JsonAssert;
+import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import org.apache.http.HttpStatus;
+import org.hamcrest.Matchers;
 import org.json.JSONObject;
 import org.junit.Test;
 import uk.gov.pay.api.model.Address;
@@ -26,6 +28,7 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+import static org.hamcrest.CoreMatchers.any;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
@@ -59,6 +62,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
             .withAmount(AMOUNT)
             .withDescription(DESCRIPTION)
             .withReference(REFERENCE)
+            .withSetUpAgreement("12345678901234567890123456")
             .withReturnUrl(RETURN_URL).build());
     private static final String GATEWAY_TRANSACTION_ID = "gateway-tx-123456";
 
@@ -126,10 +130,12 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .build();
         connectorMockClient.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
 
-        postPaymentResponse(paymentPayload(createChargeRequestParams))
+        var xx = postPaymentResponse(paymentPayload(createChargeRequestParams))
                 .statusCode(HttpStatus.SC_CREATED)
                 .contentType(JSON);
-
+                //.body("agreement_id", is("12345678901234567890123456"))
+                //.body("save_payment_instrument_to_agreement", is(true));
+        System.out.println("****************"+xx.extract().body().asPrettyString());
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
     }
 

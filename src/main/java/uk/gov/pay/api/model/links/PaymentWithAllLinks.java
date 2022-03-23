@@ -40,7 +40,7 @@ public class PaymentWithAllLinks {
                                boolean delayedCapture, boolean moto, RefundSummary refundSummary, PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
                                List<PaymentConnectorResponseLink> paymentConnectorResponseLinks, URI selfLink, URI paymentEventsUri, URI paymentCancelUri,
                                URI paymentRefundsUri, URI paymentCaptureUri, Long corporateCardSurcharge, Long totalAmount, String providerId, ExternalMetadata metadata,
-                               Long fee, Long netAmount, AuthorisationSummary authorisationSummary) {
+                               Long fee, Long netAmount, AuthorisationSummary authorisationSummary, String agreementId, boolean savePaymentInstrumentToAgreement) {
         this.payment = new CardPayment(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate,
                 refundSummary, settlementSummary, cardDetails, language, delayedCapture, moto, corporateCardSurcharge, totalAmount,
                 providerId, metadata, fee, netAmount, authorisationSummary);
@@ -92,7 +92,9 @@ public class PaymentWithAllLinks {
                 paymentConnector.getMetadata().orElse(null),
                 paymentConnector.getFee(),
                 paymentConnector.getNetAmount(),
-                paymentConnector.getAuthorisationSummary());
+                paymentConnector.getAuthorisationSummary(),
+                paymentConnector.getAgreementId(),
+                paymentConnector.isSavePaymentInstrumentToAgreement());
     }
 
     public static PaymentWithAllLinks getPaymentWithLinks(
