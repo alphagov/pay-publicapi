@@ -8,6 +8,8 @@ on:
 permissions:
   contents: read
 
+concurrency: publicapi-post-merge
+
 jobs:
   tests:
     uses: ./.github/workflows/run-tests.yml
@@ -61,3 +63,11 @@ jobs:
     secrets:
       pact_broker_username: ${{ secrets.pact_broker_username }}
       pact_broker_password: ${{ secrets.pact_broker_password }}
+
+  tag-release:
+    needs:
+      - ledger-provider-contract-tests
+      - connector-provider-contract-tests
+    permissions:
+      contents: write
+    uses: alphagov/pay-ci/.github/workflows/_create-alpha-release-tag.yml@master
