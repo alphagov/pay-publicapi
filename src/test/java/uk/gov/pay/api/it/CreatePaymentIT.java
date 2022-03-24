@@ -56,6 +56,8 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
     private static final CardDetails CARD_DETAILS = new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, CARD_TYPE);
     public static final String VALID_AGREEMENT_ID = "12345678901234567890123456";
+    public static final String TOO_SHORT_AGREEMENT_ID = "1234567890";
+    public static final String TOO_LONG_AGREEMENT_ID = "1234567890123456789012345699999";
     private static final String SUCCESS_PAYLOAD = paymentPayload(aCreateChargeRequestParams()
             .withAmount(AMOUNT)
             .withDescription(DESCRIPTION)
@@ -144,7 +146,46 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
     }
 
+    @Test
+    public void shouldReturn422WhencreateAChargeIsCalledWithTooShortAgreementId() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
+        CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
+                .withAmount(100)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withReturnUrl(RETURN_URL)
+                .withSetUpAgreement(TOO_SHORT_AGREEMENT_ID)
+                .build();
+
+        postPaymentResponse(paymentPayload(createChargeRequestParams))
+                .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
+                .contentType(JSON)
+                .body("field",  is("set_up_agreement"))
+                .body("code",  is("P0102"))
+                .body("description", is("Invalid attribute value: set_up_agreement. Field [set_up_agreement] length must be 26"));
+    }
+
+    @Test
+    public void shouldReturn422WhencreateAChargeIsCalledWithTooLongAgreementId() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+
+        CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
+                .withAmount(100)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withReturnUrl(RETURN_URL)
+                .withSetUpAgreement(TOO_LONG_AGREEMENT_ID)
+                .build();
+
+        postPaymentResponse(paymentPayload(createChargeRequestParams))
+                .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
+                .contentType(JSON)
+                .body("field",  is("set_up_agreement"))
+                .body("code",  is("P0102"))
+                .body("description", is("Invalid attribute value: set_up_agreement. Field [set_up_agreement] length must be 26"));
+    }
+    
     @Test
     public void createAChargeWithMetadataAgreementNotFound() throws IOException {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);

@@ -84,6 +84,7 @@ public class CreateCardPaymentRequest {
     private final Internal internal;
     
     @JsonProperty("set_up_agreement")
+    @Size(min=26, max=26, message = "Field [set_up_agreement] length must be 26")
     private String setUpAgreement;
 
     @Valid
