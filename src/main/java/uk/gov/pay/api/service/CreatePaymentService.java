@@ -37,7 +37,7 @@ public class CreatePaymentService {
         }
         
         ChargeFromResponse chargeFromResponse = connectorResponse.readEntity(ChargeFromResponse.class);
-        connectorResponse..context.requestContext.entity
+        
         return buildResponseModel(Charge.from(chargeFromResponse));
     }
 

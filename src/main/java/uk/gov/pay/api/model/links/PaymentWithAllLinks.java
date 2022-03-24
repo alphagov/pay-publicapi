@@ -43,7 +43,7 @@ public class PaymentWithAllLinks {
                                Long fee, Long netAmount, AuthorisationSummary authorisationSummary, String agreementId, boolean savePaymentInstrumentToAgreement) {
         this.payment = new CardPayment(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate,
                 refundSummary, settlementSummary, cardDetails, language, delayedCapture, moto, corporateCardSurcharge, totalAmount,
-                providerId, metadata, fee, netAmount, authorisationSummary);
+                providerId, metadata, fee, netAmount, authorisationSummary, agreementId, savePaymentInstrumentToAgreement);
         this.links.addSelf(selfLink.toString());
         this.links.addKnownLinksValueOf(paymentConnectorResponseLinks);
         this.links.addEvents(paymentEventsUri.toString());

@@ -142,8 +142,8 @@ public class Charge {
                 chargeFromResponse.getFee(),
                 chargeFromResponse.getNetAmount(),
                 chargeFromResponse.getAuthorisationSummary(),
-                "12345678901234567890123456", //chargeFromResponse.getAgreementId(),
-                true //chargeFromResponse.isSavePaymentInstrumentToAgreement()
+                chargeFromResponse.getAgreementId(),
+                chargeFromResponse.isSavePaymentInstrumentToAgreement()
         );
     }
 

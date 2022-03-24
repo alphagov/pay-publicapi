@@ -1,10 +1,8 @@
 package uk.gov.pay.api.it;
 
 import com.jayway.jsonassert.JsonAssert;
-import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import org.apache.http.HttpStatus;
-import org.hamcrest.Matchers;
 import org.json.JSONObject;
 import org.junit.Test;
 import uk.gov.pay.api.model.Address;
@@ -28,7 +26,6 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
-import static org.hamcrest.CoreMatchers.any;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
@@ -58,12 +55,20 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
     private static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(TIMESTAMP);
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
     private static final CardDetails CARD_DETAILS = new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, CARD_TYPE);
+    public static final String VALID_AGREEMENT_ID = "12345678901234567890123456";
     private static final String SUCCESS_PAYLOAD = paymentPayload(aCreateChargeRequestParams()
             .withAmount(AMOUNT)
             .withDescription(DESCRIPTION)
             .withReference(REFERENCE)
-            .withSetUpAgreement("12345678901234567890123456")
+            .withSetUpAgreement(VALID_AGREEMENT_ID)
             .withReturnUrl(RETURN_URL).build());
+    private static final CreateChargeRequestParams CHARGE_REQUEST_PARAMS = aCreateChargeRequestParams()
+            .withAmount(AMOUNT)
+            .withDescription(DESCRIPTION)
+            .withReference(REFERENCE)
+            .withSetUpAgreement(VALID_AGREEMENT_ID)
+            .withReturnUrl(RETURN_URL).build();
+
     private static final String GATEWAY_TRANSACTION_ID = "gateway-tx-123456";
 
     private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
@@ -126,16 +131,16 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .withDescription(DESCRIPTION)
                 .withReference(REFERENCE)
                 .withReturnUrl(RETURN_URL)
-                .withSetUpAgreement("12345678901234567890123456")
+                .withSetUpAgreement(VALID_AGREEMENT_ID)
                 .build();
         connectorMockClient.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
 
-        var xx = postPaymentResponse(paymentPayload(createChargeRequestParams))
+        postPaymentResponse(paymentPayload(createChargeRequestParams))
                 .statusCode(HttpStatus.SC_CREATED)
-                .contentType(JSON);
-                //.body("agreement_id", is("12345678901234567890123456"))
-                //.body("save_payment_instrument_to_agreement", is(true));
-        System.out.println("****************"+xx.extract().body().asPrettyString());
+                .contentType(JSON)
+                .body("agreement_id", is(VALID_AGREEMENT_ID))
+                .body("save_payment_instrument_to_agreement", is(true));
+
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
     }
 
@@ -149,9 +154,9 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .withDescription(DESCRIPTION)
                 .withReference(REFERENCE)
                 .withReturnUrl(RETURN_URL)
-                .withSetUpAgreement("12345678901234567890123456")
+                .withSetUpAgreement(VALID_AGREEMENT_ID)
                 .build();
-        connectorMockClient.respondBadRequest_whenCreateChargeWithAgreementNotFound(GATEWAY_ACCOUNT_ID, "12345678901234567890123456", "Agreement with ID [%s] not found.");
+        connectorMockClient.respondBadRequest_whenCreateChargeWithAgreementNotFound(GATEWAY_ACCOUNT_ID, VALID_AGREEMENT_ID, "Agreement with ID [%s] not found.");
         
         InputStream body = postPaymentResponse(paymentPayload(createChargeRequestParams))
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
@@ -328,7 +333,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .assertNotDefined("_links.events.type")
                 .assertNotDefined("_links.events.params");
 
-        connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, SUCCESS_PAYLOAD);
+        connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, CHARGE_REQUEST_PARAMS);
     }
 
     @Test
@@ -490,7 +495,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .assertThat("$.code", is("P0198"))
                 .assertThat("$.description", is("Downstream system error"));
 
-        connectorMockClient.verifyCreateChargeConnectorRequest(gatewayAccountId, SUCCESS_PAYLOAD);
+        connectorMockClient.verifyCreateChargeConnectorRequest(gatewayAccountId, CHARGE_REQUEST_PARAMS);
     }
 
     @Test
@@ -506,7 +511,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .body("code", is("P0199"))
                 .body("description", is("There is an error with this account. Please contact support"));
 
-        connectorMockClient.verifyCreateChargeConnectorRequest(notFoundGatewayAccountId, SUCCESS_PAYLOAD);
+        connectorMockClient.verifyCreateChargeConnectorRequest(notFoundGatewayAccountId, CHARGE_REQUEST_PARAMS);
     }
 
     @Test
@@ -545,7 +550,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .body("field", is("amount"))
                 .body("description", is("Invalid attribute value: amount. Must be greater than or equal to 1"));
 
-        connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, SUCCESS_PAYLOAD);
+        connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, CHARGE_REQUEST_PARAMS);
     }
 
     @Test
@@ -564,7 +569,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .body("code", is("P0940"))
                 .body("description", is("Account is not fully configured. Please refer to documentation to setup your account or contact support."));
 
-        connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, SUCCESS_PAYLOAD);
+        connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, CHARGE_REQUEST_PARAMS);
     }
 
     @Test

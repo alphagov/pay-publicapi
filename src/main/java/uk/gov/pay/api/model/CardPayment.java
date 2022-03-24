@@ -71,12 +71,17 @@ public class CardPayment extends Payment {
     @JsonProperty("authorisation_summary")
     private AuthorisationSummary authorisationSummary;
 
+    @JsonProperty("save_payment_instrument_to_agreement")
+    private boolean savePaymentInstrumentToAgreement;
+
+    @JsonProperty("agreement_id")
+    private String agreementId;
 
     public CardPayment(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                        String reference, String email, String paymentProvider, String createdDate,
                        RefundSummary refundSummary, PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
                        SupportedLanguage language, boolean delayedCapture, boolean moto, Long corporateCardSurcharge, Long totalAmount,
-                       String providerId, ExternalMetadata metadata, Long fee, Long netAmount, AuthorisationSummary authorisationSummary) {
+                       String providerId, ExternalMetadata metadata, Long fee, Long netAmount, AuthorisationSummary authorisationSummary, String agreementId, boolean savePaymentInstrumentToAgreement) {
         super(chargeId, amount, description, reference, paymentProvider, createdDate);
         this.state = state;
         this.refundSummary = refundSummary;
@@ -95,6 +100,8 @@ public class CardPayment extends Payment {
         this.email = email;
         this.returnUrl = returnUrl;
         this.authorisationSummary = authorisationSummary;
+        this.agreementId = agreementId;
+        this.savePaymentInstrumentToAgreement = savePaymentInstrumentToAgreement;
     }
 
     /**
@@ -186,6 +193,14 @@ public class CardPayment extends Payment {
         return authorisationSummary;
     }
 
+    public boolean isSavePaymentInstrumentToAgreement() {
+        return savePaymentInstrumentToAgreement;
+    }
+
+    public String getAgreementId() {
+        return agreementId;
+    }
+
     @Override
     public String toString() {
         // Don't include:
@@ -205,6 +220,8 @@ public class CardPayment extends Payment {
                 ", delayedCapture=" + delayedCapture +
                 ", moto=" + moto +
                 ", createdDate='" + createdDate + '\'' +
+                ", agreementId='" + agreementId + '\'' +
+                ", savePaymentInstrumentToAgreement='" + savePaymentInstrumentToAgreement + '\'' +
                 '}';
     }
 }
