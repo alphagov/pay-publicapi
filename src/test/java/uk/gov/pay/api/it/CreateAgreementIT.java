@@ -1,5 +1,6 @@
 package uk.gov.pay.api.it;
 
+
 import io.restassured.response.ValidatableResponse;
 import org.apache.http.HttpStatus;
 import org.junit.Test;
@@ -12,11 +13,11 @@ import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 import uk.gov.pay.api.utils.mocks.CreateAgreementRequestParams;
 import uk.gov.service.payments.commons.validation.DateTimeUtils;
-
 import java.time.ZonedDateTime;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static org.apache.commons.lang3.RandomStringUtils.random;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.utils.mocks.CreateAgreementRequestParams.CreateAgreementRequestParamsBuilder.aCreateAgreementRequestParams;
@@ -25,30 +26,17 @@ import static uk.gov.service.payments.commons.model.ApiResponseDateTimeFormatter
 public class CreateAgreementIT extends PaymentResourceITestBase {
 
     private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
-    private static final int AMOUNT = 9999999;
-    private static final String CHARGE_ID = "ch_ab2341da231434l";
-    private static final String CHARGE_TOKEN_ID = "token_1234567asdf";
-    private static final PaymentState CREATED = new PaymentState("created", false, null, null);
-    private static final RefundSummary REFUND_SUMMARY = new RefundSummary("pending", 100L, 50L);
-    private static final String PAYMENT_PROVIDER = "Sandbox";
+ 
     private static final String CARD_BRAND_LABEL = "Mastercard";
     private static final String CARD_TYPE = "credit";
-    private static final String RETURN_URL = "https://somewhere.gov.uk/rainbow/1";
+  
     private static final String REFERENCE = "Some reference <script> alert('This is a ?{simple} XSS attack.')</script>";
-    private static final String DESCRIPTION = "Some description <script> alert('This is a ?{simple} XSS attack.')</script>";
-    private static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(TIMESTAMP);
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
-    private static final CardDetails CARD_DETAILS = new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, CARD_TYPE);
+  
     public static final String VALID_AGREEMENT_ID = "12345678901234567890123456";
-    public static final String TOO_SHORT_AGREEMENT_ID = "1234567890";
-    public static final String TOO_LONG_AGREEMENT_ID = "1234567890123456789012345699999";
     private static final String SUCCESS_PAYLOAD = agreementPayload(aCreateAgreementRequestParams()
             .withReference(REFERENCE)
            .build());
-
-
-    private static final String GATEWAY_TRANSACTION_ID = "gateway-tx-123456";
-
     private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
 
@@ -66,30 +54,41 @@ public class CreateAgreementIT extends PaymentResourceITestBase {
                 .statusCode(HttpStatus.SC_CREATED)
                 .contentType(JSON)
                 .body("agreement_id", is(VALID_AGREEMENT_ID));
-             //   .body("save_payment_instrument_to_agreement", is(true));
-
         connectorMockClient.verifyCreateAgreementConnectorRequest(GATEWAY_ACCOUNT_ID, createAgreementRequestParams);
     }
 
-//    @Test
-//    public void shouldReturn422WhencreateAChargeIsCalledWithTooShortAgreementId() {
-//        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
-//
-//        CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
-//                .withAmount(100)
-//                .withDescription(DESCRIPTION)
-//                .withReference(REFERENCE)
-//                .withReturnUrl(RETURN_URL)
-//                .withSetUpAgreement(TOO_SHORT_AGREEMENT_ID)
-//                .build();
-//
-//        postAgreementResponse(agreementPayload(createChargeRequestParams))
-//                .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
-//                .contentType(JSON)
-//                .body("field",  is("set_up_agreement"))
-//                .body("code",  is("P0102"))
-//                .body("description", is("Invalid attribute value: set_up_agreement. Field [set_up_agreement] length must be 26"));
-//    }
+    @Test
+    public void shouldReturn422WhenWhenReferenceIsEmptyString() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+        CreateAgreementRequestParams createAgreementRequestParams = aCreateAgreementRequestParams()
+                .withReference("")
+                .build();
+        postAgreementResponse(agreementPayload(createAgreementRequestParams))
+                .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
+                .contentType(JSON)
+                .body("field", is("reference"))
+                .body("code", is("P0102"))
+                .body("description", is("Invalid attribute value: reference. Field [reference] can have a size between 0 and 255"));
+    }
+
+    @Test
+    public void shouldReturn422WhenWhenReferenceIsTooLong() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+        
+        CreateAgreementRequestParams createAgreementRequestParams = aCreateAgreementRequestParams()
+                .withReference(random(256, true, true))
+                .build();
+        
+        postAgreementResponse(agreementPayload(createAgreementRequestParams))
+                .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
+                .contentType(JSON)
+                .body("field", is("reference"))
+                .body("code", is("P0102"))
+                .body("description", is("Invalid attribute value: reference. Field [reference] can have a size between 0 and 255"));
+    }
+
+   
+
 //
 //    @Test
 //    public void shouldReturn422WhencreateAChargeIsCalledWithTooLongAgreementId() {
@@ -196,17 +195,36 @@ public class CreateAgreementIT extends PaymentResourceITestBase {
 //
 //        connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, CHARGE_REQUEST_PARAMS);
 //    }
+    
 //
-//    @Test
-//    public void createPayment_responseWith500_whenConnectorResponseIsAnUnrecognisedError() throws Exception {
+    @Test
+  public void createPayment_responseWith500_whenConnectorResponseIsAnUnrecognisedError() throws Exception {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+
+        CreateAgreementRequestParams createAgreementRequestParams = aCreateAgreementRequestParams()
+                .withReference(REFERENCE)
+                .build();
+        connectorMockClient.respondBadRequest_whenCreateAgreement(GATEWAY_ACCOUNT_ID, "Downstream error");
+
+      var x = postAgreementResponse(agreementPayload(createAgreementRequestParams))
+                .statusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR)
+                .contentType(JSON)
+                .body("message", is("Downstream error"));
+        System.out.println(x.extract().asPrettyString());
+        connectorMockClient.verifyCreateAgreementConnectorRequest(GATEWAY_ACCOUNT_ID, createAgreementRequestParams);
+
 //        String gatewayAccountId = "1234567";
 //        String errorMessage = "something went wrong";
+//        //publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+////
+//        CreateAgreementRequestParams createAgreementRequestParams = aCreateAgreementRequestParams()
+//                .withReference(REFERENCE)
+//                .build();
+//       publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 //
-//        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, gatewayAccountId);
+//        connectorMockClient.respondBadRequest_whenCreateAgreement(GATEWAY_ACCOUNT_ID, errorMessage);
 //
-//        connectorMockClient.respondBadRequest_whenCreateCharge(gatewayAccountId, errorMessage);
-//
-//        InputStream body = postAgreementResponse(SUCCESS_PAYLOAD)
+//        InputStream body = postAgreementResponse(agreementPayload(createAgreementRequestParams))
 //                .statusCode(500)
 //                .contentType(JSON).extract()
 //                .body().asInputStream();
@@ -216,8 +234,9 @@ public class CreateAgreementIT extends PaymentResourceITestBase {
 //                .assertThat("$.code", is("P0198"))
 //                .assertThat("$.description", is("Downstream system error"));
 //
-//        connectorMockClient.verifyCreateChargeConnectorRequest(gatewayAccountId, CHARGE_REQUEST_PARAMS);
-//    }
+     //   connectorMockClient.verifyCreateChargeConnectorRequest(gatewayAccountId, SUCCESS_PAYLOAD);
+    
+    }
 
 //    @Test
 //    public void createPayment_responseWith500_whenTokenForGatewayAccountIsValidButConnectorResponseIsNotFound() {
