@@ -49,6 +49,7 @@ import static org.eclipse.jetty.http.HttpStatus.PRECONDITION_FAILED_412;
 import static org.eclipse.jetty.http.HttpStatus.UNPROCESSABLE_ENTITY_422;
 import static uk.gov.pay.api.it.GetPaymentIT.AWAITING_CAPTURE_REQUEST;
 import static uk.gov.pay.api.it.fixtures.PaymentSingleResultBuilder.aSuccessfulSinglePayment;
+import static uk.gov.pay.api.utils.mocks.AgreementResponseFromConnector.AgreementResponseFromConnectorBuilder.aCreateAgreementResponseFromConnector;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.ACCOUNT_NOT_LINKED_WITH_PSP;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.GENERIC;
@@ -102,6 +103,16 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         
         return resultBuilder.build();
     }
+
+    private String buildAgreementResponse(AgreementResponseFromConnector responseFromConnector) {
+        return new JsonStringBuilder()
+                .add("reference", responseFromConnector.getReference())
+                .add("agreement_id", responseFromConnector.getAgreementId())
+                .add("service_id", responseFromConnector.getServiceId())
+                .add("created_date", responseFromConnector.getCreatedDate())
+                .add("live",responseFromConnector.isLive()).build();
+    }
+
 
     private String buildTelephoneChargeResponse(ChargeResponseFromConnector responseFromConnector) {
 
@@ -299,6 +310,33 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                         .withBody(buildChargeResponse(build)));
     }
 
+//    public void respondOk_whenCreateAgreement(String gatewayAccountId, CreateAgreementRequestParams createAgreementRequestParams) {
+//        AgreementResponseFromConnector  build = aCreateAgreementResponseFromConnector(responseFromConnector).build();
+//
+//        mockCreateAgreement(gatewayAccountId,
+//                aResponse().withStatus(CREATED_201)
+//                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+//                        .withHeader(LOCATION, chargeLocation(gatewayAccountId, responseFromConnector.getChargeId()))
+//                        .withBody(build));
+//    }
+
+    public void respondOk_whenCreateAgreement(String gatewayAccountId, CreateAgreementRequestParams requestParams) {
+
+        var responseFromConnector = aCreateAgreementResponseFromConnector()
+                .withReference(requestParams.getReference())
+                        .withAgreementId("12345678901234567890123456")
+                                .withServiceId("service-id")
+                                        .withCreatedDate("ceated-date")
+                                                .withLive(true);
+        mockCreateAgreement(gatewayAccountId, aResponse()
+                .withStatus(CREATED_201)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+              //  .withHeader(LOCATION, chargeLocation(gatewayAccountId, "chargeId"))
+                .withBody(buildAgreementResponse(responseFromConnector.build())));      
+            
+    }
+
+
     public void mockCreateTelephoneCharge(String gatewayAccountId, ResponseDefinitionBuilder responseDefinitionBuilder) {
         wireMockClassRule.stubFor(post(urlPathEqualTo(format(CONNECTOR_MOCK_TELEPHONE_CHARGES_PATH, gatewayAccountId)))
                 .withHeader(CONTENT_TYPE, matching(APPLICATION_JSON)).willReturn(responseDefinitionBuilder));
@@ -466,6 +504,11 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     public void mockCreateCharge(String gatewayAccountId, ResponseDefinitionBuilder responseDefinitionBuilder) {
         wireMockClassRule.stubFor(post(urlPathEqualTo(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId)))
+                .withHeader(CONTENT_TYPE, matching(APPLICATION_JSON)).willReturn(responseDefinitionBuilder));
+    }
+    
+    public void mockCreateAgreement(String gatewayAccountId, ResponseDefinitionBuilder responseDefinitionBuilder) {
+        wireMockClassRule.stubFor(post(urlPathEqualTo(format(CONNECTOR_MOCK_AGREEMENT_PATH, gatewayAccountId)))
                 .withHeader(CONTENT_TYPE, matching(APPLICATION_JSON)).willReturn(responseDefinitionBuilder));
     }
 
