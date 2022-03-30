@@ -29,7 +29,7 @@ public class AgreementsApiResource {
     }
 
     @POST
-    @Path("/v1/api/accounts/{accountId}/agreements")
+    @Path("/v1/agreements")
     @Produces("application/json")
     @Consumes("application/json")
     public Response createAgreement(@Parameter(hidden = true) @Auth Account account,
@@ -39,8 +39,8 @@ public class AgreementsApiResource {
         AgreementResponse a = agreementService.create(account, agreementCreateRequest);
 
         Response b = Response.status(201).entity(a).build();
-
-       return b;
+        
+        return b;
     }
 
 

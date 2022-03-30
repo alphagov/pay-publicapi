@@ -55,6 +55,7 @@ public class LedgerService {
 
         throw new GetChargeException(response);
     }
+    
 
     public RefundTransactionFromLedger getRefundTransaction(Account account, String transactionId, String parentExternalId) {
         Response response = client

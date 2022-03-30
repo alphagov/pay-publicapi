@@ -197,46 +197,46 @@ public class CreateAgreementIT extends PaymentResourceITestBase {
 //    }
     
 //
-    @Test
-  public void createPayment_responseWith500_whenConnectorResponseIsAnUnrecognisedError() throws Exception {
-        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
-
-        CreateAgreementRequestParams createAgreementRequestParams = aCreateAgreementRequestParams()
-                .withReference(REFERENCE)
-                .build();
-        connectorMockClient.respondBadRequest_whenCreateAgreement(GATEWAY_ACCOUNT_ID, "Downstream error");
-
-      var x = postAgreementResponse(agreementPayload(createAgreementRequestParams))
-                .statusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR)
-                .contentType(JSON)
-                .body("message", is("Downstream error"));
-        System.out.println(x.extract().asPrettyString());
-        connectorMockClient.verifyCreateAgreementConnectorRequest(GATEWAY_ACCOUNT_ID, createAgreementRequestParams);
-
-//        String gatewayAccountId = "1234567";
-//        String errorMessage = "something went wrong";
-//        //publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
-////
+//    @Test
+//  public void createPayment_responseWith500_whenConnectorResponseIsAnUnrecognisedError() throws Exception {
+//        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+//
 //        CreateAgreementRequestParams createAgreementRequestParams = aCreateAgreementRequestParams()
 //                .withReference(REFERENCE)
 //                .build();
-//       publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+//        connectorMockClient.respondBadRequest_whenCreateAgreement(GATEWAY_ACCOUNT_ID, "Downstream error");
 //
-//        connectorMockClient.respondBadRequest_whenCreateAgreement(GATEWAY_ACCOUNT_ID, errorMessage);
+//      var x = postAgreementResponse(agreementPayload(createAgreementRequestParams))
+//                .statusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR)
+//                .contentType(JSON)
+//                .body("message", is("Downstream error"));
+//        System.out.println(x.extract().asPrettyString());
+//        connectorMockClient.verifyCreateAgreementConnectorRequest(GATEWAY_ACCOUNT_ID, createAgreementRequestParams);
 //
-//        InputStream body = postAgreementResponse(agreementPayload(createAgreementRequestParams))
-//                .statusCode(500)
-//                .contentType(JSON).extract()
-//                .body().asInputStream();
-//
-//        JsonAssert.with(body)
-//                .assertThat("$.*", hasSize(2))
-//                .assertThat("$.code", is("P0198"))
-//                .assertThat("$.description", is("Downstream system error"));
-//
-     //   connectorMockClient.verifyCreateChargeConnectorRequest(gatewayAccountId, SUCCESS_PAYLOAD);
-    
-    }
+////        String gatewayAccountId = "1234567";
+////        String errorMessage = "something went wrong";
+////        //publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+//////
+////        CreateAgreementRequestParams createAgreementRequestParams = aCreateAgreementRequestParams()
+////                .withReference(REFERENCE)
+////                .build();
+////       publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+////
+////        connectorMockClient.respondBadRequest_whenCreateAgreement(GATEWAY_ACCOUNT_ID, errorMessage);
+////
+////        InputStream body = postAgreementResponse(agreementPayload(createAgreementRequestParams))
+////                .statusCode(500)
+////                .contentType(JSON).extract()
+////                .body().asInputStream();
+////
+////        JsonAssert.with(body)
+////                .assertThat("$.*", hasSize(2))
+////                .assertThat("$.code", is("P0198"))
+////                .assertThat("$.description", is("Downstream system error"));
+////
+//     //   connectorMockClient.verifyCreateChargeConnectorRequest(gatewayAccountId, SUCCESS_PAYLOAD);
+//    
+//    }
 
 //    @Test
 //    public void createPayment_responseWith500_whenTokenForGatewayAccountIsValidButConnectorResponseIsNotFound() {

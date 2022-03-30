@@ -45,7 +45,7 @@ public class AgreementService {
     }
 
     private boolean createdSuccessfully(Response connectorResponse) {
-        return connectorResponse.getStatus() == HttpStatus.SC_CREATED;
+        return connectorResponse.getStatus() == HttpStatus.SC_CREATED || connectorResponse.getStatus() == HttpStatus.SC_OK;
     }
 
     private Response createAgreement(Account account, CreateAgreementRequest agreementCreateRequest) {
@@ -60,5 +60,3 @@ public class AgreementService {
         return json(requestPayload.toConnectorPayload());
     }
 }
-
-

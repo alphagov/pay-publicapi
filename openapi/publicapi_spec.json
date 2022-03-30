@@ -1117,6 +1117,9 @@
           "_links" : {
             "$ref" : "#/components/schemas/PaymentLinks"
           },
+          "agreement_id" : {
+            "type" : "string"
+          },
           "amount" : {
             "type" : "integer",
             "format" : "int64",
@@ -1213,6 +1216,9 @@
             "type" : "string",
             "example" : "http://your.service.domain/your-reference",
             "readOnly" : true
+          },
+          "save_payment_instrument_to_agreement" : {
+            "type" : "boolean"
           },
           "settlement_summary" : {
             "$ref" : "#/components/schemas/PaymentSettlementSummary"
@@ -1250,6 +1256,9 @@
           "_links" : {
             "$ref" : "#/components/schemas/PaymentLinksForSearch"
           },
+          "agreement_id" : {
+            "type" : "string"
+          },
           "amount" : {
             "type" : "integer",
             "format" : "int64",
@@ -1346,6 +1355,9 @@
             "type" : "string",
             "example" : "http://your.service.domain/your-reference",
             "readOnly" : true
+          },
+          "save_payment_instrument_to_agreement" : {
+            "type" : "boolean"
           },
           "settlement_summary" : {
             "$ref" : "#/components/schemas/PaymentSettlementSummary"
