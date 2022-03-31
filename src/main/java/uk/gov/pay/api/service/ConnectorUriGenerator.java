@@ -6,14 +6,10 @@ import uk.gov.pay.api.auth.Account;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
-import java.time.ZonedDateTime;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static java.lang.String.format;
-import static uk.gov.service.payments.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public class ConnectorUriGenerator {
     private final PublicApiConfig configuration;
@@ -44,6 +40,11 @@ public class ConnectorUriGenerator {
 
     public String telephoneChargesURI(Account account) {
         return buildConnectorUri(format("/v1/api/accounts/%s/telephone-charges", account.getAccountId()));
+    }
+
+    public String getAgreementURI(Account account) {
+        String path = format("/v1/api/accounts/%s/agreements", account.getAccountId());
+        return buildConnectorUri(path);
     }
 
     String captureURI(Account account, String chargeId) {
