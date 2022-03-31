@@ -8,8 +8,14 @@ import uk.gov.pay.api.model.PaymentError;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
-import static javax.ws.rs.core.Response.Status.*;
-import static uk.gov.pay.api.model.PaymentError.Code.*;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static javax.ws.rs.core.Response.Status.CONFLICT;
+import static uk.gov.pay.api.model.PaymentError.Code.CANCEL_PAYMENT_NOT_FOUND_ERROR;
+import static uk.gov.pay.api.model.PaymentError.Code.CANCEL_PAYMENT_CONNECTOR_BAD_REQUEST_ERROR;
+import static uk.gov.pay.api.model.PaymentError.Code.CANCEL_PAYMENT_CONNECTOR_CONFLICT_ERROR;
+import static uk.gov.pay.api.model.PaymentError.Code.CANCEL_PAYMENT_CONNECTOR_ERROR;
 import static uk.gov.pay.api.model.PaymentError.aPaymentError;
 
 public class CancelChargeExceptionMapper implements ExceptionMapper<CancelChargeException> {

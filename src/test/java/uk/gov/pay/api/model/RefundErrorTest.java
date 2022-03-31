@@ -1,6 +1,7 @@
 package uk.gov.pay.api.model;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.pay.api.model.RefundError;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;

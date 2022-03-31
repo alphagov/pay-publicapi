@@ -38,6 +38,8 @@ public class Charge {
     
     private boolean moto;
 
+    private String agreementId;
+
     private Long corporateCardSurcharge;
 
     private Long totalAmount;
@@ -60,7 +62,7 @@ public class Charge {
                   PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
                   List<PaymentConnectorResponseLink> links, Long corporateCardSurcharge, Long totalAmount,
                   String gatewayTransactionId, ExternalMetadata metadata, Long fee, Long netAmount,
-                  AuthorisationSummary authorisationSummary) {
+                  AuthorisationSummary authorisationSummary, String agreementId) {
         this.chargeId = chargeId;
         this.amount = amount;
         this.state = state;
@@ -84,6 +86,7 @@ public class Charge {
         this.fee = fee;
         this.netAmount = netAmount;
         this.authorisationSummary = authorisationSummary;
+        this.agreementId = agreementId;
     }
 
     public static Charge from(ChargeFromResponse chargeFromResponse) {
@@ -110,7 +113,8 @@ public class Charge {
                 chargeFromResponse.getMetadata().orElse(null),
                 chargeFromResponse.getFee(),
                 chargeFromResponse.getNetAmount(),
-                chargeFromResponse.getAuthorisationSummary()
+                chargeFromResponse.getAuthorisationSummary(),
+                chargeFromResponse.getAgreementId()
         );
     }
 
@@ -138,8 +142,8 @@ public class Charge {
                 transactionResponse.getMetadata().orElse(null),
                 transactionResponse.getFee(),
                 transactionResponse.getNetAmount(),
-                transactionResponse.getAuthorisationSummary()
-        );
+                transactionResponse.getAuthorisationSummary(),
+                null);
     }
 
     public Optional<ExternalMetadata> getMetadata() {
@@ -236,5 +240,9 @@ public class Charge {
 
     public AuthorisationSummary getAuthorisationSummary() {
         return authorisationSummary;
+    }
+
+    public String getAgreementId() {
+        return agreementId;
     }
 }
