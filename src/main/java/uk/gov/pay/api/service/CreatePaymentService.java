@@ -35,8 +35,9 @@ public class CreatePaymentService {
         if (!createdSuccessfully(connectorResponse)) {
             throw new CreateChargeException(connectorResponse);
         }
-
+        
         ChargeFromResponse chargeFromResponse = connectorResponse.readEntity(ChargeFromResponse.class);
+        
         return buildResponseModel(Charge.from(chargeFromResponse));
     }
 

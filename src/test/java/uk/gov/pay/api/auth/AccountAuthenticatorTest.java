@@ -17,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
-import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.publicauth.AuthResponse;
 
 import javax.ws.rs.ServiceUnavailableException;

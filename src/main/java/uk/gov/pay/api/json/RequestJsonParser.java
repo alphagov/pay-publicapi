@@ -44,6 +44,7 @@ import static uk.gov.pay.api.model.CreateCardPaymentRequest.PREFILLED_CARDHOLDER
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.PREFILLED_CARDHOLDER_NAME_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.REFERENCE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.RETURN_URL_FIELD_NAME;
+import static uk.gov.pay.api.model.CreateCardPaymentRequest.SET_UP_AGREEMENT_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.SOURCE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRefundRequest.REFUND_AMOUNT_AVAILABLE;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_MISSING_FIELD_ERROR;
@@ -79,7 +80,11 @@ class RequestJsonParser {
         if(paymentRequest.has(MOTO_FIELD_NAME)) {
             builder.moto(validateAndGetMoto(paymentRequest));
         }
-        
+
+        if(paymentRequest.has(SET_UP_AGREEMENT_FIELD_NAME)) {
+            builder.setUpAgreement(validateAndGetSetUpAgreement(paymentRequest));
+        }
+
         if (paymentRequest.has(LANGUAGE_FIELD_NAME)) {
             builder.language(validateAndGetLanguage(paymentRequest));
         }
@@ -162,6 +167,10 @@ class RequestJsonParser {
                 aPaymentError(MOTO_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be true or false"),
                 JsonNode::isBoolean,
                 JsonNode::booleanValue);
+    }
+
+    private static String validateAndGetSetUpAgreement(JsonNode paymentRequest) {
+        return paymentRequest.get(SET_UP_AGREEMENT_FIELD_NAME).textValue();
     }
 
     private static Integer validateAndGetAmount(JsonNode paymentRequest, Code validationError, Code missingError) {

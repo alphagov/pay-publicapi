@@ -13,7 +13,6 @@ import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
 import java.util.Optional;
 
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
-import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 
 @JsonInclude(value = JsonInclude.Include.NON_EMPTY)
 @Schema(name = "CardPayment")
@@ -70,13 +69,15 @@ public class CardPayment extends Payment {
 
     @JsonProperty("authorisation_summary")
     private AuthorisationSummary authorisationSummary;
-
+    
+    @JsonProperty("agreement_id")
+    private String agreementId;
 
     public CardPayment(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                        String reference, String email, String paymentProvider, String createdDate,
                        RefundSummary refundSummary, PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
                        SupportedLanguage language, boolean delayedCapture, boolean moto, Long corporateCardSurcharge, Long totalAmount,
-                       String providerId, ExternalMetadata metadata, Long fee, Long netAmount, AuthorisationSummary authorisationSummary) {
+                       String providerId, ExternalMetadata metadata, Long fee, Long netAmount, AuthorisationSummary authorisationSummary, String agreementId) {
         super(chargeId, amount, description, reference, paymentProvider, createdDate);
         this.state = state;
         this.refundSummary = refundSummary;
@@ -84,7 +85,7 @@ public class CardPayment extends Payment {
         this.cardDetails = cardDetails;
         this.providerId = providerId;
         this.metadata = metadata;
-        this.paymentType = CARD.getFriendlyName();
+        this.paymentType = TokenPaymentType.CARD.getFriendlyName();
         this.language = language;
         this.delayedCapture = delayedCapture;
         this.moto = moto;
@@ -95,6 +96,7 @@ public class CardPayment extends Payment {
         this.email = email;
         this.returnUrl = returnUrl;
         this.authorisationSummary = authorisationSummary;
+        this.agreementId = agreementId;
     }
 
     /**
@@ -185,6 +187,10 @@ public class CardPayment extends Payment {
     public AuthorisationSummary getAuthorisationSummary() {
         return authorisationSummary;
     }
+    
+    public String getAgreementId() {
+        return agreementId;
+    }
 
     @Override
     public String toString() {
@@ -205,6 +211,7 @@ public class CardPayment extends Payment {
                 ", delayedCapture=" + delayedCapture +
                 ", moto=" + moto +
                 ", createdDate='" + createdDate + '\'' +
+                ", agreementId='" + agreementId + '\'' +
                 '}';
     }
 }

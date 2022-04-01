@@ -23,6 +23,7 @@ public class CreateChargeRequestParams {
     private final String addressCountry;
     private final SupportedLanguage language;
     private final Source source;
+    private final String setUpAgreement;
 
     private CreateChargeRequestParams(CreateChargeRequestParamsBuilder builder) {
         this.amount = builder.amount;
@@ -40,6 +41,7 @@ public class CreateChargeRequestParams {
         this.addressCountry = builder.addressCountry;
         this.language = builder.language;
         this.source = builder.source;
+        this.setUpAgreement = builder.setUpAgreement;
     }
 
     public int getAmount() {
@@ -102,6 +104,10 @@ public class CreateChargeRequestParams {
         return Optional.ofNullable(source);
     }
 
+    public String getSetUpAgreement() {
+        return setUpAgreement;
+    }
+
     public static final class CreateChargeRequestParamsBuilder {
         private Integer amount;
         private String returnUrl;
@@ -118,6 +124,7 @@ public class CreateChargeRequestParams {
         private String addressCountry;
         private SupportedLanguage language;
         private Source source;
+        public String setUpAgreement;
 
         private CreateChargeRequestParamsBuilder() {
         }
@@ -203,6 +210,11 @@ public class CreateChargeRequestParams {
 
         public CreateChargeRequestParamsBuilder withMoto(boolean moto) {
             this.moto = moto;
+            return this;
+        }
+
+        public CreateChargeRequestParamsBuilder withSetUpAgreement(String setUpAgreement) {
+            this.setUpAgreement = setUpAgreement;
             return this;
         }
     }
