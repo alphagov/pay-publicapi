@@ -25,6 +25,8 @@ public abstract class BaseConnectorMockClient {
     static String CONNECTOR_MOCK_CHARGES_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/charges";
     static String CONNECTOR_MOCK_TELEPHONE_CHARGES_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/telephone-charges";
     static String CONNECTOR_MOCK_CHARGE_PATH = CONNECTOR_MOCK_CHARGES_PATH + "/%s";
+    static String CONNECTOR_MOCK_AGREEMENT_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/agreements";
+   
 
     WireMockClassRule wireMockClassRule;
     Gson gson = new Gson();
@@ -108,6 +110,10 @@ public abstract class BaseConnectorMockClient {
         return payload.build();
     }
 
+    String createAgreementPayload(CreateAgreementRequestParams params) {
+      return new JsonStringBuilder().add("reference", params.getReference()).build();
+    }
+    
     public void verifyCreateChargeConnectorRequest(String gatewayAccountId, CreateChargeRequestParams createChargeRequestParams) {
         verifyCreateChargeConnectorRequest(gatewayAccountId, createChargePayload(createChargeRequestParams));
     }
@@ -116,6 +122,17 @@ public abstract class BaseConnectorMockClient {
         wireMockClassRule.getAllServeEvents();
         wireMockClassRule.verify(1,
                 postRequestedFor(urlEqualTo(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId)))
+                        .withRequestBody(equalToJson(payload, true, true)));
+    }
+    
+    public void verifyCreateAgreementConnectorRequest(String gatewayAccountId, CreateAgreementRequestParams createChargeRequestParams) {
+        verifyCreateAgreementConnectorRequest(gatewayAccountId, createAgreementPayload(createChargeRequestParams));
+    }
+
+    public void verifyCreateAgreementConnectorRequest(String gatewayAccountId, String payload) {
+        wireMockClassRule.getAllServeEvents();
+        wireMockClassRule.verify(1,
+                postRequestedFor(urlEqualTo(format(CONNECTOR_MOCK_AGREEMENT_PATH, gatewayAccountId)))
                         .withRequestBody(equalToJson(payload, true, true)));
     }
 }

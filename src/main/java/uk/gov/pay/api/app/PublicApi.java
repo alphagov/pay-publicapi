@@ -16,6 +16,7 @@ import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.glassfish.jersey.CommonProperties;
+import uk.gov.pay.api.agreement.resource.AgreementsApiResource;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.PublicApiModule;
 import uk.gov.pay.api.auth.Account;
@@ -55,7 +56,7 @@ import uk.gov.pay.api.validation.ReturnUrlValidator;
 import uk.gov.service.payments.logging.GovUkPayDropwizardRequestJsonLogLayoutFactory;
 import uk.gov.service.payments.logging.LoggingFilter;
 import uk.gov.service.payments.logging.LogstashConsoleAppenderFactory;
-
+import uk.gov.pay.api.exception.mapper.CreateAgreementExceptionMapper;
 import javax.net.ssl.HttpsURLConnection;
 import java.util.concurrent.TimeUnit;
 
@@ -89,6 +90,7 @@ public class PublicApi extends Application<PublicApiConfig> {
 
         environment.jersey().register(injector.getInstance(HealthCheckResource.class));
         environment.jersey().register(injector.getInstance(PaymentsResource.class));
+        environment.jersey().register(injector.getInstance(AgreementsApiResource.class));
         environment.jersey().register(injector.getInstance(PaymentRefundsResource.class));
         environment.jersey().register(injector.getInstance(RequestDeniedResource.class));
         environment.jersey().register(injector.getInstance(SearchRefundsResource.class));
@@ -154,6 +156,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         jersey.register(SearchRefundsExceptionMapper.class);
         jersey.register(CancelChargeExceptionMapper.class);
         jersey.register(PaymentValidationExceptionMapper.class);
+        jersey.register(CreateAgreementExceptionMapper.class);
         jersey.register(RefundsValidationExceptionMapper.class);
         jersey.register(BadRefundsRequestExceptionMapper.class);
         jersey.register(BadRequestExceptionMapper.class);
