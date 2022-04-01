@@ -30,6 +30,7 @@ public class ChargeResponseFromConnector {
     private final Long fee;
     private final Long netAmount;
     private final AuthorisationSummary authorisationSummary;
+    private String agreementId;
 
     public Long getAmount() {
         return amount;
@@ -177,6 +178,7 @@ public class ChargeResponseFromConnector {
         this.fee = builder.fee;
         this.netAmount = builder.netAmount;
         this.authorisationSummary = builder.authorisationSummary;
+        this.agreementId = builder.agreementId;
     }
 
     public static final class ChargeResponseFromConnectorBuilder {
@@ -195,7 +197,7 @@ public class ChargeResponseFromConnector {
         private Long fee = null;
         private Long netAmount = null;
         private AuthorisationSummary authorisationSummary = null;
-
+        private String agreementId;
         private ChargeResponseFromConnectorBuilder() {
         }
 
@@ -226,7 +228,8 @@ public class ChargeResponseFromConnector {
                     .withMetadata(responseFromConnector.metadata.orElse(null))
                     .withNetAmount(responseFromConnector.getNetAmount())
                     .withFee(responseFromConnector.getFee())
-                    .withAuthorisationSummary(responseFromConnector.getAuthorisationSummary());
+                    .withAuthorisationSummary(responseFromConnector.getAuthorisationSummary())
+                    .withAgreementId(responseFromConnector.getAgreementId());
         }
 
         public ChargeResponseFromConnectorBuilder withAmount(long amount) {
@@ -383,5 +386,14 @@ public class ChargeResponseFromConnector {
             this.authorisationSummary = authorisationSummary;
             return this;
         }
+
+        public ChargeResponseFromConnectorBuilder withAgreementId(String agreementId) {
+            this.agreementId = agreementId;
+            return this;
+        }
+    }
+
+    public String getAgreementId() {
+        return this.agreementId;
     }
 }

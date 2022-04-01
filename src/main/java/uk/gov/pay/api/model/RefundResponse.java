@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
-import uk.gov.pay.api.model.ledger.RefundTransactionFromLedger;
 import uk.gov.pay.api.model.links.RefundLinksForSearch;
+import uk.gov.pay.api.model.ledger.RefundTransactionFromLedger;
 
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;

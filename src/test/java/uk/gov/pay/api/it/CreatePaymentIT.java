@@ -2,6 +2,7 @@ package uk.gov.pay.api.it;
 
 import com.jayway.jsonassert.JsonAssert;
 import io.restassured.response.ValidatableResponse;
+import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 import org.junit.Test;
 import uk.gov.pay.api.model.Address;
@@ -16,6 +17,7 @@ import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.validation.DateTimeUtils;
 
 import javax.ws.rs.core.HttpHeaders;
+import java.io.IOException;
 import java.io.InputStream;
 import java.time.ZonedDateTime;
 import java.util.Map;
@@ -53,13 +55,15 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
     private static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(TIMESTAMP);
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
     private static final CardDetails CARD_DETAILS = new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, CARD_TYPE);
+    public static final String VALID_AGREEMENT_ID = "12345678901234567890123456";
+    public static final String TOO_SHORT_AGREEMENT_ID = "1234567890";
+    public static final String TOO_LONG_AGREEMENT_ID = "1234567890123456789012345699999";
     private static final String SUCCESS_PAYLOAD = paymentPayload(aCreateChargeRequestParams()
             .withAmount(AMOUNT)
             .withDescription(DESCRIPTION)
             .withReference(REFERENCE)
             .withReturnUrl(RETURN_URL).build());
     private static final String GATEWAY_TRANSACTION_ID = "gateway-tx-123456";
-
     private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
 
@@ -112,6 +116,93 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
     }
 
     @Test
+    public void createAChargeWithAgreementIdAndSaveAgreement() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+
+        CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
+                .withAmount(100)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withReturnUrl(RETURN_URL)
+                .withSetUpAgreement(VALID_AGREEMENT_ID)
+                .build();
+        connectorMockClient.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
+
+        postPaymentResponse(paymentPayload(createChargeRequestParams))
+                .statusCode(HttpStatus.SC_CREATED)
+                .contentType(JSON)
+                .body("agreement_id", is(VALID_AGREEMENT_ID));
+        connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
+    }
+
+    @Test
+    public void shouldReturn422WhencreateAChargeIsCalledWithTooShortAgreementId() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+
+        CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
+                .withAmount(100)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withReturnUrl(RETURN_URL)
+                .withSetUpAgreement(TOO_SHORT_AGREEMENT_ID)
+                .build();
+
+        postPaymentResponse(paymentPayload(createChargeRequestParams))
+                .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
+                .contentType(JSON)
+                .body("field",  is("set_up_agreement"))
+                .body("code",  is("P0102"))
+                .body("description", is("Invalid attribute value: set_up_agreement. Field [set_up_agreement] length must be 26"));
+    }
+
+    @Test
+    public void shouldReturn422WhencreateAChargeIsCalledWithTooLongAgreementId() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+
+        CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
+                .withAmount(100)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withReturnUrl(RETURN_URL)
+                .withSetUpAgreement(TOO_LONG_AGREEMENT_ID)
+                .build();
+
+        postPaymentResponse(paymentPayload(createChargeRequestParams))
+                .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
+                .contentType(JSON)
+                .body("field",  is("set_up_agreement"))
+                .body("code",  is("P0102"))
+                .body("description", is("Invalid attribute value: set_up_agreement. Field [set_up_agreement] length must be 26"));
+    }
+    
+    @Test
+    public void createAChargeWithMetadataAgreementNotFound() throws IOException {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+
+        CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
+                .withAmount(100)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withReturnUrl(RETURN_URL)
+                .withSetUpAgreement(VALID_AGREEMENT_ID)
+                .build();
+        connectorMockClient.respondBadRequest_whenCreateChargeWithAgreementNotFound(GATEWAY_ACCOUNT_ID, VALID_AGREEMENT_ID, "Agreement with ID [%s] not found.");
+        
+        InputStream body = postPaymentResponse(paymentPayload(createChargeRequestParams))
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .contentType(JSON).extract()
+                .body().asInputStream();
+
+        JsonAssert.with(body)
+                .assertThat("$.*", hasSize(3))
+                .assertThat("$.field", is("set_up_agreement"))
+                .assertThat("$.code", is("P0103"))
+                .assertThat("$.description", is("Invalid attribute value: set_up_agreement. Agreement ID does not exist"));
+
+        connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
+    }
+
+    @Test
     public void createCardPaymentWithMetadataAsNull_shouldReturn422() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
@@ -124,7 +215,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .toString();
 
         postPaymentResponse(payload)
-                .statusCode(422)
+                .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
                 .contentType(JSON)
                 .body("field", is("metadata"))
                 .body("code", is("P0102"))
@@ -173,7 +264,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .addToNestedMap("line1", 123, "prefilled_cardholder_details", "billing_address")
                 .build();
         postPaymentResponse(payload)
-                .statusCode(400)
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .contentType(JSON)
                 .body("code", is("P0102"))
                 .body("field", is("line1"))
@@ -196,7 +287,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
         connectorMockClient.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
 
         postPaymentResponse(paymentPayload(createChargeRequestParams))
-                .statusCode(201)
+                .statusCode(HttpStatus.SC_CREATED)
                 .contentType(JSON)
                 .body("email", is(nullValue()))
                 .body("card_details.cardholder_name", is("J. Bogs"))
@@ -229,7 +320,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .build());
 
         String responseBody = postPaymentResponse(SUCCESS_PAYLOAD)
-                .statusCode(201)
+                .statusCode(HttpStatus.SC_CREATED)
                 .contentType(JSON)
                 .header(HttpHeaders.LOCATION, is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)))
                 .body("payment_id", is(CHARGE_ID))
@@ -584,7 +675,11 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
         params.getSource().ifPresent(source ->  {
             payload.addToNestedMap("source", source, "internal");
         });
-        
+
+        if (params.getSetUpAgreement() != null) {
+            payload.add("set_up_agreement", params.getSetUpAgreement());
+        }
+
         return payload.build();
     }
 

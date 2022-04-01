@@ -53,6 +53,7 @@ import static uk.gov.pay.api.utils.mocks.AgreementResponseFromConnector.Agreemen
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.ACCOUNT_NOT_LINKED_WITH_PSP;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.GENERIC;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.AGREEMENT_NOT_FOUND;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.MOTO_NOT_ALLOWED;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.REFUND_AMOUNT_AVAILABLE_MISMATCH;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.REFUND_NOT_AVAILABLE;
@@ -85,6 +86,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withPaymentProvider(responseFromConnector.getPaymentProvider())
                 .withDelayedCapture(responseFromConnector.isDelayedCapture())
                 .withMoto(responseFromConnector.isMoto())
+                .withAgreementId(responseFromConnector.getAgreementId())
                 .withLinks(responseFromConnector.getLinks())
                 .withSettlementSummary(responseFromConnector.getSettlementSummary());
         
@@ -262,6 +264,10 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withLink(validGetLink(nextUrl("chargeTokenId"), "next_url"))
                 .withLink(validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap("chargeTokenId")));
 
+        if (requestParams.getSetUpAgreement() != null) {
+            responseFromConnector.withAgreementId(requestParams.getSetUpAgreement());
+        }
+
         if (!requestParams.getMetadata().isEmpty())
             responseFromConnector.withMetadata(requestParams.getMetadata());
 
@@ -335,6 +341,10 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     public void respondBadRequest_whenCreateAgreement(String gatewayAccountId, String errorMsg) {
         mockCreateAgreement(gatewayAccountId, withStatusAndErrorMessage(INTERNAL_SERVER_ERROR_500, errorMsg, GENERIC));
+    }
+
+    public void respondBadRequest_whenCreateChargeWithAgreementNotFound(String gatewayAccountId, String agreementId, String errorMsg) {
+        mockCreateCharge(gatewayAccountId, withStatusAndErrorMessage(NOT_FOUND_404, format(errorMsg, agreementId), AGREEMENT_NOT_FOUND));
     }
 
     public void respondPreconditionFailed_whenCreateRefund(String gatewayAccountId, String errorMsg, String chargeId) {

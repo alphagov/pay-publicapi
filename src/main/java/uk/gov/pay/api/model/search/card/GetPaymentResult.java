@@ -25,6 +25,6 @@ public class GetPaymentResult extends CardPayment {
                             Long totalAmount, String providerId, Long fee, Long netAmount, AuthorisationSummary authorisationSummary) {
         super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate,
                 refundSummary, settlementSummary, cardDetails, language, delayedCapture, moto, corporateCardSurcharge,
-                totalAmount, providerId, null, fee, netAmount, authorisationSummary);
+                totalAmount, providerId, null, fee, netAmount, authorisationSummary, null);
     }
 }

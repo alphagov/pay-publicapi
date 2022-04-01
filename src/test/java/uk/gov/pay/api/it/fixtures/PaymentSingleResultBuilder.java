@@ -46,6 +46,11 @@ public class PaymentSingleResultBuilder extends PaymentResultBuilder {
         return this;
     }
 
+    public PaymentSingleResultBuilder withAgreementId(String agreementId) {
+        this.agreementId = agreementId;
+        return this;
+    }
+
     public PaymentSingleResultBuilder withCorporateCardSurcharge(Long surcharge) {
         this.corporateCardSurcharge = surcharge;
         return this;
