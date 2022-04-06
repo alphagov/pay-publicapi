@@ -114,7 +114,7 @@ public class CreateAgreementIT extends PaymentResourceITestBase {
                 .accept(JSON)
                 .contentType(JSON)
                 .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
-                .post("/v1/api/accounts/GATEWAY_ACCOUNT_ID/agreements")
+                .post("/v1/agreements")
                 .then();
     }
 }
