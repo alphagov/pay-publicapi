@@ -3,6 +3,8 @@ package uk.gov.pay.api.it;
 import io.restassured.response.ValidatableResponse;
 import org.apache.http.HttpStatus;
 import org.junit.Test;
+import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
+import uk.gov.pay.api.model.CreateAgreementRequestBuilder;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
@@ -39,17 +41,29 @@ public class CreateAgreementIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void shouldReturn422WhenWhenReferenceIsEmptyString() {
+    public void shouldReturn400WhenWhenReferenceIsEmptyString() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
         CreateAgreementRequestParams createAgreementRequestParams = aCreateAgreementRequestParams()
                 .withReference("")
                 .build();
         postAgreementRequest(agreementPayload(createAgreementRequestParams))
-                .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .contentType(JSON)
                 .body("field", is("reference"))
-                .body("code", is("P0102"))
-                .body("description", is("Invalid attribute value: reference. Must be less than or equal to 255 characters length"));
+                .body("code", is("P0101"))
+                .body("description", is("Missing mandatory attribute: reference"));
+    }
+
+    @Test
+    public void shouldReturn400WhenWhenReferenceIsNull() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+        CreateAgreementRequest agreementRequest = new CreateAgreementRequest(CreateAgreementRequestBuilder.builder().reference(null));
+        postAgreementRequest(agreementRequest.toConnectorPayload())
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .contentType(JSON)
+                .body("field", is("reference"))
+                .body("code", is("P0101"))
+                .body("description", is("Missing mandatory attribute: reference"));
     }
 
     @Test
