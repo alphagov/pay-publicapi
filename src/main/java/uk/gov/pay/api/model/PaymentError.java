@@ -19,6 +19,7 @@ public class PaymentError {
         CREATE_PAYMENT_CONNECTOR_ERROR("P0198", "Downstream system error"),
         CREATE_AGREEMENT_CONNECTOR_ERROR("P0198", "Downstream system error"),
         CREATE_PAYMENT_PARSING_ERROR("P0197", "Unable to parse JSON"),
+        CREATE_AGREEMENT_PARSING_ERROR("P0197", "Unable to parse JSON"),
         CREATE_PAYMENT_MOTO_NOT_ENABLED("P0196", "MOTO payments are not enabled for this account. Please contact support if you would like to process MOTO payments"),
         
         CREATE_PAYMENT_MISSING_FIELD_ERROR("P0101", "Missing mandatory attribute: %s"),

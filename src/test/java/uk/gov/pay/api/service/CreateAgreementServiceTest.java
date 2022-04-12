@@ -11,6 +11,7 @@ import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
 import uk.gov.pay.api.agreement.model.builder.AgreementResponseBuilder;
 import uk.gov.pay.api.agreement.service.AgreementService;
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.model.CreateAgreementRequestBuilder;
 import uk.gov.pay.api.utils.mocks.CreateAgreementRequestParams;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
@@ -68,7 +69,8 @@ class CreateAgreementServiceTest {
         when(builder.post(payloadEntity)).thenReturn(connectorResponse);
         when(client.target(AGREEMENTS_CONNECTOR_URI)).thenReturn(target);
         when(connectorResponse.readEntity(AgreementResponse.class)).thenReturn(agreementResponse);
-        CreateAgreementRequest agreementCreateRequest = new CreateAgreementRequest(REFERENCE_ID);
+        CreateAgreementRequest agreementCreateRequest = new CreateAgreementRequest(CreateAgreementRequestBuilder
+                .builder().reference(REFERENCE_ID));
         AgreementResponse agreementResponseFromService = service.create(account, agreementCreateRequest);
         assertThat(agreementResponseFromService.getAgreementId(), is(AGREEMENT_ID));
         assertThat(agreementResponseFromService.getReference(), is(REFERENCE_ID));
