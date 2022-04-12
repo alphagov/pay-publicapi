@@ -3,7 +3,9 @@ package uk.gov.pay.api.json;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
+import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
 import uk.gov.pay.api.exception.BadRequestException;
+import uk.gov.pay.api.model.CreateAgreementRequestBuilder;
 import uk.gov.pay.api.model.CreateCardPaymentRequest;
 import uk.gov.pay.api.model.CreateCardPaymentRequestBuilder;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
@@ -113,6 +115,12 @@ class RequestJsonParser {
         return builder.build();
     }
 
+    static CreateAgreementRequest parseAgreementRequest(JsonNode agreementRequest) {
+        var builder = CreateAgreementRequestBuilder.builder()
+                .reference(validateAndGetReference(agreementRequest));
+        return builder.build();
+    }
+
     private static String validateAndGetReturnUrl(JsonNode paymentRequest) {
         return validateAndGetString(
                 paymentRequest.get(RETURN_URL_FIELD_NAME),
@@ -138,9 +146,9 @@ class RequestJsonParser {
                 aPaymentError(DESCRIPTION_FIELD_NAME, CREATE_PAYMENT_MISSING_FIELD_ERROR));
     }
 
-    private static String validateAndGetReference(JsonNode paymentRequest) {
+    private static String validateAndGetReference(JsonNode request) {
         return validateAndGetString(
-                paymentRequest.get(REFERENCE_FIELD_NAME),
+                request.get(REFERENCE_FIELD_NAME),
                 aPaymentError(REFERENCE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid string format"),
                 aPaymentError(REFERENCE_FIELD_NAME, CREATE_PAYMENT_MISSING_FIELD_ERROR));
     }

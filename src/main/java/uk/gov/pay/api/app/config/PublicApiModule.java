@@ -11,7 +11,9 @@ import io.dropwizard.setup.Environment;
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.SocketOptions;
+import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
 import uk.gov.pay.api.app.RestClientFactory;
+import uk.gov.pay.api.json.CreateAgreementRequestDeserializer;
 import uk.gov.pay.api.json.CreateCardPaymentRequestDeserializer;
 import uk.gov.pay.api.json.CreatePaymentRefundRequestDeserializer;
 import uk.gov.pay.api.json.StringDeserializer;
@@ -52,12 +54,13 @@ public class PublicApiModule extends AbstractModule {
     @Singleton
     public ObjectMapper provideObjectMapper() {
         ObjectMapper objectMapper = environment.getObjectMapper();
-
+        CreateAgreementRequestDeserializer agreementRequestDeserializer = new CreateAgreementRequestDeserializer();
         CreateCardPaymentRequestDeserializer cardPaymentRequestDeserializer = new CreateCardPaymentRequestDeserializer();
         CreatePaymentRefundRequestDeserializer paymentRefundRequestDeserializer = new CreatePaymentRefundRequestDeserializer(new PaymentRefundRequestValidator());
         StringDeserializer stringDeserializer = new StringDeserializer(); 
 
         SimpleModule publicApiDeserializationModule = new SimpleModule("publicApiDeserializationModule");
+        publicApiDeserializationModule.addDeserializer(CreateAgreementRequest.class, agreementRequestDeserializer); 
         publicApiDeserializationModule.addDeserializer(CreateCardPaymentRequest.class, cardPaymentRequestDeserializer);
         publicApiDeserializationModule.addDeserializer(CreatePaymentRefundRequest.class, paymentRefundRequestDeserializer);
         publicApiDeserializationModule.addDeserializer(String.class, stringDeserializer);
