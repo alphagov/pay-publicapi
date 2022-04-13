@@ -23,6 +23,7 @@ import uk.gov.pay.api.service.GetPaymentEventsService;
 import uk.gov.pay.api.service.GetPaymentService;
 import uk.gov.pay.api.service.PaymentSearchService;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
+import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 
 import javax.ws.rs.core.Response;
@@ -121,6 +122,8 @@ public class PaymentsResourceCreatePaymentTest {
                 null,
                 null,
                 null,
-                null, null);
+                null,
+                null,
+                AuthorisationMode.WEB);
     }
 }

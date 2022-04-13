@@ -162,6 +162,7 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
                 .body("results[0].card_details.card_brand", is(CARD_DETAILS.getCardBrand()))
                 .body("results[0].card_details", hasKey("card_type"))
                 .body("results[0].metadata", is(nullValue()))
+                .body("results[0].authorisation_mode", is("web"))
                 .extract().asString();
 
         JsonAssert.with(responseBody)

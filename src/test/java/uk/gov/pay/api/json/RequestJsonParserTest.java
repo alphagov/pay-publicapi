@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import uk.gov.pay.api.exception.BadRequestException;
+import uk.gov.pay.api.exception.PaymentValidationException;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CreateCardPaymentRequest;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
@@ -20,6 +21,7 @@ import static org.junit.Assert.assertThrows;
 import static uk.gov.pay.api.json.RequestJsonParser.parsePaymentRequest;
 import static uk.gov.pay.api.json.RequestJsonParser.parseRefundRequest;
 import static uk.gov.pay.api.matcher.BadRequestExceptionMatcher.aBadRequestExceptionWithError;
+import static uk.gov.service.payments.commons.model.AuthorisationMode.MOTO_API;
 import static uk.gov.service.payments.commons.model.Source.CARD_AGENT_INITIATED_MOTO;
 import static uk.gov.service.payments.commons.model.Source.CARD_API;
 import static uk.gov.service.payments.commons.model.Source.CARD_PAYMENT_LINK;
@@ -543,5 +545,57 @@ public class RequestJsonParserTest {
         BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parsePaymentRequest(jsonNode));
         assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
                 "Invalid attribute value: source. Accepted values are only CARD_PAYMENT_LINK, CARD_AGENT_INITIATED_MOTO"));
+    }
+
+    @Test
+    public void parsePaymentRequest_shouldParseValidAuthorisationMode() throws Exception {
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"authorisation_mode\": \"moto_api\"\n" +
+                "}";
+
+        JsonNode jsonNode = objectMapper.readTree(payload);
+        CreateCardPaymentRequest paymentRequest = parsePaymentRequest(jsonNode);
+        assertThat(paymentRequest.getAuthorisationMode().get(), is(MOTO_API));
+    }
+
+    @Test
+    public void parsePaymentRequest_shouldThrowValidationException_whenAuthorisationModeIsNotValidEnumValue() throws Exception {
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"authorisation_mode\": \"foo\"\n" +
+                "}";
+
+        JsonNode jsonNode = objectMapper.readTree(payload);
+
+        PaymentValidationException paymentValidationException = assertThrows(PaymentValidationException.class, () -> parsePaymentRequest(jsonNode));
+        assertThat(paymentValidationException.getPaymentError().getCode(), is("P0102"));
+        assertThat(paymentValidationException.getPaymentError().getDescription(), is("Invalid attribute value: authorisation_mode. Must be one of web, moto_api"));
+    }
+
+    @Test
+    public void parsePaymentRequest_shouldThrowValidationException_whenAuthorisationModeIsValidEnumValueButNotAccepted() throws Exception {
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"authorisation_mode\": \"external\"\n" +
+                "}";
+
+        JsonNode jsonNode = objectMapper.readTree(payload);
+
+        PaymentValidationException paymentValidationException = assertThrows(PaymentValidationException.class, () -> parsePaymentRequest(jsonNode));
+        assertThat(paymentValidationException.getPaymentError().getCode(), is("P0102"));
+        assertThat(paymentValidationException.getPaymentError().getDescription(), is("Invalid attribute value: authorisation_mode. Must be one of web, moto_api"));
     }
 }

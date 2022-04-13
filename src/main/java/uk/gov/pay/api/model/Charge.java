@@ -1,5 +1,6 @@
 package uk.gov.pay.api.model;
 
+import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
 
@@ -55,6 +56,8 @@ public class Charge {
     private ExternalMetadata metadata;
 
     private AuthorisationSummary authorisationSummary;
+    
+    private AuthorisationMode authorisationMode;
 
     public Charge(String chargeId, Long amount, PaymentState state, String returnUrl, String description,
                   String reference, String email, String paymentProvider, String createdDate,
@@ -62,7 +65,7 @@ public class Charge {
                   PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
                   List<PaymentConnectorResponseLink> links, Long corporateCardSurcharge, Long totalAmount,
                   String gatewayTransactionId, ExternalMetadata metadata, Long fee, Long netAmount,
-                  AuthorisationSummary authorisationSummary, String agreementId) {
+                  AuthorisationSummary authorisationSummary, String agreementId, AuthorisationMode authorisationMode) {
         this.chargeId = chargeId;
         this.amount = amount;
         this.state = state;
@@ -87,6 +90,7 @@ public class Charge {
         this.netAmount = netAmount;
         this.authorisationSummary = authorisationSummary;
         this.agreementId = agreementId;
+        this.authorisationMode = authorisationMode;
     }
 
     public static Charge from(ChargeFromResponse chargeFromResponse) {
@@ -114,7 +118,8 @@ public class Charge {
                 chargeFromResponse.getFee(),
                 chargeFromResponse.getNetAmount(),
                 chargeFromResponse.getAuthorisationSummary(),
-                chargeFromResponse.getAgreementId()
+                chargeFromResponse.getAgreementId(),
+                chargeFromResponse.getAuthorisationMode()
         );
     }
 
@@ -143,7 +148,8 @@ public class Charge {
                 transactionResponse.getFee(),
                 transactionResponse.getNetAmount(),
                 transactionResponse.getAuthorisationSummary(),
-                null);
+                null,
+                transactionResponse.getAuthorisationMode());
     }
 
     public Optional<ExternalMetadata> getMetadata() {
@@ -244,5 +250,9 @@ public class Charge {
 
     public String getAgreementId() {
         return agreementId;
+    }
+
+    public AuthorisationMode getAuthorisationMode() {
+        return authorisationMode;
     }
 }

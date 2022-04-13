@@ -17,6 +17,7 @@ import uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 import uk.gov.pay.api.utils.mocks.LedgerMockClient;
 import uk.gov.pay.api.utils.mocks.TransactionFromLedgerFixture;
+import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.validation.DateTimeUtils;
 
@@ -180,6 +181,31 @@ public class GetPaymentIT extends PaymentResourceITestBase {
         response.body("settlement_summary.settled_date", is(DateTimeUtils.toLocalDateString(SETTLED_DATE)));
         response.body("settlement_summary.captured_date", is(DateTimeUtils.toLocalDateString(CAPTURED_DATE)));
         response.body("settlement_summary.capture_submit_time", is(ISO_INSTANT_MILLISECOND_PRECISION.format(CAPTURE_SUBMIT_TIME)));
+    }
+
+    @Test
+    public void getPaymentWithAuthorisationModeMotoApiThroughConnector_ReturnsPayment() {
+        connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, getConnectorCharge()
+                .withAuthorisationMode(AuthorisationMode.MOTO_API)
+                .build());
+
+        ValidatableResponse response = getPaymentResponse(CHARGE_ID);
+
+        assertCommonPaymentFields(response);
+        assertConnectorOnlyPaymentFields(response);
+        response.body("authorisation_mode", is("moto_api"));
+    }
+
+    @Test
+    public void getPaymentWithAuthorisationModeMotoApiThroughLedger_ReturnsPayment() {
+        ledgerMockClient.respondWithTransaction(CHARGE_ID, getLedgerTransaction()
+                .withAuthorisationMode(AuthorisationMode.MOTO_API)
+                .build());
+
+        ValidatableResponse response = getPaymentResponse(CHARGE_ID, LEDGER_ONLY_STRATEGY);
+
+        assertCommonPaymentFields(response);
+        response.body("authorisation_mode", is("moto_api"));
     }
 
     private void assertCommonPaymentFields(ValidatableResponse paymentResponse) {

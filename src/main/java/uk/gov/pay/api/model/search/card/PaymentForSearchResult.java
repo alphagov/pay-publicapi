@@ -11,6 +11,7 @@ import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.TransactionResponse;
 import uk.gov.pay.api.model.links.PaymentLinksForSearch;
+import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
 
@@ -28,11 +29,11 @@ public class PaymentForSearchResult extends CardPayment {
                                   boolean delayedCapture, boolean moto, RefundSummary refundSummary, PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
                                   List<PaymentConnectorResponseLink> links, URI selfLink, URI paymentEventsLink, URI paymentCancelLink, URI paymentRefundsLink, URI paymentCaptureUri,
                                   Long corporateCardSurcharge, Long totalAmount, String providerId, ExternalMetadata externalMetadata,
-                                  Long fee, Long netAmount, AuthorisationSummary authorisationSummary) {
+                                  Long fee, Long netAmount, AuthorisationSummary authorisationSummary, AuthorisationMode authorisationMode) {
         
         super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider,
                 createdDate, refundSummary, settlementSummary, cardDetails, language, delayedCapture, moto, corporateCardSurcharge, totalAmount, providerId, externalMetadata,
-                fee, netAmount, authorisationSummary, null);
+                fee, netAmount, authorisationSummary, null, authorisationMode);
         this.links.addSelf(selfLink.toString());
         this.links.addEvents(paymentEventsLink.toString());
         this.links.addRefunds(paymentRefundsLink.toString());
@@ -81,7 +82,8 @@ public class PaymentForSearchResult extends CardPayment {
                 paymentResult.getMetadata().orElse(null),
                 paymentResult.getFee(),
                 paymentResult.getNetAmount(),
-                paymentResult.getAuthorisationSummary());
+                paymentResult.getAuthorisationSummary(),
+                paymentResult.getAuthorisationMode());
     }
 
     public PaymentLinksForSearch getLinks() {

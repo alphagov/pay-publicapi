@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.service.payments.commons.api.json.ExternalMetadataSerialiser;
+import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
 
@@ -72,12 +73,16 @@ public class CardPayment extends Payment {
     
     @JsonProperty("agreement_id")
     private String agreementId;
+    
+    @JsonProperty("authorisation_mode")
+    private AuthorisationMode authorisationMode;
 
     public CardPayment(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                        String reference, String email, String paymentProvider, String createdDate,
                        RefundSummary refundSummary, PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
                        SupportedLanguage language, boolean delayedCapture, boolean moto, Long corporateCardSurcharge, Long totalAmount,
-                       String providerId, ExternalMetadata metadata, Long fee, Long netAmount, AuthorisationSummary authorisationSummary, String agreementId) {
+                       String providerId, ExternalMetadata metadata, Long fee, Long netAmount, AuthorisationSummary authorisationSummary, String agreementId,
+                       AuthorisationMode authorisationMode) {
         super(chargeId, amount, description, reference, paymentProvider, createdDate);
         this.state = state;
         this.refundSummary = refundSummary;
@@ -97,6 +102,7 @@ public class CardPayment extends Payment {
         this.returnUrl = returnUrl;
         this.authorisationSummary = authorisationSummary;
         this.agreementId = agreementId;
+        this.authorisationMode = authorisationMode;
     }
 
     /**
@@ -188,8 +194,14 @@ public class CardPayment extends Payment {
         return authorisationSummary;
     }
     
+    @Schema(hidden = true)
     public String getAgreementId() {
         return agreementId;
+    }
+
+    @Schema(description = "How the payment will be authorised. Payments created in `web` mode require the paying user to visit the `next_url` to complete the payment.")
+    public AuthorisationMode getAuthorisationMode() {
+        return authorisationMode;
     }
 
     @Override

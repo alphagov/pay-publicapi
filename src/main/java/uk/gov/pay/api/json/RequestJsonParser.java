@@ -5,12 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
 import uk.gov.pay.api.exception.BadRequestException;
+import uk.gov.pay.api.exception.PaymentValidationException;
 import uk.gov.pay.api.model.CreateAgreementRequestBuilder;
 import uk.gov.pay.api.model.CreateCardPaymentRequest;
 import uk.gov.pay.api.model.CreateCardPaymentRequestBuilder;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.PaymentError;
 import uk.gov.pay.api.model.PaymentError.Code;
+import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.Source;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
@@ -30,6 +32,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.http.HttpStatus.SC_UNPROCESSABLE_ENTITY;
 import static uk.gov.pay.api.agreement.model.CreateAgreementRequest.USER_IDENTIFIER_FIELD;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.AMOUNT_FIELD_NAME;
+import static uk.gov.pay.api.model.CreateCardPaymentRequest.AUTHORISATION_MODE;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.DELAYED_CAPTURE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.DESCRIPTION_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.EMAIL_FIELD_NAME;
@@ -62,6 +65,7 @@ import static uk.gov.service.payments.commons.model.Source.CARD_PAYMENT_LINK;
 class RequestJsonParser {
 
     private static final Set<Source> ALLOWED_SOURCES = EnumSet.of(CARD_PAYMENT_LINK, CARD_AGENT_INITIATED_MOTO);
+    public static final Set<AuthorisationMode> ALLOWED_AUTHORISATION_MODES = EnumSet.of(AuthorisationMode.WEB, AuthorisationMode.MOTO_API);
 
     private static ObjectMapper objectMapper = new ObjectMapper();
     private static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
@@ -80,7 +84,7 @@ class RequestJsonParser {
                 .description(validateAndGetDescription(paymentRequest))
                 .returnUrl(validateAndGetReturnUrl(paymentRequest));
 
-        if(paymentRequest.has(MOTO_FIELD_NAME)) {
+        if (paymentRequest.has(MOTO_FIELD_NAME)) {
             builder.moto(validateAndGetMoto(paymentRequest));
         }
 
@@ -95,20 +99,24 @@ class RequestJsonParser {
         if (paymentRequest.has(DELAYED_CAPTURE_FIELD_NAME)) {
             builder.delayedCapture(validateAndGetDelayedCapture(paymentRequest));
         }
-        
+
         if (paymentRequest.has(EMAIL_FIELD_NAME)) {
             String email = validateSkipNullValueAndGetString(paymentRequest.get(EMAIL_FIELD_NAME),
                     aPaymentError(EMAIL_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
             builder.email(email);
         }
-        
-        if (paymentRequest.has(PREFILLED_CARDHOLDER_DETAILS_FIELD_NAME)) { 
+
+        if (paymentRequest.has(PREFILLED_CARDHOLDER_DETAILS_FIELD_NAME)) {
             JsonNode prefilledNode = paymentRequest.get(PREFILLED_CARDHOLDER_DETAILS_FIELD_NAME);
             validatePrefilledCardholderDetails(prefilledNode, builder);
         }
 
         if (paymentRequest.has(METADATA)) {
             builder.metadata(validateAndGetMetadata(paymentRequest));
+        }
+
+        if (paymentRequest.has(AUTHORISATION_MODE)) {
+            builder.authorisationMode(validateAndGetAuthorisationMode(paymentRequest));
         }
 
         builder.source(validateAndGetSource(paymentRequest));
@@ -145,6 +153,25 @@ class RequestJsonParser {
             return SupportedLanguage.fromIso639AlphaTwoCode(language);
         } catch (IllegalArgumentException e) {
             throw new WebApplicationException(Response.status(SC_UNPROCESSABLE_ENTITY).entity(paymentError).build());
+        }
+    }
+
+    private static AuthorisationMode validateAndGetAuthorisationMode(JsonNode paymentRequest) {
+        String errorMessage = "Must be one of " + ALLOWED_AUTHORISATION_MODES.stream()
+                .map(AuthorisationMode::getName)
+                .collect(Collectors.joining(", "));
+        PaymentError paymentError = aPaymentError(AUTHORISATION_MODE, CREATE_PAYMENT_VALIDATION_ERROR, errorMessage);
+        String value = validateAndGetString(paymentRequest.get(AUTHORISATION_MODE), paymentError, paymentError);
+
+        try {
+            AuthorisationMode authorisationMode = AuthorisationMode.of(value);
+            if (ALLOWED_AUTHORISATION_MODES.contains(authorisationMode)) {
+                return authorisationMode;
+            } else {
+                throw new PaymentValidationException(paymentError);
+            }
+        } catch (IllegalArgumentException e) {
+            throw new PaymentValidationException(paymentError);
         }
     }
 
@@ -304,7 +331,7 @@ class RequestJsonParser {
     private static String validateSkipNullValueAndGetString(JsonNode jsonNode, PaymentError validationError) {
         return validateSkipNullAndGetValue(jsonNode, validationError, JsonNode::isTextual, JsonNode::asText);
     }
-    
+
     private static <T> T validateSkipNullAndGetValue(JsonNode jsonNode,
                                                      PaymentError validationError,
                                                      Function<JsonNode, Boolean> isExpectedType,

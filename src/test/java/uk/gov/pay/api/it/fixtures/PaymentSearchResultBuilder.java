@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
+import uk.gov.service.payments.commons.model.AuthorisationMode;
 
 import java.util.List;
 import java.util.Map;
@@ -100,6 +101,11 @@ public class PaymentSearchResultBuilder extends PaymentResultBuilder {
 
     public PaymentSearchResultBuilder withAuthorisationSummary(uk.gov.pay.api.model.AuthorisationSummary authorisationSummary) {
         this.authorisationSummary = authorisationSummary == null ? null : new AuthorisationSummary(authorisationSummary.getThreeDSecure());
+        return this;
+    }
+    
+    public PaymentSearchResultBuilder withAuthorisationMode(AuthorisationMode authorisationMode) {
+        this.authorisationMode = authorisationMode;
         return this;
     }
 

@@ -132,6 +132,7 @@ public class TransactionsResourceIT {
                 .body("results[0].authorisation_summary", is(notNullValue()))
                 .body("results[0].authorisation_summary.three_d_secure", is(notNullValue()))
                 .body("results[0].authorisation_summary.three_d_secure.required", is(true))
+                .body("results[0].authorisation_mode", is("web"))
                 .body("_links.self.href", is(expectedChargesLocationFor("?reference=reference&display_size=500&page=1")))
                 .body("_links.first_page.href", is(expectedChargesLocationFor("?reference=reference&display_size=500&page=1")))
                 .body("_links.last_page.href", is(expectedChargesLocationFor("?reference=reference&display_size=500&page=1")));

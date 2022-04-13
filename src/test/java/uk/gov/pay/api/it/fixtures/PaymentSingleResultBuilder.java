@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.gson.Gson;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
+import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 
 import java.util.List;
@@ -128,11 +129,6 @@ public class PaymentSingleResultBuilder extends PaymentResultBuilder {
         return this;
     }
 
-    public String build() {
-        TestPayment result = getPayment();
-        return new Gson().toJson(result, new TypeReference<TestPayment>() {}.getType()); 
-    }
-
     public PaymentSingleResultBuilder withMetadata(Map<String, Object> metadata) {
         this.metadata = metadata;
         return this;
@@ -141,5 +137,15 @@ public class PaymentSingleResultBuilder extends PaymentResultBuilder {
     public PaymentSingleResultBuilder withAuthorisationSummary(uk.gov.pay.api.model.AuthorisationSummary authorisationSummary) {
         this.authorisationSummary = authorisationSummary == null ? null : new AuthorisationSummary(authorisationSummary.getThreeDSecure());
         return this;
+    }
+    
+    public PaymentSingleResultBuilder withAuthorisationMode(AuthorisationMode authorisationMode) {
+        this.authorisationMode = authorisationMode;
+        return this;
+    } 
+
+    public String build() {
+        TestPayment result = getPayment();
+        return new Gson().toJson(result, new TypeReference<TestPayment>() {}.getType());
     }
 }

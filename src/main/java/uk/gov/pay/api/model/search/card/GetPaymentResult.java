@@ -8,6 +8,7 @@ import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.links.PaymentLinks;
+import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 
 /**
@@ -22,9 +23,10 @@ public class GetPaymentResult extends CardPayment {
                             String reference, String email, String paymentProvider, String createdDate,
                             RefundSummary refundSummary, PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
                             SupportedLanguage language, boolean delayedCapture, boolean moto, Long corporateCardSurcharge,
-                            Long totalAmount, String providerId, Long fee, Long netAmount, AuthorisationSummary authorisationSummary) {
+                            Long totalAmount, String providerId, Long fee, Long netAmount, AuthorisationSummary authorisationSummary,
+                            AuthorisationMode authorisationMode) {
         super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate,
                 refundSummary, settlementSummary, cardDetails, language, delayedCapture, moto, corporateCardSurcharge,
-                totalAmount, providerId, null, fee, netAmount, authorisationSummary, null);
+                totalAmount, providerId, null, fee, netAmount, authorisationSummary, null, authorisationMode);
     }
 }

@@ -1,5 +1,6 @@
 package uk.gov.pay.api.utils.mocks;
 
+import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.Source;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 
@@ -24,6 +25,7 @@ public class CreateChargeRequestParams {
     private final SupportedLanguage language;
     private final Source source;
     private final String setUpAgreement;
+    private final AuthorisationMode authorisationMode;
 
     private CreateChargeRequestParams(CreateChargeRequestParamsBuilder builder) {
         this.amount = builder.amount;
@@ -42,6 +44,7 @@ public class CreateChargeRequestParams {
         this.language = builder.language;
         this.source = builder.source;
         this.setUpAgreement = builder.setUpAgreement;
+        this.authorisationMode = builder.authorisationMode;
     }
 
     public int getAmount() {
@@ -108,6 +111,10 @@ public class CreateChargeRequestParams {
         return setUpAgreement;
     }
 
+    public AuthorisationMode getAuthorisationMode() {
+        return authorisationMode;
+    }
+
     public static final class CreateChargeRequestParamsBuilder {
         private Integer amount;
         private String returnUrl;
@@ -125,6 +132,7 @@ public class CreateChargeRequestParams {
         private SupportedLanguage language;
         private Source source;
         public String setUpAgreement;
+        public AuthorisationMode authorisationMode;
 
         private CreateChargeRequestParamsBuilder() {
         }
@@ -215,6 +223,11 @@ public class CreateChargeRequestParams {
 
         public CreateChargeRequestParamsBuilder withSetUpAgreement(String setUpAgreement) {
             this.setUpAgreement = setUpAgreement;
+            return this;
+        }
+        
+        public CreateChargeRequestParamsBuilder withAuthorisationMode(AuthorisationMode authorisationMode) {
+            this.authorisationMode = authorisationMode;
             return this;
         }
     }

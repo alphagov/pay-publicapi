@@ -88,7 +88,8 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withMoto(responseFromConnector.isMoto())
                 .withAgreementId(responseFromConnector.getAgreementId())
                 .withLinks(responseFromConnector.getLinks())
-                .withSettlementSummary(responseFromConnector.getSettlementSummary());
+                .withSettlementSummary(responseFromConnector.getSettlementSummary())
+                .withAuthorisationMode(responseFromConnector.getAuthorisationMode());
         
         ofNullable(responseFromConnector.getCardDetails()).ifPresent(resultBuilder::withCardDetails);
         ofNullable(responseFromConnector.getRefundSummary()).ifPresent(resultBuilder::withRefundSummary);
