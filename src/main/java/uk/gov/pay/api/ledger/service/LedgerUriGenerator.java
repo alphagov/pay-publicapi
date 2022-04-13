@@ -22,6 +22,10 @@ public class LedgerUriGenerator {
         return buildLedgerUri("/v1/transaction", queryParams);
     }
 
+    public String agreementsURIWithParams(Map<String, String> queryParams) {
+        return buildLedgerUri("/v1/agreement", queryParams);
+    }
+
     private String buildLedgerUri(String path, Map<String, String> params) {
         var ledgerUrl = configuration.getLedgerUrl();
         UriBuilder builder = UriBuilder.fromPath(ledgerUrl).path(path);
@@ -37,6 +41,13 @@ public class LedgerUriGenerator {
                 "account_id", gatewayAccountId.getAccountId(),
                 "transaction_type", transactionType,
                 "status_version", "1"
+        ));
+    }
+
+    public String agreementURI(Account gatewayAccountId, String agreementId) {
+        String path = format("/v1/agreement/%s", agreementId);
+        return buildLedgerUri(path, Map.of(
+                "account_id", gatewayAccountId.getAccountId()
         ));
     }
 

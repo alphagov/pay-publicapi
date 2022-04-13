@@ -1,20 +1,35 @@
 package uk.gov.pay.api.agreement.resource;
 
+import com.codahale.metrics.annotation.Timed;
 import io.dropwizard.auth.Auth;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.api.agreement.model.ConnectorAgreementResponse;
 import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
-import uk.gov.pay.api.agreement.model.AgreementResponse;
 import uk.gov.pay.api.agreement.service.AgreementService;
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.service.LedgerService;
+
 import javax.inject.Inject;
 import javax.validation.Valid;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.POST;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/")
 public class AgreementsApiResource {
@@ -22,10 +37,12 @@ public class AgreementsApiResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(AgreementsApiResource.class);
 
     private final AgreementService agreementService;
+    private final LedgerService ledgerService;
 
     @Inject
-    public AgreementsApiResource(AgreementService agreementService) {
+    public AgreementsApiResource(AgreementService agreementService, LedgerService ledgerService) {
         this.agreementService = agreementService;
+        this.ledgerService = ledgerService;
     }
 
     @POST
@@ -36,13 +53,35 @@ public class AgreementsApiResource {
             @Valid CreateAgreementRequest agreementCreateRequest
     ) {
         LOGGER.info("Creating new agreement for reference  {}", agreementCreateRequest.getReference());
-        AgreementResponse a = agreementService.create(account, agreementCreateRequest);
+        var createResponse = agreementService.create(account, agreementCreateRequest);
+        var agreement = ledgerService.getAgreement(account, createResponse.getAgreement_id(), true);
 
-        Response b = Response.status(201).entity(a).build();
-        
-        return b;
+        return Response.status(201).entity(agreement).build();
     }
 
-
-   
+    @GET
+    @Timed
+    @Path("/v1/agreements/{agreementId}")
+    @Produces(APPLICATION_JSON)
+    public Response getAgreement(@Parameter(hidden = true) @Auth Account account,
+                               @PathParam("agreementId") String agreementId) {
+        var agreement = ledgerService.getAgreement(account, agreementId, true);
+        return Response.ok(agreement).build();
+    }
+    
+    @GET
+    @Timed
+    @Path("/v1/agreements")
+    @Produces(APPLICATION_JSON)
+    public Response searchAgreement(@Parameter(hidden = true) @Auth Account account,
+                                    @QueryParam("reference") String reference,
+                                    @QueryParam("status") String status,
+                                    @QueryParam("page") Integer page) {
+        Map<String, String> result = new HashMap<>();
+        Optional.ofNullable(reference).ifPresent(ref -> result.put("reference", ref));
+        Optional.ofNullable(status).ifPresent(stat -> result.put("status", stat));
+        Optional.ofNullable(page).ifPresent(pg -> result.put("page", String.valueOf(page)));
+        var searchResponse = ledgerService.searchAgreements(account, result);
+        return Response.ok(searchResponse).build(); 
+    }
 }
