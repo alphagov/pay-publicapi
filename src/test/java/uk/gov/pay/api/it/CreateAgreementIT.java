@@ -20,6 +20,8 @@ import static uk.gov.pay.api.utils.mocks.CreateAgreementRequestParams.CreateAgre
 public class CreateAgreementIT extends PaymentResourceITestBase {
    
     private static final String REFERENCE = "Some reference <script> alert('This is a ?{simple} XSS attack.')</script>";
+    private static final String DESCRIPTION = "A valid description";
+    private static final String USER_IDENTIFIER = "a-valid-user-identifier";
     public static final String VALID_AGREEMENT_ID = "12345678901234567890123456";
     private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
@@ -29,6 +31,8 @@ public class CreateAgreementIT extends PaymentResourceITestBase {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
         CreateAgreementRequestParams createAgreementRequestParams = aCreateAgreementRequestParams()
                 .withReference(REFERENCE)
+                .withDescription(DESCRIPTION)
+                .withUserIdentifier(USER_IDENTIFIER)
                 .build();
         connectorMockClient.respondOk_whenCreateAgreement(GATEWAY_ACCOUNT_ID, createAgreementRequestParams);
 
@@ -57,7 +61,7 @@ public class CreateAgreementIT extends PaymentResourceITestBase {
     @Test
     public void shouldReturn400WhenWhenReferenceIsNull() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
-        CreateAgreementRequest agreementRequest = new CreateAgreementRequest(CreateAgreementRequestBuilder.builder().reference(null));
+        CreateAgreementRequest agreementRequest = new CreateAgreementRequest(CreateAgreementRequestBuilder.builder().reference(null).description(DESCRIPTION));
         postAgreementRequest(agreementRequest.toConnectorPayload())
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .contentType(JSON)
@@ -67,11 +71,24 @@ public class CreateAgreementIT extends PaymentResourceITestBase {
     }
 
     @Test
+    public void shouldReturn400WhenWhenDescriptionIsNull() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+        CreateAgreementRequest agreementRequest = new CreateAgreementRequest(CreateAgreementRequestBuilder.builder().reference(REFERENCE).description(null));
+        postAgreementRequest(agreementRequest.toConnectorPayload())
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .contentType(JSON)
+                .body("field", is("description"))
+                .body("code", is("P0101"))
+                .body("description", is("Missing mandatory attribute: description"));
+    }
+
+    @Test
     public void shouldReturn422WhenWhenReferenceIsTooLong() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
         String tooLongReference = random(256, true, true);
         CreateAgreementRequestParams createAgreementRequestParams = aCreateAgreementRequestParams()
                 .withReference(tooLongReference)
+                .withDescription(DESCRIPTION)
                 .build();
         
         postAgreementRequest(agreementPayload(createAgreementRequestParams))
@@ -88,6 +105,7 @@ public class CreateAgreementIT extends PaymentResourceITestBase {
 
         CreateAgreementRequestParams createAgreementRequestParams = aCreateAgreementRequestParams()
                 .withReference(REFERENCE)
+                .withDescription(DESCRIPTION)
                 .build();
         connectorMockClient.respondBadRequest_whenCreateAgreement(GATEWAY_ACCOUNT_ID, "Downstream system error");
 
@@ -105,6 +123,7 @@ public class CreateAgreementIT extends PaymentResourceITestBase {
         publicAuthMockClient.respondUnauthorised();
         CreateAgreementRequestParams createAgreementRequestParams = aCreateAgreementRequestParams()
                 .withReference(REFERENCE)
+                .withDescription(DESCRIPTION)
                 .build();
         postAgreementRequest(agreementPayload(createAgreementRequestParams)).statusCode(401);
     }
@@ -119,7 +138,13 @@ public class CreateAgreementIT extends PaymentResourceITestBase {
     }
     
     public static String agreementPayload(CreateAgreementRequestParams params) {
-        return  new JsonStringBuilder().add("reference", params.getReference()).build();
+        var stringBuilder = new JsonStringBuilder()
+                .add("reference", params.getReference())
+                .add("description", params.getDescription());
+        if (params.getUserIdentifier() != null) {
+            stringBuilder.add("user_identifier", params.getUserIdentifier());
+        }
+        return stringBuilder.build();
     }
 
     protected ValidatableResponse postAgreementRequest(String payload) {
