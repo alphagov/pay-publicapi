@@ -30,6 +30,7 @@ import static uk.gov.pay.api.utils.mocks.CreateAgreementRequestParams.CreateAgre
 @ExtendWith(MockitoExtension.class)
 class CreateAgreementServiceTest {
     private static final String REFERENCE_ID = "test";
+    private static final String DESCRIPTION = "a valid description";
     private static final String AGREEMENT_ID = "12345678901234567890123456";
     private static final String AGREEMENTS_CONNECTOR_URI = "/v1/api/accounts/GATEWAY_ACCOUNT_ID/agreements";
     private AgreementService service;

@@ -30,8 +30,8 @@ public class CreateAgreementRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldDeserializeACreateAgreementRequestWithReferenceSuccessfully() throws Exception {
-        String validJson = "{\"reference\": \"Some reference\"}";
+    public void deserialize_shouldDeserializeACreateAgreementRequestWithPayloadSuccessfully() throws Exception {
+        String validJson = "{\"reference\": \"Some reference\", \"description\": \"A valid description\", \"user_identifier\": \"a-valid-user-identifier\"}";
         CreateAgreementRequest agreementRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
         assertThat(agreementRequest.getReference(), is("Some reference"));
     }
@@ -66,6 +66,14 @@ public class CreateAgreementRequestDeserializerTest {
         BadRequestException badRequestException = assertThrows(BadRequestException.class,
                 () -> deserializer.deserialize(jsonFactory.createParser(json), ctx));
         assertThat(badRequestException, aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: reference"));
+    }
+
+    @Test
+    public void deserialize_shouldThrowBadRequestException_whenDescriptionIsMissing() {
+        String invalidJson = "{\"reference\": \"Some reference\"}";
+        BadRequestException badRequestException = assertThrows(BadRequestException.class,
+                () -> deserializer.deserialize(jsonFactory.createParser(invalidJson), ctx));
+        assertThat(badRequestException, aBadRequestExceptionWithError("P0101", "Missing mandatory attribute: description"));
     }
 
     @Test
