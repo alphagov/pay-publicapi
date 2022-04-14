@@ -83,6 +83,68 @@ public class CreateAgreementIT extends PaymentResourceITestBase {
     }
 
     @Test
+    public void shouldReturn400WhenWhenDescriptionIsEmptyString() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+        CreateAgreementRequest agreementRequest = new CreateAgreementRequest(CreateAgreementRequestBuilder.builder().reference(REFERENCE).description(""));
+        postAgreementRequest(agreementRequest.toConnectorPayload())
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .contentType(JSON)
+                .body("field", is("description"))
+                .body("code", is("P0101"))
+                .body("description", is("Missing mandatory attribute: description"));
+    }
+
+    @Test
+    public void shouldReturn422WhenWhenDescriptionIsTooLong() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+        CreateAgreementRequest agreementRequest = new CreateAgreementRequest(CreateAgreementRequestBuilder.builder().reference(REFERENCE).description(random(256, true, true)));
+        postAgreementRequest(agreementRequest.toConnectorPayload())
+                .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
+                .contentType(JSON)
+                .body("field", is("description"))
+                .body("code", is("P0102"))
+                .body("description", is("Invalid attribute value: description. Must be less than or equal to 255 characters length"));
+    }
+
+    @Test
+    public void shouldReturn201WhenWhenOptionalUserIdentifierIsNull() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+        var params = aCreateAgreementRequestParams()
+                .withReference(REFERENCE)
+                .withDescription(DESCRIPTION)
+                .withUserIdentifier(null)
+                .build();
+        connectorMockClient.respondOk_whenCreateAgreement(GATEWAY_ACCOUNT_ID, params);
+        postAgreementRequest(agreementPayload(params))
+                .statusCode(HttpStatus.SC_CREATED)
+                .contentType(JSON);
+    }
+
+    @Test
+    public void shouldReturn422WhenWhenUserIdentifierIsEmptyString() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+        CreateAgreementRequest agreementRequest = new CreateAgreementRequest(CreateAgreementRequestBuilder.builder().reference(REFERENCE).description(DESCRIPTION).userIdentifier(""));
+        postAgreementRequest(agreementRequest.toConnectorPayload())
+                .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
+                .contentType(JSON)
+                .body("field", is("user_identifier"))
+                .body("code", is("P0102"))
+                .body("description", is("Invalid attribute value: user_identifier. Must be less than or equal to 255 characters length"));
+    }
+
+    @Test
+    public void shouldReturn422WhenWhenUserIdentifierIsTooLong() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+        CreateAgreementRequest agreementRequest = new CreateAgreementRequest(CreateAgreementRequestBuilder.builder().reference(REFERENCE).description(DESCRIPTION).userIdentifier(random(256, true, true)));
+        postAgreementRequest(agreementRequest.toConnectorPayload())
+                .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
+                .contentType(JSON)
+                .body("field", is("user_identifier"))
+                .body("code", is("P0102"))
+                .body("description", is("Invalid attribute value: user_identifier. Must be less than or equal to 255 characters length"));
+    }
+
+    @Test
     public void shouldReturn422WhenWhenReferenceIsTooLong() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
         String tooLongReference = random(256, true, true);
