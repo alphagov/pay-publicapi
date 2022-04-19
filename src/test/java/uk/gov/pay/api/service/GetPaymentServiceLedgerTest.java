@@ -19,6 +19,7 @@ import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
+import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
@@ -114,6 +115,7 @@ public class GetPaymentServiceLedgerTest {
         assertThat(payment.getDelayedCapture(), is(true));
         assertThat(payment.getCorporateCardSurcharge(), is(Optional.empty()));
         assertThat(payment.getTotalAmount(), is(Optional.empty()));
+        assertThat(payment.getAuthorisationMode(), is(AuthorisationMode.WEB));
         assertThat(paymentResponse.getLinks().getSelf().getHref(), containsString("v1/payments/" + CHARGE_ID_NON_EXISTENT_IN_CONNECTOR));
         assertThat(paymentResponse.getLinks().getSelf().getMethod(), is("GET"));
         assertThat(paymentResponse.getLinks().getRefunds().getHref(), containsString("v1/payments/" + CHARGE_ID_NON_EXISTENT_IN_CONNECTOR + "/refunds"));

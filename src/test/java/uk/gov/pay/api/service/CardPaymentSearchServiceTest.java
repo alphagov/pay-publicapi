@@ -163,7 +163,8 @@ public class CardPaymentSearchServiceTest {
                 .assertThat("results[0].state", hasKey("finished"))
                 .assertThat("results[0]", hasKey("authorisation_summary"))
                 .assertThat("results[0].authorisation_summary", hasKey("three_d_secure"))
-                .assertThat("results[0].authorisation_summary.three_d_secure.required", is(true));
+                .assertThat("results[0].authorisation_summary.three_d_secure.required", is(true))
+                .assertThat("results[0].authorisation_mode", is("web"));
     }
 
     @Test

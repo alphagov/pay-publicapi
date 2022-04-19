@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import uk.gov.pay.api.utils.CustomSupportedLanguageDeserializer;
 import uk.gov.service.payments.commons.api.json.ExternalMetadataDeserialiser;
+import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
 
@@ -79,6 +80,9 @@ public class TransactionResponse {
 
     @JsonProperty("authorisation_summary")
     private AuthorisationSummary authorisationSummary;
+    
+    @JsonProperty("authorisation_mode")
+    private AuthorisationMode authorisationMode;
 
     public Optional<ExternalMetadata> getMetadata() {
         return Optional.ofNullable(metadata);
@@ -181,5 +185,9 @@ public class TransactionResponse {
 
     public AuthorisationSummary getAuthorisationSummary() {
         return authorisationSummary;
+    }
+
+    public AuthorisationMode getAuthorisationMode() {
+        return authorisationMode;
     }
 }

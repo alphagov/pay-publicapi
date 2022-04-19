@@ -11,6 +11,7 @@ import uk.gov.pay.api.model.Payment;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
+import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
 
@@ -38,10 +39,10 @@ public class PaymentWithAllLinks {
                                boolean delayedCapture, boolean moto, RefundSummary refundSummary, PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
                                List<PaymentConnectorResponseLink> paymentConnectorResponseLinks, URI selfLink, URI paymentEventsUri, URI paymentCancelUri,
                                URI paymentRefundsUri, URI paymentCaptureUri, Long corporateCardSurcharge, Long totalAmount, String providerId, ExternalMetadata metadata,
-                               Long fee, Long netAmount, AuthorisationSummary authorisationSummary, String agreementId) {
+                               Long fee, Long netAmount, AuthorisationSummary authorisationSummary, String agreementId, AuthorisationMode authorisationMode) {
         this.payment = new CardPayment(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate,
                 refundSummary, settlementSummary, cardDetails, language, delayedCapture, moto, corporateCardSurcharge, totalAmount,
-                providerId, metadata, fee, netAmount, authorisationSummary, agreementId);
+                providerId, metadata, fee, netAmount, authorisationSummary, agreementId, authorisationMode);
         this.links.addSelf(selfLink.toString());
         this.links.addKnownLinksValueOf(paymentConnectorResponseLinks);
         this.links.addEvents(paymentEventsUri.toString());
@@ -91,7 +92,8 @@ public class PaymentWithAllLinks {
                 paymentConnector.getFee(),
                 paymentConnector.getNetAmount(),
                 paymentConnector.getAuthorisationSummary(),
-                paymentConnector.getAgreementId());
+                paymentConnector.getAgreementId(),
+                paymentConnector.getAuthorisationMode());
     }
 
     public static PaymentWithAllLinks getPaymentWithLinks(

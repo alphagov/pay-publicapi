@@ -20,6 +20,7 @@ import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.links.Link;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.model.links.PostLink;
+import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.ErrorIdentifier;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
@@ -149,6 +150,26 @@ public class CreatePaymentServiceTest {
         assertThat(billingAddress.getCity(), is("address city"));
         assertThat(billingAddress.getPostcode(), is("AB1 CD2"));
         assertThat(billingAddress.getCountry(), is("GB"));
+    }
+
+    @Test
+    @PactVerification({"connector"})
+    @Pacts(pacts = {"publicapi-connector-create-payment-with-authorisation-mode-moto-api"})
+    public void testCreatePaymentWithAuthorisationModeMotoApi() {
+        Account account = new Account("123456", TokenPaymentType.CARD, "a-token-link");
+        var requestPayload = CreateCardPaymentRequestBuilder.builder()
+                .amount(100)
+                .returnUrl("https://somewhere.gov.uk/rainbow/1")
+                .reference("a reference")
+                .description("a description")
+                .authorisationMode(AuthorisationMode.MOTO_API)
+                .build();
+
+        PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
+        CardPayment payment = (CardPayment) paymentResponse.getPayment();
+
+        assertThat(payment.getPaymentId(), is("ch_ab2341da231434l"));
+        assertThat(payment.getAuthorisationMode(), is(AuthorisationMode.MOTO_API));
     }
     
     @Test

@@ -892,9 +892,9 @@
           },
           "card_type" : {
             "type" : "string",
-            "description" : "The card type, `credit` or `null` if not able to determine",
-            "enum" : [ "credit", "null" ],
-            "example" : "credit",
+            "description" : "The card type, `debit` or `credit` or `null` if not able to determine",
+            "enum" : [ "debit", "credit", "null" ],
+            "example" : "debit",
             "readOnly" : true
           },
           "cardholder_name" : {
@@ -1115,6 +1115,11 @@
             "format" : "int64",
             "example" : 1200
           },
+          "authorisation_mode" : {
+            "type" : "string",
+            "description" : "How the payment will be authorised. Payments created in `web` mode require the paying user to visit the `next_url` to complete the payment.",
+            "enum" : [ "web", "moto_api", "external" ]
+          },
           "authorisation_summary" : {
             "$ref" : "#/components/schemas/AuthorisationSummary"
           },
@@ -1247,6 +1252,11 @@
             "type" : "integer",
             "format" : "int64",
             "example" : 1200
+          },
+          "authorisation_mode" : {
+            "type" : "string",
+            "description" : "How the payment will be authorised. Payments created in `web` mode require the paying user to visit the `next_url` to complete the payment.",
+            "enum" : [ "web", "moto_api", "external" ]
           },
           "authorisation_summary" : {
             "$ref" : "#/components/schemas/AuthorisationSummary"

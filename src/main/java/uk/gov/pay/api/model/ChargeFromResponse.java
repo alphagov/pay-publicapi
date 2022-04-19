@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import uk.gov.pay.api.model.telephone.PaymentOutcome;
 import uk.gov.pay.api.utils.CustomSupportedLanguageDeserializer;
 import uk.gov.service.payments.commons.api.json.ExternalMetadataDeserialiser;
+import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
 
@@ -83,6 +84,8 @@ public class ChargeFromResponse {
     private ExternalMetadata metadata;
 
     private AuthorisationSummary authorisationSummary;
+    
+    private AuthorisationMode authorisationMode;
 
     public Optional<ExternalMetadata> getMetadata() {
         return Optional.ofNullable(metadata);
@@ -214,4 +217,8 @@ public class ChargeFromResponse {
     public AuthorisationSummary getAuthorisationSummary() {
         return authorisationSummary;
     };
+
+    public AuthorisationMode getAuthorisationMode() {
+        return authorisationMode;
+    }
 }

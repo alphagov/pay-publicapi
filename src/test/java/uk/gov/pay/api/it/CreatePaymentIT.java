@@ -13,6 +13,7 @@ import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 import uk.gov.pay.api.utils.mocks.CreateChargeRequestParams;
+import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.validation.DateTimeUtils;
 
@@ -150,8 +151,8 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
         postPaymentResponse(paymentPayload(createChargeRequestParams))
                 .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
                 .contentType(JSON)
-                .body("field",  is("set_up_agreement"))
-                .body("code",  is("P0102"))
+                .body("field", is("set_up_agreement"))
+                .body("code", is("P0102"))
                 .body("description", is("Invalid attribute value: set_up_agreement. Field [set_up_agreement] length must be 26"));
     }
 
@@ -170,11 +171,11 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
         postPaymentResponse(paymentPayload(createChargeRequestParams))
                 .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
                 .contentType(JSON)
-                .body("field",  is("set_up_agreement"))
-                .body("code",  is("P0102"))
+                .body("field", is("set_up_agreement"))
+                .body("code", is("P0102"))
                 .body("description", is("Invalid attribute value: set_up_agreement. Field [set_up_agreement] length must be 26"));
     }
-    
+
     @Test
     public void createAChargeWithMetadataAgreementNotFound() throws IOException {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
@@ -187,7 +188,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .withSetUpAgreement(VALID_AGREEMENT_ID)
                 .build();
         connectorMockClient.respondBadRequest_whenCreateChargeWithAgreementNotFound(GATEWAY_ACCOUNT_ID, VALID_AGREEMENT_ID, "Agreement with ID [%s] not found.");
-        
+
         InputStream body = postPaymentResponse(paymentPayload(createChargeRequestParams))
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .contentType(JSON).extract()
@@ -408,7 +409,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
 
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, params);
     }
-    
+
     @Test
     public void createMOTOPayment() {
         int amount = 1;
@@ -439,7 +440,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .withReturnUrl(RETURN_URL)
                 .withMoto(true)
                 .build();
-        
+
         postPaymentResponse(paymentPayload(params))
                 .statusCode(201)
                 .contentType(JSON)
@@ -454,7 +455,54 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
 
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, params);
     }
-    
+
+    @Test
+    public void createPaymentWithAuthorisationModeMotoApi() {
+        int amount = 1;
+
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+
+        connectorMockClient.respondOk_whenCreateCharge(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
+                .withAmount(amount)
+                .withChargeId(CHARGE_ID)
+                .withState(CREATED)
+                .withReturnUrl(RETURN_URL)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withPaymentProvider(PAYMENT_PROVIDER)
+                .withGatewayTransactionId(GATEWAY_TRANSACTION_ID)
+                .withCreatedDate(CREATED_DATE)
+                .withLanguage(SupportedLanguage.ENGLISH)
+                .withDelayedCapture(false)
+                .withMoto(false)
+                .withRefundSummary(REFUND_SUMMARY)
+                .withCardDetails(CARD_DETAILS)
+                .withAuthorisationMode(AuthorisationMode.MOTO_API)
+                .build());
+
+        CreateChargeRequestParams params = aCreateChargeRequestParams()
+                .withAmount(amount)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withReturnUrl(RETURN_URL)
+                .withAuthorisationMode(AuthorisationMode.MOTO_API)
+                .build();
+
+        postPaymentResponse(paymentPayload(params))
+                .statusCode(201)
+                .contentType(JSON)
+                .body("payment_id", is(CHARGE_ID))
+                .body("amount", is(amount))
+                .body("reference", is(REFERENCE))
+                .body("description", is(DESCRIPTION))
+                .body("return_url", is(RETURN_URL))
+                .body("payment_provider", is(PAYMENT_PROVIDER))
+                .body("created_date", is(CREATED_DATE))
+                .body("authorisation_mode", is("moto_api"));
+
+        connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, params);
+    }
+
 
     @Test
     public void createPayment_withAllFieldsUpToMaxLengthBoundaries_shouldBeAccepted() {
@@ -557,7 +605,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .withReturnUrl(RETURN_URL)
                 .withMoto(true)
                 .build());
-        
+
         postPaymentResponse(createMotoPaymentPayload)
                 .statusCode(422)
                 .contentType(JSON)
@@ -566,7 +614,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
 
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createMotoPaymentPayload);
     }
-    
+
     @Test
     public void createPayment_responseWith422_whenZeroAmountNotAllowed() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
@@ -635,7 +683,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .add("reference", params.getReference())
                 .add("description", params.getDescription())
                 .add("return_url", params.getReturnUrl());
-        
+
         if (!params.getMetadata().isEmpty()) {
             payload.add("metadata", params.getMetadata());
         }
@@ -643,7 +691,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
         if (params.getEmail() != null) {
             payload.add("email", params.getEmail());
         }
-        
+
         if (params.isMoto() != null) {
             payload.add("moto", params.isMoto());
         }
@@ -672,7 +720,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
             payload.addToNestedMap("country", params.getAddressCountry().get(), "prefilled_cardholder_details", "billing_address");
         }
 
-        params.getSource().ifPresent(source ->  {
+        params.getSource().ifPresent(source -> {
             payload.addToNestedMap("source", source, "internal");
         });
 

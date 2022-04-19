@@ -6,6 +6,7 @@ import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.telephone.PaymentOutcome;
+import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ public class ChargeResponseFromConnector {
     private final Long netAmount;
     private final AuthorisationSummary authorisationSummary;
     private String agreementId;
+    private AuthorisationMode authorisationMode;
 
     public Long getAmount() {
         return amount;
@@ -148,6 +150,14 @@ public class ChargeResponseFromConnector {
         return authorisationSummary;
     }
 
+    public String getAgreementId() {
+        return this.agreementId;
+    }
+    
+    public AuthorisationMode getAuthorisationMode() {
+        return authorisationMode;
+    }
+
     private ChargeResponseFromConnector(ChargeResponseFromConnectorBuilder builder) {
         this.amount = builder.amount;
         this.chargeId = builder.chargeId;
@@ -179,6 +189,7 @@ public class ChargeResponseFromConnector {
         this.netAmount = builder.netAmount;
         this.authorisationSummary = builder.authorisationSummary;
         this.agreementId = builder.agreementId;
+        this.authorisationMode = builder.authorisationMode;
     }
 
     public static final class ChargeResponseFromConnectorBuilder {
@@ -198,6 +209,8 @@ public class ChargeResponseFromConnector {
         private Long netAmount = null;
         private AuthorisationSummary authorisationSummary = null;
         private String agreementId;
+        private AuthorisationMode authorisationMode = AuthorisationMode.WEB;
+        
         private ChargeResponseFromConnectorBuilder() {
         }
 
@@ -229,7 +242,8 @@ public class ChargeResponseFromConnector {
                     .withNetAmount(responseFromConnector.getNetAmount())
                     .withFee(responseFromConnector.getFee())
                     .withAuthorisationSummary(responseFromConnector.getAuthorisationSummary())
-                    .withAgreementId(responseFromConnector.getAgreementId());
+                    .withAgreementId(responseFromConnector.getAgreementId())
+                    .withAuthorisationMode(responseFromConnector.getAuthorisationMode());
         }
 
         public ChargeResponseFromConnectorBuilder withAmount(long amount) {
@@ -391,9 +405,11 @@ public class ChargeResponseFromConnector {
             this.agreementId = agreementId;
             return this;
         }
+        
+        public ChargeResponseFromConnectorBuilder withAuthorisationMode(AuthorisationMode authorisationMode) {
+            this.authorisationMode = authorisationMode;
+            return this;
+        }
     }
-
-    public String getAgreementId() {
-        return this.agreementId;
-    }
+    
 }

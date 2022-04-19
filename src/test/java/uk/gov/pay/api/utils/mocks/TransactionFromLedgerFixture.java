@@ -8,6 +8,7 @@ import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
+import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ public class TransactionFromLedgerFixture {
     private String gatewayTransactionId;
     private Map<String, Object> metadata;
     private AuthorisationSummary authorisationSummary;
+    private AuthorisationMode authorisationMode;
 
     public String getReturnUrl() {
         return returnUrl;
@@ -116,6 +118,10 @@ public class TransactionFromLedgerFixture {
         return authorisationSummary;
     }
 
+    public AuthorisationMode getAuthorisationMode() {
+        return authorisationMode;
+    }
+
     public TransactionFromLedgerFixture(TransactionFromLedgerBuilder builder) {
         this.amount = builder.amount;
         this.state = builder.state;
@@ -140,6 +146,7 @@ public class TransactionFromLedgerFixture {
         this.gatewayTransactionId = builder.gatewayTransactionId;
         this.metadata = builder.metadata;
         this.authorisationSummary = builder.authorisationSummary;
+        this.authorisationMode = builder.authorisationMode;
     }
 
     public Long getAmount() {
@@ -183,6 +190,7 @@ public class TransactionFromLedgerFixture {
         private String gatewayTransactionId;
         private Map<String, Object> metadata;
         private AuthorisationSummary authorisationSummary;
+        private AuthorisationMode authorisationMode = AuthorisationMode.WEB;
 
         private TransactionFromLedgerBuilder() {
         }
@@ -303,6 +311,11 @@ public class TransactionFromLedgerFixture {
 
         public TransactionFromLedgerBuilder withAuthorisationSummary(AuthorisationSummary authorisationSummary) {
             this.authorisationSummary = authorisationSummary;
+            return this;
+        }
+        
+        public TransactionFromLedgerBuilder withAuthorisationMode(AuthorisationMode authorisationMode) {
+            this.authorisationMode = authorisationMode;
             return this;
         }
 

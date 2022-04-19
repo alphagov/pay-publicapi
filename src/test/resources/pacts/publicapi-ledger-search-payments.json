@@ -73,7 +73,8 @@
                   "required": true,
                   "version": "2.1.0"
                 }
-              }
+              },
+              "authorisation_mode": "web"
             }
           ],
           "_links": {
@@ -178,6 +179,13 @@
               "matchers": [
                 {
                   "date": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                }
+              ]
+            },
+            "$.results[*].authorisation_mode": {
+              "matchers": [
+                {
+                  "match": "type"
                 }
               ]
             }

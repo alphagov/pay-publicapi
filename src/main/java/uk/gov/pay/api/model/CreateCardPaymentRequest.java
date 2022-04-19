@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import org.hibernate.validator.constraints.Length;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.api.validation.ValidReturnUrl;
+import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
 
@@ -44,6 +45,7 @@ public class CreateCardPaymentRequest {
     public static final String SOURCE_FIELD_NAME = "source";
     public static final String METADATA = "metadata";
     public static final String INTERNAL = "internal";
+    public static final String AUTHORISATION_MODE = "authorisation_mode";
     private static final String PREFILLED_CARDHOLDER_DETAILS = "prefilled_cardholder_details";
     private static final String BILLING_ADDRESS = "billing_address";
     
@@ -89,6 +91,8 @@ public class CreateCardPaymentRequest {
 
     @Valid
     private final PrefilledCardholderDetails prefilledCardholderDetails;
+
+    private final AuthorisationMode authorisationMode;
     
     public CreateCardPaymentRequest(CreateCardPaymentRequestBuilder builder) {
         this.amount = builder.getAmount();
@@ -103,6 +107,7 @@ public class CreateCardPaymentRequest {
         this.prefilledCardholderDetails = builder.getPrefilledCardholderDetails();
         this.internal = builder.getInternal();
         this.setUpAgreement = builder.getSetUpAgreement();
+        this.authorisationMode = builder.getAuthorisationMode();
     }
     
     @Schema(description = "amount in pence", required = true, minimum = "1", maximum = "10000000", example = "12000")
@@ -177,6 +182,12 @@ public class CreateCardPaymentRequest {
         return setUpAgreement;
     }
 
+    @JsonProperty("authorisation_mode")
+    @Schema(hidden = true)
+    public Optional<AuthorisationMode> getAuthorisationMode() {
+        return Optional.ofNullable(authorisationMode);
+    }
+
     public String toConnectorPayload() {
         JsonStringBuilder request = new JsonStringBuilder()
                 .add("amount", this.getAmount())
@@ -189,6 +200,7 @@ public class CreateCardPaymentRequest {
         getMetadata().ifPresent(metadata -> request.add("metadata", metadata.getMetadata()));
         getEmail().ifPresent(email -> request.add("email", email));
         getInternal().flatMap(Internal::getSource).ifPresent(source -> request.add("source", source));
+        getAuthorisationMode().ifPresent((authorisationMode -> request.add("authorisation_mode", authorisationMode.getName())));
         
         getPrefilledCardholderDetails().ifPresent(prefilledDetails -> {
             prefilledDetails.getCardholderName().ifPresent(name -> request.addToMap(PREFILLED_CARDHOLDER_DETAILS, "cardholder_name", name));

@@ -1,6 +1,7 @@
 package uk.gov.pay.api.it.fixtures;
 
 import uk.gov.pay.api.model.PaymentSettlementSummary;
+import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.validation.DateTimeUtils;
 
@@ -141,6 +142,7 @@ public abstract class PaymentResultBuilder {
         public Map<String, ?> metadata;
         public AuthorisationSummary authorisation_summary;
         public String agreement_id;
+        public String authorisation_mode;
     }
 
     protected static class TestPaymentState {
@@ -197,6 +199,7 @@ public abstract class PaymentResultBuilder {
     protected String gatewayTransactionId;
     protected Map<String, Object> metadata;
     protected AuthorisationSummary authorisationSummary;
+    protected AuthorisationMode authorisationMode = AuthorisationMode.WEB;
 
     public abstract String build();
     
@@ -241,6 +244,7 @@ public abstract class PaymentResultBuilder {
         payment.links = links ;
         payment.metadata = metadata;
         payment.authorisation_summary = authorisationSummary;
+        payment.authorisation_mode = authorisationMode.getName();
 
         return payment;
     }

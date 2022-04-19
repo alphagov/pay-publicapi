@@ -76,7 +76,8 @@
             "captured_date": null
           },
           "delayed_capture": true,
-          "moto": false
+          "moto": false,
+          "authorisation_mode": "web"
         },
         "matchingRules": {
           "body": {
@@ -132,6 +133,9 @@
               "matchers": [{"match": "type"}]
             },
             "$.payment_provider": {
+              "matchers": [{"match": "type"}]
+            },
+            "$.authorisation_mode": {
               "matchers": [{"match": "type"}]
             }
           }
