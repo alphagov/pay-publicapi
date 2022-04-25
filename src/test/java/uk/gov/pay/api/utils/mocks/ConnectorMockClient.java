@@ -267,7 +267,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
         if (requestParams.getSetUpAgreement() != null) {
             responseFromConnector.withAgreementId(requestParams.getSetUpAgreement());
-        }
+        } // TODO ask Steven
 
         if (!requestParams.getMetadata().isEmpty())
             responseFromConnector.withMetadata(requestParams.getMetadata());

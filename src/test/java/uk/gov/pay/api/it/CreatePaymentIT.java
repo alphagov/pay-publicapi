@@ -117,7 +117,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createAChargeWithAgreementIdAndSaveAgreement() {
+    public void createAChargeWithSetUpAgreementAndSaveAgreement() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
         CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
@@ -133,6 +133,28 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .statusCode(HttpStatus.SC_CREATED)
                 .contentType(JSON)
                 .body("agreement_id", is(VALID_AGREEMENT_ID));
+        connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
+    }
+
+    @Test
+    public void createAChargeWithAgreementIdAndAuthorisationModeAgreement() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+
+        CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
+                .withAmount(100)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withReturnUrl(RETURN_URL)
+                .withSetUpAgreement(VALID_AGREEMENT_ID)
+                .withAgreementId(VALID_AGREEMENT_ID)
+                .withAuthorisationMode(AuthorisationMode.WEB) // TODO
+                .build();
+        connectorMockClient.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
+
+        postPaymentResponse(paymentPayload(createChargeRequestParams))
+                .statusCode(HttpStatus.SC_CREATED)
+                .contentType(JSON);
+                //.body("agreement_id", is(VALID_AGREEMENT_ID));
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
     }
 
@@ -726,6 +748,14 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
 
         if (params.getSetUpAgreement() != null) {
             payload.add("set_up_agreement", params.getSetUpAgreement());
+        }
+
+        if (params.getAgreementId() != null) {
+            payload.add("agreement_id", params.getAgreementId());
+        }
+        
+        if (params.getAuthorisationMode() != null) {
+            payload.add("authorisation_mode", params.getAuthorisationMode());
         }
 
         return payload.build();

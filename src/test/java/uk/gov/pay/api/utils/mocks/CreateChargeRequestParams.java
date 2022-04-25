@@ -1,5 +1,6 @@
 package uk.gov.pay.api.utils.mocks;
 
+import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.Source;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
@@ -25,6 +26,7 @@ public class CreateChargeRequestParams {
     private final SupportedLanguage language;
     private final Source source;
     private final String setUpAgreement;
+    private final String agreementId;
     private final AuthorisationMode authorisationMode;
 
     private CreateChargeRequestParams(CreateChargeRequestParamsBuilder builder) {
@@ -44,6 +46,7 @@ public class CreateChargeRequestParams {
         this.language = builder.language;
         this.source = builder.source;
         this.setUpAgreement = builder.setUpAgreement;
+        this.agreementId = builder.agreementId;
         this.authorisationMode = builder.authorisationMode;
     }
 
@@ -111,6 +114,10 @@ public class CreateChargeRequestParams {
         return setUpAgreement;
     }
 
+    public String getAgreementId() {
+        return agreementId;
+    }
+
     public AuthorisationMode getAuthorisationMode() {
         return authorisationMode;
     }
@@ -132,6 +139,7 @@ public class CreateChargeRequestParams {
         private SupportedLanguage language;
         private Source source;
         public String setUpAgreement;
+        private String agreementId;
         public AuthorisationMode authorisationMode;
 
         private CreateChargeRequestParamsBuilder() {
@@ -225,7 +233,12 @@ public class CreateChargeRequestParams {
             this.setUpAgreement = setUpAgreement;
             return this;
         }
-        
+
+        public CreateChargeRequestParamsBuilder withAgreementId(String agreementId) {
+            this.agreementId = agreementId;
+            return this;
+        }
+
         public CreateChargeRequestParamsBuilder withAuthorisationMode(AuthorisationMode authorisationMode) {
             this.authorisationMode = authorisationMode;
             return this;

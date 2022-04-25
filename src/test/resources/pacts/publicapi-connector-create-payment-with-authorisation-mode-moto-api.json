@@ -84,6 +84,9 @@
             "$.payment_provider": {
               "matchers": [{"match": "type"}]
             },
+            "$.moto": {
+              "matchers": [{"match": "type"}]
+            },
             "$.created_date": {
               "matchers": [{ "date": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" }]
             }

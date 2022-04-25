@@ -51,6 +51,7 @@ import static uk.gov.pay.api.model.CreateCardPaymentRequest.PREFILLED_CARDHOLDER
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.REFERENCE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.RETURN_URL_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.SET_UP_AGREEMENT_FIELD_NAME;
+import static uk.gov.pay.api.model.CreateCardPaymentRequest.AGREEMENT_ID_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.SOURCE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRefundRequest.REFUND_AMOUNT_AVAILABLE;
 import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_MISSING_FIELD_ERROR;
@@ -89,7 +90,11 @@ class RequestJsonParser {
         }
 
         if(paymentRequest.has(SET_UP_AGREEMENT_FIELD_NAME)) {
-            builder.setUpAgreement(validateAndGetSetUpAgreement(paymentRequest));
+            builder.setUpAgreement(validateAndGetSetUpAgreementAndAgreementId(paymentRequest));
+        }
+
+        if(paymentRequest.has(AGREEMENT_ID_FIELD_NAME)) {
+            builder.agreementId(validateAndGetSetUpAgreementAndAgreementId(paymentRequest));
         }
 
         if (paymentRequest.has(LANGUAGE_FIELD_NAME)) {
@@ -213,7 +218,7 @@ class RequestJsonParser {
                 JsonNode::booleanValue);
     }
 
-    private static String validateAndGetSetUpAgreement(JsonNode paymentRequest) {
+    private static String validateAndGetSetUpAgreementAndAgreementId(JsonNode paymentRequest) {
         return paymentRequest.get(SET_UP_AGREEMENT_FIELD_NAME).textValue();
     }
 
