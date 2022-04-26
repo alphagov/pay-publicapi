@@ -6,6 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
 import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.exception.PaymentValidationException;
+import uk.gov.pay.api.model.AuthorisationAPIRequest;
+import uk.gov.pay.api.model.AuthorisationAPIRequestBuilder;
 import uk.gov.pay.api.model.CreateAgreementRequestBuilder;
 import uk.gov.pay.api.model.CreateCardPaymentRequest;
 import uk.gov.pay.api.model.CreateCardPaymentRequestBuilder;
@@ -28,9 +30,21 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.http.HttpStatus.SC_UNPROCESSABLE_ENTITY;
 import static uk.gov.pay.api.agreement.model.CreateAgreementRequest.USER_IDENTIFIER_FIELD;
+import static uk.gov.pay.api.model.AuthorisationAPIRequest.CARDHOLDER_NAME_FIELD_NAME;
+import static uk.gov.pay.api.model.AuthorisationAPIRequest.CARDHOLDER_NAME_MAX_LENGTH;
+import static uk.gov.pay.api.model.AuthorisationAPIRequest.CARD_NUMBER_FIELD_NAME;
+import static uk.gov.pay.api.model.AuthorisationAPIRequest.CARD_NUMBER_MAX_VALUE;
+import static uk.gov.pay.api.model.AuthorisationAPIRequest.CARD_NUMBER_MIN_VALUE;
+import static uk.gov.pay.api.model.AuthorisationAPIRequest.CVC_FIELD_NAME;
+import static uk.gov.pay.api.model.AuthorisationAPIRequest.CVC_MAX_VALUE;
+import static uk.gov.pay.api.model.AuthorisationAPIRequest.CVC_MIN_VALUE;
+import static uk.gov.pay.api.model.AuthorisationAPIRequest.EXPIRY_DATE_FIELD_NAME;
+import static uk.gov.pay.api.model.AuthorisationAPIRequest.EXPIRY_DATE_SIZE;
+import static uk.gov.pay.api.model.AuthorisationAPIRequest.ONE_TIME_TOKEN_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.AMOUNT_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.AUTHORISATION_MODE;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.DELAYED_CAPTURE_FIELD_NAME;
@@ -53,6 +67,8 @@ import static uk.gov.pay.api.model.CreateCardPaymentRequest.RETURN_URL_FIELD_NAM
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.SET_UP_AGREEMENT_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.SOURCE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRefundRequest.REFUND_AMOUNT_AVAILABLE;
+import static uk.gov.pay.api.model.RequestError.Code.AUTHORISATION_API_MISSING_FIELD_ERROR;
+import static uk.gov.pay.api.model.RequestError.Code.AUTHORISATION_API_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_MISSING_FIELD_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_REFUND_MISSING_FIELD_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_REFUND_VALIDATION_ERROR;
@@ -138,6 +154,60 @@ class RequestJsonParser {
         return builder.build();
     }
 
+    static AuthorisationAPIRequest parseAuthorisationAPIRequest(JsonNode authorisationRequest) {
+        String oneTimeToken = validateAndGetString(
+                authorisationRequest.get(ONE_TIME_TOKEN_FIELD_NAME),
+                aRequestError(ONE_TIME_TOKEN_FIELD_NAME, AUTHORISATION_API_VALIDATION_ERROR,
+                        "Must be a string"),
+                aRequestError(ONE_TIME_TOKEN_FIELD_NAME, AUTHORISATION_API_MISSING_FIELD_ERROR));
+
+        String cardNumber = validateAndGetString(
+                authorisationRequest.get(CARD_NUMBER_FIELD_NAME),
+                aRequestError(CARD_NUMBER_FIELD_NAME, AUTHORISATION_API_VALIDATION_ERROR,
+                        "Must be a string"),
+                aRequestError(CARD_NUMBER_FIELD_NAME, AUTHORISATION_API_MISSING_FIELD_ERROR),
+                aRequestError(CARD_NUMBER_FIELD_NAME, AUTHORISATION_API_VALIDATION_ERROR,
+                        format("Must be between %s and %s characters long", CARD_NUMBER_MIN_VALUE, CARD_NUMBER_MAX_VALUE)),
+                CARD_NUMBER_MIN_VALUE,
+                CARD_NUMBER_MAX_VALUE);
+
+        String cvc = validateAndGetString(
+                authorisationRequest.get(CVC_FIELD_NAME),
+                aRequestError(CVC_FIELD_NAME, AUTHORISATION_API_VALIDATION_ERROR, "Must be a string"),
+                aRequestError(CVC_FIELD_NAME, AUTHORISATION_API_MISSING_FIELD_ERROR),
+                aRequestError(CVC_FIELD_NAME, AUTHORISATION_API_VALIDATION_ERROR,
+                        format("Must be between %s and %s characters long", CVC_MIN_VALUE, CVC_MAX_VALUE)),
+                CVC_MIN_VALUE,
+                CVC_MAX_VALUE);
+
+        String expiryDate = validateAndGetString(
+                authorisationRequest.get(EXPIRY_DATE_FIELD_NAME),
+                aRequestError(EXPIRY_DATE_FIELD_NAME, AUTHORISATION_API_VALIDATION_ERROR, "Must be a string"),
+                aRequestError(EXPIRY_DATE_FIELD_NAME, AUTHORISATION_API_MISSING_FIELD_ERROR),
+                aRequestError(EXPIRY_DATE_FIELD_NAME, AUTHORISATION_API_VALIDATION_ERROR,
+                        format("Must be %s characters long", EXPIRY_DATE_SIZE)),
+                EXPIRY_DATE_SIZE,
+                EXPIRY_DATE_SIZE);
+
+        String cardholderName = validateAndGetString(
+                authorisationRequest.get(CARDHOLDER_NAME_FIELD_NAME),
+                aRequestError(CARDHOLDER_NAME_FIELD_NAME, AUTHORISATION_API_VALIDATION_ERROR,
+                        "Must be a string"),
+                aRequestError(CARDHOLDER_NAME_FIELD_NAME, AUTHORISATION_API_MISSING_FIELD_ERROR),
+                aRequestError(CARDHOLDER_NAME_FIELD_NAME, AUTHORISATION_API_VALIDATION_ERROR,
+                        format("Must be less than or equal to %s characters length", CARDHOLDER_NAME_MAX_LENGTH)),
+                CARDHOLDER_NAME_MAX_LENGTH);
+
+        var builder = AuthorisationAPIRequestBuilder.builder()
+                .oneTimeToken(oneTimeToken)
+                .cardNumber(cardNumber)
+                .cvc(cvc)
+                .expiryDate(expiryDate)
+                .cardholderName(cardholderName);
+
+        return builder.build();
+    }
+
     private static String validateAndGetReturnUrl(JsonNode paymentRequest) {
         return validateAndGetString(
                 paymentRequest.get(RETURN_URL_FIELD_NAME),
@@ -187,6 +257,18 @@ class RequestJsonParser {
                 request.get(REFERENCE_FIELD_NAME),
                 aRequestError(REFERENCE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid string format"),
                 aRequestError(REFERENCE_FIELD_NAME, CREATE_PAYMENT_MISSING_FIELD_ERROR));
+    }
+
+    private static String validateAndGetString(JsonNode jsonNode, RequestError validationError, RequestError missingError, RequestError invalidLengthError, int minLength, int maxLength) {
+        String value = validateAndGetString(jsonNode, validationError, missingError);
+        checkLength(minLength, maxLength, value, invalidLengthError);
+        return value;
+    }
+
+    private static String validateAndGetString(JsonNode jsonNode, RequestError validationError, RequestError missingError, RequestError invalidLengthError, int maxLength) {
+        String value = validateAndGetString(jsonNode, validationError, missingError);
+        checkLength(maxLength, value, invalidLengthError);
+        return value;
     }
 
     private static String validateAndGetString(JsonNode jsonNode, RequestError validationError, RequestError missingError) {
@@ -345,6 +427,18 @@ class RequestJsonParser {
 
     private static void check(boolean condition, RequestError error) {
         if (!condition) {
+            throw new BadRequestException(error);
+        }
+    }
+
+    private static void checkLength(int min, int max, String value, RequestError error) {
+        if (value.length() < min || value.length() > max) {
+            throw new BadRequestException(error);
+        }
+    }
+
+    private static void checkLength(int max, String value, RequestError error) {
+        if (value.length() > max) {
             throw new BadRequestException(error);
         }
     }

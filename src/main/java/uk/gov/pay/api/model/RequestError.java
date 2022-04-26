@@ -66,7 +66,10 @@ public class RequestError {
 
         SEARCH_REFUNDS_VALIDATION_ERROR("P1101", "Invalid parameters: %s. See Public API documentation for the correct data formats"),
         SEARCH_REFUNDS_NOT_FOUND("P1100", "Page not found"),
-        SEARCH_REFUNDS_CONNECTOR_ERROR("P1898", "Downstream system error");
+        SEARCH_REFUNDS_CONNECTOR_ERROR("P1898", "Downstream system error"),
+        AUTHORISATION_API_MISSING_FIELD_ERROR("P1201", "Missing mandatory attribute: %s"),
+        AUTHORISATION_API_VALIDATION_ERROR("P1202", "Invalid attribute value: %s. %s"),
+        AUTHORISATION_API_PARSING_ERROR("P1297", "Unable to parse JSON");
 
         private String value;
         private String format;

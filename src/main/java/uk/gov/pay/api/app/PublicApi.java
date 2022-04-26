@@ -21,10 +21,12 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.PublicApiModule;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.auth.AccountAuthenticator;
+import uk.gov.pay.api.exception.mapper.BadAuthorisationAPIRequestExceptionMapper;
 import uk.gov.pay.api.exception.mapper.BadRefundsRequestExceptionMapper;
 import uk.gov.pay.api.exception.mapper.BadRequestExceptionMapper;
 import uk.gov.pay.api.exception.mapper.CancelChargeExceptionMapper;
 import uk.gov.pay.api.exception.mapper.CaptureChargeExceptionMapper;
+import uk.gov.pay.api.exception.mapper.CreateAgreementExceptionMapper;
 import uk.gov.pay.api.exception.mapper.CreateChargeExceptionMapper;
 import uk.gov.pay.api.exception.mapper.CreateRefundExceptionMapper;
 import uk.gov.pay.api.exception.mapper.GetChargeExceptionMapper;
@@ -44,6 +46,7 @@ import uk.gov.pay.api.filter.RateLimiterFilter;
 import uk.gov.pay.api.healthcheck.Ping;
 import uk.gov.pay.api.ledger.resource.TransactionsResource;
 import uk.gov.pay.api.managed.RedisClientManager;
+import uk.gov.pay.api.resources.AuthorisationAPIResource;
 import uk.gov.pay.api.resources.HealthCheckResource;
 import uk.gov.pay.api.resources.PaymentRefundsResource;
 import uk.gov.pay.api.resources.PaymentsResource;
@@ -56,7 +59,7 @@ import uk.gov.pay.api.validation.ReturnUrlValidator;
 import uk.gov.service.payments.logging.GovUkPayDropwizardRequestJsonLogLayoutFactory;
 import uk.gov.service.payments.logging.LoggingFilter;
 import uk.gov.service.payments.logging.LogstashConsoleAppenderFactory;
-import uk.gov.pay.api.exception.mapper.CreateAgreementExceptionMapper;
+
 import javax.net.ssl.HttpsURLConnection;
 import java.util.concurrent.TimeUnit;
 
@@ -96,6 +99,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         environment.jersey().register(injector.getInstance(SearchRefundsResource.class));
         environment.jersey().register(injector.getInstance(TransactionsResource.class));
         environment.jersey().register(injector.getInstance(TelephonePaymentNotificationResource.class));
+        environment.jersey().register(injector.getInstance(AuthorisationAPIResource.class));
         environment.jersey().register(new InjectingValidationFeature(injector));
         environment.jersey().register(injector.getInstance(ReturnUrlValidator.class));
         environment.jersey().register(injector.getInstance(SecuritytxtResource.class));
@@ -165,6 +169,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         jersey.register(GetRefundsExceptionMapper.class);
         jersey.register(CaptureChargeExceptionMapper.class);
         jersey.register(JsonProcessingExceptionMapper.class);
+        jersey.register(BadAuthorisationAPIRequestExceptionMapper.class);
     }
 
     private void initialiseMetrics(PublicApiConfig configuration, Environment environment) {
