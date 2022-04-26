@@ -1,25 +1,25 @@
 package uk.gov.pay.api.model;
 
-public class AuthorisationAPIRequestBuilder {
+public class AuthorisationRequestBuilder {
     private String oneTimeToken;
     private String cardNumber;
     private String cvc;
     private String expiryDate;
     private String cardholderName;
 
-    public static AuthorisationAPIRequestBuilder builder() {
-        return new AuthorisationAPIRequestBuilder();
+    public static AuthorisationRequestBuilder builder() {
+        return new AuthorisationRequestBuilder();
     }
 
-    public AuthorisationAPIRequest build() {
-        return new AuthorisationAPIRequest(this);
+    public AuthorisationRequest build() {
+        return new AuthorisationRequest(this);
     }
 
     public String getOneTimeToken() {
         return oneTimeToken;
     }
 
-    public AuthorisationAPIRequestBuilder oneTimeToken(String oneTimeToken) {
+    public AuthorisationRequestBuilder oneTimeToken(String oneTimeToken) {
         this.oneTimeToken = oneTimeToken;
         return this;
     }
@@ -28,7 +28,7 @@ public class AuthorisationAPIRequestBuilder {
         return cardNumber;
     }
 
-    public AuthorisationAPIRequestBuilder cardNumber(String cardNumber) {
+    public AuthorisationRequestBuilder cardNumber(String cardNumber) {
         this.cardNumber = cardNumber;
         return this;
     }
@@ -37,7 +37,7 @@ public class AuthorisationAPIRequestBuilder {
         return cvc;
     }
 
-    public AuthorisationAPIRequestBuilder cvc(String cvc) {
+    public AuthorisationRequestBuilder cvc(String cvc) {
         this.cvc = cvc;
         return this;
     }
@@ -46,7 +46,7 @@ public class AuthorisationAPIRequestBuilder {
         return expiryDate;
     }
 
-    public AuthorisationAPIRequestBuilder expiryDate(String expiryDate) {
+    public AuthorisationRequestBuilder expiryDate(String expiryDate) {
         this.expiryDate = expiryDate;
         return this;
     }
@@ -55,7 +55,7 @@ public class AuthorisationAPIRequestBuilder {
         return cardholderName;
     }
 
-    public AuthorisationAPIRequestBuilder cardholderName(String cardholderName) {
+    public AuthorisationRequestBuilder cardholderName(String cardholderName) {
         this.cardholderName = cardholderName;
         return this;
     }

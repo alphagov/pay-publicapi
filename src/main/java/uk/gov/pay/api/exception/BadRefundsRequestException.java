@@ -4,20 +4,20 @@ import uk.gov.pay.api.model.RequestError;
 
 public class BadRefundsRequestException extends RuntimeException {
 
-    private RequestError refundError;
+    private RequestError requestError;
 
-    public BadRefundsRequestException(RequestError refundError) {
-        this.refundError = refundError;
+    public BadRefundsRequestException(RequestError requestError) {
+        this.requestError = requestError;
     }
     
     public RequestError getRequestError() {
-        return refundError;
+        return requestError;
     }
 
     @Override
     public String toString() {
         return "BadRefundsRequestException{" +
-                "refundError=" + refundError +
+                "refundError=" + requestError +
                 '}';
     }
 }

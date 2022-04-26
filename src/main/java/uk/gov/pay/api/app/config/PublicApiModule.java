@@ -13,12 +13,12 @@ import io.lettuce.core.RedisClient;
 import io.lettuce.core.SocketOptions;
 import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
 import uk.gov.pay.api.app.RestClientFactory;
-import uk.gov.pay.api.json.AuthorisationAPIRequestDeserializer;
+import uk.gov.pay.api.json.AuthorisationRequestDeserializer;
 import uk.gov.pay.api.json.CreateAgreementRequestDeserializer;
 import uk.gov.pay.api.json.CreateCardPaymentRequestDeserializer;
 import uk.gov.pay.api.json.CreatePaymentRefundRequestDeserializer;
 import uk.gov.pay.api.json.StringDeserializer;
-import uk.gov.pay.api.model.AuthorisationAPIRequest;
+import uk.gov.pay.api.model.AuthorisationRequest;
 import uk.gov.pay.api.model.CreateCardPaymentRequest;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.validation.PaymentRefundRequestValidator;
@@ -60,14 +60,14 @@ public class PublicApiModule extends AbstractModule {
         CreateCardPaymentRequestDeserializer cardPaymentRequestDeserializer = new CreateCardPaymentRequestDeserializer();
         CreatePaymentRefundRequestDeserializer paymentRefundRequestDeserializer = new CreatePaymentRefundRequestDeserializer(new PaymentRefundRequestValidator());
         StringDeserializer stringDeserializer = new StringDeserializer();
-        AuthorisationAPIRequestDeserializer authorisationAPIRequestDeserializer = new AuthorisationAPIRequestDeserializer();
+        AuthorisationRequestDeserializer authorisationRequestDeserializer = new AuthorisationRequestDeserializer();
 
         SimpleModule publicApiDeserializationModule = new SimpleModule("publicApiDeserializationModule");
         publicApiDeserializationModule.addDeserializer(CreateAgreementRequest.class, agreementRequestDeserializer); 
         publicApiDeserializationModule.addDeserializer(CreateCardPaymentRequest.class, cardPaymentRequestDeserializer);
         publicApiDeserializationModule.addDeserializer(CreatePaymentRefundRequest.class, paymentRefundRequestDeserializer);
         publicApiDeserializationModule.addDeserializer(String.class, stringDeserializer);
-        publicApiDeserializationModule.addDeserializer(AuthorisationAPIRequest.class, authorisationAPIRequestDeserializer);
+        publicApiDeserializationModule.addDeserializer(AuthorisationRequest.class, authorisationRequestDeserializer);
 
         objectMapper.configure(DeserializationFeature.ACCEPT_FLOAT_AS_INT, false);
         objectMapper.registerModule(publicApiDeserializationModule);

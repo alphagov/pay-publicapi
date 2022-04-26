@@ -13,7 +13,7 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 
-public class AuthorisationAPIResourceIT extends PaymentResourceITestBase {
+public class AuthorisationResourceIT extends PaymentResourceITestBase {
 
     private static final String AUTH_PATH = "/v1/auth";
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);

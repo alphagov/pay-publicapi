@@ -2,7 +2,7 @@ package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class AuthorisationAPIRequest {
+public class AuthorisationRequest {
     public static final String ONE_TIME_TOKEN_FIELD_NAME = "one_time_token";
     public static final String CARD_NUMBER_FIELD_NAME = "card_number";
     public static final String CVC_FIELD_NAME = "cvc";
@@ -31,11 +31,11 @@ public class AuthorisationAPIRequest {
     @JsonProperty(CARDHOLDER_NAME_FIELD_NAME)
     private String cardholderName;
 
-    public AuthorisationAPIRequest() {
+    public AuthorisationRequest() {
         // for Jackson
     }
 
-    public AuthorisationAPIRequest(AuthorisationAPIRequestBuilder builder) {
+    public AuthorisationRequest(AuthorisationRequestBuilder builder) {
         this.oneTimeToken = builder.getOneTimeToken();
         this.cardNumber = builder.getCardNumber();
         this.cvc = builder.getCvc();

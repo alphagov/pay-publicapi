@@ -12,12 +12,13 @@ public class BadAuthorisationRequestException extends RuntimeException {
 
     public RequestError getRequestError() {
         return requestError;
+
     }
 
     @Override
     public String toString() {
         return "BadAuthorisationRequestException{" +
-                "paymentError=" + requestError +
+                "requestError=" + requestError +
                 '}';
     }
 }

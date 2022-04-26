@@ -6,8 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
 import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.exception.PaymentValidationException;
-import uk.gov.pay.api.model.AuthorisationAPIRequest;
-import uk.gov.pay.api.model.AuthorisationAPIRequestBuilder;
+import uk.gov.pay.api.model.AuthorisationRequest;
+import uk.gov.pay.api.model.AuthorisationRequestBuilder;
 import uk.gov.pay.api.model.CreateAgreementRequestBuilder;
 import uk.gov.pay.api.model.CreateCardPaymentRequest;
 import uk.gov.pay.api.model.CreateCardPaymentRequestBuilder;
@@ -34,17 +34,17 @@ import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.http.HttpStatus.SC_UNPROCESSABLE_ENTITY;
 import static uk.gov.pay.api.agreement.model.CreateAgreementRequest.USER_IDENTIFIER_FIELD;
-import static uk.gov.pay.api.model.AuthorisationAPIRequest.CARDHOLDER_NAME_FIELD_NAME;
-import static uk.gov.pay.api.model.AuthorisationAPIRequest.CARDHOLDER_NAME_MAX_LENGTH;
-import static uk.gov.pay.api.model.AuthorisationAPIRequest.CARD_NUMBER_FIELD_NAME;
-import static uk.gov.pay.api.model.AuthorisationAPIRequest.CARD_NUMBER_MAX_VALUE;
-import static uk.gov.pay.api.model.AuthorisationAPIRequest.CARD_NUMBER_MIN_VALUE;
-import static uk.gov.pay.api.model.AuthorisationAPIRequest.CVC_FIELD_NAME;
-import static uk.gov.pay.api.model.AuthorisationAPIRequest.CVC_MAX_VALUE;
-import static uk.gov.pay.api.model.AuthorisationAPIRequest.CVC_MIN_VALUE;
-import static uk.gov.pay.api.model.AuthorisationAPIRequest.EXPIRY_DATE_FIELD_NAME;
-import static uk.gov.pay.api.model.AuthorisationAPIRequest.EXPIRY_DATE_SIZE;
-import static uk.gov.pay.api.model.AuthorisationAPIRequest.ONE_TIME_TOKEN_FIELD_NAME;
+import static uk.gov.pay.api.model.AuthorisationRequest.CARDHOLDER_NAME_FIELD_NAME;
+import static uk.gov.pay.api.model.AuthorisationRequest.CARDHOLDER_NAME_MAX_LENGTH;
+import static uk.gov.pay.api.model.AuthorisationRequest.CARD_NUMBER_FIELD_NAME;
+import static uk.gov.pay.api.model.AuthorisationRequest.CARD_NUMBER_MAX_VALUE;
+import static uk.gov.pay.api.model.AuthorisationRequest.CARD_NUMBER_MIN_VALUE;
+import static uk.gov.pay.api.model.AuthorisationRequest.CVC_FIELD_NAME;
+import static uk.gov.pay.api.model.AuthorisationRequest.CVC_MAX_VALUE;
+import static uk.gov.pay.api.model.AuthorisationRequest.CVC_MIN_VALUE;
+import static uk.gov.pay.api.model.AuthorisationRequest.EXPIRY_DATE_FIELD_NAME;
+import static uk.gov.pay.api.model.AuthorisationRequest.EXPIRY_DATE_SIZE;
+import static uk.gov.pay.api.model.AuthorisationRequest.ONE_TIME_TOKEN_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.AMOUNT_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.AUTHORISATION_MODE;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.DELAYED_CAPTURE_FIELD_NAME;
@@ -154,7 +154,7 @@ class RequestJsonParser {
         return builder.build();
     }
 
-    static AuthorisationAPIRequest parseAuthorisationAPIRequest(JsonNode authorisationRequest) {
+    static AuthorisationRequest parseAuthorisationRequest(JsonNode authorisationRequest) {
         String oneTimeToken = validateAndGetString(
                 authorisationRequest.get(ONE_TIME_TOKEN_FIELD_NAME),
                 aRequestError(ONE_TIME_TOKEN_FIELD_NAME, AUTHORISATION_API_VALIDATION_ERROR,
@@ -198,7 +198,7 @@ class RequestJsonParser {
                         format("Must be less than or equal to %s characters length", CARDHOLDER_NAME_MAX_LENGTH)),
                 CARDHOLDER_NAME_MAX_LENGTH);
 
-        var builder = AuthorisationAPIRequestBuilder.builder()
+        var builder = AuthorisationRequestBuilder.builder()
                 .oneTimeToken(oneTimeToken)
                 .cardNumber(cardNumber)
                 .cvc(cvc)

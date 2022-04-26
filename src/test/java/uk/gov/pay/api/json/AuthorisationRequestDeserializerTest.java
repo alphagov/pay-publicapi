@@ -7,7 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import uk.gov.pay.api.exception.BadAuthorisationRequestException;
-import uk.gov.pay.api.model.AuthorisationAPIRequest;
+import uk.gov.pay.api.model.AuthorisationRequest;
 import uk.gov.pay.api.model.RequestError;
 
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -15,16 +15,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThrows;
 
-class AuthorisationAPIRequestDeserializerTest {
+class AuthorisationRequestDeserializerTest {
 
     @Mock
     private DeserializationContext ctx;
     private JsonFactory jsonFactory = new JsonFactory(new ObjectMapper());
-    private AuthorisationAPIRequestDeserializer deserializer;
+    private AuthorisationRequestDeserializer deserializer;
 
     @BeforeEach
     public void setup() {
-        deserializer = new AuthorisationAPIRequestDeserializer();
+        deserializer = new AuthorisationRequestDeserializer();
     }
 
     @Test
@@ -36,7 +36,7 @@ class AuthorisationAPIRequestDeserializerTest {
                 "  \"expiry_date\": \"09/28\",\n" +
                 "  \"cardholder_name\": \"Joe Boggs\"\n" +
                 "}";
-        AuthorisationAPIRequest request = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+        AuthorisationRequest request = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
 
         assertThat(request.getOneTimeToken(), is("27432234tyu-4567"));
         assertThat(request.getCardNumber(), is("12345678901234"));

@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.model.AuthorisationAPIRequest;
+import uk.gov.pay.api.model.AuthorisationRequest;
 
 import javax.validation.Valid;
 import javax.ws.rs.POST;
@@ -18,11 +18,11 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/")
 @Produces({"application/json"})
-public class AuthorisationAPIResource {
+public class AuthorisationResource {
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthorisationAPIResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(AuthorisationResource.class);
 
-    public AuthorisationAPIResource() {
+    public AuthorisationResource() {
     }
 
     @POST
@@ -31,7 +31,7 @@ public class AuthorisationAPIResource {
     @Produces(APPLICATION_JSON)
     public Response authorisePayment(@Parameter(hidden = true) @Auth Account account,
                                      @Parameter(required = true)
-                                     @Valid AuthorisationAPIRequest authorisationRequest) {
+                                     @Valid AuthorisationRequest authorisationRequest) {
 
         logger.info("Payment authorised");
         return Response.noContent().build();
