@@ -167,9 +167,29 @@ public class CreatePaymentServiceTest {
 
         PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
         CardPayment payment = (CardPayment) paymentResponse.getPayment();
-
-        assertThat(payment.getPaymentId(), is("ch_ab2341da231434l"));
+        assertThat(paymentResponse.getLinks().getAuthUrlPost(), is(new PostLink("https://connector/v1/api/charges/authorise", "POST", "application/json", Collections.singletonMap("one_time_token", "token_1234567asdf"))));
+        assertThat(payment.getPaymentId(), is("ch_123abc456def"));
         assertThat(payment.getAuthorisationMode(), is(AuthorisationMode.MOTO_API));
+    }
+
+    @Test
+    @PactVerification({"connector"})
+    @Pacts(pacts = {"publicapi-connector-create-payment-with-authorisation-mode-moto-api-not-allowed"})
+    public void testCreatePaymentWithAuthorisationModeMotoApi_whenNotAllowedForAccount_shouldReturn422() {
+        Account account = new Account("667", TokenPaymentType.CARD, "a-token-link");
+        var requestPayload = CreateCardPaymentRequestBuilder.builder()
+                .amount(100)
+                .returnUrl("https://somewhere.gov.uk/rainbow/1")
+                .reference("a reference")
+                .description("a description")
+                .authorisationMode(AuthorisationMode.MOTO_API)
+                .build();
+        try {
+            createPaymentService.create(account, requestPayload);
+            fail("Expected CreateChargeException to be thrown");
+        } catch (CreateChargeException e) {
+            assertThat(e.getErrorIdentifier(), is(ErrorIdentifier.AUTHORISATION_API_NOT_ALLOWED));
+        }
     }
     
     @Test

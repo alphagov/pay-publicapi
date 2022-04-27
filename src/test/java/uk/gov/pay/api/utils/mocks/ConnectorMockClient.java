@@ -52,8 +52,9 @@ import static uk.gov.pay.api.it.fixtures.PaymentSingleResultBuilder.aSuccessfulS
 import static uk.gov.pay.api.utils.mocks.AgreementResponseFromConnector.AgreementResponseFromConnectorBuilder.aCreateAgreementResponseFromConnector;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.ACCOUNT_NOT_LINKED_WITH_PSP;
-import static uk.gov.service.payments.commons.model.ErrorIdentifier.GENERIC;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.AGREEMENT_NOT_FOUND;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.AUTHORISATION_API_NOT_ALLOWED;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.GENERIC;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.MOTO_NOT_ALLOWED;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.REFUND_AMOUNT_AVAILABLE_MISMATCH;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.REFUND_NOT_AVAILABLE;
@@ -263,7 +264,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withCardDetails(new CardDetails("1234", "123456", "Mr. Payment", "12/19", null, "Mastercard", "debit"))
                 .withLink(validGetLink(chargeLocation(gatewayAccountId, "chargeId"), "self"))
                 .withLink(validGetLink(nextUrl("chargeTokenId"), "next_url"))
-                .withLink(validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap("chargeTokenId")));
+                .withLink(validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap("chargeTokenId", false)));
 
         if (requestParams.getSetUpAgreement() != null) {
             responseFromConnector.withAgreementId(requestParams.getSetUpAgreement());
@@ -297,8 +298,21 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         ChargeResponseFromConnector build = aCreateOrGetChargeResponseFromConnector(responseFromConnector)
                 .withLink(validGetLink(chargeLocation(gatewayAccountId, responseFromConnector.getChargeId()), "self"))
                 .withLink(validGetLink(nextUrl(chargeTokenId), "next_url"))
-                .withLink(validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap(chargeTokenId))).build();
+                .withLink(validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap(chargeTokenId, false))).build();
         
+        mockCreateCharge(gatewayAccountId,
+                aResponse().withStatus(CREATED_201)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withHeader(LOCATION, chargeLocation(gatewayAccountId, responseFromConnector.getChargeId()))
+                        .withBody(buildChargeResponse(build)));
+    }
+
+    public void respondOk_whenCreateCharge_withAuthorisationMode_MotoApi(String chargeTokenId, String gatewayAccountId, ChargeResponseFromConnector responseFromConnector) {
+        ChargeResponseFromConnector build = aCreateOrGetChargeResponseFromConnector(responseFromConnector)
+                .withMoto(true)
+                .withLink(validGetLink(chargeLocation(gatewayAccountId, responseFromConnector.getChargeId()), "self"))
+                .withLink(validPostLink(CONNECTOR_MOCK_AUTHORISATION_PATH, "auth_url_post", "application/json", getChargeIdTokenMap(chargeTokenId, true))).build();
+
         mockCreateCharge(gatewayAccountId,
                 aResponse().withStatus(CREATED_201)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
@@ -360,6 +374,10 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         mockCreateCharge(gatewayAccountId, withStatusAndErrorMessage(UNPROCESSABLE_ENTITY_422, "anything", MOTO_NOT_ALLOWED));
     }
 
+    public void respondAuthorisationApiNotAllowed(String gatewayAccountId) {
+        mockCreateCharge(gatewayAccountId, withStatusAndErrorMessage(UNPROCESSABLE_ENTITY_422, "anything", AUTHORISATION_API_NOT_ALLOWED));
+    }
+
     public void respondTelephoneNotificationsNotEnabled(String gatewayAccountId) {
         mockCreateTelephoneCharge(gatewayAccountId, withStatusAndErrorMessage(FORBIDDEN_403, "anything", TELEPHONE_PAYMENT_NOTIFICATIONS_NOT_ALLOWED));
     }
@@ -367,8 +385,12 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     public void respondGatewayAccountCredentialNotConfigured(String gatewayAccountId) {
         mockCreateCharge(gatewayAccountId, withStatusAndErrorMessage(BAD_REQUEST_400, "Payment provider details are not configured on this account", ACCOUNT_NOT_LINKED_WITH_PSP));
     }
-
+    
     public void respondWithChargeFound(String chargeTokenId, String gatewayAccountId, ChargeResponseFromConnector chargeResponseFromConnector) {
+        respondWithChargeFound(chargeTokenId, gatewayAccountId, chargeResponseFromConnector, false);
+    }
+
+    public void respondWithChargeFound(String chargeTokenId, String gatewayAccountId, ChargeResponseFromConnector chargeResponseFromConnector, boolean isMotoApi) {
         String chargeResponseBody;
         String chargeId = chargeResponseFromConnector.getChargeId();
 
@@ -381,10 +403,16 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                     .withLink(validPostLink(chargeLocation(gatewayAccountId, chargeId) + "/capture", "capture", "application/x-www-form-urlencoded", new HashMap<>()))
                     .build();
         } else {
-            responseFromConnector
-                    .withLink(validGetLink(nextUrl(chargeId), "next_url"))
-                    .withLink(validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap(chargeTokenId)))
-                    .build();
+            if(isMotoApi) {
+                responseFromConnector
+                        .withLink(validPostLink(CONNECTOR_MOCK_AUTHORISATION_PATH, "auth_url_post", "application/json", getChargeIdTokenMap(chargeTokenId, true)))
+                        .build();
+            } else {
+                responseFromConnector
+                        .withLink(validGetLink(nextUrl(chargeId), "next_url"))
+                        .withLink(validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap(chargeTokenId, false)))
+                        .build();
+            }
         }
 
         chargeResponseBody = buildChargeResponse(responseFromConnector.build());
@@ -554,9 +582,9 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     }
 
     //"Gson can not automatically deserialize the pure inner classes since their no-args constructor"
-    private Map<String, String> getChargeIdTokenMap(String chargeTokenId) {
+    private Map<String, String> getChargeIdTokenMap(String chargeTokenId, boolean isMotoApi) {
         final Map<String, String> chargeTokenIdMap = new HashMap<>();
-        chargeTokenIdMap.put("chargeTokenId", chargeTokenId);
+        chargeTokenIdMap.put(isMotoApi ? "one_time_token" : "chargeTokenId", chargeTokenId);
         return chargeTokenIdMap;
     }
 

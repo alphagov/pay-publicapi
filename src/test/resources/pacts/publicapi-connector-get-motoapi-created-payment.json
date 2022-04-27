@@ -7,37 +7,24 @@
   },
   "interactions": [
     {
-      "description": "a create charge request with authorisation_mode of moto_api",
+      "description": "get a charge request for a moto_api created payment",
       "providerStates": [
         {
-          "name": "a gateway account with external id exists",
+          "name": "a charge with authorisation mode moto_api exists",
           "params": {
-            "gateway_account_id": "123456"
-          }
-        },
-        {
-          "name": "a gateway account has authorisation_api enabled",
-          "params": {
-            "gateway_account_id": "123456"
+            "gateway_account_id": "123456",
+            "charge_id": "ch_123abc456def"
           }
         }
       ],
       "request": {
-        "method": "POST",
-        "path": "/v1/api/accounts/123456/charges",
-        "body": {
-          "amount": 100,
-          "reference": "a reference",
-          "description": "a description",
-          "return_url": "https://somewhere.gov.uk/rainbow/1",
-          "authorisation_mode": "moto_api"
-        }
+        "method": "GET",
+        "path": "/v1/api/accounts/123456/charges/ch_123abc456def"
       },
       "response": {
-        "status": 201,
+        "status": 200,
         "headers": {
-          "Content-Type": "application/json",
-          "Location": "/v1/api/accounts/123456/charges/ch_123abc456def"
+          "Content-Type": "application/json"
         },
         "body": {
           "charge_id": "ch_123abc456def",
@@ -76,15 +63,6 @@
           ]
         },
         "matchingRules": {
-          "header": {
-            "Location": {
-              "matchers": [
-                {
-                  "regex": "https*:\/\/.*\/v1\/api\/accounts\/123456\/charges\/[a-z0-9]*"
-                }
-              ]
-            }
-          },
           "body": {
             "$.charge_id": {
               "matchers": [{"match": "type"}]

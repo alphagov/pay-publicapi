@@ -1,5 +1,6 @@
 package uk.gov.pay.api.it;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.jayway.jsonassert.JsonAssert;
 import io.restassured.response.ValidatableResponse;
 import org.apache.http.HttpStatus;
@@ -27,6 +28,7 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
@@ -462,7 +464,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
 
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
-        connectorMockClient.respondOk_whenCreateCharge(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
+        connectorMockClient.respondOk_whenCreateCharge_withAuthorisationMode_MotoApi(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
                 .withAmount(amount)
                 .withChargeId(CHARGE_ID)
                 .withState(CREATED)
@@ -474,7 +476,6 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .withCreatedDate(CREATED_DATE)
                 .withLanguage(SupportedLanguage.ENGLISH)
                 .withDelayedCapture(false)
-                .withMoto(false)
                 .withRefundSummary(REFUND_SUMMARY)
                 .withCardDetails(CARD_DETAILS)
                 .withAuthorisationMode(AuthorisationMode.MOTO_API)
@@ -498,8 +499,13 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .body("return_url", is(RETURN_URL))
                 .body("payment_provider", is(PAYMENT_PROVIDER))
                 .body("created_date", is(CREATED_DATE))
-                .body("authorisation_mode", is("moto_api"));
-
+                .body("moto", is(true))
+                .body("authorisation_mode", is(AuthorisationMode.MOTO_API.getName()))
+                .body("_links.auth_url_post.type", is("application/json"))
+                .body("_links.auth_url_post.method", is("POST"))
+                .body("_links.auth_url_post.href", is("/v1/api/charges/authorise"))
+                .body("_links.auth_url_post.params.one_time_token", is(CHARGE_TOKEN_ID));
+                
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, params);
     }
 
@@ -593,7 +599,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPayment_responseWith422_whenMototNotAllowed() {
+    public void createPayment_responseWith422_whenMotoNotAllowed() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         connectorMockClient.respondMotoPaymentNotAllowed(GATEWAY_ACCOUNT_ID);
@@ -613,6 +619,29 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .body("description", is("MOTO payments are not enabled for this account. Please contact support if you would like to process MOTO payments"));
 
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createMotoPaymentPayload);
+    }
+
+    @Test
+    public void createPayment_responseWith422_whenAuthApiNotAllowed() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+
+        connectorMockClient.respondAuthorisationApiNotAllowed(GATEWAY_ACCOUNT_ID);
+
+        String payload = paymentPayload(aCreateChargeRequestParams()
+                .withAmount(AMOUNT)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withReturnUrl(RETURN_URL)
+                .withAuthorisationMode(AuthorisationMode.MOTO_API)
+                .build());
+
+        postPaymentResponse(payload)
+                .statusCode(422)
+                .contentType(JSON)
+                .body("code", is("P0195"))
+                .body("description", is("Using authorisation_mode of moto_api is not allowed for this account"));
+
+        connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, payload);
     }
 
     @Test

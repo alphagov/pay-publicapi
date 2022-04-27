@@ -136,4 +136,27 @@ public class GetPaymentServiceTest {
         assertThat(paymentResponse.getLinks().getNextUrl(), is(nullValue()));
         assertThat(paymentResponse.getLinks().getNextUrlPost(), is(nullValue()));
     }
+
+    @Test
+    @PactVerification({"connector"})
+    @Pacts(pacts = {"publicapi-connector-get-motoapi-created-payment"})
+    public void testGetMotoApiPayment() {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "a-token-link");
+
+        PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID);
+        CardPayment payment = (CardPayment) paymentResponse.getPayment();
+
+        assertThat(payment.getAmount(), is(100L));
+        assertThat(payment.getState(), is(new PaymentState("created", false)));
+        assertThat(payment.getDescription(), is("a description"));
+        assertThat(payment.getReference(), is("a reference"));
+        assertThat(payment.getPaymentId(), is(CHARGE_ID));
+        assertThat(payment.getMoto(), is (true));
+        assertThat(payment.getAuthorisationMode(), is(AuthorisationMode.MOTO_API));
+        assertThat(paymentResponse.getLinks().getSelf().getHref(), containsString("v1/payments/" + CHARGE_ID));
+        assertThat(paymentResponse.getLinks().getSelf().getMethod(), is("GET"));
+        assertThat(paymentResponse.getLinks().getRefunds().getHref(), containsString("v1/payments/" + CHARGE_ID + "/refunds"));
+        assertThat(paymentResponse.getLinks().getRefunds().getMethod(), is("GET"));
+        assertThat(paymentResponse.getLinks().getAuthUrlPost(), is(new PostLink("https://connector/v1/api/charges/authorise", "POST", "application/json", Collections.singletonMap("one_time_token", "token_1234567asdf"))));
+    }
 }

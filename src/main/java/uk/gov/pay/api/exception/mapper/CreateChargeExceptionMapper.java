@@ -15,6 +15,7 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static uk.gov.pay.api.model.RequestError.Code.ACCOUNT_NOT_LINKED_WITH_PSP;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_ACCOUNT_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_AGREEMENT_ID_ERROR;
+import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_AUTHORISATION_API_NOT_ENABLED;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_CONNECTOR_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_MOTO_NOT_ENABLED;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
@@ -57,6 +58,10 @@ public class CreateChargeExceptionMapper implements ExceptionMapper<CreateCharge
                 case ACCOUNT_NOT_LINKED_WITH_PSP:
                     statusCode = HttpStatus.FORBIDDEN_403;
                     requestError = aRequestError(ACCOUNT_NOT_LINKED_WITH_PSP);
+                    break;
+                case AUTHORISATION_API_NOT_ALLOWED:
+                    statusCode = HttpStatus.UNPROCESSABLE_ENTITY_422;
+                    requestError = aRequestError(CREATE_PAYMENT_AUTHORISATION_API_NOT_ENABLED);
                     break;
                 default:
                     requestError = aRequestError(CREATE_PAYMENT_CONNECTOR_ERROR);
