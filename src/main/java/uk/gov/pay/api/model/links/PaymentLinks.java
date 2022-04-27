@@ -12,33 +12,37 @@ import static javax.ws.rs.HttpMethod.POST;
 @Schema(name = "PaymentLinks", description = "links for payment")
 public class PaymentLinks {
 
-    private static final String SELF = "self";
-    private static final String NEXT_URL = "next_url";
-    private static final String NEXT_URL_POST = "next_url_post";
-    private static final String EVENTS = "events";
-    private static final String CANCEL = "cancel";
-    private static final String REFUNDS = "refunds";
-    private static final String CAPTURE = "capture";
+    private static final String SELF_FIELD = "self";
+    private static final String NEXT_URL_FIELD = "next_url";
+    private static final String NEXT_URL_POST_FIELD = "next_url_post";
+    private static final String AUTH_URL_POST_FIELD = "auth_url_post";
+    private static final String EVENTS_FIELD = "events";
+    private static final String CANCEL_FIELD = "cancel";
+    private static final String REFUNDS_FIELD = "refunds";
+    private static final String CAPTURE_FIELD = "capture";
 
-    @JsonProperty(value = SELF)
+    @JsonProperty(value = SELF_FIELD)
     private Link self;
 
-    @JsonProperty(NEXT_URL)
+    @JsonProperty(NEXT_URL_FIELD)
     private Link nextUrl;
 
-    @JsonProperty(NEXT_URL_POST)
+    @JsonProperty(NEXT_URL_POST_FIELD)
     private PostLink nextUrlPost;
+    
+    @JsonProperty(AUTH_URL_POST_FIELD)
+    private PostLink authUrlPost;
 
-    @JsonProperty(value = EVENTS)
+    @JsonProperty(value = EVENTS_FIELD)
     private Link events;
 
-    @JsonProperty(value = REFUNDS)
+    @JsonProperty(value = REFUNDS_FIELD)
     private Link refunds;
 
-    @JsonProperty(value = CANCEL)
+    @JsonProperty(value = CANCEL_FIELD)
     private PostLink cancel;
     
-    @JsonProperty(value = CAPTURE)
+    @JsonProperty(value = CAPTURE_FIELD)
     private PostLink capture;
 
     public Link getSelf() {
@@ -51,6 +55,10 @@ public class PaymentLinks {
 
     public PostLink getNextUrlPost() {
         return nextUrlPost;
+    }
+    
+    public PostLink getAuthUrlPost() {
+        return authUrlPost;
     }
 
     public Link getEvents() {
@@ -72,6 +80,7 @@ public class PaymentLinks {
     public void addKnownLinksValueOf(List<PaymentConnectorResponseLink> chargeLinks) {
         addNextUrlIfPresent(chargeLinks);
         addNextUrlPostIfPresent(chargeLinks);
+        addAuthUrlPostIfPresent(chargeLinks);
         addCaptureUrlIfPresent(chargeLinks);
     }
 
@@ -94,24 +103,31 @@ public class PaymentLinks {
     public void addCapture(String href) {
         this.capture = new PostLink(href, POST);
     }
+    
+    private void addAuthUrlPostIfPresent(List<PaymentConnectorResponseLink> chargeLinks) {
+        chargeLinks.stream()
+                .filter(links -> AUTH_URL_POST_FIELD.equals(links.getRel()))
+                .findFirst()
+                .ifPresent(links -> this.authUrlPost = new PostLink(links.getHref(), links.getMethod(), links.getType(), links.getParams()));
+    }
 
     private void addNextUrlPostIfPresent(List<PaymentConnectorResponseLink> chargeLinks) {
         chargeLinks.stream()
-                .filter(chargeLink -> NEXT_URL_POST.equals(chargeLink.getRel()))
+                .filter(chargeLink -> NEXT_URL_POST_FIELD.equals(chargeLink.getRel()))
                 .findFirst()
                 .ifPresent(chargeLink -> this.nextUrlPost = new PostLink(chargeLink.getHref(), chargeLink.getMethod(), chargeLink.getType(), chargeLink.getParams()));
     }
 
     private void addNextUrlIfPresent(List<PaymentConnectorResponseLink> chargeLinks) {
         chargeLinks.stream()
-                .filter(chargeLink -> NEXT_URL.equals(chargeLink.getRel()))
+                .filter(chargeLink -> NEXT_URL_FIELD.equals(chargeLink.getRel()))
                 .findFirst()
                 .ifPresent(chargeLink -> this.nextUrl = new Link(chargeLink.getHref(), chargeLink.getMethod()));
     }
 
     private void addCaptureUrlIfPresent(List<PaymentConnectorResponseLink> chargeLinks) {
         chargeLinks.stream()
-                .filter(chargeLink -> CAPTURE.equals(chargeLink.getRel()))
+                .filter(chargeLink -> CAPTURE_FIELD.equals(chargeLink.getRel()))
                 .findFirst()
                 .ifPresent(chargeLink -> this.capture = new PostLink(chargeLink.getHref(), chargeLink.getMethod()));
     }

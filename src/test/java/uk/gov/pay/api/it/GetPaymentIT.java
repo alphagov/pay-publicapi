@@ -187,12 +187,12 @@ public class GetPaymentIT extends PaymentResourceITestBase {
     public void getPaymentWithAuthorisationModeMotoApiThroughConnector_ReturnsPayment() {
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, getConnectorCharge()
                 .withAuthorisationMode(AuthorisationMode.MOTO_API)
-                .build());
+                .build(), true);
 
         ValidatableResponse response = getPaymentResponse(CHARGE_ID);
 
         assertCommonPaymentFields(response);
-        assertConnectorOnlyPaymentFields(response);
+        assertConnectorOnlyMotoApiPaymentFields(response);
         response.body("authorisation_mode", is("moto_api"));
     }
 
@@ -260,6 +260,14 @@ public class GetPaymentIT extends PaymentResourceITestBase {
                 .body("_links.next_url_post.method", is("POST"))
                 .body("_links.next_url_post.type", is("application/x-www-form-urlencoded"))
                 .body("_links.next_url_post.params.chargeTokenId", is(CHARGE_TOKEN_ID));
+    }
+
+    private void assertConnectorOnlyMotoApiPaymentFields(ValidatableResponse paymentResponse) {
+        paymentResponse
+                .body("_links.auth_url_post.href", is("/v1/api/charges/authorise"))
+                .body("_links.auth_url_post.method", is("POST"))
+                .body("_links.auth_url_post.type", is("application/json"))
+                .body("_links.auth_url_post.params.one_time_token", is(CHARGE_TOKEN_ID));
     }
     
     @Test
