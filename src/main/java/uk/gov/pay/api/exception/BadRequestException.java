@@ -1,23 +1,23 @@
 package uk.gov.pay.api.exception;
 
-import uk.gov.pay.api.model.PaymentError;
+import uk.gov.pay.api.model.RequestError;
 
 public class BadRequestException extends RuntimeException {
 
-    private PaymentError paymentError;
+    private RequestError requestError;
 
-    public BadRequestException(PaymentError paymentError) {
-        this.paymentError = paymentError;
+    public BadRequestException(RequestError requestError) {
+        this.requestError = requestError;
     }
 
-    public PaymentError getPaymentError() {
-        return paymentError;
+    public RequestError getRequestError() {
+        return requestError;
     }
 
     @Override
     public String toString() {
         return "BadRequestException{" +
-                "paymentError=" + paymentError +
+                "requestError=" + requestError +
                 '}';
     }
 }

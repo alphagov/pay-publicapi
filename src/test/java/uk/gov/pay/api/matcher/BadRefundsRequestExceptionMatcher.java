@@ -3,7 +3,7 @@ package uk.gov.pay.api.matcher;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import uk.gov.pay.api.exception.BadRefundsRequestException;
-import uk.gov.pay.api.model.RefundError;
+import uk.gov.pay.api.model.RequestError;
 
 public class BadRefundsRequestExceptionMatcher extends TypeSafeMatcher<BadRefundsRequestException> {
 
@@ -21,9 +21,9 @@ public class BadRefundsRequestExceptionMatcher extends TypeSafeMatcher<BadRefund
 
     @Override
     protected boolean matchesSafely(BadRefundsRequestException e) {
-        RefundError refundError = e.getRefundError();
-        return code.equals(refundError.getCode()) &&
-                description.equals(refundError.getDescription());
+        RequestError requestError = e.getRequestError();
+        return code.equals(requestError.getCode()) &&
+                description.equals(requestError.getDescription());
     }
 
     @Override

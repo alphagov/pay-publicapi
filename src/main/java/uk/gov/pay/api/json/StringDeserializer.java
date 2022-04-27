@@ -8,8 +8,8 @@ import uk.gov.pay.api.exception.PaymentValidationException;
 
 import java.io.IOException;
 
-import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
-import static uk.gov.pay.api.model.PaymentError.aPaymentError;
+import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
+import static uk.gov.pay.api.model.RequestError.aRequestError;
 
 public class StringDeserializer extends StdDeserializer<String> {
     
@@ -22,7 +22,7 @@ public class StringDeserializer extends StdDeserializer<String> {
         if (p.hasToken(JsonToken.VALUE_STRING)) {
             return p.getText();
         }
-        var paymentError = aPaymentError(p.getCurrentName(), CREATE_PAYMENT_VALIDATION_ERROR, "Must be of type String");
-        throw new PaymentValidationException(paymentError);
+        var requestError = aRequestError(p.getCurrentName(), CREATE_PAYMENT_VALIDATION_ERROR, "Must be of type String");
+        throw new PaymentValidationException(requestError);
     }
 }

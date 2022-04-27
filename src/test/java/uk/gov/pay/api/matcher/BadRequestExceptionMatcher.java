@@ -3,7 +3,7 @@ package uk.gov.pay.api.matcher;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import uk.gov.pay.api.exception.BadRequestException;
-import uk.gov.pay.api.model.PaymentError;
+import uk.gov.pay.api.model.RequestError;
 
 public class BadRequestExceptionMatcher extends TypeSafeMatcher<BadRequestException> {
 
@@ -21,16 +21,16 @@ public class BadRequestExceptionMatcher extends TypeSafeMatcher<BadRequestExcept
 
     @Override
     protected boolean matchesSafely(BadRequestException e) {
-        PaymentError paymentError = e.getPaymentError();
-        return code.equals(paymentError.getCode()) &&
-                description.equals(paymentError.getDescription());
+        RequestError requestError = e.getRequestError();
+        return code.equals(requestError.getCode()) &&
+                description.equals(requestError.getDescription());
     }
 
     @Override
     public void describeTo(Description description) {
         description.appendText(BadRequestException.class.getCanonicalName())
                 .appendText(" with ")
-                .appendText(" PaymentError. { code = ")
+                .appendText(" RequestError. { code = ")
                 .appendValue(code)
                 .appendText(", description = ")
                 .appendValue(this.description)

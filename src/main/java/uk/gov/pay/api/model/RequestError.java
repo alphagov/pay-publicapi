@@ -7,9 +7,9 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static com.google.common.collect.ObjectArrays.concat;
 import static java.lang.String.format;
 
-@Schema(name = "PaymentError", description = "A Payment Error response")
+@Schema(name = "RequestError", description = "A Request Error response")
 @JsonInclude(NON_NULL)
-public class PaymentError {
+public class RequestError {
 
     public enum Code {
 
@@ -62,7 +62,11 @@ public class PaymentError {
         TOO_MANY_REQUESTS_ERROR("P0900", "Too many requests"),
         REQUEST_DENIED_ERROR("P0920", "Request blocked by security rules. Please consult API documentation for more information."),
         RESOURCE_ACCESS_FORBIDDEN("P0930", "Access to this resource is not enabled for this account. Please contact support."),
-        ACCOUNT_NOT_LINKED_WITH_PSP("P0940", "Account is not fully configured. Please refer to documentation to setup your account or contact support.");
+        ACCOUNT_NOT_LINKED_WITH_PSP("P0940", "Account is not fully configured. Please refer to documentation to setup your account or contact support."),
+
+        SEARCH_REFUNDS_VALIDATION_ERROR("P1101", "Invalid parameters: %s. See Public API documentation for the correct data formats"),
+        SEARCH_REFUNDS_NOT_FOUND("P1100", "Page not found"),
+        SEARCH_REFUNDS_CONNECTOR_ERROR("P1898", "Downstream system error");
 
         private String value;
         private String format;
@@ -85,20 +89,20 @@ public class PaymentError {
     private final Code code;
     private final String description;
 
-    public static PaymentError aPaymentError(Code code, Object... parameters) {
-        return new PaymentError(code, parameters);
+    public static RequestError aRequestError(Code code, Object... parameters) {
+        return new RequestError(code, parameters);
     }
 
-    public static PaymentError aPaymentError(String fieldName, Code code, Object... parameters) {
-        return new PaymentError(fieldName, code, parameters);
+    public static RequestError aRequestError(String fieldName, Code code, Object... parameters) {
+        return new RequestError(fieldName, code, parameters);
     }
 
-    private PaymentError(Code code, Object... parameters) {
+    private RequestError(Code code, Object... parameters) {
         this.code = code;
         this.description = format(code.getFormat(), parameters);
     }
 
-    private PaymentError(String fieldName, Code code, Object... parameters) {
+    private RequestError(String fieldName, Code code, Object... parameters) {
         this.field = fieldName;
         this.code = code;
         this.description = format(code.getFormat(), concat(fieldName, parameters));
@@ -121,7 +125,7 @@ public class PaymentError {
 
     @Override
     public String toString() {
-        return "PaymentError{" +
+        return "RequestError{" +
                 "field=" + field +
                 ", code=" + code.value() +
                 ", name=" + code +

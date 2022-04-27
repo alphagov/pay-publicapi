@@ -16,7 +16,7 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CaptureChargeException;
 import uk.gov.pay.api.model.CreateCardPaymentRequest;
 import uk.gov.pay.api.model.CreatePaymentResult;
-import uk.gov.pay.api.model.PaymentError;
+import uk.gov.pay.api.model.RequestError;
 import uk.gov.pay.api.model.PaymentEventsResponse;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.model.search.card.GetPaymentResult;
@@ -96,11 +96,11 @@ public class PaymentsResource {
                     @ApiResponse(responseCode = "401",
                             description = "Credentials are required to access this resource"),
                     @ApiResponse(responseCode = "404", description = "Not found",
-                            content = @Content(schema = @Schema(implementation = PaymentError.class))),
+                            content = @Content(schema = @Schema(implementation = RequestError.class))),
                     @ApiResponse(responseCode = "429", description = "Too many requests",
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
                     @ApiResponse(responseCode = "500", description = "Downstream system error",
-                            content = @Content(schema = @Schema(implementation = PaymentError.class)))
+                            content = @Content(schema = @Schema(implementation = RequestError.class)))
             }
     )
     public Response getPayment(@Parameter(hidden = true) @Auth Account account,
@@ -134,11 +134,11 @@ public class PaymentsResource {
                     @ApiResponse(responseCode = "401",
                             description = "Credentials are required to access this resource"),
                     @ApiResponse(responseCode = "404", description = "Not found",
-                            content = @Content(schema = @Schema(implementation = PaymentError.class))),
+                            content = @Content(schema = @Schema(implementation = RequestError.class))),
                     @ApiResponse(responseCode = "429", description = "Too many requests",
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
                     @ApiResponse(responseCode = "500", description = "Downstream system error",
-                            content = @Content(schema = @Schema(implementation = PaymentError.class)))
+                            content = @Content(schema = @Schema(implementation = RequestError.class)))
             }
     )
     public PaymentEventsResponse getPaymentEvents(@Parameter(hidden = true) @Auth Account account,
@@ -174,11 +174,11 @@ public class PaymentsResource {
                             description = "Credentials are required to access this resource"),
                     @ApiResponse(responseCode = "422",
                             description = "Invalid parameters: from_date, to_date, status, display_size. See Public API documentation for the correct data formats",
-                            content = @Content(schema = @Schema(implementation = PaymentError.class))),
+                            content = @Content(schema = @Schema(implementation = RequestError.class))),
                     @ApiResponse(responseCode = "429", description = "Too many requests",
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
                     @ApiResponse(responseCode = "500", description = "Downstream system error",
-                            content = @Content(schema = @Schema(implementation = PaymentError.class)))
+                            content = @Content(schema = @Schema(implementation = RequestError.class)))
             }
     )
     public Response searchPayments(@Parameter(hidden = true)
@@ -253,16 +253,16 @@ public class PaymentsResource {
                     @ApiResponse(responseCode = "201", description = "Created",
                             content = @Content(schema = @Schema(implementation = CreatePaymentResult.class))),
                     @ApiResponse(responseCode = "400", description = "Bad request",
-                            content = @Content(schema = @Schema(implementation = PaymentError.class))),
+                            content = @Content(schema = @Schema(implementation = RequestError.class))),
                     @ApiResponse(responseCode = "401",
                             description = "Credentials are required to access this resource"),
                     @ApiResponse(responseCode = "422",
                             description = "Invalid attribute value: description. Must be less than or equal to 255 characters length",
-                            content = @Content(schema = @Schema(implementation = PaymentError.class))),
+                            content = @Content(schema = @Schema(implementation = RequestError.class))),
                     @ApiResponse(responseCode = "429", description = "Too many requests",
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
                     @ApiResponse(responseCode = "500", description = "Downstream system error",
-                            content = @Content(schema = @Schema(implementation = PaymentError.class)))
+                            content = @Content(schema = @Schema(implementation = RequestError.class)))
             }
     )
     public Response createNewPayment(@Parameter(hidden = true) @Auth Account account,
@@ -295,17 +295,17 @@ public class PaymentsResource {
             responses = {
                     @ApiResponse(responseCode = "204", description = "No Content"),
                     @ApiResponse(responseCode = "400", description = "Cancellation of payment failed",
-                            content = @Content(schema = @Schema(implementation = PaymentError.class))),
+                            content = @Content(schema = @Schema(implementation = RequestError.class))),
                     @ApiResponse(responseCode = "401",
                             description = "Credentials are required to access this resource"),
                     @ApiResponse(responseCode = "404", description = "Not found",
-                            content = @Content(schema = @Schema(implementation = PaymentError.class))),
+                            content = @Content(schema = @Schema(implementation = RequestError.class))),
                     @ApiResponse(responseCode = "409", description = "Conflict",
-                            content = @Content(schema = @Schema(implementation = PaymentError.class))),
+                            content = @Content(schema = @Schema(implementation = RequestError.class))),
                     @ApiResponse(responseCode = "429", description = "Too many requests",
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
                     @ApiResponse(responseCode = "500", description = "Downstream system error",
-                            content = @Content(schema = @Schema(implementation = PaymentError.class)))
+                            content = @Content(schema = @Schema(implementation = RequestError.class)))
             }
     )
     public Response cancelPayment(@Parameter(hidden = true) @Auth Account account,
@@ -332,17 +332,17 @@ public class PaymentsResource {
             responses = {
                     @ApiResponse(responseCode = "204", description = "No Content"),
                     @ApiResponse(responseCode = "400", description = "Capture of payment failed",
-                            content = @Content(schema = @Schema(implementation = PaymentError.class))),
+                            content = @Content(schema = @Schema(implementation = RequestError.class))),
                     @ApiResponse(responseCode = "401",
                             description = "Credentials are required to access this resource"),
                     @ApiResponse(responseCode = "404", description = "Not found",
-                            content = @Content(schema = @Schema(implementation = PaymentError.class))),
+                            content = @Content(schema = @Schema(implementation = RequestError.class))),
                     @ApiResponse(responseCode = "409", description = "Conflict",
-                            content = @Content(schema = @Schema(implementation = PaymentError.class))),
+                            content = @Content(schema = @Schema(implementation = RequestError.class))),
                     @ApiResponse(responseCode = "429", description = "Too many requests",
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
                     @ApiResponse(responseCode = "500", description = "Downstream system error",
-                            content = @Content(schema = @Schema(implementation = PaymentError.class)))
+                            content = @Content(schema = @Schema(implementation = RequestError.class)))
             }
     )
     public Response capturePayment(@Parameter(hidden = true) @Auth Account account,

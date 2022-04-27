@@ -1,16 +1,16 @@
 package uk.gov.pay.api.exception;
 
-import uk.gov.pay.api.model.RefundError;
+import uk.gov.pay.api.model.RequestError;
 
 public class BadRefundsRequestException extends RuntimeException {
 
-    private RefundError refundError;
+    private RequestError refundError;
 
-    public BadRefundsRequestException(RefundError refundError) {
+    public BadRefundsRequestException(RequestError refundError) {
         this.refundError = refundError;
     }
     
-    public RefundError getRefundError() {
+    public RequestError getRequestError() {
         return refundError;
     }
 

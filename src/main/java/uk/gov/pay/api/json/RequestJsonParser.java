@@ -10,8 +10,8 @@ import uk.gov.pay.api.model.CreateAgreementRequestBuilder;
 import uk.gov.pay.api.model.CreateCardPaymentRequest;
 import uk.gov.pay.api.model.CreateCardPaymentRequestBuilder;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
-import uk.gov.pay.api.model.PaymentError;
-import uk.gov.pay.api.model.PaymentError.Code;
+import uk.gov.pay.api.model.RequestError;
+import uk.gov.pay.api.model.RequestError.Code;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.Source;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
@@ -53,11 +53,11 @@ import static uk.gov.pay.api.model.CreateCardPaymentRequest.RETURN_URL_FIELD_NAM
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.SET_UP_AGREEMENT_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.SOURCE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRefundRequest.REFUND_AMOUNT_AVAILABLE;
-import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_MISSING_FIELD_ERROR;
-import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_REFUND_MISSING_FIELD_ERROR;
-import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_REFUND_VALIDATION_ERROR;
-import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
-import static uk.gov.pay.api.model.PaymentError.aPaymentError;
+import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_MISSING_FIELD_ERROR;
+import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_REFUND_MISSING_FIELD_ERROR;
+import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_REFUND_VALIDATION_ERROR;
+import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
+import static uk.gov.pay.api.model.RequestError.aRequestError;
 import static uk.gov.service.payments.commons.model.Source.CARD_AGENT_INITIATED_MOTO;
 import static uk.gov.service.payments.commons.model.Source.CARD_API;
 import static uk.gov.service.payments.commons.model.Source.CARD_PAYMENT_LINK;
@@ -102,7 +102,7 @@ class RequestJsonParser {
 
         if (paymentRequest.has(EMAIL_FIELD_NAME)) {
             String email = validateSkipNullValueAndGetString(paymentRequest.get(EMAIL_FIELD_NAME),
-                    aPaymentError(EMAIL_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
+                    aRequestError(EMAIL_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
             builder.email(email);
         }
 
@@ -131,7 +131,7 @@ class RequestJsonParser {
 
         if (agreementRequest.has(USER_IDENTIFIER_FIELD)) {
             String userIdentifier = validateSkipNullValueAndGetString(agreementRequest.get(USER_IDENTIFIER_FIELD),
-                    aPaymentError(USER_IDENTIFIER_FIELD, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
+                    aRequestError(USER_IDENTIFIER_FIELD, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
             builder.userIdentifier(userIdentifier);
         }
 
@@ -141,18 +141,18 @@ class RequestJsonParser {
     private static String validateAndGetReturnUrl(JsonNode paymentRequest) {
         return validateAndGetString(
                 paymentRequest.get(RETURN_URL_FIELD_NAME),
-                aPaymentError(RETURN_URL_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid URL format"),
-                aPaymentError(RETURN_URL_FIELD_NAME, CREATE_PAYMENT_MISSING_FIELD_ERROR));
+                aRequestError(RETURN_URL_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid URL format"),
+                aRequestError(RETURN_URL_FIELD_NAME, CREATE_PAYMENT_MISSING_FIELD_ERROR));
     }
 
     private static SupportedLanguage validateAndGetLanguage(JsonNode paymentRequest) {
         String errorMessage = "Must be \"en\" or \"cy\"";
-        PaymentError paymentError = aPaymentError(LANGUAGE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, errorMessage);
-        String language = validateAndGetString(paymentRequest.get(LANGUAGE_FIELD_NAME), paymentError, paymentError);
+        RequestError requestError = aRequestError(LANGUAGE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, errorMessage);
+        String language = validateAndGetString(paymentRequest.get(LANGUAGE_FIELD_NAME), requestError, requestError);
         try {
             return SupportedLanguage.fromIso639AlphaTwoCode(language);
         } catch (IllegalArgumentException e) {
-            throw new WebApplicationException(Response.status(SC_UNPROCESSABLE_ENTITY).entity(paymentError).build());
+            throw new WebApplicationException(Response.status(SC_UNPROCESSABLE_ENTITY).entity(requestError).build());
         }
     }
 
@@ -160,36 +160,36 @@ class RequestJsonParser {
         String errorMessage = "Must be one of " + ALLOWED_AUTHORISATION_MODES.stream()
                 .map(AuthorisationMode::getName)
                 .collect(Collectors.joining(", "));
-        PaymentError paymentError = aPaymentError(AUTHORISATION_MODE, CREATE_PAYMENT_VALIDATION_ERROR, errorMessage);
-        String value = validateAndGetString(paymentRequest.get(AUTHORISATION_MODE), paymentError, paymentError);
+        RequestError requestError = aRequestError(AUTHORISATION_MODE, CREATE_PAYMENT_VALIDATION_ERROR, errorMessage);
+        String value = validateAndGetString(paymentRequest.get(AUTHORISATION_MODE), requestError, requestError);
 
         try {
             AuthorisationMode authorisationMode = AuthorisationMode.of(value);
             if (ALLOWED_AUTHORISATION_MODES.contains(authorisationMode)) {
                 return authorisationMode;
             } else {
-                throw new PaymentValidationException(paymentError);
+                throw new PaymentValidationException(requestError);
             }
         } catch (IllegalArgumentException e) {
-            throw new PaymentValidationException(paymentError);
+            throw new PaymentValidationException(requestError);
         }
     }
 
     private static String validateAndGetDescription(JsonNode paymentRequest) {
         return validateAndGetString(
                 paymentRequest.get(DESCRIPTION_FIELD_NAME),
-                aPaymentError(DESCRIPTION_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid string format"),
-                aPaymentError(DESCRIPTION_FIELD_NAME, CREATE_PAYMENT_MISSING_FIELD_ERROR));
+                aRequestError(DESCRIPTION_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid string format"),
+                aRequestError(DESCRIPTION_FIELD_NAME, CREATE_PAYMENT_MISSING_FIELD_ERROR));
     }
 
     private static String validateAndGetReference(JsonNode request) {
         return validateAndGetString(
                 request.get(REFERENCE_FIELD_NAME),
-                aPaymentError(REFERENCE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid string format"),
-                aPaymentError(REFERENCE_FIELD_NAME, CREATE_PAYMENT_MISSING_FIELD_ERROR));
+                aRequestError(REFERENCE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid string format"),
+                aRequestError(REFERENCE_FIELD_NAME, CREATE_PAYMENT_MISSING_FIELD_ERROR));
     }
 
-    private static String validateAndGetString(JsonNode jsonNode, PaymentError validationError, PaymentError missingError) {
+    private static String validateAndGetString(JsonNode jsonNode, RequestError validationError, RequestError missingError) {
         String value = validateAndGetValue(jsonNode, validationError, missingError, JsonNode::isTextual, JsonNode::asText);
         check(isNotBlank(value), missingError);
         return value;
@@ -198,8 +198,8 @@ class RequestJsonParser {
     private static Boolean validateAndGetDelayedCapture(JsonNode paymentRequest) {
         return validateAndGetValue(
                 paymentRequest.get(DELAYED_CAPTURE_FIELD_NAME),
-                aPaymentError(DELAYED_CAPTURE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be true or false"),
-                aPaymentError(DELAYED_CAPTURE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be true or false"),
+                aRequestError(DELAYED_CAPTURE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be true or false"),
+                aRequestError(DELAYED_CAPTURE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be true or false"),
                 JsonNode::isBoolean,
                 JsonNode::booleanValue);
     }
@@ -207,8 +207,8 @@ class RequestJsonParser {
     private static Boolean validateAndGetMoto(JsonNode paymentRequest) {
         return validateAndGetValue(
                 paymentRequest.get(MOTO_FIELD_NAME),
-                aPaymentError(MOTO_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be true or false"),
-                aPaymentError(MOTO_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be true or false"),
+                aRequestError(MOTO_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be true or false"),
+                aRequestError(MOTO_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be true or false"),
                 JsonNode::isBoolean,
                 JsonNode::booleanValue);
     }
@@ -220,8 +220,8 @@ class RequestJsonParser {
     private static Integer validateAndGetAmount(JsonNode paymentRequest, Code validationError, Code missingError) {
         return validateAndGetValue(
                 paymentRequest.get(AMOUNT_FIELD_NAME),
-                aPaymentError(AMOUNT_FIELD_NAME, validationError, "Must be a valid numeric format"),
-                aPaymentError(AMOUNT_FIELD_NAME, missingError),
+                aRequestError(AMOUNT_FIELD_NAME, validationError, "Must be a valid numeric format"),
+                aRequestError(AMOUNT_FIELD_NAME, missingError),
                 JsonNode::isInt,
                 JsonNode::intValue);
     }
@@ -231,15 +231,15 @@ class RequestJsonParser {
         try {
             metadataMap = objectMapper.convertValue(paymentRequest.get("metadata"), Map.class);
         } catch (IllegalArgumentException e) {
-            PaymentError paymentError = aPaymentError(METADATA, CREATE_PAYMENT_VALIDATION_ERROR,
+            RequestError requestError = aRequestError(METADATA, CREATE_PAYMENT_VALIDATION_ERROR,
                     "Must be an object of JSON key-value pairs");
-            throw new WebApplicationException(Response.status(SC_UNPROCESSABLE_ENTITY).entity(paymentError).build());
+            throw new WebApplicationException(Response.status(SC_UNPROCESSABLE_ENTITY).entity(requestError).build());
         }
 
         if (metadataMap == null) {
-            PaymentError paymentError = aPaymentError(METADATA, CREATE_PAYMENT_VALIDATION_ERROR,
+            RequestError requestError = aRequestError(METADATA, CREATE_PAYMENT_VALIDATION_ERROR,
                     "Value must not be null");
-            throw new WebApplicationException(Response.status(SC_UNPROCESSABLE_ENTITY).entity(paymentError).build());
+            throw new WebApplicationException(Response.status(SC_UNPROCESSABLE_ENTITY).entity(requestError).build());
         }
 
         ExternalMetadata metadata = new ExternalMetadata(metadataMap);
@@ -250,8 +250,8 @@ class RequestJsonParser {
                     .map(msg -> msg.replace("Field [metadata] ", ""))
                     .map(StringUtils::capitalize)
                     .collect(Collectors.joining(". "));
-            PaymentError paymentError = aPaymentError(METADATA, CREATE_PAYMENT_VALIDATION_ERROR, message);
-            throw new WebApplicationException(Response.status(SC_UNPROCESSABLE_ENTITY).entity(paymentError).build());
+            RequestError requestError = aRequestError(METADATA, CREATE_PAYMENT_VALIDATION_ERROR, message);
+            throw new WebApplicationException(Response.status(SC_UNPROCESSABLE_ENTITY).entity(requestError).build());
         }
         return metadata;
     }
@@ -259,34 +259,34 @@ class RequestJsonParser {
     private static void validatePrefilledCardholderDetails(JsonNode prefilledNode, CreateCardPaymentRequestBuilder builder) {
         if (prefilledNode.has(PREFILLED_CARDHOLDER_NAME_FIELD_NAME)) {
             String cardHolderName = validateSkipNullValueAndGetString(prefilledNode.get(PREFILLED_CARDHOLDER_NAME_FIELD_NAME),
-                    aPaymentError(PREFILLED_CARDHOLDER_NAME_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
+                    aRequestError(PREFILLED_CARDHOLDER_NAME_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
             builder.cardholderName(cardHolderName);
         }
         if (prefilledNode.has(PREFILLED_BILLING_ADDRESS_FIELD_NAME)) {
             JsonNode addressNode = prefilledNode.get(PREFILLED_BILLING_ADDRESS_FIELD_NAME);
             if (addressNode.has(PREFILLED_ADDRESS_LINE1_FIELD_NAME)) {
                 String addressLine1 = validateSkipNullValueAndGetString(addressNode.get(PREFILLED_ADDRESS_LINE1_FIELD_NAME),
-                        aPaymentError(PREFILLED_ADDRESS_LINE1_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
+                        aRequestError(PREFILLED_ADDRESS_LINE1_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
                 builder.addressLine1(addressLine1);
             }
             if (addressNode.has(PREFILLED_ADDRESS_LINE2_FIELD_NAME)) {
                 String addressLine1 = validateSkipNullValueAndGetString(addressNode.get(PREFILLED_ADDRESS_LINE2_FIELD_NAME),
-                        aPaymentError(PREFILLED_ADDRESS_LINE2_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
+                        aRequestError(PREFILLED_ADDRESS_LINE2_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
                 builder.addressLine2(addressLine1);
             }
             if (addressNode.has(PREFILLED_ADDRESS_CITY_FIELD_NAME)) {
                 String addressCity = validateSkipNullValueAndGetString(addressNode.get(PREFILLED_ADDRESS_CITY_FIELD_NAME),
-                        aPaymentError(PREFILLED_ADDRESS_CITY_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
+                        aRequestError(PREFILLED_ADDRESS_CITY_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
                 builder.city(addressCity);
             }
             if (addressNode.has(PREFILLED_ADDRESS_POSTCODE_FIELD_NAME)) {
                 String addressPostcode = validateSkipNullValueAndGetString(addressNode.get(PREFILLED_ADDRESS_POSTCODE_FIELD_NAME),
-                        aPaymentError(PREFILLED_ADDRESS_POSTCODE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
+                        aRequestError(PREFILLED_ADDRESS_POSTCODE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
                 builder.postcode(addressPostcode);
             }
             if (addressNode.has(PREFILLED_ADDRESS_COUNTRY_FIELD_NAME)) {
                 String countryCode = validateSkipNullValueAndGetString(addressNode.get(PREFILLED_ADDRESS_COUNTRY_FIELD_NAME),
-                        aPaymentError(PREFILLED_ADDRESS_COUNTRY_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
+                        aRequestError(PREFILLED_ADDRESS_COUNTRY_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
                 builder.country(countryCode);
             }
         }
@@ -298,17 +298,17 @@ class RequestJsonParser {
 
             if (internalNode.has(SOURCE_FIELD_NAME)) {
                 String errorMessage = "Accepted values are only CARD_PAYMENT_LINK, CARD_AGENT_INITIATED_MOTO";
-                PaymentError paymentError = aPaymentError(SOURCE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, errorMessage);
-                String sourceString = validateSkipNullValueAndGetString(internalNode.get(SOURCE_FIELD_NAME), paymentError);
+                RequestError requestError = aRequestError(SOURCE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, errorMessage);
+                String sourceString = validateSkipNullValueAndGetString(internalNode.get(SOURCE_FIELD_NAME), requestError);
 
                 try {
                     Source source = Source.valueOf(sourceString);
                     if (ALLOWED_SOURCES.contains(source)) {
                         return source;
                     }
-                    throw new BadRequestException(paymentError);
+                    throw new BadRequestException(requestError);
                 } catch (IllegalArgumentException e) {
-                    throw new WebApplicationException(Response.status(SC_UNPROCESSABLE_ENTITY).entity(paymentError).build());
+                    throw new WebApplicationException(Response.status(SC_UNPROCESSABLE_ENTITY).entity(requestError).build());
                 }
             }
         }
@@ -317,8 +317,8 @@ class RequestJsonParser {
     }
 
     private static <T> T validateAndGetValue(JsonNode jsonNode,
-                                             PaymentError validationError,
-                                             PaymentError missingError,
+                                             RequestError validationError,
+                                             RequestError missingError,
                                              Function<JsonNode, Boolean> isExpectedType,
                                              Function<JsonNode, T> valueFromJsonNode) {
         if (jsonNode != null && !jsonNode.isNull()) {
@@ -328,12 +328,12 @@ class RequestJsonParser {
         throw new BadRequestException(missingError);
     }
 
-    private static String validateSkipNullValueAndGetString(JsonNode jsonNode, PaymentError validationError) {
+    private static String validateSkipNullValueAndGetString(JsonNode jsonNode, RequestError validationError) {
         return validateSkipNullAndGetValue(jsonNode, validationError, JsonNode::isTextual, JsonNode::asText);
     }
 
     private static <T> T validateSkipNullAndGetValue(JsonNode jsonNode,
-                                                     PaymentError validationError,
+                                                     RequestError validationError,
                                                      Function<JsonNode, Boolean> isExpectedType,
                                                      Function<JsonNode, T> valueFromJsonNode) {
         if (jsonNode == null || jsonNode.isNull()) {
@@ -343,7 +343,7 @@ class RequestJsonParser {
         return valueFromJsonNode.apply(jsonNode);
     }
 
-    private static void check(boolean condition, PaymentError error) {
+    private static void check(boolean condition, RequestError error) {
         if (!condition) {
             throw new BadRequestException(error);
         }

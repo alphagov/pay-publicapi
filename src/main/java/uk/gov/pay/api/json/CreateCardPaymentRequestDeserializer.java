@@ -10,8 +10,8 @@ import uk.gov.pay.api.model.CreateCardPaymentRequest;
 import java.io.IOException;
 
 import static uk.gov.pay.api.json.RequestJsonParser.parsePaymentRequest;
-import static uk.gov.pay.api.model.PaymentError.Code.CREATE_PAYMENT_PARSING_ERROR;
-import static uk.gov.pay.api.model.PaymentError.aPaymentError;
+import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_PARSING_ERROR;
+import static uk.gov.pay.api.model.RequestError.aRequestError;
 
 public class CreateCardPaymentRequestDeserializer extends StdDeserializer<CreateCardPaymentRequest> {
 
@@ -25,7 +25,7 @@ public class CreateCardPaymentRequestDeserializer extends StdDeserializer<Create
             JsonNode json = parser.readValueAsTree();
             return parsePaymentRequest(json);
         } catch (IOException e) {
-            throw new BadRequestException(aPaymentError(CREATE_PAYMENT_PARSING_ERROR));
+            throw new BadRequestException(aRequestError(CREATE_PAYMENT_PARSING_ERROR));
         }
     }
 }
