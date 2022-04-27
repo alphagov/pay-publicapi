@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.model.RefundError;
+import uk.gov.pay.api.model.RequestError;
 import uk.gov.pay.api.model.search.card.SearchRefundsResults;
 import uk.gov.pay.api.service.RefundsParams;
 import uk.gov.pay.api.service.SearchRefundsService;
@@ -56,9 +56,9 @@ public class SearchRefundsResource {
                     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = SearchRefundsResults.class))),
                     @ApiResponse(responseCode = "401", description = "Credentials are required to access this resource"),
                     @ApiResponse(responseCode = "422", description = "Invalid parameters. See Public API documentation for the correct data formats",
-                            content = @Content(schema = @Schema(implementation = RefundError.class))),
+                            content = @Content(schema = @Schema(implementation = RequestError.class))),
                     @ApiResponse(responseCode = "500", description = "Downstream system error",
-                            content = @Content(schema = @Schema(implementation = RefundError.class))),
+                            content = @Content(schema = @Schema(implementation = RequestError.class))),
             }
     )
     public SearchRefundsResults searchRefunds(@Parameter(hidden = true)

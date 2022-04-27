@@ -577,8 +577,8 @@ public class RequestJsonParserTest {
         JsonNode jsonNode = objectMapper.readTree(payload);
 
         PaymentValidationException paymentValidationException = assertThrows(PaymentValidationException.class, () -> parsePaymentRequest(jsonNode));
-        assertThat(paymentValidationException.getPaymentError().getCode(), is("P0102"));
-        assertThat(paymentValidationException.getPaymentError().getDescription(), is("Invalid attribute value: authorisation_mode. Must be one of web, moto_api"));
+        assertThat(paymentValidationException.getRequestError().getCode(), is("P0102"));
+        assertThat(paymentValidationException.getRequestError().getDescription(), is("Invalid attribute value: authorisation_mode. Must be one of web, moto_api"));
     }
 
     @Test
@@ -595,7 +595,7 @@ public class RequestJsonParserTest {
         JsonNode jsonNode = objectMapper.readTree(payload);
 
         PaymentValidationException paymentValidationException = assertThrows(PaymentValidationException.class, () -> parsePaymentRequest(jsonNode));
-        assertThat(paymentValidationException.getPaymentError().getCode(), is("P0102"));
-        assertThat(paymentValidationException.getPaymentError().getDescription(), is("Invalid attribute value: authorisation_mode. Must be one of web, moto_api"));
+        assertThat(paymentValidationException.getRequestError().getCode(), is("P0102"));
+        assertThat(paymentValidationException.getRequestError().getDescription(), is("Invalid attribute value: authorisation_mode. Must be one of web, moto_api"));
     }
 }

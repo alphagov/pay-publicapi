@@ -11,7 +11,7 @@ import uk.gov.pay.api.exception.SearchPaymentsException;
 import uk.gov.pay.api.exception.SearchTransactionsException;
 import uk.gov.pay.api.ledger.model.TransactionSearchParams;
 import uk.gov.pay.api.ledger.model.TransactionSearchResults;
-import uk.gov.pay.api.model.PaymentError;
+import uk.gov.pay.api.model.RequestError;
 import uk.gov.pay.api.model.TransactionResponse;
 import uk.gov.pay.api.model.links.Link;
 import uk.gov.pay.api.model.links.SearchNavigationLinks;
@@ -154,8 +154,8 @@ public class TransactionSearchService {
                 .filter(this::isUnsupportedParamWithNonBlankValue)
                 .findFirst()
                 .ifPresent(invalidParam -> {
-                    throw new BadRequestException(PaymentError
-                            .aPaymentError(PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR, invalidParam.getKey()));
+                    throw new BadRequestException(RequestError
+                            .aRequestError(RequestError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR, invalidParam.getKey()));
                 });
     }
 

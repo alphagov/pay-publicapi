@@ -1,23 +1,23 @@
 package uk.gov.pay.api.exception;
 
-import uk.gov.pay.api.model.RefundError;
+import uk.gov.pay.api.model.RequestError;
 
 public class RefundsValidationException extends RuntimeException {
 
-    private RefundError refundError;
+    private RequestError requestError;
 
-    public RefundsValidationException(RefundError refundError) {
-        this.refundError = refundError;
+    public RefundsValidationException(RequestError requestError) {
+        this.requestError = requestError;
     }
 
-    public RefundError getRefundError() {
-        return refundError;
+    public RequestError getRequestError() {
+        return requestError;
     }
 
     @Override
     public String toString() {
         return "RefundsValidationException{" +
-                "refundError=" + refundError +
+                "refundError=" + requestError +
                 '}';
     }
 }

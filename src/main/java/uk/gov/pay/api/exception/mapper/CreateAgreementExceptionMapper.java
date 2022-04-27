@@ -1,13 +1,16 @@
 package uk.gov.pay.api.exception.mapper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.exception.CreateAgreementException;
-import uk.gov.pay.api.model.PaymentError;
+import uk.gov.pay.api.model.RequestError;
+
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
+
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-import static uk.gov.pay.api.model.PaymentError.aPaymentError;
+import static uk.gov.pay.api.model.RequestError.aRequestError;
 
 public class CreateAgreementExceptionMapper implements ExceptionMapper<CreateAgreementException> {
 
@@ -15,12 +18,12 @@ public class CreateAgreementExceptionMapper implements ExceptionMapper<CreateAgr
    
     @Override
     public Response toResponse(CreateAgreementException exception) {
-        PaymentError paymentError = aPaymentError(PaymentError.Code.CREATE_AGREEMENT_CONNECTOR_ERROR);
+        RequestError requestError = aRequestError(RequestError.Code.CREATE_AGREEMENT_CONNECTOR_ERROR);
         LOGGER.info("Connector invalid response was {}.\n Returning http status {} with error body {}",
-                exception.getMessage(), INTERNAL_SERVER_ERROR, paymentError);
+                exception.getMessage(), INTERNAL_SERVER_ERROR, requestError);
         LOGGER.info(exception.getMessage());
         return Response.status(INTERNAL_SERVER_ERROR)
-                .entity(paymentError)
+                .entity(requestError)
                 .type(APPLICATION_JSON)
                 .build();
     }

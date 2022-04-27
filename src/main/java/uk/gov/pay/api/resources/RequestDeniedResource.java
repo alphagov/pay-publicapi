@@ -4,13 +4,19 @@ import com.codahale.metrics.annotation.Timed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.*;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static uk.gov.pay.api.model.PaymentError.Code.REQUEST_DENIED_ERROR;
-import static uk.gov.pay.api.model.PaymentError.aPaymentError;
+import static uk.gov.pay.api.model.RequestError.Code.REQUEST_DENIED_ERROR;
+import static uk.gov.pay.api.model.RequestError.aRequestError;
 
 @Path("/")
 public class RequestDeniedResource {
@@ -51,6 +57,6 @@ public class RequestDeniedResource {
 
     private Response requestDenied(@HeaderParam("x-naxsi_sig") String naxsiViolatedRules) {
         logger.info("Naxsi rules violated - [ {} ]", naxsiViolatedRules);
-        return Response.status(BAD_REQUEST).entity(aPaymentError(REQUEST_DENIED_ERROR)).build();
+        return Response.status(BAD_REQUEST).entity(aRequestError(REQUEST_DENIED_ERROR)).build();
     }
 }

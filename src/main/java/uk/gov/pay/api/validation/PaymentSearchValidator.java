@@ -13,8 +13,8 @@ import static org.apache.commons.lang3.StringUtils.join;
 import static org.eclipse.jetty.util.StringUtil.isBlank;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.EMAIL_MAX_LENGTH;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.REFERENCE_MAX_LENGTH;
-import static uk.gov.pay.api.model.PaymentError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR;
-import static uk.gov.pay.api.model.PaymentError.aPaymentError;
+import static uk.gov.pay.api.model.RequestError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR;
+import static uk.gov.pay.api.model.RequestError.aRequestError;
 import static uk.gov.pay.api.validation.MaxLengthValidator.isInvalid;
 import static uk.gov.pay.api.validation.SearchValidator.validateDisplaySizeIfNotNull;
 import static uk.gov.pay.api.validation.SearchValidator.validateFromDate;
@@ -68,10 +68,10 @@ public class PaymentSearchValidator {
             validateFromSettledDate(fromSettledDate, validationErrors);
             validateToSettledDate(toSettledDate, validationErrors);
         } catch (Exception e) {
-            throw new PaymentValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", "), e.getMessage()));
+            throw new PaymentValidationException(aRequestError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", "), e.getMessage()));
         }
         if (!validationErrors.isEmpty()) {
-            throw new PaymentValidationException(aPaymentError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", ")));
+            throw new PaymentValidationException(aRequestError(SEARCH_PAYMENTS_VALIDATION_ERROR, join(validationErrors, ", ")));
         }
     }
     

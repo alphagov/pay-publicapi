@@ -17,7 +17,7 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateRefundException;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
-import uk.gov.pay.api.model.PaymentError;
+import uk.gov.pay.api.model.RequestError;
 import uk.gov.pay.api.model.RefundFromConnector;
 import uk.gov.pay.api.model.RefundResponse;
 import uk.gov.pay.api.model.RefundSummary;
@@ -89,11 +89,11 @@ public class PaymentRefundsResource {
                             content = @Content(schema = @Schema(implementation = RefundForSearchResult.class))),
                     @ApiResponse(responseCode = "401", description = "Credentials are required to access this resource"),
                     @ApiResponse(responseCode = "404", description = "Not found",
-                            content = @Content(schema = @Schema(implementation = PaymentError.class))),
+                            content = @Content(schema = @Schema(implementation = RequestError.class))),
                     @ApiResponse(responseCode = "429", description = "Too many requests",
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
                     @ApiResponse(responseCode = "500", description = "Downstream system error",
-                            content = @Content(schema = @Schema(implementation = PaymentError.class)))
+                            content = @Content(schema = @Schema(implementation = RequestError.class)))
             }
     )
     public RefundsResponse getRefunds(@Parameter(hidden = true) @Auth Account account,
@@ -123,11 +123,11 @@ public class PaymentRefundsResource {
                             content = @Content(schema = @Schema(implementation = RefundResult.class))),
                     @ApiResponse(responseCode = "401", description = "Credentials are required to access this resource"),
                     @ApiResponse(responseCode = "404", description = "Not found",
-                            content = @Content(schema = @Schema(implementation = PaymentError.class))),
+                            content = @Content(schema = @Schema(implementation = RequestError.class))),
                     @ApiResponse(responseCode = "429", description = "Too many requests",
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
                     @ApiResponse(responseCode = "500", description = "Downstream system error",
-                            content = @Content(schema = @Schema(implementation = PaymentError.class)))
+                            content = @Content(schema = @Schema(implementation = RequestError.class)))
             }
     )
     @Produces(APPLICATION_JSON)
@@ -162,12 +162,12 @@ public class PaymentRefundsResource {
                     @ApiResponse(responseCode = "202", description = "ACCEPTED"),
                     @ApiResponse(responseCode = "401", description = "Credentials are required to access this resource"),
                     @ApiResponse(responseCode = "404", description = "Not found",
-                            content = @Content(schema = @Schema(implementation = PaymentError.class))),
+                            content = @Content(schema = @Schema(implementation = RequestError.class))),
                     @ApiResponse(responseCode = "412", description = "Refund amount available mismatch"),
                     @ApiResponse(responseCode = "429", description = "Too many requests",
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
                     @ApiResponse(responseCode = "500", description = "Downstream system error",
-                            content = @Content(schema = @Schema(implementation = PaymentError.class)))
+                            content = @Content(schema = @Schema(implementation = RequestError.class)))
             }
     )
     public Response submitRefund(@Parameter(hidden = true) @Auth Account account,

@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.pay.api.exception.ConnectorResponseErrorException.ConnectorErrorResponse;
 import uk.gov.pay.api.exception.CreateChargeException;
-import uk.gov.pay.api.model.PaymentError;
+import uk.gov.pay.api.model.RequestError;
 import uk.gov.service.payments.commons.model.ErrorIdentifier;
 
 import javax.ws.rs.core.Response;
@@ -15,7 +15,7 @@ import javax.ws.rs.core.Response;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
-import static uk.gov.pay.api.model.PaymentError.aPaymentError;
+import static uk.gov.pay.api.model.RequestError.aRequestError;
 
 @ExtendWith(MockitoExtension.class)
 public class CreateChargeExceptionMapperTest {
@@ -31,13 +31,13 @@ public class CreateChargeExceptionMapperTest {
             "ACCOUNT_NOT_LINKED_WITH_PSP, ACCOUNT_NOT_LINKED_WITH_PSP, 403",
             "MOTO_NOT_ALLOWED, CREATE_PAYMENT_MOTO_NOT_ENABLED, 422"
     })
-    public void testExceptionMapping(String errorIdentifier, String paymentError, int expectedStatusCode) {
+    public void testExceptionMapping(String errorIdentifier, String requestError, int expectedStatusCode) {
         when(mockResponse.readEntity(ConnectorErrorResponse.class))
                 .thenReturn(new ConnectorErrorResponse(ErrorIdentifier.valueOf(errorIdentifier), null, null));
 
         Response returnedResponse = mapper.toResponse(new CreateChargeException(mockResponse));
-        PaymentError returnedError = (PaymentError) returnedResponse.getEntity();
-        PaymentError expectedError = aPaymentError(PaymentError.Code.valueOf(paymentError));
+        RequestError returnedError = (RequestError) returnedResponse.getEntity();
+        RequestError expectedError = aRequestError(RequestError.Code.valueOf(requestError));
 
         assertThat(returnedResponse.getStatus(), is(expectedStatusCode));
         assertThat(returnedError.getDescription(),
