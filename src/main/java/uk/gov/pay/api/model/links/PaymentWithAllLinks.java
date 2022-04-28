@@ -38,13 +38,13 @@ public class PaymentWithAllLinks {
                                String reference, String email, String paymentProvider, String createdDate, SupportedLanguage language,
                                boolean delayedCapture, boolean moto, RefundSummary refundSummary, PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
                                List<PaymentConnectorResponseLink> paymentConnectorResponseLinks, URI selfLink, URI paymentEventsUri, URI paymentCancelUri,
-                               URI paymentRefundsUri, URI paymentCaptureUri, Long corporateCardSurcharge, Long totalAmount, String providerId, ExternalMetadata metadata,
+                               URI paymentRefundsUri, URI paymentCaptureUri, URI paymentAuthorisationUri,  Long corporateCardSurcharge, Long totalAmount, String providerId, ExternalMetadata metadata,
                                Long fee, Long netAmount, AuthorisationSummary authorisationSummary, String agreementId, AuthorisationMode authorisationMode) {
         this.payment = new CardPayment(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate,
                 refundSummary, settlementSummary, cardDetails, language, delayedCapture, moto, corporateCardSurcharge, totalAmount,
                 providerId, metadata, fee, netAmount, authorisationSummary, agreementId, authorisationMode);
         this.links.addSelf(selfLink.toString());
-        this.links.addKnownLinksValueOf(paymentConnectorResponseLinks);
+        this.links.addKnownLinksValueOf(paymentConnectorResponseLinks, paymentAuthorisationUri);
         this.links.addEvents(paymentEventsUri.toString());
         this.links.addRefunds(paymentRefundsUri.toString());
 
@@ -62,7 +62,8 @@ public class PaymentWithAllLinks {
                                               URI paymentEventsUri,
                                               URI paymentCancelUri,
                                               URI paymentRefundsUri,
-                                              URI paymentsCaptureUri) {
+                                              URI paymentsCaptureUri,
+                                              URI paymentAuthorisationUri) {
         return new PaymentWithAllLinks(
                 paymentConnector.getChargeId(),
                 paymentConnector.getAmount(),
@@ -85,6 +86,7 @@ public class PaymentWithAllLinks {
                 paymentCancelUri,
                 paymentRefundsUri,
                 paymentsCaptureUri,
+                paymentAuthorisationUri,
                 paymentConnector.getCorporateCardSurcharge(),
                 paymentConnector.getTotalAmount(),
                 paymentConnector.getGatewayTransactionId(),
@@ -102,9 +104,10 @@ public class PaymentWithAllLinks {
             URI paymentEventsUri,
             URI paymentCancelUri,
             URI paymentRefundsUri,
-            URI paymentsCaptureUri) {
+            URI paymentsCaptureUri,
+            URI paymentAuthorisationUri) {
         
-        return PaymentWithAllLinks.valueOf(paymentConnector, selfLink, paymentEventsUri, paymentCancelUri, paymentRefundsUri, paymentsCaptureUri);
+        return PaymentWithAllLinks.valueOf(paymentConnector, selfLink, paymentEventsUri, paymentCancelUri, paymentRefundsUri, paymentsCaptureUri, paymentAuthorisationUri);
     }
 
     @Override

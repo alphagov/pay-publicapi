@@ -264,7 +264,7 @@ public class GetPaymentIT extends PaymentResourceITestBase {
 
     private void assertConnectorOnlyMotoApiPaymentFields(ValidatableResponse paymentResponse) {
         paymentResponse
-                .body("_links.auth_url_post.href", is("/v1/api/charges/authorise"))
+                .body("_links.auth_url_post.href", is("http://publicapi.url/v1/auth"))
                 .body("_links.auth_url_post.method", is("POST"))
                 .body("_links.auth_url_post.type", is("application/json"))
                 .body("_links.auth_url_post.params.one_time_token", is(CHARGE_TOKEN_ID));

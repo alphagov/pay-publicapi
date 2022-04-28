@@ -116,6 +116,7 @@ public class PaymentsResourceCreatePaymentTest {
                 URI.create(PAYMENT_URI + "/cancel"),
                 URI.create(PAYMENT_URI + "/refunds"),
                 URI.create(PAYMENT_URI + "/capture"),
+                URI.create(PAYMENT_URI + "/auth"),
                 null,
                 null,
                 "providerId",

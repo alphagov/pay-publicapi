@@ -51,6 +51,12 @@ public class PublicApiUriGenerator {
                 .path("/v1/payments/{paymentId}/capture")
                 .build(chargeId);
     }
+    
+    public URI getPaymentAuthorisationURI(){
+        return UriBuilder.fromUri(baseUrl)
+                .path("/v1/auth")
+                .build();
+    }
 
     public String convertHostToPublicAPI(String link) {
         URI originalUri = UriBuilder.fromUri(link).build();

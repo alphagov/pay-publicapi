@@ -157,6 +157,6 @@ public class GetPaymentServiceTest {
         assertThat(paymentResponse.getLinks().getSelf().getMethod(), is("GET"));
         assertThat(paymentResponse.getLinks().getRefunds().getHref(), containsString("v1/payments/" + CHARGE_ID + "/refunds"));
         assertThat(paymentResponse.getLinks().getRefunds().getMethod(), is("GET"));
-        assertThat(paymentResponse.getLinks().getAuthUrlPost(), is(new PostLink("https://connector/v1/api/charges/authorise", "POST", "application/json", Collections.singletonMap("one_time_token", "token_1234567asdf"))));
+        assertThat(paymentResponse.getLinks().getAuthUrlPost(), is(new PostLink("http://publicapi.test.localhost/v1/auth", "POST", "application/json", Collections.singletonMap("one_time_token", "token_1234567asdf"))));
     }
 }
