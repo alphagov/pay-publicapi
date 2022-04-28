@@ -44,6 +44,7 @@ import uk.gov.pay.api.filter.RateLimiterFilter;
 import uk.gov.pay.api.healthcheck.Ping;
 import uk.gov.pay.api.ledger.resource.TransactionsResource;
 import uk.gov.pay.api.managed.RedisClientManager;
+import uk.gov.pay.api.resources.AuthorisationResource;
 import uk.gov.pay.api.resources.HealthCheckResource;
 import uk.gov.pay.api.resources.PaymentRefundsResource;
 import uk.gov.pay.api.resources.PaymentsResource;
@@ -99,6 +100,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         environment.jersey().register(new InjectingValidationFeature(injector));
         environment.jersey().register(injector.getInstance(ReturnUrlValidator.class));
         environment.jersey().register(injector.getInstance(SecuritytxtResource.class));
+        environment.jersey().register(injector.getInstance(AuthorisationResource.class));
 
         environment.jersey().register(injector.getInstance(RateLimiterFilter.class));
         environment.jersey().register(injector.getInstance(LoggingMDCRequestFilter.class));
