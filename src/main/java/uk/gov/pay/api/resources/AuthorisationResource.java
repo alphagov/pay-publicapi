@@ -7,7 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.AuthorisationRequest;
+import uk.gov.pay.api.service.AuthorisationService;
 
+import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -21,8 +23,11 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 public class AuthorisationResource {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthorisationResource.class);
+    private final AuthorisationService authorisationService;
 
-    public AuthorisationResource() {
+    @Inject
+    public AuthorisationResource(AuthorisationService authorisationService) {
+        this.authorisationService = authorisationService;
     }
 
     @POST
@@ -31,8 +36,6 @@ public class AuthorisationResource {
     @Produces(APPLICATION_JSON)
     public Response authorisePayment(@Parameter(required = true)
                                      @Valid AuthorisationRequest authorisationRequest) {
-
-        logger.info("Payment authorised");
-        return Response.noContent().build();
+        return authorisationService.authoriseRequest(authorisationRequest);
     }
 }
