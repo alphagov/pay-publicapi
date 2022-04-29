@@ -59,6 +59,7 @@ import uk.gov.service.payments.logging.LoggingFilter;
 import uk.gov.service.payments.logging.LogstashConsoleAppenderFactory;
 import uk.gov.pay.api.exception.mapper.CreateAgreementExceptionMapper;
 import javax.net.ssl.HttpsURLConnection;
+import javax.servlet.FilterRegistration;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.EnumSet.of;
@@ -110,9 +111,10 @@ public class PublicApi extends Application<PublicApiConfig> {
 
         environment.servlets().addFilter("LoggingFilter", injector.getInstance(LoggingFilter.class))
                 .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");
-        
-        environment.servlets().addFilter("AuthorizationValidationFilter", injector.getInstance(AuthorizationValidationFilter.class))
-                .addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");
+
+        FilterRegistration.Dynamic authorizationValidationFilter = environment.servlets().addFilter("AuthorizationValidationFilter", injector.getInstance(AuthorizationValidationFilter.class));
+        authorizationValidationFilter.setInitParameter("excludedUrls", "/v1/auth");
+        authorizationValidationFilter.addMappingForUrlPatterns(of(REQUEST), true, "/v1/*");
 
         /*
            Turn off 'FilteringJacksonJaxbJsonProvider' which overrides dropwizard JacksonMessageBodyProvider.

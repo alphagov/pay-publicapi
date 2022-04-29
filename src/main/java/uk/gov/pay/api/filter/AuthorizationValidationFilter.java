@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.Arrays;
 import java.util.Optional;
 
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
@@ -31,7 +32,11 @@ public class AuthorizationValidationFilter implements Filter {
 
     private static final int HMAC_SHA1_LENGTH = 32;
     private static final String BEARER_PREFIX = "Bearer ";
-
+    
+    private static final String[] EXCLUDED_URLS = {
+            "/v1/auth"
+    };
+    
     private String apiKeyHmacSecret;
 
     @Inject
@@ -46,6 +51,12 @@ public class AuthorizationValidationFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
+        String path = ((HttpServletRequest) request).getRequestURI();
+        if (Arrays.stream(EXCLUDED_URLS).anyMatch(path::startsWith)) {
+            chain.doFilter(request, response);
+            return;
+        }
+        
         final String authorization = ((HttpServletRequest) request).getHeader("Authorization");
         String clientAddress = Optional.ofNullable(((HttpServletRequest) request).getHeader("X-Forwarded-For"))
                 .map(forwarded -> forwarded.split(",")[0])
