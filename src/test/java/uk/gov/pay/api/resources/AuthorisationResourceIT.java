@@ -162,7 +162,6 @@ public class AuthorisationResourceIT extends PaymentResourceITestBase {
                 .body(payload)
                 .accept(JSON)
                 .contentType(JSON)
-                .header(AUTHORIZATION, "Bearer " + API_KEY)
                 .post(AUTH_PATH)
                 .then();
     }

@@ -31,7 +31,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.pay.api.utils.ApiKeyGenerator.apiKeyValueOf;
 
 @ExtendWith(MockitoExtension.class)
-public class AuthorizationValidationFilterTest {
+class AuthorizationValidationFilterTest {
 
     private static final String SECRET_KEY = "mysupersecret";
     private AuthorizationValidationFilter authorizationValidationFilter;
@@ -50,7 +50,7 @@ public class AuthorizationValidationFilterTest {
     ArgumentCaptor<LoggingEvent> loggingEventArgumentCaptor;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         Logger logger = (Logger) LoggerFactory.getLogger(AuthorizationValidationFilter.class);
         logger.setLevel(Level.WARN);
         logger.addAppender(mockAppender);
@@ -61,11 +61,12 @@ public class AuthorizationValidationFilterTest {
     }
 
     @Test
-    public void shouldProcessFilterChain_whenAuthorizationHeaderIsValid() throws Exception {
+    void shouldProcessFilterChain_whenAuthorizationHeaderIsValid() throws Exception {
 
         String validToken = "asdfghdasd";
         String authorization = "Bearer " + apiKeyValueOf(validToken, SECRET_KEY);
 
+        when(mockRequest.getRequestURI()).thenReturn("/v1/payments");
         when(mockRequest.getHeader("Authorization")).thenReturn(authorization);
 
         authorizationValidationFilter.doFilter(mockRequest, mockResponse, mockFilterChain);
@@ -74,11 +75,19 @@ public class AuthorizationValidationFilterTest {
     }
 
     @Test
-    public void shouldRejectRequest_with401ResponseError_whenAuthorizationHeaderIsInvalid() throws Exception {
+    void shouldProcessFilterChain_whenUrlIsAuthURLAndNoAuthorisationHeaderPresent() throws Exception {
+        when(mockRequest.getRequestURI()).thenReturn("/v1/auth");
+        authorizationValidationFilter.doFilter(mockRequest, mockResponse, mockFilterChain);
+        verify(mockFilterChain).doFilter(mockRequest, mockResponse);
+    }
+
+    @Test
+    void shouldRejectRequest_with401ResponseError_whenAuthorizationHeaderIsInvalid() throws Exception {
 
         String invalidApiKey = "asdfghdasdakjshdkjwhdjweghrhjgwerguweurweruhiweuiweriuui";
         String authorization = "Bearer " + invalidApiKey;
 
+        when(mockRequest.getRequestURI()).thenReturn("/v1/payments");
         when(mockRequest.getHeader("Authorization")).thenReturn(authorization);
 
         authorizationValidationFilter.doFilter(mockRequest, mockResponse, mockFilterChain);
@@ -93,8 +102,9 @@ public class AuthorizationValidationFilterTest {
     }
 
     @Test
-    public void shouldRejectRequest_with401ResponseError_whenAuthorizationHeaderIsNotPresent() throws Exception {
+    void shouldRejectRequest_with401ResponseError_whenAuthorizationHeaderIsNotPresent() throws Exception {
 
+        when(mockRequest.getRequestURI()).thenReturn("/v1/payments");
         when(mockRequest.getHeader("Authorization")).thenReturn(null);
 
         authorizationValidationFilter.doFilter(mockRequest, mockResponse, mockFilterChain);
@@ -104,11 +114,12 @@ public class AuthorizationValidationFilterTest {
     }
 
     @Test
-    public void shouldRejectRequest_with401ResponseError_whenAuthorizationHeaderHasInvalidFormat() throws Exception {
+    void shouldRejectRequest_with401ResponseError_whenAuthorizationHeaderHasInvalidFormat() throws Exception {
 
         String validToken = "asdfghdasd";
         String authorization = "Bearer" + apiKeyValueOf(validToken, SECRET_KEY);
 
+        when(mockRequest.getRequestURI()).thenReturn("/v1/payments");
         when(mockRequest.getHeader("Authorization")).thenReturn(authorization);
 
         authorizationValidationFilter.doFilter(mockRequest, mockResponse, mockFilterChain);
@@ -118,11 +129,12 @@ public class AuthorizationValidationFilterTest {
     }
 
     @Test
-    public void shouldRejectRequest_with401ResponseError_whenAuthorizationHeaderHasNotMinimumLengthExpected() throws Exception {
+    void shouldRejectRequest_with401ResponseError_whenAuthorizationHeaderHasNotMinimumLengthExpected() throws Exception {
 
         String apiKey = RandomStringUtils.randomAlphanumeric(32);
         String authorization = "Bearer " + apiKey;
 
+        when(mockRequest.getRequestURI()).thenReturn("/v1/payments");
         when(mockRequest.getHeader("Authorization")).thenReturn(authorization);
 
         authorizationValidationFilter.doFilter(mockRequest, mockResponse, mockFilterChain);
