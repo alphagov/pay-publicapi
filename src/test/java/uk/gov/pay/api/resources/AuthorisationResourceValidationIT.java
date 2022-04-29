@@ -4,7 +4,6 @@ import com.google.gson.GsonBuilder;
 import io.restassured.response.ValidatableResponse;
 import org.junit.Test;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,9 +12,8 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.core.Is.is;
-import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 
-public class AuthorisationResourceIT extends PaymentResourceITestBase {
+public class AuthorisationResourceValidationIT extends PaymentResourceITestBase {
 
     private static final String AUTH_PATH = "/v1/auth";
 
@@ -142,19 +140,6 @@ public class AuthorisationResourceIT extends PaymentResourceITestBase {
                 .body("code", is("P0102"))
                 .body("field", is("expiry_date"))
                 .body("description", is("Invalid attribute value: expiry_date. Must be a valid date with the format MM/YY"));
-    }
-
-    @Test
-    public void authorisation_respondWith204_whenRequestIsOk() {
-        String payload = toJson(
-                Map.of("one_time_token", "1234567890",
-                        "card_number", "1234567890123456",
-                        "cvc", "123",
-                        "expiry_date", "09/27",
-                        "cardholder_name", "Joe Boggs"));
-
-        postAuthRequest(payload)
-                .statusCode(204);
     }
 
     protected ValidatableResponse postAuthRequest(String payload) {

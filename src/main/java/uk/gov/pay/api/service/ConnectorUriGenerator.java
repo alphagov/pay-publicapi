@@ -61,6 +61,11 @@ public class ConnectorUriGenerator {
         String path = format("/v1/api/accounts/%s/charges/%s/refunds/%s", accountId, chargeId, refundId);
         return buildConnectorUri(path);
     }
+
+    String authorisationURI() {
+        String path = "/v1/api/charges/authorise";
+        return buildConnectorUri(path);
+    }
     
     private String buildConnectorUri(String path) {
         return buildConnectorUri(path, Collections.emptyMap());

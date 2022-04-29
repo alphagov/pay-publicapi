@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import uk.gov.service.payments.commons.model.ErrorIdentifier;
 
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 public class ConnectorResponseErrorException extends RuntimeException {
 
@@ -77,6 +78,11 @@ public class ConnectorResponseErrorException extends RuntimeException {
         return super.getMessage();
     }
 
+    public String getConnectorErrorMessage() {
+        return error.message.stream().findFirst()
+                .orElseThrow(() -> new InternalServerException("Error deserializing connector error message"));
+    }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class ConnectorErrorResponse {
 
@@ -85,14 +91,14 @@ public class ConnectorResponseErrorException extends RuntimeException {
 
         private String reason;
 
-        private Object message;
+        private List<String> message;
         
         // Needed for Jackson deserialization from Responses
         public ConnectorErrorResponse() {
             
         }
 
-        public ConnectorErrorResponse(ErrorIdentifier errorIdentifier, String reason, Object message) {
+        public ConnectorErrorResponse(ErrorIdentifier errorIdentifier, String reason, List<String> message) {
             this.errorIdentifier = errorIdentifier;
             this.reason = reason;
             this.message = message;
@@ -106,7 +112,7 @@ public class ConnectorResponseErrorException extends RuntimeException {
             return reason;
         }
         
-        public Object getMessage() {
+        public List<String> getMessage() {
             return message;
         }
 

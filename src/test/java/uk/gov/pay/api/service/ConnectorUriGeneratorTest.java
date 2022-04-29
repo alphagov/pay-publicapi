@@ -65,4 +65,10 @@ public class ConnectorUriGeneratorTest {
         String uri = connectorUriGenerator.chargeEventsURI(cardAccount, chargeId);
         assertThat(uri, is("https://bla.test/v1/api/accounts/accountId/charges/" + chargeId + "/events"));
     }
+
+    @Test
+    public void shouldGenerateTheRightAuthoriseURI() {
+        String uri = connectorUriGenerator.authorisationURI();
+        assertThat(uri, is("https://bla.test/v1/api/charges/authorise"));
+    }
 }

@@ -67,7 +67,16 @@ public class RequestError {
 
         SEARCH_REFUNDS_VALIDATION_ERROR("P1101", "Invalid parameters: %s. See Public API documentation for the correct data formats"),
         SEARCH_REFUNDS_NOT_FOUND("P1100", "Page not found"),
-        SEARCH_REFUNDS_CONNECTOR_ERROR("P1898", "Downstream system error");
+        SEARCH_REFUNDS_CONNECTOR_ERROR("P1898", "Downstream system error"),
+        AUTHORISATION_MISSING_FIELD_ERROR("P0101", "%s"),
+        AUTHORISATION_VALIDATION_ERROR("P0102", "%s"),
+        AUTHORISATION_CARD_NUMBER_REJECTED_ERROR("P0010", "%s"),
+        AUTHORISATION_REJECTED_ERROR("P0010", "%s"),
+        AUTHORISATION_ERROR("P0050", "%s"),
+        AUTHORISATION_TIMEOUT_ERROR("P0050", "%s"),
+        AUTHORISATION_ONE_TIME_TOKEN_ALREADY_USED_ERROR("P1212", "%s"),
+        AUTHORISATION_ONE_TIME_TOKEN_INVALID_ERROR("P1211", "%s");
+
 
         private String value;
         private String format;
