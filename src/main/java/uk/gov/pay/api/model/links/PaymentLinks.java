@@ -3,7 +3,9 @@ package uk.gov.pay.api.model.links;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
+import uk.gov.pay.api.service.PublicApiUriGenerator;
 
+import java.net.URI;
 import java.util.List;
 
 import static javax.ws.rs.HttpMethod.GET;
@@ -11,7 +13,7 @@ import static javax.ws.rs.HttpMethod.POST;
 
 @Schema(name = "PaymentLinks", description = "links for payment")
 public class PaymentLinks {
-
+    
     private static final String SELF_FIELD = "self";
     private static final String NEXT_URL_FIELD = "next_url";
     private static final String NEXT_URL_POST_FIELD = "next_url_post";
@@ -77,10 +79,10 @@ public class PaymentLinks {
         return capture;
     }
 
-    public void addKnownLinksValueOf(List<PaymentConnectorResponseLink> chargeLinks) {
+    public void addKnownLinksValueOf(List<PaymentConnectorResponseLink> chargeLinks, URI paymentAuthorisationUri) {
         addNextUrlIfPresent(chargeLinks);
         addNextUrlPostIfPresent(chargeLinks);
-        addAuthUrlPostIfPresent(chargeLinks);
+        addAuthUrlPostIfPresent(chargeLinks, paymentAuthorisationUri);
         addCaptureUrlIfPresent(chargeLinks);
     }
 
@@ -104,11 +106,11 @@ public class PaymentLinks {
         this.capture = new PostLink(href, POST);
     }
     
-    private void addAuthUrlPostIfPresent(List<PaymentConnectorResponseLink> chargeLinks) {
+    private void addAuthUrlPostIfPresent(List<PaymentConnectorResponseLink> chargeLinks, URI paymentAuthorisationUri) {
         chargeLinks.stream()
                 .filter(links -> AUTH_URL_POST_FIELD.equals(links.getRel()))
                 .findFirst()
-                .ifPresent(links -> this.authUrlPost = new PostLink(links.getHref(), links.getMethod(), links.getType(), links.getParams()));
+                .ifPresent(links -> this.authUrlPost = new PostLink(paymentAuthorisationUri.toString(), links.getMethod(), links.getType(), links.getParams()));
     }
 
     private void addNextUrlPostIfPresent(List<PaymentConnectorResponseLink> chargeLinks) {

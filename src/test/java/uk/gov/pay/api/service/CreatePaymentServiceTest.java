@@ -167,7 +167,7 @@ public class CreatePaymentServiceTest {
 
         PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
         CardPayment payment = (CardPayment) paymentResponse.getPayment();
-        assertThat(paymentResponse.getLinks().getAuthUrlPost(), is(new PostLink("https://connector/v1/api/charges/authorise", "POST", "application/json", Collections.singletonMap("one_time_token", "token_1234567asdf"))));
+        assertThat(paymentResponse.getLinks().getAuthUrlPost(), is(new PostLink("http://publicapi.test.localhost/v1/auth", "POST", "application/json", Collections.singletonMap("one_time_token", "token_1234567asdf"))));
         assertThat(payment.getPaymentId(), is("ch_123abc456def"));
         assertThat(payment.getAuthorisationMode(), is(AuthorisationMode.MOTO_API));
     }

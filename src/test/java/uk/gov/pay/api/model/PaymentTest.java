@@ -23,6 +23,7 @@ public class PaymentTest {
         URI cancelUri = URI.create("http://self.link.com/cancel");
         URI refundsUri = URI.create("http://self.link.com/cancel");
         URI captureUri = URI.create("self.link.com/capture");
+        URI authUri = URI.create("self.link.com/auth");
 
         // language=JSON
         ChargeFromResponse paymentFromConnector = objectMapper.readValue("{\n" +
@@ -48,7 +49,7 @@ public class PaymentTest {
                 "}", ChargeFromResponse.class);
 
         PaymentWithAllLinks payment = PaymentWithAllLinks.valueOf(Charge.from(paymentFromConnector), selfUri, eventsUri,
-                cancelUri, refundsUri, captureUri);
+                cancelUri, refundsUri, captureUri, authUri);
 
         assertThat(payment.toString(), not(containsString("user@example.com")));
         assertThat(payment.toString(), not(containsString("last_digits_card_number")));
