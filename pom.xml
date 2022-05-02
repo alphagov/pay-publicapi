@@ -11,7 +11,7 @@
         <dropwizard.version>2.0.29</dropwizard.version>
         <guice.version>5.1.0</guice.version>
         <guava.version>31.1-jre</guava.version>
-        <wiremock.version>2.33.1</wiremock.version>
+        <wiremock.version>2.33.2</wiremock.version>
         <hamcrest.version>2.2</hamcrest.version>
         <jackson.version>2.13.2</jackson.version>
         <logback.version>1.2.11</logback.version>
