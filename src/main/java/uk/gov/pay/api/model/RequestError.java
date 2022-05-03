@@ -21,8 +21,12 @@ public class RequestError {
         CREATE_PAYMENT_PARSING_ERROR("P0197", "Unable to parse JSON"),
         CREATE_AGREEMENT_PARSING_ERROR("P0197", "Unable to parse JSON"),
         CREATE_PAYMENT_MOTO_NOT_ENABLED("P0196", "MOTO payments are not enabled for this account. Please contact support if you would like to process MOTO payments"),
-        
         CREATE_PAYMENT_AUTHORISATION_API_NOT_ENABLED("P0195","Using authorisation_mode of moto_api is not allowed for this account"),
+
+        GENERIC_MISSING_FIELD_ERROR_MESSAGE_FROM_CONNECTOR("P0101", "%s"),
+        GENERIC_VALIDATION_EXCEPTION_MESSAGE_FROM_CONNECTOR("P0102", "%s"),
+        GENERIC_UNEXPECTED_FIELD_ERROR_MESSAGE_FROM_CONNECTOR("P0104", "%s"),
+        
         CREATE_PAYMENT_MISSING_FIELD_ERROR("P0101", "Missing mandatory attribute: %s"),
         CREATE_PAYMENT_VALIDATION_ERROR("P0102", "Invalid attribute value: %s. %s"),
 
@@ -68,8 +72,7 @@ public class RequestError {
         SEARCH_REFUNDS_VALIDATION_ERROR("P1101", "Invalid parameters: %s. See Public API documentation for the correct data formats"),
         SEARCH_REFUNDS_NOT_FOUND("P1100", "Page not found"),
         SEARCH_REFUNDS_CONNECTOR_ERROR("P1898", "Downstream system error"),
-        AUTHORISATION_MISSING_FIELD_ERROR("P0101", "%s"),
-        AUTHORISATION_VALIDATION_ERROR("P0102", "%s"),
+
         AUTHORISATION_CARD_NUMBER_REJECTED_ERROR("P0010", "%s"),
         AUTHORISATION_REJECTED_ERROR("P0010", "%s"),
         AUTHORISATION_ERROR("P0050", "%s"),

@@ -90,6 +90,7 @@ public class TransactionsResourceIT {
                 .withPayments(aSuccessfulSearchPayment()
                         .withInProgressState("created")
                         .withReference("reference")
+                        .withReturnUrl(DEFAULT_RETURN_URL)
                         .withCardDetails(cardDetails)
                         .withNumberOfResults(2)
                         .withEmail("j.doe@example.org")

@@ -19,6 +19,9 @@ import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_AUTHORISATIO
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_CONNECTOR_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_MOTO_NOT_ENABLED;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
+import static uk.gov.pay.api.model.RequestError.Code.GENERIC_MISSING_FIELD_ERROR_MESSAGE_FROM_CONNECTOR;
+import static uk.gov.pay.api.model.RequestError.Code.GENERIC_UNEXPECTED_FIELD_ERROR_MESSAGE_FROM_CONNECTOR;
+import static uk.gov.pay.api.model.RequestError.Code.GENERIC_VALIDATION_EXCEPTION_MESSAGE_FROM_CONNECTOR;
 import static uk.gov.pay.api.model.RequestError.Code.RESOURCE_ACCESS_FORBIDDEN;
 import static uk.gov.pay.api.model.RequestError.aRequestError;
 
@@ -62,6 +65,18 @@ public class CreateChargeExceptionMapper implements ExceptionMapper<CreateCharge
                 case AUTHORISATION_API_NOT_ALLOWED:
                     statusCode = HttpStatus.UNPROCESSABLE_ENTITY_422;
                     requestError = aRequestError(CREATE_PAYMENT_AUTHORISATION_API_NOT_ENABLED);
+                    break;
+                case MISSING_MANDATORY_ATTRIBUTE:
+                    statusCode = HttpStatus.BAD_REQUEST_400;
+                    requestError = aRequestError(GENERIC_MISSING_FIELD_ERROR_MESSAGE_FROM_CONNECTOR, exception.getConnectorErrorMessage());
+                    break;
+                case UNEXPECTED_ATTRIBUTE:
+                    statusCode = HttpStatus.BAD_REQUEST_400;
+                    requestError = aRequestError(GENERIC_UNEXPECTED_FIELD_ERROR_MESSAGE_FROM_CONNECTOR, exception.getConnectorErrorMessage());
+                    break;
+                case INVALID_ATTRIBUTE_VALUE:
+                    statusCode = HttpStatus.UNPROCESSABLE_ENTITY_422;
+                    requestError = aRequestError(GENERIC_VALIDATION_EXCEPTION_MESSAGE_FROM_CONNECTOR, exception.getConnectorErrorMessage());
                     break;
                 default:
                     requestError = aRequestError(CREATE_PAYMENT_CONNECTOR_ERROR);

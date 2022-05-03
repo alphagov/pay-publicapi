@@ -35,27 +35,28 @@ class AuthorisationRequestExceptionMapperTest {
     private final AuthorisationRequestExceptionMapper mapper = new AuthorisationRequestExceptionMapper();
     static Object[] parametersForMapping() {
         return new Object[] {
-                new Object[]{CARD_NUMBER_REJECTED, "The card_number is not a valid card number", 402, "P0010"},
-                new Object[]{AUTHORISATION_REJECTED, "The payment was rejected", 402, "P0010"},
-                new Object[]{AUTHORISATION_ERROR, "There was an error authorising the payment", 500, "P0050"},
-                new Object[]{ONE_TIME_TOKEN_INVALID, "The one_time_token has already been used", 400, "P1211"},
-                new Object[]{ONE_TIME_TOKEN_ALREADY_USED, "The one_time_token has already been used", 400, "P1212"},
-                new Object[]{INVALID_ATTRIBUTE_VALUE, "Invalid attribute value: card_number. Must be a valid card number", 422, "P0102"},
-                new Object[]{TELEPHONE_PAYMENT_NOTIFICATIONS_NOT_ALLOWED, "Downstream system error", 500, "P0198"}
+                new Object[]{CARD_NUMBER_REJECTED, true, "An error message from connector", 402, "P0010"},
+                new Object[]{AUTHORISATION_REJECTED, true, "An error message from connector", 402, "P0010"},
+                new Object[]{AUTHORISATION_ERROR, true, "An error message from connector", 500, "P0050"},
+                new Object[]{ONE_TIME_TOKEN_INVALID, true, "An error message from connector", 400, "P1211"},
+                new Object[]{ONE_TIME_TOKEN_ALREADY_USED, true, "An error message from connector", 400, "P1212"},
+                new Object[]{INVALID_ATTRIBUTE_VALUE, true, "An error message from connector", 422, "P0102"},
+                new Object[]{TELEPHONE_PAYMENT_NOTIFICATIONS_NOT_ALLOWED,  false,"Downstream system error", 500, "P0198"}
 
         };
     }
 
     @ParameterizedTest
     @MethodSource("parametersForMapping")
-    void testMapping(ErrorIdentifier errorIdentifier, String exceptionMsg, int error, String errorCode) {
+    void testMapping(ErrorIdentifier errorIdentifier, boolean messageFromConnector, String expectedDescription, int expectedStatusCode, String errorCode) {
+        List<String> connectorErrorMessages = messageFromConnector ? List.of(expectedDescription) : List.of("Generic error message");
         when(mockResponse.readEntity(ConnectorResponseErrorException.ConnectorErrorResponse.class))
-                .thenReturn(new ConnectorResponseErrorException.ConnectorErrorResponse(errorIdentifier, null, List.of(exceptionMsg)));
+                .thenReturn(new ConnectorResponseErrorException.ConnectorErrorResponse(errorIdentifier, connectorErrorMessages));
         Response returnedResponse = mapper.toResponse(new AuthorisationRequestException(mockResponse));
         RequestError returnedError = (RequestError) returnedResponse.getEntity();
         assertThat(returnedError.getCode(), is(errorCode));
-        assertThat(returnedError.getDescription(), is(exceptionMsg));
-        assertThat(returnedResponse.getStatus(), is(error));
+        assertThat(returnedError.getDescription(), is(expectedDescription));
+        assertThat(returnedResponse.getStatus(), is(expectedStatusCode));
     }
 
 }

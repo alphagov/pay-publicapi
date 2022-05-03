@@ -7,23 +7,22 @@
   },
   "interactions": [
     {
-      "description": "a create charge request when gateway account has moto_api auth mode disabled",
+      "description": "a create web payment request with missing return_url",
       "providerStates": [
         {
-          "name": "a gateway account with MOTO enabled and an external id 667 exists in the database",
+          "name": "a gateway account with external id exists",
           "params": {
-            "gateway_account_id": "667"
+            "gateway_account_id": "444"
           }
         }
       ],
       "request": {
         "method": "POST",
-        "path": "/v1/api/accounts/667/charges",
+        "path": "/v1/api/accounts/444/charges",
         "body": {
           "amount": 100,
           "reference": "a reference",
-          "description": "a description",
-          "authorisation_mode": "moto_api"
+          "description": "a description"
         }
       },
       "response": {
@@ -32,7 +31,10 @@
           "Content-Type": "application/json"
         },
         "body": {
-          "error_identifier": "AUTHORISATION_API_NOT_ALLOWED"
+          "error_identifier": "MISSING_MANDATORY_ATTRIBUTE",
+          "message": [
+            "Missing mandatory attribute: return_url"
+          ]
         }
       }
     }

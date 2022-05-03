@@ -108,6 +108,7 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
                 .withPayments(aSuccessfulSearchPayment()
                         .withInProgressState(TEST_STATE)
                         .withReference(TEST_REFERENCE)
+                        .withReturnUrl(DEFAULT_RETURN_URL)
                         .withCardDetails(CARD_DETAILS)
                         .withDelayedCapture(true)
                         .withNumberOfResults(1)

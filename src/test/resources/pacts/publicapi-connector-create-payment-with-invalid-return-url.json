@@ -7,23 +7,23 @@
   },
   "interactions": [
     {
-      "description": "a create charge request when gateway account has moto_api auth mode disabled",
+      "description": "a create web payment request with invalid return_url",
       "providerStates": [
         {
-          "name": "a gateway account with MOTO enabled and an external id 667 exists in the database",
+          "name": "a gateway account with external id exists",
           "params": {
-            "gateway_account_id": "667"
+            "gateway_account_id": "444"
           }
         }
       ],
       "request": {
         "method": "POST",
-        "path": "/v1/api/accounts/667/charges",
+        "path": "/v1/api/accounts/444/charges",
         "body": {
           "amount": 100,
           "reference": "a reference",
           "description": "a description",
-          "authorisation_mode": "moto_api"
+          "return_url": "invalid"
         }
       },
       "response": {
@@ -32,7 +32,10 @@
           "Content-Type": "application/json"
         },
         "body": {
-          "error_identifier": "AUTHORISATION_API_NOT_ALLOWED"
+          "error_identifier": "INVALID_ATTRIBUTE_VALUE",
+          "message": [
+            "Invalid attribute value: return_url. Must be a valid URL format"
+          ]
         }
       }
     }

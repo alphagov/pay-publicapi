@@ -42,6 +42,11 @@ public class PaymentSearchResultBuilder extends PaymentResultBuilder {
         this.reference = reference;
         return this;
     }
+    
+    public PaymentSearchResultBuilder withReturnUrl(String returnUrl) {
+        this.returnUrl = returnUrl;
+        return this;
+    }
 
     public PaymentSearchResultBuilder withFee(Long fee) {
         this.fee = fee;

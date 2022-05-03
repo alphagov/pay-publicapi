@@ -26,12 +26,12 @@ import static uk.gov.service.payments.commons.model.Source.CARD_AGENT_INITIATED_
 import static uk.gov.service.payments.commons.model.Source.CARD_API;
 import static uk.gov.service.payments.commons.model.Source.CARD_PAYMENT_LINK;
 
-public class RequestJsonParserTest {
+class RequestJsonParserTest {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
-    public void parsePaymentRequest_withReturnUrl_shouldParseSuccessfully() throws Exception {
+    void parsePaymentRequest_withReturnUrl_shouldParseSuccessfully() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -52,7 +52,27 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_withReturnUrlAndLanguageAndDelayedCaptureAndMoto_shouldParseSuccessfully() throws Exception {
+    void parsePaymentRequest_withoutReturnUrl_shouldParseSuccessfully() throws Exception {
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\"\n" +
+                "}";
+
+        JsonNode jsonNode = objectMapper.readTree(payload);
+
+        CreateCardPaymentRequest createPaymentRequest = parsePaymentRequest(jsonNode);
+
+        assertThat(createPaymentRequest, is(notNullValue()));
+        assertThat(createPaymentRequest.getAmount(), is(1000));
+        assertThat(createPaymentRequest.getReference(), is("Some reference"));
+        assertThat(createPaymentRequest.getDescription(), is("Some description"));
+        assertThat(createPaymentRequest.getReturnUrl(), is(nullValue()));
+    }
+
+    @Test
+    void parsePaymentRequest_withReturnUrlAndLanguageAndDelayedCaptureAndMoto_shouldParseSuccessfully() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -79,7 +99,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRefundRequest_shouldParseSuccessfully() throws Exception {
+    void parsePaymentRefundRequest_shouldParseSuccessfully() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000\n" +
@@ -94,7 +114,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_whenReferenceFieldIsNotAString() throws Exception {
+    void parsePaymentRequest_whenReferenceFieldIsNotAString() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -111,7 +131,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_whenDescriptionFieldIsNotAString() throws Exception {
+    void parsePaymentRequest_whenDescriptionFieldIsNotAString() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -128,7 +148,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_whenLanguageFieldIsNotAString() throws Exception {
+    void parsePaymentRequest_whenLanguageFieldIsNotAString() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -146,7 +166,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_whenDelayedCaptureFieldIsNotABoolean() throws Exception {
+    void parsePaymentRequest_whenDelayedCaptureFieldIsNotABoolean() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -164,7 +184,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_whenReturnUrlIsNotAString_shouldOverrideFormattingErrorMessage() throws Exception {
+    void parsePaymentRequest_whenReturnUrlIsNotAString_shouldOverrideFormattingErrorMessage() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -181,7 +201,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_whenReferenceFieldIsNullValue() throws Exception {
+    void parsePaymentRequest_whenReferenceFieldIsNullValue() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -198,7 +218,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_whenDescriptionFieldIsNullValue() throws Exception {
+    void parsePaymentRequest_whenDescriptionFieldIsNullValue() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -215,7 +235,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_whenLanguageFieldIsNullValue() throws Exception {
+    void parsePaymentRequest_whenLanguageFieldIsNullValue() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -233,7 +253,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRefundRequest_whenAmountFieldIsNullValue() throws Exception {
+    void parsePaymentRefundRequest_whenAmountFieldIsNullValue() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": null\n" +
@@ -247,7 +267,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_whenAmountFieldIsMissing() throws Exception {
+    void parsePaymentRequest_whenAmountFieldIsMissing() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"reference\": \"Some reference\",\n" +
@@ -263,7 +283,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_whenReferenceFieldIsMissing() throws Exception {
+    void parsePaymentRequest_whenReferenceFieldIsMissing() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -279,7 +299,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_whenDescriptionFieldIsMissing() throws Exception {
+    void parsePaymentRequest_whenDescriptionFieldIsMissing() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -295,7 +315,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRefundRequest_whenAmountFieldIsMissing() throws Exception {
+    void parsePaymentRefundRequest_whenAmountFieldIsMissing() throws Exception {
         // language=JSON
         String payload = "{}";
 
@@ -307,23 +327,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_whenReturnUrlIsMissing() throws Exception {
-        // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\"\n" +
-                "}";
-
-        JsonNode jsonNode = objectMapper.readTree(payload);
-
-        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parsePaymentRequest(jsonNode));
-        assertThat(badRequestException, aBadRequestExceptionWithError("P0101",
-                "Missing mandatory attribute: return_url"));
-    }
-
-    @Test
-    public void parsePaymentRequest_withAllPrefilledCardholderDetails_shouldParseSuccessfully() throws Exception {
+    void parsePaymentRequest_withAllPrefilledCardholderDetails_shouldParseSuccessfully() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -365,7 +369,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_withSomePrefilledCardholderDetails_shouldParseSuccessfully() throws Exception {
+    void parsePaymentRequest_withSomePrefilledCardholderDetails_shouldParseSuccessfully() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -407,7 +411,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_withEmailFieldIsNotAString() throws Exception {
+    void parsePaymentRequest_withEmailFieldIsNotAString() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -433,7 +437,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_withLine1FieldIsNotAString() throws Exception {
+    void parsePaymentRequest_withLine1FieldIsNotAString() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -459,7 +463,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_shouldSetSourceToDefaultIfNotInPayload() throws Exception {
+    void parsePaymentRequest_shouldSetSourceToDefaultIfNotInPayload() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 27432,\n" +
@@ -476,7 +480,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_shouldParseCardPaymentLinkSourceCorrectly() throws Exception {
+    void parsePaymentRequest_shouldParseCardPaymentLinkSourceCorrectly() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -493,7 +497,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_shouldCardAgentInitiatedMotoSourceCorrectly() throws Exception {
+    void parsePaymentRequest_shouldCardAgentInitiatedMotoSourceCorrectly() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -510,7 +514,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_shouldThrowValidationException_whenSourceIsInvalidType() throws Exception {
+    void parsePaymentRequest_shouldThrowValidationException_whenSourceIsInvalidType() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -529,7 +533,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_shouldThrowValidationException_whenSourceIsValidEnumTypeButNotAccepted() throws Exception {
+    void parsePaymentRequest_shouldThrowValidationException_whenSourceIsValidEnumTypeButNotAccepted() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -548,7 +552,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_shouldParseValidAuthorisationMode() throws Exception {
+    void parsePaymentRequest_shouldParseValidAuthorisationMode() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -564,7 +568,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_shouldThrowValidationException_whenAuthorisationModeIsNotValidEnumValue() throws Exception {
+    void parsePaymentRequest_shouldThrowValidationException_whenAuthorisationModeIsNotValidEnumValue() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -582,7 +586,7 @@ public class RequestJsonParserTest {
     }
 
     @Test
-    public void parsePaymentRequest_shouldThrowValidationException_whenAuthorisationModeIsValidEnumValueButNotAccepted() throws Exception {
+    void parsePaymentRequest_shouldThrowValidationException_whenAuthorisationModeIsValidEnumValueButNotAccepted() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +

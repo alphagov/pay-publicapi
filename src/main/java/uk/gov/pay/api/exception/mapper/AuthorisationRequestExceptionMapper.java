@@ -10,7 +10,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.EXPECTATION_FAILED;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.PAYMENT_REQUIRED;
 import static org.apache.http.HttpStatus.SC_UNPROCESSABLE_ENTITY;
@@ -19,7 +18,7 @@ import static uk.gov.pay.api.model.RequestError.Code.AUTHORISATION_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.AUTHORISATION_ONE_TIME_TOKEN_ALREADY_USED_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.AUTHORISATION_ONE_TIME_TOKEN_INVALID_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.AUTHORISATION_REJECTED_ERROR;
-import static uk.gov.pay.api.model.RequestError.Code.AUTHORISATION_VALIDATION_ERROR;
+import static uk.gov.pay.api.model.RequestError.Code.GENERIC_VALIDATION_EXCEPTION_MESSAGE_FROM_CONNECTOR;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_CONNECTOR_ERROR;
 import static uk.gov.pay.api.model.RequestError.aRequestError;
 
@@ -53,7 +52,7 @@ public class AuthorisationRequestExceptionMapper implements ExceptionMapper<Auth
                 break;
             case INVALID_ATTRIBUTE_VALUE:
                 errorStatus = SC_UNPROCESSABLE_ENTITY;
-                requestError = aRequestError(AUTHORISATION_VALIDATION_ERROR, exception.getConnectorErrorMessage());
+                requestError = aRequestError(GENERIC_VALIDATION_EXCEPTION_MESSAGE_FROM_CONNECTOR, exception.getConnectorErrorMessage());
                 break;
             default:
                 LOGGER.error("Connector invalid response was {}.\n Returning http status {}", exception.getConnectorErrorMessage(), INTERNAL_SERVER_ERROR);

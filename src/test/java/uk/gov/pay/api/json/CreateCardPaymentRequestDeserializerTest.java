@@ -26,7 +26,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.pay.api.matcher.BadRequestExceptionMatcher.aBadRequestExceptionWithError;
 import static uk.gov.service.payments.commons.model.Source.CARD_PAYMENT_LINK;
 
-public class CreateCardPaymentRequestDeserializerTest {
+class CreateCardPaymentRequestDeserializerTest {
 
     @Mock
     private DeserializationContext ctx;
@@ -35,12 +35,12 @@ public class CreateCardPaymentRequestDeserializerTest {
     private CreateCardPaymentRequestDeserializer deserializer;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         deserializer = new CreateCardPaymentRequestDeserializer();
     }
 
     @Test
-    public void deserialize_shouldDeserializeARequestWithReturnUrlSuccessfully() throws Exception {
+    void deserialize_shouldDeserializeARequestWithReturnUrlSuccessfully() throws Exception {
         // language=JSON
         String validJson = "{\n" +
                 "  \"amount\": 27432,\n" +
@@ -62,7 +62,28 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldDeserializeARequestWithEnglishLanguageSuccessfully() throws Exception {
+    void deserialize_shouldDeserializeARequestWithoutReturnUrlSuccessfully() throws Exception {
+        // language=JSON
+        String validJson = "{\n" +
+                "  \"amount\": 27432,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\"\n" +
+                "}";
+
+        CreateCardPaymentRequest paymentRequest = deserializer.deserialize(jsonFactory.createParser(validJson), ctx);
+
+        assertThat(paymentRequest.getAmount(), is(27432));
+        assertThat(paymentRequest.getReference(), is("Some reference"));
+        assertThat(paymentRequest.getDescription(), is("Some description"));
+        assertThat(paymentRequest.getReturnUrl(), is(nullValue()));
+        assertThat(paymentRequest.getLanguage(), is(Optional.empty()));
+        assertThat(paymentRequest.getDelayedCapture(), is(Optional.empty()));
+        assertThat(paymentRequest.getEmail(), is(Optional.empty()));
+        assertThat(paymentRequest.getPrefilledCardholderDetails(), is(Optional.empty()));
+    }
+
+    @Test
+    void deserialize_shouldDeserializeARequestWithEnglishLanguageSuccessfully() throws Exception {
         // language=JSON
         String validJson = "{\n" +
                 "  \"amount\": 27432,\n" +
@@ -82,7 +103,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldDeserializeARequestWithWelshLanguageSuccessfully() throws Exception {
+    void deserialize_shouldDeserializeARequestWithWelshLanguageSuccessfully() throws Exception {
         // language=JSON
         String validJson = "{\n" +
                 "  \"amount\": 27432,\n" +
@@ -102,7 +123,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldDeserializeARequestWithDelayedCaptureEqualsTrueSuccessfully() throws Exception {
+    void deserialize_shouldDeserializeARequestWithDelayedCaptureEqualsTrueSuccessfully() throws Exception {
         // language=JSON
         String validJson = "{\n" +
                 "  \"amount\": 27432,\n" +
@@ -122,7 +143,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldDeserializeARequestWithDelayedCaptureEqualsFalseSuccessfully() throws Exception {
+    void deserialize_shouldDeserializeARequestWithDelayedCaptureEqualsFalseSuccessfully() throws Exception {
         // language=JSON
         String validJson = "{\n" +
                 "  \"amount\": 27432,\n" +
@@ -143,7 +164,7 @@ public class CreateCardPaymentRequestDeserializerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"true", "false"})
-    public void deserialize_shouldDeserializeARequestWithMotoFieldSuccessfully(String value) throws Exception {
+    void deserialize_shouldDeserializeARequestWithMotoFieldSuccessfully(String value) throws Exception {
         // language=JSON
         String validJson = "{\n" +
                 "  \"amount\": 27432,\n" +
@@ -163,7 +184,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowBadRequestException_whenJsonIsNotWellFormed() throws Exception {
+    void deserialize_shouldThrowBadRequestException_whenJsonIsNotWellFormed() throws Exception {
         String invalidJson = "{" +
                 "  \"amount\" : " +
                 "  \"reference\" : \"Some reference\"," +
@@ -178,7 +199,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowBadRequestException_whenAmountIsMissing() throws Exception {
+    void deserialize_shouldThrowBadRequestException_whenAmountIsMissing() throws Exception {
         // language=JSON
         String json = "{\n" +
                 "  \"reference\": \"Some reference\",\n" +
@@ -193,7 +214,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_asAmountIsMissing_whenAmountIsNullValue() throws Exception {
+    void deserialize_shouldThrowValidationException_asAmountIsMissing_whenAmountIsNullValue() throws Exception {
         // language=JSON
         String json = "{\n" +
                 "  \"amount\": null,\n" +
@@ -209,7 +230,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_whenAmountIsNotInteger() throws Exception {
+    void deserialize_shouldThrowValidationException_whenAmountIsNotInteger() throws Exception {
         // language=JSON
         String json = "{\n" +
                 "  \"amount\": \"\",\n" +
@@ -226,7 +247,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_whenReturnUrlIsNotAStringValue() throws Exception {
+    void deserialize_shouldThrowValidationException_whenReturnUrlIsNotAStringValue() throws Exception {
         // language=JSON
         String json = "{\n" +
                 "  \"amount\": 1000000,\n" +
@@ -241,42 +262,9 @@ public class CreateCardPaymentRequestDeserializerTest {
         assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
                 "Invalid attribute value: return_url. Must be a valid URL format"));
     }
-
+    
     @Test
-    public void deserialize_shouldThrowValidationException_whenReturnUrlIsMissing() throws Exception {
-        // language=JSON
-        String json = "{\n" +
-                "  \"amount\": 666,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\"\n" +
-                "}";
-
-        BadRequestException badRequestException = assertThrows(BadRequestException.class,
-                () -> deserializer.deserialize(jsonFactory.createParser(json), ctx));
-
-        assertThat(badRequestException, aBadRequestExceptionWithError("P0101",
-                "Missing mandatory attribute: return_url"));
-    }
-
-    @Test
-    public void deserialize_shouldThrowValidationException_AsReturnUrlIsMissing_whenReturnUrlIsNullValue() throws Exception {
-        // language=JSON
-        String json = "{\n" +
-                "  \"amount\": 666,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": null\n" +
-                "}";
-
-        BadRequestException badRequestException = assertThrows(BadRequestException.class,
-                () -> deserializer.deserialize(jsonFactory.createParser(json), ctx));
-
-        assertThat(badRequestException, aBadRequestExceptionWithError("P0101",
-                "Missing mandatory attribute: return_url"));
-    }
-
-    @Test
-    public void deserialize_shouldThrowValidationException_whenReferenceIsMissing() throws Exception {
+    void deserialize_shouldThrowValidationException_whenReferenceIsMissing() throws Exception {
         // language=JSON
         String json = "{\n" +
                 "  \"amount\": 666,\n" +
@@ -292,7 +280,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_AsReferenceIsMissing_whenReferenceIsNullValue() throws Exception {
+    void deserialize_shouldThrowValidationException_AsReferenceIsMissing_whenReferenceIsNullValue() throws Exception {
         // language=JSON
         String json = "{\n" +
                 "  \"amount\": 666,\n" +
@@ -309,7 +297,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_whenReferenceIsNotAString() throws Exception {
+    void deserialize_shouldThrowValidationException_whenReferenceIsNotAString() throws Exception {
         // language=JSON
         String json = "{\n" +
                 "  \"amount\": 666,\n" +
@@ -326,7 +314,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_whenDescriptionIsMissing() throws Exception {
+    void deserialize_shouldThrowValidationException_whenDescriptionIsMissing() throws Exception {
         // language=JSON
         String json = "{\n" +
                 "  \"amount\": 666,\n" +
@@ -342,7 +330,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_asDescriptionIsMissing_whenDescriptionIsNullValue() throws Exception {
+    void deserialize_shouldThrowValidationException_asDescriptionIsMissing_whenDescriptionIsNullValue() throws Exception {
         // language=JSON
         String json = "{\n" +
                 "  \"amount\": 666,\n" +
@@ -359,7 +347,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_whenDescriptionIsNotAString() throws Exception {
+    void deserialize_shouldThrowValidationException_whenDescriptionIsNotAString() throws Exception {
         // language=JSON
         String json = "{\n" +
                 "  \"amount\": 666,\n" +
@@ -376,7 +364,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_whenLanguageIsNotAString() throws Exception {
+    void deserialize_shouldThrowValidationException_whenLanguageIsNotAString() throws Exception {
         // language=JSON
         String json = "{\n" +
                 "  \"amount\": 1337,\n" +
@@ -394,7 +382,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_whenLanguageIsNullValue() throws Exception {
+    void deserialize_shouldThrowValidationException_whenLanguageIsNullValue() throws Exception {
         // language=JSON
         String json = "{\n" +
                 "  \"amount\": 1337,\n" +
@@ -412,7 +400,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_whenLanguageIsEmptyString() throws Exception {
+    void deserialize_shouldThrowValidationException_whenLanguageIsEmptyString() throws Exception {
         // language=JSON
         String json = "{\n" +
                 "  \"amount\": 1337,\n" +
@@ -430,7 +418,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_whenDelayedCaptureIsNotABoolean() throws Exception {
+    void deserialize_shouldThrowValidationException_whenDelayedCaptureIsNotABoolean() throws Exception {
         // language=JSON
         String json = "{\n" +
                 "  \"amount\": 1337,\n" +
@@ -448,7 +436,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_whenDelayedCaptureIsNullValue() throws Exception {
+    void deserialize_shouldThrowValidationException_whenDelayedCaptureIsNullValue() throws Exception {
         // language=JSON
         String json = "{\n" +
                 "  \"amount\": 1337,\n" +
@@ -466,7 +454,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_whenDelayedCaptureIsNumeric() throws Exception {
+    void deserialize_shouldThrowValidationException_whenDelayedCaptureIsNumeric() throws Exception {
         // language=JSON
         String json = "{\n" +
                 "  \"amount\": 1337,\n" +
@@ -485,7 +473,7 @@ public class CreateCardPaymentRequestDeserializerTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"null", "\"true\"", "0"})
-    public void deserialize_shouldThrowValidationException_whenMotoIsNotABoolean(@Nullable String value) throws Exception {
+    void deserialize_shouldThrowValidationException_whenMotoIsNotABoolean(@Nullable String value) throws Exception {
         // language=JSON
         String json = "{\n" +
                 "  \"amount\": 1337,\n" +
@@ -503,7 +491,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void shouldDeserializeARequestWithPrefilledCardholderDetailsSuccessfully() throws Exception {
+    void shouldDeserializeARequestWithPrefilledCardholderDetailsSuccessfully() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -544,7 +532,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void shouldDeserializeARequestWithCardholderNameAndNoBillingAddressSuccessfully() throws Exception {
+    void shouldDeserializeARequestWithCardholderNameAndNoBillingAddressSuccessfully() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -569,7 +557,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void shouldDeserializeARequestWithBillingAddressSuccessfully() throws Exception {
+    void shouldDeserializeARequestWithBillingAddressSuccessfully() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -605,7 +593,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void shouldDeserializeARequestWithEmptyCountrySuccessfully() throws Exception {
+    void shouldDeserializeARequestWithEmptyCountrySuccessfully() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -642,7 +630,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_whenLine1IsNumeric() throws Exception {
+    void deserialize_shouldThrowValidationException_whenLine1IsNumeric() throws Exception {
         // language=JSON
         String json = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -667,7 +655,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldNotThrowValidationException_whenCountryIsEmptyString() throws Exception {
+    void deserialize_shouldNotThrowValidationException_whenCountryIsEmptyString() throws Exception {
         // language=JSON
         String json = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -683,7 +671,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @Test
-    public void shouldDeserializeARequestAndSetSourceCorrectly() throws Exception {
+    void shouldDeserializeARequestAndSetSourceCorrectly() throws Exception {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 1000,\n" +
@@ -699,7 +687,7 @@ public class CreateCardPaymentRequestDeserializerTest {
     }
 
     @After
-    public void tearDown() {
+    void tearDown() {
         verifyNoInteractions(ctx);
     }
 }

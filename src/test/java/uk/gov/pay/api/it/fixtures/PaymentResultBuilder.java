@@ -225,7 +225,7 @@ public abstract class PaymentResultBuilder {
         payment.amount = amount;
         payment.gateway_transaction_id = gatewayTransactionId == null ? randomUUID().toString() : gatewayTransactionId;
         payment.created_date = getCreatedDate();
-        payment.return_url = returnUrl == null ? DEFAULT_RETURN_URL : returnUrl;
+        payment.return_url = returnUrl;
         payment.payment_provider = paymentProvider == null ? DEFAULT_PAYMENT_PROVIDER : paymentProvider;
         payment.language = SupportedLanguage.ENGLISH.toString();
         payment.delayed_capture = delayedCapture == null ? false : delayedCapture;

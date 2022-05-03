@@ -29,7 +29,6 @@
           "amount": 100,
           "reference": "a reference",
           "description": "a description",
-          "return_url": "https://somewhere.gov.uk/rainbow/1",
           "authorisation_mode": "moto_api"
         }
       },
