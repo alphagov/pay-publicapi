@@ -159,7 +159,6 @@ public class CreatePaymentServiceTest {
         Account account = new Account("123456", TokenPaymentType.CARD, "a-token-link");
         var requestPayload = CreateCardPaymentRequestBuilder.builder()
                 .amount(100)
-                .returnUrl("https://somewhere.gov.uk/rainbow/1")
                 .reference("a reference")
                 .description("a description")
                 .authorisationMode(AuthorisationMode.MOTO_API)
@@ -179,7 +178,6 @@ public class CreatePaymentServiceTest {
         Account account = new Account("667", TokenPaymentType.CARD, "a-token-link");
         var requestPayload = CreateCardPaymentRequestBuilder.builder()
                 .amount(100)
-                .returnUrl("https://somewhere.gov.uk/rainbow/1")
                 .reference("a reference")
                 .description("a description")
                 .authorisationMode(AuthorisationMode.MOTO_API)
@@ -248,6 +246,47 @@ public class CreatePaymentServiceTest {
             fail("Expected CreateChargeException to be thrown");
         } catch (CreateChargeException e) {
             assertThat(e.getErrorIdentifier(), is(ErrorIdentifier.ACCOUNT_NOT_LINKED_WITH_PSP));
+        }
+    }
+
+    @Test
+    @PactVerification({"connector"})
+    @Pacts(pacts = {"publicapi-connector-create-payment-with-invalid-return-url"})
+    public void shouldThrowExceptionWithIdentifierInvalidAttributeValue_whenReturnUrlInvalid() {
+        Account account = new Account("444", TokenPaymentType.CARD, "a-token-link");
+        var requestPayload = CreateCardPaymentRequestBuilder.builder()
+                .amount(100)
+                .returnUrl("invalid")
+                .reference("a reference")
+                .description("a description")
+                .build();
+
+        try {
+            createPaymentService.create(account, requestPayload);
+            fail("Expected CreateChargeException to be thrown");
+        } catch (CreateChargeException e) {
+            assertThat(e.getErrorIdentifier(), is(ErrorIdentifier.INVALID_ATTRIBUTE_VALUE));
+            assertThat(e.getConnectorErrorMessage(), is("Invalid attribute value: return_url. Must be a valid URL format"));
+        }
+    }
+
+    @Test
+    @PactVerification({"connector"})
+    @Pacts(pacts = {"publicapi-connector-create-payment-with-missing-return-url"})
+    public void shouldThrowExceptionWithIdentifierMissingMandatoryAttribute_whenReturnUrlMissing() {
+        Account account = new Account("444", TokenPaymentType.CARD, "a-token-link");
+        var requestPayload = CreateCardPaymentRequestBuilder.builder()
+                .amount(100)
+                .reference("a reference")
+                .description("a description")
+                .build();
+
+        try {
+            createPaymentService.create(account, requestPayload);
+            fail("Expected CreateChargeException to be thrown");
+        } catch (CreateChargeException e) {
+            assertThat(e.getErrorIdentifier(), is(ErrorIdentifier.MISSING_MANDATORY_ATTRIBUTE));
+            assertThat(e.getConnectorErrorMessage(), is("Missing mandatory attribute: return_url"));
         }
     }
 }

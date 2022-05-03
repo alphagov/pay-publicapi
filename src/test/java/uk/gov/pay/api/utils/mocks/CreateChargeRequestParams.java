@@ -202,7 +202,7 @@ public class CreateChargeRequestParams {
         }
 
         public CreateChargeRequestParams build() {
-            List.of(amount, reference, returnUrl, description).forEach(Objects::requireNonNull);
+            List.of(amount, reference, description).forEach(Objects::requireNonNull);
             return new CreateChargeRequestParams(this);
         }
 

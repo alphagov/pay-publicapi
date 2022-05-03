@@ -98,6 +98,10 @@ public class ConnectorResponseErrorException extends RuntimeException {
             
         }
 
+        public ConnectorErrorResponse(ErrorIdentifier errorIdentifier, List<String> message) {
+            this(errorIdentifier, null, message);
+        }
+        
         public ConnectorErrorResponse(ErrorIdentifier errorIdentifier, String reason, List<String> message) {
             this.errorIdentifier = errorIdentifier;
             this.reason = reason;

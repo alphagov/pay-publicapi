@@ -81,9 +81,14 @@ class RequestJsonParser {
         var builder = CreateCardPaymentRequestBuilder.builder()
                 .amount(validateAndGetAmount(paymentRequest, CREATE_PAYMENT_VALIDATION_ERROR, CREATE_PAYMENT_MISSING_FIELD_ERROR))
                 .reference(validateAndGetReference(paymentRequest))
-                .description(validateAndGetDescription(paymentRequest))
-                .returnUrl(validateAndGetReturnUrl(paymentRequest));
+                .description(validateAndGetDescription(paymentRequest));
 
+        if (paymentRequest.has(RETURN_URL_FIELD_NAME)) {
+            String returnUrl = validateSkipNullValueAndGetString(paymentRequest.get(RETURN_URL_FIELD_NAME),
+                    aRequestError(RETURN_URL_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid URL format"));
+            builder.returnUrl(returnUrl);
+        }
+        
         if (paymentRequest.has(MOTO_FIELD_NAME)) {
             builder.moto(validateAndGetMoto(paymentRequest));
         }
@@ -137,14 +142,7 @@ class RequestJsonParser {
 
         return builder.build();
     }
-
-    private static String validateAndGetReturnUrl(JsonNode paymentRequest) {
-        return validateAndGetString(
-                paymentRequest.get(RETURN_URL_FIELD_NAME),
-                aRequestError(RETURN_URL_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid URL format"),
-                aRequestError(RETURN_URL_FIELD_NAME, CREATE_PAYMENT_MISSING_FIELD_ERROR));
-    }
-
+    
     private static SupportedLanguage validateAndGetLanguage(JsonNode paymentRequest) {
         String errorMessage = "Must be \"en\" or \"cy\"";
         RequestError requestError = aRequestError(LANGUAGE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, errorMessage);

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.hibernate.validator.constraints.Length;
 import uk.gov.pay.api.utils.JsonStringBuilder;
-import uk.gov.pay.api.validation.ValidReturnUrl;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
@@ -71,7 +70,6 @@ public class CreateCardPaymentRequest {
     @Length(max = EMAIL_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
     private String email;
     
-    @ValidReturnUrl
     @Size(max = URL_MAX_LENGTH, message = "Must be less than or equal to {max} characters length")
     @JsonProperty("return_url")
     private final String returnUrl;

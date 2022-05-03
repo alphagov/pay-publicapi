@@ -1,6 +1,5 @@
 package uk.gov.pay.api.it;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.jayway.jsonassert.JsonAssert;
 import io.restassured.response.ValidatableResponse;
 import org.apache.http.HttpStatus;
@@ -28,7 +27,6 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
-import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
@@ -468,7 +466,6 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .withAmount(amount)
                 .withChargeId(CHARGE_ID)
                 .withState(CREATED)
-                .withReturnUrl(RETURN_URL)
                 .withDescription(DESCRIPTION)
                 .withReference(REFERENCE)
                 .withPaymentProvider(PAYMENT_PROVIDER)
@@ -485,18 +482,17 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .withAmount(amount)
                 .withDescription(DESCRIPTION)
                 .withReference(REFERENCE)
-                .withReturnUrl(RETURN_URL)
                 .withAuthorisationMode(AuthorisationMode.MOTO_API)
                 .build();
 
         postPaymentResponse(paymentPayload(params))
                 .statusCode(201)
                 .contentType(JSON)
+                .body("$", not(hasKey("return_url")))
                 .body("payment_id", is(CHARGE_ID))
                 .body("amount", is(amount))
                 .body("reference", is(REFERENCE))
                 .body("description", is(DESCRIPTION))
-                .body("return_url", is(RETURN_URL))
                 .body("payment_provider", is(PAYMENT_PROVIDER))
                 .body("created_date", is(CREATED_DATE))
                 .body("moto", is(true))
