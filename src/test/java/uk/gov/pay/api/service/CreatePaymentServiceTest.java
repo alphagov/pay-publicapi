@@ -159,7 +159,6 @@ public class CreatePaymentServiceTest {
         Account account = new Account("123456", TokenPaymentType.CARD, "a-token-link");
         var requestPayload = CreateCardPaymentRequestBuilder.builder()
                 .amount(100)
-                .returnUrl("https://somewhere.gov.uk/rainbow/1")
                 .reference("a reference")
                 .description("a description")
                 .authorisationMode(AuthorisationMode.MOTO_API)
@@ -179,7 +178,6 @@ public class CreatePaymentServiceTest {
         Account account = new Account("667", TokenPaymentType.CARD, "a-token-link");
         var requestPayload = CreateCardPaymentRequestBuilder.builder()
                 .amount(100)
-                .returnUrl("https://somewhere.gov.uk/rainbow/1")
                 .reference("a reference")
                 .description("a description")
                 .authorisationMode(AuthorisationMode.MOTO_API)
