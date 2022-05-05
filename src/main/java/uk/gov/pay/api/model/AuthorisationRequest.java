@@ -27,6 +27,17 @@ public class AuthorisationRequest {
     @Size(max = 255, message = "Must be less than or equal to {max} characters long")
     private String cardholderName;
 
+    public AuthorisationRequest() {
+    }
+
+    public AuthorisationRequest(String oneTimeToken, String cardNumber, String cvc, String expiryDate, String cardholderName) {
+        this.oneTimeToken = oneTimeToken;
+        this.cardNumber = cardNumber;
+        this.cvc = cvc;
+        this.expiryDate = expiryDate;
+        this.cardholderName = cardholderName;
+    }
+
     public String getOneTimeToken() {
         return oneTimeToken;
     }
