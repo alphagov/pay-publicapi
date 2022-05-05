@@ -2,15 +2,24 @@ package uk.gov.pay.api.resources;
 
 import com.codahale.metrics.annotation.Timed;
 import io.dropwizard.auth.Auth;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.AuthorisationRequest;
+import uk.gov.pay.api.model.CreatePaymentResult;
+import uk.gov.pay.api.model.RequestError;
+import uk.gov.pay.api.resources.error.ApiErrorResponse;
 import uk.gov.pay.api.service.AuthorisationService;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -33,7 +42,24 @@ public class AuthorisationResource {
     @POST
     @Timed
     @Path("/v1/auth")
+    @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
+    @Operation(operationId = "Authorise a MOTO payment",
+            summary = "Authorise a MOTO payment",
+            description = "Authorise a payment that was created with `authorisation_mode` set to `moto_api`.",
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "Your authorisation request was successful."),
+                    @ApiResponse(responseCode = "400", description = "Your request is invalid. Check the `code` and `description` in the response to find out why your request failed.",
+                            content = @Content(schema = @Schema(implementation = RequestError.class))),
+                    @ApiResponse(responseCode = "402",
+                            description = "The `card_number` you sent is not a valid card number or you chose not to accept this card type. Check the `code` and `description` fields in the response to find out why your request failed.",
+                            content = @Content(schema = @Schema(implementation = RequestError.class))),
+                    @ApiResponse(responseCode = "422", description = "A value you sent is invalid or missing. Check the `code` and `description` in the response to find out why your request failed.",
+                            content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
+                    @ApiResponse(responseCode = "500", description = "There is something wrong with GOV.UK Pay. If there are no issues on our status page (https://payments.statuspage.io), you can contact us with your error code and we'll investigate.",
+                            content = @Content(schema = @Schema(implementation = RequestError.class)))
+            }
+    )
     public Response authorisePayment(@Parameter(required = true)
                                      @Valid AuthorisationRequest authorisationRequest) {
         return authorisationService.authoriseRequest(authorisationRequest);
