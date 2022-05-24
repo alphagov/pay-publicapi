@@ -20,6 +20,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_CONNECTOR_ERROR;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.AUTHORISATION_ERROR;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.AUTHORISATION_REJECTED;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.AUTHORISATION_TIMEOUT;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.CARD_NUMBER_REJECTED;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.INVALID_ATTRIBUTE_VALUE;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.ONE_TIME_TOKEN_ALREADY_USED;
@@ -33,15 +34,17 @@ class AuthorisationRequestExceptionMapperTest {
     private Response mockResponse;
 
     private final AuthorisationRequestExceptionMapper mapper = new AuthorisationRequestExceptionMapper();
+
     static Object[] parametersForMapping() {
-        return new Object[] {
+        return new Object[]{
                 new Object[]{CARD_NUMBER_REJECTED, true, "An error message from connector", 402, "P0010"},
                 new Object[]{AUTHORISATION_REJECTED, true, "An error message from connector", 402, "P0010"},
-                new Object[]{AUTHORISATION_ERROR, true, "An error message from connector", 500, "P0050"},
+                new Object[]{AUTHORISATION_ERROR, false, "There was an error authorising the payment", 500, "P0050"},
+                new Object[]{AUTHORISATION_TIMEOUT, false, "There was an error authorising the payment", 500, "P0050"},
                 new Object[]{ONE_TIME_TOKEN_INVALID, true, "An error message from connector", 400, "P1211"},
                 new Object[]{ONE_TIME_TOKEN_ALREADY_USED, true, "An error message from connector", 400, "P1212"},
                 new Object[]{INVALID_ATTRIBUTE_VALUE, true, "An error message from connector", 422, "P0102"},
-                new Object[]{TELEPHONE_PAYMENT_NOTIFICATIONS_NOT_ALLOWED,  false,"Downstream system error", 500, "P0198"}
+                new Object[]{TELEPHONE_PAYMENT_NOTIFICATIONS_NOT_ALLOWED, false, "Downstream system error", 500, "P0198"}
 
         };
     }

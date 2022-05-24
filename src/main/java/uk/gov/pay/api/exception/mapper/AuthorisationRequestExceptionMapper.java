@@ -39,8 +39,9 @@ public class AuthorisationRequestExceptionMapper implements ExceptionMapper<Auth
                 requestError = aRequestError(AUTHORISATION_REJECTED_ERROR, exception.getConnectorErrorMessage());
                 break;
             case AUTHORISATION_ERROR:
+            case AUTHORISATION_TIMEOUT:
                 errorStatus = INTERNAL_SERVER_ERROR.getStatusCode();
-                requestError = aRequestError(AUTHORISATION_ERROR, exception.getConnectorErrorMessage());
+                requestError = aRequestError(AUTHORISATION_ERROR, "There was an error authorising the payment");
                 break;
             case ONE_TIME_TOKEN_ALREADY_USED:
                 errorStatus = BAD_REQUEST.getStatusCode();
