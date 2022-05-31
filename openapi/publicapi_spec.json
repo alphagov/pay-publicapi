@@ -14,6 +14,69 @@
     "name" : "Refunding card payments"
   } ],
   "paths" : {
+    "/v1/auth" : {
+      "post" : {
+        "description" : "Authorise a payment that was created with `authorisation_mode` set to `moto_api`.",
+        "operationId" : "Authorise a MOTO payment",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AuthorisationRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "204" : {
+            "description" : "Your authorisation request was successful."
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RequestError"
+                }
+              }
+            },
+            "description" : "Your request is invalid. Check the `code` and `description` in the response to find out why your request failed."
+          },
+          "402" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RequestError"
+                }
+              }
+            },
+            "description" : "The `card_number` you sent is not a valid card number or you chose not to accept this card type. Check the `code` and `description` fields in the response to find out why your request failed."
+          },
+          "422" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description" : "A value you sent is invalid or missing. Check the `code` and `description` in the response to find out why your request failed."
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RequestError"
+                }
+              }
+            },
+            "description" : "There is something wrong with GOV.UK Pay. If there are no issues on our status page (https://payments.statuspage.io), you can contact us with your error code and we'll investigate."
+          }
+        },
+        "summary" : "Authorise a MOTO payment",
+        "tags" : [ "Authorise card payments" ]
+      }
+    },
     "/v1/payments" : {
       "get" : {
         "description" : "Search payments by reference, state, 'from' and 'to' date. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
@@ -869,6 +932,46 @@
           }
         }
       },
+      "AuthorisationRequest" : {
+        "type" : "object",
+        "description" : "Contains the user's payment information. This information will be sent to the payment service provider to authorise the payment.",
+        "properties" : {
+          "card_number" : {
+            "type" : "string",
+            "description" : "The full card number from the paying user's card.",
+            "example" : "4242424242424242",
+            "maxLength" : 19,
+            "minLength" : 12
+          },
+          "cardholder_name" : {
+            "type" : "string",
+            "description" : "The name on the paying user's card.",
+            "example" : "J. Citizen",
+            "maxLength" : 255,
+            "minLength" : 0
+          },
+          "cvc" : {
+            "type" : "string",
+            "description" : "The card verification code (CVC) or card verification value (CVV) on the paying user's card.",
+            "example" : "123",
+            "maxLength" : 4,
+            "minLength" : 3
+          },
+          "expiry_date" : {
+            "type" : "string",
+            "description" : "The expiry date of the paying user's card. This value must be in `MM/YY` format.",
+            "example" : "09/22",
+            "maxLength" : 5,
+            "minLength" : 5
+          },
+          "one_time_token" : {
+            "type" : "string",
+            "description" : "This single use token authorises your request and matches it to a payment. GOV.UK Pay generated the `one_time_token` when the payment was created.",
+            "example" : "12345-edsfr-6789-gtyu"
+          }
+        },
+        "required" : [ "card_number", "cardholder_name", "cvc", "expiry_date", "one_time_token" ]
+      },
       "AuthorisationSummary" : {
         "type" : "object",
         "description" : "Object containing information about the authentication of the payment.",
@@ -1420,6 +1523,9 @@
         "type" : "object",
         "description" : "links for payment",
         "properties" : {
+          "auth_url_post" : {
+            "$ref" : "#/components/schemas/PostLink"
+          },
           "cancel" : {
             "$ref" : "#/components/schemas/PostLink"
           },

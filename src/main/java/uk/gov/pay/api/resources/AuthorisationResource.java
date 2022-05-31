@@ -1,18 +1,15 @@
 package uk.gov.pay.api.resources;
 
 import com.codahale.metrics.annotation.Timed;
-import io.dropwizard.auth.Auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.AuthorisationRequest;
-import uk.gov.pay.api.model.CreatePaymentResult;
 import uk.gov.pay.api.model.RequestError;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
 import uk.gov.pay.api.service.AuthorisationService;
@@ -29,6 +26,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/")
 @Produces({"application/json"})
+@Tag(name = "Authorise card payments")
 public class AuthorisationResource {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthorisationResource.class);
