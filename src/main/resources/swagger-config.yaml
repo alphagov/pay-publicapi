@@ -1,4 +1,5 @@
 resourceClasses:
+  - uk.gov.pay.api.resources.AuthorisationResource
   - uk.gov.pay.api.resources.PaymentsResource
   - uk.gov.pay.api.resources.PaymentRefundsResource
   - uk.gov.pay.api.resources.SearchRefundsResource
