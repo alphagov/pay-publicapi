@@ -1,4 +1,4 @@
-FROM eclipse-temurin:11.0.14_9-jre
+FROM eclipse-temurin:11.0.15_10-jre
 
 ARG DNS_TTL=15
 
