@@ -1221,7 +1221,7 @@
           "authorisation_mode" : {
             "type" : "string",
             "description" : "How the payment will be authorised. Payments created in `web` mode require the paying user to visit the `next_url` to complete the payment.",
-            "enum" : [ "web", "moto_api", "external" ]
+            "enum" : [ "web", "moto_api", "agreement", "external" ]
           },
           "authorisation_summary" : {
             "$ref" : "#/components/schemas/AuthorisationSummary"
@@ -1359,7 +1359,7 @@
           "authorisation_mode" : {
             "type" : "string",
             "description" : "How the payment will be authorised. Payments created in `web` mode require the paying user to visit the `next_url` to complete the payment.",
-            "enum" : [ "web", "moto_api", "external" ]
+            "enum" : [ "web", "moto_api", "agreement", "external" ]
           },
           "authorisation_summary" : {
             "$ref" : "#/components/schemas/AuthorisationSummary"

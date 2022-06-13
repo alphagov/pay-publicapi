@@ -9,7 +9,7 @@ public class Agreement {
         this.reference = reference;
     }
 
-    public static Agreement from(AgreementResponse agreementResponse) {
+    public static Agreement from(ConnectorAgreementResponse agreementResponse) {
         return new Agreement(agreementResponse.getAgreementId(),
                 agreementResponse.getReference()
         );

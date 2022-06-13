@@ -62,4 +62,16 @@ public class LedgerUriGenerator {
         String path = format("/v1/transaction/%s/transaction", paymentId);
         return buildLedgerUri(path, Map.of("gateway_account_id", gatewayAccountId));
     }
+
+    public String agreementURI(Account gatewayAccountId, String agreementId) {
+        String path = format("/v1/agreement/%s", agreementId);
+        return buildLedgerUri(path, Map.of(
+                "account_id", gatewayAccountId.getAccountId()
+        ));
+    }
+
+    // @TODO(sfount) this should be done through a known and specified params POJO, not a generic map
+    public String agreementsURIWithParams(Map<String, String> queryParams) {
+        return buildLedgerUri("/v1/agreement", queryParams);
+    }
 }

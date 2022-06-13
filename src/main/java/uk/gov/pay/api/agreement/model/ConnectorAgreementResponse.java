@@ -11,7 +11,7 @@ import java.util.Objects;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class AgreementResponse {
+public class ConnectorAgreementResponse {
 
     @JsonProperty("agreement_id")
     private String agreementId;
@@ -19,9 +19,9 @@ public class AgreementResponse {
     @JsonProperty("reference")
     private String reference;
       
-    public AgreementResponse(){}
+    public ConnectorAgreementResponse(){}
   
-    public AgreementResponse(AgreementResponseBuilder agreementResponseBuilder) {
+    public ConnectorAgreementResponse(AgreementResponseBuilder agreementResponseBuilder) {
         this.agreementId = agreementResponseBuilder.getAgreementId();
         this.reference = agreementResponseBuilder.getReference();
     }
@@ -38,7 +38,7 @@ public class AgreementResponse {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AgreementResponse that = (AgreementResponse) o;
+        ConnectorAgreementResponse that = (ConnectorAgreementResponse) o;
         return agreementId.equals(that.agreementId)  && reference.equals(that.reference);
     }
 
@@ -49,7 +49,7 @@ public class AgreementResponse {
 
     @Override
     public String toString() {
-        return "AgreementResponse{" +
+        return "ConnectorAgreementResponse{" +
                 "agreementId='" + agreementId +'}';
     }
 }

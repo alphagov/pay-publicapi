@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.http.HttpStatus.SC_UNPROCESSABLE_ENTITY;
 import static uk.gov.pay.api.agreement.model.CreateAgreementRequest.USER_IDENTIFIER_FIELD;
+import static uk.gov.pay.api.model.CreateCardPaymentRequest.AGREEMENT_ID_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.AMOUNT_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.AUTHORISATION_MODE;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.DELAYED_CAPTURE_FIELD_NAME;
@@ -95,6 +96,15 @@ class RequestJsonParser {
 
         if(paymentRequest.has(SET_UP_AGREEMENT_FIELD_NAME)) {
             builder.setUpAgreement(validateAndGetSetUpAgreement(paymentRequest));
+        }
+        
+        if(paymentRequest.has(AGREEMENT_ID_FIELD_NAME)) {
+            builder.agreementId(
+                    validateSkipNullValueAndGetString(
+                            paymentRequest.get(AGREEMENT_ID_FIELD_NAME),
+                            aRequestError(AGREEMENT_ID_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string")
+                    )
+            );
         }
 
         if (paymentRequest.has(LANGUAGE_FIELD_NAME)) {

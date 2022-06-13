@@ -1,13 +1,17 @@
 package uk.gov.pay.api.service;
 
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.exception.GetAgreementException;
 import uk.gov.pay.api.exception.GetChargeException;
 import uk.gov.pay.api.exception.GetEventsException;
 import uk.gov.pay.api.exception.GetRefundsException;
 import uk.gov.pay.api.exception.GetTransactionException;
+import uk.gov.pay.api.exception.SearchAgreementsException;
 import uk.gov.pay.api.exception.SearchPaymentsException;
 import uk.gov.pay.api.exception.SearchRefundsException;
+import uk.gov.pay.api.ledger.model.AgreementSearchResults;
 import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
+import uk.gov.pay.api.model.AgreementResponse;
 import uk.gov.pay.api.model.Charge;
 import uk.gov.pay.api.model.TransactionEvents;
 import uk.gov.pay.api.model.TransactionResponse;
@@ -138,5 +142,40 @@ public class LedgerService {
         }
 
         throw new SearchPaymentsException(response);
+    }
+
+    public AgreementResponse getAgreement(Account account, String agreementId, Boolean consistent) {
+        Response response = client
+                .target(ledgerUriGenerator.agreementURI(account, agreementId))
+                .request()
+                .header("X-Consistent", consistent)
+                .get();
+
+        if (response.getStatus() == SC_OK) {
+            return response.readEntity(AgreementResponse.class);
+        }
+
+        throw new GetAgreementException(response);
+    }
+
+    public AgreementSearchResults searchAgreements(Account account, Map<String, String> paramsAsMap) {
+        paramsAsMap.put("gateway_account_id", account.getAccountId());
+        paramsAsMap.put(PARAM_EXACT_REFERENCE_MATCH, "true");
+
+        Response response = client
+                .target(ledgerUriGenerator.agreementsURIWithParams(paramsAsMap))
+                .request()
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .get();
+
+        if (response.getStatus() == SC_OK) {
+            try {
+                return response.readEntity(AgreementSearchResults.class);
+            } catch (ProcessingException ex) {
+                throw new SearchAgreementsException(ex);
+            }
+        }
+
+        throw new SearchAgreementsException(response);
     }
 }

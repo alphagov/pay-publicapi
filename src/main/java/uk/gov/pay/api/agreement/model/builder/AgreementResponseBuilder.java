@@ -1,5 +1,5 @@
 package uk.gov.pay.api.agreement.model.builder;
-import uk.gov.pay.api.agreement.model.AgreementResponse;
+import uk.gov.pay.api.agreement.model.ConnectorAgreementResponse;
 
 public class AgreementResponseBuilder {
 
@@ -25,7 +25,7 @@ public class AgreementResponseBuilder {
         return this;
     }
     
-    public AgreementResponse build() {
-        return new AgreementResponse(this);
+    public ConnectorAgreementResponse build() {
+        return new ConnectorAgreementResponse(this);
     }
 }
