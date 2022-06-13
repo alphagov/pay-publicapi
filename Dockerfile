@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:jre-11.0.14_9-alpine@sha256:2dc1275bb70b9865986ecf036216b970b0c8236b649434ef8c6f01a9fff0ffc7
+FROM eclipse-temurin:11.0.15_10-jre-alpine@sha256:5fa1c745e68287a0f6fdd68aefbb89f139bd6a028007a22c6ed8e8b6be00457f
 
 RUN ["apk", "--no-cache", "upgrade"]
 
