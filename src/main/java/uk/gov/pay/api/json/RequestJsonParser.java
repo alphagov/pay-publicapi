@@ -65,7 +65,7 @@ import static uk.gov.service.payments.commons.model.Source.CARD_PAYMENT_LINK;
 class RequestJsonParser {
 
     private static final Set<Source> ALLOWED_SOURCES = EnumSet.of(CARD_PAYMENT_LINK, CARD_AGENT_INITIATED_MOTO);
-    public static final Set<AuthorisationMode> ALLOWED_AUTHORISATION_MODES = EnumSet.of(AuthorisationMode.WEB, AuthorisationMode.MOTO_API);
+    public static final Set<AuthorisationMode> ALLOWED_AUTHORISATION_MODES = EnumSet.of(AuthorisationMode.WEB, AuthorisationMode.MOTO_API, AuthorisationMode.AGREEMENT);
 
     private static ObjectMapper objectMapper = new ObjectMapper();
     private static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
