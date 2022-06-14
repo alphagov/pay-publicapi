@@ -154,6 +154,25 @@ public class CreatePaymentServiceTest {
 
     @Test
     @PactVerification({"connector"})
+    @Pacts(pacts = {"publicapi-connector-create-payment-for-disabled-account"})
+    public void creating_payment_for_disabled_account_should_return_422() {
+        var requestPayload = CreateCardPaymentRequestBuilder.builder()
+                .amount(100)
+                .returnUrl("https://somewhere.gov.uk/rainbow/1")
+                .reference("a reference")
+                .description("a description")
+                .build();
+
+        try {
+            createPaymentService.create(account, requestPayload);
+            fail("Expected CreateChargeException to be thrown");
+        } catch (CreateChargeException e) {
+            assertThat(e.getErrorIdentifier(), is(ErrorIdentifier.ACCOUNT_DISABLED));
+        }
+    }
+
+    @Test
+    @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-create-payment-with-authorisation-mode-moto-api"})
     public void testCreatePaymentWithAuthorisationModeMotoApi() {
         Account account = new Account("123456", TokenPaymentType.CARD, "a-token-link");
