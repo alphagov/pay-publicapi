@@ -48,10 +48,11 @@ public class CreateRefundService {
 
         Integer refundAmountAvailable = createPaymentRefundRequest.getRefundAmountAvailable()
                 .orElseGet(() -> getRefundAmountAvailableFromPayment(strategy));
-        
-        ImmutableMap<String, Object> payloadMap = ImmutableMap.of("amount", createPaymentRefundRequest.getAmount(), "refund_amount_available", refundAmountAvailable);
-        String connectorPayload = new GsonBuilder().create().toJson(
-                payloadMap);
+
+        ImmutableMap<String, Object> payloadMap = ImmutableMap.of(
+                "amount", createPaymentRefundRequest.getAmount(),
+                "refund_amount_available", refundAmountAvailable);
+        String connectorPayload = new GsonBuilder().create().toJson(payloadMap);
 
         Response connectorResponse = client
                 .target(getConnectorUrl(format("/v1/api/accounts/%s/charges/%s/refunds", account.getAccountId(), paymentId)))
@@ -61,7 +62,7 @@ public class CreateRefundService {
         if (connectorResponse.getStatus() != ACCEPTED.getStatusCode()) {
             throw new CreateRefundException(connectorResponse);
         }
-        
+
         RefundFromConnector refundFromConnector = connectorResponse.readEntity(RefundFromConnector.class);
         logger.debug("created refund returned - [ {} ]", refundFromConnector);
         return RefundResponse.valueOf(refundFromConnector, paymentId, baseUrl);
