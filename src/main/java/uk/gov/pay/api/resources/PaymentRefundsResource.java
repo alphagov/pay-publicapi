@@ -1,8 +1,6 @@
 package uk.gov.pay.api.resources;
 
 import com.codahale.metrics.annotation.Timed;
-import com.google.common.collect.ImmutableMap;
-import com.google.gson.GsonBuilder;
 import io.dropwizard.auth.Auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,18 +13,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.exception.CreateRefundException;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
-import uk.gov.pay.api.model.RequestError;
-import uk.gov.pay.api.model.RefundFromConnector;
 import uk.gov.pay.api.model.RefundResponse;
-import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.RefundsResponse;
-import uk.gov.pay.api.model.CardPayment;
+import uk.gov.pay.api.model.RequestError;
 import uk.gov.pay.api.model.search.card.RefundForSearchResult;
 import uk.gov.pay.api.model.search.card.RefundResult;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
 import uk.gov.pay.api.service.ConnectorService;
+import uk.gov.pay.api.service.CreateRefundService;
 import uk.gov.pay.api.service.GetPaymentRefundService;
 import uk.gov.pay.api.service.GetPaymentRefundsService;
 import uk.gov.pay.api.service.GetPaymentService;
@@ -39,15 +34,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
-import java.util.Optional;
 
-import static java.lang.String.format;
-import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.Status.ACCEPTED;
-import static javax.ws.rs.core.UriBuilder.fromPath;
 
 @Path("/v1/payments/{paymentId}/refunds")
 @Tag(name = "Refunding card payments")
@@ -55,25 +44,20 @@ import static javax.ws.rs.core.UriBuilder.fromPath;
 public class PaymentRefundsResource {
     private static final Logger logger = LoggerFactory.getLogger(PaymentRefundsResource.class);
 
-    private final String baseUrl;
-    private final Client client;
-    private final String connectorUrl;
     private final GetPaymentRefundsService getPaymentRefundsService;
     private final GetPaymentRefundService getPaymentRefundService;
-    private final ConnectorService connectorService;
-    private final GetPaymentService getPaymentService;
+    private final CreateRefundService createRefundService;
 
     @Inject
-    public PaymentRefundsResource(Client client, PublicApiConfig configuration,
+    public PaymentRefundsResource(PublicApiConfig configuration,
                                   GetPaymentRefundsService getPaymentRefundsService,
-                                  GetPaymentRefundService getPaymentRefundService, ConnectorService connectorService, GetPaymentService getPaymentService) {
-        this.client = client;
-        this.baseUrl = configuration.getBaseUrl();
-        this.connectorUrl = configuration.getConnectorUrl();
+                                  GetPaymentRefundService getPaymentRefundService,
+                                  ConnectorService connectorService,
+                                  GetPaymentService getPaymentService,
+                                  CreateRefundService createRefundService) {
         this.getPaymentRefundsService = getPaymentRefundsService;
         this.getPaymentRefundService = getPaymentRefundService;
-        this.connectorService = connectorService;
-        this.getPaymentService = getPaymentService;
+        this.createRefundService = createRefundService;
     }
 
     @GET
@@ -174,39 +158,9 @@ public class PaymentRefundsResource {
                                  @PathParam("paymentId") String paymentId,
                                  @Parameter(required = true, description = "requestPayload")
                                  CreatePaymentRefundRequest requestPayload) {
-        var strategy = new GetOnePaymentStrategy("", account, paymentId, getPaymentService);
 
         logger.info("Create a refund for payment request - paymentId={}", paymentId);
-
-        Integer refundAmountAvailable = requestPayload.getRefundAmountAvailable()
-                .orElseGet(() -> Optional.of((CardPayment) strategy.validateAndExecute().getPayment())
-                        .map(p -> p.getRefundSummary()
-                                .map(RefundSummary::getAmountAvailable)
-                                .orElse(0L))
-                        .map(Long::intValue)
-                        .orElse(0));
-
-        ImmutableMap<String, Object> payloadMap = ImmutableMap.of("amount", requestPayload.getAmount(), "refund_amount_available", refundAmountAvailable);
-        String connectorPayload = new GsonBuilder().create().toJson(
-                payloadMap);
-
-        Response connectorResponse = client
-                .target(getConnectorUrl(format("/v1/api/accounts/%s/charges/%s/refunds", account.getAccountId(), paymentId)))
-                .request()
-                .post(json(connectorPayload));
-
-        if (connectorResponse.getStatus() == ACCEPTED.getStatusCode()) {
-            RefundFromConnector refundFromConnector = connectorResponse.readEntity(RefundFromConnector.class);
-            logger.debug("created refund returned - [ {} ]", refundFromConnector);
-            RefundResponse refundResponse = RefundResponse.valueOf(refundFromConnector, paymentId, baseUrl);
-
-            return Response.accepted(refundResponse).build();
-        }
-
-        throw new CreateRefundException(connectorResponse);
-    }
-
-    private String getConnectorUrl(String urlPath) {
-        return fromPath(connectorUrl).path(urlPath).toString();
+        RefundResponse refundResponse = createRefundService.createRefund(account, paymentId, requestPayload);
+        return Response.accepted(refundResponse).build();
     }
 }
