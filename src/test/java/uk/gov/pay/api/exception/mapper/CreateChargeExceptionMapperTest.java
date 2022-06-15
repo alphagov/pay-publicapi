@@ -16,6 +16,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.ACCOUNT_DISABLED;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.ACCOUNT_NOT_LINKED_WITH_PSP;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.AUTHORISATION_API_NOT_ALLOWED;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.INVALID_ATTRIBUTE_VALUE;
@@ -35,6 +36,7 @@ class CreateChargeExceptionMapperTest {
 
     static Object[] parametersForMapping() {
         return new Object[] {
+                new Object[]{ACCOUNT_DISABLED, false, "GOV.UK Pay has disabled payment and refund creation on this account. Contact support with your error code.", 422, "P0941"},
                 new Object[]{ZERO_AMOUNT_NOT_ALLOWED, false, "Invalid attribute value: amount. Must be greater than or equal to 1", 422, "P0102"},
                 new Object[]{MOTO_NOT_ALLOWED, false, "MOTO payments are not enabled for this account. Please contact support if you would like to process MOTO payments", 422, "P0196"},
                 new Object[]{TELEPHONE_PAYMENT_NOTIFICATIONS_NOT_ALLOWED, false, "Access to this resource is not enabled for this account. Please contact support.", 403, "P0930"},

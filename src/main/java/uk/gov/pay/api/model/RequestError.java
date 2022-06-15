@@ -68,6 +68,7 @@ public class RequestError {
         REQUEST_DENIED_ERROR("P0920", "Request blocked by security rules. Please consult API documentation for more information."),
         RESOURCE_ACCESS_FORBIDDEN("P0930", "Access to this resource is not enabled for this account. Please contact support."),
         ACCOUNT_NOT_LINKED_WITH_PSP("P0940", "Account is not fully configured. Please refer to documentation to setup your account or contact support."),
+        ACCOUNT_DISABLED("P0941", "GOV.UK Pay has disabled payment and refund creation on this account. Contact support with your error code."),
 
         SEARCH_REFUNDS_VALIDATION_ERROR("P1101", "Invalid parameters: %s. See Public API documentation for the correct data formats"),
         SEARCH_REFUNDS_NOT_FOUND("P1100", "Page not found"),
