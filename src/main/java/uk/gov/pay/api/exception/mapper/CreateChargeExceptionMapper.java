@@ -46,10 +46,6 @@ public class CreateChargeExceptionMapper implements ExceptionMapper<CreateCharge
         } else {
             ErrorIdentifier errorIdentifier = exception.getErrorIdentifier();
             switch (errorIdentifier) {
-                case ACCOUNT_DISABLED:
-                    statusCode = HttpStatus.UNPROCESSABLE_ENTITY_422;
-                    requestError = aRequestError(ACCOUNT_DISABLED);
-                    break;
                 case ZERO_AMOUNT_NOT_ALLOWED:
                     statusCode = HttpStatus.UNPROCESSABLE_ENTITY_422;
                     requestError = aRequestError("amount", CREATE_PAYMENT_VALIDATION_ERROR,
@@ -58,6 +54,10 @@ public class CreateChargeExceptionMapper implements ExceptionMapper<CreateCharge
                 case MOTO_NOT_ALLOWED:
                     statusCode = HttpStatus.UNPROCESSABLE_ENTITY_422;
                     requestError = aRequestError(CREATE_PAYMENT_MOTO_NOT_ENABLED);
+                    break;
+                case ACCOUNT_DISABLED:
+                    statusCode = HttpStatus.FORBIDDEN_403;
+                    requestError = aRequestError(ACCOUNT_DISABLED);
                     break;
                 case TELEPHONE_PAYMENT_NOTIFICATIONS_NOT_ALLOWED:
                     statusCode = HttpStatus.FORBIDDEN_403;
