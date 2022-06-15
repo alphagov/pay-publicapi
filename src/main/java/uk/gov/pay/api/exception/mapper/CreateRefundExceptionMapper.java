@@ -10,9 +10,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
+import static uk.gov.pay.api.model.RequestError.Code.ACCOUNT_DISABLED;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_REFUND_AMOUNT_AVAILABLE_MISMATCH;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_REFUND_CONNECTOR_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_REFUND_NOT_AVAILABLE;
@@ -33,15 +35,36 @@ public class CreateRefundExceptionMapper implements ExceptionMapper<CreateRefund
             requestError = aRequestError(CREATE_PAYMENT_REFUND_NOT_FOUND_ERROR);
             status = NOT_FOUND;
 
-        } else if (exception.getErrorIdentifier() == ErrorIdentifier.REFUND_NOT_AVAILABLE && exception.hasReason()) {
-            requestError = aRequestError(CREATE_PAYMENT_REFUND_NOT_AVAILABLE, exception.getReason());
-            status = BAD_REQUEST;
-        } else if (exception.getErrorIdentifier() == ErrorIdentifier.REFUND_AMOUNT_AVAILABLE_MISMATCH) {
-            requestError = aRequestError(CREATE_PAYMENT_REFUND_AMOUNT_AVAILABLE_MISMATCH);
-            status = PRECONDITION_FAILED;
-        } else {
-            requestError = aRequestError(CREATE_PAYMENT_REFUND_CONNECTOR_ERROR);
-            status = INTERNAL_SERVER_ERROR;
+        }
+        else {
+            switch (exception.getErrorIdentifier()) {
+                case ACCOUNT_DISABLED: {
+                    requestError = aRequestError(ACCOUNT_DISABLED);
+                    status = FORBIDDEN;
+                    break;
+                }
+                case REFUND_NOT_AVAILABLE: {
+                    if (exception.hasReason()) {
+                        requestError = aRequestError(CREATE_PAYMENT_REFUND_NOT_AVAILABLE, exception.getReason());
+                        status = BAD_REQUEST;
+                    }
+                    else {
+                        LOGGER.error("Connector response for REFUND_NOT_AVAILABLE is missing the 'reason' field");
+                        requestError = aRequestError(CREATE_PAYMENT_REFUND_CONNECTOR_ERROR);
+                        status = INTERNAL_SERVER_ERROR;
+                    }
+                    break;
+                }
+                case REFUND_AMOUNT_AVAILABLE_MISMATCH: {
+                    requestError = aRequestError(CREATE_PAYMENT_REFUND_AMOUNT_AVAILABLE_MISMATCH);
+                    status = PRECONDITION_FAILED;
+                    break;
+                }
+                default: {
+                    requestError = aRequestError(CREATE_PAYMENT_REFUND_CONNECTOR_ERROR);
+                    status = INTERNAL_SERVER_ERROR;
+                }
+            }
         }
 
         if (status == INTERNAL_SERVER_ERROR) {
