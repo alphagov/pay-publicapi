@@ -589,7 +589,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .statusCode(500)
                 .contentType(JSON)
                 .body("code", is("P0199"))
-                .body("description", is("There is an error with this account. Please contact support"));
+                .body("description", is("There is an error with this account. Contact support with your error code - https://www.payments.service.gov.uk/support/ ."));
 
         connectorMockClient.verifyCreateChargeConnectorRequest(notFoundGatewayAccountId, SUCCESS_PAYLOAD);
     }
@@ -612,7 +612,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .statusCode(422)
                 .contentType(JSON)
                 .body("code", is("P0196"))
-                .body("description", is("MOTO payments are not enabled for this account. Please contact support if you would like to process MOTO payments"));
+                .body("description", is("MOTO payments are not enabled for this account. Please contact support if you would like to process MOTO payments - https://www.payments.service.gov.uk/support/ ."));
 
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createMotoPaymentPayload);
     }
@@ -670,7 +670,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .statusCode(403)
                 .contentType(JSON)
                 .body("code", is("P0940"))
-                .body("description", is("Account is not fully configured. Please refer to documentation to setup your account or contact support."));
+                .body("description", is("Account is not fully configured. Please refer to documentation to setup your account or contact support with your error code - https://www.payments.service.gov.uk/support/ ."));
 
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, SUCCESS_PAYLOAD);
     }

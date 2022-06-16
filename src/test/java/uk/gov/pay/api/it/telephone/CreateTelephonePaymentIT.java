@@ -155,6 +155,6 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .statusCode(403)
                 .contentType(JSON)
                 .body("code", is("P0930"))
-                .body("description", is("Access to this resource is not enabled for this account. Please contact support."));
+                .body("description", is("Access to this resource is not enabled for this account. Contact support with your error code - https://www.payments.service.gov.uk/support/ ."));
     }
 }

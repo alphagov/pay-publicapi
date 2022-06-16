@@ -32,7 +32,7 @@ class CreateRefundExceptionMapperTest {
 
     static Object[] parametersForMapping() {
         return new Object[] {
-                new Object[]{ACCOUNT_DISABLED, null, "GOV.UK Pay has disabled payment and refund creation on this account. Contact support with your error code.", 403, "P0941"},
+                new Object[]{ACCOUNT_DISABLED, null, "GOV.UK Pay has disabled payment and refund creation on this account. Contact support with your error code - https://www.payments.service.gov.uk/support/ .", 403, "P0941"},
                 new Object[]{REFUND_AMOUNT_AVAILABLE_MISMATCH, null, "Refund amount available mismatch.", 412, "P0604"},
                 new Object[]{REFUND_NOT_AVAILABLE, "This is a reason", "The payment is not available for refund. Payment refund status: This is a reason", 400, "P0603"},
                 new Object[]{REFUND_NOT_AVAILABLE, null, "Downstream system error", 500, "P0698"},
