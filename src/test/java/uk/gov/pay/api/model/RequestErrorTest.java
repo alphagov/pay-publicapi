@@ -11,7 +11,7 @@ public class RequestErrorTest {
     @Test
     void shouldGetExpectedValuesWhenToStringIsCalled() {
         RequestError requestError = aRequestError(RequestError.Code.CREATE_PAYMENT_ACCOUNT_ERROR);
-        assertThat(requestError.toString(), is("RequestError{field=null, code=P0199, name=CREATE_PAYMENT_ACCOUNT_ERROR, description='There is an error with this account. Please contact support'}"));
+        assertThat(requestError.toString(), is("RequestError{field=null, code=P0199, name=CREATE_PAYMENT_ACCOUNT_ERROR, description='There is an error with this account. Contact support with your error code - https://www.payments.service.gov.uk/support/ .'}"));
     }
 
     @Test

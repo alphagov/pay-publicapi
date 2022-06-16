@@ -15,12 +15,12 @@ public class RequestError {
 
         CREATE_PAYMENT_AGREEMENT_ID_ERROR("P0103", "Invalid attribute value: set_up_agreement. Agreement ID does not exist"),
 
-        CREATE_PAYMENT_ACCOUNT_ERROR("P0199", "There is an error with this account. Please contact support"),
+        CREATE_PAYMENT_ACCOUNT_ERROR("P0199", "There is an error with this account. Contact support with your error code - https://www.payments.service.gov.uk/support/ ."),
         CREATE_PAYMENT_CONNECTOR_ERROR("P0198", "Downstream system error"),
         CREATE_AGREEMENT_CONNECTOR_ERROR("P0198", "Downstream system error"),
         CREATE_PAYMENT_PARSING_ERROR("P0197", "Unable to parse JSON"),
         CREATE_AGREEMENT_PARSING_ERROR("P0197", "Unable to parse JSON"),
-        CREATE_PAYMENT_MOTO_NOT_ENABLED("P0196", "MOTO payments are not enabled for this account. Please contact support if you would like to process MOTO payments"),
+        CREATE_PAYMENT_MOTO_NOT_ENABLED("P0196", "MOTO payments are not enabled for this account. Please contact support if you would like to process MOTO payments - https://www.payments.service.gov.uk/support/ ."),
         CREATE_PAYMENT_AUTHORISATION_API_NOT_ENABLED("P0195","Using authorisation_mode of moto_api is not allowed for this account"),
 
         GENERIC_MISSING_FIELD_ERROR_MESSAGE_FROM_CONNECTOR("P0101", "%s"),
@@ -66,9 +66,9 @@ public class RequestError {
 
         TOO_MANY_REQUESTS_ERROR("P0900", "Too many requests"),
         REQUEST_DENIED_ERROR("P0920", "Request blocked by security rules. Please consult API documentation for more information."),
-        RESOURCE_ACCESS_FORBIDDEN("P0930", "Access to this resource is not enabled for this account. Please contact support."),
-        ACCOUNT_NOT_LINKED_WITH_PSP("P0940", "Account is not fully configured. Please refer to documentation to setup your account or contact support."),
-        ACCOUNT_DISABLED("P0941", "GOV.UK Pay has disabled payment and refund creation on this account. Contact support with your error code."),
+        RESOURCE_ACCESS_FORBIDDEN("P0930", "Access to this resource is not enabled for this account. Contact support with your error code - https://www.payments.service.gov.uk/support/ ."),
+        ACCOUNT_NOT_LINKED_WITH_PSP("P0940", "Account is not fully configured. Please refer to documentation to setup your account or contact support with your error code - https://www.payments.service.gov.uk/support/ ."),
+        ACCOUNT_DISABLED("P0941", "GOV.UK Pay has disabled payment and refund creation on this account. Contact support with your error code - https://www.payments.service.gov.uk/support/ ."),
 
         SEARCH_REFUNDS_VALIDATION_ERROR("P1101", "Invalid parameters: %s. See Public API documentation for the correct data formats"),
         SEARCH_REFUNDS_NOT_FOUND("P1100", "Page not found"),

@@ -37,10 +37,10 @@ class CreateChargeExceptionMapperTest {
     static Object[] parametersForMapping() {
         return new Object[] {
                 new Object[]{ZERO_AMOUNT_NOT_ALLOWED, false, "Invalid attribute value: amount. Must be greater than or equal to 1", 422, "P0102"},
-                new Object[]{MOTO_NOT_ALLOWED, false, "MOTO payments are not enabled for this account. Please contact support if you would like to process MOTO payments", 422, "P0196"},
-                new Object[]{ACCOUNT_DISABLED, false, "GOV.UK Pay has disabled payment and refund creation on this account. Contact support with your error code.", 403, "P0941"},
-                new Object[]{TELEPHONE_PAYMENT_NOTIFICATIONS_NOT_ALLOWED, false, "Access to this resource is not enabled for this account. Please contact support.", 403, "P0930"},
-                new Object[]{ACCOUNT_NOT_LINKED_WITH_PSP, false, "Account is not fully configured. Please refer to documentation to setup your account or contact support.", 403, "P0940"},
+                new Object[]{MOTO_NOT_ALLOWED, false, "MOTO payments are not enabled for this account. Please contact support if you would like to process MOTO payments - https://www.payments.service.gov.uk/support/ .", 422, "P0196"},
+                new Object[]{ACCOUNT_DISABLED, false, "GOV.UK Pay has disabled payment and refund creation on this account. Contact support with your error code - https://www.payments.service.gov.uk/support/ .", 403, "P0941"},
+                new Object[]{TELEPHONE_PAYMENT_NOTIFICATIONS_NOT_ALLOWED, false, "Access to this resource is not enabled for this account. Contact support with your error code - https://www.payments.service.gov.uk/support/ .", 403, "P0930"},
+                new Object[]{ACCOUNT_NOT_LINKED_WITH_PSP, false, "Account is not fully configured. Please refer to documentation to setup your account or contact support with your error code - https://www.payments.service.gov.uk/support/ .", 403, "P0940"},
                 new Object[]{AUTHORISATION_API_NOT_ALLOWED, false, "Using authorisation_mode of moto_api is not allowed for this account", 422, "P0195"},
                 new Object[]{MISSING_MANDATORY_ATTRIBUTE, true, "An error message from connector", 400, "P0101"},
                 new Object[]{UNEXPECTED_ATTRIBUTE, true, "An error message from connector", 400, "P0104"},
