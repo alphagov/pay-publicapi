@@ -88,7 +88,7 @@ public class CreateCardPaymentRequest {
     @Size(min=26, max=26, message = "Field [set_up_agreement] length must be 26")
     private String setUpAgreement;
     
-    @JsonProperty("set_up_agreement")
+    @JsonProperty("agreement_id")
     @Size(min=26, max=26, message = "Field [agreement_id] length must be 26")
     private String agreementId;
    
@@ -189,7 +189,7 @@ public class CreateCardPaymentRequest {
     @JsonProperty("agreement_id")
     @Schema(description = "agreement ID", required = false, example = "abcefghjklmnopqr1234567890", hidden = true)
     public String getAgreementId() {
-        return setUpAgreement;
+        return agreementId;
     }
 
     @JsonProperty("authorisation_mode")

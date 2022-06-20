@@ -135,6 +135,26 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .body("agreement_id", is(VALID_AGREEMENT_ID));
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
     }
+    
+    @Test
+    public void createAChargeWithAgreementIdAndAgreementAuthMode() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+
+        CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
+                .withAmount(100)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withAuthorisationMode(AuthorisationMode.AGREEMENT)
+                .withAgreementId(VALID_AGREEMENT_ID)
+                .build();
+        connectorMockClient.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
+
+        postPaymentResponse(paymentPayload(createChargeRequestParams))
+                .statusCode(HttpStatus.SC_CREATED)
+                .contentType(JSON)
+                .body("agreement_id", is(VALID_AGREEMENT_ID));
+        connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
+    }
 
     @Test
     public void shouldReturn422WhencreateAChargeIsCalledWithTooShortAgreementId() {
@@ -751,6 +771,14 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
 
         if (params.getSetUpAgreement() != null) {
             payload.add("set_up_agreement", params.getSetUpAgreement());
+        }
+        
+        if (params.getAuthorisationMode() != null) {
+            payload.add("authorisation_mode", params.getAuthorisationMode().getName());
+        }
+        
+        if (params.getAgreementId() != null) {
+            payload.add("agreement_id", params.getAgreementId());
         }
 
         return payload.build();
