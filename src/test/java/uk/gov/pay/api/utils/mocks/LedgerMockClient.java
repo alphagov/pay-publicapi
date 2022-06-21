@@ -162,6 +162,18 @@ public class LedgerMockClient {
         respondError(errorMessage, status, path);
     }
 
+    public void respondWithAgreement(String agreementId, AgreementFromLedgerFixture agreementFromLedgerFixture) throws JsonProcessingException {
+        respondWithAgreement(agreementId, mapper.writeValueAsString(agreementFromLedgerFixture));
+    }
+
+    public void respondWithAgreement(String agreementId, String body) {
+        ledgerMock.stubFor(get(urlPathEqualTo(format("/v1/agreement/%s", agreementId)))
+                .willReturn(aResponse()
+                        .withStatus(OK_200)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withBody(body)));
+    }
+
     private void respondTransactionError(String transactionId, String message, int status) {
         String path = format("/v1/transaction/%s", transactionId);
         respondError(message, status, path);
