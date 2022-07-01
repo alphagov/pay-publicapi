@@ -27,6 +27,8 @@ import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.apache.http.HttpHeaders.CACHE_CONTROL;
+import static org.apache.http.HttpHeaders.PRAGMA;
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -87,8 +89,11 @@ public class PaymentResourceSearchIT extends PaymentResourceITestBase {
 
         ledgerMockClient.respondOk_whenSearchCharges(payments);
 
-        searchPayments(Map.of()).statusCode(200)
-                .contentType(JSON).log().body()
+        searchPayments(Map.of())
+                .statusCode(200)
+                .header(PRAGMA, "no-cache")
+                .header(CACHE_CONTROL, "no-store")
+                .contentType(JSON)
                 .body("results[0].metadata.reconciled", is(true))
                 .body("results[0].metadata.ledger_code", is(123))
                 .body("results[0].metadata.fuh", is("fuh you"))

@@ -12,6 +12,8 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
+import static org.apache.http.HttpHeaders.CACHE_CONTROL;
+import static org.apache.http.HttpHeaders.PRAGMA;
 import static uk.gov.pay.api.validation.PaymentSearchValidator.validateSearchParameters;
 
 public class PaymentSearchService {
@@ -56,6 +58,8 @@ public class PaymentSearchService {
                 .addProperty("results", chargeFromResponses);
 
         return Response.ok()
+                .header(PRAGMA, "no-cache")
+                .header(CACHE_CONTROL, "no-store")
                 .entity(paginationDecorator
                         .decoratePagination(halRepresentation, paymentSearchResponse, PAYMENTS_PATH)
                         .build()
