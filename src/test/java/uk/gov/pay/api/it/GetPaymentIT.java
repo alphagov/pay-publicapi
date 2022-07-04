@@ -32,6 +32,8 @@ import java.util.function.Consumer;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static org.apache.http.HttpHeaders.CACHE_CONTROL;
+import static org.apache.http.HttpHeaders.PRAGMA;
 import static org.apache.http.HttpStatus.SC_NOT_ACCEPTABLE;
 import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -96,6 +98,7 @@ public class GetPaymentIT extends PaymentResourceITestBase {
 
         ValidatableResponse response = getPaymentResponse(CHARGE_ID);
 
+        response.header(PRAGMA, "no-cache").header(CACHE_CONTROL, "no-store");
         assertCommonPaymentFields(response);
         assertConnectorOnlyPaymentFields(response);
         assertPaymentWithMetadata(response);
@@ -110,6 +113,7 @@ public class GetPaymentIT extends PaymentResourceITestBase {
 
         ValidatableResponse response = getPaymentResponse(CHARGE_ID, LEDGER_ONLY_STRATEGY);
 
+        response.header(PRAGMA, "no-cache").header(CACHE_CONTROL, "no-store");
         assertCommonPaymentFields(response);
         assertPaymentWithMetadata(response);
     }

@@ -47,6 +47,8 @@ import javax.ws.rs.core.UriInfo;
 
 import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.apache.http.HttpHeaders.CACHE_CONTROL;
+import static org.apache.http.HttpHeaders.PRAGMA;
 
 @Path("/")
 @Tag(name = "Card payments")
@@ -115,7 +117,10 @@ public class PaymentsResource {
         PaymentWithAllLinks payment = strategy.validateAndExecute();
 
         logger.info("Payment returned - [ {} ]", payment);
-        return Response.ok(payment).build();
+        return Response.ok(payment)
+                .header(PRAGMA, "no-cache")
+                .header(CACHE_CONTROL, "no-store")
+                .build();
     }
 
     @GET
@@ -275,6 +280,8 @@ public class PaymentsResource {
         Response response = Response
                 .created(publicApiUriGenerator.getPaymentURI(createdPayment.getPayment().getPaymentId()))
                 .entity(createdPayment)
+                .header(PRAGMA, "no-cache")
+                .header(CACHE_CONTROL, "no-store")
                 .build();
 
         logger.info("Payment returned (created): [ {} ]", createdPayment);

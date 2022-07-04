@@ -30,6 +30,8 @@ import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.Collections;
 
+import static org.apache.http.HttpHeaders.CACHE_CONTROL;
+import static org.apache.http.HttpHeaders.PRAGMA;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -86,6 +88,8 @@ public class PaymentsResourceCreatePaymentTest {
 
         Response newPayment = paymentsResource.createNewPayment(account, createPaymentRequest);
 
+        assertThat(newPayment.getHeaderString(PRAGMA), is("no-cache"));
+        assertThat(newPayment.getHeaderString(CACHE_CONTROL), is("no-store"));
         assertThat(newPayment.getStatus(), is(201));
         assertThat(newPayment.getLocation(), is(URI.create(PAYMENT_URI)));
         assertThat(newPayment.getEntity(), sameInstance(injectedResponse));
