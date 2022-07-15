@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.http.HttpStatus.SC_UNPROCESSABLE_ENTITY;
 import static uk.gov.pay.api.agreement.model.CreateAgreementRequest.USER_IDENTIFIER_FIELD;
+import static uk.gov.pay.api.model.CreateCardPaymentRequest.AGREEMENT_ID_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.AMOUNT_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.AUTHORISATION_MODE;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.DELAYED_CAPTURE_FIELD_NAME;
@@ -65,7 +66,7 @@ import static uk.gov.service.payments.commons.model.Source.CARD_PAYMENT_LINK;
 class RequestJsonParser {
 
     private static final Set<Source> ALLOWED_SOURCES = EnumSet.of(CARD_PAYMENT_LINK, CARD_AGENT_INITIATED_MOTO);
-    public static final Set<AuthorisationMode> ALLOWED_AUTHORISATION_MODES = EnumSet.of(AuthorisationMode.WEB, AuthorisationMode.MOTO_API);
+    public static final Set<AuthorisationMode> ALLOWED_AUTHORISATION_MODES = EnumSet.of(AuthorisationMode.WEB, AuthorisationMode.MOTO_API, AuthorisationMode.AGREEMENT);
 
     private static ObjectMapper objectMapper = new ObjectMapper();
     private static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
@@ -95,6 +96,13 @@ class RequestJsonParser {
 
         if(paymentRequest.has(SET_UP_AGREEMENT_FIELD_NAME)) {
             builder.setUpAgreement(validateAndGetSetUpAgreement(paymentRequest));
+        }
+
+        if(paymentRequest.has(AGREEMENT_ID_FIELD_NAME)) {
+            builder.agreementId(validateSkipNullValueAndGetString(
+                   paymentRequest.get(AGREEMENT_ID_FIELD_NAME),
+                   aRequestError(AGREEMENT_ID_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid string format")
+            ));
         }
 
         if (paymentRequest.has(LANGUAGE_FIELD_NAME)) {

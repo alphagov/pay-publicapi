@@ -525,6 +525,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .withRefundSummary(REFUND_SUMMARY)
                 .withCardDetails(CARD_DETAILS)
                 .withAuthorisationMode(AuthorisationMode.AGREEMENT)
+                .withAgreementId(VALID_AGREEMENT_ID)
                 .build());
 
         CreateChargeRequestParams params = aCreateChargeRequestParams()
@@ -532,6 +533,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .withDescription(DESCRIPTION)
                 .withReference(REFERENCE)
                 .withAuthorisationMode(AuthorisationMode.AGREEMENT)
+                .withAgreementId(VALID_AGREEMENT_ID)
                 .build();
 
         postPaymentResponse(paymentPayload(params))
@@ -774,7 +776,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
             payload.addToNestedMap("line1", addressLine1, "prefilled_cardholder_details", "billing_address");
         });
 
-        params.getAddressLine1().ifPresent(addressLine2 -> {
+        params.getAddressLine2().ifPresent(addressLine2 -> {
             payload.addToNestedMap("line2", addressLine2, "prefilled_cardholder_details", "billing_address");
         });
 
@@ -796,6 +798,14 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
 
         if (params.getSetUpAgreement() != null) {
             payload.add("set_up_agreement", params.getSetUpAgreement());
+        }
+
+        if (params.getAgreementId() != null) {
+            payload.add("agreement_id", params.getAgreementId());
+        }
+
+        if (params.getAuthorisationMode() != null) {
+            payload.add("authorisation_mode", params.getAuthorisationMode().getName());
         }
 
         return payload.build();

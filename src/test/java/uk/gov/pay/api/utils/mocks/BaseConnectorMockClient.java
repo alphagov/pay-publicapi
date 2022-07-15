@@ -110,6 +110,14 @@ public abstract class BaseConnectorMockClient {
             payload.add("save_payment_instrument_to_agreement", true);
         }
 
+        if (params.getAgreementId() != null) {
+            payload.add("agreement_id", params.getAgreementId());
+        }
+
+        if (params.getAuthorisationMode() != null) {
+            payload.add("authorisation_mode", params.getAuthorisationMode().getName());
+        }
+
         payload.add("source", params.getSource().orElse(CARD_API));
 
         return payload.build();

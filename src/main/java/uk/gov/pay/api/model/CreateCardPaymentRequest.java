@@ -41,6 +41,7 @@ public class CreateCardPaymentRequest {
     public static final String DELAYED_CAPTURE_FIELD_NAME = "delayed_capture";
     public static final String MOTO_FIELD_NAME = "moto";
     public static final String SET_UP_AGREEMENT_FIELD_NAME = "set_up_agreement";
+    public static final String AGREEMENT_ID_FIELD_NAME = "agreement_id";
     public static final String SOURCE_FIELD_NAME = "source";
     public static final String METADATA = "metadata";
     public static final String INTERNAL = "internal";
@@ -110,6 +111,7 @@ public class CreateCardPaymentRequest {
         this.internal = builder.getInternal();
         this.setUpAgreement = builder.getSetUpAgreement();
         this.authorisationMode = builder.getAuthorisationMode();
+        this.agreementId = builder.getAgreementId();
     }
     
     @Schema(description = "amount in pence", required = true, minimum = "1", maximum = "10000000", example = "12000")

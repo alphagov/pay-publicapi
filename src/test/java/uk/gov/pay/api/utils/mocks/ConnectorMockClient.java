@@ -12,6 +12,7 @@ import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.links.Link;
 import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
 import uk.gov.pay.api.utils.JsonStringBuilder;
+import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.ErrorIdentifier;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 
@@ -322,7 +323,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     public void respondOk_whenCreateCharge_withAuthorisationMode_Agreement(String chargeTokenId, String gatewayAccountId, ChargeResponseFromConnector responseFromConnector) {
         ChargeResponseFromConnector build = aCreateOrGetChargeResponseFromConnector(responseFromConnector)
-                .withMoto(true)
+                .withAuthorisationMode(AuthorisationMode.AGREEMENT)
                 .withLink(validGetLink(chargeLocation(gatewayAccountId, responseFromConnector.getChargeId()), "self"))
                 .build();
 

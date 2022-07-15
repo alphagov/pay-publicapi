@@ -26,6 +26,7 @@ public class CreateChargeRequestParams {
     private final Source source;
     private final String setUpAgreement;
     private final AuthorisationMode authorisationMode;
+    private final String agreementId;
 
     private CreateChargeRequestParams(CreateChargeRequestParamsBuilder builder) {
         this.amount = builder.amount;
@@ -45,6 +46,7 @@ public class CreateChargeRequestParams {
         this.source = builder.source;
         this.setUpAgreement = builder.setUpAgreement;
         this.authorisationMode = builder.authorisationMode;
+        this.agreementId = builder.agreementId;
     }
 
     public int getAmount() {
@@ -115,6 +117,10 @@ public class CreateChargeRequestParams {
         return authorisationMode;
     }
 
+    public String getAgreementId() {
+        return agreementId;
+    }
+
     public static final class CreateChargeRequestParamsBuilder {
         private Integer amount;
         private String returnUrl;
@@ -133,6 +139,7 @@ public class CreateChargeRequestParams {
         private Source source;
         public String setUpAgreement;
         public AuthorisationMode authorisationMode;
+        public String agreementId;
 
         private CreateChargeRequestParamsBuilder() {
         }
@@ -228,6 +235,11 @@ public class CreateChargeRequestParams {
         
         public CreateChargeRequestParamsBuilder withAuthorisationMode(AuthorisationMode authorisationMode) {
             this.authorisationMode = authorisationMode;
+            return this;
+        }
+
+        public CreateChargeRequestParamsBuilder withAgreementId(String agreementId) {
+            this.agreementId = agreementId;
             return this;
         }
     }
