@@ -71,6 +71,14 @@ public class CreateChargeExceptionMapper implements ExceptionMapper<CreateCharge
                     statusCode = HttpStatus.UNPROCESSABLE_ENTITY_422;
                     requestError = aRequestError(CREATE_PAYMENT_AUTHORISATION_API_NOT_ENABLED);
                     break;
+                case AGREEMENT_NOT_FOUND:
+                    statusCode = HttpStatus.BAD_REQUEST_400;
+                    requestError = aRequestError("agreement_id", CREATE_PAYMENT_VALIDATION_ERROR, "Agreement does not exist");
+                    break;
+                case AGREEMENT_NOT_ACTIVE:
+                    statusCode = HttpStatus.BAD_REQUEST_400;
+                    requestError = aRequestError("agreement_id", CREATE_PAYMENT_VALIDATION_ERROR, "Agreement must be active");
+                    break;
                 case MISSING_MANDATORY_ATTRIBUTE:
                     statusCode = HttpStatus.BAD_REQUEST_400;
                     requestError = aRequestError(GENERIC_MISSING_FIELD_ERROR_MESSAGE_FROM_CONNECTOR, exception.getConnectorErrorMessage());

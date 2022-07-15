@@ -18,6 +18,8 @@ import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.ACCOUNT_DISABLED;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.ACCOUNT_NOT_LINKED_WITH_PSP;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.AGREEMENT_NOT_ACTIVE;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.AGREEMENT_NOT_FOUND;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.AUTHORISATION_API_NOT_ALLOWED;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.INVALID_ATTRIBUTE_VALUE;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.MISSING_MANDATORY_ATTRIBUTE;
@@ -44,6 +46,8 @@ class CreateChargeExceptionMapperTest {
                 new Object[]{AUTHORISATION_API_NOT_ALLOWED, false, "Using authorisation_mode of moto_api is not allowed for this account", 422, "P0195"},
                 new Object[]{MISSING_MANDATORY_ATTRIBUTE, true, "An error message from connector", 400, "P0101"},
                 new Object[]{UNEXPECTED_ATTRIBUTE, true, "An error message from connector", 400, "P0104"},
+                new Object[]{AGREEMENT_NOT_FOUND, false, "Invalid attribute value: agreement_id. Agreement does not exist", 400, "P0102"},
+                new Object[]{AGREEMENT_NOT_ACTIVE, false, "Invalid attribute value: agreement_id. Agreement must be active", 400, "P0102"},
                 new Object[]{INVALID_ATTRIBUTE_VALUE, true, "An error message from connector", 422, "P0102"}
         };
     }

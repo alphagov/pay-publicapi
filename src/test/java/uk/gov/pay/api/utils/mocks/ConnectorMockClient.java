@@ -319,6 +319,19 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                         .withHeader(LOCATION, chargeLocation(gatewayAccountId, responseFromConnector.getChargeId()))
                         .withBody(buildChargeResponse(build)));
     }
+
+    public void respondOk_whenCreateCharge_withAuthorisationMode_Agreement(String chargeTokenId, String gatewayAccountId, ChargeResponseFromConnector responseFromConnector) {
+        ChargeResponseFromConnector build = aCreateOrGetChargeResponseFromConnector(responseFromConnector)
+                .withMoto(true)
+                .withLink(validGetLink(chargeLocation(gatewayAccountId, responseFromConnector.getChargeId()), "self"))
+                .build();
+
+        mockCreateCharge(gatewayAccountId,
+                aResponse().withStatus(CREATED_201)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withHeader(LOCATION, chargeLocation(gatewayAccountId, responseFromConnector.getChargeId()))
+                        .withBody(buildChargeResponse(build)));
+    }
     
     public void respondOk_whenCreateAgreement(String gatewayAccountId, CreateAgreementRequestParams requestParams) {
         var responseFromConnector = aCreateAgreementResponseFromConnector()
