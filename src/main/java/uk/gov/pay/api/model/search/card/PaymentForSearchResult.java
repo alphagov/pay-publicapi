@@ -2,10 +2,10 @@ package uk.gov.pay.api.model.search.card;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.AuthorisationSummary;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.CardPayment;
+import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
@@ -38,7 +38,7 @@ public class PaymentForSearchResult extends CardPayment {
         this.links.addEvents(paymentEventsLink.toString());
         this.links.addRefunds(paymentRefundsLink.toString());
 
-        if (!state.isFinished()) {
+        if (!state.isFinished() && authorisationMode != AuthorisationMode.AGREEMENT) {
             this.links.addCancel(paymentCancelLink.toString());
         }
         if (links.stream().anyMatch(link -> "capture".equals(link.getRel()))) {

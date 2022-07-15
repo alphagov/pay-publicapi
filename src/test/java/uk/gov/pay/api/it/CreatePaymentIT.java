@@ -505,6 +505,52 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, params);
     }
 
+    @Test
+    public void createPaymentWithAuthorisationModeAgreement() {
+        int amount = 1;
+
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+
+        connectorMockClient.respondOk_whenCreateCharge_withAuthorisationMode_Agreement(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
+                .withAmount(amount)
+                .withChargeId(CHARGE_ID)
+                .withState(CREATED)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withPaymentProvider(PAYMENT_PROVIDER)
+                .withGatewayTransactionId(GATEWAY_TRANSACTION_ID)
+                .withCreatedDate(CREATED_DATE)
+                .withLanguage(SupportedLanguage.ENGLISH)
+                .withDelayedCapture(false)
+                .withRefundSummary(REFUND_SUMMARY)
+                .withCardDetails(CARD_DETAILS)
+                .withAuthorisationMode(AuthorisationMode.AGREEMENT)
+                .build());
+
+        CreateChargeRequestParams params = aCreateChargeRequestParams()
+                .withAmount(amount)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withAuthorisationMode(AuthorisationMode.MOTO_API)
+                .build();
+
+        postPaymentResponse(paymentPayload(params))
+                .statusCode(201)
+                .contentType(JSON)
+                .body("$", not(hasKey("return_url")))
+                .body("$_links", not(hasKey("cancel")))
+                .body("payment_id", is(CHARGE_ID))
+                .body("amount", is(amount))
+                .body("reference", is(REFERENCE))
+                .body("description", is(DESCRIPTION))
+                .body("payment_provider", is(PAYMENT_PROVIDER))
+                .body("created_date", is(CREATED_DATE))
+                .body("moto", is(true))
+                .body("authorisation_mode", is(AuthorisationMode.AGREEMENT.getName()));
+
+        connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, params);
+    }
+
 
     @Test
     public void createPayment_withAllFieldsUpToMaxLengthBoundaries_shouldBeAccepted() {

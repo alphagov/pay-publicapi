@@ -2,12 +2,12 @@ package uk.gov.pay.api.model.links;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.AuthorisationSummary;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.Charge;
 import uk.gov.pay.api.model.Payment;
+import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
@@ -48,7 +48,7 @@ public class PaymentWithAllLinks {
         this.links.addEvents(paymentEventsUri.toString());
         this.links.addRefunds(paymentRefundsUri.toString());
 
-        if (!state.isFinished()) {
+        if (!state.isFinished() && authorisationMode != AuthorisationMode.AGREEMENT) {
             this.links.addCancel(paymentCancelUri.toString());
         }
 
