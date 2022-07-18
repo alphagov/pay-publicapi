@@ -267,9 +267,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withLink(validGetLink(nextUrl("chargeTokenId"), "next_url"))
                 .withLink(validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap("chargeTokenId", false)));
 
-        if (requestParams.getSetUpAgreement() != null) {
-            responseFromConnector.withAgreementId(requestParams.getSetUpAgreement());
-        }
+        requestParams.getSetUpAgreement().ifPresent(responseFromConnector::withAgreementId);
 
         if (!requestParams.getMetadata().isEmpty())
             responseFromConnector.withMetadata(requestParams.getMetadata());

@@ -792,21 +792,10 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 payload.addToNestedMap("country", addressCountry, "prefilled_cardholder_details", "billing_address");
         });
 
-        params.getSource().ifPresent(source -> {
-            payload.addToNestedMap("source", source, "internal");
-        });
-
-        if (params.getSetUpAgreement() != null) {
-            payload.add("set_up_agreement", params.getSetUpAgreement());
-        }
-
-        if (params.getAgreementId() != null) {
-            payload.add("agreement_id", params.getAgreementId());
-        }
-
-        if (params.getAuthorisationMode() != null) {
-            payload.add("authorisation_mode", params.getAuthorisationMode().getName());
-        }
+        params.getSource().ifPresent(source -> payload.addToNestedMap("source", source, "internal"));
+        params.getSetUpAgreement().ifPresent(setUpAgreement -> payload.add("set_up_agreement", setUpAgreement));
+        params.getAgreementId().ifPresent(agreementId -> payload.add("agreement_id", agreementId));
+        params.getAuthorisationMode().ifPresent(authorisationMode -> payload.add("authorisation_mode", authorisationMode));
 
         return payload.build();
     }

@@ -109,16 +109,16 @@ public class CreateChargeRequestParams {
         return Optional.ofNullable(source);
     }
 
-    public String getSetUpAgreement() {
-        return setUpAgreement;
+    public Optional<String> getSetUpAgreement() {
+        return Optional.ofNullable(setUpAgreement);
     }
 
-    public AuthorisationMode getAuthorisationMode() {
-        return authorisationMode;
+    public Optional<AuthorisationMode> getAuthorisationMode() {
+        return Optional.ofNullable(authorisationMode);
     }
 
-    public String getAgreementId() {
-        return agreementId;
+    public Optional<String> getAgreementId() {
+        return Optional.ofNullable(agreementId);
     }
 
     public static final class CreateChargeRequestParamsBuilder {
