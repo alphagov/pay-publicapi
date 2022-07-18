@@ -602,4 +602,78 @@ class RequestJsonParserTest {
         assertThat(paymentValidationException.getRequestError().getCode(), is("P0102"));
         assertThat(paymentValidationException.getRequestError().getDescription(), is("Invalid attribute value: authorisation_mode. Must be one of web, moto_api, agreement"));
     }
+
+    @Test
+    void parsePaymentRequest_shouldParseAgreementId_whenAuthorisationModeAgreement() throws Exception {
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"authorisation_mode\": \"agreement\",\n" +
+                "  \"agreement_id\": \"abcdefghijklmnopqrstuvwxyz\"\n" +
+                "}";
+
+        JsonNode jsonNode = objectMapper.readTree(payload);
+        CreateCardPaymentRequest paymentRequest = parsePaymentRequest(jsonNode);
+        assertThat(paymentRequest.getAgreementId().get(), is("abcdefghijklmnopqrstuvwxyz"));
+    }
+
+    @Test
+    void parsePaymentRequest_shouldThrowValidationException_whenAgreementIdIsInvalidType_butAuthorisationModeIsAgreement() throws Exception {
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"authorisation_mode\": \"agreement\",\n" +
+                "  \"agreement_id\": true\n" +
+                "}";
+
+        JsonNode jsonNode = objectMapper.readTree(payload);
+
+        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parsePaymentRequest(jsonNode));
+        assertThat(badRequestException.getRequestError().getCode(), is("P0102"));
+        assertThat(badRequestException.getRequestError().getDescription(), is("Invalid attribute value: agreement_id. Must be a valid string format"));
+    }
+
+    @Test
+    void parsePaymentRequest_shouldThrowValidationException_whenAgreementIdIsProvidedAndAuthorisationModeIsNotAgreement() throws Exception {
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"authorisation_mode\": \"web\",\n" +
+                "  \"agreement_id\": \"abcdefgklmnopqrstuvwxyz\"\n" +
+                "}";
+
+        JsonNode jsonNode = objectMapper.readTree(payload);
+
+        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parsePaymentRequest(jsonNode));
+        assertThat(badRequestException.getRequestError().getCode(), is("P0104"));
+        assertThat(badRequestException.getRequestError().getDescription(), is("Unexpected attribute: agreement_id"));
+    }
+
+    @Test
+    void parsePaymentRequest_shouldThrowValidationException_whenAgreementIdIsProvidedAndAuthorisationModeIsNotSpecified() throws Exception {
+        // language=JSON
+        String payload = "{\n" +
+                "  \"amount\": 1000,\n" +
+                "  \"reference\": \"Some reference\",\n" +
+                "  \"description\": \"Some description\",\n" +
+                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
+                "  \"agreement_id\": \"abcdefgklmnopqrstuvwxyz\"\n" +
+                "}";
+
+        JsonNode jsonNode = objectMapper.readTree(payload);
+
+        BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parsePaymentRequest(jsonNode));
+        assertThat(badRequestException.getRequestError().getCode(), is("P0104"));
+        assertThat(badRequestException.getRequestError().getDescription(), is("Unexpected attribute: agreement_id"));
+    }
+
 }
