@@ -28,6 +28,7 @@ public class RequestError {
         GENERIC_UNEXPECTED_FIELD_ERROR_MESSAGE_FROM_CONNECTOR("P0104", "%s"),
         
         CREATE_PAYMENT_MISSING_FIELD_ERROR("P0101", "Missing mandatory attribute: %s"),
+        CREATE_PAYMENT_UNEXPECTED_FIELD_ERROR("P0104", "Unexpected attribute: %s"),
         CREATE_PAYMENT_VALIDATION_ERROR("P0102", "Invalid attribute value: %s. %s"),
 
         GET_PAYMENT_NOT_FOUND_ERROR("P0200", "Not found"),
