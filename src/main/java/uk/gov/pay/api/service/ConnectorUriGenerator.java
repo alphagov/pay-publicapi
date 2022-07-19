@@ -1,6 +1,5 @@
 package uk.gov.pay.api.service;
 
-import com.google.common.collect.Maps;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 
@@ -35,16 +34,11 @@ public class ConnectorUriGenerator {
 
     String cancelURI(Account account, String paymentId) {
         String path = format("/v1/api/accounts/%s/charges/%s/cancel", account.getAccountId(), paymentId);
-        return buildConnectorUri(path, Maps.newHashMap());
+        return buildConnectorUri(path, Collections.emptyMap());
     }
 
     public String telephoneChargesURI(Account account) {
         return buildConnectorUri(format("/v1/api/accounts/%s/telephone-charges", account.getAccountId()));
-    }
-
-    public String getAgreementURI(Account account) {
-        String path = format("/v1/api/accounts/%s/agreements", account.getAccountId());
-        return buildConnectorUri(path);
     }
 
     String captureURI(Account account, String chargeId) {
@@ -66,7 +60,17 @@ public class ConnectorUriGenerator {
         String path = "/v1/api/charges/authorise";
         return buildConnectorUri(path);
     }
-    
+
+    public String getAgreementURI(Account account) {
+        String path = format("/v1/api/accounts/%s/agreements", account.getAccountId());
+        return buildConnectorUri(path);
+    }
+
+    public String cancelAgreementURI(Account account, String agreementId) {
+        String path = format("/v1/api/accounts/%s/agreements/%s/cancel", account.getAccountId(), agreementId);
+        return buildConnectorUri(path, Collections.emptyMap());
+    }
+
     private String buildConnectorUri(String path) {
         return buildConnectorUri(path, Collections.emptyMap());
     }

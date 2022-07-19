@@ -8,11 +8,13 @@ import uk.gov.pay.api.agreement.model.builder.AgreementResponseBuilder;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateAgreementException;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
+
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import static javax.ws.rs.client.Entity.json;
 
 public class AgreementService {
@@ -34,10 +36,17 @@ public class AgreementService {
         }
         
         AgreementResponse agreementResponse = connectorResponse.readEntity(AgreementResponse.class);
-        return buildResponseModel(Agreement.from(agreementResponse));
+        return buildCreateAgreementResponseModel(Agreement.from(agreementResponse));
     }
-    
-    private AgreementResponse buildResponseModel(Agreement agreementFromConnector) {
+
+    public Response cancel(Account account, String agreementId) {
+        return client
+                .target(connectorUriGenerator.cancelAgreementURI(account, agreementId))
+                .request()
+                .post(null);
+    }
+
+    private AgreementResponse buildCreateAgreementResponseModel(Agreement agreementFromConnector) {
         return new AgreementResponseBuilder().
                 withAgreementId(agreementFromConnector.getAgreementId())
                 .withReference(agreementFromConnector.getReference())
@@ -53,10 +62,10 @@ public class AgreementService {
                 .target(connectorUriGenerator.getAgreementURI(account))
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
-                .post(buildAgreementCreateRequestPayload(agreementCreateRequest));
+                .post(buildCreateAgreementRequestPayload(agreementCreateRequest));
     }
 
-    private Entity buildAgreementCreateRequestPayload(CreateAgreementRequest requestPayload) {
+    private Entity buildCreateAgreementRequestPayload(CreateAgreementRequest requestPayload) {
         return json(requestPayload.toConnectorPayload());
     }
 }

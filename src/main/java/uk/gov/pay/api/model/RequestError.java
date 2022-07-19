@@ -13,15 +13,12 @@ public class RequestError {
 
     public enum Code {
 
-        CREATE_PAYMENT_AGREEMENT_ID_ERROR("P0103", "Invalid attribute value: set_up_agreement. Agreement ID does not exist"),
-
         CREATE_PAYMENT_ACCOUNT_ERROR("P0199", "There is an error with this account. Contact support with your error code - https://www.payments.service.gov.uk/support/ ."),
         CREATE_PAYMENT_CONNECTOR_ERROR("P0198", "Downstream system error"),
-        CREATE_AGREEMENT_CONNECTOR_ERROR("P0198", "Downstream system error"),
         CREATE_PAYMENT_PARSING_ERROR("P0197", "Unable to parse JSON"),
-        CREATE_AGREEMENT_PARSING_ERROR("P0197", "Unable to parse JSON"),
         CREATE_PAYMENT_MOTO_NOT_ENABLED("P0196", "MOTO payments are not enabled for this account. Please contact support if you would like to process MOTO payments - https://www.payments.service.gov.uk/support/ ."),
         CREATE_PAYMENT_AUTHORISATION_API_NOT_ENABLED("P0195","Using authorisation_mode of moto_api is not allowed for this account"),
+        CREATE_PAYMENT_AGREEMENT_ID_ERROR("P0103", "Invalid attribute value: set_up_agreement. Agreement ID does not exist"),
 
         GENERIC_MISSING_FIELD_ERROR_MESSAGE_FROM_CONNECTOR("P0101", "%s"),
         GENERIC_VALIDATION_EXCEPTION_MESSAGE_FROM_CONNECTOR("P0102", "%s"),
@@ -80,8 +77,13 @@ public class RequestError {
         AUTHORISATION_ERROR("P0050", "%s"),
         AUTHORISATION_TIMEOUT_ERROR("P0050", "%s"),
         AUTHORISATION_ONE_TIME_TOKEN_ALREADY_USED_ERROR("P1212", "%s"),
-        AUTHORISATION_ONE_TIME_TOKEN_INVALID_ERROR("P1211", "%s");
+        AUTHORISATION_ONE_TIME_TOKEN_INVALID_ERROR("P1211", "%s"),
 
+        CREATE_AGREEMENT_CONNECTOR_ERROR("P0198", "Downstream system error"),
+        CREATE_AGREEMENT_PARSING_ERROR("P0197", "Unable to parse JSON"),
+
+        CANCEL_AGREEMENT_CONNECTOR_BAD_REQUEST_ERROR("P0501", "Cancellation of agreement failed"),
+        CANCEL_AGREEMENT_CONNECTOR_ERROR("P0198", "Downstream system error");
 
         private String value;
         private String format;
