@@ -137,7 +137,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void shouldReturn422WhencreateAChargeIsCalledWithTooShortAgreementId() {
+    public void shouldReturn422WhenCreateAChargeIsCalledWithTooShortAgreementId() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
         CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
@@ -525,13 +525,15 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .withRefundSummary(REFUND_SUMMARY)
                 .withCardDetails(CARD_DETAILS)
                 .withAuthorisationMode(AuthorisationMode.AGREEMENT)
+                .withAgreementId(VALID_AGREEMENT_ID)
                 .build());
 
         CreateChargeRequestParams params = aCreateChargeRequestParams()
                 .withAmount(amount)
                 .withDescription(DESCRIPTION)
                 .withReference(REFERENCE)
-                .withAuthorisationMode(AuthorisationMode.MOTO_API)
+                .withAuthorisationMode(AuthorisationMode.AGREEMENT)
+                .withAgreementId(VALID_AGREEMENT_ID)
                 .build();
 
         postPaymentResponse(paymentPayload(params))
@@ -545,7 +547,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .body("description", is(DESCRIPTION))
                 .body("payment_provider", is(PAYMENT_PROVIDER))
                 .body("created_date", is(CREATED_DATE))
-                .body("moto", is(true))
+                .body("moto", is(false))
                 .body("authorisation_mode", is(AuthorisationMode.AGREEMENT.getName()));
 
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, params);
@@ -736,7 +738,6 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .withDescription(DESCRIPTION)
                 .withReference(REFERENCE)
                 .withReturnUrl(RETURN_URL)
-                .withReturnUrl(RETURN_URL)
                 .withSource(CARD_PAYMENT_LINK)
                 .build();
         connectorMockClient.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
@@ -767,37 +768,34 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
             payload.add("moto", params.isMoto());
         }
 
-        if (params.getCardholderName().isPresent()) {
-            payload.addToNestedMap("cardholder_name", params.getCardholderName().get(), "prefilled_cardholder_details");
-        }
-
-        if (params.getAddressLine1().isPresent()) {
-            payload.addToNestedMap("line1", params.getAddressLine1().get(), "prefilled_cardholder_details", "billing_address");
-        }
-
-        if (params.getAddressLine2().isPresent()) {
-            payload.addToNestedMap("line2", params.getAddressLine2().get(), "prefilled_cardholder_details", "billing_address");
-        }
-
-        if (params.getAddressPostcode().isPresent()) {
-            payload.addToNestedMap("postcode", params.getAddressPostcode().get(), "prefilled_cardholder_details", "billing_address");
-        }
-
-        if (params.getAddressCity().isPresent()) {
-            payload.addToNestedMap("city", params.getAddressCity().get(), "prefilled_cardholder_details", "billing_address");
-        }
-
-        if (params.getAddressCountry().isPresent()) {
-            payload.addToNestedMap("country", params.getAddressCountry().get(), "prefilled_cardholder_details", "billing_address");
-        }
-
-        params.getSource().ifPresent(source -> {
-            payload.addToNestedMap("source", source, "internal");
+        params.getCardholderName().ifPresent(cardholderName -> {
+            payload.addToNestedMap("cardholder_name", cardholderName, "prefilled_cardholder_details");
         });
 
-        if (params.getSetUpAgreement() != null) {
-            payload.add("set_up_agreement", params.getSetUpAgreement());
-        }
+        params.getAddressLine1().ifPresent(addressLine1 -> {
+            payload.addToNestedMap("line1", addressLine1, "prefilled_cardholder_details", "billing_address");
+        });
+
+        params.getAddressLine2().ifPresent(addressLine2 -> {
+            payload.addToNestedMap("line2", addressLine2, "prefilled_cardholder_details", "billing_address");
+        });
+
+        params.getAddressPostcode().ifPresent(addressPostcode -> {
+            payload.addToNestedMap("postcode", addressPostcode, "prefilled_cardholder_details", "billing_address");
+        });
+
+        params.getAddressCity().ifPresent(addressCity -> {
+            payload.addToNestedMap("city", addressCity, "prefilled_cardholder_details", "billing_address");
+        });
+
+        params.getAddressCountry().ifPresent(addressCountry -> {
+                payload.addToNestedMap("country", addressCountry, "prefilled_cardholder_details", "billing_address");
+        });
+
+        params.getSource().ifPresent(source -> payload.addToNestedMap("source", source, "internal"));
+        params.getSetUpAgreement().ifPresent(setUpAgreement -> payload.add("set_up_agreement", setUpAgreement));
+        params.getAgreementId().ifPresent(agreementId -> payload.add("agreement_id", agreementId));
+        params.getAuthorisationMode().ifPresent(authorisationMode -> payload.add("authorisation_mode", authorisationMode));
 
         return payload.build();
     }

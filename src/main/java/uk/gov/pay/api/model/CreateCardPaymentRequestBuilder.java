@@ -26,6 +26,7 @@ public class CreateCardPaymentRequestBuilder {
     private Internal internal;
     private String setUpAgreement;
     private AuthorisationMode authorisationMode;
+    private String agreementId;
 
     public static CreateCardPaymentRequestBuilder builder() {
         return new CreateCardPaymentRequestBuilder();
@@ -117,6 +118,11 @@ public class CreateCardPaymentRequestBuilder {
     
     public CreateCardPaymentRequestBuilder authorisationMode(AuthorisationMode authorisationMode) {
         this.authorisationMode = authorisationMode;
+        return this;
+    }
+
+    public CreateCardPaymentRequestBuilder agreementId(String agreementId) {
+        this.agreementId = agreementId;
         return this;
     }
 
@@ -215,5 +221,9 @@ public class CreateCardPaymentRequestBuilder {
 
     public String getSetUpAgreement() {
         return setUpAgreement;
+    }
+
+    public String getAgreementId() {
+        return agreementId;
     }
 }

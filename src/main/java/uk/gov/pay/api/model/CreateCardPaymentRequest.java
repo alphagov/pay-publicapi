@@ -41,6 +41,7 @@ public class CreateCardPaymentRequest {
     public static final String DELAYED_CAPTURE_FIELD_NAME = "delayed_capture";
     public static final String MOTO_FIELD_NAME = "moto";
     public static final String SET_UP_AGREEMENT_FIELD_NAME = "set_up_agreement";
+    public static final String AGREEMENT_ID_FIELD_NAME = "agreement_id";
     public static final String SOURCE_FIELD_NAME = "source";
     public static final String METADATA = "metadata";
     public static final String INTERNAL = "internal";
@@ -87,6 +88,10 @@ public class CreateCardPaymentRequest {
     @Size(min=26, max=26, message = "Field [set_up_agreement] length must be 26")
     private String setUpAgreement;
 
+    @JsonProperty("agreement_id")
+    @Size(min=26, max=26, message = "Field [agreement_id] length must be 26")
+    private String agreementId;
+
     @Valid
     private final PrefilledCardholderDetails prefilledCardholderDetails;
 
@@ -106,6 +111,7 @@ public class CreateCardPaymentRequest {
         this.internal = builder.getInternal();
         this.setUpAgreement = builder.getSetUpAgreement();
         this.authorisationMode = builder.getAuthorisationMode();
+        this.agreementId = builder.getAgreementId();
     }
     
     @Schema(description = "amount in pence", required = true, minimum = "1", maximum = "10000000", example = "12000")
@@ -175,9 +181,15 @@ public class CreateCardPaymentRequest {
     }
 
     @JsonProperty("set_up_agreement")
-    @Schema(description = "agreement ID", required = false, example = "abcefghjklmnopqr1234567890", hidden = true)
-    public String getSetUpAgreement() {
-        return setUpAgreement;
+    @Schema(description = "ID of agreement to save card details to", required = false, example = "abcefghjklmnopqr1234567890", hidden = true)
+    public Optional<String> getSetUpAgreement() {
+        return Optional.ofNullable(setUpAgreement);
+    }
+
+    @JsonProperty("agreement_id")
+    @Schema(description = "ID of agreement to take payment from (requires \"authorisation_mode\": \"agreement\")", required = false, example = "abcefghjklmnopqr1234567890", hidden = true)
+    public Optional<String> getAgreementId() {
+        return Optional.ofNullable(agreementId);
     }
 
     @JsonProperty("authorisation_mode")
@@ -198,8 +210,13 @@ public class CreateCardPaymentRequest {
         getMetadata().ifPresent(metadata -> request.add("metadata", metadata.getMetadata()));
         getEmail().ifPresent(email -> request.add("email", email));
         getInternal().flatMap(Internal::getSource).ifPresent(source -> request.add("source", source));
-        getAuthorisationMode().ifPresent((authorisationMode -> request.add("authorisation_mode", authorisationMode.getName())));
-        
+        getAuthorisationMode().ifPresent(authorisationMode -> request.add("authorisation_mode", authorisationMode.getName()));
+        getAgreementId().ifPresent(agreementId -> request.add("agreement_id", agreementId));
+        getSetUpAgreement().ifPresent(setUpAgreement -> {
+            request.add("agreement_id", setUpAgreement);
+            request.add("save_payment_instrument_to_agreement", true);
+        });
+
         getPrefilledCardholderDetails().ifPresent(prefilledDetails -> {
             prefilledDetails.getCardholderName().ifPresent(name -> request.addToMap(PREFILLED_CARDHOLDER_DETAILS, "cardholder_name", name));
             prefilledDetails.getBillingAddress().ifPresent(address -> {
@@ -210,11 +227,6 @@ public class CreateCardPaymentRequest {
                 request.addToNestedMap("country", address.getCountry(), PREFILLED_CARDHOLDER_DETAILS, BILLING_ADDRESS);
             });
         });
-        
-        if (this.getSetUpAgreement() != null) {
-            request.add("agreement_id", this.getSetUpAgreement())
-                    .add("save_payment_instrument_to_agreement", true);
-        }
 
         return request.build();
     }
@@ -235,11 +247,10 @@ public class CreateCardPaymentRequest {
         getDelayedCapture().ifPresent(value -> joiner.add("delayed_capture: " + value));
         getMoto().ifPresent(value -> joiner.add("moto: " + value));
         getMetadata().ifPresent(value -> joiner.add("metadata: " + value));
-        
-        if (this.getSetUpAgreement() != null) {
-            joiner.add("set_up_agreement: " + this.getSetUpAgreement());
-        }
-        
+        getAuthorisationMode().ifPresent(authorisationMode -> joiner.add("authorisation_mode: " + authorisationMode));
+        getSetUpAgreement().ifPresent(setUpAgreement -> joiner.add("set_up_agreement: " + setUpAgreement));
+        getAgreementId().ifPresent(agreementId -> joiner.add("agreement_id: " + agreementId));
+
         return joiner.toString();
     }
 }

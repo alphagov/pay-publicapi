@@ -104,11 +104,19 @@ public abstract class BaseConnectorMockClient {
         if (params.getAddressCountry().isPresent()) {
             payload.addToNestedMap("country", params.getAddressCountry().get(), "prefilled_cardholder_details", "billing_address");
         }
-        
-        if (params.getSetUpAgreement() != null) {
-            payload.add("agreement_id", params.getSetUpAgreement());
+
+        params.getSetUpAgreement().ifPresent(setUpAgreement -> {
+            payload.add("agreement_id", setUpAgreement);
             payload.add("save_payment_instrument_to_agreement", true);
-        }
+        });
+
+        params.getAgreementId().ifPresent(agreementId -> {
+            payload.add("agreement_id", agreementId);
+        });
+
+        params.getAuthorisationMode().ifPresent(authorisationMode -> {
+            payload.add("authorisation_mode", authorisationMode);
+        });
 
         payload.add("source", params.getSource().orElse(CARD_API));
 

@@ -12,6 +12,7 @@ import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.links.Link;
 import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
 import uk.gov.pay.api.utils.JsonStringBuilder;
+import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.ErrorIdentifier;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 
@@ -266,9 +267,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withLink(validGetLink(nextUrl("chargeTokenId"), "next_url"))
                 .withLink(validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap("chargeTokenId", false)));
 
-        if (requestParams.getSetUpAgreement() != null) {
-            responseFromConnector.withAgreementId(requestParams.getSetUpAgreement());
-        }
+        requestParams.getSetUpAgreement().ifPresent(responseFromConnector::withAgreementId);
 
         if (!requestParams.getMetadata().isEmpty())
             responseFromConnector.withMetadata(requestParams.getMetadata());
@@ -322,7 +321,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     public void respondOk_whenCreateCharge_withAuthorisationMode_Agreement(String chargeTokenId, String gatewayAccountId, ChargeResponseFromConnector responseFromConnector) {
         ChargeResponseFromConnector build = aCreateOrGetChargeResponseFromConnector(responseFromConnector)
-                .withMoto(true)
+                .withAuthorisationMode(AuthorisationMode.AGREEMENT)
                 .withLink(validGetLink(chargeLocation(gatewayAccountId, responseFromConnector.getChargeId()), "self"))
                 .build();
 

@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.http.HttpStatus.SC_UNPROCESSABLE_ENTITY;
 import static uk.gov.pay.api.agreement.model.CreateAgreementRequest.USER_IDENTIFIER_FIELD;
+import static uk.gov.pay.api.model.CreateCardPaymentRequest.AGREEMENT_ID_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.AMOUNT_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.AUTHORISATION_MODE;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.DELAYED_CAPTURE_FIELD_NAME;
@@ -56,6 +57,7 @@ import static uk.gov.pay.api.model.CreatePaymentRefundRequest.REFUND_AMOUNT_AVAI
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_MISSING_FIELD_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_REFUND_MISSING_FIELD_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_REFUND_VALIDATION_ERROR;
+import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_UNEXPECTED_FIELD_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.RequestError.aRequestError;
 import static uk.gov.service.payments.commons.model.Source.CARD_AGENT_INITIATED_MOTO;
@@ -65,7 +67,7 @@ import static uk.gov.service.payments.commons.model.Source.CARD_PAYMENT_LINK;
 class RequestJsonParser {
 
     private static final Set<Source> ALLOWED_SOURCES = EnumSet.of(CARD_PAYMENT_LINK, CARD_AGENT_INITIATED_MOTO);
-    public static final Set<AuthorisationMode> ALLOWED_AUTHORISATION_MODES = EnumSet.of(AuthorisationMode.WEB, AuthorisationMode.MOTO_API);
+    public static final Set<AuthorisationMode> ALLOWED_AUTHORISATION_MODES = EnumSet.of(AuthorisationMode.WEB, AuthorisationMode.MOTO_API, AuthorisationMode.AGREEMENT);
 
     private static ObjectMapper objectMapper = new ObjectMapper();
     private static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
@@ -97,6 +99,23 @@ class RequestJsonParser {
             builder.setUpAgreement(validateAndGetSetUpAgreement(paymentRequest));
         }
 
+        AuthorisationMode authorisationMode = null;
+        if (paymentRequest.has(AUTHORISATION_MODE)) {
+            authorisationMode = validateAndGetAuthorisationMode(paymentRequest);
+            builder.authorisationMode(authorisationMode);
+        }
+
+        if (paymentRequest.has(AGREEMENT_ID_FIELD_NAME)) {
+            if (AuthorisationMode.AGREEMENT == authorisationMode) {
+                builder.agreementId(validateAndGetString(
+                        paymentRequest.get(AGREEMENT_ID_FIELD_NAME),
+                        aRequestError(AGREEMENT_ID_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid string format"),
+                        aRequestError(AGREEMENT_ID_FIELD_NAME, CREATE_PAYMENT_MISSING_FIELD_ERROR)));
+            } else {
+                throw new BadRequestException(aRequestError(CREATE_PAYMENT_UNEXPECTED_FIELD_ERROR, AGREEMENT_ID_FIELD_NAME));
+            }
+        }
+
         if (paymentRequest.has(LANGUAGE_FIELD_NAME)) {
             builder.language(validateAndGetLanguage(paymentRequest));
         }
@@ -118,10 +137,6 @@ class RequestJsonParser {
 
         if (paymentRequest.has(METADATA)) {
             builder.metadata(validateAndGetMetadata(paymentRequest));
-        }
-
-        if (paymentRequest.has(AUTHORISATION_MODE)) {
-            builder.authorisationMode(validateAndGetAuthorisationMode(paymentRequest));
         }
 
         builder.source(validateAndGetSource(paymentRequest));
