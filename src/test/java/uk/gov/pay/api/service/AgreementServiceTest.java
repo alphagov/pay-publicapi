@@ -11,11 +11,11 @@ import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
 import uk.gov.pay.api.agreement.model.builder.AgreementResponseBuilder;
 import uk.gov.pay.api.agreement.service.AgreementService;
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.exception.CancelAgreementException;
 import uk.gov.pay.api.model.CreateAgreementRequestBuilder;
 import uk.gov.pay.api.utils.mocks.CreateAgreementRequestParams;
 
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
@@ -25,6 +25,8 @@ import static javax.ws.rs.client.Entity.json;
 import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.pay.api.it.CreateAgreementIT.agreementPayload;
 import static uk.gov.pay.api.utils.mocks.CreateAgreementRequestParams.CreateAgreementRequestParamsBuilder.aCreateAgreementRequestParams;
@@ -37,47 +39,48 @@ class AgreementServiceTest {
     private static final String AGREEMENTS_CONNECTOR_URI = "/v1/api/accounts/GATEWAY_ACCOUNT_ID/agreements"; // pragma: allowlist secret
     private static final String AGREEMENT_CONNECTOR_CANCEL_URI = AGREEMENTS_CONNECTOR_URI + '/' + AGREEMENT_ID + "/cancel";
 
+    @Mock
+    private Account mockAccount;
+    @Mock
+    private ConnectorUriGenerator mockConnectorUriGenerator;
+    @Mock
+    private Client mockClient;
+    @Mock
+    private WebTarget mockWebTarget;
+    @Mock
+    private Invocation.Builder mockInvocationBuilder;
+    @Mock
+    private Response mockConnectorResponse;
+
     private AgreementService service;
-    @Mock
-    private Client client;
-    @Mock
-    private WebTarget target;
-    @Mock
-    private Account account;
-    @Mock
-    private ConnectorUriGenerator connectorUriGenerator;
-    @Mock
-    private Invocation.Builder builder;
-    @Mock
-    private Response connectorResponse;
 
     @BeforeEach
     void setUp() {
-
-        service = new AgreementService(client, connectorUriGenerator);
+        service = new AgreementService(mockClient, mockConnectorUriGenerator);
     }
 
     @Test
     void shouldCreateAgreement() {
+        when(mockConnectorUriGenerator.getAgreementURI(mockAccount)).thenReturn(AGREEMENTS_CONNECTOR_URI);
+        when(mockClient.target(AGREEMENTS_CONNECTOR_URI)).thenReturn(mockWebTarget);
+        when(mockWebTarget.request()).thenReturn(mockInvocationBuilder);
+        when(mockInvocationBuilder.accept(MediaType.APPLICATION_JSON)).thenReturn(mockInvocationBuilder);
+
         CreateAgreementRequestParams createAgreementRequestParams = aCreateAgreementRequestParams()
                 .withReference(REFERENCE_ID)
                 .build();
-        String payloadToConnector = agreementPayload(createAgreementRequestParams);
-        Entity<String> payloadEntity = json(payloadToConnector);
+        when(mockInvocationBuilder.post(json(agreementPayload(createAgreementRequestParams)))).thenReturn(mockConnectorResponse);
+
+        when(mockConnectorResponse.getStatus()).thenReturn(HttpStatus.SC_CREATED);
+
         var agreementResponse = new AgreementResponseBuilder()
                 .withReference(REFERENCE_ID)
                 .withAgreementId(AGREEMENT_ID).build();
-        when(connectorUriGenerator.getAgreementURI(account)).thenReturn(AGREEMENTS_CONNECTOR_URI);
-        when(connectorResponse.getStatus()).thenReturn(HttpStatus.SC_CREATED);
-        when(target.request()).thenReturn(builder);
-        when(builder.accept(MediaType.APPLICATION_JSON)).thenReturn(builder);
-        when(builder.post(payloadEntity)).thenReturn(connectorResponse);
-        when(client.target(AGREEMENTS_CONNECTOR_URI)).thenReturn(target);
-        when(connectorResponse.readEntity(AgreementResponse.class)).thenReturn(agreementResponse);
+        when(mockConnectorResponse.readEntity(AgreementResponse.class)).thenReturn(agreementResponse);
+
         CreateAgreementRequest agreementCreateRequest = new CreateAgreementRequest(CreateAgreementRequestBuilder
                 .builder().reference(REFERENCE_ID));
-
-        AgreementResponse agreementResponseFromService = service.create(account, agreementCreateRequest);
+        AgreementResponse agreementResponseFromService = service.create(mockAccount, agreementCreateRequest);
 
         assertThat(agreementResponseFromService.getAgreementId(), is(AGREEMENT_ID));
         assertThat(agreementResponseFromService.getReference(), is(REFERENCE_ID));
@@ -85,15 +88,30 @@ class AgreementServiceTest {
 
     @Test
     void shouldCancelAgreement() {
-        when(connectorUriGenerator.cancelAgreementURI(account, AGREEMENT_ID)).thenReturn(AGREEMENT_CONNECTOR_CANCEL_URI);
-        when(connectorResponse.getStatus()).thenReturn(HttpStatus.SC_NO_CONTENT);
-        when(target.request()).thenReturn(builder);
-        when(builder.post(null)).thenReturn(connectorResponse);
-        when(client.target(AGREEMENT_CONNECTOR_CANCEL_URI)).thenReturn(target);
+        when(mockConnectorUriGenerator.cancelAgreementURI(mockAccount, AGREEMENT_ID)).thenReturn(AGREEMENT_CONNECTOR_CANCEL_URI);
+        when(mockClient.target(AGREEMENT_CONNECTOR_CANCEL_URI)).thenReturn(mockWebTarget);
+        when(mockWebTarget.request()).thenReturn(mockInvocationBuilder);
+        when(mockInvocationBuilder.post(null)).thenReturn(mockConnectorResponse);
+        when(mockConnectorResponse.getStatus()).thenReturn(HttpStatus.SC_NO_CONTENT);
 
-        Response response = service.cancel(account, AGREEMENT_ID);
+        Response response = service.cancel(mockAccount, AGREEMENT_ID);
 
         assertThat(response.getStatus(), is(NO_CONTENT.getStatusCode()));
+
+        verify(mockConnectorResponse).close();
+    }
+
+    @Test
+    void shouldThrowExceptionIfConnectorReturnsUnexpectedStatusCodeWhenCancellingAgreement() {
+        when(mockConnectorUriGenerator.cancelAgreementURI(mockAccount, AGREEMENT_ID)).thenReturn(AGREEMENT_CONNECTOR_CANCEL_URI);
+        when(mockClient.target(AGREEMENT_CONNECTOR_CANCEL_URI)).thenReturn(mockWebTarget);
+        when(mockWebTarget.request()).thenReturn(mockInvocationBuilder);
+        when(mockInvocationBuilder.post(null)).thenReturn(mockConnectorResponse);
+        when(mockConnectorResponse.getStatus()).thenReturn(HttpStatus.SC_BAD_REQUEST);
+
+        assertThrows(CancelAgreementException.class, () -> service.cancel(mockAccount, AGREEMENT_ID));
+
+        verify(mockConnectorResponse).close();
     }
 
 }

@@ -6,6 +6,7 @@ import uk.gov.pay.api.agreement.model.AgreementResponse;
 import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
 import uk.gov.pay.api.agreement.model.builder.AgreementResponseBuilder;
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.exception.CancelAgreementException;
 import uk.gov.pay.api.exception.CreateAgreementException;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 
@@ -31,19 +32,23 @@ public class AgreementService {
     public AgreementResponse create(Account account, CreateAgreementRequest createAgreementRequest) {
         Response connectorResponse = createAgreement(account, createAgreementRequest);
 
-        if (!createdSuccessfully(connectorResponse)) {
+        if (connectorResponse.getStatus() != HttpStatus.SC_CREATED) {
             throw new CreateAgreementException(connectorResponse);
+
         }
-        
+
         AgreementResponse agreementResponse = connectorResponse.readEntity(AgreementResponse.class);
         return buildCreateAgreementResponseModel(Agreement.from(agreementResponse));
     }
 
     public Response cancel(Account account, String agreementId) {
-        return client
-                .target(connectorUriGenerator.cancelAgreementURI(account, agreementId))
-                .request()
-                .post(null);
+        Response connectorResponse = client.target(connectorUriGenerator.cancelAgreementURI(account, agreementId)).request().post(null);
+        if (connectorResponse.getStatus() != HttpStatus.SC_NO_CONTENT) {
+            throw new CancelAgreementException(connectorResponse);
+        }
+
+        connectorResponse.close();
+        return Response.noContent().build();
     }
 
     private AgreementResponse buildCreateAgreementResponseModel(Agreement agreementFromConnector) {
@@ -51,10 +56,6 @@ public class AgreementService {
                 withAgreementId(agreementFromConnector.getAgreementId())
                 .withReference(agreementFromConnector.getReference())
                 .build();
-    }
-
-    private boolean createdSuccessfully(Response connectorResponse) {
-        return connectorResponse.getStatus() == HttpStatus.SC_CREATED;
     }
 
     private Response createAgreement(Account account, CreateAgreementRequest agreementCreateRequest) {
