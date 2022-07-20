@@ -24,8 +24,10 @@ import uk.gov.pay.api.auth.AccountAuthenticator;
 import uk.gov.pay.api.exception.mapper.AuthorisationRequestExceptionMapper;
 import uk.gov.pay.api.exception.mapper.BadRefundsRequestExceptionMapper;
 import uk.gov.pay.api.exception.mapper.BadRequestExceptionMapper;
+import uk.gov.pay.api.exception.mapper.CancelAgreementExceptionMapper;
 import uk.gov.pay.api.exception.mapper.CancelChargeExceptionMapper;
 import uk.gov.pay.api.exception.mapper.CaptureChargeExceptionMapper;
+import uk.gov.pay.api.exception.mapper.CreateAgreementExceptionMapper;
 import uk.gov.pay.api.exception.mapper.CreateChargeExceptionMapper;
 import uk.gov.pay.api.exception.mapper.CreateRefundExceptionMapper;
 import uk.gov.pay.api.exception.mapper.GetChargeExceptionMapper;
@@ -58,7 +60,7 @@ import uk.gov.pay.api.validation.InjectingValidationFeature;
 import uk.gov.service.payments.logging.GovUkPayDropwizardRequestJsonLogLayoutFactory;
 import uk.gov.service.payments.logging.LoggingFilter;
 import uk.gov.service.payments.logging.LogstashConsoleAppenderFactory;
-import uk.gov.pay.api.exception.mapper.CreateAgreementExceptionMapper;
+
 import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.FilterRegistration;
 import java.util.concurrent.TimeUnit;
@@ -161,6 +163,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         jersey.register(CancelChargeExceptionMapper.class);
         jersey.register(PaymentValidationExceptionMapper.class);
         jersey.register(CreateAgreementExceptionMapper.class);
+        jersey.register(CancelAgreementExceptionMapper.class);
         jersey.register(RefundsValidationExceptionMapper.class);
         jersey.register(BadRefundsRequestExceptionMapper.class);
         jersey.register(BadRequestExceptionMapper.class);
