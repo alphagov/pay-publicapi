@@ -6,9 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.pay.api.agreement.model.AgreementResponse;
+import uk.gov.pay.api.agreement.model.AgreementCreatedResponse;
 import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
-import uk.gov.pay.api.agreement.model.builder.AgreementResponseBuilder;
 import uk.gov.pay.api.agreement.service.AgreementService;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CancelAgreementException;
@@ -73,17 +72,14 @@ class AgreementServiceTest {
 
         when(mockConnectorResponse.getStatus()).thenReturn(HttpStatus.SC_CREATED);
 
-        var agreementResponse = new AgreementResponseBuilder()
-                .withReference(REFERENCE_ID)
-                .withAgreementId(AGREEMENT_ID).build();
-        when(mockConnectorResponse.readEntity(AgreementResponse.class)).thenReturn(agreementResponse);
+        var agreementResponse = new AgreementCreatedResponse(AGREEMENT_ID);
+        when(mockConnectorResponse.readEntity(AgreementCreatedResponse.class)).thenReturn(agreementResponse);
 
         CreateAgreementRequest agreementCreateRequest = new CreateAgreementRequest(CreateAgreementRequestBuilder
                 .builder().reference(REFERENCE_ID));
-        AgreementResponse agreementResponseFromService = service.create(mockAccount, agreementCreateRequest);
+        AgreementCreatedResponse agreementResponseFromService = service.create(mockAccount, agreementCreateRequest);
 
         assertThat(agreementResponseFromService.getAgreementId(), is(AGREEMENT_ID));
-        assertThat(agreementResponseFromService.getReference(), is(REFERENCE_ID));
     }
 
     @Test
@@ -113,5 +109,4 @@ class AgreementServiceTest {
 
         verify(mockConnectorResponse).close();
     }
-
 }

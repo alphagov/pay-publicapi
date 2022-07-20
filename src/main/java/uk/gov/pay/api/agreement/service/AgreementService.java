@@ -2,9 +2,8 @@ package uk.gov.pay.api.agreement.service;
 
 import org.apache.http.HttpStatus;
 import uk.gov.pay.api.agreement.model.Agreement;
-import uk.gov.pay.api.agreement.model.AgreementResponse;
+import uk.gov.pay.api.agreement.model.AgreementCreatedResponse;
 import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
-import uk.gov.pay.api.agreement.model.builder.AgreementResponseBuilder;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CancelAgreementException;
 import uk.gov.pay.api.exception.CreateAgreementException;
@@ -29,16 +28,13 @@ public class AgreementService {
         this.connectorUriGenerator = connectorUriGenerator;
     }
 
-    public AgreementResponse create(Account account, CreateAgreementRequest createAgreementRequest) {
-        Response connectorResponse = createAgreement(account, createAgreementRequest);
+    public AgreementCreatedResponse create(Account account, CreateAgreementRequest createAgreementRequest) {
+        var response = createAgreement(account, createAgreementRequest);
 
-        if (connectorResponse.getStatus() != HttpStatus.SC_CREATED) {
-            throw new CreateAgreementException(connectorResponse);
-
+        if (response.getStatus() != HttpStatus.SC_CREATED) {
+            throw new CreateAgreementException(response);
         }
-
-        AgreementResponse agreementResponse = connectorResponse.readEntity(AgreementResponse.class);
-        return buildCreateAgreementResponseModel(Agreement.from(agreementResponse));
+        return response.readEntity(AgreementCreatedResponse.class);
     }
 
     public Response cancel(Account account, String agreementId) {
@@ -49,13 +45,6 @@ public class AgreementService {
 
         connectorResponse.close();
         return Response.noContent().build();
-    }
-
-    private AgreementResponse buildCreateAgreementResponseModel(Agreement agreementFromConnector) {
-        return new AgreementResponseBuilder().
-                withAgreementId(agreementFromConnector.getAgreementId())
-                .withReference(agreementFromConnector.getReference())
-                .build();
     }
 
     private Response createAgreement(Account account, CreateAgreementRequest agreementCreateRequest) {

@@ -39,8 +39,7 @@ public class CreateAgreementIT extends PaymentResourceITestBase {
         postAgreementRequest(agreementPayload(createAgreementRequestParams))
                 .statusCode(HttpStatus.SC_CREATED)
                 .contentType(JSON)
-                .body("agreement_id", is(VALID_AGREEMENT_ID))
-                .body("reference", is(REFERENCE));
+                .body("agreement_id", is(VALID_AGREEMENT_ID));
         connectorMockClient.verifyCreateAgreementConnectorRequest(GATEWAY_ACCOUNT_ID, createAgreementRequestParams);
     }
 
