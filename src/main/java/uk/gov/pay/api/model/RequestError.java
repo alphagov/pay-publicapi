@@ -82,6 +82,9 @@ public class RequestError {
         CREATE_AGREEMENT_CONNECTOR_ERROR("P0198", "Downstream system error"),
         CREATE_AGREEMENT_PARSING_ERROR("P0197", "Unable to parse JSON"),
 
+        GET_AGREEMENT_NOT_FOUND_ERROR("P0200", "Not found"),
+        GET_AGREEMENT_LEDGER_ERROR("P0298", "Downstream system error"),
+
         CANCEL_AGREEMENT_CONNECTOR_BAD_REQUEST_ERROR("P0501", "Cancellation of agreement failed"),
         CANCEL_AGREEMENT_CONNECTOR_ERROR("P0198", "Downstream system error");
 

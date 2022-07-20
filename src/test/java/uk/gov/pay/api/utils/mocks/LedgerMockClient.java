@@ -174,6 +174,19 @@ public class LedgerMockClient {
                         .withBody(body)));
     }
 
+    public void respondAgreementNotFound(String agreementId) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("message", List.of("Agreement not found"));
+
+        ResponseDefinitionBuilder response = aResponse()
+                .withStatus(NOT_FOUND_404)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                .withBody(new GsonBuilder().create().toJson(payload));
+
+        ledgerMock.stubFor(get(urlPathEqualTo(format("/v1/agreement/%s", agreementId)))
+                .willReturn(response));
+    }
+
     private void respondTransactionError(String transactionId, String message, int status) {
         String path = format("/v1/transaction/%s", transactionId);
         respondError(message, status, path);

@@ -43,4 +43,17 @@ public class AgreementsIT extends PaymentResourceITestBase {
                 .body("status", is(fixture.getStatus().toLowerCase()))
                 .body("created_date", is(fixture.getCreatedDate()));
     }
+
+    @Test
+    public void getAgreement_MissingAgreementShouldMapException() {
+        ledgerMockClient.respondAgreementNotFound(agreementId);
+        given().port(app.getLocalPort())
+                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .get(AGREEMENTS_PATH + agreementId)
+                .then()
+                .statusCode(404)
+                .contentType(ContentType.JSON)
+                .body("code", is("P0200"))
+                .body("description", is("Not found"));
+    }
 }
