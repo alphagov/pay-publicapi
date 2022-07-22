@@ -18,6 +18,7 @@ import static uk.gov.pay.api.model.RequestError.Code.ACCOUNT_DISABLED;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_REFUND_AMOUNT_AVAILABLE_MISMATCH;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_REFUND_CONNECTOR_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_REFUND_NOT_AVAILABLE;
+import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_REFUND_NOT_AVAILABLE_DUE_TO_DISPUTE;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_REFUND_NOT_FOUND_ERROR;
 import static uk.gov.pay.api.model.RequestError.aRequestError;
 
@@ -53,6 +54,11 @@ public class CreateRefundExceptionMapper implements ExceptionMapper<CreateRefund
                         requestError = aRequestError(CREATE_PAYMENT_REFUND_CONNECTOR_ERROR);
                         status = INTERNAL_SERVER_ERROR;
                     }
+                    break;
+                }
+                case REFUND_NOT_AVAILABLE_DUE_TO_DISPUTE: {
+                    requestError = aRequestError(CREATE_PAYMENT_REFUND_NOT_AVAILABLE_DUE_TO_DISPUTE);
+                    status = BAD_REQUEST;
                     break;
                 }
                 case REFUND_AMOUNT_AVAILABLE_MISMATCH: {
