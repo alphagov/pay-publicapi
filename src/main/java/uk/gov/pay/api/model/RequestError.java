@@ -54,6 +54,7 @@ public class RequestError {
         CREATE_PAYMENT_REFUND_MISSING_FIELD_ERROR("P0601", "Missing mandatory attribute: %s"),
         CREATE_PAYMENT_REFUND_VALIDATION_ERROR("P0602", "Invalid attribute value: %s. %s"),
         CREATE_PAYMENT_REFUND_NOT_AVAILABLE("P0603", "The payment is not available for refund. Payment refund status: %s"),
+        CREATE_PAYMENT_REFUND_NOT_AVAILABLE_DUE_TO_DISPUTE("P0603", "The payment is disputed and cannot be refunded"),
         CREATE_PAYMENT_REFUND_AMOUNT_AVAILABLE_MISMATCH("P0604", "Refund amount available mismatch."),
 
         GET_PAYMENT_REFUND_NOT_FOUND_ERROR("P0700", "Not found"),
