@@ -12,8 +12,8 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.BadRequestException;
+import uk.gov.pay.api.ledger.model.SearchResults;
 import uk.gov.pay.api.ledger.model.TransactionSearchParams;
-import uk.gov.pay.api.ledger.model.TransactionSearchResults;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.TokenPaymentType;
@@ -78,8 +78,7 @@ public class TransactionSearchServiceTest {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "a-token-link");
         TransactionSearchParams searchParams = new TransactionSearchParams();
 
-        TransactionSearchResults searchResults = transactionSearchService.doSearch(account,
-                searchParams);
+        SearchResults<PaymentForSearchResult> searchResults = transactionSearchService.doSearch(account, searchParams);
 
         PaymentForSearchResult payment = searchResults.getResults().get(0);
 

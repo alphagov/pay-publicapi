@@ -5,24 +5,23 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import uk.gov.pay.api.model.links.SearchNavigationLinks;
 import uk.gov.pay.api.model.search.SearchPagination;
-import uk.gov.pay.api.model.search.card.PaymentForSearchResult;
 
 import java.util.List;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class TransactionSearchResults implements SearchPagination {
+public class SearchResults<E> implements SearchPagination {
 
     private int total;
     private int count;
     private int page;
-    private List<PaymentForSearchResult> results;
+    private List<E> results;
     SearchNavigationLinks links;
 
-    public TransactionSearchResults() {
+    public SearchResults() {
     }
 
-    public TransactionSearchResults(int total, int count, int page, List<PaymentForSearchResult> results,
-                                    SearchNavigationLinks links) {
+    public SearchResults(int total, int count, int page, List<E> results,
+                         SearchNavigationLinks links) {
         this.total = total;
         this.count = count;
         this.page = page;
@@ -47,7 +46,7 @@ public class TransactionSearchResults implements SearchPagination {
     }
 
     @JsonProperty("results")
-    public List<PaymentForSearchResult> getResults() {
+    public List<E> getResults() {
         return results;
     }
 

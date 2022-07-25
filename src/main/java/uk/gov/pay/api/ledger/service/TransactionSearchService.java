@@ -9,8 +9,8 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.exception.SearchPaymentsException;
 import uk.gov.pay.api.exception.SearchTransactionsException;
+import uk.gov.pay.api.ledger.model.SearchResults;
 import uk.gov.pay.api.ledger.model.TransactionSearchParams;
-import uk.gov.pay.api.ledger.model.TransactionSearchResults;
 import uk.gov.pay.api.model.RequestError;
 import uk.gov.pay.api.model.TransactionResponse;
 import uk.gov.pay.api.model.links.Link;
@@ -67,7 +67,7 @@ public class TransactionSearchService {
         this.baseUrl = configuration.getBaseUrl();
     }
 
-    public TransactionSearchResults doSearch(Account account, TransactionSearchParams searchParams) {
+    public SearchResults<PaymentForSearchResult> doSearch(Account account, TransactionSearchParams searchParams) {
         validateSearchParameters(searchParams.getState(), searchParams.getReference(),
                 searchParams.getEmail(), searchParams.getCardBrand(), searchParams.getFromDate(),
                 searchParams.getToDate(), searchParams.getPageNumber(), searchParams.getDisplaySize(),
@@ -89,10 +89,10 @@ public class TransactionSearchService {
         throw new SearchTransactionsException(ledgerResponse);
     }
 
-    private TransactionSearchResults processResponse(Response connectorResponse) {
+    private SearchResults<PaymentForSearchResult> processResponse(Response connectorResponse) {
         PaymentSearchResponse<TransactionResponse> response;
         try {
-            response = connectorResponse.readEntity(new GenericType<PaymentSearchResponse<TransactionResponse>>() {
+            response = connectorResponse.readEntity(new GenericType<>() {
             });
         } catch (ProcessingException ex) {
             throw new SearchTransactionsException(ex);
@@ -103,7 +103,7 @@ public class TransactionSearchService {
                 .map(this::getPaymentForSearchResult)
                 .collect(toList());
 
-        return new TransactionSearchResults(
+        return new SearchResults<>(
                 response.getTotal(),
                 response.getCount(),
                 response.getPage(),
