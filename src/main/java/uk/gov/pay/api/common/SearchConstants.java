@@ -6,6 +6,7 @@ public class SearchConstants {
     public static final String REFERENCE_KEY = "reference";
     public static final String EMAIL_KEY = "email";
     public static final String STATE_KEY = "state";
+    public static final String STATUS_KEY = "state";
     public static final String CARD_BRAND_KEY = "card_brand";
     public static final String FIRST_DIGITS_CARD_NUMBER_KEY = "first_digits_card_number";
     public static final String LAST_DIGITS_CARD_NUMBER_KEY = "last_digits_card_number";
@@ -16,4 +17,5 @@ public class SearchConstants {
     public static final String DISPLAY_SIZE = "display_size";
     public static final String FROM_SETTLED_DATE = "from_settled_date";
     public static final String TO_SETTLED_DATE = "to_settled_date";
+
 }

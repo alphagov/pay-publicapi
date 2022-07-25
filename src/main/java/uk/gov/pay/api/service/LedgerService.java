@@ -1,5 +1,8 @@
 package uk.gov.pay.api.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uk.gov.pay.api.agreement.model.Agreement;
 import uk.gov.pay.api.agreement.model.AgreementLedgerResponse;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.GetAgreementException;
@@ -8,8 +11,11 @@ import uk.gov.pay.api.exception.GetEventsException;
 import uk.gov.pay.api.exception.GetRefundsException;
 import uk.gov.pay.api.exception.GetTransactionException;
 import uk.gov.pay.api.exception.SearchDisputesException;
+import uk.gov.pay.api.exception.SearchAgreementsException;
 import uk.gov.pay.api.exception.SearchPaymentsException;
 import uk.gov.pay.api.exception.SearchRefundsException;
+import uk.gov.pay.api.ledger.model.AgreementSearchParams;
+import uk.gov.pay.api.ledger.model.SearchResults;
 import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.Charge;
 import uk.gov.pay.api.model.TransactionEvents;
@@ -19,21 +25,29 @@ import uk.gov.pay.api.model.ledger.RefundsFromLedger;
 import uk.gov.pay.api.model.ledger.SearchDisputesResponseFromLedger;
 import uk.gov.pay.api.model.ledger.SearchRefundsResponseFromLedger;
 import uk.gov.pay.api.model.search.card.PaymentSearchResponse;
+import uk.gov.pay.api.validation.AgreementSearchValidator;
 
 import javax.inject.Inject;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.HashMap;
 import java.util.Map;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.http.HttpStatus.SC_OK;
+import static uk.gov.pay.api.common.SearchConstants.GATEWAY_ACCOUNT_ID;
 
 public class LedgerService {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(LedgerService.class);
+
     private static final String PARAM_ACCOUNT_ID = "account_id";
     private static final String PARAM_TRANSACTION_TYPE = "transaction_type";
-    private static final String PARAM_EXACT_REFERENCE_MATCH = "exact_reference_match";
+    public static final String PARAM_EXACT_REFERENCE_MATCH = "exact_reference_match";
     private static final String PAYMENT_TRANSACTION_TYPE = "PAYMENT";
     private static final String REFUND_TRANSACTION_TYPE = "REFUND";
     private static final String DISPUTE_TRANSACTION_TYPE = "DISPUTE";
@@ -160,7 +174,7 @@ public class LedgerService {
 
         if (response.getStatus() == SC_OK) {
             try {
-                return response.readEntity(new GenericType<PaymentSearchResponse<TransactionResponse>>() {
+                return response.readEntity(new GenericType<>() {
                 });
             } catch (ProcessingException ex) {
                 throw new SearchPaymentsException(ex);
@@ -182,5 +196,31 @@ public class LedgerService {
         }
 
         throw new GetAgreementException(response);
+    }
+
+    public SearchResults<Agreement> searchAgreements(Account account, AgreementSearchParams searchParams) {
+        AgreementSearchValidator.validateSearchParameters(searchParams);
+
+        var params = new HashMap<>(searchParams.getQueryMap());
+        params.put(GATEWAY_ACCOUNT_ID, account.getAccountId());
+        params.put(PARAM_EXACT_REFERENCE_MATCH, "true");
+
+        String url = ledgerUriGenerator.agreementsURIWithParams(params);
+        Response ledgerResponse = client
+                .target(url)
+                .request()
+                .header(HttpHeaders.ACCEPT, APPLICATION_JSON)
+                .get();
+        LOGGER.info("response from ledger for agreement search: {}", ledgerResponse);
+
+        if (ledgerResponse.getStatus() == SC_OK) {
+            try {
+                return ledgerResponse.readEntity(new GenericType<>() {
+                });
+            } catch (ProcessingException ex) {
+                throw new SearchAgreementsException(ex);
+            }
+        }
+        throw new SearchAgreementsException(ledgerResponse);
     }
 }

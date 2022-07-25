@@ -1,24 +1,25 @@
 package uk.gov.pay.api.agreement.resource;
 
+import com.codahale.metrics.annotation.Timed;
 import io.dropwizard.auth.Auth;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.agreement.model.Agreement;
-import uk.gov.pay.api.agreement.model.AgreementLedgerResponse;
 import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
 import uk.gov.pay.api.agreement.service.AgreementService;
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.ledger.model.AgreementSearchParams;
+import uk.gov.pay.api.ledger.model.SearchResults;
+import uk.gov.pay.api.service.LedgerService;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-
-import uk.gov.pay.api.service.LedgerService;
-
-import javax.ws.rs.GET;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
@@ -66,6 +67,14 @@ public class AgreementsApiResource {
         LOGGER.info("Get agreement {} request", agreementId);
         var agreementLedgerResponse = ledgerService.getAgreement(account, agreementId);
         return Agreement.from(agreementLedgerResponse);
+    }
+
+    @GET
+    @Timed
+    @Path("/v1/agreements")
+    @Produces(APPLICATION_JSON)
+    public SearchResults<Agreement> getAgreements(@Auth Account account, @BeanParam AgreementSearchParams searchParams) {
+        return ledgerService.searchAgreements(account, searchParams);
     }
 
     @POST
