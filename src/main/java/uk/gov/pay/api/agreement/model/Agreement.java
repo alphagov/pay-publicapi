@@ -14,25 +14,15 @@ import java.util.Optional;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class Agreement {
     private String externalId;
-    private String serviceId;
     private String reference;
     private String description;
     private String status;
     private String createdDate;
     private PaymentInstrument paymentInstrument;
 
-    @JsonProperty("external_id")
-    public void setExternalId(String externalId) {
-        this.externalId = externalId;
-    }
-
-    @JsonProperty("id")
+    @JsonProperty("agreement_id")
     public String getExternalId() {
         return externalId;
-    }
-
-    public String getServiceId() {
-        return serviceId;
     }
 
     public String getReference() {
@@ -55,21 +45,42 @@ public class Agreement {
         return paymentInstrument;
     }
 
+    public Agreement(String externalId, String reference, String description, String status, String createdDate, PaymentInstrument paymentInstrument) {
+        this.externalId = externalId;
+        this.reference = reference;
+        this.description = description;
+        this.status = status;
+        this.createdDate = createdDate;
+        this.paymentInstrument = paymentInstrument;
+    }
+
+    public static Agreement from(AgreementLedgerResponse agreementLedgerResponse) {
+        return new Agreement(
+                agreementLedgerResponse.getExternalId(),
+                agreementLedgerResponse.getReference(),
+                agreementLedgerResponse.getDescription(),
+                agreementLedgerResponse.getStatus(),
+                agreementLedgerResponse.getCreatedDate(),
+                Optional.ofNullable(agreementLedgerResponse.getPaymentInstrument()).map(PaymentInstrument::from).orElse(null)
+        );
+    }
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-    public class PaymentInstrument {
-        private String externalId;
-        private String agreementExternalId;
-        private CardDetails cardDetails;
-        private String createdDate;
+    public static class PaymentInstrument {
+        private final CardDetails cardDetails;
+        private final String createdDate;
+        private final String type;
 
-        public String getExternalId() {
-            return externalId;
+        public PaymentInstrument(CardDetails cardDetails, String createdDate, String type) {
+            this.cardDetails = cardDetails;
+            this.createdDate = createdDate;
+            this.type = type;
         }
 
-        public String getAgreementExternalId() {
-            return agreementExternalId;
+        public static PaymentInstrument from(AgreementLedgerResponse.PaymentInstrumentLedgerResponse paymentInstrumentLedgerResponse) {
+            return new PaymentInstrument(paymentInstrumentLedgerResponse.getCardDetails(), paymentInstrumentLedgerResponse.getCreatedDate(), paymentInstrumentLedgerResponse.getType());
         }
 
         public CardDetails getCardDetails() {
@@ -78,6 +89,10 @@ public class Agreement {
 
         public String getCreatedDate() {
             return createdDate;
+        }
+
+        public String getType() {
+            return Optional.ofNullable(type).map(String::toLowerCase).orElse(null);
         }
     }
 }

@@ -1,6 +1,6 @@
 package uk.gov.pay.api.service;
 
-import uk.gov.pay.api.agreement.model.Agreement;
+import uk.gov.pay.api.agreement.model.AgreementLedgerResponse;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.GetAgreementException;
 import uk.gov.pay.api.exception.GetChargeException;
@@ -166,7 +166,7 @@ public class LedgerService {
         throw new SearchPaymentsException(response);
     }
 
-    public Agreement getAgreement(Account account, String agreementId) {
+    public AgreementLedgerResponse getAgreement(Account account, String agreementId) {
         Response response = client
                 .target(ledgerUriGenerator.agreementURI(account, agreementId))
                 .request()
@@ -174,7 +174,7 @@ public class LedgerService {
                 .get();
 
         if (response.getStatus() == SC_OK) {
-            return response.readEntity(Agreement.class);
+            return response.readEntity(AgreementLedgerResponse.class);
         }
 
         throw new GetAgreementException(response);

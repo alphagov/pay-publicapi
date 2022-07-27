@@ -2,7 +2,7 @@ package uk.gov.pay.api.utils.mocks;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import uk.gov.pay.api.agreement.model.Agreement;
+import uk.gov.pay.api.agreement.model.AgreementLedgerResponse;
 
 import java.time.ZonedDateTime;
 
@@ -17,7 +17,7 @@ public class AgreementFromLedgerFixture {
     private final String description;
     private final String status;
     private final String createdDate;
-    private final Agreement.PaymentInstrument paymentInstrument;
+    private final AgreementLedgerResponse.PaymentInstrumentLedgerResponse paymentInstrument;
 
     private AgreementFromLedgerFixture(AgreementFromLedgerFixtureBuilder builder) {
         this.externalId = builder.externalId;
@@ -53,7 +53,7 @@ public class AgreementFromLedgerFixture {
         return createdDate;
     }
 
-    public Agreement.PaymentInstrument getPaymentInstrument() {
+    public AgreementLedgerResponse.PaymentInstrumentLedgerResponse getPaymentInstrument() {
         return paymentInstrument;
     }
 
@@ -64,7 +64,7 @@ public class AgreementFromLedgerFixture {
         private String description = "An agreement description";
         private String status = "CREATED";
         private String createdDate = ISO_INSTANT_MILLISECOND_PRECISION.format(ZonedDateTime.parse("2022-07-20T11:01:00.132012345Z"));
-        private Agreement.PaymentInstrument paymentInstrument;
+        private AgreementLedgerResponse.PaymentInstrumentLedgerResponse paymentInstrument;
 
         private AgreementFromLedgerFixtureBuilder() {
         }
@@ -103,7 +103,7 @@ public class AgreementFromLedgerFixture {
             return this;
         }
         
-        public AgreementFromLedgerFixtureBuilder withPaymentInstrument(Agreement.PaymentInstrument paymentInstrument) {
+        public AgreementFromLedgerFixtureBuilder withPaymentInstrument(AgreementLedgerResponse.PaymentInstrumentLedgerResponse paymentInstrument) {
             this.paymentInstrument = paymentInstrument;
             return this;
         }

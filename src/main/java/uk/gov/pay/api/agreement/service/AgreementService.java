@@ -1,7 +1,6 @@
 package uk.gov.pay.api.agreement.service;
 
 import org.apache.http.HttpStatus;
-import uk.gov.pay.api.agreement.model.Agreement;
 import uk.gov.pay.api.agreement.model.AgreementCreatedResponse;
 import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
 import uk.gov.pay.api.auth.Account;
