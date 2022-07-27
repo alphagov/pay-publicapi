@@ -17,7 +17,7 @@ public class RequestErrorTest {
     @Test
     void shouldGetExpectedValuesForAgreementNotFoundError() {
         RequestError requestError = aRequestError("set_up_agreement", RequestError.Code.CREATE_PAYMENT_AGREEMENT_ID_ERROR);
-        assertThat(requestError.toString(), is("RequestError{field=set_up_agreement, code=P0103, name=CREATE_PAYMENT_AGREEMENT_ID_ERROR, description='Invalid attribute value: set_up_agreement. Agreement ID does not exist'}"));
+        assertThat(requestError.toString(), is("RequestError{field=set_up_agreement, code=P0103, name=CREATE_PAYMENT_AGREEMENT_ID_ERROR, description='Invalid attribute value: set_up_agreement. AgreementLedgerResponse ID does not exist'}"));
     }
 
 }

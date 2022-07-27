@@ -4,6 +4,7 @@ import io.dropwizard.auth.Auth;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.api.agreement.model.AgreementLedgerResponse;
 import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
 import uk.gov.pay.api.agreement.service.AgreementService;
 import uk.gov.pay.api.auth.Account;
@@ -14,7 +15,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
-import uk.gov.pay.api.agreement.model.Agreement;
 import uk.gov.pay.api.service.LedgerService;
 
 import javax.ws.rs.GET;
@@ -58,7 +58,7 @@ public class AgreementsApiResource {
     @GET
     @Path("/v1/agreements/{agreementId}")
     @Produces(APPLICATION_JSON)
-    public Agreement getAgreement(
+    public AgreementLedgerResponse getAgreement(
             @Parameter(hidden = true) @Auth Account account,
             @PathParam("agreementId") String agreementId
     ) {
