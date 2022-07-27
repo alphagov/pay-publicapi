@@ -23,6 +23,9 @@
         "query": {
           "gateway_account_id": [
             "123456"
+          ],
+          "transaction_type": [
+            "REFUND"
           ]
         }
       },
