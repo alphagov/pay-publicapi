@@ -51,7 +51,8 @@ public class AgreementsApiResource {
         LOGGER.info("Creating new agreement for reference {} and gateway accountID {}", 
                 createAgreementRequest.getReference(), account.getAccountId());
         var agreementCreatedResponse = agreementService.create(account, createAgreementRequest);
-        return Response.status(SC_CREATED).entity(agreementCreatedResponse).build();
+        var agreement = ledgerService.getAgreement(account, agreementCreatedResponse.getAgreementId());
+        return Response.status(SC_CREATED).entity(agreement).build();
     }
 
     @GET

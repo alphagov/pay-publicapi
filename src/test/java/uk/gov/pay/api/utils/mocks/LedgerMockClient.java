@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
@@ -168,6 +169,7 @@ public class LedgerMockClient {
 
     public void respondWithAgreement(String agreementId, String body) {
         ledgerMock.stubFor(get(urlPathEqualTo(format("/v1/agreement/%s", agreementId)))
+                .withHeader("X-Consistent", WireMock.equalTo("true"))
                 .willReturn(aResponse()
                         .withStatus(OK_200)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
