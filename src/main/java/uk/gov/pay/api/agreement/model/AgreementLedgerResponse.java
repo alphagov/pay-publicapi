@@ -7,8 +7,6 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import uk.gov.pay.api.model.CardDetails;
 
-import java.util.Optional;
-
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
@@ -44,7 +42,7 @@ public class AgreementLedgerResponse {
     }
 
     public String getStatus() {
-        return Optional.ofNullable(status).map(String::toLowerCase).orElse(null);
+        return status;
     }
 
     public String getCreatedDate() {

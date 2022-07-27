@@ -9,6 +9,8 @@ import uk.gov.pay.api.utils.mocks.LedgerMockClient;
 
 import static io.restassured.RestAssured.given;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.utils.mocks.AgreementFromLedgerFixture.AgreementFromLedgerFixtureBuilder.anAgreementFromLedgerFixture;
 
@@ -36,8 +38,8 @@ public class AgreementsIT extends PaymentResourceITestBase {
                 .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .body("id", is(agreementId))
-                .body("service_id", is(fixture.getServiceId()))
+                .body("agreement_id", is(agreementId))
+                .body("$", not(hasKey("service_id")))
                 .body("reference", is(fixture.getReference()))
                 .body("description", is(fixture.getDescription()))
                 .body("status", is(fixture.getStatus().toLowerCase()))

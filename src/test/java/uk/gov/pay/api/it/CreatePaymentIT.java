@@ -187,7 +187,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .withReturnUrl(RETURN_URL)
                 .withSetUpAgreement(VALID_AGREEMENT_ID)
                 .build();
-        connectorMockClient.respondBadRequest_whenCreateChargeWithAgreementNotFound(GATEWAY_ACCOUNT_ID, VALID_AGREEMENT_ID, "AgreementLedgerResponse with ID [%s] not found.");
+        connectorMockClient.respondBadRequest_whenCreateChargeWithAgreementNotFound(GATEWAY_ACCOUNT_ID, VALID_AGREEMENT_ID, "Agreement with ID [%s] not found.");
 
         InputStream body = postPaymentResponse(paymentPayload(createChargeRequestParams))
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
@@ -198,7 +198,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .assertThat("$.*", hasSize(3))
                 .assertThat("$.field", is("set_up_agreement"))
                 .assertThat("$.code", is("P0103"))
-                .assertThat("$.description", is("Invalid attribute value: set_up_agreement. AgreementLedgerResponse ID does not exist"));
+                .assertThat("$.description", is("Invalid attribute value: set_up_agreement. Agreement ID does not exist"));
 
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
     }

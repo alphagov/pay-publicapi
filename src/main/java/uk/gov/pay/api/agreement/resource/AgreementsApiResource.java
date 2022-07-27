@@ -4,6 +4,7 @@ import io.dropwizard.auth.Auth;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.pay.api.agreement.model.Agreement;
 import uk.gov.pay.api.agreement.model.AgreementLedgerResponse;
 import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
 import uk.gov.pay.api.agreement.service.AgreementService;
@@ -51,19 +52,20 @@ public class AgreementsApiResource {
         LOGGER.info("Creating new agreement for reference {} and gateway accountID {}", 
                 createAgreementRequest.getReference(), account.getAccountId());
         var agreementCreatedResponse = agreementService.create(account, createAgreementRequest);
-        var agreement = ledgerService.getAgreement(account, agreementCreatedResponse.getAgreementId());
-        return Response.status(SC_CREATED).entity(agreement).build();
+        var agreementLedgerResponse = ledgerService.getAgreement(account, agreementCreatedResponse.getAgreementId());
+        return Response.status(SC_CREATED).entity(Agreement.from(agreementLedgerResponse)).build();
     }
 
     @GET
     @Path("/v1/agreements/{agreementId}")
     @Produces(APPLICATION_JSON)
-    public AgreementLedgerResponse getAgreement(
+    public Agreement getAgreement(
             @Parameter(hidden = true) @Auth Account account,
             @PathParam("agreementId") String agreementId
     ) {
         LOGGER.info("Get agreement {} request", agreementId);
-        return ledgerService.getAgreement(account, agreementId);
+        var agreementLedgerResponse = ledgerService.getAgreement(account, agreementId);
+        return Agreement.from(agreementLedgerResponse);
     }
 
     @POST

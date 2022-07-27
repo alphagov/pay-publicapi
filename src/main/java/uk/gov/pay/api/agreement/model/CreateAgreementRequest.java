@@ -8,7 +8,7 @@ import uk.gov.pay.api.utils.JsonStringBuilder;
 import javax.validation.constraints.Size;
 import java.util.Objects;
 
-@Schema(description = "The AgreementLedgerResponse Request Payload")
+@Schema(description = "The Agreement Request Payload")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CreateAgreementRequest {
     

@@ -92,7 +92,7 @@ public class Agreement {
         }
 
         public String getType() {
-            return type;
+            return Optional.ofNullable(type).map(String::toLowerCase).orElse(null);
         }
     }
 }

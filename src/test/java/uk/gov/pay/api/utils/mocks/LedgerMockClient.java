@@ -178,7 +178,7 @@ public class LedgerMockClient {
 
     public void respondAgreementNotFound(String agreementId) {
         Map<String, Object> payload = new HashMap<>();
-        payload.put("message", List.of("AgreementLedgerResponse not found"));
+        payload.put("message", List.of("Agreement not found"));
 
         ResponseDefinitionBuilder response = aResponse()
                 .withStatus(NOT_FOUND_404)

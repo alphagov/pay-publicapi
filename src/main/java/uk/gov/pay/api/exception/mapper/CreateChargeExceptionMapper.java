@@ -73,11 +73,11 @@ public class CreateChargeExceptionMapper implements ExceptionMapper<CreateCharge
                     break;
                 case AGREEMENT_NOT_FOUND:
                     statusCode = HttpStatus.BAD_REQUEST_400;
-                    requestError = aRequestError("agreement_id", CREATE_PAYMENT_VALIDATION_ERROR, "AgreementLedgerResponse does not exist");
+                    requestError = aRequestError("agreement_id", CREATE_PAYMENT_VALIDATION_ERROR, "Agreement does not exist");
                     break;
                 case AGREEMENT_NOT_ACTIVE:
                     statusCode = HttpStatus.BAD_REQUEST_400;
-                    requestError = aRequestError("agreement_id", CREATE_PAYMENT_VALIDATION_ERROR, "AgreementLedgerResponse must be active");
+                    requestError = aRequestError("agreement_id", CREATE_PAYMENT_VALIDATION_ERROR, "Agreement must be active");
                     break;
                 case MISSING_MANDATORY_ATTRIBUTE:
                     statusCode = HttpStatus.BAD_REQUEST_400;
