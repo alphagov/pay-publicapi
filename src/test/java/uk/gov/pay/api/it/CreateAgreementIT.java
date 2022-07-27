@@ -1,5 +1,6 @@
 package uk.gov.pay.api.it;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.restassured.response.ValidatableResponse;
 import org.apache.http.HttpStatus;
 import org.junit.Test;
@@ -9,12 +10,15 @@ import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 import uk.gov.pay.api.utils.mocks.CreateAgreementRequestParams;
+import uk.gov.pay.api.utils.mocks.LedgerMockClient;
+
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.apache.commons.lang3.RandomStringUtils.random;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
+import static uk.gov.pay.api.utils.mocks.AgreementFromLedgerFixture.AgreementFromLedgerFixtureBuilder.anAgreementFromLedgerFixture;
 import static uk.gov.pay.api.utils.mocks.CreateAgreementRequestParams.CreateAgreementRequestParamsBuilder.aCreateAgreementRequestParams;
 
 public class CreateAgreementIT extends PaymentResourceITestBase {
@@ -25,21 +29,27 @@ public class CreateAgreementIT extends PaymentResourceITestBase {
     public static final String VALID_AGREEMENT_ID = "12345678901234567890123456";
     private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    private LedgerMockClient ledgerMockClient = new LedgerMockClient(ledgerMock);
 
     @Test
-    public void shouldCreateAgreement() {
+    public void shouldCreateAgreement() throws JsonProcessingException {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
         CreateAgreementRequestParams createAgreementRequestParams = aCreateAgreementRequestParams()
                 .withReference(REFERENCE)
                 .withDescription(DESCRIPTION)
                 .withUserIdentifier(USER_IDENTIFIER)
                 .build();
+        var agreementFixture = anAgreementFromLedgerFixture()
+                .withExternalId(VALID_AGREEMENT_ID)
+                .build();
         connectorMockClient.respondOk_whenCreateAgreement(GATEWAY_ACCOUNT_ID, createAgreementRequestParams);
-
+        ledgerMockClient.respondWithAgreement(VALID_AGREEMENT_ID, agreementFixture);
         postAgreementRequest(agreementPayload(createAgreementRequestParams))
                 .statusCode(HttpStatus.SC_CREATED)
                 .contentType(JSON)
-                .body("agreement_id", is(VALID_AGREEMENT_ID));
+                .body("id", is(VALID_AGREEMENT_ID))
+                .body("reference", is("valid-reference"))
+                .body("description", is("An agreement description"));
         connectorMockClient.verifyCreateAgreementConnectorRequest(GATEWAY_ACCOUNT_ID, createAgreementRequestParams);
     }
 
@@ -106,14 +116,19 @@ public class CreateAgreementIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void shouldReturn201WhenWhenOptionalUserIdentifierIsNull() {
+    public void shouldReturn201WhenWhenOptionalUserIdentifierIsNull() throws JsonProcessingException {
+        var agreementFixture = anAgreementFromLedgerFixture()
+                .withExternalId(VALID_AGREEMENT_ID)
+                .build();
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+
         var params = aCreateAgreementRequestParams()
                 .withReference(REFERENCE)
                 .withDescription(DESCRIPTION)
                 .withUserIdentifier(null)
                 .build();
         connectorMockClient.respondOk_whenCreateAgreement(GATEWAY_ACCOUNT_ID, params);
+        ledgerMockClient.respondWithAgreement(VALID_AGREEMENT_ID, agreementFixture);
         postAgreementRequest(agreementPayload(params))
                 .statusCode(HttpStatus.SC_CREATED)
                 .contentType(JSON);
