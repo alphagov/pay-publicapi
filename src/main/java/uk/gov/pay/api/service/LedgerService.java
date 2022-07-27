@@ -146,6 +146,7 @@ public class LedgerService {
         Response response = client
                 .target(ledgerUriGenerator.agreementURI(account, agreementId))
                 .request()
+                .header("X-Consistent", true)
                 .get();
 
         if (response.getStatus() == SC_OK) {
