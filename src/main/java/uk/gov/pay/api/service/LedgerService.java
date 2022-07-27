@@ -7,6 +7,7 @@ import uk.gov.pay.api.exception.GetChargeException;
 import uk.gov.pay.api.exception.GetEventsException;
 import uk.gov.pay.api.exception.GetRefundsException;
 import uk.gov.pay.api.exception.GetTransactionException;
+import uk.gov.pay.api.exception.SearchDisputeException;
 import uk.gov.pay.api.exception.SearchPaymentsException;
 import uk.gov.pay.api.exception.SearchRefundsException;
 import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
@@ -15,6 +16,7 @@ import uk.gov.pay.api.model.TransactionEvents;
 import uk.gov.pay.api.model.TransactionResponse;
 import uk.gov.pay.api.model.ledger.RefundTransactionFromLedger;
 import uk.gov.pay.api.model.ledger.RefundsFromLedger;
+import uk.gov.pay.api.model.ledger.SearchDisputeResponseFromLedger;
 import uk.gov.pay.api.model.ledger.SearchRefundsResponseFromLedger;
 import uk.gov.pay.api.model.search.card.PaymentSearchResponse;
 
@@ -34,6 +36,7 @@ public class LedgerService {
     private static final String PARAM_EXACT_REFERENCE_MATCH = "exact_reference_match";
     private static final String PAYMENT_TRANSACTION_TYPE = "PAYMENT";
     private static final String REFUND_TRANSACTION_TYPE = "REFUND";
+    private static final String DISPUTE_TRANSACTION_TYPE = "DISPUTE";
 
     private final Client client;
     private final LedgerUriGenerator ledgerUriGenerator;
@@ -116,6 +119,27 @@ public class LedgerService {
         }
 
         throw new SearchRefundsException(response);
+    }
+
+    public SearchDisputeResponseFromLedger searchDispute(Account account, Map<String, String> paramsAsMap) {
+        paramsAsMap.put(PARAM_ACCOUNT_ID, account.getAccountId());
+        paramsAsMap.put(PARAM_TRANSACTION_TYPE, DISPUTE_TRANSACTION_TYPE);
+
+        Response response = client
+                .target(ledgerUriGenerator.transactionsURIWithParams(paramsAsMap))
+                .request()
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .get();
+
+        if (response.getStatus() == SC_OK) {
+            try {
+                return response.readEntity(SearchDisputeResponseFromLedger.class);
+            } catch (ProcessingException exception) {
+                throw new SearchDisputeException(exception);
+            }
+        }
+
+        throw new SearchDisputeException(response);
     }
 
     public PaymentSearchResponse<TransactionResponse> searchPayments(Account account, Map<String, String> paramsAsMap) {

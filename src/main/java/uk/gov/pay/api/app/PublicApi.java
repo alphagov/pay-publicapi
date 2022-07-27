@@ -30,6 +30,7 @@ import uk.gov.pay.api.exception.mapper.CaptureChargeExceptionMapper;
 import uk.gov.pay.api.exception.mapper.CreateAgreementExceptionMapper;
 import uk.gov.pay.api.exception.mapper.CreateChargeExceptionMapper;
 import uk.gov.pay.api.exception.mapper.CreateRefundExceptionMapper;
+import uk.gov.pay.api.exception.mapper.DisputeValidationExceptionMapper;
 import uk.gov.pay.api.exception.mapper.GetAgreementExceptionMapper;
 import uk.gov.pay.api.exception.mapper.GetChargeExceptionMapper;
 import uk.gov.pay.api.exception.mapper.GetEventsExceptionMapper;
@@ -176,6 +177,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         jersey.register(JsonProcessingExceptionMapper.class);
         jersey.register(AuthorisationRequestExceptionMapper.class);
         jersey.register(InternalServerExceptionMapper.class);
+        jersey.register(DisputeValidationExceptionMapper.class);
     }
 
     private void initialiseMetrics(PublicApiConfig configuration, Environment environment) {
