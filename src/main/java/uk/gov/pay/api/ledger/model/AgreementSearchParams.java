@@ -23,6 +23,10 @@ public class AgreementSearchParams {
     @QueryParam("display_size")
     private String displaySize;
 
+    public AgreementSearchParams() {
+        // Framework gubbins
+    }
+    
     public AgreementSearchParams(String reference, String status, String pageNumber, String displaySize) {
         this.reference = reference;
         this.status = status;
