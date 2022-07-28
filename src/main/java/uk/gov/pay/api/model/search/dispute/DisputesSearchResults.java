@@ -7,15 +7,15 @@ import uk.gov.pay.api.model.search.SearchPagination;
 
 import java.util.List;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class DisputeSearchResults implements SearchPagination {
+public class DisputesSearchResults implements SearchPagination {
     private int total;
     private int count;
     private int page;
     private List<DisputeForSearchResult> results;
     SearchNavigationLinks links;
 
-    public DisputeSearchResults(int total, int count, int page, List<DisputeForSearchResult> results,
-                                SearchNavigationLinks links) {
+    public DisputesSearchResults(int total, int count, int page, List<DisputeForSearchResult> results,
+                                 SearchNavigationLinks links) {
         this.total = total;
         this.count = count;
         this.page = page;

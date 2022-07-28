@@ -8,14 +8,12 @@ import uk.gov.pay.api.model.ledger.TransactionState;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.LedgerMockClient;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.utils.mocks.DisputeTransactionFromLedgerFixture.DisputeTransactionFromLedgerBuilder.aDisputeTransactionFromLedgerFixture;
 
