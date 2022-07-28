@@ -58,9 +58,12 @@ public class LedgerUriGenerator {
         );
     }
 
-    public String transactionsForTransactionURI(String gatewayAccountId, String paymentId) {
+    public String transactionsForTransactionURI(String gatewayAccountId, String paymentId, String transactionType) {
         String path = format("/v1/transaction/%s/transaction", paymentId);
-        return buildLedgerUri(path, Map.of("gateway_account_id", gatewayAccountId));
+        return buildLedgerUri(path,
+                Map.of("gateway_account_id", gatewayAccountId,
+                        "transaction_type", transactionType)
+        );
     }
 
     public String agreementURI(Account account, String agreementId) {

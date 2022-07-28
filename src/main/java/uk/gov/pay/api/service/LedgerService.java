@@ -88,7 +88,7 @@ public class LedgerService {
 
     public RefundsFromLedger getPaymentRefunds(String accountId, String paymentId) {
         Response response = client
-                .target(ledgerUriGenerator.transactionsForTransactionURI(accountId, paymentId))
+                .target(ledgerUriGenerator.transactionsForTransactionURI(accountId, paymentId, REFUND_TRANSACTION_TYPE))
                 .request()
                 .get();
 
