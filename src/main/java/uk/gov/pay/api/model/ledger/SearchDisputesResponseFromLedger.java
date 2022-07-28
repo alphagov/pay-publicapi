@@ -10,7 +10,7 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SearchDisputeResponseFromLedger implements SearchPagination {
+public class SearchDisputesResponseFromLedger implements SearchPagination {
 
     @JsonProperty("total")
     private int total;

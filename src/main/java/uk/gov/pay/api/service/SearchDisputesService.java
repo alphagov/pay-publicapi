@@ -1,13 +1,12 @@
 package uk.gov.pay.api.service;
 
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.model.ledger.SearchDisputeResponseFromLedger;
+import uk.gov.pay.api.model.ledger.SearchDisputesResponseFromLedger;
 import uk.gov.pay.api.model.search.PaginationDecorator;
 import uk.gov.pay.api.model.search.dispute.DisputeForSearchResult;
-import uk.gov.pay.api.model.search.dispute.DisputeSearchResults;
+import uk.gov.pay.api.model.search.dispute.DisputesSearchResults;
 
 import javax.inject.Inject;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,12 +26,12 @@ public class SearchDisputesService {
         this.paginationDecorator = paginationDecorator;
     }
 
-    public DisputeSearchResults searchDisputes(Account account, DisputesSearchParams params) {
-        SearchDisputeResponseFromLedger disputesFromLedger = ledgerService.searchDisputes(account, params.getParamsAsMap());
+    public DisputesSearchResults searchDisputes(Account account, DisputesSearchParams params) {
+        SearchDisputesResponseFromLedger disputesFromLedger = ledgerService.searchDisputes(account, params.getParamsAsMap());
         return processLedgerResponse(disputesFromLedger);
     }
 
-    private DisputeSearchResults processLedgerResponse(SearchDisputeResponseFromLedger searchResponse) {
+    private DisputesSearchResults processLedgerResponse(SearchDisputesResponseFromLedger searchResponse) {
         List<DisputeForSearchResult> results = searchResponse.getDisputes()
                 .stream()
                 .map(dispute -> DisputeForSearchResult.valueOf(dispute,
@@ -41,11 +40,11 @@ public class SearchDisputesService {
 
         reWriteSearchLinks(searchResponse);
 
-        return new DisputeSearchResults(searchResponse.getTotal(), searchResponse.getCount(), searchResponse.getPage(),
+        return new DisputesSearchResults(searchResponse.getTotal(), searchResponse.getCount(), searchResponse.getPage(),
                 results, paginationDecorator.transformLinksToPublicApiUri(searchResponse.getLinks(), DISPUTES_PATH));
     }
 
-    private void reWriteSearchLinks(SearchDisputeResponseFromLedger searchResponse) {
+    private void reWriteSearchLinks(SearchDisputesResponseFromLedger searchResponse) {
         var links = searchResponse.getLinks();
         if (links.getSelf() != null) {
             links.withSelfLink(links.getSelf().getHref().replace("state", "status"));

@@ -5,7 +5,7 @@ import io.dropwizard.auth.Auth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.model.search.dispute.DisputeSearchResults;
+import uk.gov.pay.api.model.search.dispute.DisputesSearchResults;
 import uk.gov.pay.api.service.DisputesSearchParams;
 import uk.gov.pay.api.service.SearchDisputesService;
 
@@ -34,14 +34,14 @@ public class SearchDisputesResource {
     @Timed
     @Path("/v1/disputes")
     @Produces(APPLICATION_JSON)
-    public DisputeSearchResults searchDisputes(@Auth Account account,
-                                               @QueryParam("from_date") String fromDate,
-                                               @QueryParam("to_date") String toDate,
-                                               @QueryParam("from_settled_date") String fromSettledDate,
-                                               @QueryParam("to_settled_date") String toSettledDate,
-                                               @QueryParam("status") String status,
-                                               @QueryParam("page") String pageNumber,
-                                               @QueryParam("display_size") String displaySize) {
+    public DisputesSearchResults searchDisputes(@Auth Account account,
+                                                @QueryParam("from_date") String fromDate,
+                                                @QueryParam("to_date") String toDate,
+                                                @QueryParam("from_settled_date") String fromSettledDate,
+                                                @QueryParam("to_settled_date") String toSettledDate,
+                                                @QueryParam("status") String status,
+                                                @QueryParam("page") String pageNumber,
+                                                @QueryParam("display_size") String displaySize) {
         logger.info("Disputes search request - [ {} ]",
                 format("from_date: %s, to_date: %s, from_settled_date: %s, to_settled_date: %s, " +
                                 "status: s, page: %s, display_size: %s",
