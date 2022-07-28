@@ -88,7 +88,9 @@ public class RequestError {
 
         CANCEL_AGREEMENT_CONNECTOR_BAD_REQUEST_ERROR("P0501", "Cancellation of agreement failed"),
         CANCEL_AGREEMENT_CONNECTOR_ERROR("P0198", "Downstream system error"),
-        SEARCH_DISPUTES_VALIDATION_ERROR("P0401", "Invalid parameters: %s. See Public API documentation for the correct data formats");
+        SEARCH_DISPUTES_VALIDATION_ERROR("P0401", "Invalid parameters: %s. See Public API documentation for the correct data formats"),
+        GET_DISPUTE_LEDGER_ERROR("P0498", "Downstream system error"),
+        SEARCH_DISPUTES_NOT_FOUND("P0402", "Page not found");
 
         private String value;
         private String format;

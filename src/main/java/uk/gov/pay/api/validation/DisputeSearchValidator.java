@@ -2,7 +2,7 @@ package uk.gov.pay.api.validation;
 
 import com.google.common.collect.ImmutableList;
 import uk.gov.pay.api.exception.DisputesValidationException;
-import uk.gov.pay.api.service.DisputesParams;
+import uk.gov.pay.api.service.DisputesSearchParams;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -23,7 +23,7 @@ public class DisputeSearchValidator {
     private static final List<String> VALID_DISPUTE_STATES = ImmutableList.of("created", "needs_response",
             "under_review", "lost", "won");
 
-    public static void validateDisputeParameters(DisputesParams params) {
+    public static void validateDisputeParameters(DisputesSearchParams params) {
         String pageNumber = params.getPage();
         String displaySize = params.getDisplaySize();
         String fromSettledDate = params.getFromSettledDate();

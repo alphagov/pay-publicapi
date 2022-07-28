@@ -7,7 +7,7 @@
   },
   "interactions": [
     {
-      "description": "Search disputes by settled dates",
+      "description": "search disputes by state",
       "providerStates": [
         {
           "name": "a dispute lost transaction exists",
@@ -24,8 +24,7 @@
         "query": {
           "page": ["1"],
           "display_size": ["500"],
-          "from_settled_date": ["2022-05-27"],
-          "to_settled_date": ["2022-05-27"],
+          "state": ["lost"],
           "account_id": ["123456"],
           "transaction_type": ["DISPUTE"],
           "status_version": ["1"]
@@ -62,13 +61,13 @@
           ],
           "_links": {
             "self": {
-              "href": "http://ledger.service.backend/v1/transaction?account_id=1234566&transaction_type=DISPUTE&from_settled_date=2022-05-27&to_settled_date=2022-05-27&page=1&display_size=500"
+              "href": "http://ledger.service.backend/v1/transaction?account_id=123456&state=lost&transaction_type=DISPUTE&page=1&display_size=500"
             },
             "last_page": {
-              "href": "http://ledger.service.backend/v1/transaction?account_id=1234566&transaction_type=DISPUTE&from_settled_date=2022-05-27&to_settled_date=2022-05-27&page=1&display_size=500"
+              "href": "http://ledger.service.backend/v1/transaction?account_id=123456&state=lost&transaction_type=DISPUTE&page=1&display_size=500"
             },
             "first_page": {
-              "href": "http://ledger.service.backend/v1/transaction?account_id=1234566&transaction_type=DISPUTE&from_settled_date=2022-05-27&to_settled_date=2022-05-27&page=1&display_size=500"
+              "href": "http://ledger.service.backend/v1/transaction?account_id=123456&state=lost&transaction_type=DISPUTE&page=1&display_size=500"
             }
           }
         },
@@ -157,21 +156,21 @@
             "$._links.self.href": {
               "matchers": [
                 {
-                  "regex": "http.*:\/\/.*\/v1\/transaction\\?account_id=123456&transaction_type=DISPUTE&from_settled_date=2022-05-27&to_settled_date=2022-05-27&page=1&display_size=500"
+                  "regex": "http.*:\/\/.*\/v1\/transaction\\?account_id=123456&state=lost&transaction_type=DISPUTE&page=1&display_size=500"
                 }
               ]
             },
             "$._links.last_page.href": {
               "matchers": [
                 {
-                  "regex": "http.*:\/\/.*\/v1\/transaction\\?account_id=123456&transaction_type=DISPUTE&from_settled_date=2022-05-27&to_settled_date=2022-05-27&page=1&display_size=500"
+                  "regex": "http.*:\/\/.*\/v1\/transaction\\?account_id=123456&state=lost&transaction_type=DISPUTE&page=1&display_size=500"
                 }
               ]
             },
             "$._links.first_page.href": {
               "matchers": [
                 {
-                  "regex": "http.*:\/\/.*\/v1\/transaction\\?account_id=123456&transaction_type=DISPUTE&from_settled_date=2022-05-27&to_settled_date=2022-05-27&page=1&display_size=500"
+                  "regex": "http.*:\/\/.*\/v1\/transaction\\?account_id=123456&state=lost&transaction_type=DISPUTE&page=1&display_size=500"
                 }
               ]
             }

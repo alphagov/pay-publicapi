@@ -101,7 +101,35 @@ public class LedgerMockClient {
                         .withBody(jsonStringBuilder.build())));
     }
 
+    public void respondWithSearchDisputes(DisputeTransactionFromLedgerFixture... disputes) {
+
+        Map<String, Link> links = (ImmutableMap.of(
+                "first_page", new Link("http://server:port/first-link?page=1"),
+                "self", new Link("http://server:port/self-link?page=1"),
+                "last_page", new Link("http://server:port/last-link?page=1")));
+
+        JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
+                .add("total", 1)
+                .add("count", 1)
+                .add("page", 1)
+                .add("results", Arrays.asList(disputes))
+                .add("_links", links);
+
+        ledgerMock.stubFor(get(urlPathEqualTo("/v1/transaction"))
+                .willReturn(aResponse()
+                        .withStatus(OK_200)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withBody(jsonStringBuilder.build())));
+    }
+
     public void respondWithSearchRefundsNotFound() {
+        ledgerMock.stubFor(get(urlPathEqualTo("/v1/transaction"))
+                .willReturn(aResponse()
+                        .withStatus(NOT_FOUND_404)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)));
+    }
+
+    public void respondWithSearchDisputesNotFound() {
         ledgerMock.stubFor(get(urlPathEqualTo("/v1/transaction"))
                 .willReturn(aResponse()
                         .withStatus(NOT_FOUND_404)

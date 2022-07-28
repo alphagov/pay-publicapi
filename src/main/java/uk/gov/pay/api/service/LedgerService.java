@@ -121,9 +121,13 @@ public class LedgerService {
         throw new SearchRefundsException(response);
     }
 
-    public SearchDisputeResponseFromLedger searchDispute(Account account, Map<String, String> paramsAsMap) {
+    public SearchDisputeResponseFromLedger searchDisputes(Account account, Map<String, String> paramsAsMap) {
         paramsAsMap.put(PARAM_ACCOUNT_ID, account.getAccountId());
         paramsAsMap.put(PARAM_TRANSACTION_TYPE, DISPUTE_TRANSACTION_TYPE);
+
+        if (paramsAsMap.containsKey("status")) {
+            paramsAsMap.put("state", paramsAsMap.remove("status"));
+        }
 
         Response response = client
                 .target(ledgerUriGenerator.transactionsURIWithParams(paramsAsMap))

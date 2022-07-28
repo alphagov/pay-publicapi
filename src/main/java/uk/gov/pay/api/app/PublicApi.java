@@ -41,6 +41,7 @@ import uk.gov.pay.api.exception.mapper.JsonProcessingExceptionMapper;
 import uk.gov.pay.api.exception.mapper.PaymentValidationExceptionMapper;
 import uk.gov.pay.api.exception.mapper.RefundsValidationExceptionMapper;
 import uk.gov.pay.api.exception.mapper.SearchChargesExceptionMapper;
+import uk.gov.pay.api.exception.mapper.SearchDisputeExceptionMapper;
 import uk.gov.pay.api.exception.mapper.SearchRefundsExceptionMapper;
 import uk.gov.pay.api.exception.mapper.ViolationExceptionMapper;
 import uk.gov.pay.api.filter.AuthorizationValidationFilter;
@@ -55,6 +56,7 @@ import uk.gov.pay.api.resources.HealthCheckResource;
 import uk.gov.pay.api.resources.PaymentRefundsResource;
 import uk.gov.pay.api.resources.PaymentsResource;
 import uk.gov.pay.api.resources.RequestDeniedResource;
+import uk.gov.pay.api.resources.SearchDisputesResource;
 import uk.gov.pay.api.resources.SearchRefundsResource;
 import uk.gov.pay.api.resources.SecuritytxtResource;
 import uk.gov.pay.api.resources.telephone.TelephonePaymentNotificationResource;
@@ -106,6 +108,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         environment.jersey().register(new InjectingValidationFeature(injector));
         environment.jersey().register(injector.getInstance(SecuritytxtResource.class));
         environment.jersey().register(injector.getInstance(AuthorisationResource.class));
+        environment.jersey().register(injector.getInstance(SearchDisputesResource.class));
 
         environment.jersey().register(injector.getInstance(RateLimiterFilter.class));
         environment.jersey().register(injector.getInstance(LoggingMDCRequestFilter.class));
@@ -178,6 +181,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         jersey.register(AuthorisationRequestExceptionMapper.class);
         jersey.register(InternalServerExceptionMapper.class);
         jersey.register(DisputeValidationExceptionMapper.class);
+        jersey.register(SearchDisputeExceptionMapper.class);
     }
 
     private void initialiseMetrics(PublicApiConfig configuration, Environment environment) {

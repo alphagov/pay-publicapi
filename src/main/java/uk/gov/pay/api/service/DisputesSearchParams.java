@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class DisputesParams {
+public class DisputesSearchParams {
 
     private static final String PAGE = "page";
     private static final String DISPLAY_SIZE = "display_size";
@@ -14,7 +14,7 @@ public class DisputesParams {
     private static final String TO_DATE = "to_date";
     private static final String FROM_SETTLED_DATE = "from_settled_date";
     private static final String TO_SETTLED_DATE = "to_settled_date";
-    private static final String STATE = "state";
+    private static final String STATUS = "status";
 
     private String fromDate;
     private String toDate;
@@ -24,14 +24,14 @@ public class DisputesParams {
     private String toSettledDate;
     private String state;
 
-    private DisputesParams(Builder builder) {
+    private DisputesSearchParams(Builder builder) {
         this.fromDate = builder.fromDate;
         this.toDate = builder.toDate;
         this.page = builder.page;
         this.displaySize = builder.displaySize;
         this.fromSettledDate = builder.fromSettledDate;
         this.toSettledDate = builder.toSettledDate;
-        this.state = builder.state;
+        this.state = builder.status;
     }
 
     public Map<String, String> getParamsAsMap() {
@@ -42,7 +42,7 @@ public class DisputesParams {
         params.put(DISPLAY_SIZE, Optional.ofNullable(displaySize).orElse(DEFAULT_DISPLAY_SIZE));
         params.put(FROM_SETTLED_DATE, fromSettledDate);
         params.put(TO_SETTLED_DATE, toSettledDate);
-        params.put(STATE, state);
+        params.put(STATUS, state);
         
         return params;
     }
@@ -82,13 +82,13 @@ public class DisputesParams {
         private String displaySize;
         private String fromSettledDate;
         private String toSettledDate;
-        private String state;
+        private String status;
 
         public Builder() {
         }
 
-        public DisputesParams build() {
-            return new DisputesParams(this);
+        public DisputesSearchParams build() {
+            return new DisputesSearchParams(this);
         }
 
         public Builder withFromDate(String fromDate) {
@@ -121,8 +121,8 @@ public class DisputesParams {
             return this;
         }
 
-        public Builder withState(String state) {
-            this.state = state;
+        public Builder withStatus(String status) {
+            this.status = status;
             return this;
         }
     }
