@@ -2,7 +2,6 @@ package uk.gov.pay.api.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.pay.api.agreement.model.Agreement;
 import uk.gov.pay.api.agreement.model.AgreementLedgerResponse;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.GetAgreementException;
@@ -10,8 +9,8 @@ import uk.gov.pay.api.exception.GetChargeException;
 import uk.gov.pay.api.exception.GetEventsException;
 import uk.gov.pay.api.exception.GetRefundsException;
 import uk.gov.pay.api.exception.GetTransactionException;
-import uk.gov.pay.api.exception.SearchDisputesException;
 import uk.gov.pay.api.exception.SearchAgreementsException;
+import uk.gov.pay.api.exception.SearchDisputesException;
 import uk.gov.pay.api.exception.SearchPaymentsException;
 import uk.gov.pay.api.exception.SearchRefundsException;
 import uk.gov.pay.api.ledger.model.AgreementSearchParams;
@@ -198,7 +197,7 @@ public class LedgerService {
         throw new GetAgreementException(response);
     }
 
-    public SearchResults<Agreement> searchAgreements(Account account, AgreementSearchParams searchParams) {
+    public SearchResults<AgreementLedgerResponse> searchAgreements(Account account, AgreementSearchParams searchParams) {
         AgreementSearchValidator.validateSearchParameters(searchParams);
 
         var params = new HashMap<>(searchParams.getQueryMap());

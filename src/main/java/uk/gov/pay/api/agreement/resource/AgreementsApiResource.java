@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.agreement.model.Agreement;
+import uk.gov.pay.api.agreement.model.AgreementLedgerResponse;
 import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
 import uk.gov.pay.api.agreement.service.AgreementService;
 import uk.gov.pay.api.auth.Account;
@@ -23,6 +24,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.http.HttpStatus.SC_CREATED;
@@ -74,7 +76,9 @@ public class AgreementsApiResource {
     @Path("/v1/agreements")
     @Produces(APPLICATION_JSON)
     public SearchResults<Agreement> getAgreements(@Auth Account account, @BeanParam AgreementSearchParams searchParams) {
-        return ledgerService.searchAgreements(account, searchParams);
+        SearchResults<AgreementLedgerResponse> searchResults = ledgerService.searchAgreements(account, searchParams);
+        return new SearchResults<>(searchResults.getTotal(), searchResults.getCount(),
+                searchResults.getPage(), searchResults.getResults().stream().map(Agreement::from).collect(Collectors.toUnmodifiableList()), null);
     }
 
     @POST
