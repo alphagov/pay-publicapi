@@ -77,6 +77,114 @@
         "tags" : [ "Authorise card payments" ]
       }
     },
+    "/v1/disputes" : {
+      "get" : {
+        "description" : "Search disputes by status, 'from' and 'to' date, and 'from' and 'to' settled_date. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "operationId" : "Search disputes",
+        "parameters" : [ {
+          "description" : "Returns disputes raised on or after the 'from_date' Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - 'YYYY-MM-DDTHH:MM:SSZ'.",
+          "in" : "query",
+          "name" : "from_date",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "Returns disputes raised before the 'to_date' Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - 'YYYY-MM-DDTHH:MM:SSZ'.",
+          "in" : "query",
+          "name" : "to_date",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "Returns disputes settled on or after the 'from_settled_date'. Date must be in ISO 8601 format to date-level accuracy - 'YYYY-MM-DD'. Disputes are settled when your payment service provider takes the disputed amount from a payout to your bank account.You can only use 'from_settled_date' to find disputes raised on or after 8 August 2022.",
+          "in" : "query",
+          "name" : "from_settled_date",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "Returns disputes settled before the 'to_settled_date'. 'Date must be in ISO 8601 format to date-level accuracy - 'YYYY-MM-DD'.Disputes are settled when your payment service provider takes the disputed amount from a payout to your bank account. You can only use 'to_settled_date' to find disputes raised on or after 8 August 2022.",
+          "in" : "query",
+          "name" : "to_settled_date",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "Returns disputes with a matching 'status'. 'status' reflects what stage of the dispute process a dispute is at.",
+          "example" : "won",
+          "in" : "query",
+          "name" : "status",
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "needs_response", "under_review", "lost", "won" ]
+          }
+        }, {
+          "description" : "Returns a specific page of results. Defaults to '1'.",
+          "in" : "query",
+          "name" : "page",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "The number of disputes returned per results page. Defaults to '500'. Maximum value is '500'",
+          "in" : "query",
+          "name" : "display_size",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/DisputesSearchResults"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "401" : {
+            "description" : "Credentials are required to access this resource"
+          },
+          "422" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RequestError"
+                }
+              }
+            },
+            "description" : "Invalid parameters: from_date, to_date, from_settled_date, to_settled_date, status, display_size. See Public API documentation for the correct data formats"
+          },
+          "429" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description" : "Too many requests"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RequestError"
+                }
+              }
+            },
+            "description" : "Downstream system error"
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ],
+        "summary" : "Search disputes",
+        "tags" : [ "Disputes" ]
+      }
+    },
     "/v1/payments" : {
       "get" : {
         "description" : "Search payments by reference, state, 'from' and 'to' date. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
@@ -1170,6 +1278,117 @@
           }
         }
       },
+      "DisputeDetailForSearch" : {
+        "type" : "object",
+        "description" : "Contains disputes matching your search criteria.",
+        "properties" : {
+          "_links" : {
+            "$ref" : "#/components/schemas/DisputeLinksForSearch"
+          },
+          "amount" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "The disputed amount in pence.",
+            "example" : 1200,
+            "readOnly" : true
+          },
+          "created_date" : {
+            "type" : "string",
+            "description" : "The date and time the user's bank told GOV.UK Pay about this dispute.",
+            "example" : "2022-07-28T16:43:000Z",
+            "readOnly" : true
+          },
+          "dispute_id" : {
+            "type" : "string",
+            "description" : "The unique ID GOV.UK Pay automatically associated with this dispute when the paying user disputed the payment.",
+            "example" : "hu20sqlact5260q2nanm0q8u93",
+            "readOnly" : true
+          },
+          "evidence_due_date" : {
+            "type" : "string",
+            "description" : "The deadline for submitting your supporting evidence. This value uses Coordinated Universal Time (UTC) and ISO 8601 format",
+            "example" : "2022-07-28T16:43:000Z",
+            "readOnly" : true
+          },
+          "fee" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "The payment service provider’s dispute fee, in pence.",
+            "example" : 1200,
+            "readOnly" : true
+          },
+          "net_amount" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "The amount, in pence, your payment service provider will take for a lost dispute. 'net_amount' is deducted from your payout after you lose the dispute. For example, a 'net_amount' of '-1500' means your PSP will take £15.00 from your next payout into your bank account. 'net_amount' is always a negative value. 'net_amount' only appears if you lose the dispute.",
+            "example" : -2400,
+            "readOnly" : true
+          },
+          "payment_id" : {
+            "type" : "string",
+            "description" : "The unique ID GOV.UK Pay automatically associated with this payment when you created it.",
+            "example" : "hu20sqlact5260q2nanm0q8u93",
+            "readOnly" : true
+          },
+          "reason" : {
+            "type" : "string",
+            "description" : "The reason the paying user gave for disputing this payment. Possible values are: 'credit_not_processed', 'duplicate', 'fraudulent', 'general', 'product_not_received', 'product_unacceptable', 'unrecognised', 'subscription_cancelled', >'other'",
+            "example" : "fraudulent",
+            "readOnly" : true
+          },
+          "settlement_summary" : {
+            "$ref" : "#/components/schemas/SettlementSummary"
+          },
+          "status" : {
+            "type" : "string",
+            "description" : "The current status of the dispute. Possible values are: 'needs_response', 'won', 'lost', 'under_review'",
+            "example" : "under_review",
+            "readOnly" : true
+          }
+        }
+      },
+      "DisputeLinksForSearch" : {
+        "type" : "object",
+        "description" : "links for search dispute resource",
+        "properties" : {
+          "payment" : {
+            "$ref" : "#/components/schemas/Link"
+          }
+        }
+      },
+      "DisputesSearchResults" : {
+        "type" : "object",
+        "properties" : {
+          "count" : {
+            "type" : "integer",
+            "format" : "int32",
+            "description" : "Number of disputes on the current page of search results.",
+            "example" : 20
+          },
+          "links" : {
+            "$ref" : "#/components/schemas/SearchNavigationLinks"
+          },
+          "page" : {
+            "type" : "integer",
+            "format" : "int32",
+            "description" : "The page of results you’re viewing. To view other pages, make this request again using the 'page' parameter.",
+            "example" : 1
+          },
+          "results" : {
+            "type" : "array",
+            "description" : "Contains disputes matching your search criteria.",
+            "items" : {
+              "$ref" : "#/components/schemas/DisputeDetailForSearch"
+            }
+          },
+          "total" : {
+            "type" : "integer",
+            "format" : "int32",
+            "description" : "Number of total disputes matching your search criteria.",
+            "example" : 100
+          }
+        }
+      },
       "EmbeddedRefunds" : {
         "type" : "object",
         "properties" : {
@@ -1940,6 +2159,18 @@
           },
           "self" : {
             "$ref" : "#/components/schemas/Link"
+          }
+        }
+      },
+      "SettlementSummary" : {
+        "type" : "object",
+        "description" : "Contains information about when a lost dispute was settled. A dispute is settled when your payment service provider takes it from a payout to your bank account. 'settlement_summary' only appears if you lost the dispute.",
+        "properties" : {
+          "settled_date" : {
+            "type" : "string",
+            "description" : "The date your payment service provider took the disputed payment and dispute fee from a payout to your bank account. This value appears in ISO 8601 format. 'settled_date' only appears if you lost the dispute.",
+            "example" : "2022-07-28",
+            "readOnly" : true
           }
         }
       },

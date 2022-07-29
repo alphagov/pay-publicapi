@@ -21,22 +21,27 @@ public class SearchNavigationLinks {
     @JsonProperty(value = "next_page")
     private Link nextPage;
 
+    @Schema(description = "Use this URL ('href') to run the same search again.")
     public Link getSelf() {
         return self;
     }
 
+    @Schema(description = "Use this URL ('href') to get the first page of results.")
     public Link getFirstPage() {
         return firstPage;
     }
 
+    @Schema(description = "Use this URL ('href') to get the last page of results.")
     public Link getLastPage() {
         return lastPage;
     }
 
+    @Schema(description = "Use this URL ('href') to get the previous page of results.")
     public Link getPrevPage() {
         return prevPage;
     }
-
+    
+    @Schema(description = "Use this URL ('href') to get the next page of results.")
     public Link getNextPage() {
         return nextPage;
     }
