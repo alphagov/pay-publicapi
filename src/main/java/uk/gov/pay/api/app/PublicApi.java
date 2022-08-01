@@ -21,6 +21,7 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.PublicApiModule;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.auth.AccountAuthenticator;
+import uk.gov.pay.api.exception.mapper.AgreementValidationExceptionMapper;
 import uk.gov.pay.api.exception.mapper.AuthorisationRequestExceptionMapper;
 import uk.gov.pay.api.exception.mapper.BadRefundsRequestExceptionMapper;
 import uk.gov.pay.api.exception.mapper.BadRequestExceptionMapper;
@@ -172,6 +173,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         jersey.register(SearchAgreementsExceptionMapper.class);
         jersey.register(GetAgreementExceptionMapper.class);
         jersey.register(CancelAgreementExceptionMapper.class);
+        jersey.register(AgreementValidationExceptionMapper.class);
         jersey.register(RefundsValidationExceptionMapper.class);
         jersey.register(BadRefundsRequestExceptionMapper.class);
         jersey.register(BadRequestExceptionMapper.class);

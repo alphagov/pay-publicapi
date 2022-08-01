@@ -101,4 +101,18 @@ public class AgreementsIT extends PaymentResourceITestBase {
                 .body("results[1].created_date", is(fixture2.getCreatedDate()));
     }
 
+    @Test
+    public void searchAgreementsReturnsErrorWhenValidationError() throws Exception {
+        given().port(app.getLocalPort())
+                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .basePath(AGREEMENTS_PATH)
+                .queryParam("status", "ethereal")
+                .get()
+                .then()
+                .statusCode(422)
+                .contentType(ContentType.JSON)
+                .body("code", is("P2401"))
+                .body("description", is("Invalid parameters: status. See Public API documentation for the correct data formats"));
+    }
+
 }
