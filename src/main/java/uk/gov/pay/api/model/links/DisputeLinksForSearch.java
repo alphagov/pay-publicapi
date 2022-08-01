@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import static javax.ws.rs.HttpMethod.GET;
 
-@Schema(name = "RefundLinksForSearch", description = "links for search refunds resource")
+@Schema(name = "DisputeLinksForSearch", description = "links for search dispute resource")
 public class DisputeLinksForSearch {
 
     private static final String PAYMENT = "payment";

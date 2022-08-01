@@ -20,8 +20,8 @@ import static uk.gov.pay.api.validation.SearchValidator.validateToSettledDate;
 
 
 public class DisputeSearchValidator {
-    private static final List<String> VALID_DISPUTE_STATES = ImmutableList.of("created", "needs_response",
-            "under_review", "lost", "won");
+    private static final List<String> VALID_DISPUTE_STATES = ImmutableList.of("needs_response", "under_review",
+            "lost", "won");
 
     public static void validateDisputeParameters(DisputesSearchParams params) {
         String pageNumber = params.getPage();
