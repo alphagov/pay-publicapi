@@ -84,14 +84,19 @@ public class RequestError {
         AUTHORISATION_ONE_TIME_TOKEN_ALREADY_USED_ERROR("P1212", "%s"),
         AUTHORISATION_ONE_TIME_TOKEN_INVALID_ERROR("P1211", "%s"),
 
-        CREATE_AGREEMENT_CONNECTOR_ERROR("P0198", "Downstream system error"),
-        CREATE_AGREEMENT_PARSING_ERROR("P0197", "Unable to parse JSON"),
+        CREATE_AGREEMENT_CONNECTOR_ERROR("P2198", "Downstream system error"),
+        CREATE_AGREEMENT_PARSING_ERROR("P2197", "Unable to parse JSON"),
 
-        GET_AGREEMENT_NOT_FOUND_ERROR("P0200", "Not found"),
-        GET_AGREEMENT_LEDGER_ERROR("P0298", "Downstream system error"),
+        CREATE_AGREEMENT_MISSING_FIELD_ERROR("P2101", "Missing mandatory attribute: %s"),
+        CREATE_AGREEMENT_VALIDATION_ERROR("P2102", "Invalid attribute value: %s. %s"),
 
-        CANCEL_AGREEMENT_CONNECTOR_BAD_REQUEST_ERROR("P0501", "Cancellation of agreement failed"),
-        CANCEL_AGREEMENT_CONNECTOR_ERROR("P0198", "Downstream system error"),
+        GET_AGREEMENT_NOT_FOUND_ERROR("P2200", "Not found"),
+        GET_AGREEMENT_LEDGER_ERROR("P2298", "Downstream system error"),
+
+        CANCEL_AGREEMENT_NOT_FOUND_ERROR("P2500", "Not found"),
+        CANCEL_AGREEMENT_CONNECTOR_BAD_REQUEST_ERROR("P2501", "Cancellation of agreement failed"),
+        CANCEL_AGREEMENT_CONNECTOR_ERROR("P2598", "Downstream system error"),
+        
         SEARCH_DISPUTES_VALIDATION_ERROR("P0401", "Invalid parameters: %s. See Public API documentation for the correct data formats"),
         GET_DISPUTE_LEDGER_ERROR("P0498", "Downstream system error"),
         SEARCH_DISPUTES_NOT_FOUND("P0402", "Page not found");

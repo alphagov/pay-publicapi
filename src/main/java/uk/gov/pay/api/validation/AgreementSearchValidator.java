@@ -21,14 +21,13 @@ import static uk.gov.pay.api.common.SearchConstants.REFERENCE_KEY;
 import static uk.gov.pay.api.common.SearchConstants.STATUS_KEY;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.REFERENCE_MAX_LENGTH;
 import static uk.gov.pay.api.model.RequestError.Code.SEARCH_AGREEMENTS_VALIDATION_ERROR;
-import static uk.gov.pay.api.model.RequestError.Code.SEARCH_PAYMENTS_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.RequestError.aRequestError;
 import static uk.gov.pay.api.validation.MaxLengthValidator.isInvalid;
 import static uk.gov.pay.api.validation.SearchValidator.validateDisplaySizeIfNotNull;
 import static uk.gov.pay.api.validation.SearchValidator.validatePageIfNotNull;
 
 public class AgreementSearchValidator {
-    
+
     private static final Set<String> SUPPORTED_SEARCH_PARAMS = Set.of(REFERENCE_KEY, STATUS_KEY, PAGE, DISPLAY_SIZE);
 
     public static void validateSearchParameters(AgreementSearchParams searchParams) {

@@ -54,6 +54,8 @@ import static uk.gov.pay.api.model.CreateCardPaymentRequest.RETURN_URL_FIELD_NAM
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.SET_UP_AGREEMENT_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.SOURCE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreatePaymentRefundRequest.REFUND_AMOUNT_AVAILABLE;
+import static uk.gov.pay.api.model.RequestError.Code.CREATE_AGREEMENT_MISSING_FIELD_ERROR;
+import static uk.gov.pay.api.model.RequestError.Code.CREATE_AGREEMENT_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_MISSING_FIELD_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_REFUND_MISSING_FIELD_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_REFUND_VALIDATION_ERROR;
@@ -82,8 +84,8 @@ class RequestJsonParser {
 
         var builder = CreateCardPaymentRequestBuilder.builder()
                 .amount(validateAndGetAmount(paymentRequest, CREATE_PAYMENT_VALIDATION_ERROR, CREATE_PAYMENT_MISSING_FIELD_ERROR))
-                .reference(validateAndGetReference(paymentRequest))
-                .description(validateAndGetDescription(paymentRequest));
+                .reference(validateAndGetPaymentReference(paymentRequest))
+                .description(validateAndGetPaymentDescription(paymentRequest));
 
         if (paymentRequest.has(RETURN_URL_FIELD_NAME)) {
             String returnUrl = validateSkipNullValueAndGetString(paymentRequest.get(RETURN_URL_FIELD_NAME),
@@ -146,12 +148,12 @@ class RequestJsonParser {
 
     static CreateAgreementRequest parseAgreementRequest(JsonNode agreementRequest) {
         var builder = CreateAgreementRequestBuilder.builder()
-                .reference(validateAndGetReference(agreementRequest))
-                .description(validateAndGetDescription(agreementRequest));
+                .reference(validateAndGetAgreementReference(agreementRequest))
+                .description(validateAndGetAgreementDescription(agreementRequest));
 
         if (agreementRequest.has(USER_IDENTIFIER_FIELD)) {
             String userIdentifier = validateSkipNullValueAndGetString(agreementRequest.get(USER_IDENTIFIER_FIELD),
-                    aRequestError(USER_IDENTIFIER_FIELD, CREATE_PAYMENT_VALIDATION_ERROR, "Field must be a string"));
+                    aRequestError(USER_IDENTIFIER_FIELD, CREATE_AGREEMENT_VALIDATION_ERROR, "Field must be a string"));
             builder.userIdentifier(userIdentifier);
         }
 
@@ -188,18 +190,34 @@ class RequestJsonParser {
         }
     }
 
-    private static String validateAndGetDescription(JsonNode paymentRequest) {
-        return validateAndGetString(
-                paymentRequest.get(DESCRIPTION_FIELD_NAME),
-                aRequestError(DESCRIPTION_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid string format"),
-                aRequestError(DESCRIPTION_FIELD_NAME, CREATE_PAYMENT_MISSING_FIELD_ERROR));
+    private static String validateAndGetPaymentDescription(JsonNode paymentRequest) {
+        return validateAndGetDescription(paymentRequest, CREATE_PAYMENT_VALIDATION_ERROR, CREATE_PAYMENT_MISSING_FIELD_ERROR);
     }
 
-    private static String validateAndGetReference(JsonNode request) {
+    private static String validateAndGetAgreementDescription(JsonNode paymentRequest) {
+        return validateAndGetDescription(paymentRequest, CREATE_AGREEMENT_VALIDATION_ERROR, CREATE_AGREEMENT_MISSING_FIELD_ERROR);
+    }
+
+    private static String validateAndGetDescription(JsonNode request, RequestError.Code validationError, RequestError.Code missingFieldError) {
+        return validateAndGetString(
+                request.get(DESCRIPTION_FIELD_NAME),
+                aRequestError(DESCRIPTION_FIELD_NAME, validationError, "Must be a valid string format"),
+                aRequestError(DESCRIPTION_FIELD_NAME, missingFieldError));
+    }
+
+    private static String validateAndGetPaymentReference(JsonNode paymentRequest) {
+        return validateAndGetReference(paymentRequest, CREATE_PAYMENT_VALIDATION_ERROR, CREATE_PAYMENT_MISSING_FIELD_ERROR);
+    }
+
+    private static String validateAndGetAgreementReference(JsonNode agreementRequest) {
+        return validateAndGetReference(agreementRequest, CREATE_AGREEMENT_VALIDATION_ERROR, CREATE_AGREEMENT_MISSING_FIELD_ERROR);
+    }
+
+    private static String validateAndGetReference(JsonNode request, RequestError.Code validationError, RequestError.Code missingFieldError) {
         return validateAndGetString(
                 request.get(REFERENCE_FIELD_NAME),
-                aRequestError(REFERENCE_FIELD_NAME, CREATE_PAYMENT_VALIDATION_ERROR, "Must be a valid string format"),
-                aRequestError(REFERENCE_FIELD_NAME, CREATE_PAYMENT_MISSING_FIELD_ERROR));
+                aRequestError(REFERENCE_FIELD_NAME, validationError, "Must be a valid string format"),
+                aRequestError(REFERENCE_FIELD_NAME, missingFieldError));
     }
 
     private static String validateAndGetString(JsonNode jsonNode, RequestError validationError, RequestError missingError) {

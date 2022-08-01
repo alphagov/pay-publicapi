@@ -11,7 +11,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static uk.gov.pay.api.model.RequestError.Code.SEARCH_AGREEMENTS_LEDGER_ERROR;
-import static uk.gov.pay.api.model.RequestError.Code.SEARCH_PAYMENTS_NOT_FOUND;
+import static uk.gov.pay.api.model.RequestError.Code.SEARCH_AGREEMENTS_NOT_FOUND;
 import static uk.gov.pay.api.model.RequestError.aRequestError;
 
 public class SearchAgreementsExceptionMapper implements ExceptionMapper<SearchAgreementsException> {
@@ -22,10 +22,9 @@ public class SearchAgreementsExceptionMapper implements ExceptionMapper<SearchAg
         if (exception.getErrorStatus() == NOT_FOUND.getStatusCode()) {
             return Response
                     .status(NOT_FOUND)
-                    .entity(aRequestError(SEARCH_PAYMENTS_NOT_FOUND))
+                    .entity(aRequestError(SEARCH_AGREEMENTS_NOT_FOUND))
                     .build();
-        }
-        else {
+        } else {
             RequestError requestError = aRequestError(SEARCH_AGREEMENTS_LEDGER_ERROR);
             final Response.Status status = INTERNAL_SERVER_ERROR;
             LOGGER.error("Ledger response was {}.\n Returning http status {} with error body {}", exception.getMessage(), status, requestError);

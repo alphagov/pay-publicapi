@@ -55,7 +55,7 @@ public class AgreementsIT extends PaymentResourceITestBase {
                 .then()
                 .statusCode(404)
                 .contentType(ContentType.JSON)
-                .body("code", is("P0200"))
+                .body("code", is("P2200"))
                 .body("description", is("Not found"));
     }
 
