@@ -58,4 +58,47 @@ public class AgreementsIT extends PaymentResourceITestBase {
                 .body("code", is("P0200"))
                 .body("description", is("Not found"));
     }
+
+    @Test
+    public void searchAgreementsFromLedger() {
+        var fixture1 = anAgreementFromLedgerFixture()
+                .withExternalId(agreementId)
+                .build();
+
+        var fixture2 = anAgreementFromLedgerFixture()
+                .withExternalId("another-agreement-id")
+                .withServiceId("service-2")
+                .withReference("ref-2")
+                .withDescription("Description 2")
+                .withStatus("CREATED")
+                .withCreatedDate("2022-07-27T12:30:00Z")
+                .build();
+
+        ledgerMockClient.respondWithSearchAgreements(GATEWAY_ACCOUNT_ID, fixture1, fixture2);
+
+        given().port(app.getLocalPort())
+                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .basePath(AGREEMENTS_PATH)
+                .queryParam("status", "created")
+                .queryParam("page", "3")
+                .get()
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("total", is(9))
+                .body("count", is(2))
+                .body("page", is(3))
+                .body("results.size()", is(2))
+                .body("results[0].agreement_id", is(fixture1.getExternalId()))
+                .body("results[0].reference", is(fixture1.getReference()))
+                .body("results[0].description", is(fixture1.getDescription()))
+                .body("results[0].status", is(fixture1.getStatus().toLowerCase()))
+                .body("results[0].created_date", is(fixture1.getCreatedDate()))
+                .body("results[1].agreement_id", is(fixture2.getExternalId()))
+                .body("results[1].reference", is(fixture2.getReference()))
+                .body("results[1].description", is(fixture2.getDescription()))
+                .body("results[1].status", is(fixture2.getStatus().toLowerCase()))
+                .body("results[1].created_date", is(fixture2.getCreatedDate()));
+    }
+
 }

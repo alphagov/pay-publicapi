@@ -38,6 +38,10 @@ public class RequestError {
         SEARCH_PAYMENTS_NOT_FOUND("P0402", "Page not found"),
         SEARCH_PAYMENTS_CONNECTOR_ERROR("P0498", "Downstream system error"),
 
+        SEARCH_AGREEMENTS_VALIDATION_ERROR("P2401", "Invalid parameters: %s. See Public API documentation for the correct data formats"),
+        SEARCH_AGREEMENTS_NOT_FOUND("P2402", "Page not found"),
+        SEARCH_AGREEMENTS_LEDGER_ERROR("P2498", "Downstream system error"),  
+
         CANCEL_PAYMENT_NOT_FOUND_ERROR("P0500", "Not found"),
         CANCEL_PAYMENT_CONNECTOR_BAD_REQUEST_ERROR("P0501", "Cancellation of payment failed"),
         CANCEL_PAYMENT_CONNECTOR_CONFLICT_ERROR("P0502", "Cancellation of payment failed"),

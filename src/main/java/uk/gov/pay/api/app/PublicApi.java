@@ -40,6 +40,7 @@ import uk.gov.pay.api.exception.mapper.InternalServerExceptionMapper;
 import uk.gov.pay.api.exception.mapper.JsonProcessingExceptionMapper;
 import uk.gov.pay.api.exception.mapper.PaymentValidationExceptionMapper;
 import uk.gov.pay.api.exception.mapper.RefundsValidationExceptionMapper;
+import uk.gov.pay.api.exception.mapper.SearchAgreementsExceptionMapper;
 import uk.gov.pay.api.exception.mapper.SearchChargesExceptionMapper;
 import uk.gov.pay.api.exception.mapper.SearchDisputesExceptionMapper;
 import uk.gov.pay.api.exception.mapper.SearchRefundsExceptionMapper;
@@ -168,6 +169,7 @@ public class PublicApi extends Application<PublicApiConfig> {
         jersey.register(CancelChargeExceptionMapper.class);
         jersey.register(PaymentValidationExceptionMapper.class);
         jersey.register(CreateAgreementExceptionMapper.class);
+        jersey.register(SearchAgreementsExceptionMapper.class);
         jersey.register(GetAgreementExceptionMapper.class);
         jersey.register(CancelAgreementExceptionMapper.class);
         jersey.register(RefundsValidationExceptionMapper.class);

@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.matching;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
@@ -202,6 +203,34 @@ public class LedgerMockClient {
                         .withStatus(OK_200)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                         .withBody(body)));
+    }
+
+    public void respondWithSearchAgreements(String gatewayAccountId, AgreementFromLedgerFixture... agreements) {
+        var links = Map.of(
+                "first_page", new Link("http://server:port/first-link?page=1"),
+                "prev_page", new Link("http://server:port/prev-link?page=2"),
+                "self", new Link("http://server:port/self-link?page=3"),
+                "last_page", new Link("http://server:port/last-link?page=5"),
+                "next_page", new Link("http://server:port/next-link?page=4")
+        );
+
+        var jsonStringBuilder = new JsonStringBuilder()
+                .add("total", 9)
+                .add("count", 2)
+                .add("page", 3)
+                .add("results", List.copyOf(Arrays.asList(agreements)))
+                .add("_links", links);
+
+        ledgerMock.stubFor(get(urlPathEqualTo("/v1/agreement"))
+                .withQueryParam("page", equalTo("3"))
+                .withQueryParam("status", equalTo("created"))
+                .withQueryParam("account_id", equalTo(gatewayAccountId))
+                .withQueryParam("exact_reference_match", equalTo("true"))
+                .withQueryParam("status_version", equalTo("1"))
+                .willReturn(aResponse()
+                        .withStatus(OK_200)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withBody(jsonStringBuilder.build())));
     }
 
     public void respondAgreementNotFound(String agreementId) {
