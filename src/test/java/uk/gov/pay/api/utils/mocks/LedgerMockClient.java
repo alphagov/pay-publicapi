@@ -215,13 +215,15 @@ public class LedgerMockClient {
         );
 
         var jsonStringBuilder = new JsonStringBuilder()
-                .add("total", 1)
-                .add("count", 1)
-                .add("page", 1)
+                .add("total", 9)
+                .add("count", 2)
+                .add("page", 3)
                 .add("results", List.copyOf(Arrays.asList(agreements)))
                 .add("_links", links);
 
         ledgerMock.stubFor(get(urlPathEqualTo("/v1/agreement"))
+                .withQueryParam("page", equalTo("3"))
+                .withQueryParam("status", equalTo("created"))
                 .withQueryParam("account_id", equalTo(gatewayAccountId))
                 .withQueryParam("exact_reference_match", equalTo("true"))
                 .withQueryParam("status_version", equalTo("1"))
