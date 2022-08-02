@@ -63,7 +63,7 @@ public class CreateAgreementIT extends PaymentResourceITestBase {
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .contentType(JSON)
                 .body("field", is("reference"))
-                .body("code", is("P0101"))
+                .body("code", is("P2101"))
                 .body("description", is("Missing mandatory attribute: reference"));
     }
 
@@ -75,7 +75,7 @@ public class CreateAgreementIT extends PaymentResourceITestBase {
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .contentType(JSON)
                 .body("field", is("reference"))
-                .body("code", is("P0101"))
+                .body("code", is("P2101"))
                 .body("description", is("Missing mandatory attribute: reference"));
     }
 
@@ -87,7 +87,7 @@ public class CreateAgreementIT extends PaymentResourceITestBase {
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .contentType(JSON)
                 .body("field", is("description"))
-                .body("code", is("P0101"))
+                .body("code", is("P2101"))
                 .body("description", is("Missing mandatory attribute: description"));
     }
 
@@ -99,7 +99,7 @@ public class CreateAgreementIT extends PaymentResourceITestBase {
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
                 .contentType(JSON)
                 .body("field", is("description"))
-                .body("code", is("P0101"))
+                .body("code", is("P2101"))
                 .body("description", is("Missing mandatory attribute: description"));
     }
 
@@ -188,7 +188,7 @@ public class CreateAgreementIT extends PaymentResourceITestBase {
        postAgreementRequest(agreementPayload(createAgreementRequestParams))
                .statusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR)
                 .contentType(JSON)
-               .body("code",is("P0198"))
+               .body("code",is("P2198"))
                .body("description", is("Downstream system error"));
       
         connectorMockClient.verifyCreateAgreementConnectorRequest(GATEWAY_ACCOUNT_ID, createAgreementRequestParams);
