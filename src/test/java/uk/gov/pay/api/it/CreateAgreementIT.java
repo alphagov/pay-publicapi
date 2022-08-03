@@ -18,7 +18,7 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.apache.commons.lang3.RandomStringUtils.random;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
-import static uk.gov.pay.api.utils.mocks.AgreementFromLedgerFixture.AgreementFromLedgerFixtureBuilder.anAgreementFromLedgerFixture;
+import static uk.gov.pay.api.utils.mocks.AgreementFromLedgerFixture.AgreementFromLedgerFixtureBuilder.anAgreementFromLedgerWithoutPaymentInstrumentFixture;
 import static uk.gov.pay.api.utils.mocks.CreateAgreementRequestParams.CreateAgreementRequestParamsBuilder.aCreateAgreementRequestParams;
 
 public class CreateAgreementIT extends PaymentResourceITestBase {
@@ -39,8 +39,9 @@ public class CreateAgreementIT extends PaymentResourceITestBase {
                 .withDescription(DESCRIPTION)
                 .withUserIdentifier(USER_IDENTIFIER)
                 .build();
-        var agreementFixture = anAgreementFromLedgerFixture()
+        var agreementFixture = anAgreementFromLedgerWithoutPaymentInstrumentFixture()
                 .withExternalId(VALID_AGREEMENT_ID)
+                .withPaymentInstrument(null)
                 .build();
         connectorMockClient.respondOk_whenCreateAgreement(GATEWAY_ACCOUNT_ID, createAgreementRequestParams);
         ledgerMockClient.respondWithAgreement(VALID_AGREEMENT_ID, agreementFixture);
@@ -117,8 +118,9 @@ public class CreateAgreementIT extends PaymentResourceITestBase {
 
     @Test
     public void shouldReturn201WhenWhenOptionalUserIdentifierIsNull() throws JsonProcessingException {
-        var agreementFixture = anAgreementFromLedgerFixture()
+        var agreementFixture = anAgreementFromLedgerWithoutPaymentInstrumentFixture()
                 .withExternalId(VALID_AGREEMENT_ID)
+                .withPaymentInstrument(null)
                 .build();
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
