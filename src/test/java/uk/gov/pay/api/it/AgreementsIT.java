@@ -12,7 +12,8 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
-import static uk.gov.pay.api.utils.mocks.AgreementFromLedgerFixture.AgreementFromLedgerFixtureBuilder.anAgreementFromLedgerFixture;
+import static uk.gov.pay.api.utils.mocks.AgreementFromLedgerFixture.AgreementFromLedgerFixtureBuilder.anAgreementFromLedgerWithPaymentInstrumentFixture;
+import static uk.gov.pay.api.utils.mocks.AgreementFromLedgerFixture.AgreementFromLedgerFixtureBuilder.anAgreementFromLedgerWithoutPaymentInstrumentFixture;
 
 public class AgreementsIT extends PaymentResourceITestBase {
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
@@ -27,7 +28,7 @@ public class AgreementsIT extends PaymentResourceITestBase {
 
     @Test
     public void getAgreementFromLedger() throws JsonProcessingException {
-        var fixture = anAgreementFromLedgerFixture()
+        var fixture = anAgreementFromLedgerWithoutPaymentInstrumentFixture()
                 .withExternalId(agreementId)
                 .build();
         ledgerMockClient.respondWithAgreement(agreementId, fixture);
@@ -60,12 +61,12 @@ public class AgreementsIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchAgreementsFromLedger() {
-        var fixture1 = anAgreementFromLedgerFixture()
+    public void searchAgreementsFromLedger() throws JsonProcessingException {
+        var agreementWithPaymentInstrument = anAgreementFromLedgerWithPaymentInstrumentFixture()
                 .withExternalId(agreementId)
                 .build();
 
-        var fixture2 = anAgreementFromLedgerFixture()
+        var agreementWithoutPaymentInstrument = anAgreementFromLedgerWithoutPaymentInstrumentFixture()
                 .withExternalId("another-agreement-id")
                 .withServiceId("service-2")
                 .withReference("ref-2")
@@ -74,7 +75,7 @@ public class AgreementsIT extends PaymentResourceITestBase {
                 .withCreatedDate("2022-07-27T12:30:00Z")
                 .build();
 
-        ledgerMockClient.respondWithSearchAgreements(GATEWAY_ACCOUNT_ID, fixture1, fixture2);
+        ledgerMockClient.respondWithSearchAgreements(GATEWAY_ACCOUNT_ID, agreementWithPaymentInstrument, agreementWithoutPaymentInstrument);
 
         given().port(app.getLocalPort())
                 .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
@@ -89,16 +90,41 @@ public class AgreementsIT extends PaymentResourceITestBase {
                 .body("count", is(2))
                 .body("page", is(3))
                 .body("results.size()", is(2))
-                .body("results[0].agreement_id", is(fixture1.getExternalId()))
-                .body("results[0].reference", is(fixture1.getReference()))
-                .body("results[0].description", is(fixture1.getDescription()))
-                .body("results[0].status", is(fixture1.getStatus().toLowerCase()))
-                .body("results[0].created_date", is(fixture1.getCreatedDate()))
-                .body("results[1].agreement_id", is(fixture2.getExternalId()))
-                .body("results[1].reference", is(fixture2.getReference()))
-                .body("results[1].description", is(fixture2.getDescription()))
-                .body("results[1].status", is(fixture2.getStatus().toLowerCase()))
-                .body("results[1].created_date", is(fixture2.getCreatedDate()));
+                .body("results[0].agreement_id", is(agreementWithPaymentInstrument.getExternalId()))
+                .body("results[0].reference", is(agreementWithPaymentInstrument.getReference()))
+                .body("results[0].description", is(agreementWithPaymentInstrument.getDescription()))
+                .body("results[0].status", is(agreementWithPaymentInstrument.getStatus().toLowerCase()))
+                .body("results[0].created_date", is(agreementWithPaymentInstrument.getCreatedDate()))
+                .body("results[0].payment_instrument.type", is(agreementWithPaymentInstrument.getPaymentInstrument().getType()))
+                .body("results[0].payment_instrument.card_details.card_type",
+                        is(agreementWithPaymentInstrument.getPaymentInstrument().getCardDetails().getCardType()))
+                .body("results[0].payment_instrument.card_details.card_brand",
+                        is(agreementWithPaymentInstrument.getPaymentInstrument().getCardDetails().getCardBrand()))
+                .body("results[0].payment_instrument.card_details.cardholder_name",
+                        is(agreementWithPaymentInstrument.getPaymentInstrument().getCardDetails().getCardHolderName()))
+                .body("results[0].payment_instrument.card_details.billing_address.line1",
+                        is(agreementWithPaymentInstrument.getPaymentInstrument().getCardDetails().getBillingAddress().get().getLine1()))
+                .body("results[0].payment_instrument.card_details.billing_address.line2",
+                        is(agreementWithPaymentInstrument.getPaymentInstrument().getCardDetails().getBillingAddress().get().getLine2()))
+                .body("results[0].payment_instrument.card_details.billing_address.city",
+                        is(agreementWithPaymentInstrument.getPaymentInstrument().getCardDetails().getBillingAddress().get().getCity()))
+                .body("results[0].payment_instrument.card_details.billing_address.postcode",
+                        is(agreementWithPaymentInstrument.getPaymentInstrument().getCardDetails().getBillingAddress().get().getPostcode()))
+                .body("results[0].payment_instrument.card_details.billing_address.country",
+                        is(agreementWithPaymentInstrument.getPaymentInstrument().getCardDetails().getBillingAddress().get().getCountry()))
+                .body("results[0].payment_instrument.card_details.expiry_date",
+                        is(agreementWithPaymentInstrument.getPaymentInstrument().getCardDetails().getExpiryDate()))
+                .body("results[0].payment_instrument.card_details.first_digits_card_number",
+                        is(agreementWithPaymentInstrument.getPaymentInstrument().getCardDetails().getFirstDigitsCardNumber()))
+                .body("results[0].payment_instrument.card_details.last_digits_card_number",
+                        is(agreementWithPaymentInstrument.getPaymentInstrument().getCardDetails().getLastDigitsCardNumber()))
+                .body("results[0].payment_instrument.created_date", is(agreementWithPaymentInstrument.getPaymentInstrument().getCreatedDate()))
+                .body("results[1].agreement_id", is(agreementWithoutPaymentInstrument.getExternalId()))
+                .body("results[1].reference", is(agreementWithoutPaymentInstrument.getReference()))
+                .body("results[1].description", is(agreementWithoutPaymentInstrument.getDescription()))
+                .body("results[1].status", is(agreementWithoutPaymentInstrument.getStatus().toLowerCase()))
+                .body("results[1].created_date", is(agreementWithoutPaymentInstrument.getCreatedDate()))
+                .body("results[1]", not(hasKey("payment_instrument")));
     }
 
     @Test

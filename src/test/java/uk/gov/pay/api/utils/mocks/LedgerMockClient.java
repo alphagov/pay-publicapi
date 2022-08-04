@@ -205,7 +205,7 @@ public class LedgerMockClient {
                         .withBody(body)));
     }
 
-    public void respondWithSearchAgreements(String gatewayAccountId, AgreementFromLedgerFixture... agreements) {
+    public void respondWithSearchAgreements(String gatewayAccountId, AgreementFromLedgerFixture... agreements) throws JsonProcessingException {
         var links = Map.of(
                 "first_page", new Link("http://server:port/first-link?page=1"),
                 "prev_page", new Link("http://server:port/prev-link?page=2"),
@@ -214,12 +214,12 @@ public class LedgerMockClient {
                 "next_page", new Link("http://server:port/next-link?page=4")
         );
 
-        var jsonStringBuilder = new JsonStringBuilder()
-                .add("total", 9)
-                .add("count", 2)
-                .add("page", 3)
-                .add("results", List.copyOf(Arrays.asList(agreements)))
-                .add("_links", links);
+        var responseBody = new HashMap<String, Object>();
+        responseBody.put("total", 9);
+        responseBody.put("count", 2);
+        responseBody.put("page", 3);
+        responseBody.put("results", List.copyOf(Arrays.asList(agreements)));
+        responseBody.put("_links", links);
 
         ledgerMock.stubFor(get(urlPathEqualTo("/v1/agreement"))
                 .withQueryParam("page", equalTo("3"))
@@ -230,7 +230,7 @@ public class LedgerMockClient {
                 .willReturn(aResponse()
                         .withStatus(OK_200)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                        .withBody(jsonStringBuilder.build())));
+                        .withBody(mapper.writeValueAsString(responseBody))));
     }
 
     public void respondAgreementNotFound(String agreementId) {

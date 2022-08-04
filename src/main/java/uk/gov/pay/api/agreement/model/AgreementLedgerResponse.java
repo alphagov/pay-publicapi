@@ -56,12 +56,25 @@ public class AgreementLedgerResponse {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-    public class PaymentInstrumentLedgerResponse {
+    public static class PaymentInstrumentLedgerResponse {
+
         private String externalId;
         private String agreementExternalId;
         private CardDetails cardDetails;
         private String createdDate;
         private String type;
+
+        public PaymentInstrumentLedgerResponse() {
+            // Janet Jackson
+        }
+        
+        private PaymentInstrumentLedgerResponse(Builder builder) {
+            this.externalId = builder.externalId;
+            this.agreementExternalId = builder.agreementExternalId;
+            this.cardDetails = builder.cardDetails;
+            this.createdDate = builder.createdDate;
+            this.type = builder.type;
+        }
 
         public String getExternalId() {
             return externalId;
@@ -82,5 +95,45 @@ public class AgreementLedgerResponse {
         public String getType() {
             return type;
         }
+
+        public static class Builder {
+            private String externalId;
+            private String agreementExternalId;
+            private CardDetails cardDetails;
+            private String createdDate;
+            private String type;
+
+            public PaymentInstrumentLedgerResponse build() {
+                return new PaymentInstrumentLedgerResponse(this);
+            }
+
+            public Builder withExternalId(String externalId) {
+                this.externalId = externalId;
+                return this;
+            }
+
+            public Builder withAgreementExternalId(String agreementExternalId) {
+                this.agreementExternalId = agreementExternalId;
+                return this;
+            }
+
+            public Builder withCardDetails(CardDetails cardDetails) {
+                this.cardDetails = cardDetails;
+                return this;
+            }
+
+            public Builder withCreatedDate(String createdDate) {
+                this.createdDate = createdDate;
+                return this;
+            }
+
+            public Builder withType(String type) {
+                this.type = type;
+                return this;
+            }
+
+        }
+
     }
+
 }

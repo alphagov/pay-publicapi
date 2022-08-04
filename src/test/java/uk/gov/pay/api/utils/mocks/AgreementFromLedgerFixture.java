@@ -3,6 +3,8 @@ package uk.gov.pay.api.utils.mocks;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import uk.gov.pay.api.agreement.model.AgreementLedgerResponse;
+import uk.gov.pay.api.model.Address;
+import uk.gov.pay.api.model.CardDetails;
 
 import java.time.ZonedDateTime;
 
@@ -58,7 +60,7 @@ public class AgreementFromLedgerFixture {
     }
 
     public static final class AgreementFromLedgerFixtureBuilder {
-        private String externalId = "an-external-id";
+        private String externalId = "agreement-external-id";
         private String serviceId = "a-service-id";
         private String reference = "valid-reference";
         private String description = "An agreement description";
@@ -67,10 +69,23 @@ public class AgreementFromLedgerFixture {
         private AgreementLedgerResponse.PaymentInstrumentLedgerResponse paymentInstrument;
 
         private AgreementFromLedgerFixtureBuilder() {
+            paymentInstrument = new AgreementLedgerResponse.PaymentInstrumentLedgerResponse.Builder()
+                    .withExternalId("payment-instrument-external-id")
+                    .withAgreementExternalId("agreement-external-id")
+                    .withCreatedDate("2022-08-02T15:20:00.000Z")
+                    .withType("card")
+                    .withCardDetails(new CardDetails("1234", "123456", "Rio Curring", "12/27",
+                            new Address("Line 1", "Line 2", "E1 8QS", "London", "GB"),
+                            "Mastercard", "debit"))
+                    .build();
         }
 
-        public static AgreementFromLedgerFixtureBuilder anAgreementFromLedgerFixture() {
+        public static AgreementFromLedgerFixtureBuilder anAgreementFromLedgerWithPaymentInstrumentFixture() {
             return new AgreementFromLedgerFixtureBuilder();
+        }
+
+        public static AgreementFromLedgerFixtureBuilder anAgreementFromLedgerWithoutPaymentInstrumentFixture() {
+            return new AgreementFromLedgerFixtureBuilder().withPaymentInstrument(null);
         }
 
         public AgreementFromLedgerFixtureBuilder withExternalId(String externalId) {
