@@ -5,6 +5,7 @@ import io.restassured.http.ContentType;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
+import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 import uk.gov.pay.api.utils.mocks.LedgerMockClient;
 
 import static io.restassured.RestAssured.given;
@@ -16,8 +17,10 @@ import static uk.gov.pay.api.utils.mocks.AgreementFromLedgerFixture.AgreementFro
 import static uk.gov.pay.api.utils.mocks.AgreementFromLedgerFixture.AgreementFromLedgerFixtureBuilder.anAgreementFromLedgerWithoutPaymentInstrumentFixture;
 
 public class AgreementsIT extends PaymentResourceITestBase {
-    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
-    private LedgerMockClient ledgerMockClient = new LedgerMockClient(ledgerMock);
+
+    private final PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    private final LedgerMockClient ledgerMockClient = new LedgerMockClient(ledgerMock);
+    private final ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
 
     private final String agreementId = "an-agreement-id";
 
@@ -139,6 +142,55 @@ public class AgreementsIT extends PaymentResourceITestBase {
                 .contentType(ContentType.JSON)
                 .body("code", is("P2401"))
                 .body("description", is("Invalid parameters: status. See Public API documentation for the correct data formats"));
+    }
+
+    @Test
+    public void cancelAgreement() {
+        connectorMockClient.respondOk_whenCancelAgreement(agreementId, GATEWAY_ACCOUNT_ID);
+        given().port(app.getLocalPort())
+                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .post(AGREEMENTS_PATH + agreementId + "/cancel")
+                .then()
+                .statusCode(204);
+    }
+
+    @Test
+    public void cancelAgreementReturnsErrorWhenConnectorRespondsAgreementNotFound() {
+        connectorMockClient.respondAgreementNotFound_WhenCancelAgreement(agreementId, GATEWAY_ACCOUNT_ID, "error message");
+        given().port(app.getLocalPort())
+                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .post(AGREEMENTS_PATH + agreementId + "/cancel")
+                .then()
+                .statusCode(404)
+                .contentType(ContentType.JSON)
+                .body("code", is("P2500"))
+                .body("description", is("Not found"));
+    }
+
+    @Test
+    public void cancelAgreementReturnsErrorWhenConnectorRespondsAgreementNotActive() {
+        connectorMockClient.respondAgreementNotActive_WhenCancelAgreement(agreementId, GATEWAY_ACCOUNT_ID, "error message");
+        given().port(app.getLocalPort())
+                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .post(AGREEMENTS_PATH + agreementId + "/cancel")
+                .then()
+                .statusCode(400)
+                .contentType(ContentType.JSON)
+                .body("code", is("P2501"))
+                .body("description", is("Cancellation of agreement failed"));
+    }
+
+    @Test
+    public void cancelAgreementReturnsErrorWhenConnectorRespondsWithError() {
+        connectorMockClient.respondError_WhenCancelAgreement(agreementId, GATEWAY_ACCOUNT_ID, "error message");
+        given().port(app.getLocalPort())
+                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .post(AGREEMENTS_PATH + agreementId + "/cancel")
+                .then()
+                .statusCode(500)
+                .contentType(ContentType.JSON)
+                .body("code", is("P2598"))
+                .body("description", is("Downstream system error"));
     }
 
 }

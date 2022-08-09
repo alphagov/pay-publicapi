@@ -83,7 +83,7 @@ public class AgreementsApiResource {
 
     @POST
     @Path("/v1/agreements/{agreementId}/cancel")
-    @Consumes("application/json")
+    @Produces(APPLICATION_JSON)
     public Response createAgreement(@Parameter(hidden = true) @Auth Account account, @PathParam("agreementId") String agreementId) {
         agreementService.cancel(account, agreementId);
         return Response.status(SC_NO_CONTENT).build();

@@ -22,7 +22,6 @@ public class CancelAgreementExceptionMapper implements ExceptionMapper<CancelAgr
 
     @Override
     public Response toResponse(CancelAgreementException exception) {
-
         int errorStatus = exception.getErrorStatus();
         RequestError requestError;
         Response.Status status;
