@@ -25,7 +25,8 @@ public abstract class BaseConnectorMockClient {
     static String CONNECTOR_MOCK_CHARGES_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/charges";
     static String CONNECTOR_MOCK_TELEPHONE_CHARGES_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/telephone-charges";
     static String CONNECTOR_MOCK_CHARGE_PATH = CONNECTOR_MOCK_CHARGES_PATH + "/%s";
-    static String CONNECTOR_MOCK_AGREEMENT_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/agreements";
+    static String CONNECTOR_MOCK_AGREEMENTS_PATH = CONNECTOR_MOCK_ACCOUNTS_PATH + "/agreements";
+    static String CONNECTOR_MOCK_AGREEMENT_PATH = CONNECTOR_MOCK_AGREEMENTS_PATH + "/%s";
     static String CONNECTOR_MOCK_AUTHORISATION_PATH = "/v1/api/charges/authorise";
 
     WireMockClassRule wireMockClassRule;
@@ -145,7 +146,7 @@ public abstract class BaseConnectorMockClient {
     public void verifyCreateAgreementConnectorRequest(String gatewayAccountId, String payload) {
         wireMockClassRule.getAllServeEvents();
         wireMockClassRule.verify(1,
-                postRequestedFor(urlEqualTo(format(CONNECTOR_MOCK_AGREEMENT_PATH, gatewayAccountId)))
+                postRequestedFor(urlEqualTo(format(CONNECTOR_MOCK_AGREEMENTS_PATH, gatewayAccountId)))
                         .withRequestBody(equalToJson(payload, true, true)));
     }
 }

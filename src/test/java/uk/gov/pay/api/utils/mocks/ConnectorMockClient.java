@@ -53,6 +53,7 @@ import static uk.gov.pay.api.it.fixtures.PaymentSingleResultBuilder.aSuccessfulS
 import static uk.gov.pay.api.utils.mocks.AgreementResponseFromConnector.AgreementResponseFromConnectorBuilder.aCreateAgreementResponseFromConnector;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.ACCOUNT_NOT_LINKED_WITH_PSP;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.AGREEMENT_NOT_ACTIVE;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.AGREEMENT_NOT_FOUND;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.AUTHORISATION_API_NOT_ALLOWED;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.GENERIC;
@@ -345,6 +346,21 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withBody(buildAgreementResponse(responseFromConnector.build()))); 
     }
 
+    public void respondOk_whenCancelAgreement(String agreementId, String accountId) {
+        whenCancelAgreement(agreementId, accountId, aResponse().withStatus(NO_CONTENT_204));
+    }
+
+    public void respondAgreementNotFound_WhenCancelAgreement(String agreementId, String accountId, String errorMsg) {
+        respond_WhenCancelAgreement(agreementId, accountId, errorMsg, NOT_FOUND_404, AGREEMENT_NOT_FOUND);
+    }
+
+    public void respondAgreementNotActive_WhenCancelAgreement(String agreementId, String accountId, String errorMsg) {
+        respond_WhenCancelAgreement(agreementId, accountId, errorMsg, BAD_REQUEST_400, AGREEMENT_NOT_ACTIVE);
+    }
+
+    public void respondError_WhenCancelAgreement(String agreementId, String accountId, String errorMsg) {
+        respond_WhenCancelAgreement(agreementId, accountId, errorMsg, INTERNAL_SERVER_ERROR_500, GENERIC);
+    }
 
     public void mockCreateTelephoneCharge(String gatewayAccountId, ResponseDefinitionBuilder responseDefinitionBuilder) {
         wireMockClassRule.stubFor(post(urlPathEqualTo(format(CONNECTOR_MOCK_TELEPHONE_CHARGES_PATH, gatewayAccountId)))
@@ -367,7 +383,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     }
 
     public void respondBadRequest_whenCreateAgreement(String gatewayAccountId, String errorMsg) {
-        mockCreateAgreement(gatewayAccountId, withStatusAndErrorMessage(INTERNAL_SERVER_ERROR_500, errorMsg, GENERIC));
+        mockCreateAgreement(gatewayAccountId, withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg, GENERIC));
     }
 
     public void respondBadRequest_whenCreateChargeWithAgreementNotFound(String gatewayAccountId, String agreementId, String errorMsg) {
@@ -529,14 +545,22 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         whenCaptureCharge(paymentId, accountId, withStatusAndErrorMessage(status, errorMessage, GENERIC, null));
     }
 
+    public void respond_WhenCancelAgreement(String paymentId, String accountId, String errorMessage, int status, ErrorIdentifier errorIdentifier) {
+        whenCancelAgreement(paymentId, accountId, withStatusAndErrorMessage(status, errorMessage, errorIdentifier, null));
+    }
+
     public void mockCreateCharge(String gatewayAccountId, ResponseDefinitionBuilder responseDefinitionBuilder) {
         wireMockClassRule.stubFor(post(urlPathEqualTo(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId)))
                 .withHeader(CONTENT_TYPE, matching(APPLICATION_JSON)).willReturn(responseDefinitionBuilder));
     }
     
     public void mockCreateAgreement(String gatewayAccountId, ResponseDefinitionBuilder responseDefinitionBuilder) {
-        wireMockClassRule.stubFor(post(urlPathEqualTo(format(CONNECTOR_MOCK_AGREEMENT_PATH, gatewayAccountId)))
+        wireMockClassRule.stubFor(post(urlPathEqualTo(format(CONNECTOR_MOCK_AGREEMENTS_PATH, gatewayAccountId)))
                 .withHeader(CONTENT_TYPE, matching(APPLICATION_JSON)).willReturn(responseDefinitionBuilder));
+    }
+
+    public void whenCancelAgreement(String agreementId, String gatewayAccountId, ResponseDefinitionBuilder responseDefinitionBuilder) {
+        wireMockClassRule.stubFor(post(urlPathEqualTo(connectorCancelAgreementPathFor(agreementId, gatewayAccountId))).willReturn(responseDefinitionBuilder));
     }
 
     private void whenCreateRefund(String gatewayAccountId, String chargeId, ResponseDefinitionBuilder response) {
@@ -573,6 +597,10 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     private String connectorCaptureChargePathFor(String paymentId, String accountId) {
         return format(CONNECTOR_MOCK_CHARGE_PATH + "/capture", accountId, paymentId);
+    }
+
+    private String connectorCancelAgreementPathFor(String agreementId, String accountId) {
+        return format(CONNECTOR_MOCK_AGREEMENT_PATH + "/cancel", accountId, agreementId);
     }
 
     private ResponseDefinitionBuilder withStatusAndErrorMessage(int statusCode, String errorMsg, ErrorIdentifier errorIdentifier) {
