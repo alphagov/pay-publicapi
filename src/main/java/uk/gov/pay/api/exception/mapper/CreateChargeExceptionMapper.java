@@ -12,6 +12,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static uk.gov.pay.api.model.CreateCardPaymentRequest.SET_UP_AGREEMENT_FIELD_NAME;
 import static uk.gov.pay.api.model.RequestError.Code.ACCOUNT_DISABLED;
 import static uk.gov.pay.api.model.RequestError.Code.ACCOUNT_NOT_LINKED_WITH_PSP;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_ACCOUNT_ERROR;
@@ -19,6 +20,7 @@ import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_AGREEMENT_ID
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_AUTHORISATION_API_NOT_ENABLED;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_CONNECTOR_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_MOTO_NOT_ENABLED;
+import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_UNEXPECTED_FIELD_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.GENERIC_MISSING_FIELD_ERROR_MESSAGE_FROM_CONNECTOR;
 import static uk.gov.pay.api.model.RequestError.Code.GENERIC_UNEXPECTED_FIELD_ERROR_MESSAGE_FROM_CONNECTOR;
@@ -86,6 +88,10 @@ public class CreateChargeExceptionMapper implements ExceptionMapper<CreateCharge
                 case UNEXPECTED_ATTRIBUTE:
                     statusCode = HttpStatus.BAD_REQUEST_400;
                     requestError = aRequestError(GENERIC_UNEXPECTED_FIELD_ERROR_MESSAGE_FROM_CONNECTOR, exception.getConnectorErrorMessage());
+                    break;
+                case INCORRECT_AUTHORISATION_MODE_FOR_SAVE_PAYMENT_INSTRUMENT_TO_AGREEMENT:
+                    statusCode = HttpStatus.BAD_REQUEST_400;
+                    requestError = aRequestError(CREATE_PAYMENT_UNEXPECTED_FIELD_ERROR, SET_UP_AGREEMENT_FIELD_NAME);
                     break;
                 case INVALID_ATTRIBUTE_VALUE:
                     statusCode = HttpStatus.UNPROCESSABLE_ENTITY_422;

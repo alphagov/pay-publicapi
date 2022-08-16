@@ -57,6 +57,7 @@ import static uk.gov.service.payments.commons.model.ErrorIdentifier.AGREEMENT_NO
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.AGREEMENT_NOT_FOUND;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.AUTHORISATION_API_NOT_ALLOWED;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.GENERIC;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.INCORRECT_AUTHORISATION_MODE_FOR_SAVE_PAYMENT_INSTRUMENT_TO_AGREEMENT;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.MOTO_NOT_ALLOWED;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.REFUND_AMOUNT_AVAILABLE_MISMATCH;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.REFUND_NOT_AVAILABLE;
@@ -386,8 +387,12 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         mockCreateAgreement(gatewayAccountId, withStatusAndErrorMessage(BAD_REQUEST_400, errorMsg, GENERIC));
     }
 
-    public void respondBadRequest_whenCreateChargeWithAgreementNotFound(String gatewayAccountId, String agreementId, String errorMsg) {
+    public void respondAgreementNotFound_whenCreateCharge(String gatewayAccountId, String agreementId, String errorMsg) {
         mockCreateCharge(gatewayAccountId, withStatusAndErrorMessage(NOT_FOUND_404, format(errorMsg, agreementId), AGREEMENT_NOT_FOUND));
+    }
+
+    public void respondIncorrectAuthorisationModeForSavePaymentInstrumentToAgreement_whenCreateCharge(String gatewayAccountId, String agreementId, String errorMsg) {
+        mockCreateCharge(gatewayAccountId, withStatusAndErrorMessage(BAD_REQUEST_400, format(errorMsg, agreementId), INCORRECT_AUTHORISATION_MODE_FOR_SAVE_PAYMENT_INSTRUMENT_TO_AGREEMENT));
     }
 
     public void respondPreconditionFailed_whenCreateRefund(String gatewayAccountId, String errorMsg, String chargeId) {
