@@ -117,7 +117,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createAChargeWithAgreementIdAndSaveAgreement() {
+    public void createAChargeWithSetUpAgreementAndSaveAgreement() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
         CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
@@ -137,7 +137,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void shouldReturn422WhenCreateAChargeIsCalledWithTooShortAgreementId() {
+    public void createPayment_responseWith422_whenAgreementIdTooShort() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
         CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
@@ -157,7 +157,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void shouldReturn422WhencreateAChargeIsCalledWithTooLongAgreementId() {
+    public void createPayment_responseWith422_whenAgreementIdTooLong() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
         CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
@@ -177,7 +177,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createAChargeWithMetadataAgreementNotFound() throws IOException {
+    public void createPayment_respondWith400_whenAgreementNotFound() throws IOException {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
         CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
@@ -187,7 +187,7 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .withReturnUrl(RETURN_URL)
                 .withSetUpAgreement(VALID_AGREEMENT_ID)
                 .build();
-        connectorMockClient.respondBadRequest_whenCreateChargeWithAgreementNotFound(GATEWAY_ACCOUNT_ID, VALID_AGREEMENT_ID, "Agreement with ID [%s] not found.");
+        connectorMockClient.respondAgreementNotFound_whenCreateCharge(GATEWAY_ACCOUNT_ID, VALID_AGREEMENT_ID, "Agreement with ID [%s] not found.");
 
         InputStream body = postPaymentResponse(paymentPayload(createChargeRequestParams))
                 .statusCode(HttpStatus.SC_BAD_REQUEST)
@@ -199,6 +199,53 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
                 .assertThat("$.field", is("set_up_agreement"))
                 .assertThat("$.code", is("P0103"))
                 .assertThat("$.description", is("Invalid attribute value: set_up_agreement. Agreement ID does not exist"));
+
+        connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
+    }
+    
+    @Test
+    public void createPayment_responseWith400_whenIncorrectAuthorisationModeForSavePaymentInstrumentToAgreement() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+
+        CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
+                .withAmount(100)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withAuthorisationMode(AuthorisationMode.AGREEMENT)
+                .withSetUpAgreement(VALID_AGREEMENT_ID)
+                .build();
+        connectorMockClient.respondIncorrectAuthorisationModeForSavePaymentInstrumentToAgreement_whenCreateCharge(GATEWAY_ACCOUNT_ID, VALID_AGREEMENT_ID, "error message from connector");
+
+        postPaymentResponse(paymentPayload(createChargeRequestParams))
+                .statusCode(400)
+                .contentType(JSON)
+                .body("field", is(nullValue()))
+                .body("code", is("P0104"))
+                .body("description", is("Unexpected attribute: set_up_agreement"));
+
+        connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
+    }
+
+    @Test
+    public void createPayment_responseWith400_whenIncorrectAuthorisationModeForSavePaymentInstrumentToAgreementWithAgreementId() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+
+        CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
+                .withAmount(100)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withAuthorisationMode(AuthorisationMode.AGREEMENT)
+                .withAgreementId(VALID_AGREEMENT_ID)
+                .withSetUpAgreement(VALID_AGREEMENT_ID)
+                .build();
+        connectorMockClient.respondIncorrectAuthorisationModeForSavePaymentInstrumentToAgreement_whenCreateCharge(GATEWAY_ACCOUNT_ID, VALID_AGREEMENT_ID, "error message from connector");
+
+        postPaymentResponse(paymentPayload(createChargeRequestParams))
+                .statusCode(400)
+                .contentType(JSON)
+                .body("field", is(nullValue()))
+                .body("code", is("P0104"))
+                .body("description", is("Unexpected attribute: set_up_agreement"));
 
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
     }
@@ -552,7 +599,6 @@ public class CreatePaymentIT extends PaymentResourceITestBase {
 
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, params);
     }
-
 
     @Test
     public void createPayment_withAllFieldsUpToMaxLengthBoundaries_shouldBeAccepted() {
