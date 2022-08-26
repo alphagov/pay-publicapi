@@ -1816,8 +1816,7 @@
             "description" : "Amount in pence. Total amount still available before issuing the refund",
             "example" : 200000,
             "maximum" : 10000000,
-            "minimum" : 1,
-            "readOnly" : true
+            "minimum" : 1
           }
         },
         "required" : [ "amount" ]

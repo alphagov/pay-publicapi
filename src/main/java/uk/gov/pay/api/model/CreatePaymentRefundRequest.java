@@ -5,8 +5,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Optional;
 
-import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
-
 @Schema(name = "PaymentRefundRequest", description = "The Payment Refund Request Payload")
 public class CreatePaymentRefundRequest {
 
@@ -18,7 +16,7 @@ public class CreatePaymentRefundRequest {
     private int amount;
     @JsonProperty("refund_amount_available")
     @Schema(description = "Amount in pence. Total amount still available before issuing the refund", required = false,
-            example = "200000", accessMode = READ_ONLY, minimum = "1", maximum = "10000000")
+            example = "200000", minimum = "1", maximum = "10000000")
     private Integer refundAmountAvailable;
 
     public CreatePaymentRefundRequest() {
