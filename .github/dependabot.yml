@@ -20,6 +20,16 @@ updates:
   - dependencies
   - govuk-pay
   - java
+- package-ecosystem: docker
+  directory: "/m1"
+  schedule:
+    interval: daily
+    time: "03:00"
+  open-pull-requests-limit: 10
+  labels:
+  - dependencies
+  - govuk-pay
+  - java
 - package-ecosystem: github-actions
   directory: "/"
   schedule:
