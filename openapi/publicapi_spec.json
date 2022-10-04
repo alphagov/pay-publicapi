@@ -1211,7 +1211,7 @@
           "created_date" : {
             "type" : "string",
             "description" : "The date you created the payment.",
-            "example" : "2016-01-21T17:15:00Z"
+            "example" : "2016-01-21T17:15:00.000Z"
           },
           "delayed_capture" : {
             "type" : "boolean",
@@ -1295,7 +1295,7 @@
           "created_date" : {
             "type" : "string",
             "description" : "The date and time the user's bank told GOV.UK Pay about this dispute.",
-            "example" : "2022-07-28T16:43:000Z",
+            "example" : "2022-07-28T16:43:00.000Z",
             "readOnly" : true
           },
           "dispute_id" : {
@@ -1307,7 +1307,7 @@
           "evidence_due_date" : {
             "type" : "string",
             "description" : "The deadline for submitting your supporting evidence. This value uses Coordinated Universal Time (UTC) and ISO 8601 format",
-            "example" : "2022-07-28T16:43:000Z",
+            "example" : "2022-07-28T16:43:00.000Z",
             "readOnly" : true
           },
           "fee" : {
@@ -1463,7 +1463,7 @@
           },
           "created_date" : {
             "type" : "string",
-            "example" : "2016-01-21T17:15:000Z",
+            "example" : "2016-01-21T17:15:00.000Z",
             "readOnly" : true
           },
           "delayed_capture" : {
@@ -1601,7 +1601,7 @@
           },
           "created_date" : {
             "type" : "string",
-            "example" : "2016-01-21T17:15:000Z",
+            "example" : "2016-01-21T17:15:00.000Z",
             "readOnly" : true
           },
           "delayed_capture" : {
@@ -1857,7 +1857,7 @@
           "capture_submit_time" : {
             "type" : "string",
             "description" : "Date and time capture request has been submitted. May be null if capture request was not immediately acknowledged by payment gateway.",
-            "example" : "2016-01-21T17:15:000Z",
+            "example" : "2016-01-21T17:15:00.000Z",
             "readOnly" : true
           },
           "captured_date" : {

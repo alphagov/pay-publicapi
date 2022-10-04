@@ -43,7 +43,7 @@ public abstract class Payment {
         this.createdDate = createdDate;
     }
 
-    @Schema(example = "2016-01-21T17:15:000Z", accessMode = READ_ONLY)
+    @Schema(example = "2016-01-21T17:15:00.000Z", accessMode = READ_ONLY)
     public String getCreatedDate() {
         return createdDate;
     }

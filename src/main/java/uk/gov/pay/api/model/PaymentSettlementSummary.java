@@ -30,7 +30,7 @@ public class PaymentSettlementSummary {
     }
 
     @Schema(description = "Date and time capture request has been submitted. May be null if capture request was not immediately acknowledged by payment gateway.",
-            example = "2016-01-21T17:15:000Z", accessMode = READ_ONLY)
+            example = "2016-01-21T17:15:00.000Z", accessMode = READ_ONLY)
     public String getCaptureSubmitTime() {
         return captureSubmitTime;
     }
