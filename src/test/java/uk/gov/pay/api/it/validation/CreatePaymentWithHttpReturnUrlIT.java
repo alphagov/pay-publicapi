@@ -1,7 +1,6 @@
 package uk.gov.pay.api.it.validation;
 
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
-import com.spotify.docker.client.exceptions.DockerException;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 import io.restassured.response.ValidatableResponse;
 import org.junit.Before;
@@ -33,15 +32,7 @@ public class CreatePaymentWithHttpReturnUrlIT {
     private static final String PAYMENTS_PATH = "/v1/payments/";
 
     @ClassRule
-    public static RedisDockerRule redisDockerRule;
-
-    static {
-        try {
-            redisDockerRule = new RedisDockerRule();
-        } catch (DockerException e) {
-            e.printStackTrace();
-        }
-    }
+    public static RedisDockerRule redisDockerRule = new RedisDockerRule();
 
     private static final int CONNECTOR_PORT = findFreePort();
     private static final int PUBLIC_AUTH_PORT = findFreePort();
@@ -62,8 +53,8 @@ public class CreatePaymentWithHttpReturnUrlIT {
             config("allowHttpForReturnUrl", "true")
     );
 
-    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
-    private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
+    private final PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    private final ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
     
     @Before
     public void setup() {
