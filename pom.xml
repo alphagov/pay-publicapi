@@ -15,7 +15,6 @@
         <hamcrest.version>2.2</hamcrest.version>
         <jackson.version>2.13.4</jackson.version>
         <logback.version>1.2.11</logback.version>
-        <docker-client.version>8.16.0</docker-client.version>
         <pay-java-commons.version>1.0.20221024133103</pay-java-commons.version>
         <junit5.version>5.9.1</junit5.version>
         <pact.version>3.6.15</pact.version>
@@ -230,12 +229,6 @@
             <groupId>au.com.dius</groupId>
             <artifactId>pact-jvm-consumer-junit_2.12</artifactId>
             <version>${pact.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.spotify</groupId>
-            <artifactId>docker-client</artifactId>
-            <version>${docker-client.version}</version>
             <scope>test</scope>
         </dependency>
         <!-- swagger -->
