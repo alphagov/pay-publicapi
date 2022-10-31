@@ -21,13 +21,13 @@ public class RedisContainer {
                     .waitingFor(Wait.forLogMessage(".*Ready to accept connections.*", 1));
 
             REDIS_CONTAINER.start();
-            logger.info(format("Redis container started, mapped %o to host port %o", PORT, REDIS_CONTAINER.getMappedPort(6379)));
+            logger.info(format("Redis container started, mapped %o to host port %o", PORT, REDIS_CONTAINER.getMappedPort(PORT)));
         }
         return REDIS_CONTAINER;
     }
     
     static String getConnectionUrl() {
-        return format("%s:%s", REDIS_CONTAINER.getHost(), REDIS_CONTAINER.getMappedPort(6379)) ;
+        return format("%s:%s", REDIS_CONTAINER.getHost(), REDIS_CONTAINER.getMappedPort(PORT)) ;
     }
 
     static void clearRedisCache() {
