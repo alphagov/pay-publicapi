@@ -3,7 +3,6 @@ package uk.gov.pay.api.it;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.spotify.docker.client.exceptions.DockerException;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 import io.restassured.response.ValidatableResponse;
 import org.junit.Before;
@@ -35,15 +34,7 @@ public abstract class PaymentResourceITestBase {
     protected static final String CONNECTOR_ONLY_STRATEGY = "connector-only";
 
     @ClassRule
-    public static RedisDockerRule redisDockerRule;
-
-    static {
-        try {
-            redisDockerRule = new RedisDockerRule();
-        } catch (DockerException e) {
-            e.printStackTrace();
-        }
-    }
+    public static RedisDockerRule redisDockerRule = new RedisDockerRule();
 
     private static final int CONNECTOR_PORT = findFreePort();
     private static final int PUBLIC_AUTH_PORT = findFreePort();

@@ -18,6 +18,7 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.apache.commons.lang3.RandomStringUtils.random;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
+import static uk.gov.pay.api.utils.Payloads.agreementPayload;
 import static uk.gov.pay.api.utils.mocks.AgreementFromLedgerFixture.AgreementFromLedgerFixtureBuilder.anAgreementFromLedgerWithoutPaymentInstrumentFixture;
 import static uk.gov.pay.api.utils.mocks.CreateAgreementRequestParams.CreateAgreementRequestParamsBuilder.aCreateAgreementRequestParams;
 
@@ -213,16 +214,6 @@ public class CreateAgreementIT extends PaymentResourceITestBase {
                 .withReference(REFERENCE)
                 .build();
         postAgreementRequest(agreementPayload(createAgreementRequestParams)).statusCode(503);
-    }
-    
-    public static String agreementPayload(CreateAgreementRequestParams params) {
-        var stringBuilder = new JsonStringBuilder()
-                .add("reference", params.getReference())
-                .add("description", params.getDescription());
-        if (params.getUserIdentifier() != null) {
-            stringBuilder.add("user_identifier", params.getUserIdentifier());
-        }
-        return stringBuilder.build();
     }
 
     protected ValidatableResponse postAgreementRequest(String payload) {

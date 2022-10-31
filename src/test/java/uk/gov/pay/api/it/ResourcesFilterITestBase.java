@@ -2,7 +2,6 @@ package uk.gov.pay.api.it;
 
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.google.common.collect.ImmutableMap;
-import com.spotify.docker.client.exceptions.DockerException;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -60,18 +59,10 @@ abstract public class ResourcesFilterITestBase {
     private static final int PUBLIC_AUTH_PORT = findFreePort();
     private static final int LEDGER_PORT = findFreePort();
 
-    private ExecutorService executor = Executors.newFixedThreadPool(2);
+    private final ExecutorService executor = Executors.newFixedThreadPool(2);
 
     @ClassRule
-    public static RedisDockerRule redisDockerRule;
-
-    static {
-        try {
-            redisDockerRule = new RedisDockerRule();
-        } catch (DockerException e) {
-            e.printStackTrace();
-        }
-    }
+    public static RedisDockerRule redisDockerRule = new RedisDockerRule();
 
     @ClassRule
     public static WireMockClassRule connectorMock = new WireMockClassRule(CONNECTOR_PORT);
@@ -94,7 +85,7 @@ abstract public class ResourcesFilterITestBase {
             config("rateLimiter.noOfReqForPost", "1")
     );
 
-    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    private final PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
 
     @Before
     public void setupApiKey() {

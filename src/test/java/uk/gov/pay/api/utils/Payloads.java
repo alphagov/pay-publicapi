@@ -1,5 +1,7 @@
 package uk.gov.pay.api.utils;
 
+import uk.gov.pay.api.utils.mocks.CreateAgreementRequestParams;
+
 public class Payloads {
 
     public static String aSuccessfulPaymentPayload() {
@@ -17,5 +19,15 @@ public class Payloads {
                 .add("description", description)
                 .add("return_url", returnUrl)
                 .build();
+    }
+
+    public static String agreementPayload(CreateAgreementRequestParams params) {
+        var stringBuilder = new JsonStringBuilder()
+                .add("reference", params.getReference())
+                .add("description", params.getDescription());
+        if (params.getUserIdentifier() != null) {
+            stringBuilder.add("user_identifier", params.getUserIdentifier());
+        }
+        return stringBuilder.build();
     }
 }

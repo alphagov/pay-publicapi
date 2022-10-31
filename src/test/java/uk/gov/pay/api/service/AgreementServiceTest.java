@@ -27,7 +27,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.pay.api.it.CreateAgreementIT.agreementPayload;
+import static uk.gov.pay.api.utils.Payloads.agreementPayload;
 import static uk.gov.pay.api.utils.mocks.CreateAgreementRequestParams.CreateAgreementRequestParamsBuilder.aCreateAgreementRequestParams;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,11 +51,11 @@ class AgreementServiceTest {
     @Mock
     private Response mockConnectorResponse;
 
-    private AgreementService service;
+    private AgreementService underTest;
 
     @BeforeEach
     void setUp() {
-        service = new AgreementService(mockClient, mockConnectorUriGenerator);
+        underTest = new AgreementService(mockClient, mockConnectorUriGenerator);
     }
 
     @Test
@@ -77,7 +77,7 @@ class AgreementServiceTest {
 
         CreateAgreementRequest agreementCreateRequest = new CreateAgreementRequest(CreateAgreementRequestBuilder
                 .builder().reference(REFERENCE_ID));
-        AgreementCreatedResponse agreementResponseFromService = service.create(mockAccount, agreementCreateRequest);
+        AgreementCreatedResponse agreementResponseFromService = underTest.create(mockAccount, agreementCreateRequest);
 
         assertThat(agreementResponseFromService.getAgreementId(), is(AGREEMENT_ID));
     }
@@ -90,7 +90,7 @@ class AgreementServiceTest {
         when(mockInvocationBuilder.post(null)).thenReturn(mockConnectorResponse);
         when(mockConnectorResponse.getStatus()).thenReturn(HttpStatus.SC_NO_CONTENT);
 
-        Response response = service.cancel(mockAccount, AGREEMENT_ID);
+        Response response = underTest.cancel(mockAccount, AGREEMENT_ID);
 
         assertThat(response.getStatus(), is(NO_CONTENT.getStatusCode()));
 
@@ -105,7 +105,7 @@ class AgreementServiceTest {
         when(mockInvocationBuilder.post(null)).thenReturn(mockConnectorResponse);
         when(mockConnectorResponse.getStatus()).thenReturn(HttpStatus.SC_BAD_REQUEST);
 
-        assertThrows(CancelAgreementException.class, () -> service.cancel(mockAccount, AGREEMENT_ID));
+        assertThrows(CancelAgreementException.class, () -> underTest.cancel(mockAccount, AGREEMENT_ID));
 
         verify(mockConnectorResponse).close();
     }
