@@ -46,7 +46,7 @@ public class CreatePaymentResult {
     private String returnUrl;
 
     @JsonProperty
-    @Schema(name = "created_date", description = "The date you created the payment.", example = "2016-01-21T17:15:00Z")
+    @Schema(name = "created_date", description = "The date you created the payment.", example = "2016-01-21T17:15:00.000Z")
     private String createdDate;
 
     @JsonProperty

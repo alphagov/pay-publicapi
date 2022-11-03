@@ -60,7 +60,7 @@ public class DisputeForSearchResult {
         return amount;
     }
 
-    @Schema(example = "2022-07-28T16:43:000Z", description = "The date and time the user's bank told GOV.UK Pay about this dispute.", accessMode = READ_ONLY)
+    @Schema(example = "2022-07-28T16:43:00.000Z", description = "The date and time the user's bank told GOV.UK Pay about this dispute.", accessMode = READ_ONLY)
     public String getCreatedDate() {
         return createdDate;
     }
@@ -70,7 +70,7 @@ public class DisputeForSearchResult {
         return disputeId;
     }
 
-    @Schema(example = "2022-07-28T16:43:000Z", description = "The deadline for submitting your supporting evidence. This value uses Coordinated Universal Time (UTC) and ISO 8601 format", accessMode = READ_ONLY)
+    @Schema(example = "2022-07-28T16:43:00.000Z", description = "The deadline for submitting your supporting evidence. This value uses Coordinated Universal Time (UTC) and ISO 8601 format", accessMode = READ_ONLY)
     public String getEvidenceDueDate() {
         return evidenceDueDate;
     }
