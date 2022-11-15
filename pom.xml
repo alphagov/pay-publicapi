@@ -14,7 +14,7 @@
         <wiremock.version>2.35.0</wiremock.version>
         <hamcrest.version>2.2</hamcrest.version>
         <jackson.version>2.14.0</jackson.version>
-        <logback.version>1.2.11</logback.version>
+        <logback.version>1.4.4</logback.version>
         <pay-java-commons.version>1.0.20221114122851</pay-java-commons.version>
         <junit5.version>5.9.1</junit5.version>
         <pact.version>3.6.15</pact.version>
