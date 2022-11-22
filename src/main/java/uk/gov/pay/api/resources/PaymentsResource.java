@@ -49,6 +49,11 @@ import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.http.HttpHeaders.CACHE_CONTROL;
 import static org.apache.http.HttpHeaders.PRAGMA;
+import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_200_DESCRIPTION;
+import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_401_DESCRIPTION;
+import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_422_DESCRIPTION;
+import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_429_DESCRIPTION;
+import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_500_DESCRIPTION;
 
 @Path("/")
 @Tag(name = "Card payments")
@@ -174,23 +179,16 @@ public class PaymentsResource {
                     "You can see a full reference for this endpoint in " +
                     "[our documentation](https://docs.payments.service.gov.uk/api_reference/search_payments_reference)",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "OK - your request was successful",
+                    @ApiResponse(responseCode = "200", description = RESPONSE_200_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = PaymentSearchResults.class))),
                     @ApiResponse(responseCode = "401",
-                            description = "Unauthorised: Your API key is missing or invalid.<br><br><a href=\"https://docs.payments.service.gov.uk/api_reference/#authentication\">" +
-                                    "Read more about authenticating GOV.UK Pay API requests</a>."),
+                            description = RESPONSE_401_DESCRIPTION),
                     @ApiResponse(responseCode = "422",
-                            description = "Unprocessable entity: One of the values you sent is formatted incorrectly. " +
-                                    "This could be an invalid value, or a value that exceeds a character limit." +
-                                    "<br><br>Check the <code>field</code>, <code>code</code>, and <code>description</code> " +
-                                    "attributes in the response for more information.",
+                            description = RESPONSE_422_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RequestError.class))),
-                    @ApiResponse(responseCode = "429", description = "Too many requests: You&rsquo;ve made too many requests using your API key.<br><br>" +
-                                    "<a href=\"/api_reference#rate-limits\">Read more about rate limits</a>.",
+                    @ApiResponse(responseCode = "429", description = RESPONSE_429_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-                    @ApiResponse(responseCode = "500", description = "Internal server error: There&rsquo;s something wrong with GOV.UK Pay. <br><br>" +
-                                    "If there are no issues on <a href=\"https://payments.statuspage.io\">our status page</a>, " +
-                                    "you can <a href=\"/support_contact_and_more_information/\">contact us with your error code</a> and we&rsquo;ll investigate.",
+                    @ApiResponse(responseCode = "500", description= RESPONSE_500_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RequestError.class)))
             }
     )

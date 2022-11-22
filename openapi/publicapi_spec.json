@@ -305,7 +305,7 @@
                 }
               }
             },
-            "description" : "Unprocessable entity: One of the values you sent is formatted incorrectly. This could be an invalid value, or a value that exceeds a character limit.<br><br>Check the <code>field</code>, <code>code</code>, and <code>description</code> attributes in the response for more information."
+            "description" : "One of the values you sent is formatted incorrectly.This could be an invalid value, or a value that exceeds a character limit.<br><br>Check the `field`, `code`, and `description` attributes in the response for more information."
           },
           "429" : {
             "content" : {
@@ -315,7 +315,7 @@
                 }
               }
             },
-            "description" : "Too many requests: You&rsquo;ve made too many requests using your API key.<br><br><a href=\"/api_reference#rate-limits\">Read more about rate limits</a>."
+            "description" : "Too many requests : You've made too many requests using your API key.<br><br>[Read more about rate limits](https://docs.payments.service.gov.uk/api_reference#rate-limits)."
           },
           "500" : {
             "content" : {
@@ -325,7 +325,7 @@
                 }
               }
             },
-            "description" : "Internal server error: There&rsquo;s something wrong with GOV.UK Pay. <br><br>If there are no issues on <a href=\"https://payments.statuspage.io\">our status page</a>, you can <a href=\"/support_contact_and_more_information/\">contact us with your error code</a> and we&rsquo;ll investigate."
+            "description" : "Internal server error : There's something wrong with GOV.UK Pay. <br><br>If there are no issues on [our status page](https://payments.statuspage.io), you can [contact us with your error code](https://docs.payments.service.gov.uk/support_contact_and_more_information/) and we'll investigate."
           }
         },
         "security" : [ {
