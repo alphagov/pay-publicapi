@@ -234,14 +234,14 @@
             "type" : "string"
           }
         }, {
-          "description" : "Returns a specific page of results.<br><br>Defaults to `1`.<br><br>You can [read more about search pagination](/api_reference/#pagination).",
+          "description" : "Returns a specific page of results.<br><br>Defaults to `1`.<br><br>You can [read more about search pagination](https://docs.payments.service.gov.uk/api_reference/#pagination).",
           "in" : "query",
           "name" : "page",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "The number of payments returned per results page. <br><br>Defaults to `500`. Maximum value is `500`.<br><br>You can [read more about search pagination](/api_reference/#pagination).",
+          "description" : "The number of payments returned per results page. <br><br>Defaults to `500`. Maximum value is `500`.<br><br>You can [read more about search pagination](https://docs.payments.service.gov.uk/api_reference/#pagination).",
           "in" : "query",
           "name" : "display_size",
           "schema" : {
@@ -295,7 +295,7 @@
             "description" : "OK - your request was successful"
           },
           "401" : {
-            "description" : "Unauthorised: Your API key is missing or invalid.<br><br><a href=\"/api_reference/#authentication\">Read more about authenticating GOV.UK Pay API requests</a>."
+            "description" : "Unauthorised: Your API key is missing or invalid.<br><br><a href=\"https://docs.payments.service.gov.uk/api_reference/#authentication\">Read more about authenticating GOV.UK Pay API requests</a>."
           },
           "422" : {
             "content" : {

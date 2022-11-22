@@ -177,7 +177,7 @@ public class PaymentsResource {
                     @ApiResponse(responseCode = "200", description = "OK - your request was successful",
                             content = @Content(schema = @Schema(implementation = PaymentSearchResults.class))),
                     @ApiResponse(responseCode = "401",
-                            description = "Unauthorised: Your API key is missing or invalid.<br><br><a href=\"/api_reference/#authentication\">" +
+                            description = "Unauthorised: Your API key is missing or invalid.<br><br><a href=\"https://docs.payments.service.gov.uk/api_reference/#authentication\">" +
                                     "Read more about authenticating GOV.UK Pay API requests</a>."),
                     @ApiResponse(responseCode = "422",
                             description = "Unprocessable entity: One of the values you sent is formatted incorrectly. " +
@@ -216,10 +216,10 @@ public class PaymentsResource {
                                            "`YYYY-MM-DDTHH:MM:SSZ`.")
                                    @QueryParam("to_date") String toDate,
                                    @Parameter(description = "Returns a specific page of results.<br><br>" +
-                                           "Defaults to `1`.<br><br>You can [read more about search pagination](/api_reference/#pagination).")
+                                           "Defaults to `1`.<br><br>You can [read more about search pagination](https://docs.payments.service.gov.uk/api_reference/#pagination).")
                                    @QueryParam("page") String pageNumber,
                                    @Parameter(description = "The number of payments returned per results page. <br><br>" +
-                                           "Defaults to `500`. Maximum value is `500`.<br><br>You can [read more about search pagination](/api_reference/#pagination).")
+                                           "Defaults to `500`. Maximum value is `500`.<br><br>You can [read more about search pagination](https://docs.payments.service.gov.uk/api_reference/#pagination).")
                                    @QueryParam("display_size") String displaySize,
                                    @Parameter(description = "Returns payments paid with cards under this cardholder name.")
                                    @QueryParam("cardholder_name") String cardHolderName,
