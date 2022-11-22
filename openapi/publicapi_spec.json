@@ -187,24 +187,24 @@
     },
     "/v1/payments" : {
       "get" : {
-        "description" : "Search payments by reference, state, 'from' and 'to' date. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "description" : "You can use this endpoint to search for payments you’ve previously created. Payments are sorted by date, with the most recently-created payment appearing first.<br><br>You can see a full reference for this endpoint in [our documentation](https://docs.payments.service.gov.uk/api_reference/search_payments_reference)",
         "operationId" : "Search payments",
         "parameters" : [ {
-          "description" : "Your payment reference to search (exact match, case insensitive)",
+          "description" : "Returns payments with <code>reference</code> values exactly matching your specified value.",
           "in" : "query",
           "name" : "reference",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "The user email used in the payment to be searched",
+          "description" : "\nReturns payments with matching `email` values. You can send full or partial email addresses.<br><br>`email` is the paying user’s email address.\n",
           "in" : "query",
           "name" : "email",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "State of payments to be searched. Example=success",
+          "description" : "Returns payments in a matching `state`.<br><br>`state` reflects where a payment is in the [payment status lifecycle](https://docs.payments.service.gov.uk/api_reference/#payment-status-lifecycle).",
           "example" : "success",
           "in" : "query",
           "name" : "state",
@@ -213,70 +213,70 @@
             "enum" : [ "created", "started", "submitted", "success", "failed", "cancelled", "error" ]
           }
         }, {
-          "description" : "Card brand used for payment. Example=master-card",
+          "description" : "Returns payments paid with a particular card brand.",
           "in" : "query",
           "name" : "card_brand",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "From date of payments to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z",
+          "description" : "Returns payments created on or after the `from_date`.<br><br>Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDTHH:MM:SSZ`.",
           "in" : "query",
           "name" : "from_date",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "To date of payments to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z",
+          "description" : "Returns payments created before the `to_date`.<br><br>Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDTHH:MM:SSZ`.",
           "in" : "query",
           "name" : "to_date",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "Page number requested for the search, should be a positive integer (optional, defaults to 1)",
+          "description" : "Returns a specific page of results.<br><br>Defaults to `1`.<br><br>You can [read more about search pagination](/api_reference/#pagination).",
           "in" : "query",
           "name" : "page",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)",
+          "description" : "The number of payments returned per results page. <br><br>Defaults to `500`. Maximum value is `500`.<br><br>You can [read more about search pagination](/api_reference/#pagination).",
           "in" : "query",
           "name" : "display_size",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "Name on card used to make payment",
+          "description" : "Returns payments paid with cards under this cardholder name.",
           "in" : "query",
           "name" : "cardholder_name",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "First six digits of the card used to make payment",
+          "description" : "Returns payments paid by cards beginning with the `first_digits_card_number` value. <br><br>`first_digits_card_number` value must be 6 digits.",
           "in" : "query",
           "name" : "first_digits_card_number",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "Last four digits of the card used to make payment",
+          "description" : "Returns payments paid by cards ending with the `last_digits_card_number` value.<br><br>`last_digits_card_number` value must be 4 digits.",
           "in" : "query",
           "name" : "last_digits_card_number",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "From settled date of payment to be searched (this date is inclusive). Example=2015-08-13",
+          "description" : "Returns payments settled on or after the `from_settled_date` value.<br><br>You can only search by settled date if your payment service provider is Stripe.<br><br>Date must be in ISO 8601 format to date-level accuracy - `YYYY-MM-DD`.<br><br>Payments are settled when your payment service provider sends funds to your bank account.",
           "in" : "query",
           "name" : "from_settled_date",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "To settled date of payment to be searched (this date is inclusive). Example=2015-08-14",
+          "description" : "Returns payments settled before the `to_settled_date` value.<br><br>You can only search by settled date if your payment service provider is Stripe. <br><br>Date must be in ISO 8601 format to date-level accuracy - `YYYY-MM-DD`.<br><br>Payments are settled when your payment service provider sends funds to your bank account.",
           "in" : "query",
           "name" : "to_settled_date",
           "schema" : {
@@ -292,10 +292,10 @@
                 }
               }
             },
-            "description" : "OK"
+            "description" : "OK - your request was successful"
           },
           "401" : {
-            "description" : "Credentials are required to access this resource"
+            "description" : "Unauthorised: Your API key is missing or invalid.<br><br><a href=\"/api_reference/#authentication\">Read more about authenticating GOV.UK Pay API requests</a>."
           },
           "422" : {
             "content" : {
@@ -305,7 +305,7 @@
                 }
               }
             },
-            "description" : "Invalid parameters: from_date, to_date, status, display_size. See Public API documentation for the correct data formats"
+            "description" : "Unprocessable entity: One of the values you sent is formatted incorrectly. This could be an invalid value, or a value that exceeds a character limit.<br><br>Check the <code>field</code>, <code>code</code>, and <code>description</code> attributes in the response for more information."
           },
           "429" : {
             "content" : {
@@ -315,7 +315,7 @@
                 }
               }
             },
-            "description" : "Too many requests"
+            "description" : "Too many requests: You&rsquo;ve made too many requests using your API key.<br><br><a href=\"/api_reference#rate-limits\">Read more about rate limits</a>."
           },
           "500" : {
             "content" : {
@@ -325,7 +325,7 @@
                 }
               }
             },
-            "description" : "Downstream system error"
+            "description" : "Internal server error: There&rsquo;s something wrong with GOV.UK Pay. <br><br>If there are no issues on <a href=\"https://payments.statuspage.io\">our status page</a>, you can <a href=\"/support_contact_and_more_information/\">contact us with your error code</a> and we&rsquo;ll investigate."
           }
         },
         "security" : [ {
@@ -1440,7 +1440,7 @@
           "authorisation_mode" : {
             "type" : "string",
             "description" : "How the payment will be authorised. Payments created in `web` mode require the paying user to visit the `next_url` to complete the payment.",
-            "enum" : [ "web", "moto_api", "external" ]
+            "enum" : [ "web", "moto_api", "agreement", "external" ]
           },
           "authorisation_summary" : {
             "$ref" : "#/components/schemas/AuthorisationSummary"
@@ -1578,7 +1578,7 @@
           "authorisation_mode" : {
             "type" : "string",
             "description" : "How the payment will be authorised. Payments created in `web` mode require the paying user to visit the `next_url` to complete the payment.",
-            "enum" : [ "web", "moto_api", "external" ]
+            "enum" : [ "web", "moto_api", "agreement", "external" ]
           },
           "authorisation_summary" : {
             "$ref" : "#/components/schemas/AuthorisationSummary"

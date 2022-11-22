@@ -169,51 +169,75 @@ public class PaymentsResource {
     @Operation(security = {@SecurityRequirement(name = "BearerAuth")},
             operationId = "Search payments",
             summary = "Search payments",
-            description = "Search payments by reference, state, 'from' and 'to' date. " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
+            description = "You can use this endpoint to search for payments you’ve previously created. " +
+                    "Payments are sorted by date, with the most recently-created payment appearing first.<br><br>" +
+                    "You can see a full reference for this endpoint in " +
+                    "[our documentation](https://docs.payments.service.gov.uk/api_reference/search_payments_reference)",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "OK",
+                    @ApiResponse(responseCode = "200", description = "OK - your request was successful",
                             content = @Content(schema = @Schema(implementation = PaymentSearchResults.class))),
                     @ApiResponse(responseCode = "401",
-                            description = "Credentials are required to access this resource"),
+                            description = "Unauthorised: Your API key is missing or invalid.<br><br><a href=\"/api_reference/#authentication\">" +
+                                    "Read more about authenticating GOV.UK Pay API requests</a>."),
                     @ApiResponse(responseCode = "422",
-                            description = "Invalid parameters: from_date, to_date, status, display_size. See Public API documentation for the correct data formats",
+                            description = "Unprocessable entity: One of the values you sent is formatted incorrectly. " +
+                                    "This could be an invalid value, or a value that exceeds a character limit." +
+                                    "<br><br>Check the <code>field</code>, <code>code</code>, and <code>description</code> " +
+                                    "attributes in the response for more information.",
                             content = @Content(schema = @Schema(implementation = RequestError.class))),
-                    @ApiResponse(responseCode = "429", description = "Too many requests",
+                    @ApiResponse(responseCode = "429", description = "Too many requests: You&rsquo;ve made too many requests using your API key.<br><br>" +
+                                    "<a href=\"/api_reference#rate-limits\">Read more about rate limits</a>.",
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-                    @ApiResponse(responseCode = "500", description = "Downstream system error",
+                    @ApiResponse(responseCode = "500", description = "Internal server error: There&rsquo;s something wrong with GOV.UK Pay. <br><br>" +
+                                    "If there are no issues on <a href=\"https://payments.statuspage.io\">our status page</a>, " +
+                                    "you can <a href=\"/support_contact_and_more_information/\">contact us with your error code</a> and we&rsquo;ll investigate.",
                             content = @Content(schema = @Schema(implementation = RequestError.class)))
             }
     )
     public Response searchPayments(@Parameter(hidden = true)
                                    @Auth Account account,
-                                   @Parameter(description = "Your payment reference to search (exact match, case insensitive)")
+                                   @Parameter(description = "Returns payments with <code>reference</code> values exactly matching your specified value.")
                                    @QueryParam("reference") String reference,
-                                   @Parameter(description = "The user email used in the payment to be searched")
+                                   @Parameter(description = "\n" +
+                                           "Returns payments with matching `email` values. You can send full or partial email addresses.<br><br>" +
+                                           "`email` is the paying user’s email address.\n")
                                    @QueryParam("email") String email,
-                                   @Parameter(description = "State of payments to be searched. Example=success", example = "success",
-                                           schema = @Schema(allowableValues = {"created", "started", "submitted", "success", "failed", "cancelled", "error"}))
+                                   @Parameter(description = "Returns payments in a matching `state`.<br><br>" +
+                                           "`state` reflects where a payment is in the [payment status lifecycle](https://docs.payments.service.gov.uk/api_reference/#payment-status-lifecycle).",
+                                           example = "success", schema = @Schema(allowableValues = {"created", "started", "submitted", "success", "failed", "cancelled", "error"}))
                                    @QueryParam("state") String state,
-                                   @Parameter(description = "Card brand used for payment. Example=master-card")
+                                   @Parameter(description = "Returns payments paid with a particular card brand.")
                                    @QueryParam("card_brand") String cardBrand,
-                                   @Parameter(description = "From date of payments to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z")
+                                   @Parameter(description = "Returns payments created on or after the `from_date`.<br><br>" +
+                                           "Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDTHH:MM:SSZ`.")
                                    @QueryParam("from_date") String fromDate,
-                                   @Parameter(description = "To date of payments to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z")
+                                   @Parameter(description = "Returns payments created before the `to_date`.<br><br>" +
+                                           "Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - " +
+                                           "`YYYY-MM-DDTHH:MM:SSZ`.")
                                    @QueryParam("to_date") String toDate,
-                                   @Parameter(description = "Page number requested for the search, should be a positive integer (optional, defaults to 1)")
+                                   @Parameter(description = "Returns a specific page of results.<br><br>" +
+                                           "Defaults to `1`.<br><br>You can [read more about search pagination](/api_reference/#pagination).")
                                    @QueryParam("page") String pageNumber,
-                                   @Parameter(description = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)")
+                                   @Parameter(description = "The number of payments returned per results page. <br><br>" +
+                                           "Defaults to `500`. Maximum value is `500`.<br><br>You can [read more about search pagination](/api_reference/#pagination).")
                                    @QueryParam("display_size") String displaySize,
-                                   @Parameter(description = "Name on card used to make payment")
+                                   @Parameter(description = "Returns payments paid with cards under this cardholder name.")
                                    @QueryParam("cardholder_name") String cardHolderName,
-                                   @Parameter(description = "First six digits of the card used to make payment")
+                                   @Parameter(description = "Returns payments paid by cards beginning with the `first_digits_card_number` value. <br><br>" +
+                                           "`first_digits_card_number` value must be 6 digits.")
                                    @QueryParam("first_digits_card_number") String firstDigitsCardNumber,
-                                   @Parameter(description = "Last four digits of the card used to make payment", hidden = false)
+                                   @Parameter(description = "Returns payments paid by cards ending with the `last_digits_card_number` value.<br><br>" +
+                                           "`last_digits_card_number` value must be 4 digits.", hidden = false)
                                    @QueryParam("last_digits_card_number") String lastDigitsCardNumber,
-                                   @Parameter(description = "From settled date of payment to be searched (this date is inclusive). Example=2015-08-13")
+                                   @Parameter(description = "Returns payments settled on or after the `from_settled_date` value.<br><br>" +
+                                           "You can only search by settled date if your payment service provider is Stripe.<br><br>" +
+                                           "Date must be in ISO 8601 format to date-level accuracy - `YYYY-MM-DD`.<br><br>" +
+                                           "Payments are settled when your payment service provider sends funds to your bank account.")
                                    @QueryParam("from_settled_date") String fromSettledDate,
-                                   @Parameter(description = "To settled date of payment to be searched (this date is inclusive). Example=2015-08-14")
+                                   @Parameter(description = "Returns payments settled before the `to_settled_date` value.<br><br>" +
+                                           "You can only search by settled date if your payment service provider is Stripe. <br><br>" +
+                                           "Date must be in ISO 8601 format to date-level accuracy - `YYYY-MM-DD`.<br><br>" +
+                                           "Payments are settled when your payment service provider sends funds to your bank account.")
                                    @QueryParam("to_settled_date") String toSettledDate,
                                    @Context UriInfo uriInfo) {
 
