@@ -49,6 +49,13 @@ import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.http.HttpHeaders.CACHE_CONTROL;
 import static org.apache.http.HttpHeaders.PRAGMA;
+import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_200_DESCRIPTION;
+import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_400_DESCRIPTION;
+import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_401_DESCRIPTION;
+import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_404_DESCRIPTION;
+import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_409_DESCRIPTION;
+import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_429_DESCRIPTION;
+import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_500_DESCRIPTION;
 
 @Path("/")
 @Tag(name = "Card payments")
@@ -93,15 +100,15 @@ public class PaymentsResource {
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "OK",
+                    @ApiResponse(responseCode = "200", description = RESPONSE_200_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = GetPaymentResult.class))),
                     @ApiResponse(responseCode = "401",
-                            description = "Credentials are required to access this resource"),
-                    @ApiResponse(responseCode = "404", description = "Not found",
+                            description = RESPONSE_401_DESCRIPTION),
+                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RequestError.class))),
-                    @ApiResponse(responseCode = "429", description = "Too many requests",
+                    @ApiResponse(responseCode = "429", description = RESPONSE_429_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-                    @ApiResponse(responseCode = "500", description = "Downstream system error",
+                    @ApiResponse(responseCode = "500", description = RESPONSE_500_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RequestError.class)))
             }
     )
@@ -134,15 +141,15 @@ public class PaymentsResource {
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "OK",
+                    @ApiResponse(responseCode = "200", description = RESPONSE_200_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = PaymentEventsResponse.class))),
                     @ApiResponse(responseCode = "401",
-                            description = "Credentials are required to access this resource"),
-                    @ApiResponse(responseCode = "404", description = "Not found",
+                            description = RESPONSE_401_DESCRIPTION),
+                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RequestError.class))),
-                    @ApiResponse(responseCode = "429", description = "Too many requests",
+                    @ApiResponse(responseCode = "429", description = RESPONSE_429_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-                    @ApiResponse(responseCode = "500", description = "Downstream system error",
+                    @ApiResponse(responseCode = "500", description = RESPONSE_500_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RequestError.class)))
             }
     )
@@ -173,16 +180,16 @@ public class PaymentsResource {
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "OK",
+                    @ApiResponse(responseCode = "200", description = RESPONSE_200_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = PaymentSearchResults.class))),
                     @ApiResponse(responseCode = "401",
-                            description = "Credentials are required to access this resource"),
+                            description = RESPONSE_401_DESCRIPTION),
                     @ApiResponse(responseCode = "422",
                             description = "Invalid parameters: from_date, to_date, status, display_size. See Public API documentation for the correct data formats",
                             content = @Content(schema = @Schema(implementation = RequestError.class))),
-                    @ApiResponse(responseCode = "429", description = "Too many requests",
+                    @ApiResponse(responseCode = "429", description = RESPONSE_429_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-                    @ApiResponse(responseCode = "500", description = "Downstream system error",
+                    @ApiResponse(responseCode = "500", description = RESPONSE_500_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RequestError.class)))
             }
     )
@@ -257,16 +264,16 @@ public class PaymentsResource {
             responses = {
                     @ApiResponse(responseCode = "201", description = "Created",
                             content = @Content(schema = @Schema(implementation = CreatePaymentResult.class))),
-                    @ApiResponse(responseCode = "400", description = "Bad request",
+                    @ApiResponse(responseCode = "400", description = RESPONSE_400_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RequestError.class))),
                     @ApiResponse(responseCode = "401",
-                            description = "Credentials are required to access this resource"),
+                            description = RESPONSE_401_DESCRIPTION),
                     @ApiResponse(responseCode = "422",
                             description = "Invalid attribute value: description. Must be less than or equal to 255 characters length",
                             content = @Content(schema = @Schema(implementation = RequestError.class))),
-                    @ApiResponse(responseCode = "429", description = "Too many requests",
+                    @ApiResponse(responseCode = "429", description = RESPONSE_429_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-                    @ApiResponse(responseCode = "500", description = "Downstream system error",
+                    @ApiResponse(responseCode = "500", description = RESPONSE_500_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RequestError.class)))
             }
     )
@@ -304,14 +311,14 @@ public class PaymentsResource {
                     @ApiResponse(responseCode = "400", description = "Cancellation of payment failed",
                             content = @Content(schema = @Schema(implementation = RequestError.class))),
                     @ApiResponse(responseCode = "401",
-                            description = "Credentials are required to access this resource"),
-                    @ApiResponse(responseCode = "404", description = "Not found",
+                            description = RESPONSE_401_DESCRIPTION),
+                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RequestError.class))),
-                    @ApiResponse(responseCode = "409", description = "Conflict",
+                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RequestError.class))),
-                    @ApiResponse(responseCode = "429", description = "Too many requests",
+                    @ApiResponse(responseCode = "429", description = RESPONSE_429_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-                    @ApiResponse(responseCode = "500", description = "Downstream system error",
+                    @ApiResponse(responseCode = "500", description = RESPONSE_500_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RequestError.class)))
             }
     )
@@ -341,14 +348,14 @@ public class PaymentsResource {
                     @ApiResponse(responseCode = "400", description = "Capture of payment failed",
                             content = @Content(schema = @Schema(implementation = RequestError.class))),
                     @ApiResponse(responseCode = "401",
-                            description = "Credentials are required to access this resource"),
-                    @ApiResponse(responseCode = "404", description = "Not found",
+                            description = RESPONSE_401_DESCRIPTION),
+                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RequestError.class))),
-                    @ApiResponse(responseCode = "409", description = "Conflict",
+                    @ApiResponse(responseCode = "409", description = RESPONSE_409_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RequestError.class))),
-                    @ApiResponse(responseCode = "429", description = "Too many requests",
+                    @ApiResponse(responseCode = "429", description = RESPONSE_429_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-                    @ApiResponse(responseCode = "500", description = "Downstream system error",
+                    @ApiResponse(responseCode = "500", description = RESPONSE_500_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RequestError.class)))
             }
     )

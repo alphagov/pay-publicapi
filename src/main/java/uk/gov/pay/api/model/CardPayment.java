@@ -199,7 +199,8 @@ public class CardPayment extends Payment {
         return agreementId;
     }
 
-    @Schema(description = "How the payment will be authorised. Payments created in `web` mode require the paying user to visit the `next_url` to complete the payment.")
+    @Schema(type = "String", description = "How the payment will be authorised. Payments created in `web` mode require the paying user to visit the `next_url` to complete the payment.",
+        allowableValues = {"web", "moto_api", "external"})
     public AuthorisationMode getAuthorisationMode() {
         return authorisationMode;
     }
