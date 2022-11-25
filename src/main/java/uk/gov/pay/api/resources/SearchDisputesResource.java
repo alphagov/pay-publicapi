@@ -26,6 +26,10 @@ import javax.ws.rs.QueryParam;
 
 import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_200_DESCRIPTION;
+import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_401_DESCRIPTION;
+import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_429_DESCRIPTION;
+import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_500_DESCRIPTION;
 import static uk.gov.pay.api.validation.DisputeSearchValidator.validateDisputeParameters;
 
 @Path("/")
@@ -51,16 +55,16 @@ public class SearchDisputesResource {
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "OK",
+                    @ApiResponse(responseCode = "200", description = RESPONSE_200_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = DisputesSearchResults.class))),
                     @ApiResponse(responseCode = "401",
-                            description = "Credentials are required to access this resource"),
+                            description = RESPONSE_401_DESCRIPTION),
                     @ApiResponse(responseCode = "422",
                             description = "Invalid parameters: from_date, to_date, from_settled_date, to_settled_date, status, display_size. See Public API documentation for the correct data formats",
                             content = @Content(schema = @Schema(implementation = RequestError.class))),
-                    @ApiResponse(responseCode = "429", description = "Too many requests",
+                    @ApiResponse(responseCode = "429", description = RESPONSE_429_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-                    @ApiResponse(responseCode = "500", description = "Downstream system error",
+                    @ApiResponse(responseCode = "500", description = RESPONSE_500_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RequestError.class)))
             }
     )

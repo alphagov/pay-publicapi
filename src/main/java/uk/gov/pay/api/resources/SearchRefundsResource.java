@@ -26,6 +26,9 @@ import javax.ws.rs.QueryParam;
 
 import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_200_DESCRIPTION;
+import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_401_DESCRIPTION;
+import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_500_DESCRIPTION;
 
 @Path("/")
 @Tag(name = "Refunding card payments")
@@ -53,11 +56,11 @@ public class SearchRefundsResource {
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = SearchRefundsResults.class))),
-                    @ApiResponse(responseCode = "401", description = "Credentials are required to access this resource"),
+                    @ApiResponse(responseCode = "200", description = RESPONSE_200_DESCRIPTION, content = @Content(schema = @Schema(implementation = SearchRefundsResults.class))),
+                    @ApiResponse(responseCode = "401", description = RESPONSE_401_DESCRIPTION),
                     @ApiResponse(responseCode = "422", description = "Invalid parameters. See Public API documentation for the correct data formats",
                             content = @Content(schema = @Schema(implementation = RequestError.class))),
-                    @ApiResponse(responseCode = "500", description = "Downstream system error",
+                    @ApiResponse(responseCode = "500", description = RESPONSE_500_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RequestError.class))),
             }
     )

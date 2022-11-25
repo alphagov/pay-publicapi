@@ -37,6 +37,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_200_DESCRIPTION;
+import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_401_DESCRIPTION;
+import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_404_DESCRIPTION;
+import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_429_DESCRIPTION;
+import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_500_DESCRIPTION;
 
 @Path("/v1/payments/{paymentId}/refunds")
 @Tag(name = "Refunding card payments")
@@ -69,14 +74,14 @@ public class PaymentRefundsResource {
             description = "Return refunds for a payment. " +
                     "The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "OK",
+                    @ApiResponse(responseCode = "200", description = RESPONSE_200_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RefundForSearchResult.class))),
-                    @ApiResponse(responseCode = "401", description = "Credentials are required to access this resource"),
-                    @ApiResponse(responseCode = "404", description = "Not found",
+                    @ApiResponse(responseCode = "401", description = RESPONSE_401_DESCRIPTION),
+                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RequestError.class))),
-                    @ApiResponse(responseCode = "429", description = "Too many requests",
+                    @ApiResponse(responseCode = "429", description = RESPONSE_429_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-                    @ApiResponse(responseCode = "500", description = "Downstream system error",
+                    @ApiResponse(responseCode = "500", description = RESPONSE_500_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RequestError.class)))
             }
     )
@@ -103,14 +108,14 @@ public class PaymentRefundsResource {
                     "The Authorisation token needs to be specified in the 'authorization' header " +
                     "as 'authorization: Bearer YOUR_API_KEY_HERE'",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "OK",
+                    @ApiResponse(responseCode = "200", description = RESPONSE_200_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RefundResult.class))),
-                    @ApiResponse(responseCode = "401", description = "Credentials are required to access this resource"),
-                    @ApiResponse(responseCode = "404", description = "Not found",
+                    @ApiResponse(responseCode = "401", description = RESPONSE_401_DESCRIPTION),
+                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RequestError.class))),
-                    @ApiResponse(responseCode = "429", description = "Too many requests",
+                    @ApiResponse(responseCode = "429", description = RESPONSE_429_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-                    @ApiResponse(responseCode = "500", description = "Downstream system error",
+                    @ApiResponse(responseCode = "500", description = RESPONSE_500_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RequestError.class)))
             }
     )
@@ -144,13 +149,13 @@ public class PaymentRefundsResource {
                     @ApiResponse(responseCode = "200", description = "successful operation",
                             content = @Content(schema = @Schema(implementation = RefundResult.class))),
                     @ApiResponse(responseCode = "202", description = "ACCEPTED"),
-                    @ApiResponse(responseCode = "401", description = "Credentials are required to access this resource"),
-                    @ApiResponse(responseCode = "404", description = "Not found",
+                    @ApiResponse(responseCode = "401", description = RESPONSE_401_DESCRIPTION),
+                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RequestError.class))),
                     @ApiResponse(responseCode = "412", description = "Refund amount available mismatch"),
-                    @ApiResponse(responseCode = "429", description = "Too many requests",
+                    @ApiResponse(responseCode = "429", description = RESPONSE_429_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
-                    @ApiResponse(responseCode = "500", description = "Downstream system error",
+                    @ApiResponse(responseCode = "500", description = RESPONSE_500_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RequestError.class)))
             }
     )
