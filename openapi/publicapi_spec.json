@@ -1216,7 +1216,7 @@
           "created_date" : {
             "type" : "string",
             "description" : "The date you created the payment.",
-            "example" : "2016-01-21T17:15:00.00Z"
+            "example" : "2016-01-21T17:15:00.000Z"
           },
           "delayed_capture" : {
             "type" : "boolean",
