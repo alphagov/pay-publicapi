@@ -70,9 +70,9 @@ public class PaymentRefundsResource {
     @Produces(APPLICATION_JSON)
     @Operation(security = {@SecurityRequirement(name = "BearerAuth")},
             operationId = "Get all refunds for a payment",
-            summary = "Get all refunds for a payment",
-            description = "Return refunds for a payment. " +
-                    "The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+            summary = "Get information about a payment’s refunds",
+            description = "You can use this endpoint to [get a list of refunds for a payment]" +
+                    "(https://docs.payments.service.gov.uk/refunding_payments/#get-all-refunds-for-a-single-payment).",
             responses = {
                     @ApiResponse(responseCode = "200", description = RESPONSE_200_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RefundForSearchResult.class))),
@@ -86,7 +86,8 @@ public class PaymentRefundsResource {
             }
     )
     public RefundsResponse getRefunds(@Parameter(hidden = true) @Auth Account account,
-                                      @PathParam("paymentId") String paymentId,
+                                      @PathParam("paymentId") @Parameter(name = "paymentId", 
+                                              description = "The unique `payment_id` of the payment you want a list of refunds for.") String paymentId,
                                       @Parameter(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
 
         logger.info("Get refunds for payment request - paymentId={} using strategy={}", paymentId, strategyName);
@@ -103,10 +104,9 @@ public class PaymentRefundsResource {
     @Path("/{refundId}")
     @Operation(security = {@SecurityRequirement(name = "BearerAuth")},
             operationId = "Get a payment refund",
-            summary = "Find payment refund by ID",
-            description = "Return payment refund information by Refund ID " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
+            summary = "Check the status of a refund",
+            description = "You can use this endpoint to [get details about an individual refund]" +
+                    "(https://docs.payments.service.gov.uk/refunding_payments/#checking-the-status-of-a-refund).",
             responses = {
                     @ApiResponse(responseCode = "200", description = RESPONSE_200_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RefundResult.class))),
@@ -122,8 +122,11 @@ public class PaymentRefundsResource {
     @Produces(APPLICATION_JSON)
     public RefundResponse getRefundById(@Parameter(hidden = true)
                                         @Auth Account account,
-                                        @PathParam("paymentId") String paymentId,
-                                        @PathParam("refundId") String refundId,
+                                        @PathParam("paymentId") @Parameter(name = "paymentId",
+                                                description = "The unique `payment_id` of the payment you want to view a refund of.") String paymentId,
+                                        @PathParam("refundId") @Parameter(name = "refundId",
+                                                description = "The unique `refund_id` of the refund you want to view. " + 
+                                                        "If one payment has multiple refunds, each refund has a different `refund_id`.") String refundId,
                                         @Parameter(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
 
         logger.info("Payment refund request - paymentId={}, refundId={}", paymentId, refundId);
@@ -142,9 +145,9 @@ public class PaymentRefundsResource {
     @Consumes(APPLICATION_JSON)
     @Operation(security = {@SecurityRequirement(name = "BearerAuth")},
             operationId = "Submit a refund for a payment",
-            summary = "Submit a refund for a payment",
-            description = "Return issued refund information. " +
-                    "The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+            summary = "Refund a payment",
+            description = "You can use this endpoint to [fully or partially refund a payment]" +
+                    "(https://docs.payments.service.gov.uk/refunding_payments).",
             responses = {
                     @ApiResponse(responseCode = "200", description = "successful operation",
                             content = @Content(schema = @Schema(implementation = RefundResult.class))),
@@ -160,7 +163,8 @@ public class PaymentRefundsResource {
             }
     )
     public Response submitRefund(@Parameter(hidden = true) @Auth Account account,
-                                 @PathParam("paymentId") String paymentId,
+                                 @PathParam("paymentId") @Parameter(name = "paymentId",
+                                         description = "The unique `payment_id` of the payment you want to refund.") String paymentId,
                                  @Parameter(required = true, description = "requestPayload")
                                  CreatePaymentRefundRequest requestPayload) {
 

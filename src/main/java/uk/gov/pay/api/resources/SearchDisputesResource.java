@@ -51,9 +51,8 @@ public class SearchDisputesResource {
     @Operation(security = {@SecurityRequirement(name = "BearerAuth")},
             operationId = "Search disputes",
             summary = "Search disputes",
-            description = "Search disputes by status, 'from' and 'to' date, and 'from' and 'to' settled_date. " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
+            description = "You can use this endpoint to search disputes. " +
+                    "A dispute is when [a paying user challenges a completed payment through their bank](https://docs.payments.service.gov.uk/disputes/).",
             responses = {
                     @ApiResponse(responseCode = "200", description = RESPONSE_200_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = DisputesSearchResults.class))),
@@ -70,20 +69,27 @@ public class SearchDisputesResource {
     )
     public DisputesSearchResults searchDisputes(@Parameter(hidden = true)
                                                     @Auth Account account,
-                                                @Parameter(description = "Returns disputes raised on or after the 'from_date' Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - 'YYYY-MM-DDTHH:MM:SSZ'.")
+                                                @Parameter(description = "Returns disputes raised on or after the `from_date`. " +
+                                                        "Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDTHH:MM:SSZ`.")
                                                 @QueryParam("from_date") String fromDate,
-                                                @Parameter(description = "Returns disputes raised before the 'to_date' Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - 'YYYY-MM-DDTHH:MM:SSZ'.")
+                                                @Parameter(description = "Returns disputes raised before the `to_date`. " +
+                                                        "Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDTHH:MM:SSZ`.")
                                                 @QueryParam("to_date") String toDate,
-                                                @Parameter(description = "Returns disputes settled on or after the 'from_settled_date'. Date must be in ISO 8601 format to date-level accuracy - 'YYYY-MM-DD'. Disputes are settled when your payment service provider takes the disputed amount from a payout to your bank account.You can only use 'from_settled_date' to find disputes raised on or after 8 August 2022.")
+                                                @Parameter(description = "Returns disputes settled on or after the `from_settled_date`. " +
+                                                        "Date must be in ISO 8601 format to date-level accuracy - `YYYY-MM-DD`. " +
+                                                        "Disputes are settled when your payment service provider takes the disputed amount from a payout to your bank account.")
                                                 @QueryParam("from_settled_date") String fromSettledDate,
-                                                @Parameter(description = "Returns disputes settled before the 'to_settled_date'. 'Date must be in ISO 8601 format to date-level accuracy - 'YYYY-MM-DD'.Disputes are settled when your payment service provider takes the disputed amount from a payout to your bank account. You can only use 'to_settled_date' to find disputes raised on or after 8 August 2022.")
+                                                @Parameter(description = "Returns disputes settled before the `to_settled_date`. " +
+                                                        "Date must be in ISO 8601 format to date-level accuracy - `YYYY-MM-DD`. " +
+                                                        "Disputes are settled when your payment service provider takes the disputed amount from a payout to your bank account.")
                                                 @QueryParam("to_settled_date") String toSettledDate,
-                                                @Parameter(description = "Returns disputes with a matching 'status'. 'status' reflects what stage of the dispute process a dispute is at.", example = "won",
+                                                @Parameter(description = "Returns disputes with a matching `status`. `status` reflects what stage of the dispute process a dispute is at. " +
+                                                        "You can [read more about the meanings of the different status values](https://docs.payments.service.gov.uk/disputes/#dispute-status)", example = "won",
                                                         schema = @Schema(allowableValues = {"needs_response", "under_review", "lost", "won"}))
                                                 @QueryParam("status") String status,
-                                                @Parameter(description = "Returns a specific page of results. Defaults to '1'.")
+                                                @Parameter(description = "Returns a specific page of results. Defaults to `1`.")
                                                 @QueryParam("page") String pageNumber,
-                                                @Parameter(description = "The number of disputes returned per results page. Defaults to '500'. Maximum value is '500'")
+                                                @Parameter(description = "The number of disputes returned per results page. Defaults to `500`. Maximum value is `500`.")
                                                 @QueryParam("display_size") String displaySize) {
         logger.info("Disputes search request - [ {} ]",
                 format("from_date: %s, to_date: %s, from_settled_date: %s, to_settled_date: %s, " +

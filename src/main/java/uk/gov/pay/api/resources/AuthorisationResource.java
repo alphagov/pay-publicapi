@@ -43,8 +43,8 @@ public class AuthorisationResource {
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     @Operation(operationId = "Authorise a MOTO payment",
-            summary = "Authorise a MOTO payment",
-            description = "Authorise a payment that was created with `authorisation_mode` set to `moto_api`.",
+            summary = "Send card details to authorise a MOTO payment",
+            description = "You can use this endpoint to [authorise payments](https://docs.payments.service.gov.uk/moto_payments/moto_send_card_details_api/) you have created with `authorisation_mode` set to `moto_api`.",
             responses = {
                     @ApiResponse(responseCode = "204", description = "Your authorisation request was successful."),
                     @ApiResponse(responseCode = "400", description = "Your request is invalid. Check the `code` and `description` in the response to find out why your request failed.",

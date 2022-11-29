@@ -95,10 +95,9 @@ public class PaymentsResource {
     @Produces(APPLICATION_JSON)
     @Operation(security = {@SecurityRequirement(name = "BearerAuth")},
             operationId = "Get a payment",
-            summary = "Find payment by ID",
-            description = "Return information about the payment " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
+            summary = "Get information about a single payment",
+            description = "You can use this endpoint to [get details about a single payment you’ve previously created]" +
+                    "(https://docs.payments.service.gov.uk/reporting/#get-information-about-a-single-payment).",
             responses = {
                     @ApiResponse(responseCode = "200", description = RESPONSE_200_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = GetPaymentResult.class))),
@@ -114,7 +113,7 @@ public class PaymentsResource {
     )
     public Response getPayment(@Parameter(hidden = true) @Auth Account account,
                                @PathParam("paymentId")
-                               @Parameter(name = "paymentId", description = "Payment identifier", example = "hu20sqlact5260q2nanm0q8u93")
+                               @Parameter(name = "paymentId", description = "Returns the payment with the matching `payment_id`.", example = "hu20sqlact5260q2nanm0q8u93")
                                        String paymentId,
                                @Parameter(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
 
@@ -136,10 +135,10 @@ public class PaymentsResource {
     @Produces(APPLICATION_JSON)
     @Operation(security = {@SecurityRequirement(name = "BearerAuth")},
             operationId = "Get events for a payment",
-            summary = "Return payment events by ID",
-            description = "Return payment events information about a certain payment " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
+            summary = "Get a payment's events",
+            description = "You can use this endpoint to " +
+                    "[get a list of a payment’s events](https://docs.payments.service.gov.uk/reporting/#get-a-payment-s-events). " +
+                    "A payment event is when a payment’s `state` changes, such as when the payment is created, or when the paying user submits their details.",
             responses = {
                     @ApiResponse(responseCode = "200", description = RESPONSE_200_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = PaymentEventsResponse.class))),
@@ -176,9 +175,8 @@ public class PaymentsResource {
     @Operation(security = {@SecurityRequirement(name = "BearerAuth")},
             operationId = "Search payments",
             summary = "Search payments",
-            description = "Search payments by reference, state, 'from' and 'to' date. " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
+            description = "You can use this endpoint to [search for payments you’ve previously created](https://docs.payments.service.gov.uk/reporting/#search-payments/). " +
+                    "Payments are sorted by date, with the most recently-created payment appearing first.",
             responses = {
                     @ApiResponse(responseCode = "200", description = RESPONSE_200_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = PaymentSearchResults.class))),
@@ -195,32 +193,45 @@ public class PaymentsResource {
     )
     public Response searchPayments(@Parameter(hidden = true)
                                    @Auth Account account,
-                                   @Parameter(description = "Your payment reference to search (exact match, case insensitive)")
+                                   @Parameter(description = "Returns payments with `reference` values exactly matching your specified value.")
                                    @QueryParam("reference") String reference,
-                                   @Parameter(description = "The user email used in the payment to be searched")
+                                   @Parameter(description = "Returns payments with matching `email` values. You can send full or partial email addresses. " +
+                                           "`email` is the paying user’s email address.")
                                    @QueryParam("email") String email,
-                                   @Parameter(description = "State of payments to be searched. Example=success", example = "success",
+                                   @Parameter(description = "Returns payments in a matching `state`. `state` reflects where a payment is in the " +
+                                           "[payment status lifecycle](https://docs.payments.service.gov.uk/api_reference/#payment-status-lifecycle).", example = "success",
                                            schema = @Schema(allowableValues = {"created", "started", "submitted", "success", "failed", "cancelled", "error"}))
                                    @QueryParam("state") String state,
-                                   @Parameter(description = "Card brand used for payment. Example=master-card")
+                                   @Parameter(description = "Returns payments paid with a particular card brand.")
                                    @QueryParam("card_brand") String cardBrand,
-                                   @Parameter(description = "From date of payments to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z")
+                                   @Parameter(description = "Returns payments created on or after the `from_date`. " +
+                                           "Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDTHH:MM:SSZ`.")
                                    @QueryParam("from_date") String fromDate,
-                                   @Parameter(description = "To date of payments to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z")
+                                   @Parameter(description = "Returns payments created before the `to_date`. " +
+                                           "Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDTHH:MM:SSZ`.")
                                    @QueryParam("to_date") String toDate,
-                                   @Parameter(description = "Page number requested for the search, should be a positive integer (optional, defaults to 1)")
+                                   @Parameter(description = "Returns a [specific page of results](https://docs.payments.service.gov.uk/api_reference/#pagination). Defaults to `1`.")
                                    @QueryParam("page") String pageNumber,
-                                   @Parameter(description = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)")
+                                   @Parameter(description = "The number of payments returned " +
+                                           "[per results page](https://docs.payments.service.gov.uk/api_reference/#pagination). Defaults to `500`. Maximum value is `500`.")
                                    @QueryParam("display_size") String displaySize,
-                                   @Parameter(description = "Name on card used to make payment")
+                                   @Parameter(description = "Returns payments paid with cards under this cardholder name.")
                                    @QueryParam("cardholder_name") String cardHolderName,
-                                   @Parameter(description = "First six digits of the card used to make payment")
+                                   @Parameter(description = "Returns payments paid by cards beginning with the `first_digits_card_number` value. "
+                                           + "`first_digits_card_number` value must be 6 digits.")
                                    @QueryParam("first_digits_card_number") String firstDigitsCardNumber,
-                                   @Parameter(description = "Last four digits of the card used to make payment", hidden = false)
+                                   @Parameter(description = "Returns payments paid by cards ending with the `last_digits_card_number` value. " +
+                                           "`last_digits_card_number` value must be 4 digits.", hidden = false)
                                    @QueryParam("last_digits_card_number") String lastDigitsCardNumber,
-                                   @Parameter(description = "From settled date of payment to be searched (this date is inclusive). Example=2015-08-13")
+                                   @Parameter(description = "Returns payments settled on or after the `from_settled_date` value. " +
+                                           "You can only search by settled date if your payment service provider is Stripe. " +
+                                           "Date must be in ISO 8601 format to date-level accuracy - `YYYY-MM-DD`. " +
+                                           "Payments are settled when your payment service provider sends funds to your bank account.")
                                    @QueryParam("from_settled_date") String fromSettledDate,
-                                   @Parameter(description = "To settled date of payment to be searched (this date is inclusive). Example=2015-08-14")
+                                   @Parameter(description = "Returns payments settled before the `to_settled_date` value. " +
+                                           "You can only search by settled date if your payment service provider is Stripe. " +
+                                           "Date must be in ISO 8601 format to date-level accuracy - `YYYY-MM-DD`. " +
+                                           "Payments are settled when your payment service provider sends funds to your bank account.")
                                    @QueryParam("to_settled_date") String toSettledDate,
                                    @Context UriInfo uriInfo) {
 
@@ -257,10 +268,8 @@ public class PaymentsResource {
     @Produces(APPLICATION_JSON)
     @Operation(security = {@SecurityRequirement(name = "BearerAuth")},
             operationId = "Create a payment",
-            summary = "Create new payment",
-            description = "Create a new payment for the account associated to the Authorisation token. " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
+            summary = "Create a payment",
+            description = "You can use this endpoint to [create a new payment](https://docs.payments.service.gov.uk/making_payments/).",
             responses = {
                     @ApiResponse(responseCode = "201", description = "Created",
                             content = @Content(schema = @Schema(implementation = CreatePaymentResult.class))),
@@ -302,10 +311,8 @@ public class PaymentsResource {
     @Operation(security = {@SecurityRequirement(name = "BearerAuth")},
             operationId = "Cancel a payment",
             summary = "Cancel payment",
-            description = "Cancel a payment based on the provided payment ID and the Authorisation token. " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be cancelled if it's in " +
-                    "a state that isn't finished.",
+            description = "You can use this endpoint [to cancel an unfinished payment]" +
+                    "(https://docs.payments.service.gov.uk/making_payments/#cancel-a-payment-that-s-in-progress).",
             responses = {
                     @ApiResponse(responseCode = "204", description = "No Content"),
                     @ApiResponse(responseCode = "400", description = "Cancellation of payment failed",
@@ -324,7 +331,7 @@ public class PaymentsResource {
     )
     public Response cancelPayment(@Parameter(hidden = true) @Auth Account account,
                                   @PathParam("paymentId")
-                                  @Parameter(name = "paymentId", description = "Payment identifier", example = "hu20sqlact5260q2nanm0q8u93")
+                                  @Parameter(name = "paymentId", description = "The `payment_id` of the payment you’re cancelling.", example = "hu20sqlact5260q2nanm0q8u93")
                                           String paymentId) {
 
         logger.info("Payment cancel request - payment_id=[{}]", paymentId);
@@ -338,11 +345,9 @@ public class PaymentsResource {
     @Produces(APPLICATION_JSON)
     @Operation(security = {@SecurityRequirement(name = "BearerAuth")},
             operationId = "Capture a payment",
-            summary = "Capture payment",
-            description = "Capture a payment based on the provided payment ID and the Authorisation token. " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be captured if it's in " +
-                    "'submitted' state",
+            summary = "Take a delayed payment",
+            description = "You can use this endpoint to [take (‘capture’) a delayed payment from the paying user’s bank account]" +
+                    "(https://docs.payments.service.gov.uk/delayed_capture/).",
             responses = {
                     @ApiResponse(responseCode = "204", description = "No Content"),
                     @ApiResponse(responseCode = "400", description = "Capture of payment failed",
@@ -361,7 +366,7 @@ public class PaymentsResource {
     )
     public Response capturePayment(@Parameter(hidden = true) @Auth Account account,
                                    @PathParam("paymentId")
-                                   @Parameter(name = "paymentId", description = "Payment identifier", example = "hu20sqlact5260q2nanm0q8u93")
+                                   @Parameter(name = "paymentId", description = "The `payment_id` of the payment you’re capturing.", example = "hu20sqlact5260q2nanm0q8u93")
                                            String paymentId) {
         logger.info("Payment capture request - payment_id=[{}]", paymentId);
 
