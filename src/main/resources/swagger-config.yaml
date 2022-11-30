@@ -8,7 +8,7 @@ readAllResources: false
 sortOutput: true
 openAPI:
   info:
-    description: 'GOV.UK Pay API'
+    description: 'The GOV.UK Pay REST API. Read [our documentation](https://docs.payments.service.gov.uk/) for more information.'
     version: '1.0.3'
     title: 'GOV.UK Pay API'
   servers:

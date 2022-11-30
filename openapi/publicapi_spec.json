@@ -1,7 +1,7 @@
 {
   "openapi" : "3.0.1",
   "info" : {
-    "description" : "GOV.UK Pay API",
+    "description" : "The GOV.UK Pay REST API. Read [our documentation](https://docs.payments.service.gov.uk/) for more information.",
     "title" : "GOV.UK Pay API",
     "version" : "1.0.3"
   },
@@ -16,7 +16,7 @@
   "paths" : {
     "/v1/auth" : {
       "post" : {
-        "description" : "Authorise a payment that was created with `authorisation_mode` set to `moto_api`.",
+        "description" : "You can use this endpoint to [authorise payments](https://docs.payments.service.gov.uk/moto_payments/moto_send_card_details_api/) you have created with `authorisation_mode` set to `moto_api`.",
         "operationId" : "Authorise a MOTO payment",
         "requestBody" : {
           "content" : {
@@ -73,44 +73,46 @@
             "description" : "There is something wrong with GOV.UK Pay. If there are no issues on our status page (https://payments.statuspage.io), you can contact us with your error code and we'll investigate."
           }
         },
-        "summary" : "Authorise a MOTO payment",
+        "summary" : "Send card details to authorise a MOTO payment",
         "tags" : [ "Authorise card payments" ]
       }
     },
     "/v1/disputes" : {
       "get" : {
-        "description" : "Search disputes by status, 'from' and 'to' date, and 'from' and 'to' settled_date. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "description" : "You can use this endpoint to search disputes. A dispute is when [a paying user challenges a completed payment through their bank](https://docs.payments.service.gov.uk/disputes/).",
         "operationId" : "Search disputes",
         "parameters" : [ {
-          "description" : "Returns disputes raised on or after the 'from_date' Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - 'YYYY-MM-DDTHH:MM:SSZ'.",
+          "description" : "Returns disputes raised on or after the `from_date`. Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDThh:mm:ssZ`.",
+          "example" : "2015-08-13T12:35:00Z",
           "in" : "query",
           "name" : "from_date",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "Returns disputes raised before the 'to_date' Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - 'YYYY-MM-DDTHH:MM:SSZ'.",
+          "description" : "Returns disputes raised before the `to_date`. Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDThh:mm:ssZ`.",
+          "example" : "2015-08-13T12:35:00Z",
           "in" : "query",
           "name" : "to_date",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "Returns disputes settled on or after the 'from_settled_date'. Date must be in ISO 8601 format to date-level accuracy - 'YYYY-MM-DD'. Disputes are settled when your payment service provider takes the disputed amount from a payout to your bank account.You can only use 'from_settled_date' to find disputes raised on or after 8 August 2022.",
+          "description" : "Returns disputes settled on or after the `from_settled_date`. Date must be in ISO 8601 format to date-level accuracy - `YYYY-MM-DD`. Disputes are settled when your payment service provider takes the disputed amount from a payout to your bank account.",
           "in" : "query",
           "name" : "from_settled_date",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "Returns disputes settled before the 'to_settled_date'. 'Date must be in ISO 8601 format to date-level accuracy - 'YYYY-MM-DD'.Disputes are settled when your payment service provider takes the disputed amount from a payout to your bank account. You can only use 'to_settled_date' to find disputes raised on or after 8 August 2022.",
+          "description" : "Returns disputes settled before the `to_settled_date`. Date must be in ISO 8601 format to date-level accuracy - `YYYY-MM-DD`. Disputes are settled when your payment service provider takes the disputed amount from a payout to your bank account.",
           "in" : "query",
           "name" : "to_settled_date",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "Returns disputes with a matching 'status'. 'status' reflects what stage of the dispute process a dispute is at.",
+          "description" : "Returns disputes with a matching `status`. `status` reflects what stage of the dispute process a dispute is at. You can [read more about the meanings of the different status values](https://docs.payments.service.gov.uk/disputes/#dispute-status)",
           "example" : "won",
           "in" : "query",
           "name" : "status",
@@ -119,14 +121,14 @@
             "enum" : [ "needs_response", "under_review", "lost", "won" ]
           }
         }, {
-          "description" : "Returns a specific page of results. Defaults to '1'.",
+          "description" : "Returns a specific page of results. Defaults to `1`.",
           "in" : "query",
           "name" : "page",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "The number of disputes returned per results page. Defaults to '500'. Maximum value is '500'",
+          "description" : "The number of disputes returned per results page. Defaults to `500`. Maximum value is `500`.",
           "in" : "query",
           "name" : "display_size",
           "schema" : {
@@ -142,10 +144,10 @@
                 }
               }
             },
-            "description" : "OK"
+            "description" : "OK - your request was successful."
           },
           "401" : {
-            "description" : "Credentials are required to access this resource"
+            "description" : "Your API key is missing or invalid. Read more about [authenticating GOV.UK Pay API requests](https://docs.payments.service.gov.uk/api_reference/#authentication)"
           },
           "422" : {
             "content" : {
@@ -187,24 +189,24 @@
     },
     "/v1/payments" : {
       "get" : {
-        "description" : "Search payments by reference, state, 'from' and 'to' date. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "description" : "You can use this endpoint to [search for payments you’ve previously created](https://docs.payments.service.gov.uk/reporting/#search-payments/). Payments are sorted by date, with the most recently-created payment appearing first.",
         "operationId" : "Search payments",
         "parameters" : [ {
-          "description" : "Your payment reference to search (exact match, case insensitive)",
+          "description" : "Returns payments with `reference` values exactly matching your specified value.",
           "in" : "query",
           "name" : "reference",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "The user email used in the payment to be searched",
+          "description" : "Returns payments with matching `email` values. You can send full or partial email addresses. `email` is the paying user’s email address.",
           "in" : "query",
           "name" : "email",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "State of payments to be searched. Example=success",
+          "description" : "Returns payments in a matching `state`. `state` reflects where a payment is in the [payment status lifecycle](https://docs.payments.service.gov.uk/api_reference/#payment-status-lifecycle).",
           "example" : "success",
           "in" : "query",
           "name" : "state",
@@ -213,70 +215,72 @@
             "enum" : [ "created", "started", "submitted", "success", "failed", "cancelled", "error" ]
           }
         }, {
-          "description" : "Card brand used for payment. Example=master-card",
+          "description" : "Returns payments paid with a particular card brand.",
           "in" : "query",
           "name" : "card_brand",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "From date of payments to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z",
+          "description" : "Returns payments created on or after the `from_date`. Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDThh:mm:ssZ`.",
+          "example" : "2015-08-13T12:35:00Z",
           "in" : "query",
           "name" : "from_date",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "To date of payments to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z",
+          "description" : "Returns payments created before the `to_date`. Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDThh:mm:ssZ`.",
+          "example" : "2015-08-13T12:35:00Z",
           "in" : "query",
           "name" : "to_date",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "Page number requested for the search, should be a positive integer (optional, defaults to 1)",
+          "description" : "Returns a [specific page of results](https://docs.payments.service.gov.uk/api_reference/#pagination). Defaults to `1`.",
           "in" : "query",
           "name" : "page",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)",
+          "description" : "The number of payments returned [per results page](https://docs.payments.service.gov.uk/api_reference/#pagination). Defaults to `500`. Maximum value is `500`.",
           "in" : "query",
           "name" : "display_size",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "Name on card used to make payment",
+          "description" : "Returns payments paid with cards under this cardholder name.",
           "in" : "query",
           "name" : "cardholder_name",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "First six digits of the card used to make payment",
+          "description" : "Returns payments paid by cards beginning with the `first_digits_card_number` value. `first_digits_card_number` value must be 6 digits.",
           "in" : "query",
           "name" : "first_digits_card_number",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "Last four digits of the card used to make payment",
+          "description" : "Returns payments paid by cards ending with the `last_digits_card_number` value. `last_digits_card_number` value must be 4 digits.",
           "in" : "query",
           "name" : "last_digits_card_number",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "From settled date of payment to be searched (this date is inclusive). Example=2015-08-13",
+          "description" : "Returns payments settled on or after the `from_settled_date` value. You can only search by settled date if your payment service provider is Stripe. Date must be in ISO 8601 format to date-level accuracy - `YYYY-MM-DD`. Payments are settled when your payment service provider sends funds to your bank account.",
           "in" : "query",
           "name" : "from_settled_date",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "To settled date of payment to be searched (this date is inclusive). Example=2015-08-14",
+          "description" : "Returns payments settled before the `to_settled_date` value. You can only search by settled date if your payment service provider is Stripe. Date must be in ISO 8601 format to date-level accuracy - `YYYY-MM-DD`. Payments are settled when your payment service provider sends funds to your bank account.",
           "in" : "query",
           "name" : "to_settled_date",
           "schema" : {
@@ -292,10 +296,10 @@
                 }
               }
             },
-            "description" : "OK"
+            "description" : "OK - your request was successful."
           },
           "401" : {
-            "description" : "Credentials are required to access this resource"
+            "description" : "Your API key is missing or invalid. Read more about [authenticating GOV.UK Pay API requests](https://docs.payments.service.gov.uk/api_reference/#authentication)"
           },
           "422" : {
             "content" : {
@@ -335,7 +339,7 @@
         "tags" : [ "Card payments" ]
       },
       "post" : {
-        "description" : "Create a new payment for the account associated to the Authorisation token. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "description" : "You can use this endpoint to [create a new payment](https://docs.payments.service.gov.uk/making_payments/).",
         "operationId" : "Create a payment",
         "requestBody" : {
           "content" : {
@@ -370,7 +374,7 @@
             "description" : "Bad request"
           },
           "401" : {
-            "description" : "Credentials are required to access this resource"
+            "description" : "Your API key is missing or invalid. Read more about [authenticating GOV.UK Pay API requests](https://docs.payments.service.gov.uk/api_reference/#authentication)"
           },
           "422" : {
             "content" : {
@@ -406,16 +410,16 @@
         "security" : [ {
           "BearerAuth" : [ ]
         } ],
-        "summary" : "Create new payment",
+        "summary" : "Create a payment",
         "tags" : [ "Card payments" ]
       }
     },
     "/v1/payments/{paymentId}" : {
       "get" : {
-        "description" : "Return information about the payment The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "description" : "You can use this endpoint to [get details about a single payment you’ve previously created](https://docs.payments.service.gov.uk/reporting/#get-information-about-a-single-payment).",
         "operationId" : "Get a payment",
         "parameters" : [ {
-          "description" : "Payment identifier",
+          "description" : "Returns the payment with the matching `payment_id`.",
           "example" : "hu20sqlact5260q2nanm0q8u93",
           "in" : "path",
           "name" : "paymentId",
@@ -433,10 +437,10 @@
                 }
               }
             },
-            "description" : "OK"
+            "description" : "OK - your request was successful."
           },
           "401" : {
-            "description" : "Credentials are required to access this resource"
+            "description" : "Your API key is missing or invalid. Read more about [authenticating GOV.UK Pay API requests](https://docs.payments.service.gov.uk/api_reference/#authentication)"
           },
           "404" : {
             "content" : {
@@ -472,16 +476,16 @@
         "security" : [ {
           "BearerAuth" : [ ]
         } ],
-        "summary" : "Find payment by ID",
+        "summary" : "Get information about a single payment",
         "tags" : [ "Card payments" ]
       }
     },
     "/v1/payments/{paymentId}/cancel" : {
       "post" : {
-        "description" : "Cancel a payment based on the provided payment ID and the Authorisation token. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be cancelled if it's in a state that isn't finished.",
+        "description" : "You can use this endpoint [to cancel an unfinished payment](https://docs.payments.service.gov.uk/making_payments/#cancel-a-payment-that-s-in-progress).",
         "operationId" : "Cancel a payment",
         "parameters" : [ {
-          "description" : "Payment identifier",
+          "description" : "The `payment_id` of the payment you’re cancelling.",
           "example" : "hu20sqlact5260q2nanm0q8u93",
           "in" : "path",
           "name" : "paymentId",
@@ -505,7 +509,7 @@
             "description" : "Cancellation of payment failed"
           },
           "401" : {
-            "description" : "Credentials are required to access this resource"
+            "description" : "Your API key is missing or invalid. Read more about [authenticating GOV.UK Pay API requests](https://docs.payments.service.gov.uk/api_reference/#authentication)"
           },
           "404" : {
             "content" : {
@@ -557,10 +561,10 @@
     },
     "/v1/payments/{paymentId}/capture" : {
       "post" : {
-        "description" : "Capture a payment based on the provided payment ID and the Authorisation token. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'. A payment can only be captured if it's in 'submitted' state",
+        "description" : "You can use this endpoint to [take (‘capture’) a delayed payment from the paying user’s bank account](https://docs.payments.service.gov.uk/delayed_capture/).",
         "operationId" : "Capture a payment",
         "parameters" : [ {
-          "description" : "Payment identifier",
+          "description" : "The `payment_id` of the payment you’re capturing.",
           "example" : "hu20sqlact5260q2nanm0q8u93",
           "in" : "path",
           "name" : "paymentId",
@@ -584,7 +588,7 @@
             "description" : "Capture of payment failed"
           },
           "401" : {
-            "description" : "Credentials are required to access this resource"
+            "description" : "Your API key is missing or invalid. Read more about [authenticating GOV.UK Pay API requests](https://docs.payments.service.gov.uk/api_reference/#authentication)"
           },
           "404" : {
             "content" : {
@@ -630,13 +634,13 @@
         "security" : [ {
           "BearerAuth" : [ ]
         } ],
-        "summary" : "Capture payment",
+        "summary" : "Take a delayed payment",
         "tags" : [ "Card payments" ]
       }
     },
     "/v1/payments/{paymentId}/events" : {
       "get" : {
-        "description" : "Return payment events information about a certain payment The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "description" : "You can use this endpoint to [get a list of a payment’s events](https://docs.payments.service.gov.uk/reporting/#get-a-payment-s-events). A payment event is when a payment’s `state` changes, such as when the payment is created, or when the paying user submits their details.",
         "operationId" : "Get events for a payment",
         "parameters" : [ {
           "description" : "Payment identifier",
@@ -657,10 +661,10 @@
                 }
               }
             },
-            "description" : "OK"
+            "description" : "OK - your request was successful."
           },
           "401" : {
-            "description" : "Credentials are required to access this resource"
+            "description" : "Your API key is missing or invalid. Read more about [authenticating GOV.UK Pay API requests](https://docs.payments.service.gov.uk/api_reference/#authentication)"
           },
           "404" : {
             "content" : {
@@ -696,15 +700,16 @@
         "security" : [ {
           "BearerAuth" : [ ]
         } ],
-        "summary" : "Return payment events by ID",
+        "summary" : "Get a payment's events",
         "tags" : [ "Card payments" ]
       }
     },
     "/v1/payments/{paymentId}/refunds" : {
       "get" : {
-        "description" : "Return refunds for a payment. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "description" : "You can use this endpoint to [get a list of refunds for a payment](https://docs.payments.service.gov.uk/refunding_payments/#get-all-refunds-for-a-single-payment).",
         "operationId" : "Get all refunds for a payment",
         "parameters" : [ {
+          "description" : "The unique `payment_id` of the payment you want a list of refunds for.",
           "in" : "path",
           "name" : "paymentId",
           "required" : true,
@@ -721,10 +726,10 @@
                 }
               }
             },
-            "description" : "OK"
+            "description" : "OK - your request was successful."
           },
           "401" : {
-            "description" : "Credentials are required to access this resource"
+            "description" : "Your API key is missing or invalid. Read more about [authenticating GOV.UK Pay API requests](https://docs.payments.service.gov.uk/api_reference/#authentication)"
           },
           "404" : {
             "content" : {
@@ -760,13 +765,14 @@
         "security" : [ {
           "BearerAuth" : [ ]
         } ],
-        "summary" : "Get all refunds for a payment",
+        "summary" : "Get information about a payment’s refunds",
         "tags" : [ "Refunding card payments" ]
       },
       "post" : {
-        "description" : "Return issued refund information. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "description" : "You can use this endpoint to [fully or partially refund a payment](https://docs.payments.service.gov.uk/refunding_payments).",
         "operationId" : "Submit a refund for a payment",
         "parameters" : [ {
+          "description" : "The unique `payment_id` of the payment you want to refund.",
           "in" : "path",
           "name" : "paymentId",
           "required" : true,
@@ -800,7 +806,7 @@
             "description" : "ACCEPTED"
           },
           "401" : {
-            "description" : "Credentials are required to access this resource"
+            "description" : "Your API key is missing or invalid. Read more about [authenticating GOV.UK Pay API requests](https://docs.payments.service.gov.uk/api_reference/#authentication)"
           },
           "404" : {
             "content" : {
@@ -839,15 +845,16 @@
         "security" : [ {
           "BearerAuth" : [ ]
         } ],
-        "summary" : "Submit a refund for a payment",
+        "summary" : "Refund a payment",
         "tags" : [ "Refunding card payments" ]
       }
     },
     "/v1/payments/{paymentId}/refunds/{refundId}" : {
       "get" : {
-        "description" : "Return payment refund information by Refund ID The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "description" : "You can use this endpoint to [get details about an individual refund](https://docs.payments.service.gov.uk/refunding_payments/#checking-the-status-of-a-refund).",
         "operationId" : "Get a payment refund",
         "parameters" : [ {
+          "description" : "The unique `payment_id` of the payment you want to view a refund of.",
           "in" : "path",
           "name" : "paymentId",
           "required" : true,
@@ -855,6 +862,7 @@
             "type" : "string"
           }
         }, {
+          "description" : "The unique `refund_id` of the refund you want to view. If one payment has multiple refunds, each refund has a different `refund_id`.",
           "in" : "path",
           "name" : "refundId",
           "required" : true,
@@ -871,10 +879,10 @@
                 }
               }
             },
-            "description" : "OK"
+            "description" : "OK - your request was successful."
           },
           "401" : {
-            "description" : "Credentials are required to access this resource"
+            "description" : "Your API key is missing or invalid. Read more about [authenticating GOV.UK Pay API requests](https://docs.payments.service.gov.uk/api_reference/#authentication)"
           },
           "404" : {
             "content" : {
@@ -910,51 +918,55 @@
         "security" : [ {
           "BearerAuth" : [ ]
         } ],
-        "summary" : "Find payment refund by ID",
+        "summary" : "Check the status of a refund",
         "tags" : [ "Refunding card payments" ]
       }
     },
     "/v1/refunds" : {
       "get" : {
-        "description" : "Search refunds by 'from' and 'to' date. The Authorisation token needs to be specified in the 'authorization' header as 'authorization: Bearer YOUR_API_KEY_HERE'",
+        "description" : "You can use this endpoint to [search refunds you’ve previously created](https://docs.payments.service.gov.uk/refunding_payments/#searching-refunds). The refunds are sorted by date, with the most recently created refunds appearing first.",
         "operationId" : "Search refunds",
         "parameters" : [ {
-          "description" : "From date of refunds to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z",
+          "description" : "Returns refunds created on or after the `from_date`. Date and time must use Coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDThh:mm:ssZ`.",
+          "example" : "2015-08-13T12:35:00Z",
           "in" : "query",
           "name" : "from_date",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "To date of refunds to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z",
+          "description" : "Returns refunds created before the `to_date`. Date and time must use Coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDThh:mm:ssZ`.",
+          "example" : "2015-08-13T12:35:00Z",
           "in" : "query",
           "name" : "to_date",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "From settled date of refund to be searched (this date is inclusive). Example=2015-08-13",
+          "description" : "Returns refunds settled on or after the `from_settled_date` value. You can only use `from_settled_date` if your payment service provider is Stripe. Date must use ISO 8601 format to date-level accuracy - `YYYY-MM-DD`. Refunds are settled when Stripe takes the refund from your account balance.",
+          "example" : "2022-08-13",
           "in" : "query",
           "name" : "from_settled_date",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "To settled date of refund to be searched (this date is inclusive). Example=2015-08-13",
+          "description" : "Returns refunds settled before the `to_settled_date` value. You can only use `to_settled_date` if your payment service provider is Stripe. Date must use ISO 8601 format to date-level accuracy - `YYYY-MM-DD`. Refunds are settled when Stripe takes the refund from your account balance.",
+          "example" : "2022-08-13",
           "in" : "query",
           "name" : "to_settled_date",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "Page number requested for the search, should be a positive integer (optional, defaults to 1)",
+          "description" : "Returns a [specific page of results](https://docs.payments.service.gov.uk/api_reference/#pagination). Defaults to `1`.",
           "in" : "query",
           "name" : "page",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)",
+          "description" : "The number of refunds returned [per results page](https://docs.payments.service.gov.uk/api_reference/#pagination). Defaults to `500`. Maximum value is `500`.",
           "in" : "query",
           "name" : "display_size",
           "schema" : {
@@ -970,10 +982,10 @@
                 }
               }
             },
-            "description" : "OK"
+            "description" : "OK - your request was successful."
           },
           "401" : {
-            "description" : "Credentials are required to access this resource"
+            "description" : "Your API key is missing or invalid. Read more about [authenticating GOV.UK Pay API requests](https://docs.payments.service.gov.uk/api_reference/#authentication)"
           },
           "422" : {
             "content" : {

@@ -52,9 +52,9 @@ public class SearchRefundsResource {
             security = {@SecurityRequirement(name = "BearerAuth")},
             operationId = "Search refunds",
             summary = "Search refunds",
-            description = "Search refunds by 'from' and 'to' date. " +
-                    "The Authorisation token needs to be specified in the 'authorization' header " +
-                    "as 'authorization: Bearer YOUR_API_KEY_HERE'",
+            description = "You can use this endpoint to [search refunds you’ve previously created]" +
+                    "(https://docs.payments.service.gov.uk/refunding_payments/#searching-refunds). " +
+                    "The refunds are sorted by date, with the most recently created refunds appearing first.",
             responses = {
                     @ApiResponse(responseCode = "200", description = RESPONSE_200_DESCRIPTION, content = @Content(schema = @Schema(implementation = SearchRefundsResults.class))),
                     @ApiResponse(responseCode = "401", description = RESPONSE_401_DESCRIPTION),
@@ -66,17 +66,27 @@ public class SearchRefundsResource {
     )
     public SearchRefundsResults searchRefunds(@Parameter(hidden = true)
                                   @Auth Account account,
-                                  @Parameter(description = "From date of refunds to be searched (this date is inclusive). Example=2015-08-13T12:35:00Z")
+                                  @Parameter(description = "Returns refunds created on or after the `from_date`. " +
+                                          "Date and time must use Coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDThh:mm:ssZ`.", example = "2015-08-13T12:35:00Z")
                                   @QueryParam("from_date") String fromDate,
-                                  @Parameter(description = "To date of refunds to be searched (this date is exclusive). Example=2015-08-14T12:35:00Z")
+                                  @Parameter(description = "Returns refunds created before the `to_date`. " +
+                                          "Date and time must use Coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDThh:mm:ssZ`.", example = "2015-08-13T12:35:00Z")
                                   @QueryParam("to_date") String toDate,
-                                  @Parameter(description = "From settled date of refund to be searched (this date is inclusive). Example=2015-08-13")
+                                  @Parameter(description = "Returns refunds settled on or after the `from_settled_date` value. " +
+                                          "You can only use `from_settled_date` if your payment service provider is Stripe. " +
+                                          "Date must use ISO 8601 format to date-level accuracy - `YYYY-MM-DD`. " +
+                                          "Refunds are settled when Stripe takes the refund from your account balance.", example="2022-08-13")
                                   @QueryParam("from_settled_date") String fromSettledDate,
-                                  @Parameter(description = "To settled date of refund to be searched (this date is inclusive). Example=2015-08-13")
+                                  @Parameter(description = "Returns refunds settled before the `to_settled_date` value. " +
+                                          "You can only use `to_settled_date` if your payment service provider is Stripe. " +
+                                          "Date must use ISO 8601 format to date-level accuracy - `YYYY-MM-DD`. " +
+                                          "Refunds are settled when Stripe takes the refund from your account balance.", example="2022-08-13")
                                   @QueryParam("to_settled_date") String toSettledDate,
-                                  @Parameter(description = "Page number requested for the search, should be a positive integer (optional, defaults to 1)")
+                                  @Parameter(description = "Returns a [specific page of results](https://docs.payments.service.gov.uk/api_reference/#pagination). " +
+                                          "Defaults to `1`.")
                                   @QueryParam("page") String pageNumber,
-                                  @Parameter(description = "Number of results to be shown per page, should be a positive integer (optional, defaults to 500, max 500)", hidden = false)
+                                  @Parameter(description = "The number of refunds returned [per results page](https://docs.payments.service.gov.uk/api_reference/#pagination). " +
+                                          "Defaults to `500`. Maximum value is `500`.", hidden = false)
                                   @QueryParam("display_size") String displaySize) {
 
         logger.info("Refunds search request - [ {} ]",
