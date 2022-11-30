@@ -205,10 +205,10 @@ public class PaymentsResource {
                                    @Parameter(description = "Returns payments paid with a particular card brand.")
                                    @QueryParam("card_brand") String cardBrand,
                                    @Parameter(description = "Returns payments created on or after the `from_date`. " +
-                                           "Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDTHH:MM:SSZ`.")
+                                           "Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDThh:mm:ssZ`.")
                                    @QueryParam("from_date") String fromDate,
                                    @Parameter(description = "Returns payments created before the `to_date`. " +
-                                           "Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDTHH:MM:SSZ`.")
+                                           "Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDThh:mm:ssZ`.")
                                    @QueryParam("to_date") String toDate,
                                    @Parameter(description = "Returns a [specific page of results](https://docs.payments.service.gov.uk/api_reference/#pagination). Defaults to `1`.")
                                    @QueryParam("page") String pageNumber,
