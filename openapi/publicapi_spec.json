@@ -82,14 +82,16 @@
         "description" : "You can use this endpoint to search disputes. A dispute is when [a paying user challenges a completed payment through their bank](https://docs.payments.service.gov.uk/disputes/).",
         "operationId" : "Search disputes",
         "parameters" : [ {
-          "description" : "Returns disputes raised on or after the `from_date`. Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDTHH:MM:SSZ`.",
+          "description" : "Returns disputes raised on or after the `from_date`. Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDThh:mm:ssZ`.",
+          "example" : "2015-08-13T12:35:00Z",
           "in" : "query",
           "name" : "from_date",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "Returns disputes raised before the `to_date`. Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDTHH:MM:SSZ`.",
+          "description" : "Returns disputes raised before the `to_date`. Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDThh:mm:ssZ`.",
+          "example" : "2015-08-13T12:35:00Z",
           "in" : "query",
           "name" : "to_date",
           "schema" : {
@@ -220,14 +222,16 @@
             "type" : "string"
           }
         }, {
-          "description" : "Returns payments created on or after the `from_date`. Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDTHH:MM:SSZ`.",
+          "description" : "Returns payments created on or after the `from_date`. Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDThh:mm:ssZ`.",
+          "example" : "2015-08-13T12:35:00Z",
           "in" : "query",
           "name" : "from_date",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "Returns payments created before the `to_date`. Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDTHH:MM:SSZ`.",
+          "description" : "Returns payments created before the `to_date`. Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDThh:mm:ssZ`.",
+          "example" : "2015-08-13T12:35:00Z",
           "in" : "query",
           "name" : "to_date",
           "schema" : {
@@ -923,14 +927,16 @@
         "description" : "You can use this endpoint to [search refunds you’ve previously created](https://docs.payments.service.gov.uk/refunding_payments/#searching-refunds). The refunds are sorted by date, with the most recently created refunds appearing first.",
         "operationId" : "Search refunds",
         "parameters" : [ {
-          "description" : "Returns refunds created on or after the `from_date`. Date and time must use Coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDTHH:MM:SSZ`.",
+          "description" : "Returns refunds created on or after the `from_date`. Date and time must use Coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDThh:mm:ssZ`.",
+          "example" : "2015-08-13T12:35:00Z",
           "in" : "query",
           "name" : "from_date",
           "schema" : {
             "type" : "string"
           }
         }, {
-          "description" : "Returns refunds created before the `to_date`. Date and time must use Coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDTHH:MM:SSZ`.",
+          "description" : "Returns refunds created before the `to_date`. Date and time must use Coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDThh:mm:ssZ`.",
+          "example" : "2015-08-13T12:35:00Z",
           "in" : "query",
           "name" : "to_date",
           "schema" : {

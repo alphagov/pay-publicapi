@@ -70,10 +70,10 @@ public class SearchDisputesResource {
     public DisputesSearchResults searchDisputes(@Parameter(hidden = true)
                                                     @Auth Account account,
                                                 @Parameter(description = "Returns disputes raised on or after the `from_date`. " +
-                                                        "Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDTHH:MM:SSZ`.")
+                                                        "Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDThh:mm:ssZ`.", example = "2015-08-13T12:35:00Z")
                                                 @QueryParam("from_date") String fromDate,
                                                 @Parameter(description = "Returns disputes raised before the `to_date`. " +
-                                                        "Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDTHH:MM:SSZ`.")
+                                                        "Date and time must be coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDThh:mm:ssZ`.", example = "2015-08-13T12:35:00Z")
                                                 @QueryParam("to_date") String toDate,
                                                 @Parameter(description = "Returns disputes settled on or after the `from_settled_date`. " +
                                                         "Date must be in ISO 8601 format to date-level accuracy - `YYYY-MM-DD`. " +

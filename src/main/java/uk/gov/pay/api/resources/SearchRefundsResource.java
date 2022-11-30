@@ -67,10 +67,10 @@ public class SearchRefundsResource {
     public SearchRefundsResults searchRefunds(@Parameter(hidden = true)
                                   @Auth Account account,
                                   @Parameter(description = "Returns refunds created on or after the `from_date`. " +
-                                          "Date and time must use Coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDThh:mm:ssZ`.")
+                                          "Date and time must use Coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDThh:mm:ssZ`.", example = "2015-08-13T12:35:00Z")
                                   @QueryParam("from_date") String fromDate,
                                   @Parameter(description = "Returns refunds created before the `to_date`. " +
-                                          "Date and time must use Coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDThh:mm:ssZ`.")
+                                          "Date and time must use Coordinated Universal Time (UTC) and ISO 8601 format to second-level accuracy - `YYYY-MM-DDThh:mm:ssZ`.", example = "2015-08-13T12:35:00Z")
                                   @QueryParam("to_date") String toDate,
                                   @Parameter(description = "Returns refunds settled on or after the `from_settled_date` value. " +
                                           "You can only use `from_settled_date` if your payment service provider is Stripe. " +
