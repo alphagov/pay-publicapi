@@ -944,6 +944,7 @@
           }
         }, {
           "description" : "Returns refunds settled on or after the `from_settled_date` value. You can only use `from_settled_date` if your payment service provider is Stripe. Date must use ISO 8601 format to date-level accuracy - `YYYY-MM-DD`. Refunds are settled when Stripe takes the refund from your account balance.",
+          "example" : "2022-08-13",
           "in" : "query",
           "name" : "from_settled_date",
           "schema" : {
@@ -951,6 +952,7 @@
           }
         }, {
           "description" : "Returns refunds settled before the `to_settled_date` value. You can only use `to_settled_date` if your payment service provider is Stripe. Date must use ISO 8601 format to date-level accuracy - `YYYY-MM-DD`. Refunds are settled when Stripe takes the refund from your account balance.",
+          "example" : "2022-08-13",
           "in" : "query",
           "name" : "to_settled_date",
           "schema" : {

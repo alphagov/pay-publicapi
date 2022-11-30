@@ -75,12 +75,12 @@ public class SearchRefundsResource {
                                   @Parameter(description = "Returns refunds settled on or after the `from_settled_date` value. " +
                                           "You can only use `from_settled_date` if your payment service provider is Stripe. " +
                                           "Date must use ISO 8601 format to date-level accuracy - `YYYY-MM-DD`. " +
-                                          "Refunds are settled when Stripe takes the refund from your account balance.")
+                                          "Refunds are settled when Stripe takes the refund from your account balance.", example="2022-08-13")
                                   @QueryParam("from_settled_date") String fromSettledDate,
                                   @Parameter(description = "Returns refunds settled before the `to_settled_date` value. " +
                                           "You can only use `to_settled_date` if your payment service provider is Stripe. " +
                                           "Date must use ISO 8601 format to date-level accuracy - `YYYY-MM-DD`. " +
-                                          "Refunds are settled when Stripe takes the refund from your account balance.")
+                                          "Refunds are settled when Stripe takes the refund from your account balance.", example="2022-08-13")
                                   @QueryParam("to_settled_date") String toSettledDate,
                                   @Parameter(description = "Returns a [specific page of results](https://docs.payments.service.gov.uk/api_reference/#pagination). " +
                                           "Defaults to `1`.")
