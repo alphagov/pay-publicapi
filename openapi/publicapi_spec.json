@@ -1,7 +1,7 @@
 {
   "openapi" : "3.0.1",
   "info" : {
-    "description" : "The GOV.UK Pay REST API. Read [our documentation](https://docs.payments.service.gov.uk/) for more information.",
+    "description" : "The GOV.UK Pay REST API. Read [our documentation](https://docs.payments.service.gov.uk/) for more details.",
     "title" : "GOV.UK Pay API",
     "version" : "1.0.3"
   },
@@ -1026,29 +1026,34 @@
             "type" : "string",
             "example" : "address city",
             "maxLength" : 255,
-            "minLength" : 0
+            "minLength" : 0,
+            "description" : "The paying user's city."
           },
           "country" : {
             "type" : "string",
-            "example" : "GB"
+            "example" : "GB",
+            "description" : "The paying user’s country, displayed as a 2-character ISO-3166-1-alpha-2 code."
           },
           "line1" : {
             "type" : "string",
             "example" : "address line 1",
             "maxLength" : 255,
-            "minLength" : 0
+            "minLength" : 0,
+            "description" : "The first line of the paying user’s address."
           },
           "line2" : {
             "type" : "string",
             "example" : "address line 2",
             "maxLength" : 255,
-            "minLength" : 0
+            "minLength" : 0,
+            "description" : "The second line of the paying user’s address."
           },
           "postcode" : {
             "type" : "string",
             "example" : "AB1 2CD",
             "maxLength" : 25,
-            "minLength" : 0
+            "minLength" : 0,
+            "description" : "The paying user's postcode."
           }
         }
       },
@@ -1111,69 +1116,73 @@
           "card_brand" : {
             "type" : "string",
             "example" : "Visa",
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "The brand of card the user paid with."
           },
           "card_type" : {
             "type" : "string",
-            "description" : "The card type, `debit` or `credit` or `null` if not able to determine",
+            "description" : "The type of card the user paid with.`null` means your user paid with Google Pay or we did not recognise which type of card they paid with.",
             "enum" : [ "debit", "credit", "null" ],
             "example" : "debit",
             "readOnly" : true
           },
           "cardholder_name" : {
             "type" : "string",
-            "example" : "Mr. Card holder"
+            "example" : "Mr. Card Holder",
+            "description" : "The cardholder name the user entered when they paid."
           },
           "expiry_date" : {
             "type" : "string",
-            "description" : "The expiry date of the card in MM/yy format",
+            "description" : "The expiry date of the card the user paid with in `MM/YY` format.",
             "example" : "04/24",
             "readOnly" : true
           },
           "first_digits_card_number" : {
             "type" : "string",
             "example" : "123456",
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "The first 6 digits of the card the user paid with."
           },
           "last_digits_card_number" : {
             "type" : "string",
             "example" : "1234",
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "The last 4 digits of the card the user paid with."
           }
         }
       },
       "CreateCardPaymentRequest" : {
         "type" : "object",
-        "description" : "The Payment Request Payload",
+        "description" : "The create payment request body",
         "properties" : {
           "amount" : {
             "type" : "integer",
             "format" : "int32",
-            "description" : "amount in pence",
+            "description" : "Sets the amount the user will pay, in pence.",
             "example" : 12000,
             "maximum" : 10000000,
             "minimum" : 0
           },
           "delayed_capture" : {
             "type" : "boolean",
-            "description" : "delayed capture flag",
+            "description" : "You can use this parameter to [delay taking a payment from the paying user’s bank account](https://docs.payments.service.gov.uk/delayed_capture/#delay-taking-a-payment). For example, you might want to do your own anti-fraud checks on payments, or check that users are eligible for your service. Defaults to `false`.",
             "example" : false
           },
           "description" : {
             "type" : "string",
-            "description" : "payment description",
+            "description" : "A human-readable description of the payment you’re creating. Paying users see this description on the payment pages. Service staff see the description in the GOV.UK Pay admin tool.",
             "example" : "New passport application",
             "maxLength" : 255,
             "minLength" : 0
           },
           "email" : {
             "type" : "string",
-            "description" : "email",
+            "description" : "[Prefills](https://docs.payments.service.gov.uk/optional_features/prefill_user_details) the paying user’s email address field when they make their payment.",
             "example" : "Joe.Bogs@example.org"
           },
           "language" : {
             "type" : "string",
-            "description" : "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages",
+            "description" : "[Sets the language of the user’s payment page](https://docs.payments.service.gov.uk/optional_features/welsh_language) with an ISO-6391 Alpha-2 code of a supported language.",
             "enum" : [ "en", "cy" ],
             "example" : "en"
           },
@@ -1182,7 +1191,7 @@
           },
           "moto" : {
             "type" : "boolean",
-            "description" : "Mail Order / Telephone Order (MOTO) payment flag",
+            "description" : "You can use this parameter to [designate a payment as a Mail Order / Telephone Order (MOTO) payment](https://docs.payments.service.gov.uk/moto_payments).",
             "example" : false
           },
           "prefilled_cardholder_details" : {
@@ -1190,14 +1199,14 @@
           },
           "reference" : {
             "type" : "string",
-            "description" : "payment reference",
+            "description" : "Associate a reference with this payment. `reference` is not unique - multiple payments can have identical `reference` values.",
             "example" : "12345",
             "maxLength" : 255,
             "minLength" : 0
           },
           "return_url" : {
             "type" : "string",
-            "description" : "service return url",
+            "description" : "The URL [the paying user is directed to after their payment journey on GOV.UK Pay ends](https://docs.payments.service.gov.uk/making_payments/#choose-the-return-url-and-match-your-users-to-payments).",
             "example" : "https://service-name.gov.uk/transactions/12345",
             "maxLength" : 2000,
             "minLength" : 0
@@ -1214,7 +1223,7 @@
           "amount" : {
             "type" : "integer",
             "format" : "int64",
-            "description" : "The amount in pence.",
+            "description" : "The amount, in pence, the user has paid or will pay. `amount` will match the value you sent in the request body.",
             "example" : 1200
           },
           "card_details" : {
@@ -1222,28 +1231,28 @@
           },
           "created_date" : {
             "type" : "string",
-            "description" : "The date you created the payment.",
+            "description" : "The date and time you created this payment. This value uses Coordinated Universal Time (UTC) and ISO 8601 format - `YYYY-MM-DDTHH:MM:SSZ`.",
             "example" : "2016-01-21T17:15:00.000Z"
           },
           "delayed_capture" : {
             "type" : "boolean",
-            "description" : "Whether to [delay capturing](https://docs.payments.service.gov.uk/optional_features/delayed_capture/) this payment.",
+            "description" : "`delayed_capture` is `true` if you’re controlling [when GOV.UK Pay takes (‘captures’) the payment from the paying user’s bank account](https://docs.payments.service.gov.uk/delayed_capture).",
             "example" : false,
             "readOnly" : true
           },
           "description" : {
             "type" : "string",
-            "description" : "The human-readable description you gave the payment.",
+            "description" : "The description you sent in the request body when creating this payment.",
             "example" : "New passport application"
           },
           "email" : {
             "type" : "string",
-            "description" : "The email address of your user.",
+            "description" : "The paying user’s email address. The paying user’s email field will be prefilled with this value when they make their payment. `email` does not appear if you did not include it in the request body.",
             "example" : "citizen@example.org"
           },
           "language" : {
             "type" : "string",
-            "description" : "Which language your users will see on the payment pages when they make a payment.",
+            "description" : "The language of the user’s payment page.",
             "enum" : [ "en", "cy" ],
             "example" : "en"
           },
@@ -1252,26 +1261,27 @@
           },
           "moto" : {
             "type" : "boolean",
-            "description" : "Mail Order / Telephone Order (MOTO) payment flag.",
+            "description" : "Indicates if this payment is a [Mail Order / Telephone Order (MOTO) payment](https://docs.payments.service.gov.uk/moto_payments).",
             "example" : false
           },
           "payment_id" : {
             "type" : "string",
-            "description" : "The unique identifier of the payment.",
+            "description" : "The unique ID GOV.UK Pay automatically associated with this payment when you created it.",
             "example" : "hu20sqlact5260q2nanm0q8u93"
           },
           "payment_provider" : {
             "type" : "string",
-            "example" : "worldpay"
+            "example" : "worldpay",
+            "description" : "The payment service provider that will process this payment."
           },
           "provider_id" : {
             "type" : "string",
-            "description" : "The reference number the payment gateway associated with the payment.",
+            "description" : "The reference number your payment service provider associated with the payment.",
             "example" : "null"
           },
           "reference" : {
             "type" : "string",
-            "description" : "The reference number you associated with this payment.",
+            "description" : "The reference you sent when creating this payment.",
             "example" : "12345"
           },
           "refund_summary" : {
@@ -1279,7 +1289,7 @@
           },
           "return_url" : {
             "type" : "string",
-            "description" : "An HTTPS URL on your site that your user will be sent back to once they have completed their payment attempt on GOV.UK Pay.",
+            "description" : "The URL you direct the paying user to after their payment journey on GOV.UK Pay ends.",
             "example" : "https://service-name.gov.uk/transactions/12345"
           },
           "settlement_summary" : {
@@ -1418,11 +1428,13 @@
         "properties" : {
           "code" : {
             "type" : "string",
-            "example" : "P0900"
+            "example" : "P0900",
+            "description" : "A GOV.UK Pay API error code. You can [find out more about this code in our documentation](https://docs.payments.service.gov.uk/api_reference/#gov-uk-pay-api-error-codes)."
           },
           "description" : {
             "type" : "string",
-            "example" : "Too many requests"
+            "example" : "Too many requests",
+            "description" : "Additional details about the error"
           }
         }
       },
@@ -1447,7 +1459,8 @@
           "amount" : {
             "type" : "integer",
             "format" : "int64",
-            "example" : 1200
+            "example" : 1200,
+            "description" : "The amount in pence the user has paid or will pay."
           },
           "authorisation_mode" : {
             "type" : "string",
@@ -1460,7 +1473,7 @@
           "card_brand" : {
             "type" : "string",
             "deprecated" : true,
-            "description" : "Card Brand. Deprecated, please use card_details.card_brand instead",
+            "description" : "This attribute is deprecated. Please use `card_details.card_brand` instead.",
             "example" : "Visa",
             "readOnly" : true
           },
@@ -1471,72 +1484,81 @@
             "type" : "integer",
             "format" : "int64",
             "example" : 250,
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "The [corporate card surcharge](https://docs.payments.service.gov.uk/corporate_card_surcharges/#add-corporate-card-fees) amount in pence."
           },
           "created_date" : {
             "type" : "string",
             "example" : "2016-01-21T17:15:00.000Z",
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "The date and time you created this payment. This value uses Coordinated Universal Time (UTC) and ISO 8601 format - `YYYY-MM-DDTHH:MM:SSZ`."
           },
           "delayed_capture" : {
             "type" : "boolean",
-            "description" : "delayed capture flag",
+            "description" : "`delayed_capture` is `true` if you’re [controlling how long it takes GOV.UK Pay to take (‘capture’) a payment](https://docs.payments.service.gov.uk/delayed_capture).",
             "example" : false,
             "readOnly" : true
           },
           "description" : {
             "type" : "string",
-            "example" : "Your Service Description"
+            "example" : "Your Service Description",
+            "description" : "The description assigned to the payment when it was created."
           },
           "email" : {
             "type" : "string",
-            "example" : "your email"
+            "example" : "citizen@example.org",
+            "description" : "The paying user’s email address."
           },
           "fee" : {
             "type" : "integer",
             "format" : "int64",
-            "description" : "processing fee taken by the GOV.UK Pay platform, in pence. Only available depending on payment service provider",
+            "description" : "The [payment service provider’s (PSP) transaction fee](https://docs.payments.service.gov.uk/reporting/#psp-fees), in pence. `fee` only appears when we have taken (‘captured’) the payment from the user or if their payment fails after they submitted their card details. `fee` will not appear if your PSP is Worldpay or you are using an API key from a test service.",
             "example" : 5,
             "readOnly" : true
           },
           "language" : {
             "type" : "string",
             "enum" : [ "en", "cy" ],
-            "example" : "en"
+            "example" : "en",
+            "description" : "The ISO-6391 Alpha-2 code of the [language of the user's payment page](https://docs.payments.service.gov.uk/optional_features/welsh_language)."
           },
           "metadata" : {
             "$ref" : "#/components/schemas/ExternalMetadata"
           },
           "moto" : {
             "type" : "boolean",
-            "description" : "Mail Order / Telephone Order (MOTO) payment flag",
+            "description" : "Indicates if this payment is a [Mail Order / Telephone Order (MOTO) payment](https://docs.payments.service.gov.uk/moto_payments).",
             "example" : false
           },
           "net_amount" : {
             "type" : "integer",
             "format" : "int64",
-            "description" : "amount including all surcharges and less all fees, in pence. Only available depending on payment service provider",
+            "description" : "The amount, in pence, that will be paid into your bank account after your payment service provider takes the `fee`.",
             "example" : 1195,
             "readOnly" : true
           },
           "payment_id" : {
             "type" : "string",
             "example" : "hu20sqlact5260q2nanm0q8u93",
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "The unique ID GOV.UK Pay automatically associated with this payment when you created it."
           },
           "payment_provider" : {
             "type" : "string",
             "example" : "worldpay",
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "The payment service provider that processed this payment."
           },
           "provider_id" : {
             "type" : "string",
             "example" : "reference-from-payment-gateway",
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "The unique ID your payment service provider generated for this payment. This is not the same as the `payment_id`."
           },
           "reference" : {
             "type" : "string",
-            "example" : "your-reference"
+            "example" : "your-reference",
+            "description" : "The reference associated with the payment when it was created. `reference` is not unique - multiple payments can have the same `reference` value."
           },
           "refund_summary" : {
             "$ref" : "#/components/schemas/RefundSummary"
@@ -1544,7 +1566,8 @@
           "return_url" : {
             "type" : "string",
             "example" : "http://your.service.domain/your-reference",
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "The URL you direct the paying user to after their payment journey on GOV.UK Pay ends."
           },
           "settlement_summary" : {
             "$ref" : "#/components/schemas/PaymentSettlementSummary"
@@ -1556,7 +1579,8 @@
             "type" : "integer",
             "format" : "int64",
             "example" : 1450,
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "Amount your user paid in pence, including corporate card fees. `total_amount` only appears if you [added a corporate card surcharge to the payment](https://docs.payments.service.gov.uk/corporate_card_surcharges/#add-corporate-card-fees)."
           }
         }
       },
@@ -1567,12 +1591,14 @@
           "href" : {
             "type" : "string",
             "example" : "https://an.example.link/from/payment/platform",
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "A URL that lets you perform additional actions to this payment when combined with the associated `method`."
           },
           "method" : {
             "type" : "string",
             "example" : "GET",
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "An API method that lets you perform additional actions to this payment when combined with the associated `href`."
           }
         }
       },
@@ -1585,7 +1611,8 @@
           "amount" : {
             "type" : "integer",
             "format" : "int64",
-            "example" : 1200
+            "example" : 1200,
+            "description" : "The amount in pence the user has paid or will pay."
           },
           "authorisation_mode" : {
             "type" : "string",
@@ -1598,7 +1625,7 @@
           "card_brand" : {
             "type" : "string",
             "deprecated" : true,
-            "description" : "Card Brand. Deprecated, please use card_details.card_brand instead",
+            "description" : "This attribute is deprecated. Please use `card_details.card_brand` instead.",
             "example" : "Visa",
             "readOnly" : true
           },
@@ -1609,72 +1636,81 @@
             "type" : "integer",
             "format" : "int64",
             "example" : 250,
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "The [corporate card surcharge](https://docs.payments.service.gov.uk/corporate_card_surcharges/#add-corporate-card-fees) amount in pence."
           },
           "created_date" : {
             "type" : "string",
             "example" : "2016-01-21T17:15:00.000Z",
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "The date and time you created this payment. This value uses Coordinated Universal Time (UTC) and ISO 8601 format - `YYYY-MM-DDTHH:MM:SSZ`."
           },
           "delayed_capture" : {
             "type" : "boolean",
-            "description" : "delayed capture flag",
+            "description" : "`delayed_capture` is `true` if you’re [controlling how long it takes GOV.UK Pay to take (‘capture’) a payment](https://docs.payments.service.gov.uk/delayed_capture).",
             "example" : false,
             "readOnly" : true
           },
           "description" : {
             "type" : "string",
-            "example" : "Your Service Description"
+            "example" : "Your Service Description",
+            "description" : "The description assigned to the payment when it was created."
           },
           "email" : {
             "type" : "string",
-            "example" : "your email"
+            "example" : "citizen@example.org",
+            "description" : "The paying user’s email address."
           },
           "fee" : {
             "type" : "integer",
             "format" : "int64",
-            "description" : "processing fee taken by the GOV.UK Pay platform, in pence. Only available depending on payment service provider",
+            "description" : "The [payment service provider’s (PSP) transaction fee](https://docs.payments.service.gov.uk/reporting/#psp-fees), in pence. `fee` only appears when we have taken (‘captured’) the payment from the user or if their payment fails after they submitted their card details. `fee` will not appear if your PSP is Worldpay or you are using an API key from a test service.",
             "example" : 5,
             "readOnly" : true
           },
           "language" : {
             "type" : "string",
             "enum" : [ "en", "cy" ],
-            "example" : "en"
+            "example" : "en",
+            "description" : "The ISO-6391 Alpha-2 code of the [language of the user's payment page](https://docs.payments.service.gov.uk/optional_features/welsh_language)."
           },
           "metadata" : {
             "$ref" : "#/components/schemas/ExternalMetadata"
           },
           "moto" : {
             "type" : "boolean",
-            "description" : "Mail Order / Telephone Order (MOTO) payment flag",
+            "description" : "Indicates if this payment is a [Mail Order / Telephone Order (MOTO) payment](https://docs.payments.service.gov.uk/moto_payments).",
             "example" : false
           },
           "net_amount" : {
             "type" : "integer",
             "format" : "int64",
-            "description" : "amount including all surcharges and less all fees, in pence. Only available depending on payment service provider",
+            "description" : "The amount, in pence, that will be paid into your bank account after your payment service provider takes the `fee`.",
             "example" : 1195,
             "readOnly" : true
           },
           "payment_id" : {
             "type" : "string",
             "example" : "hu20sqlact5260q2nanm0q8u93",
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "The unique ID GOV.UK Pay automatically associated with this payment when you created it."
           },
           "payment_provider" : {
             "type" : "string",
             "example" : "worldpay",
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "The payment service provider that processed this payment."
           },
           "provider_id" : {
             "type" : "string",
             "example" : "reference-from-payment-gateway",
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "The unique ID your payment service provider generated for this payment. This is not the same as the `payment_id`."
           },
           "reference" : {
             "type" : "string",
-            "example" : "your-reference"
+            "example" : "your-reference",
+            "description" : "The reference associated with the payment when it was created. `reference` is not unique - multiple payments can have the same `reference` value."
           },
           "refund_summary" : {
             "$ref" : "#/components/schemas/RefundSummary"
@@ -1682,7 +1718,8 @@
           "return_url" : {
             "type" : "string",
             "example" : "http://your.service.domain/your-reference",
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "The URL you direct the paying user to after their payment journey on GOV.UK Pay ends."
           },
           "settlement_summary" : {
             "$ref" : "#/components/schemas/PaymentSettlementSummary"
@@ -1694,7 +1731,8 @@
             "type" : "integer",
             "format" : "int64",
             "example" : 1450,
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "Amount your user paid in pence, including corporate card fees. `total_amount` only appears if you [added a corporate card surcharge to the payment](https://docs.payments.service.gov.uk/corporate_card_surcharges/#add-corporate-card-fees)."
           }
         }
       },
@@ -1708,14 +1746,15 @@
           "payment_id" : {
             "type" : "string",
             "example" : "hu20sqlact5260q2nanm0q8u93",
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "The unique ID your payment service provider generated for this payment. This is not the same as the `payment_id`."
           },
           "state" : {
             "$ref" : "#/components/schemas/PaymentState"
           },
           "updated" : {
             "type" : "string",
-            "description" : "updated",
+            "description" : "When this payment’s state changed. This value uses Coordinated Universal Time (UTC) and ISO-8601 format - `YYYY-MM-DDTHH:MM:SSZ`.",
             "example" : "2017-01-10T16:44:48.646Z",
             "readOnly" : true
           }
@@ -1746,7 +1785,8 @@
           "payment_id" : {
             "type" : "string",
             "example" : "hu20sqlact5260q2nanm0q8u93",
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "The unique ID GOV.UK Pay automatically associated with this payment when you created it."
           }
         }
       },
@@ -1817,7 +1857,7 @@
           "amount" : {
             "type" : "integer",
             "format" : "int32",
-            "description" : "Amount in pence. Can't be more than the available amount for refunds",
+            "description" : "The amount you want to [refund to your user](https://docs.payments.service.gov.uk/refunding_payments/) in pence.",
             "example" : 150000,
             "maximum" : 10000000,
             "minimum" : 1
@@ -1825,7 +1865,7 @@
           "refund_amount_available" : {
             "type" : "integer",
             "format" : "int32",
-            "description" : "Amount in pence. Total amount still available before issuing the refund",
+            "description" : "The amount available to refund before submitting this request. `refund_amount_available` must match the `amount_available` you receive when you check if you can refund a payment. Use `GET /v1/payments/{PAYMENT_ID}` to check if you can refund this payment.",
             "example" : 200000,
             "maximum" : 10000000,
             "minimum" : 1
@@ -1842,23 +1882,27 @@
           "count" : {
             "type" : "integer",
             "format" : "int32",
-            "example" : 20
+            "example" : 20,
+            "description" : "Number of payments on the current page of search results."
           },
           "page" : {
             "type" : "integer",
             "format" : "int32",
-            "example" : 1
+            "example" : 1,
+            "description" : "The [page of results you’re viewing](https://docs.payments.service.gov.uk/api_reference/#pagination). To view other pages, make this request again using the `page` parameter."
           },
           "results" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/PaymentDetailForSearch"
-            }
+            },
+            "description" : "Contains payments matching your search criteria."
           },
           "total" : {
             "type" : "integer",
             "format" : "int32",
-            "example" : 100
+            "example" : 100,
+            "description" : "Total number of payments matching your search criteria."
           }
         }
       },
@@ -1868,19 +1912,19 @@
         "properties" : {
           "capture_submit_time" : {
             "type" : "string",
-            "description" : "Date and time capture request has been submitted. May be null if capture request was not immediately acknowledged by payment gateway.",
+            "description" : "The date and time GOV.UK Pay asked your payment service provider to take the payment from your user’s account. This value uses Coordinated Universal Time (UTC) and ISO 8601 format - `YYYY-MM-DDTHH:MM:SSZ`.",
             "example" : "2016-01-21T17:15:00.000Z",
             "readOnly" : true
           },
           "captured_date" : {
             "type" : "string",
-            "description" : "Date of the capture event.",
+            "description" : "The date your payment service provider took the payment from your user. This value uses ISO 8601 format - `YYYY-MM-DD`.",
             "example" : "2016-01-21",
             "readOnly" : true
           },
           "settled_date" : {
             "type" : "string",
-            "description" : "The date that the transaction was paid into the service's account.",
+            "description" : "The date your payment service provider sent the payment to your bank account as part of a payout. This value uses ISO 8601 format - `YYYY-MM-DD`.",
             "example" : "2016-01-21",
             "readOnly" : true
           }
@@ -1892,24 +1936,24 @@
         "properties" : {
           "code" : {
             "type" : "string",
-            "description" : "What went wrong with the Payment if it finished with an error - error code",
+            "description" : "An [API error code](https://docs.payments.service.gov.uk/api_reference/#gov-uk-pay-api-error-codes) that explains why the payment failed. `code` only appears if the payment failed.",
             "example" : "P010",
             "readOnly" : true
           },
           "finished" : {
             "type" : "boolean",
-            "description" : "Whether the payment has finished",
+            "description" : "Indicates whether a payment journey is finished.",
             "readOnly" : true
           },
           "message" : {
             "type" : "string",
-            "description" : "What went wrong with the Payment if it finished with an error - English message",
+            "description" : "A description of what went wrong with this payment. `message` only appears if the payment failed.",
             "example" : "User cancelled the payment",
             "readOnly" : true
           },
           "status" : {
             "type" : "string",
-            "description" : "Current progress of the payment in its lifecycle",
+            "description" : "Where the payment is in [the payment status lifecycle](https://docs.payments.service.gov.uk/api_reference/#payment-status-meanings).",
             "example" : "created",
             "readOnly" : true
           }
@@ -1922,12 +1966,14 @@
           "href" : {
             "type" : "string",
             "example" : "https://an.example.link/from/payment/platform",
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "A URL that lets you perform additional actions to this payment when combined with the associated `method`."
           },
           "method" : {
             "type" : "string",
             "example" : "POST",
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "An API method that lets you perform additional actions to this payment when combined with the associated `href`."
           },
           "params" : {
             "type" : "object",
@@ -1956,7 +2002,7 @@
           },
           "cardholder_name" : {
             "type" : "string",
-            "description" : "prefilled cardholder name",
+            "description" : "The cardholder name you prefilled when you created this payment.",
             "example" : "J. Bogs",
             "maxLength" : 255,
             "minLength" : 0
@@ -1973,17 +2019,20 @@
             "type" : "integer",
             "format" : "int64",
             "example" : 120,
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "The amount refunded to the user in pence."
           },
           "created_date" : {
             "type" : "string",
             "example" : "2017-01-10T16:52:07.855Z",
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "The date and time you created this refund.<br><br>This value uses Coordinated Universal Time (UTC) and ISO 8601 format - `YYYY-MM-DDTHH:MM:SSZ`."
           },
           "refund_id" : {
             "type" : "string",
             "example" : "act4c33g40j3edfmi8jknab84x",
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "The unique ID GOV.UK Pay automatically associated with this refund when you created it."
           },
           "settlement_summary" : {
             "$ref" : "#/components/schemas/RefundSettlementSummary"
@@ -1992,7 +2041,8 @@
             "type" : "string",
             "enum" : [ "submitted", "success", "error" ],
             "example" : "success",
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "The [status of the refund](https://docs.payments.service.gov.uk/refunding_payments/#checking-the-status-of-a-refund-status)."
           }
         }
       },
@@ -2006,17 +2056,20 @@
             "type" : "integer",
             "format" : "int64",
             "example" : 120,
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "The amount refunded to the user in pence."
           },
           "created_date" : {
             "type" : "string",
             "example" : "2017-01-10T16:52:07.855Z",
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "The date and time you created this refund.<br><br>This value uses Coordinated Universal Time (UTC) and ISO 8601 format - `YYYY-MM-DDTHH:MM:SSZ`."
           },
           "refund_id" : {
             "type" : "string",
             "example" : "act4c33g40j3edfmi8jknab84x",
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "The unique ID GOV.UK Pay automatically associated with this refund when you created it."
           },
           "settlement_summary" : {
             "$ref" : "#/components/schemas/RefundSettlementSummary"
@@ -2025,7 +2078,8 @@
             "type" : "string",
             "enum" : [ "submitted", "success", "error" ],
             "example" : "success",
-            "readOnly" : true
+            "readOnly" : true,
+            "description" : "The [status of the refund](https://docs.payments.service.gov.uk/refunding_payments/#checking-the-status-of-a-refund-status)."
           }
         }
       },
@@ -2040,7 +2094,8 @@
           },
           "payment_id" : {
             "type" : "string",
-            "example" : "hu20sqlact5260q2nanm0q8u93"
+            "example" : "hu20sqlact5260q2nanm0q8u93",
+            "description" : "The unique ID GOV.UK Pay associated with this payment when you created it."
           }
         }
       },
@@ -2065,23 +2120,27 @@
           "count" : {
             "type" : "integer",
             "format" : "int32",
-            "example" : 20
+            "example" : 20,
+            "description" : "Number of refunds on the current page of search results."
           },
           "page" : {
             "type" : "integer",
             "format" : "int32",
-            "example" : 1
+            "example" : 1,
+            "description" : "The [page of results](payments.service.gov.uk/api_reference/#pagination) you’re viewing. To view other pages, make this request again using the `page` parameter."
           },
           "results" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/RefundDetailForSearch"
-            }
+            },
+            "description" : "Contains the refunds matching your search criteria."
           },
           "total" : {
             "type" : "integer",
             "format" : "int32",
-            "example" : 100
+            "example" : 100,
+            "description" : "Number of refunds matching your search criteria."
           }
         }
       },
@@ -2091,7 +2150,7 @@
         "properties" : {
           "settled_date" : {
             "type" : "string",
-            "description" : "The date that the transaction was refunded from the service's account.",
+            "description" : "The date Stripe took the refund from a payout to your bank account. `settled_date` only appears if Stripe has taken the refund. This value uses Coordinated Universal Time (UTC) and ISO 8601 format - `YYYY-MM-DD`.",
             "example" : "2016-01-21",
             "readOnly" : true
           }
@@ -2105,19 +2164,19 @@
           "amount_available" : {
             "type" : "integer",
             "format" : "int64",
-            "description" : "Amount available for refund in pence",
+            "description" : "How much you can refund to the user, in pence.",
             "example" : 100,
             "readOnly" : true
           },
           "amount_submitted" : {
             "type" : "integer",
             "format" : "int64",
-            "description" : "Amount submitted for refunds on this Payment in pence",
+            "description" : "How much you’ve already refunded to the user, in pence.",
             "readOnly" : true
           },
           "status" : {
             "type" : "string",
-            "description" : "Availability status of the refund",
+            "description" : "Whether you can [refund the payment](https://docs.payments.service.gov.uk/refunding_payments/#checking-the-status-of-a-refund-status).",
             "example" : "available"
           }
         }
@@ -2130,7 +2189,8 @@
           },
           "payment_id" : {
             "type" : "string",
-            "example" : "hu20sqlact5260q2nanm0q8u93"
+            "example" : "hu20sqlact5260q2nanm0q8u93",
+            "description" : "The unique ID GOV.UK Pay associated with this payment when you created it."
           }
         }
       },
@@ -2140,21 +2200,24 @@
         "properties" : {
           "code" : {
             "type" : "string",
-            "example" : "P0102"
+            "example" : "P0102",
+            "description" : "An [API error code](https://docs.payments.service.gov.uk/api_reference/#gov-uk-pay-api-error-codes) that explains why the payment failed.<br><br>`code` only appears if the payment failed."
           },
           "description" : {
             "type" : "string",
-            "example" : "Invalid attribute value: amount. Must be less than or equal to 10000000"
+            "example" : "Invalid attribute value: amount. Must be less than or equal to 10000000",
+            "description" : "Additional details about the error."
           },
           "field" : {
             "type" : "string",
-            "example" : "amount"
+            "example" : "amount",
+            "description" : "The parameter in your request that's causing the error."
           }
         }
       },
       "SearchNavigationLinks" : {
         "type" : "object",
-        "description" : "Links to navigate through pages",
+        "description" : "Links to navigate through pages of your search.",
         "properties" : {
           "first_page" : {
             "$ref" : "#/components/schemas/Link"
@@ -2179,7 +2242,7 @@
         "properties" : {
           "settled_date" : {
             "type" : "string",
-            "description" : "The date your payment service provider took the disputed payment and dispute fee from a payout to your bank account. This value appears in ISO 8601 format. 'settled_date' only appears if you lost the dispute.",
+            "description" : "The date your payment service provider took the disputed payment and dispute fee from a payout to your bank account. This value appears in ISO 8601 format - `YYYY-MM-DD`. `settled_date` only appears if you lost the dispute.",
             "example" : "2022-07-28",
             "readOnly" : true
           }
@@ -2191,14 +2254,14 @@
         "properties" : {
           "required" : {
             "type" : "boolean",
-            "description" : "Flag indicating whether the payment required 3D Secure authentication."
+            "description" : "Indicates if this payment was authorised with 3D Secure authentication. `required` is `true` if the payment required 3D Secure authentication."
           }
         }
       }
     },
     "securitySchemes" : {
       "BearerAuth" : {
-        "description" : "<br> The Authorisation token needs to be specified in the 'Authorization' header as `Authorization: Bearer YOUR_API_KEY_HERE`",
+        "description" : "GOV.UK Pay authenticates API calls with [OAuth2 HTTP bearer tokens](http://tools.ietf.org/html/rfc6750). You need to use an `\"Authorization\"` HTTP header to provide your API key, with a `\"Bearer\"` prefix. For example: `Authorization: Bearer {YOUR_API_KEY_HERE}`",
         "scheme" : "bearer",
         "type" : "http"
       }
