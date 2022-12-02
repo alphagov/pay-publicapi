@@ -13,7 +13,9 @@ import java.util.Optional;
 public class PrefilledCardholderDetails {
 
     @JsonProperty("cardholder_name")
-    @Schema(name = "cardholder_name", description = "prefilled cardholder name", example = "J. Bogs")
+    @Schema(name = "cardholder_name", 
+            description = "The cardholder name you prefilled when you created this payment.", 
+            example = "J. Bogs")
     @Size(max = 255, message = "Must be less than or equal to {max} characters length")
     private String cardholderName;
 

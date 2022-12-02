@@ -50,23 +50,26 @@ public class PaymentState {
         this.code = code;
     }
 
-    @Schema(description = "Current progress of the payment in its lifecycle", example = "created", accessMode = READ_ONLY)
+    @Schema(description = "Where the payment is in [the payment status lifecycle]" +
+            "(https://docs.payments.service.gov.uk/api_reference/#payment-status-meanings).", 
+            example = "created", accessMode = READ_ONLY)
     public String getStatus() {
         return status;
     }
 
-    @Schema(description = "Whether the payment has finished", accessMode = READ_ONLY)
+    @Schema(description = "Indicates whether a payment journey is finished.", accessMode = READ_ONLY)
     public boolean isFinished() {
         return finished;
     }
 
-    @Schema(description = "What went wrong with the Payment if it finished with an error - English message",
+    @Schema(description = "A description of what went wrong with this payment. `message` only appears if the payment failed.",
             example = "User cancelled the payment", accessMode = READ_ONLY)
     public String getMessage() {
         return message;
     }
 
-    @Schema(description = "What went wrong with the Payment if it finished with an error - error code", example = "P010",
+    @Schema(description = "An [API error code](https://docs.payments.service.gov.uk/api_reference/#gov-uk-pay-api-error-codes)" +
+            "that explains why the payment failed. `code` only appears if the payment failed.", example = "P010",
             accessMode = READ_ONLY)
     public String getCode() {
         return code;

@@ -13,12 +13,14 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class SearchRefundsResults implements SearchPagination {
 
-    @Schema(example = "100")
+    @Schema(example = "100", description = "Number of refunds matching your search criteria.")
     private int total;
-    @Schema(example = "20")
+    @Schema(example = "20", description = "Number of refunds on the current page of search results.")
     private int count;
-    @Schema(example = "1")
+    @Schema(example = "1", description = "The [page of results](payments.service.gov.uk/api_reference/#pagination) you’re viewing. To view other pages, make this request again using the `page` parameter.")
     private int page;
+    
+    @Schema(description = "Contains the refunds matching your search criteria.")
     private List<RefundForSearchRefundsResult> results;
     @JsonProperty("_links")
     private SearchNavigationLinks links;

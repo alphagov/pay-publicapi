@@ -35,7 +35,9 @@ public class PaymentSettlementSummary {
         return captureSubmitTime;
     }
 
-    @Schema(description = "Date of the capture event.", example = "2016-01-21", accessMode = READ_ONLY)
+    @Schema(description = "The date your payment service provider took the payment from your user. " +
+            "This value uses ISO 8601 format - `YYYY-MM-DD`", 
+            example = "2016-01-21", accessMode = READ_ONLY)
     public String getCapturedDate() {
         return capturedDate;
     }

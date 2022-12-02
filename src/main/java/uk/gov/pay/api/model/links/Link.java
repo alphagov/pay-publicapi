@@ -14,10 +14,16 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 public class Link {
 
     @JsonProperty(value = "href")
-    @Schema(example = "https://an.example.link/from/payment/platform", accessMode = READ_ONLY)
+    @Schema(example = "https://an.example.link/from/payment/platform", 
+            description = "A URL that lets you perform additional actions to this payment " +
+                    "when combined with the associated `method`.",
+            accessMode = READ_ONLY)
     private String href;
     @JsonProperty(value = "method")
-    @Schema(example = "GET", accessMode = READ_ONLY)
+    @Schema(example = "GET", 
+            description = "An API method that lets you perform additional actions to this payment" +
+                    "when combined with the associated `href`.",
+            accessMode = READ_ONLY)
     private String method;
 
     public Link(String href, String method) {

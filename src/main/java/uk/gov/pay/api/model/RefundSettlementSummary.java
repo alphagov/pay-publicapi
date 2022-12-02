@@ -21,7 +21,10 @@ public class RefundSettlementSummary {
         this.settledDate = settledDate;
     }
 
-    @Schema(description = "The date that the transaction was refunded from the service's account.", example = "2016-01-21",
+    @Schema(description = "The date Stripe took the refund from a payout to your bank account. " +
+            "`settled_date` only appears if Stripe has taken the refund. " +
+            "This value uses Coordinated Universal Time (UTC) and ISO 8601 format - `YYYY-MM-DD`.", 
+            example = "2016-01-21",
             accessMode = READ_ONLY)
     public String getSettledDate() {
         return settledDate;

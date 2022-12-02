@@ -11,7 +11,8 @@ public class CreatePaymentRefundRequest {
     public static final String REFUND_AMOUNT_AVAILABLE = "refund_amount_available";
     public static final int REFUND_MIN_VALUE = 1;
 
-    @Schema(description = "Amount in pence. Can't be more than the available amount for refunds", required = true,
+    @Schema(description = "The amount you want to [refund to your user]" +
+            "(https://docs.payments.service.gov.uk/refunding_payments/) in pence.", required = true,
             example = "150000", minimum = "1", maximum = "10000000")
     private int amount;
     @JsonProperty("refund_amount_available")

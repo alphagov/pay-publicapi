@@ -26,17 +26,19 @@ public class RefundSummary {
         this.amountSubmitted = amountSubmitted;
     }
 
-    @Schema(description = "Availability status of the refund", example = "available")
+    @Schema(description = "Whether you can [refund the payment]" +
+            "(https://docs.payments.service.gov.uk/refunding_payments/#checking-the-status-of-a-refund-status).", 
+            example = "available")
     public String getStatus() {
         return status;
     }
 
-    @Schema(description = "Amount available for refund in pence", example = "100", accessMode = READ_ONLY)
+    @Schema(description = "How much you can refund to the user, in pence.", example = "100", accessMode = READ_ONLY)
     public long getAmountAvailable() {
         return amountAvailable;
     }
 
-    @Schema(description = "Amount submitted for refunds on this Payment in pence", accessMode = READ_ONLY)
+    @Schema(description = "How much you’ve already refunded to the user, in pence.", accessMode = READ_ONLY)
     public long getAmountSubmitted() {
         return amountSubmitted;
     }

@@ -67,7 +67,7 @@ public class CardDetails {
         return cardHolderName;
     }
 
-    @Schema(description = "The expiry date of the card in MM/yy format", example = "04/24", accessMode = READ_ONLY)
+    @Schema(description = "The expiry date of the card the user paid with in `MM/YY` format.", example = "04/24", accessMode = READ_ONLY)
     public String getExpiryDate() {
         return expiryDate;
     }
@@ -76,12 +76,15 @@ public class CardDetails {
         return Optional.ofNullable(billingAddress);
     }
 
-    @Schema(example = "Visa", accessMode = READ_ONLY)
+    @Schema(example = "Visa", description = "The brand of card the user paid with.", accessMode = READ_ONLY)
     public String getCardBrand() {
         return cardBrand;
     }
 
-    @Schema(description = "The card type, `debit` or `credit` or `null` if not able to determine", allowableValues = {"debit","credit","null"}, example = "debit", accessMode = READ_ONLY)
+    @Schema(description = "The type of card the user paid with." +
+            "`null` means your user paid with Google Pay or " +
+            "we did not recognise which type of card they paid with.", 
+            allowableValues = {"debit","credit","null"}, example = "debit", accessMode = READ_ONLY)
     public String getCardType() {
         return cardType;
     }

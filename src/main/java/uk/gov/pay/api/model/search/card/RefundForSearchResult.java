@@ -8,7 +8,7 @@ import java.util.List;
 
 public class RefundForSearchResult {
 
-    @Schema(name = "payment_id", example = "hu20sqlact5260q2nanm0q8u93")
+    @Schema(name = "payment_id", example = "hu20sqlact5260q2nanm0q8u93", description = "The unique ID GOV.UK Pay associated with this payment when you created it.")
     private String paymentId;
     @Schema(name = "_links")
     private RefundLinksForSearch links;

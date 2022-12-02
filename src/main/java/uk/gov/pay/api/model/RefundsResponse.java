@@ -9,7 +9,7 @@ import java.util.List;
 public class RefundsResponse {
 
     @JsonProperty("payment_id")
-    @Schema(example = "hu20sqlact5260q2nanm0q8u93")
+    @Schema(example = "hu20sqlact5260q2nanm0q8u93", description = "The unique ID GOV.UK Pay associated with this payment when you created it.")
     private String paymentId;
     @JsonProperty("_links")
     private RefundLinksForSearch links;

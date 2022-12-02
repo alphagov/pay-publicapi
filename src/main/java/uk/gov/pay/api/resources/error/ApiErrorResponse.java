@@ -43,12 +43,14 @@ public class ApiErrorResponse {
         this.description = format(code.getFormat(), parameters);
     }
 
-    @Schema(example = "P0900")
+    @Schema(example = "P0900", description = "A GOV.UK Pay API error code. " +
+            "You can [find out more about this code in our documentation]" +
+            "(https://docs.payments.service.gov.uk/api_reference/#gov-uk-pay-api-error-codes).")
     public String getCode() {
         return code.value();
     }
 
-    @Schema(example = "Too many requests")
+    @Schema(example = "Too many requests", description = "Additional details about the error")
     public String getDescription() {
         return description;
     }

@@ -44,7 +44,9 @@ public class PaymentEventsResponse {
         return new PaymentEventsResponse(transactionEvents.getTransactionId(), events, paymentLinksForEvents);
     }
 
-    @Schema(example = "hu20sqlact5260q2nanm0q8u93", accessMode = READ_ONLY)
+    @Schema(example = "hu20sqlact5260q2nanm0q8u93", 
+            description = "The unique ID GOV.UK Pay automatically associated with this payment when you created it.",
+            accessMode = READ_ONLY)
     public String getPaymentId() {
         return paymentId;
     }
