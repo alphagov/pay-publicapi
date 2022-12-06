@@ -1231,7 +1231,7 @@
           },
           "created_date" : {
             "type" : "string",
-            "description" : "The date and time you created this payment. This value uses Coordinated Universal Time (UTC) and ISO 8601 format - `YYYY-MM-DDTHH:MM:SSZ`.",
+            "description" : "The date and time you created this payment. This value uses Coordinated Universal Time (UTC) and ISO 8601 format - `YYYY-MM-DDThh:mm:ss.sssZ`.",
             "example" : "2016-01-21T17:15:00.000Z"
           },
           "delayed_capture" : {
@@ -1491,7 +1491,7 @@
             "type" : "string",
             "example" : "2016-01-21T17:15:00.000Z",
             "readOnly" : true,
-            "description" : "The date and time you created this payment. This value uses Coordinated Universal Time (UTC) and ISO 8601 format - `YYYY-MM-DDTHH:MM:SSZ`."
+            "description" : "The date and time you created this payment. This value uses Coordinated Universal Time (UTC) and ISO 8601 format - `YYYY-MM-DDThh:mm:ss.sssZ`."
           },
           "delayed_capture" : {
             "type" : "boolean",
@@ -1643,7 +1643,7 @@
             "type" : "string",
             "example" : "2016-01-21T17:15:00.000Z",
             "readOnly" : true,
-            "description" : "The date and time you created this payment. This value uses Coordinated Universal Time (UTC) and ISO 8601 format - `YYYY-MM-DDTHH:MM:SSZ`."
+            "description" : "The date and time you created this payment. This value uses Coordinated Universal Time (UTC) and ISO 8601 format - `YYYY-MM-DDThh:mm:ss.sssZ`."
           },
           "delayed_capture" : {
             "type" : "boolean",
@@ -1747,14 +1747,14 @@
             "type" : "string",
             "example" : "hu20sqlact5260q2nanm0q8u93",
             "readOnly" : true,
-            "description" : "The unique ID your payment service provider generated for this payment. This is not the same as the `payment_id`."
+            "description" : "The unique ID GOV.UK Pay automatically associated with this payment when you created it.."
           },
           "state" : {
             "$ref" : "#/components/schemas/PaymentState"
           },
           "updated" : {
             "type" : "string",
-            "description" : "When this payment’s state changed. This value uses Coordinated Universal Time (UTC) and ISO-8601 format - `YYYY-MM-DDTHH:MM:SSZ`.",
+            "description" : "When this payment’s state changed. This value uses Coordinated Universal Time (UTC) and ISO-8601 format - `YYYY-MM-DDThh:mm:ss.sssZ`.",
             "example" : "2017-01-10T16:44:48.646Z",
             "readOnly" : true
           }
@@ -1912,7 +1912,7 @@
         "properties" : {
           "capture_submit_time" : {
             "type" : "string",
-            "description" : "The date and time GOV.UK Pay asked your payment service provider to take the payment from your user’s account. This value uses Coordinated Universal Time (UTC) and ISO 8601 format - `YYYY-MM-DDTHH:MM:SSZ`.",
+            "description" : "The date and time GOV.UK Pay asked your payment service provider to take the payment from your user’s account. This value uses Coordinated Universal Time (UTC) and ISO 8601 format - `YYYY-MM-DDThh:mm:ssZ`.",
             "example" : "2016-01-21T17:15:00.000Z",
             "readOnly" : true
           },
@@ -2026,7 +2026,7 @@
             "type" : "string",
             "example" : "2017-01-10T16:52:07.855Z",
             "readOnly" : true,
-            "description" : "The date and time you created this refund.<br><br>This value uses Coordinated Universal Time (UTC) and ISO 8601 format - `YYYY-MM-DDTHH:MM:SSZ`."
+            "description" : "The date and time you created this refund.<br><br>This value uses Coordinated Universal Time (UTC) and ISO 8601 format - `YYYY-MM-DDThh:mm:ss.sssZ`."
           },
           "refund_id" : {
             "type" : "string",
@@ -2063,7 +2063,7 @@
             "type" : "string",
             "example" : "2017-01-10T16:52:07.855Z",
             "readOnly" : true,
-            "description" : "The date and time you created this refund.<br><br>This value uses Coordinated Universal Time (UTC) and ISO 8601 format - `YYYY-MM-DDTHH:MM:SSZ`."
+            "description" : "The date and time you created this refund. This value uses Coordinated Universal Time (UTC) and ISO 8601 format - `YYYY-MM-DDThh:mm:ss.sssZ`."
           },
           "refund_id" : {
             "type" : "string",
