@@ -37,7 +37,9 @@ public class PaymentEventResponse {
         this.paymentLink = new PaymentEventLink(paymentLink);
     }
 
-    @Schema(example = "hu20sqlact5260q2nanm0q8u93", accessMode = READ_ONLY)
+    @Schema(example = "hu20sqlact5260q2nanm0q8u93", 
+            description = "The unique ID GOV.UK Pay automatically associated with this payment when you created it.", 
+            accessMode = READ_ONLY)
     public String getPaymentId() {
         return paymentId;
     }
@@ -47,7 +49,9 @@ public class PaymentEventResponse {
         return state;
     }
 
-    @Schema(description = "updated", example = "2017-01-10T16:44:48.646Z", accessMode = READ_ONLY)
+    @Schema(description = "When this payment’s state changed. " +
+            "This value uses Coordinated Universal Time (UTC) and ISO-8601 format - `YYYY-MM-DDThh:mm:ss.SSSZ`.", 
+            example = "2017-01-10T16:44:48.646Z", accessMode = READ_ONLY)
     public String getUpdated() {
         return updated;
     }

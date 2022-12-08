@@ -20,7 +20,10 @@ public class RefundResponse {
             description = "The unique ID GOV.UK Pay automatically associated with this refund when you created it.",
             accessMode = READ_ONLY)
     private String refundId;
-    @Schema(example = "2017-01-10T16:52:07.855Z", accessMode = READ_ONLY)
+    @Schema(example = "2017-01-10T16:52:07.855Z", 
+            description = "The date and time you created this refund. " + 
+                    "This value uses Coordinated Universal Time (UTC) and ISO 8601 format - `YYYY-MM-DDThh:mm:ss.SSSZ`", 
+            accessMode = READ_ONLY)
     private String createdDate;
     @Schema(example = "120", description = "The amount refunded to the user in pence.", accessMode = READ_ONLY)
     private Long amount;

@@ -29,7 +29,9 @@ public class PaymentSettlementSummary {
         this.settledDate = settledDate;
     }
 
-    @Schema(description = "Date and time capture request has been submitted. May be null if capture request was not immediately acknowledged by payment gateway.",
+    @Schema(description = "The date and time GOV.UK Pay asked your payment service provider " +
+            "to take the payment from your user’s account. " +
+            "This value uses Coordinated Universal Time (UTC) and ISO 8601 format - `YYYY-MM-DDThh:mm:ss.SSSZ`",
             example = "2016-01-21T17:15:00.000Z", accessMode = READ_ONLY)
     public String getCaptureSubmitTime() {
         return captureSubmitTime;

@@ -22,7 +22,10 @@ public class RefundForSearchRefundsResult {
     private String refundId;
 
     @JsonProperty("created_date")
-    @Schema(example = "2017-01-10T16:52:07.855Z", accessMode = READ_ONLY)
+    @Schema(example = "2017-01-10T16:52:07.855Z",
+            description = "The date and time you created this refund. " +
+                    "This value uses Coordinated Universal Time (UTC) and ISO 8601 format - `YYYY-MM-DDThh:mm:ss.SSSZ`.",
+            accessMode = READ_ONLY)
     private String createdDate;
 
     private String chargeId;
