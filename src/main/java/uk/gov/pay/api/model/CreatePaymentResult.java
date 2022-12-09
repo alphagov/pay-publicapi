@@ -15,14 +15,15 @@ import static uk.gov.pay.api.model.Payment.LINKS_JSON_ATTRIBUTE;
 public class CreatePaymentResult {
 
     @JsonProperty
-    @Schema(name = "amount", description = "The amount in pence.", example = "1200")
+    @Schema(name = "amount", description = "The amount, in pence, the user has paid or will pay. " +
+            "`amount` will match the value you sent in the request body.", example = "1200")
     private long amount;
 
     @JsonProperty
     private PaymentState state;
 
     @JsonProperty
-    @Schema(description = "The human-readable description you gave the payment.", example = "New passport application")
+    @Schema(description = "The description you sent in the request body when creating this payment.", example = "New passport application")
     private String description;
 
     @JsonProperty
@@ -30,11 +31,12 @@ public class CreatePaymentResult {
     private String reference;
 
     @JsonProperty
-    @Schema(name = "language", description = "Which language your users will see on the payment pages when they make a payment.", example = "en")
+    @Schema(name = "language", description = "The language of the user’s payment page.", example = "en")
     private SupportedLanguage language;
 
     @JsonProperty
-    @Schema(name = "payment_id", description = "The unique identifier of the payment.", example = "hu20sqlact5260q2nanm0q8u93")
+    @Schema(name = "payment_id", description = "The unique ID GOV.UK Pay automatically associated " +
+            "with this payment when you created it.", example = "hu20sqlact5260q2nanm0q8u93")
     private String paymentId;
 
     @JsonProperty
@@ -42,7 +44,9 @@ public class CreatePaymentResult {
     private String paymentProvider;
 
     @JsonProperty
-    @Schema(name = "return_url", description = "An HTTPS URL on your site that your user will be sent back to once they have completed their payment attempt on GOV.UK Pay.", example = "https://service-name.gov.uk/transactions/12345")
+    @Schema(name = "return_url", description = "The URL you direct the paying user to " +
+            "after their payment journey on GOV.UK Pay ends.",
+            example = "https://service-name.gov.uk/transactions/12345")
     private String returnUrl;
 
     @JsonProperty
@@ -50,11 +54,15 @@ public class CreatePaymentResult {
     private String createdDate;
 
     @JsonProperty
-    @Schema(name = "delayed_capture", description = "Whether to [delay capturing](https://docs.payments.service.gov.uk/optional_features/delayed_capture/) this payment.", example = "false", accessMode = READ_ONLY)
+    @Schema(name = "delayed_capture", description = "`delayed_capture` is `true` if you’re controlling " +
+            "[when GOV.UK Pay takes (‘captures’) the payment from the paying user’s bank account]" +
+            "(https://docs.payments.service.gov.uk/delayed_capture).", example = "false", accessMode = READ_ONLY)
     private boolean delayedCapture;
 
     @JsonProperty
-    @Schema(description = "Mail Order / Telephone Order (MOTO) payment flag.", example = "false")
+    @Schema(description = "Indicates if this payment is a " +
+            "[Mail Order / Telephone Order (MOTO) payment]" +
+            "(https://docs.payments.service.gov.uk/moto_payments).", example = "false")
     private boolean moto;
 
     @JsonProperty("refund_summary")
@@ -68,7 +76,8 @@ public class CreatePaymentResult {
     private PaymentLinks links;
 
     @JsonProperty
-    @Schema(name = "provider_id", description = "The reference number the payment gateway associated with the payment.", example = "null")
+    @Schema(name = "provider_id", description = "The reference number your " +
+            "payment service provider associated with the payment.", example = "null")
     private String providerId;
 
     @JsonProperty
@@ -76,7 +85,10 @@ public class CreatePaymentResult {
     private ExternalMetadata metadata;
 
     @JsonProperty
-    @Schema(name = "email", description = "The email address of your user.", example = "citizen@example.org")
+    @Schema(name = "email", description = "The paying user’s email address. " +
+            "The paying user’s email field will be prefilled with this value when they make their payment. " +
+            "`email` does not appear if you did not include it in the request body.", 
+            example = "citizen@example.org")
     private String email;
 
     @JsonProperty(value = "card_details")

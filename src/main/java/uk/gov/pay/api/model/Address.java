@@ -41,27 +41,27 @@ public class Address {
         this.country = country;
     }
 
-    @Schema(example = "address line 1")
+    @Schema(example = "address line 1", description = "The first line of the paying user’s address.")
     public String getLine1() {
         return line1;
     }
 
-    @Schema(example = "address line 2")
+    @Schema(example = "address line 2", description = "The second line of the paying user’s address.")
     public String getLine2() {
         return line2;
     }
 
-    @Schema(example = "AB1 2CD")
+    @Schema(example = "AB1 2CD", description = "The paying user's postcode.")
     public String getPostcode() {
         return postcode;
     }
 
-    @Schema(example = "address city")
+    @Schema(example = "address city", description="The paying user's city.")
     public String getCity() {
         return city;
     }
 
-    @Schema(example = "GB")
+    @Schema(example = "GB", description = "The paying user’s country, displayed as a 2-character ISO-3166-1-alpha-2 code.")
     public String getCountry() {
         return country;
     }

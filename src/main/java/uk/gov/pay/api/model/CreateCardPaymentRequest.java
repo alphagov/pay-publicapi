@@ -15,7 +15,7 @@ import javax.validation.constraints.Size;
 import java.util.Optional;
 import java.util.StringJoiner;
 
-@Schema(description = "The Payment Request Payload")
+@Schema(description = "The create payment request body")
 public class CreateCardPaymentRequest {
 
     public static final int EMAIL_MAX_LENGTH = 254;
@@ -114,22 +114,29 @@ public class CreateCardPaymentRequest {
         this.agreementId = builder.getAgreementId();
     }
     
-    @Schema(description = "amount in pence", required = true, minimum = "1", maximum = "10000000", example = "12000")
+    @Schema(description = "Sets the amount the user will pay, in pence.", required = true, minimum = "1", maximum = "10000000", example = "12000")
     public int getAmount() {
         return amount;
     }
 
-    @Schema(description = "payment reference", required = true, example = "12345")
+    @Schema(description = "Associate a reference with this payment. " +
+            "`reference` is not unique - multiple payments can have identical `reference` values.",
+            required = true, example = "12345")
     public String getReference() {
         return reference;
     }
 
-    @Schema(description = "payment description", required = true, example = "New passport application")
+    @Schema(description = "A human-readable description of the payment you’re creating. " +
+            "Paying users see this description on the payment pages. " +
+            "Service staff see the description in the GOV.UK Pay admin tool", 
+            required = true, example = "New passport application")
     public String getDescription() {
         return description;
     }
 
-    @Schema(description = "ISO-639-1 Alpha-2 code of a supported language to use on the payment pages", example = "en")
+    @Schema(description = "[Sets the language of the user’s payment page]" +
+            "(https://docs.payments.service.gov.uk/optional_features/welsh_language) " +
+            "with an ISO-6391 Alpha-2 code of a supported language.", example = "en")
     @JsonProperty(LANGUAGE_FIELD_NAME)
     public Optional<SupportedLanguage> getLanguage() {
         return Optional.ofNullable(language);
@@ -141,7 +148,9 @@ public class CreateCardPaymentRequest {
         return Optional.ofNullable(email);
     }
     
-    @Schema(description = "service return url", required = true, example = "https://service-name.gov.uk/transactions/12345")
+    @Schema(description = "The URL [the paying user is directed to after their payment journey on GOV.UK Pay ends]" +
+            "(https://docs.payments.service.gov.uk/making_payments/#choose-the-return-url-and-match-your-users-to-payments).",
+            required = true, example = "https://service-name.gov.uk/transactions/12345")
     public String getReturnUrl() {
         return returnUrl;
     }
@@ -152,14 +161,21 @@ public class CreateCardPaymentRequest {
         return Optional.ofNullable(prefilledCardholderDetails);
     }
 
-    @Schema(description = "delayed capture flag", example = "false")
+    @Schema(description = "You can use this parameter to " +
+            "[delay taking a payment from the paying user’s bank account]" +
+            "(https://docs.payments.service.gov.uk/delayed_capture/#delay-taking-a-payment). " +
+            "For example, you might want to do your own anti-fraud checks on payments, " +
+            "or check that users are eligible for your service. Defaults to `false`.", 
+            example = "false")
     @JsonProperty(DELAYED_CAPTURE_FIELD_NAME)
     public Optional<Boolean> getDelayedCapture() {
         return Optional.ofNullable(delayedCapture);
     }
 
     @JsonProperty(MOTO_FIELD_NAME)
-    @Schema(description = "Mail Order / Telephone Order (MOTO) payment flag", example = "false")
+    @Schema(description = "You can use this parameter to " +
+            "[designate a payment as a Mail Order / Telephone Order (MOTO) payment]" +
+            "(https://docs.payments.service.gov.uk/moto_payments).", example = "false")
     public Optional<Boolean> getMoto() {
         return Optional.ofNullable(moto);
     }

@@ -9,7 +9,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class ThreeDSecure {
 
     @JsonProperty("required")
-    @Schema(name = "required", description = "Flag indicating whether the payment required 3D Secure authentication.")
+    @Schema(name = "required", description = "Indicates if this payment was authorised with 3D Secure authentication. " +
+            "`required` is `true` if the payment required 3D Secure authentication.")
     private boolean required;
 
     public ThreeDSecure() {

@@ -16,11 +16,16 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 public class RefundForSearchRefundsResult {
 
     @JsonProperty("refund_id")
-    @Schema(example = "act4c33g40j3edfmi8jknab84x", accessMode = READ_ONLY)
+    @Schema(example = "act4c33g40j3edfmi8jknab84x", 
+            description = "The unique ID GOV.UK Pay automatically associated with this refund when you created it.", 
+            accessMode = READ_ONLY)
     private String refundId;
 
     @JsonProperty("created_date")
-    @Schema(example = "2017-01-10T16:52:07.855Z", accessMode = READ_ONLY)
+    @Schema(example = "2017-01-10T16:52:07.855Z",
+            description = "The date and time you created this refund. " +
+                    "This value uses Coordinated Universal Time (UTC) and ISO 8601 format - `YYYY-MM-DDThh:mm:ss.SSSZ`.",
+            accessMode = READ_ONLY)
     private String createdDate;
 
     private String chargeId;
@@ -30,7 +35,10 @@ public class RefundForSearchRefundsResult {
     private RefundLinksForSearch links = new RefundLinksForSearch();
 
     @JsonProperty("status")
-    @Schema(example = "success", allowableValues = {"submitted", "success", "error"}, accessMode = READ_ONLY)
+    @Schema(example = "success", 
+            description = "The [status of the refund]" +
+                    "(https://docs.payments.service.gov.uk/refunding_payments/#checking-the-status-of-a-refund-status).",
+            allowableValues = {"submitted", "success", "error"}, accessMode = READ_ONLY)
     private String status;
 
     @Schema(accessMode = READ_ONLY)
@@ -83,7 +91,7 @@ public class RefundForSearchRefundsResult {
     }
 
     @JsonProperty("amount")
-    @Schema(example = "120", accessMode = READ_ONLY)
+    @Schema(example = "120", description = "The amount refunded to the user in pence.", accessMode = READ_ONLY)
     public Long getAmount() {
         return amount;
     }

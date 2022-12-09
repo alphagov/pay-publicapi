@@ -48,27 +48,34 @@ public abstract class Payment {
         return createdDate;
     }
 
-    @Schema(example = "hu20sqlact5260q2nanm0q8u93", accessMode = READ_ONLY)
+    @Schema(example = "hu20sqlact5260q2nanm0q8u93", 
+            description = "The unique ID GOV.UK Pay automatically associated " +
+                    "with this payment when you created it.", 
+            accessMode = READ_ONLY)
     public String getPaymentId() {
         return paymentId;
     }
 
-    @Schema(example = "1200")
+    @Schema(example = "1200", description = "The description assigned to the payment when it was created.")
     public long getAmount() {
         return amount;
     }
 
-    @Schema(example = "Your Service Description")
+    @Schema(example = "Your Service Description", description = "The description assigned to the payment when it was created.")
     public String getDescription() {
         return description;
     }
 
-    @Schema(example = "your-reference")
+    @Schema(example = "your-reference", 
+            description = "The reference associated with the payment when it was created. " +
+            "`reference` is not unique - multiple payments can have the same `reference` value.")
     public String getReference() {
         return reference;
     }
 
-    @Schema(example = "worldpay", accessMode = READ_ONLY)
+    @Schema(example = "worldpay", 
+            description = "The payment service provider that processed this payment.", 
+            accessMode = READ_ONLY)
     public String getPaymentProvider() {
         return paymentProvider;
     }

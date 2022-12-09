@@ -141,17 +141,20 @@ public class RequestError {
         this.description = format(code.getFormat(), concat(fieldName, parameters));
     }
 
-    @Schema(example = "amount")
+    @Schema(example = "amount", description = "The parameter in your request that's causing the error.")
     public String getField() {
         return field;
     }
 
-    @Schema(example = "P0102")
+    @Schema(example = "P0102", 
+            description = "An [API error code](https://docs.payments.service.gov.uk/api_reference/#gov-uk-pay-api-error-codes)" +
+                    "that explains why the payment failed.<br><br>`code` only appears if the payment failed.")
     public String getCode() {
         return code.value();
     }
 
-    @Schema(example = "Invalid attribute value: amount. Must be less than or equal to 10000000")
+    @Schema(example = "Invalid attribute value: amount. Must be less than or equal to 10000000",
+            description = "Additional details about the error.")
     public String getDescription() {
         return description;
     }

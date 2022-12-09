@@ -21,7 +21,11 @@ public class DisputeSettlementSummary {
         this.settledDate = settledDate;
     }
 
-    @Schema(description = "The date your payment service provider took the disputed payment and dispute fee from a payout to your bank account. This value appears in ISO 8601 format. 'settled_date' only appears if you lost the dispute.", example = "2022-07-28",
+    @Schema(description = "The date your payment service provider took the disputed payment " +
+            "and dispute fee from a payout to your bank account. " +
+            "This value appears in ISO 8601 format - `YYYY-MM-DD`. " +
+            "`settled_date` only appears if you lost the dispute.", 
+            example = "2022-07-28",
             accessMode = READ_ONLY)
     public String getSettledDate() {
         return settledDate;
