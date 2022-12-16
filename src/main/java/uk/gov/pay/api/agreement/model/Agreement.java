@@ -19,6 +19,7 @@ public class Agreement {
     private String status;
     private String createdDate;
     private PaymentInstrument paymentInstrument;
+    private String userIdentifier;
 
     @JsonProperty("agreement_id")
     public String getExternalId() {
@@ -41,17 +42,22 @@ public class Agreement {
         return createdDate;
     }
 
+    public String getUserIdentifier() {
+        return userIdentifier;
+    }
+
     public PaymentInstrument getPaymentInstrument() {
         return paymentInstrument;
     }
 
-    public Agreement(String externalId, String reference, String description, String status, String createdDate, PaymentInstrument paymentInstrument) {
+    public Agreement(String externalId, String reference, String description, String status, String createdDate, PaymentInstrument paymentInstrument, String userIdentifier) {
         this.externalId = externalId;
         this.reference = reference;
         this.description = description;
         this.status = status;
         this.createdDate = createdDate;
         this.paymentInstrument = paymentInstrument;
+        this.userIdentifier = userIdentifier;
     }
 
     public static Agreement from(AgreementLedgerResponse agreementLedgerResponse) {
@@ -61,8 +67,8 @@ public class Agreement {
                 agreementLedgerResponse.getDescription(),
                 agreementLedgerResponse.getStatus(),
                 agreementLedgerResponse.getCreatedDate(),
-                Optional.ofNullable(agreementLedgerResponse.getPaymentInstrument()).map(PaymentInstrument::from).orElse(null)
-        );
+                Optional.ofNullable(agreementLedgerResponse.getPaymentInstrument()).map(PaymentInstrument::from).orElse(null),
+                agreementLedgerResponse.getUserIdentifier());
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)

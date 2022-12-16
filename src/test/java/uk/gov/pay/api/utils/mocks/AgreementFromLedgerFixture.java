@@ -20,6 +20,7 @@ public class AgreementFromLedgerFixture {
     private final String status;
     private final String createdDate;
     private final AgreementLedgerResponse.PaymentInstrumentLedgerResponse paymentInstrument;
+    private String userIdentifier;
 
     private AgreementFromLedgerFixture(AgreementFromLedgerFixtureBuilder builder) {
         this.externalId = builder.externalId;
@@ -29,6 +30,7 @@ public class AgreementFromLedgerFixture {
         this.status = builder.status;
         this.createdDate = builder.createdDate;
         this.paymentInstrument = builder.paymentInstrument;
+        this.userIdentifier = builder.userIdentifier;
     }
 
     public String getExternalId() {
@@ -59,6 +61,10 @@ public class AgreementFromLedgerFixture {
         return paymentInstrument;
     }
 
+    public String getUserIdentifier() {
+        return userIdentifier;
+    }
+
     public static final class AgreementFromLedgerFixtureBuilder {
         private String externalId = "agreement-external-id";
         private String serviceId = "a-service-id";
@@ -67,6 +73,7 @@ public class AgreementFromLedgerFixture {
         private String status = "CREATED";
         private String createdDate = ISO_INSTANT_MILLISECOND_PRECISION.format(ZonedDateTime.parse("2022-07-20T11:01:00.132012345Z"));
         private AgreementLedgerResponse.PaymentInstrumentLedgerResponse paymentInstrument;
+        private String userIdentifier;
 
         private AgreementFromLedgerFixtureBuilder() {
             paymentInstrument = new AgreementLedgerResponse.PaymentInstrumentLedgerResponse.Builder()
@@ -120,6 +127,11 @@ public class AgreementFromLedgerFixture {
         
         public AgreementFromLedgerFixtureBuilder withPaymentInstrument(AgreementLedgerResponse.PaymentInstrumentLedgerResponse paymentInstrument) {
             this.paymentInstrument = paymentInstrument;
+            return this;
+        }
+
+        public AgreementFromLedgerFixtureBuilder withUserIdentifier(String userIdentifier) {
+            this.userIdentifier = userIdentifier;
             return this;
         }
         
