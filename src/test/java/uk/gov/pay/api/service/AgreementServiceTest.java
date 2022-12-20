@@ -11,6 +11,7 @@ import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
 import uk.gov.pay.api.agreement.service.AgreementService;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CancelAgreementException;
+import uk.gov.pay.api.exception.CreateAgreementException;
 import uk.gov.pay.api.model.CreateAgreementRequestBuilder;
 import uk.gov.pay.api.utils.mocks.CreateAgreementRequestParams;
 
@@ -82,6 +83,25 @@ class AgreementServiceTest {
         assertThat(agreementResponseFromService.getAgreementId(), is(AGREEMENT_ID));
     }
 
+    @Test
+    void shouldThrowExceptionIfConnectorReturnsRecurringPaymentsNotAllowedExceptionWhenCreatingAgreement() {
+        when(mockConnectorUriGenerator.getAgreementURI(mockAccount)).thenReturn(AGREEMENTS_CONNECTOR_URI);
+        when(mockClient.target(AGREEMENTS_CONNECTOR_URI)).thenReturn(mockWebTarget);
+        when(mockWebTarget.request()).thenReturn(mockInvocationBuilder);
+        when(mockInvocationBuilder.accept(MediaType.APPLICATION_JSON)).thenReturn(mockInvocationBuilder);
+
+        CreateAgreementRequestParams createAgreementRequestParams = aCreateAgreementRequestParams()
+                .withReference(REFERENCE_ID)
+                .build();
+        when(mockInvocationBuilder.post(json(agreementPayload(createAgreementRequestParams)))).thenReturn(mockConnectorResponse);
+
+        when(mockConnectorResponse.getStatus()).thenReturn(HttpStatus.SC_UNPROCESSABLE_ENTITY);
+        CreateAgreementRequest agreementCreateRequest = new CreateAgreementRequest(CreateAgreementRequestBuilder
+                .builder().reference(REFERENCE_ID));
+        assertThrows(CreateAgreementException.class, () -> underTest.create(mockAccount, agreementCreateRequest));
+
+        verify(mockConnectorResponse).close();
+    }
     @Test
     void shouldCancelAgreement() {
         when(mockConnectorUriGenerator.cancelAgreementURI(mockAccount, AGREEMENT_ID)).thenReturn(AGREEMENT_CONNECTOR_CANCEL_URI);
