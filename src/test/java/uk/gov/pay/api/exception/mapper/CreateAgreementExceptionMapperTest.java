@@ -28,10 +28,10 @@ class CreateAgreementExceptionMapperTest {
     @Test
     void testExceptionMapping() {
         when(mockResponse.readEntity(ConnectorErrorResponse.class))
-                .thenReturn(new ConnectorErrorResponse(ErrorIdentifier.valueOf("GENERIC"), null, null));
+                .thenReturn(new ConnectorErrorResponse(ErrorIdentifier.GENERIC, null, null));
         Response returnedResponse = mapper.toResponse(new CreateAgreementException(mockResponse));
         RequestError returnedError = (RequestError) returnedResponse.getEntity();
-        RequestError expectedError = aRequestError(RequestError.Code.valueOf("CREATE_AGREEMENT_CONNECTOR_ERROR"));
+        RequestError expectedError = aRequestError(RequestError.Code.CREATE_AGREEMENT_CONNECTOR_ERROR);
         assertThat(returnedResponse.getStatus(), is(SC_INTERNAL_SERVER_ERROR));
         assertThat(returnedError.getDescription(),
                 is(expectedError.getDescription()));
@@ -41,10 +41,10 @@ class CreateAgreementExceptionMapperTest {
     @Test
     void testExceptionMappingForRecurringCardPaymentsNotAllowed() {
         when(mockResponse.readEntity(ConnectorErrorResponse.class))
-                .thenReturn(new ConnectorErrorResponse(ErrorIdentifier.valueOf("RECURRING_CARD_PAYMENTS_NOT_ALLOWED"), null, null));
+                .thenReturn(new ConnectorErrorResponse(ErrorIdentifier.RECURRING_CARD_PAYMENTS_NOT_ALLOWED, null, null));
         Response returnedResponse = mapper.toResponse(new CreateAgreementException(mockResponse));
         RequestError returnedError = (RequestError) returnedResponse.getEntity();
-        RequestError expectedError = aRequestError(RequestError.Code.valueOf("CREATE_AGREEMENT_RECURRING_CARD_PAYMENTS_NOT_ALLOWED_ERROR"));
+        RequestError expectedError = aRequestError(RequestError.Code.CREATE_AGREEMENT_RECURRING_CARD_PAYMENTS_NOT_ALLOWED_ERROR);
         assertThat(returnedResponse.getStatus(), is(SC_UNPROCESSABLE_ENTITY));
         assertThat(returnedError.getDescription(),
                 is(expectedError.getDescription()));
