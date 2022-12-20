@@ -18,6 +18,7 @@ public class AgreementLedgerResponse {
     private String status;
     private String createdDate;
     private PaymentInstrumentLedgerResponse paymentInstrument;
+    private String userIdentifier;
 
     @JsonProperty("external_id")
     public void setExternalId(String externalId) {
@@ -51,6 +52,10 @@ public class AgreementLedgerResponse {
 
     public PaymentInstrumentLedgerResponse getPaymentInstrument() {
         return paymentInstrument;
+    }
+
+    public String getUserIdentifier() {
+        return userIdentifier;
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)

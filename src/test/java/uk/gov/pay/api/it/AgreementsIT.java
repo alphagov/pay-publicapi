@@ -47,7 +47,8 @@ public class AgreementsIT extends PaymentResourceITestBase {
                 .body("reference", is(fixture.getReference()))
                 .body("description", is(fixture.getDescription()))
                 .body("status", is(fixture.getStatus().toLowerCase()))
-                .body("created_date", is(fixture.getCreatedDate()));
+                .body("created_date", is(fixture.getCreatedDate()))
+                .body("$", not(hasKey("user_identifier")));
     }
 
     @Test
@@ -67,6 +68,7 @@ public class AgreementsIT extends PaymentResourceITestBase {
     public void searchAgreementsFromLedger() throws JsonProcessingException {
         var agreementWithPaymentInstrument = anAgreementFromLedgerWithPaymentInstrumentFixture()
                 .withExternalId(agreementId)
+                .withUserIdentifier("a-valid-user-identifier")
                 .build();
 
         var agreementWithoutPaymentInstrument = anAgreementFromLedgerWithoutPaymentInstrumentFixture()
@@ -96,6 +98,7 @@ public class AgreementsIT extends PaymentResourceITestBase {
                 .body("results[0].agreement_id", is(agreementWithPaymentInstrument.getExternalId()))
                 .body("results[0].reference", is(agreementWithPaymentInstrument.getReference()))
                 .body("results[0].description", is(agreementWithPaymentInstrument.getDescription()))
+                .body("results[0].user_identifier", is(agreementWithPaymentInstrument.getUserIdentifier()))
                 .body("results[0].status", is(agreementWithPaymentInstrument.getStatus().toLowerCase()))
                 .body("results[0].created_date", is(agreementWithPaymentInstrument.getCreatedDate()))
                 .body("results[0].payment_instrument.type", is(agreementWithPaymentInstrument.getPaymentInstrument().getType()))
