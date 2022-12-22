@@ -89,7 +89,7 @@ public class RequestError {
 
         CREATE_AGREEMENT_MISSING_FIELD_ERROR("P2101", "Missing mandatory attribute: %s"),
         CREATE_AGREEMENT_VALIDATION_ERROR("P2102", "Invalid attribute value: %s. %s"),
-
+        CREATE_AGREEMENT_RECURRING_CARD_PAYMENTS_NOT_ALLOWED_ERROR("P2103", "Recurring card payments are currently disabled for this service. Contact support with your error code - https://www.payments.service.gov.uk/support/"),
         GET_AGREEMENT_NOT_FOUND_ERROR("P2200", "Not found"),
         GET_AGREEMENT_LEDGER_ERROR("P2298", "Downstream system error"),
 
