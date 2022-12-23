@@ -286,6 +286,13 @@
           "schema" : {
             "type" : "string"
           }
+        }, {
+          "description" : "Returns payments that were authorised using the agreement with this `agreement_id`. Must be an exact match.",
+          "in" : "query",
+          "name" : "agreement_id",
+          "schema" : {
+            "type" : "string"
+          }
         } ],
         "responses" : {
           "200" : {
