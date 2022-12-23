@@ -348,7 +348,8 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
                 "email", TEST_EMAIL,
                 "state", TEST_STATE,
                 "from_date", TEST_FROM_DATE,
-                "to_date", TEST_TO_DATE))
+                "to_date", TEST_TO_DATE,
+                "agreement_id", "does_not_exist"))
                 .statusCode(200)
                 .contentType(JSON)
                 .body("results.size()", is(0))
