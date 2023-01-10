@@ -10,6 +10,7 @@ import uk.gov.pay.api.utils.mocks.LedgerMockClient;
 
 import static io.restassured.RestAssured.given;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
@@ -94,6 +95,11 @@ public class AgreementsIT extends PaymentResourceITestBase {
                 .body("total", is(9))
                 .body("count", is(2))
                 .body("page", is(3))
+                .body("_links.self.href", containsString("/v1/agreements?page=3"))
+                .body("_links.first_page.href", containsString("/v1/agreements?page=1"))
+                .body("_links.last_page.href", containsString("/v1/agreements?page=5"))
+                .body("_links.prev_page.href", containsString("/v1/agreements?page=2"))
+                .body("_links.next_page.href", containsString("/v1/agreements?page=4"))
                 .body("results.size()", is(2))
                 .body("results[0].agreement_id", is(agreementWithPaymentInstrument.getExternalId()))
                 .body("results[0].reference", is(agreementWithPaymentInstrument.getReference()))
