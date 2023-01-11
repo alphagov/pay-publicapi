@@ -23,7 +23,7 @@ import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.utils.WiremockStubbing.stubPublicAuthV1ApiAuth;
 import static uk.gov.service.payments.commons.testing.port.PortFactory.findFreePort;
 
-public class CancelPaymentIT {
+public class PaymentsResourceCancelPactConsumerIT {
 
     private static final String API_KEY = ApiKeyGenerator.apiKeyValueOf("TEST_BEARER_TOKEN", "qwer9yuhgf");
 
