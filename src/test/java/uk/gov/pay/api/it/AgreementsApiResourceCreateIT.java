@@ -6,7 +6,6 @@ import org.apache.http.HttpStatus;
 import org.junit.Test;
 import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
 import uk.gov.pay.api.model.CreateAgreementRequestBuilder;
-import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 import uk.gov.pay.api.utils.mocks.CreateAgreementRequestParams;
@@ -22,7 +21,7 @@ import static uk.gov.pay.api.utils.Payloads.agreementPayload;
 import static uk.gov.pay.api.utils.mocks.AgreementFromLedgerFixture.AgreementFromLedgerFixtureBuilder.anAgreementFromLedgerWithoutPaymentInstrumentFixture;
 import static uk.gov.pay.api.utils.mocks.CreateAgreementRequestParams.CreateAgreementRequestParamsBuilder.aCreateAgreementRequestParams;
 
-public class CreateAgreementIT extends PaymentResourceITestBase {
+public class AgreementsApiResourceCreateIT extends PaymentResourceITestBase {
    
     private static final String REFERENCE = "Some reference <script> alert('This is a ?{simple} XSS attack.')</script>";
     private static final String DESCRIPTION = "A valid description";

@@ -26,12 +26,12 @@ import static java.util.stream.Collectors.toUnmodifiableMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.core.Is.is;
-import static uk.gov.pay.api.it.CreatePaymentIT.paymentPayload;
+import static uk.gov.pay.api.it.PaymentsResourceCreateIT.paymentPayload;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.utils.mocks.CreateChargeRequestParams.CreateChargeRequestParamsBuilder.aCreateChargeRequestParams;
 
 @RunWith(JUnitParamsRunner.class)
-public class PaymentResourceMetadataValidationFailuresIT extends PaymentResourceITestBase {
+public class PaymentsResourceMetadataValidationFailuresIT extends PaymentResourceITestBase {
 
     private static CreateChargeRequestParamsBuilder createChargeRequestParamsBuilder = aCreateChargeRequestParams()
                 .withAmount(100)

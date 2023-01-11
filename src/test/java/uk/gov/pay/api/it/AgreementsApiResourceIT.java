@@ -17,7 +17,7 @@ import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.utils.mocks.AgreementFromLedgerFixture.AgreementFromLedgerFixtureBuilder.anAgreementFromLedgerWithPaymentInstrumentFixture;
 import static uk.gov.pay.api.utils.mocks.AgreementFromLedgerFixture.AgreementFromLedgerFixtureBuilder.anAgreementFromLedgerWithoutPaymentInstrumentFixture;
 
-public class AgreementsIT extends PaymentResourceITestBase {
+public class AgreementsApiResourceIT extends PaymentResourceITestBase {
 
     private final PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
     private final LedgerMockClient ledgerMockClient = new LedgerMockClient(ledgerMock);

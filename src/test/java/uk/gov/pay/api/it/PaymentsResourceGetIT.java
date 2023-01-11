@@ -48,7 +48,7 @@ import static uk.gov.pay.api.utils.mocks.TransactionEventFixture.TransactionEven
 import static uk.gov.pay.api.utils.mocks.TransactionFromLedgerFixture.TransactionFromLedgerBuilder.aTransactionFromLedgerFixture;
 import static uk.gov.service.payments.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
 
-public class GetPaymentIT extends PaymentResourceITestBase {
+public class PaymentsResourceGetIT extends PaymentResourceITestBase {
 
     private static final ZonedDateTime CAPTURED_DATE = ZonedDateTime.parse("2016-01-02T14:03:00Z");
     private static final ZonedDateTime CAPTURE_SUBMIT_TIME = ZonedDateTime.parse("2016-01-02T15:02:00Z");
