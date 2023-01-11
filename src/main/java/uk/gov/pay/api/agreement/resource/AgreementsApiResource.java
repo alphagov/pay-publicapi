@@ -6,13 +6,13 @@ import io.swagger.v3.oas.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.agreement.model.Agreement;
-import uk.gov.pay.api.agreement.model.AgreementLedgerResponse;
 import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
 import uk.gov.pay.api.agreement.service.AgreementService;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.ledger.model.AgreementSearchParams;
 import uk.gov.pay.api.ledger.model.SearchResults;
 import uk.gov.pay.api.service.LedgerService;
+import uk.gov.pay.api.service.SearchAgreementsService;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -24,7 +24,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.http.HttpStatus.SC_CREATED;
@@ -37,11 +36,15 @@ public class AgreementsApiResource {
 
     private final AgreementService agreementService;
     private final LedgerService ledgerService;
+    private final SearchAgreementsService searchAgreementsService;
 
     @Inject
-    public AgreementsApiResource(AgreementService agreementService, LedgerService ledgerService) {
+    public AgreementsApiResource(AgreementService agreementService,
+                                 LedgerService ledgerService, 
+                                 SearchAgreementsService searchAgreementsService) {
         this.agreementService = agreementService;
         this.ledgerService = ledgerService;
+        this.searchAgreementsService = searchAgreementsService;
     }
 
     @POST
@@ -76,9 +79,7 @@ public class AgreementsApiResource {
     @Path("/v1/agreements")
     @Produces(APPLICATION_JSON)
     public SearchResults<Agreement> getAgreements(@Auth Account account, @BeanParam AgreementSearchParams searchParams) {
-        SearchResults<AgreementLedgerResponse> searchResults = ledgerService.searchAgreements(account, searchParams);
-        return new SearchResults<>(searchResults.getTotal(), searchResults.getCount(),
-                searchResults.getPage(), searchResults.getResults().stream().map(Agreement::from).collect(Collectors.toUnmodifiableList()), null);
+        return searchAgreementsService.searchLedgerAgreements(account, searchParams);
     }
 
     @POST
