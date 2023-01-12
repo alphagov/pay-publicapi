@@ -116,4 +116,16 @@ public class AgreementsApiResourceSearchIT extends PaymentResourceITestBase {
                 .body("code", is("P2401"))
                 .body("description", is("Invalid parameters: status. See Public API documentation for the correct data formats"));
     }
+
+    @Test
+    public void searchPaymentsAgreements_errorIfLedgerRespondsWith404() {
+        given().port(app.getLocalPort())
+                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .basePath(AGREEMENTS_PATH)
+                .get()
+                .then()
+                .statusCode(404)
+                .body("code", is("P2402"))
+                .body("description", is("Page not found"));
+    }
 }
