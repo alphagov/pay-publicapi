@@ -16,6 +16,7 @@ import uk.gov.pay.api.exception.SearchPaymentsException;
 import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.search.PaginationDecorator;
+import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
 
@@ -203,5 +204,26 @@ public class CardPaymentSearchServiceTest {
                 .assertThat("results", hasSize(equalTo(1)))
                 .assertThat("results[0].settlement_summary", hasKey("settled_date"))
                 .assertThat("results[0].settlement_summary.settled_date", is("2020-09-19"));
+    }
+
+    @Test
+    @PactVerification({"ledger"})
+    @Pacts(pacts = ("publicapi-ledger-search-payment-by-agreement-id"))
+    public void shouldReturnAPaymentWhenSearchedByAgreementId() {
+        String accountId = "123456";
+        String agreementId = "agreement-1";
+        Account account = new Account(accountId, TokenPaymentType.CARD, tokenLink);
+        var searchParams = new PaymentSearchParams.Builder()
+                .withAgreementId(agreementId)
+                .withDisplaySize("500")
+                .withPageNumber("1")
+                .build();
+        Response response = paymentSearchService.searchLedgerPayments(account, searchParams);
+        JsonAssert.with(response.getEntity().toString())
+                .assertThat("count", is(1))
+                .assertThat("total", is(1))
+                .assertThat("page", is(1))
+                .assertThat("results", hasSize(equalTo(1)))
+                .assertThat("results[0].authorisation_mode", is(AuthorisationMode.AGREEMENT.getName()));
     }
 }

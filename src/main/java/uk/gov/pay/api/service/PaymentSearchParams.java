@@ -20,6 +20,7 @@ public class PaymentSearchParams {
     public static final String DISPLAY_SIZE = "display_size";
     public static final String FROM_SETTLED_DATE = "from_settled_date";
     public static final String TO_SETTLED_DATE = "to_settled_date";
+    public static final String AGREEMENT_ID = "agreement_id";
 
     private String reference;
     private String email;
@@ -34,6 +35,7 @@ public class PaymentSearchParams {
     private String lastDigitsCardNumber;
     private String fromSettledDate;
     private String toSettledDate;
+    private String agreementId;
 
     public PaymentSearchParams(Builder builder) {
         this.reference = builder.reference;
@@ -49,6 +51,7 @@ public class PaymentSearchParams {
         this.lastDigitsCardNumber = builder.lastDigitsCardNumber;
         this.fromSettledDate = builder.fromSettledDate;
         this.toSettledDate = builder.toSettledDate;
+        this.agreementId = builder.agreementId;
     }
 
     public Map<String, String> getParamsAsMap() {
@@ -66,6 +69,7 @@ public class PaymentSearchParams {
         params.put(DISPLAY_SIZE, displaySize);
         params.put(FROM_SETTLED_DATE, fromSettledDate);
         params.put(TO_SETTLED_DATE, toSettledDate);
+        params.put(AGREEMENT_ID, agreementId);
 
         return params;
     }
@@ -118,6 +122,10 @@ public class PaymentSearchParams {
         return toSettledDate;
     }
 
+    public String getAgreementId() {
+        return agreementId;
+    }
+
     public static class Builder {
         private String reference;
         private String email;
@@ -132,6 +140,7 @@ public class PaymentSearchParams {
         private String lastDigitsCardNumber;
         private String fromSettledDate;
         private String toSettledDate;
+        private String agreementId;
 
         public Builder() {
         }
@@ -207,6 +216,11 @@ public class PaymentSearchParams {
 
         public Builder withToSettledDate(String toSettledDate) {
             this.toSettledDate = toSettledDate;
+            return this;
+        }
+
+        public Builder withAgreementId(String agreementId) {
+            this.agreementId = agreementId;
             return this;
         }
     }

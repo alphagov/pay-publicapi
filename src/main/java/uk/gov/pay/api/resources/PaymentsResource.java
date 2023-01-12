@@ -233,14 +233,17 @@ public class PaymentsResource {
                                            "Date must be in ISO 8601 format to date-level accuracy - `YYYY-MM-DD`. " +
                                            "Payments are settled when your payment service provider sends funds to your bank account.")
                                    @QueryParam("to_settled_date") String toSettledDate,
+                                   @Parameter(description = "Returns payments that were authorised using the agreement with this `agreement_id`. " + 
+                                           "Must be an exact match.")
+                                   @QueryParam("agreement_id") String agreementId,
                                    @Context UriInfo uriInfo) {
 
         logger.info("Payments search request - [ {} ]",
                 format("reference:%s, email: %s, status: %s, card_brand %s, fromDate: %s, toDate: %s, page: %s, " +
                                 "display_size: %s, cardholder_name: %s, first_digits_card_number: %s, " +
-                                "last_digits_card_number: %s, from_settled_date: %s, to_settled_date: %s",
+                                "last_digits_card_number: %s, from_settled_date: %s, to_settled_date: %s, agreement_id: %s",
                         reference, email, state, cardBrand, fromDate, toDate, pageNumber, displaySize,
-                        cardHolderName, firstDigitsCardNumber, lastDigitsCardNumber, fromSettledDate, toSettledDate));
+                        cardHolderName, firstDigitsCardNumber, lastDigitsCardNumber, fromSettledDate, toSettledDate, agreementId));
 
         var paymentSearchParams = new PaymentSearchParams.Builder()
                 .withReference(reference)
@@ -256,6 +259,7 @@ public class PaymentsResource {
                 .withLastDigitsCardNumber(lastDigitsCardNumber)
                 .withFromSettledDate(fromSettledDate)
                 .withToSettledDate(toSettledDate)
+                .withAgreementId(agreementId)
                 .build();
 
         return paymentSearchService.searchLedgerPayments(account, paymentSearchParams);
