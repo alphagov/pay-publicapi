@@ -44,7 +44,7 @@ class CreateAgreementExceptionMapperTest {
                 .thenReturn(new ConnectorErrorResponse(ErrorIdentifier.RECURRING_CARD_PAYMENTS_NOT_ALLOWED, null, null));
         Response returnedResponse = mapper.toResponse(new CreateAgreementException(mockResponse));
         RequestError returnedError = (RequestError) returnedResponse.getEntity();
-        RequestError expectedError = aRequestError(RequestError.Code.CREATE_AGREEMENT_RECURRING_CARD_PAYMENTS_NOT_ALLOWED_ERROR);
+        RequestError expectedError = aRequestError(RequestError.Code.RECURRING_CARD_PAYMENTS_NOT_ALLOWED_ERROR);
         assertThat(returnedResponse.getStatus(), is(SC_UNPROCESSABLE_ENTITY));
         assertThat(returnedError.getDescription(),
                 is(expectedError.getDescription()));

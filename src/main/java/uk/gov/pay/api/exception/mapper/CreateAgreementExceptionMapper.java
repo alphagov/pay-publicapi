@@ -27,7 +27,7 @@ public class CreateAgreementExceptionMapper implements ExceptionMapper<CreateAgr
         
         if (exception.getErrorIdentifier() == ErrorIdentifier.RECURRING_CARD_PAYMENTS_NOT_ALLOWED) {
             statusCode = HttpStatus.UNPROCESSABLE_ENTITY_422;
-            requestError = aRequestError(RequestError.Code.CREATE_AGREEMENT_RECURRING_CARD_PAYMENTS_NOT_ALLOWED_ERROR);
+            requestError = aRequestError(RequestError.Code.RECURRING_CARD_PAYMENTS_NOT_ALLOWED_ERROR);
         }
         else {
             requestError = aRequestError(CREATE_AGREEMENT_CONNECTOR_ERROR);
