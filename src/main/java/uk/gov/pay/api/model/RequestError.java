@@ -72,6 +72,7 @@ public class RequestError {
         RESOURCE_ACCESS_FORBIDDEN("P0930", "Access to this resource is not enabled for this account. Contact support with your error code - https://www.payments.service.gov.uk/support/ ."),
         ACCOUNT_NOT_LINKED_WITH_PSP("P0940", "Account is not fully configured. Please refer to documentation to setup your account or contact support with your error code - https://www.payments.service.gov.uk/support/ ."),
         ACCOUNT_DISABLED("P0941", "GOV.UK Pay has disabled payment and refund creation on this account. Contact support with your error code - https://www.payments.service.gov.uk/support/ ."),
+        RECURRING_CARD_PAYMENTS_NOT_ALLOWED_ERROR("P0942", "Recurring card payments are currently disabled for this service. Contact support with your error code - https://www.payments.service.gov.uk/support/"),
 
         SEARCH_REFUNDS_VALIDATION_ERROR("P1101", "Invalid parameters: %s. See Public API documentation for the correct data formats"),
         SEARCH_REFUNDS_NOT_FOUND("P1100", "Page not found"),
@@ -89,7 +90,6 @@ public class RequestError {
 
         CREATE_AGREEMENT_MISSING_FIELD_ERROR("P2101", "Missing mandatory attribute: %s"),
         CREATE_AGREEMENT_VALIDATION_ERROR("P2102", "Invalid attribute value: %s. %s"),
-        CREATE_AGREEMENT_RECURRING_CARD_PAYMENTS_NOT_ALLOWED_ERROR("P2103", "Recurring card payments are currently disabled for this service. Contact support with your error code - https://www.payments.service.gov.uk/support/"),
         GET_AGREEMENT_NOT_FOUND_ERROR("P2200", "Not found"),
         GET_AGREEMENT_LEDGER_ERROR("P2298", "Downstream system error"),
 
