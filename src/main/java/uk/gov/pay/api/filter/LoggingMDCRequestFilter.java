@@ -12,6 +12,7 @@ import java.security.Principal;
 import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static uk.gov.service.payments.logging.LoggingKeys.AGREEMENT_EXTERNAL_ID;
 import static uk.gov.service.payments.logging.LoggingKeys.GATEWAY_ACCOUNT_ID;
 import static uk.gov.service.payments.logging.LoggingKeys.PAYMENT_EXTERNAL_ID;
 import static uk.gov.service.payments.logging.LoggingKeys.REFUND_EXTERNAL_ID;
@@ -34,6 +35,8 @@ public class LoggingMDCRequestFilter implements ContainerRequestFilter {
                 .ifPresent(paymentId -> MDC.put(PAYMENT_EXTERNAL_ID, paymentId));
         getPathParameterFromRequest("refundId", requestContext)
                 .ifPresent(refundId -> MDC.put(REFUND_EXTERNAL_ID, refundId));
+        getPathParameterFromRequest("agreementId", requestContext)
+                .ifPresent(agreementId -> MDC.put(AGREEMENT_EXTERNAL_ID, agreementId));
     }
 
     private String getClientAddress(ContainerRequestContext requestContext) {

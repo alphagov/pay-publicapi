@@ -59,6 +59,8 @@ public class AgreementsApiResource {
                 createAgreementRequest.getReference(), account.getAccountId());
         var agreementCreatedResponse = agreementService.create(account, createAgreementRequest);
         var agreementLedgerResponse = ledgerService.getAgreement(account, agreementCreatedResponse.getAgreementId());
+        
+        LOGGER.info("Agreement returned (created): [ {} ]", agreementCreatedResponse);
         return Response.status(SC_CREATED).entity(Agreement.from(agreementLedgerResponse)).build();
     }
 
