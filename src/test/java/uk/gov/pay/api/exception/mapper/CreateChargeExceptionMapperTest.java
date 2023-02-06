@@ -28,6 +28,7 @@ import static uk.gov.service.payments.commons.model.ErrorIdentifier.INCORRECT_AU
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.INVALID_ATTRIBUTE_VALUE;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.MISSING_MANDATORY_ATTRIBUTE;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.MOTO_NOT_ALLOWED;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.RECURRING_CARD_PAYMENTS_NOT_ALLOWED;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.TELEPHONE_PAYMENT_NOTIFICATIONS_NOT_ALLOWED;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.UNEXPECTED_ATTRIBUTE;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.ZERO_AMOUNT_NOT_ALLOWED;
@@ -68,7 +69,8 @@ class CreateChargeExceptionMapperTest {
                 arguments(INCORRECT_AUTHORISATION_MODE_FOR_SAVE_PAYMENT_INSTRUMENT_TO_AGREEMENT, true, "Unexpected attribute: set_up_agreement", 400, "P0104"),
                 arguments(AGREEMENT_NOT_FOUND, false, "Invalid attribute value: agreement_id. Agreement does not exist", 400, "P0102"),
                 arguments(AGREEMENT_NOT_ACTIVE, false, "Invalid attribute value: agreement_id. Agreement must be active", 400, "P0102"),
-                arguments(INVALID_ATTRIBUTE_VALUE, true, "An error message from connector", 422, "P0102")
+                arguments(INVALID_ATTRIBUTE_VALUE, true, "An error message from connector", 422, "P0102"),
+                arguments(RECURRING_CARD_PAYMENTS_NOT_ALLOWED, true, "Recurring card payments are currently disabled for this service. Contact support with your error code - https://www.payments.service.gov.uk/support/", 422, "P0942")
         );
     }
 
