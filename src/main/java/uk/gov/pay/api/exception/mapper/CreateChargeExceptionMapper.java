@@ -25,6 +25,7 @@ import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_VALIDATION_E
 import static uk.gov.pay.api.model.RequestError.Code.GENERIC_MISSING_FIELD_ERROR_MESSAGE_FROM_CONNECTOR;
 import static uk.gov.pay.api.model.RequestError.Code.GENERIC_UNEXPECTED_FIELD_ERROR_MESSAGE_FROM_CONNECTOR;
 import static uk.gov.pay.api.model.RequestError.Code.GENERIC_VALIDATION_EXCEPTION_MESSAGE_FROM_CONNECTOR;
+import static uk.gov.pay.api.model.RequestError.Code.RECURRING_CARD_PAYMENTS_NOT_ALLOWED_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.RESOURCE_ACCESS_FORBIDDEN;
 import static uk.gov.pay.api.model.RequestError.aRequestError;
 
@@ -96,6 +97,10 @@ public class CreateChargeExceptionMapper implements ExceptionMapper<CreateCharge
                 case INVALID_ATTRIBUTE_VALUE:
                     statusCode = HttpStatus.UNPROCESSABLE_ENTITY_422;
                     requestError = aRequestError(GENERIC_VALIDATION_EXCEPTION_MESSAGE_FROM_CONNECTOR, exception.getConnectorErrorMessage());
+                    break;
+                case RECURRING_CARD_PAYMENTS_NOT_ALLOWED:
+                    statusCode = HttpStatus.UNPROCESSABLE_ENTITY_422;
+                    requestError = aRequestError(RECURRING_CARD_PAYMENTS_NOT_ALLOWED_ERROR);
                     break;
                 default:
                     requestError = aRequestError(CREATE_PAYMENT_CONNECTOR_ERROR);
