@@ -1,5 +1,8 @@
 package uk.gov.pay.api.ledger.model;
 
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.ws.rs.QueryParam;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,15 +15,32 @@ import static uk.gov.pay.api.common.SearchConstants.STATUS_KEY;
 
 public class AgreementSearchParams {
     @QueryParam("reference")
+    @Parameter(name = "reference", description = "Returns agreements with a `reference` that exactly matches the value you sent. " +
+            "This parameter is not case sensitive. " + 
+            "A `reference` was associated with the agreement when that agreement was created.",
+            example = "CT-22-23-0001")
     private String reference;
 
     @QueryParam("status")
+    @Parameter(name = "status", description = "Returns agreements in a matching `status`. " +
+            "`status` reflects where an agreement is in its lifecycle. " +
+            "You can [read more about the meanings of the different agreement status values]" +
+            "(https://docs.payments.service.gov.uk/recurring_payments/#understanding-agreement-status).",
+            schema = @Schema(allowableValues = {"created", "active", "cancelled", "expired"}))
     private String status;
 
     @QueryParam("page")
+    @Parameter(name = "page", 
+            description = "Returns a specific page of results. Defaults to `1`. " +
+                    "You can [read about search pagination](https://docs.payments.service.gov.uk/api_reference/#pagination)",
+            example = "1")
     private String pageNumber;
 
     @QueryParam("display_size")
+    @Parameter(name = "display_size",
+            description = "The number of agreements returned per results page. Defaults to `500`. " +
+                    "Maximum value is `500`. You can [read about search pagination](https://docs.payments.service.gov.uk/api_reference/#pagination)",
+            example = "50")
     private String displaySize;
 
     public AgreementSearchParams() {
