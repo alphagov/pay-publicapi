@@ -13,6 +13,8 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@Schema(description = "Contains information about a user's agreement for recurring payments. " +
+        "An agreement represents an understanding between you and your paying user that you'll use their card to make ongoing payments for a service.")
 public class Agreement {
     private String externalId;
     private String reference;
