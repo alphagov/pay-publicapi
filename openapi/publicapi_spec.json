@@ -9,11 +9,322 @@
     "url" : "https://publicapi.payments.service.gov.uk"
   } ],
   "tags" : [ {
+    "name" : "Agreements"
+  }, {
     "name" : "Card payments"
   }, {
     "name" : "Refunding card payments"
   } ],
   "paths" : {
+    "/v1/agreements" : {
+      "get" : {
+        "description" : "You can use this endpoint to search for recurring payments agreements. The agreements are sorted by date, with the most recently-created agreements appearing first.",
+        "operationId" : "Search agreements",
+        "parameters" : [ {
+          "description" : "Returns agreements with a `reference` that exactly matches the value you sent. This parameter is not case sensitive. A `reference` was associated with the agreement when that agreement was created.",
+          "example" : "CT-22-23-0001",
+          "in" : "query",
+          "name" : "reference",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "Returns agreements in a matching `status`. `status` reflects where an agreement is in its lifecycle. You can [read more about the meanings of the different agreement status values](https://docs.payments.service.gov.uk/recurring_payments/#understanding-agreement-status).",
+          "in" : "query",
+          "name" : "status",
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "created", "active", "cancelled", "expired" ]
+          }
+        }, {
+          "description" : "Returns a specific page of results. Defaults to `1`. You can [read about search pagination](https://docs.payments.service.gov.uk/api_reference/#pagination)",
+          "example" : 1,
+          "in" : "query",
+          "name" : "page",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "The number of agreements returned per results page. Defaults to `500`. Maximum value is `500`. You can [read about search pagination](https://docs.payments.service.gov.uk/api_reference/#pagination)",
+          "example" : 50,
+          "in" : "query",
+          "name" : "display_size",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AgreementSearchResults"
+                }
+              }
+            },
+            "description" : "OK - your request was successful."
+          },
+          "401" : {
+            "description" : "Your API key is missing or invalid. Read more about [authenticating GOV.UK Pay API requests](https://docs.payments.service.gov.uk/api_reference/#authentication)"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RequestError"
+                }
+              }
+            },
+            "description" : "Not found"
+          },
+          "422" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RequestError"
+                }
+              }
+            },
+            "description" : "Your request failed. Check the `code` and `description` in the response to find out why your request failed."
+          },
+          "429" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description" : "Too many requests"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RequestError"
+                }
+              }
+            },
+            "description" : "Downstream system error"
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ],
+        "summary" : "Search agreements for recurring payments",
+        "tags" : [ "Agreements" ]
+      },
+      "post" : {
+        "description" : "You can use this endpoint to create a new agreement.",
+        "operationId" : "Create an agreement",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CreateAgreementRequest"
+              }
+            }
+          },
+          "description" : "requestPayload",
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Agreement"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RequestError"
+                }
+              }
+            },
+            "description" : "Bad request"
+          },
+          "401" : {
+            "description" : "Your API key is missing or invalid. Read more about [authenticating GOV.UK Pay API requests](https://docs.payments.service.gov.uk/api_reference/#authentication)"
+          },
+          "422" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RequestError"
+                }
+              }
+            },
+            "description" : "Your request failed. Check the `code` and `description` in the response to find out why your request failed."
+          },
+          "429" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description" : "Too many requests"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RequestError"
+                }
+              }
+            },
+            "description" : "Downstream system error"
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ],
+        "summary" : "Create an agreement for recurring payments",
+        "tags" : [ "Agreements" ]
+      }
+    },
+    "/v1/agreements/{agreementId}" : {
+      "get" : {
+        "description" : "You can use this endpoint to get information about a single recurring payments agreement.",
+        "operationId" : "Get an agreement",
+        "parameters" : [ {
+          "description" : "Returns the agreement with the matching `agreement_id`. GOV.UK Pay generated an `agreement_id` when you created the agreement.",
+          "example" : "cgc1ocvh0pt9fqs0ma67r42l58",
+          "in" : "path",
+          "name" : "agreementId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Agreement"
+                }
+              }
+            },
+            "description" : "OK - your request was successful."
+          },
+          "401" : {
+            "description" : "Your API key is missing or invalid. Read more about [authenticating GOV.UK Pay API requests](https://docs.payments.service.gov.uk/api_reference/#authentication)"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RequestError"
+                }
+              }
+            },
+            "description" : "Not found"
+          },
+          "429" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description" : "Too many requests"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RequestError"
+                }
+              }
+            },
+            "description" : "Downstream system error"
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ],
+        "summary" : "Get information about a single agreement for recurring payments",
+        "tags" : [ "Agreements" ]
+      }
+    },
+    "/v1/agreements/{agreementId}/cancel" : {
+      "post" : {
+        "description" : "You can use this endpoint to cancel a recurring payments agreement in the `active` status.",
+        "operationId" : "Cancel an agreement",
+        "parameters" : [ {
+          "description" : "The `agreement_id` of the agreement you are cancelling",
+          "example" : "cgc1ocvh0pt9fqs0ma67r42l58",
+          "in" : "path",
+          "name" : "agreementId",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RequestError"
+                }
+              }
+            },
+            "description" : "Cancellation of agreement failed"
+          },
+          "401" : {
+            "description" : "Your API key is missing or invalid. Read more about [authenticating GOV.UK Pay API requests](https://docs.payments.service.gov.uk/api_reference/#authentication)"
+          },
+          "404" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RequestError"
+                }
+              }
+            },
+            "description" : "Not found"
+          },
+          "429" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description" : "Too many requests"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RequestError"
+                }
+              }
+            },
+            "description" : "Downstream system error"
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ],
+        "summary" : "Cancel an agreement for recurring payments",
+        "tags" : [ "Agreements" ]
+      }
+    },
     "/v1/auth" : {
       "post" : {
         "description" : "You can use this endpoint to [authorise payments](https://docs.payments.service.gov.uk/moto_payments/moto_send_card_details_api/) you have created with `authorisation_mode` set to `moto_api`.",
@@ -1064,6 +1375,77 @@
           }
         }
       },
+      "Agreement" : {
+        "type" : "object",
+        "properties" : {
+          "agreement_id" : {
+            "type" : "string",
+            "description" : "The unique ID GOV.UK Pay automatically associated with this agreement when you created it.",
+            "example" : "cgc1ocvh0pt9fqs0ma67r42l58"
+          },
+          "created_date" : {
+            "type" : "string",
+            "description" : "The date and time you created this agreement. This value uses Coordinated Universal Time (UTC) and ISO 8601 format – `YYYY-MM-DDThh:mm:ss.sssZ`.",
+            "example" : "2022-07-08T14:33:00.000Z"
+          },
+          "description" : {
+            "type" : "string",
+            "description" : "The description you sent when creating this agreement.",
+            "example" : "Dorset Council 2022/23 council tax subscription."
+          },
+          "payment_instrument" : {
+            "$ref" : "#/components/schemas/PaymentInstrument"
+          },
+          "reference" : {
+            "type" : "string",
+            "description" : "The reference you sent when creating this agreement.",
+            "example" : "CT-22-23-0001"
+          },
+          "status" : {
+            "type" : "string",
+            "description" : "The status of this agreement. You can [read more about the meanings of each agreement status.](https://docs.payments.service.gov.uk/recurring_payments/#understanding-agreement-status)",
+            "enum" : [ "created", "active", "cancelled", "expired" ]
+          },
+          "user_identifier" : {
+            "type" : "string",
+            "description" : "The identifier you sent when creating this agreement. `user_identifier` helps you identify users in your records.",
+            "example" : "user-3fb81107-76b7-4910"
+          }
+        }
+      },
+      "AgreementSearchResults" : {
+        "type" : "object",
+        "properties" : {
+          "_links" : {
+            "$ref" : "#/components/schemas/SearchNavigationLinks"
+          },
+          "count" : {
+            "type" : "integer",
+            "format" : "int32",
+            "description" : "Number of agreements on the current page of search results.",
+            "example" : 20
+          },
+          "page" : {
+            "type" : "integer",
+            "format" : "int32",
+            "description" : "The [page of agreements you’re viewing](https://docs.payments.service.gov.uk/api_reference/#pagination). To view other pages, make this request again using the `page` parameter.",
+            "example" : 1
+          },
+          "results" : {
+            "type" : "array",
+            "description" : "Contains agreements matching your search criteria.",
+            "items" : {
+              "$ref" : "#/components/schemas/Agreement"
+            }
+          },
+          "total" : {
+            "type" : "integer",
+            "format" : "int32",
+            "description" : "Total number of agreements matching your search criteria.",
+            "example" : 100
+          }
+        }
+      },
       "AuthorisationRequest" : {
         "type" : "object",
         "description" : "Contains the user's payment information. This information will be sent to the payment service provider to authorise the payment.",
@@ -1152,6 +1534,33 @@
             "type" : "string",
             "example" : "1234",
             "readOnly" : true
+          }
+        }
+      },
+      "CreateAgreementRequest" : {
+        "type" : "object",
+        "description" : "The Agreement Request Payload",
+        "properties" : {
+          "description" : {
+            "type" : "string",
+            "description" : "A human-readable description of the purpose of the agreement for recurring payments. We’ll show the description to your user when they make their first payment to activate this agreement. Limited to 255 characters.",
+            "example" : "Dorset Council 2022/23 council tax subscription.",
+            "maxLength" : 255,
+            "minLength" : 1
+          },
+          "reference" : {
+            "type" : "string",
+            "description" : "Associate a reference with this agreement to help you identify it. Limited to 255 characters.",
+            "example" : "CT-22-23-0001",
+            "maxLength" : 255,
+            "minLength" : 1
+          },
+          "user_identifier" : {
+            "type" : "string",
+            "description" : "Associate an identifier with the user who will enter into this agreement with your service.user_identifier is not unique – multiple agreements can have identical user_identifier values.You should not include personal data in user_identifier.",
+            "example" : "user-3fb81107-76b7-4910",
+            "maxLength" : 255,
+            "minLength" : 1
           }
         }
       },
@@ -1790,6 +2199,24 @@
           }
         }
       },
+      "PaymentInstrument" : {
+        "type" : "object",
+        "properties" : {
+          "CardDetails" : {
+            "$ref" : "#/components/schemas/CardDetails"
+          },
+          "created_date" : {
+            "type" : "string",
+            "description" : "The date and time you created this payment instrument. This value uses Coordinated Universal Time (UTC) and ISO 8601 format – `YYYY-MM-DDThh:mm:ss.sssZ`.",
+            "example" : "2022-07-08T14:33:00.000Z"
+          },
+          "type" : {
+            "type" : "string",
+            "description" : "The type of payment instrument.",
+            "enum" : [ "card" ]
+          }
+        }
+      },
       "PaymentLinks" : {
         "type" : "object",
         "description" : "links for payment",
@@ -2233,6 +2660,32 @@
           },
           "self" : {
             "$ref" : "#/components/schemas/Link"
+          }
+        }
+      },
+      "SearchResultsAgreement" : {
+        "type" : "object",
+        "properties" : {
+          "_links" : {
+            "$ref" : "#/components/schemas/SearchNavigationLinks"
+          },
+          "count" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "page" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "results" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Agreement"
+            }
+          },
+          "total" : {
+            "type" : "integer",
+            "format" : "int32"
           }
         }
       },

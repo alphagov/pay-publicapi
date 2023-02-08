@@ -1,4 +1,5 @@
 resourceClasses:
+  - uk.gov.pay.api.agreement.resource.AgreementsApiResource
   - uk.gov.pay.api.resources.AuthorisationResource
   - uk.gov.pay.api.resources.PaymentsResource
   - uk.gov.pay.api.resources.PaymentRefundsResource
@@ -14,6 +15,7 @@ openAPI:
   servers:
     - url: 'https://publicapi.payments.service.gov.uk'
   tags:
+    - name: Agreements
     - name: Card payments
     - name: Refunding card payments
 
