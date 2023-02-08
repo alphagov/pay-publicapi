@@ -32,7 +32,6 @@ public class AgreementSearchResults implements SearchPagination {
     }
 
     @Override
-
     public int getPage() {
         return page;
     }
