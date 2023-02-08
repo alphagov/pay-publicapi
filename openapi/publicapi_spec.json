@@ -1403,7 +1403,7 @@
           },
           "status" : {
             "type" : "string",
-            "description" : "The status of this agreement. `status value` will automatically be set to created because you’ve just created this agreement. You can [read more about the meanings of each agreement status.](https://docs.payments.service.gov.uk/recurring_payments/#understanding-agreement-status)",
+            "description" : "The status of this agreement. You can [read more about the meanings of each agreement status.](https://docs.payments.service.gov.uk/recurring_payments/#understanding-agreement-status)",
             "enum" : [ "created", "active", "cancelled", "expired" ]
           },
           "user_identifier" : {
@@ -2213,7 +2213,7 @@
           "type" : {
             "type" : "string",
             "description" : "The type of payment instrument.",
-            "example" : "card"
+            "enum" : [ "card" ]
           }
         }
       },

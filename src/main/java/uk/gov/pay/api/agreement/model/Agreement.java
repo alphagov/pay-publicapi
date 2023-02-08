@@ -42,7 +42,6 @@ public class Agreement {
     }
 
     @Schema(description = "The status of this agreement. " +
-            "`status value` will automatically be set to created because you’ve just created this agreement. " +
             "You can [read more about the meanings of each agreement status.](https://docs.payments.service.gov.uk/recurring_payments/#understanding-agreement-status)",
             allowableValues = {"created", "active", "cancelled", "expired"})
     public String getStatus() {
@@ -120,7 +119,7 @@ public class Agreement {
         }
 
         @Schema(description = "The type of payment instrument.",
-                example = "card")
+                allowableValues = {"card"})
         public String getType() {
             return Optional.ofNullable(type).map(String::toLowerCase).orElse(null);
         }
