@@ -76,7 +76,7 @@ public class AgreementsApiResource {
     @Consumes(APPLICATION_JSON)
     @Operation(security = {@SecurityRequirement(name = "BearerAuth")},
             operationId = "Create an agreement",
-            summary = "Create an agreement",
+            summary = "Create an agreement for recurring payments",
             description = "You can use this endpoint to create a new agreement.",
             responses = {
                     @ApiResponse(responseCode = "201", description = RESPONSE_201_DESCRIPTION,
@@ -85,8 +85,6 @@ public class AgreementsApiResource {
                             content = @Content(schema = @Schema(implementation = RequestError.class))),
                     @ApiResponse(responseCode = "401",
                             description = RESPONSE_401_DESCRIPTION),
-                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION,
-                            content = @Content(schema = @Schema(implementation = RequestError.class))),
                     @ApiResponse(responseCode = "422",
                             description = RESPONSE_422_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RequestError.class))),
@@ -113,7 +111,7 @@ public class AgreementsApiResource {
     @Produces(APPLICATION_JSON)
     @Operation(security = {@SecurityRequirement(name = "BearerAuth")},
             operationId = "Get an agreement",
-            summary = "Get information about a single agreement",
+            summary = "Get information about a single agreement for recurring payments",
             description = "You can use this endpoint to get information about a single recurring payments agreement.",
             responses = {
                     @ApiResponse(responseCode = "200", description = RESPONSE_200_DESCRIPTION,
@@ -132,7 +130,8 @@ public class AgreementsApiResource {
             @Parameter(hidden = true) @Auth Account account,
             @PathParam("agreementId") 
             @Parameter(name = "agreementId", 
-                    description = "Returns the agreement with the matching `agreement_id`", 
+                    description = "Returns the agreement with the matching `agreement_id`. " +
+                            "GOV.UK Pay generated an `agreement_id` when you created the agreement.", 
                     example = "cgc1ocvh0pt9fqs0ma67r42l58") 
             String agreementId) {
         LOGGER.info("Get agreement {} request", agreementId);
@@ -146,7 +145,7 @@ public class AgreementsApiResource {
     @Produces(APPLICATION_JSON)
     @Operation(security = {@SecurityRequirement(name = "BearerAuth")},
             operationId = "Search agreements",
-            summary = "Search agreements",
+            summary = "Search agreements for recurring payments",
             description = "You can use this endpoint to search for recurring payments agreements. " +
                     "The agreements are sorted by date, with the most recently-created agreements appearing first.",
             responses = {
@@ -154,6 +153,8 @@ public class AgreementsApiResource {
                             content = @Content(schema = @Schema(implementation = AgreementSearchResults.class))),
                     @ApiResponse(responseCode = "401",
                             description = RESPONSE_401_DESCRIPTION),
+                    @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION,
+                            content = @Content(schema = @Schema(implementation = RequestError.class))),
                     @ApiResponse(responseCode = "422",
                             description = RESPONSE_422_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RequestError.class))),
@@ -172,7 +173,7 @@ public class AgreementsApiResource {
     @Produces(APPLICATION_JSON)
     @Operation(security = {@SecurityRequirement(name = "BearerAuth")},
             operationId = "Cancel an agreement",
-            summary = "Cancel an agreement",
+            summary = "Cancel an agreement for recurring payments",
             description = "You can use this endpoint to cancel a recurring payments agreement in the `active` status.",
             responses = {
                     @ApiResponse(responseCode = "204", description = "No Content"),

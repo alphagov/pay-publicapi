@@ -39,14 +39,24 @@ public class CreateAgreementRequest {
         this.userIdentifier = builder.getUserIdentifier();
     }
 
+    @Schema(description = "Associate a reference with this agreement to help you identify it. Limited to 255 characters.",
+    example = "CT-22-23-0001")
     public String getReference() {
         return reference;
     }
 
+    @Schema(description = "A human-readable description of the purpose of the agreement for recurring payments. " +
+            "We’ll show the description to your user when they make their first payment to activate this agreement. " +
+            "Limited to 255 characters.",
+            example = "Dorset Council 2022/23 council tax subscription.")
     public String getDescription() {
         return description;
     }
 
+   @Schema(description = "Associate an identifier with the user who will enter into this agreement with your service." +
+           "user_identifier is not unique – multiple agreements can have identical user_identifier values." +
+           "You should not include personal data in user_identifier.",
+            example = "user-3fb81107-76b7-4910")
     public String getUserIdentifier() {
         return userIdentifier;
     }
