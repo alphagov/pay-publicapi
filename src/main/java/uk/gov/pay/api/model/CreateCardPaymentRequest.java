@@ -207,7 +207,7 @@ public class CreateCardPaymentRequest {
     @JsonProperty("agreement_id")
     @Schema(description = "The unique ID GOV.UK Pay automatically associated with a recurring payments agreement. " +
             "Including `agreement_id` in your request tells the API to take this payment using the card details that are associated with this agreement. " +
-            "`agreement_id` must match an active agreement ID." +
+            "`agreement_id` must match an active agreement ID. " +
             "You must set `authorisation_mode` to `agreement` for the API to accept `agreement_id`.", 
             required = false, example = "abcefghjklmnopqr1234567890")
     public Optional<String> getAgreementId() {
@@ -217,10 +217,10 @@ public class CreateCardPaymentRequest {
     @JsonProperty("authorisation_mode")
     @Schema(description = "Sets how you intend to authorise the payment. Defaults to `web`. " +
             "Payments created with `web` mode follow the [standard GOV.UK Pay payment journey](https://docs.payments.service.gov.uk/payment_flow/). " +
-            "Paying users visit the `next_url` in the response to complete their payment." +
+            "Paying users visit the `next_url` in the response to complete their payment. " +
             "Payments created with `agreement` mode are authorised with an agreement for recurring payments. " +
             "If you create an `agreement` payment, you must also send an active `agreement_id`. " +
-            "You must not send `return_url`, `email`, or `prefilled_cardholder_details` or your request will fail." +
+            "You must not send `return_url`, `email`, or `prefilled_cardholder_details` or your request will fail. " +
             "Payments created with `moto_api` mode return an `auth_url_post` object and a `one_time_token`. " +
             "You can use `auth_url_post` and `one_time_token` to send the paying user’s card details through the API and complete the payment. " +
             "If you create a `moto_api` payment, do not send a `return_url` in your request.",
