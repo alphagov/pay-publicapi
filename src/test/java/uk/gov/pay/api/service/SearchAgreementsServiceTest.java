@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.api.agreement.model.Agreement;
+import uk.gov.pay.api.agreement.model.AgreementSearchResults;
 import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
@@ -56,7 +57,7 @@ public class SearchAgreementsServiceTest {
     public void searchWithPageAndDisplaySize_shouldReturnCorrectPageAndPaginationLinks() {
         AgreementSearchParams params = new AgreementSearchParams(null, null, "2", "1");
         Account account = new Account("777", TokenPaymentType.CARD, "a-token-link");
-        SearchResults<Agreement> results = searchAgreementsService.searchLedgerAgreements(account, params);
+        AgreementSearchResults results = searchAgreementsService.searchLedgerAgreements(account, params);
 
         assertThat(results.getResults().size(), is(1));
         assertThat(results.getCount(), is(1));

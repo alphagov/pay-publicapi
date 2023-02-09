@@ -166,7 +166,7 @@ public class AgreementsApiResource {
                             content = @Content(schema = @Schema(implementation = RequestError.class)))
             }
     )
-    public SearchResults<Agreement> getAgreements(@Parameter(hidden = true) @Auth Account account, @BeanParam AgreementSearchParams searchParams) {
+    public AgreementSearchResults getAgreements(@Parameter(hidden = true) @Auth Account account, @BeanParam AgreementSearchParams searchParams) {
         return searchAgreementsService.searchLedgerAgreements(account, searchParams);
     }
 

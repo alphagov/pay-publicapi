@@ -1378,6 +1378,7 @@
       },
       "Agreement" : {
         "type" : "object",
+        "description" : "Contains information about a user's agreement for recurring payments. An agreement represents an understanding between you and your paying user that you'll use their card to make ongoing payments for a service.",
         "properties" : {
           "agreement_id" : {
             "type" : "string",
@@ -2680,32 +2681,6 @@
           },
           "self" : {
             "$ref" : "#/components/schemas/Link"
-          }
-        }
-      },
-      "SearchResultsAgreement" : {
-        "type" : "object",
-        "properties" : {
-          "_links" : {
-            "$ref" : "#/components/schemas/SearchNavigationLinks"
-          },
-          "count" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
-          "page" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
-          "results" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/Agreement"
-            }
-          },
-          "total" : {
-            "type" : "integer",
-            "format" : "int32"
           }
         }
       },
