@@ -599,6 +599,7 @@
           }
         }, {
           "description" : "Returns payments that were authorised using the agreement with this `agreement_id`. Must be an exact match.",
+          "example" : "abcefghjklmnopqr1234567890",
           "in" : "query",
           "name" : "agreement_id",
           "schema" : {
@@ -702,7 +703,7 @@
                 }
               }
             },
-            "description" : "Invalid attribute value: description. Must be less than or equal to 255 characters length"
+            "description" : "Your request failed. Check the `code` and `description` in the response to find out why your request failed."
           },
           "429" : {
             "content" : {
@@ -1568,6 +1569,13 @@
         "type" : "object",
         "description" : "The create payment request body",
         "properties" : {
+          "agreement_id" : {
+            "type" : "string",
+            "description" : "The unique ID GOV.UK Pay automatically associated with a recurring payments agreement. Including `agreement_id` in your request tells the API to take this payment using the card details that are associated with this agreement. `agreement_id` must match an active agreement ID. You must set `authorisation_mode` to `agreement` for the API to accept `agreement_id`.",
+            "example" : "abcefghjklmnopqr1234567890",
+            "maxLength" : 26,
+            "minLength" : 26
+          },
           "amount" : {
             "type" : "integer",
             "format" : "int32",
@@ -1575,6 +1583,11 @@
             "example" : 12000,
             "maximum" : 10000000,
             "minimum" : 0
+          },
+          "authorisation_mode" : {
+            "type" : "string",
+            "description" : "Sets how you intend to authorise the payment. Defaults to `web`. Payments created with `web` mode follow the [standard GOV.UK Pay payment journey](https://docs.payments.service.gov.uk/payment_flow/). Paying users visit the `next_url` in the response to complete their payment. Payments created with `agreement` mode are authorised with an agreement for recurring payments. If you create an `agreement` payment, you must also send an active `agreement_id`. You must not send `return_url`, `email`, or `prefilled_cardholder_details` or your request will fail. Payments created with `moto_api` mode return an `auth_url_post` object and a `one_time_token`. You can use `auth_url_post` and `one_time_token` to send the paying user’s card details through the API and complete the payment. If you create a `moto_api` payment, do not send a `return_url` in your request.",
+            "enum" : [ "web", "agreement", "moto_api" ]
           },
           "delayed_capture" : {
             "type" : "boolean",
@@ -1623,6 +1636,13 @@
             "example" : "https://service-name.gov.uk/transactions/12345",
             "maxLength" : 2000,
             "minLength" : 0
+          },
+          "set_up_agreement" : {
+            "type" : "string",
+            "description" : "Use this parameter to set up an existing agreement for recurring payments. The `set_up_agreement` value you send must be a valid `agreement_id`.",
+            "example" : "abcefghjklmnopqr1234567890",
+            "maxLength" : 26,
+            "minLength" : 26
           }
         },
         "required" : [ "amount", "description", "reference", "return_url" ]

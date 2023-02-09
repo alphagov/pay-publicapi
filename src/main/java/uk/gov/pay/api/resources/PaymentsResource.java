@@ -54,6 +54,7 @@ import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_400_DESCRIPTION;
 import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_401_DESCRIPTION;
 import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_404_DESCRIPTION;
 import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_409_DESCRIPTION;
+import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_422_DESCRIPTION;
 import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_429_DESCRIPTION;
 import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_500_DESCRIPTION;
 
@@ -234,7 +235,7 @@ public class PaymentsResource {
                                            "Payments are settled when your payment service provider sends funds to your bank account.")
                                    @QueryParam("to_settled_date") String toSettledDate,
                                    @Parameter(description = "Returns payments that were authorised using the agreement with this `agreement_id`. " + 
-                                           "Must be an exact match.")
+                                           "Must be an exact match.", example = "abcefghjklmnopqr1234567890")
                                    @QueryParam("agreement_id") String agreementId,
                                    @Context UriInfo uriInfo) {
 
@@ -282,7 +283,7 @@ public class PaymentsResource {
                     @ApiResponse(responseCode = "401",
                             description = RESPONSE_401_DESCRIPTION),
                     @ApiResponse(responseCode = "422",
-                            description = "Invalid attribute value: description. Must be less than or equal to 255 characters length",
+                            description = RESPONSE_422_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = RequestError.class))),
                     @ApiResponse(responseCode = "429", description = RESPONSE_429_DESCRIPTION,
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
