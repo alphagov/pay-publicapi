@@ -224,7 +224,7 @@ public class CreateCardPaymentRequest {
             "Payments created with `moto_api` mode return an `auth_url_post` object and a `one_time_token`. " +
             "You can use `auth_url_post` and `one_time_token` to send the paying user’s card details through the API and complete the payment. " +
             "If you create a `moto_api` payment, do not send a `return_url` in your request.",
-            allowableValues = {"web", "agreement", "moto_api"})
+            type = "String", allowableValues = {"web", "agreement", "moto_api"})
     public Optional<AuthorisationMode> getAuthorisationMode() {
         return Optional.ofNullable(authorisationMode);
     }
