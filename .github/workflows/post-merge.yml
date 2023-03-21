@@ -29,13 +29,13 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
       - name: Cache Maven packages
-        uses: actions/cache@940f3d7cf195ba83374c77632d1e2cbb2f24ae68
+        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Cache pacts directory
-        uses: actions/cache@940f3d7cf195ba83374c77632d1e2cbb2f24ae68
+        uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8
         with:
           path: target/pacts
           key: ${{ runner.os }}-build-id-${{ github.head_ref }}-${{ github.sha }}-pacts
