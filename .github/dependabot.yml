@@ -23,7 +23,7 @@ updates:
   labels:
   - dependencies
   - govuk-pay
-  - java
+  - docker
 - package-ecosystem: docker
   directory: "/m1"
   schedule:
@@ -37,7 +37,7 @@ updates:
   labels:
   - dependencies
   - govuk-pay
-  - java
+  - docker
 - package-ecosystem: github-actions
   directory: "/"
   schedule:
