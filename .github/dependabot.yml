@@ -15,6 +15,10 @@ updates:
   schedule:
     interval: daily
     time: "03:00"
+  ignore:
+  - dependency-name: "eclipse-temurin"
+    versions:
+    - "> 11"
   open-pull-requests-limit: 10
   labels:
   - dependencies
@@ -25,6 +29,10 @@ updates:
   schedule:
     interval: daily
     time: "03:00"
+  ignore:
+  - dependency-name: "eclipse-temurin"
+    versions:
+    - "> 11"
   open-pull-requests-limit: 10
   labels:
   - dependencies
