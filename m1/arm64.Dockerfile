@@ -1,4 +1,4 @@
-FROM eclipse-temurin:11-jre@sha256:1d4485bfb09d46e475c36175369a2985a273991ea879e4083ce0fb6fac226b7a
+FROM eclipse-temurin:11-jre@sha256:886f7f392c4857b9be28f3a501d3956f5eea8cf01085b3451778be1c09c9caa4
 
 RUN ["apt-get", "update"]
 
