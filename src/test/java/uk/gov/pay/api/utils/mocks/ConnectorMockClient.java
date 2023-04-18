@@ -40,6 +40,7 @@ import static javax.ws.rs.core.HttpHeaders.LOCATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.eclipse.jetty.http.HttpStatus.ACCEPTED_202;
 import static org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
+import static org.eclipse.jetty.http.HttpStatus.CONFLICT_409;
 import static org.eclipse.jetty.http.HttpStatus.CREATED_201;
 import static org.eclipse.jetty.http.HttpStatus.FORBIDDEN_403;
 import static org.eclipse.jetty.http.HttpStatus.INTERNAL_SERVER_ERROR_500;
@@ -57,6 +58,7 @@ import static uk.gov.service.payments.commons.model.ErrorIdentifier.AGREEMENT_NO
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.AGREEMENT_NOT_FOUND;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.AUTHORISATION_API_NOT_ALLOWED;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.GENERIC;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.IDEMPOTENCY_KEY_USED;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.INCORRECT_AUTHORISATION_MODE_FOR_SAVE_PAYMENT_INSTRUMENT_TO_AGREEMENT;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.MOTO_NOT_ALLOWED;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.REFUND_AMOUNT_AVAILABLE_MISMATCH;
@@ -250,7 +252,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         );
     }
 
-    public void respondOk_whenCreateCharge(String gatewayAccountId, CreateChargeRequestParams requestParams) {
+    public void respondCreated_whenCreateCharge(String gatewayAccountId, CreateChargeRequestParams requestParams) {
 
         var responseFromConnector = aCreateOrGetChargeResponseFromConnector()
                 .withAmount(requestParams.getAmount())
@@ -295,7 +297,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withBody(buildChargeResponse(responseFromConnector.build())));
     }
 
-    public void respondOk_whenCreateCharge(String chargeTokenId, String gatewayAccountId, ChargeResponseFromConnector responseFromConnector) {
+    public void respondCreated_whenCreateCharge(String chargeTokenId, String gatewayAccountId, ChargeResponseFromConnector responseFromConnector) {
         ChargeResponseFromConnector build = aCreateOrGetChargeResponseFromConnector(responseFromConnector)
                 .withLink(validGetLink(chargeLocation(gatewayAccountId, responseFromConnector.getChargeId()), "self"))
                 .withLink(validGetLink(nextUrl(chargeTokenId), "next_url"))
@@ -308,7 +310,19 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                         .withBody(buildChargeResponse(build)));
     }
 
-    public void respondOk_whenCreateCharge_withAuthorisationMode_MotoApi(String chargeTokenId, String gatewayAccountId, ChargeResponseFromConnector responseFromConnector) {
+    public void respondOK_whenCreateChargeIdempotencyKey(String chargeTokenId, String gatewayAccountId, ChargeResponseFromConnector responseFromConnector) {
+        ChargeResponseFromConnector build = aCreateOrGetChargeResponseFromConnector(responseFromConnector)
+                .withLink(validGetLink(chargeLocation(gatewayAccountId, responseFromConnector.getChargeId()), "self"))
+                .build();
+
+        mockCreateCharge(gatewayAccountId,
+                aResponse().withStatus(OK_200)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withHeader(LOCATION, chargeLocation(gatewayAccountId, responseFromConnector.getChargeId()))
+                        .withBody(buildChargeResponse(build)));
+    }
+
+    public void respondCreated_whenCreateCharge_withAuthorisationMode_MotoApi(String chargeTokenId, String gatewayAccountId, ChargeResponseFromConnector responseFromConnector) {
         ChargeResponseFromConnector build = aCreateOrGetChargeResponseFromConnector(responseFromConnector)
                 .withMoto(true)
                 .withLink(validGetLink(chargeLocation(gatewayAccountId, responseFromConnector.getChargeId()), "self"))
@@ -321,7 +335,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                         .withBody(buildChargeResponse(build)));
     }
 
-    public void respondOk_whenCreateCharge_withAuthorisationMode_Agreement(String chargeTokenId, String gatewayAccountId, ChargeResponseFromConnector responseFromConnector) {
+    public void respondCreated_whenCreateCharge_withAuthorisationMode_Agreement(String chargeTokenId, String gatewayAccountId, ChargeResponseFromConnector responseFromConnector) {
         ChargeResponseFromConnector build = aCreateOrGetChargeResponseFromConnector(responseFromConnector)
                 .withAuthorisationMode(AuthorisationMode.AGREEMENT)
                 .withLink(validGetLink(chargeLocation(gatewayAccountId, responseFromConnector.getChargeId()), "self"))
@@ -334,7 +348,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                         .withBody(buildChargeResponse(build)));
     }
     
-    public void respondOk_whenCreateAgreement(String gatewayAccountId, CreateAgreementRequestParams requestParams) {
+    public void respondCreated_whenCreateAgreement(String gatewayAccountId, CreateAgreementRequestParams requestParams) {
         var responseFromConnector = aCreateAgreementResponseFromConnector()
                 .withReference(requestParams.getReference())
                 .withAgreementId(VALID_AGREEMENT_ID)
@@ -532,6 +546,11 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     public void respondChargeNotFound_WhenCancelCharge(String paymentId, String accountId, String errorMsg) {
         respond_WhenCancelCharge(paymentId, accountId, errorMsg, NOT_FOUND_404);
+    }
+
+    public void respondConflict_whenCreateChargeAndIdempotencyKeyUSed(String gatewayAccountId) {
+        mockCreateCharge(gatewayAccountId, withStatusAndErrorMessage(CONFLICT_409,
+                "The Idempotency-Key has already been used to create a payment", IDEMPOTENCY_KEY_USED, null));
     }
 
     public void respondChargeNotFound_WhenCaptureCharge(String paymentId, String accountId, String errorMsg) {

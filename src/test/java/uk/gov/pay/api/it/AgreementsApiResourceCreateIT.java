@@ -43,7 +43,7 @@ public class AgreementsApiResourceCreateIT extends PaymentResourceITestBase {
                 .withExternalId(VALID_AGREEMENT_ID)
                 .withPaymentInstrument(null)
                 .build();
-        connectorMockClient.respondOk_whenCreateAgreement(GATEWAY_ACCOUNT_ID, createAgreementRequestParams);
+        connectorMockClient.respondCreated_whenCreateAgreement(GATEWAY_ACCOUNT_ID, createAgreementRequestParams);
         ledgerMockClient.respondWithAgreement(VALID_AGREEMENT_ID, agreementFixture);
         postAgreementRequest(agreementPayload(createAgreementRequestParams))
                 .statusCode(HttpStatus.SC_CREATED)
@@ -129,7 +129,7 @@ public class AgreementsApiResourceCreateIT extends PaymentResourceITestBase {
                 .withDescription(DESCRIPTION)
                 .withUserIdentifier(null)
                 .build();
-        connectorMockClient.respondOk_whenCreateAgreement(GATEWAY_ACCOUNT_ID, params);
+        connectorMockClient.respondCreated_whenCreateAgreement(GATEWAY_ACCOUNT_ID, params);
         ledgerMockClient.respondWithAgreement(VALID_AGREEMENT_ID, agreementFixture);
         postAgreementRequest(agreementPayload(params))
                 .statusCode(HttpStatus.SC_CREATED)

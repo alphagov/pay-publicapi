@@ -28,6 +28,7 @@ public class RequestError {
         CREATE_PAYMENT_UNEXPECTED_FIELD_ERROR("P0104", "Unexpected attribute: %s"),
         CREATE_PAYMENT_VALIDATION_ERROR("P0102", "Invalid attribute value: %s. %s"),
         CREATE_PAYMENT_HEADER_VALIDATION_ERROR("P0102", "%s"),
+        CREATE_PAYMENT_IDEMPOTENCY_KEY_ALREADY_USED("P0191", "The `Idempotency-Key` you sent in the request header has already been used to create a payment."),
 
         GET_PAYMENT_NOT_FOUND_ERROR("P0200", "Not found"),
         GET_PAYMENT_CONNECTOR_ERROR("P0298", "Downstream system error"),

@@ -17,6 +17,7 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CaptureChargeException;
 import uk.gov.pay.api.model.CreateCardPaymentRequest;
 import uk.gov.pay.api.model.CreatePaymentResult;
+import uk.gov.pay.api.model.CreatedPaymentWithAllLinks;
 import uk.gov.pay.api.model.PaymentEventsResponse;
 import uk.gov.pay.api.model.RequestError;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
@@ -299,17 +300,29 @@ public class PaymentsResource {
                                      @Nullable @Length(min = 1, max = 255, message = "Header [Idempotency-Key] can have a size between 1 and 255") @HeaderParam("Idempotency-Key") String idempotencyKey) {
         logger.info("Payment create request parsed to {}", createCardPaymentRequest);
 
-        PaymentWithAllLinks createdPayment = createPaymentService.create(account, createCardPaymentRequest);
+        CreatedPaymentWithAllLinks createdPayment = createPaymentService.create(account, createCardPaymentRequest, idempotencyKey);
 
-        Response response = Response
-                .created(publicApiUriGenerator.getPaymentURI(createdPayment.getPayment().getPaymentId()))
-                .entity(createdPayment)
-                .header(PRAGMA, "no-cache")
-                .header(CACHE_CONTROL, "no-store")
-                .build();
+        PaymentWithAllLinks paymentWithAllLinks = createdPayment.getPayment();
+        Response.ResponseBuilder response;
 
-        logger.info("Payment returned (created): [ {} ]", createdPayment);
-        return response;
+        switch (createdPayment.getWhenCreated()) {
+            case BRAND_NEW:
+                response = Response
+                        .created(publicApiUriGenerator.getPaymentURI(paymentWithAllLinks.getPayment().getPaymentId()));
+                break;
+            case EXISTING:
+                response = Response.ok();
+                break;
+            default:
+                throw new IllegalArgumentException(format("Unrecognised WhenCreated enum: %s", createdPayment.getWhenCreated()));
+        }
+
+        response.entity(paymentWithAllLinks)
+            .header(PRAGMA, "no-cache")
+            .header(CACHE_CONTROL, "no-store");
+
+        logger.info("Payment returned (created): [ {} ]", paymentWithAllLinks);
+        return response.build();
     }
 
     @POST

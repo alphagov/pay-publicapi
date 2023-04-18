@@ -15,6 +15,7 @@ import uk.gov.pay.api.exception.CreateChargeException;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.CreateCardPaymentRequestBuilder;
+import uk.gov.pay.api.model.CreatedPaymentWithAllLinks;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.links.Link;
@@ -74,7 +75,8 @@ public class CreatePaymentServiceTest {
                 .description("a description")
                 .build();
 
-        PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
+        CreatedPaymentWithAllLinks createdPaymentWithAllLinks = createPaymentService.create(account, requestPayload, null);
+        PaymentWithAllLinks paymentResponse = createdPaymentWithAllLinks.getPayment();
         CardPayment payment = (CardPayment) paymentResponse.getPayment();
 
         assertThat(payment.getPaymentId(), is("ch_ab2341da231434l"));
@@ -121,7 +123,8 @@ public class CreatePaymentServiceTest {
                 .country("GB")
                 .build();
 
-        PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
+        CreatedPaymentWithAllLinks paymentWithAllLinks = createPaymentService.create(account, requestPayload, null);
+        PaymentWithAllLinks paymentResponse = paymentWithAllLinks.getPayment();
         CardPayment payment = (CardPayment) paymentResponse.getPayment();
 
         assertThat(payment.getPaymentId(), is("ch_ab2341da231434l"));
@@ -164,7 +167,7 @@ public class CreatePaymentServiceTest {
                 .build();
 
         try {
-            createPaymentService.create(account, requestPayload);
+            createPaymentService.create(account, requestPayload, null);
             fail("Expected CreateChargeException to be thrown");
         } catch (CreateChargeException e) {
             assertThat(e.getErrorIdentifier(), is(ErrorIdentifier.ACCOUNT_DISABLED));
@@ -183,7 +186,8 @@ public class CreatePaymentServiceTest {
                 .authorisationMode(AuthorisationMode.MOTO_API)
                 .build();
 
-        PaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload);
+        CreatedPaymentWithAllLinks paymentWithAllLinks = createPaymentService.create(account, requestPayload, null);
+        PaymentWithAllLinks paymentResponse = paymentWithAllLinks.getPayment();
         CardPayment payment = (CardPayment) paymentResponse.getPayment();
         assertThat(paymentResponse.getLinks().getAuthUrlPost(), is(new PostLink("http://publicapi.test.localhost/v1/auth", "POST", "application/json", Collections.singletonMap("one_time_token", "token_1234567asdf"))));
         assertThat(payment.getPaymentId(), is("ch_123abc456def"));
@@ -202,7 +206,7 @@ public class CreatePaymentServiceTest {
                 .authorisationMode(AuthorisationMode.MOTO_API)
                 .build();
         try {
-            createPaymentService.create(account, requestPayload);
+            createPaymentService.create(account, requestPayload, null);
             fail("Expected CreateChargeException to be thrown");
         } catch (CreateChargeException e) {
             assertThat(e.getErrorIdentifier(), is(ErrorIdentifier.AUTHORISATION_API_NOT_ALLOWED));
@@ -221,7 +225,7 @@ public class CreatePaymentServiceTest {
                 .build();
 
         try {
-            createPaymentService.create(account, requestPayload);
+            createPaymentService.create(account, requestPayload, null);
             fail("Expected CreateChargeException to be thrown");
         } catch (CreateChargeException e) {
             assertThat(e.getErrorIdentifier(), is(ErrorIdentifier.ZERO_AMOUNT_NOT_ALLOWED));
@@ -241,7 +245,7 @@ public class CreatePaymentServiceTest {
                 .build();
 
         try {
-            createPaymentService.create(account, requestPayload);
+            createPaymentService.create(account, requestPayload, null);
             fail("Expected CreateChargeException to be thrown");
         } catch (CreateChargeException e) {
             assertThat(e.getErrorIdentifier(), is(ErrorIdentifier.MOTO_NOT_ALLOWED));
@@ -261,7 +265,7 @@ public class CreatePaymentServiceTest {
                 .build();
 
         try {
-            createPaymentService.create(account, requestPayload);
+            createPaymentService.create(account, requestPayload, null);
             fail("Expected CreateChargeException to be thrown");
         } catch (CreateChargeException e) {
             assertThat(e.getErrorIdentifier(), is(ErrorIdentifier.ACCOUNT_NOT_LINKED_WITH_PSP));
@@ -281,7 +285,7 @@ public class CreatePaymentServiceTest {
                 .build();
 
         try {
-            createPaymentService.create(account, requestPayload);
+            createPaymentService.create(account, requestPayload, null);
             fail("Expected CreateChargeException to be thrown");
         } catch (CreateChargeException e) {
             assertThat(e.getErrorIdentifier(), is(ErrorIdentifier.INVALID_ATTRIBUTE_VALUE));
@@ -301,7 +305,7 @@ public class CreatePaymentServiceTest {
                 .build();
 
         try {
-            createPaymentService.create(account, requestPayload);
+            createPaymentService.create(account, requestPayload, null);
             fail("Expected CreateChargeException to be thrown");
         } catch (CreateChargeException e) {
             assertThat(e.getErrorIdentifier(), is(ErrorIdentifier.MISSING_MANDATORY_ATTRIBUTE));

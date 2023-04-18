@@ -89,7 +89,7 @@ public class ResourcesFilterLocalRateLimiterIT {
 
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
-        connectorMockClient.respondOk_whenCreateCharge(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
+        connectorMockClient.respondCreated_whenCreateCharge(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
                 .withAmount(AMOUNT)
                 .withChargeId(CHARGE_ID)
                 .withState(CREATED)

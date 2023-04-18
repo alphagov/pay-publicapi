@@ -71,7 +71,7 @@ public class CreatePaymentWithHttpReturnUrlIT {
                 .add("metadata", Map.of())
                 .build();
 
-        connectorMockClient.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, aCreateChargeRequestParams()
+        connectorMockClient.respondCreated_whenCreateCharge(GATEWAY_ACCOUNT_ID, aCreateChargeRequestParams()
                 .withAmount(100)
                 .withDescription("desc")
                 .withReference("ref")
@@ -91,7 +91,7 @@ public class CreatePaymentWithHttpReturnUrlIT {
                 .add("metadata", Map.of())
                 .build();
 
-        connectorMockClient.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, aCreateChargeRequestParams()
+        connectorMockClient.respondCreated_whenCreateCharge(GATEWAY_ACCOUNT_ID, aCreateChargeRequestParams()
                 .withAmount(100)
                 .withDescription("desc")
                 .withReference("ref")

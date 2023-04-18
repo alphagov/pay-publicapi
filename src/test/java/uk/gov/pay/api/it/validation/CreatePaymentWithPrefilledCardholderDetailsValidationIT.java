@@ -71,7 +71,7 @@ public class CreatePaymentWithPrefilledCardholderDetailsValidationIT extends Pay
         payload.add("prefilled_cardholder_details", Map.of("billing_address",
                 Map.of("country", "")));
 
-        connectorMockClient.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, aCreateChargeRequestParams()
+        connectorMockClient.respondCreated_whenCreateCharge(GATEWAY_ACCOUNT_ID, aCreateChargeRequestParams()
                 .withAmount(100)
                 .withDescription("hi")
                 .withReference("Ref")

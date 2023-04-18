@@ -43,7 +43,7 @@ public class ResourcesFilterRateLimiterIT extends ResourcesFilterITestBase {
         logger.setLevel(Level.INFO);
         logger.addAppender(mockAppender);
 
-        connectorMockClient.respondOk_whenCreateCharge("token_1234567asdf", GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
+        connectorMockClient.respondCreated_whenCreateCharge("token_1234567asdf", GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
                 .withAmount(AMOUNT)
                 .withChargeId(CHARGE_ID)
                 .withState(CREATED)
