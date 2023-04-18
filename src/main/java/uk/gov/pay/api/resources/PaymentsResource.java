@@ -10,14 +10,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.http.HttpStatus;
+import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CaptureChargeException;
 import uk.gov.pay.api.model.CreateCardPaymentRequest;
 import uk.gov.pay.api.model.CreatePaymentResult;
-import uk.gov.pay.api.model.RequestError;
 import uk.gov.pay.api.model.PaymentEventsResponse;
+import uk.gov.pay.api.model.RequestError;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.model.search.card.GetPaymentResult;
 import uk.gov.pay.api.model.search.card.PaymentSearchResults;
@@ -31,6 +32,7 @@ import uk.gov.pay.api.service.PaymentSearchParams;
 import uk.gov.pay.api.service.PaymentSearchService;
 import uk.gov.pay.api.service.PublicApiUriGenerator;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -293,7 +295,8 @@ public class PaymentsResource {
     )
     public Response createNewPayment(@Parameter(hidden = true) @Auth Account account,
                                      @Parameter(required = true, description = "requestPayload")
-                                     @Valid CreateCardPaymentRequest createCardPaymentRequest) {
+                                     @Valid CreateCardPaymentRequest createCardPaymentRequest,
+                                     @Nullable @Length(min = 1, max = 255, message = "Header [Idempotency-Key] can have a size between 1 and 255") @HeaderParam("Idempotency-Key") String idempotencyKey) {
         logger.info("Payment create request parsed to {}", createCardPaymentRequest);
 
         PaymentWithAllLinks createdPayment = createPaymentService.create(account, createCardPaymentRequest);

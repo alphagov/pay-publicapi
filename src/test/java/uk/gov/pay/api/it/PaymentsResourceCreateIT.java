@@ -2,6 +2,7 @@ package uk.gov.pay.api.it;
 
 import com.jayway.jsonassert.JsonAssert;
 import io.restassured.response.ValidatableResponse;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -751,6 +752,30 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
+    public void createPayment_responseWith422_whenIdempotencyKeyIsEmpty() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+
+        postPaymentResponseWithIdempotencyKey(SUCCESS_PAYLOAD, "")
+                .statusCode(422)
+                .contentType(JSON)
+                .body("code", is("P0102"))
+                .body("header", is("Idempotency-Key"))
+                .body("description", is("Header [Idempotency-Key] can have a size between 1 and 255"));
+    }
+
+    @Test
+    public void createPayment_responseWith422_whenIdempotencyKeyIsTooLength() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+
+        postPaymentResponseWithIdempotencyKey(SUCCESS_PAYLOAD, RandomStringUtils.randomAlphanumeric(256))
+                .statusCode(422)
+                .contentType(JSON)
+                .body("code", is("P0102"))
+                .body("header", is("Idempotency-Key"))
+                .body("description", is("Header [Idempotency-Key] can have a size between 1 and 255"));
+    }
+
+    @Test
     public void createPayment_Returns401_WhenUnauthorised() {
         publicAuthMockClient.respondUnauthorised();
         postPaymentResponse(SUCCESS_PAYLOAD).statusCode(401);
@@ -852,6 +877,17 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
                 .accept(JSON)
                 .contentType(JSON)
                 .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .post(PAYMENTS_PATH)
+                .then();
+    }
+
+    protected ValidatableResponse postPaymentResponseWithIdempotencyKey(String payload, String idempotencyKey) {
+        return given().port(app.getLocalPort())
+                .body(payload)
+                .accept(JSON)
+                .contentType(JSON)
+                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .header("Idempotency-Key", idempotencyKey)
                 .post(PAYMENTS_PATH)
                 .then();
     }

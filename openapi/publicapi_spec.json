@@ -660,6 +660,13 @@
       "post" : {
         "description" : "You can use this endpoint to [create a new payment](https://docs.payments.service.gov.uk/making_payments/).",
         "operationId" : "Create a payment",
+        "parameters" : [ {
+          "in" : "header",
+          "name" : "Idempotency-Key",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -2660,6 +2667,11 @@
             "type" : "string",
             "description" : "The parameter in your request that's causing the error.",
             "example" : "amount"
+          },
+          "header" : {
+            "type" : "string",
+            "description" : "The header in your request that's causing the error.",
+            "example" : "Idempotency-Key"
           }
         }
       },
