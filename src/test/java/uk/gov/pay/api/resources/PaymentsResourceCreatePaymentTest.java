@@ -86,7 +86,7 @@ public class PaymentsResourceCreatePaymentTest {
 
         when(createPaymentService.create(account, createPaymentRequest)).thenReturn(injectedResponse);
 
-        Response newPayment = paymentsResource.createNewPayment(account, createPaymentRequest);
+        Response newPayment = paymentsResource.createNewPayment(account, createPaymentRequest, null);
 
         assertThat(newPayment.getHeaderString(PRAGMA), is("no-cache"));
         assertThat(newPayment.getHeaderString(CACHE_CONTROL), is("no-store"));

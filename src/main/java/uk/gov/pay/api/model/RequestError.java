@@ -27,6 +27,7 @@ public class RequestError {
         CREATE_PAYMENT_MISSING_FIELD_ERROR("P0101", "Missing mandatory attribute: %s"),
         CREATE_PAYMENT_UNEXPECTED_FIELD_ERROR("P0104", "Unexpected attribute: %s"),
         CREATE_PAYMENT_VALIDATION_ERROR("P0102", "Invalid attribute value: %s. %s"),
+        CREATE_PAYMENT_HEADER_VALIDATION_ERROR("P0102", "%s"),
 
         GET_PAYMENT_NOT_FOUND_ERROR("P0200", "Not found"),
         GET_PAYMENT_CONNECTOR_ERROR("P0298", "Downstream system error"),
@@ -119,6 +120,7 @@ public class RequestError {
     }
 
     private String field;
+    private String header;
     private final Code code;
     private final String description;
 
@@ -127,7 +129,11 @@ public class RequestError {
     }
 
     public static RequestError aRequestError(String fieldName, Code code, Object... parameters) {
-        return new RequestError(fieldName, code, parameters);
+        return new RequestError(null, fieldName, code, parameters);
+    }
+
+    public static RequestError aHeaderRequestError(String header, Code code, Object... parameters) {
+        return new RequestError(header, null, code, parameters);
     }
 
     private RequestError(Code code, Object... parameters) {
@@ -135,10 +141,11 @@ public class RequestError {
         this.description = format(code.getFormat(), parameters);
     }
 
-    private RequestError(String fieldName, Code code, Object... parameters) {
+    private RequestError(String header, String fieldName, Code code, Object... parameters) {
+        this.header = header;
         this.field = fieldName;
         this.code = code;
-        this.description = format(code.getFormat(), concat(fieldName, parameters));
+        this.description = format(code.getFormat(), fieldName != null ? concat(fieldName, parameters) : parameters);
     }
 
     @Schema(example = "amount", description = "The parameter in your request that's causing the error.")
@@ -146,7 +153,12 @@ public class RequestError {
         return field;
     }
 
-    @Schema(example = "P0102", 
+    @Schema(example = "Idempotency-Key", description = "The header in your request that's causing the error.")
+    public String getHeader() {
+        return header;
+    }
+
+    @Schema(example = "P0102",
             description = "An [API error code](https://docs.payments.service.gov.uk/api_reference/#gov-uk-pay-api-error-codes)" +
                     "that explains why the payment failed.<br><br>`code` only appears if the payment failed.")
     public String getCode() {
