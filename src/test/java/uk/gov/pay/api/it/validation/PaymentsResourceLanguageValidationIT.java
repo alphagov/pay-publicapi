@@ -37,7 +37,7 @@ public class PaymentsResourceLanguageValidationIT extends PaymentResourceITestBa
                         "email", "dorothy@rainbow.com",
                         "language", language));
 
-        connectorMockClient.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, aCreateChargeRequestParams()
+        connectorMockClient.respondCreated_whenCreateCharge(GATEWAY_ACCOUNT_ID, aCreateChargeRequestParams()
                 .withAmount(100)
                 .withDescription("hi")
                 .withReference("Some ref")

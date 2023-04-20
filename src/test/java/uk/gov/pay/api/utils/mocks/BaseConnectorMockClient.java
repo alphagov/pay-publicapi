@@ -3,6 +3,7 @@ package uk.gov.pay.api.utils.mocks;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
+import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import uk.gov.pay.api.utils.JsonStringBuilder;
@@ -137,6 +138,14 @@ public abstract class BaseConnectorMockClient {
         wireMockClassRule.verify(1,
                 postRequestedFor(urlEqualTo(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId)))
                         .withRequestBody(equalToJson(payload, true, true)));
+    }
+
+    public void verifyCreateChargeConnectorRequestWithHeader(String gatewayAccountId, String payload, StringValuePattern idempotencyKey) {
+        wireMockClassRule.getAllServeEvents();
+        wireMockClassRule.verify(1,
+                postRequestedFor(urlEqualTo(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId)))
+                        .withRequestBody(equalToJson(payload, true, true))
+                        .withHeader("Idempotency-Key", idempotencyKey));
     }
     
     public void verifyCreateAgreementConnectorRequest(String gatewayAccountId, CreateAgreementRequestParams createChargeRequestParams) {

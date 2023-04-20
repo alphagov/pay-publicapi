@@ -11,6 +11,7 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.CreateCardPaymentRequestBuilder;
+import uk.gov.pay.api.model.CreatedPaymentWithAllLinks;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
@@ -37,6 +38,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static uk.gov.pay.api.model.CreatedPaymentWithAllLinks.WhenCreated.BRAND_NEW;
 
 @ExtendWith(MockitoExtension.class)
 public class PaymentsResourceCreatePaymentTest {
@@ -83,8 +85,9 @@ public class PaymentsResourceCreatePaymentTest {
                 .build();
 
         PaymentWithAllLinks injectedResponse = aSuccessfullyCreatedPayment();
+        CreatedPaymentWithAllLinks payment = CreatedPaymentWithAllLinks.of(injectedResponse, BRAND_NEW);
 
-        when(createPaymentService.create(account, createPaymentRequest)).thenReturn(injectedResponse);
+        when(createPaymentService.create(account, createPaymentRequest, null)).thenReturn(payment);
 
         Response newPayment = paymentsResource.createNewPayment(account, createPaymentRequest, null);
 

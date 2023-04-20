@@ -19,6 +19,7 @@ import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_ACCOUNT_ERRO
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_AGREEMENT_ID_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_AUTHORISATION_API_NOT_ENABLED;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_CONNECTOR_ERROR;
+import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_IDEMPOTENCY_KEY_ALREADY_USED;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_MOTO_NOT_ENABLED;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_UNEXPECTED_FIELD_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
@@ -101,6 +102,10 @@ public class CreateChargeExceptionMapper implements ExceptionMapper<CreateCharge
                 case RECURRING_CARD_PAYMENTS_NOT_ALLOWED:
                     statusCode = HttpStatus.UNPROCESSABLE_ENTITY_422;
                     requestError = aRequestError(RECURRING_CARD_PAYMENTS_NOT_ALLOWED_ERROR);
+                    break;
+                case IDEMPOTENCY_KEY_USED:
+                    statusCode = HttpStatus.CONFLICT_409;
+                    requestError = aRequestError(CREATE_PAYMENT_IDEMPOTENCY_KEY_ALREADY_USED);
                     break;
                 default:
                     requestError = aRequestError(CREATE_PAYMENT_CONNECTOR_ERROR);

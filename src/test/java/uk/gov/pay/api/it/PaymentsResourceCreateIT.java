@@ -2,7 +2,6 @@ package uk.gov.pay.api.it;
 
 import com.jayway.jsonassert.JsonAssert;
 import io.restassured.response.ValidatableResponse;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -81,7 +80,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
                 .add("metadata", Map.of())
                 .build();
 
-        connectorMockClient.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, aCreateChargeRequestParams()
+        connectorMockClient.respondCreated_whenCreateCharge(GATEWAY_ACCOUNT_ID, aCreateChargeRequestParams()
                 .withAmount(100)
                 .withDescription(DESCRIPTION)
                 .withReference(REFERENCE)
@@ -105,7 +104,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
                 .withReturnUrl(RETURN_URL)
                 .withMetadata(Map.of("reconciled", true, "ledger_code", 123, "fuh", "fuh you"))
                 .build();
-        connectorMockClient.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
+        connectorMockClient.respondCreated_whenCreateCharge(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
 
         postPaymentResponse(paymentPayload(createChargeRequestParams))
                 .statusCode(201)
@@ -128,7 +127,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
                 .withReturnUrl(RETURN_URL)
                 .withSetUpAgreement(VALID_AGREEMENT_ID)
                 .build();
-        connectorMockClient.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
+        connectorMockClient.respondCreated_whenCreateCharge(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
 
         postPaymentResponse(paymentPayload(createChargeRequestParams))
                 .statusCode(HttpStatus.SC_CREATED)
@@ -287,7 +286,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
                 .withAddressCity("address city")
                 .withAddressCountry("GB")
                 .build();
-        connectorMockClient.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
+        connectorMockClient.respondCreated_whenCreateCharge(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
 
         postPaymentResponse(paymentPayload(createChargeRequestParams))
                 .statusCode(201)
@@ -333,7 +332,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
                 .withAddressCity("address city")
                 .withAddressCountry("GB")
                 .build();
-        connectorMockClient.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
+        connectorMockClient.respondCreated_whenCreateCharge(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
 
         postPaymentResponse(paymentPayload(createChargeRequestParams))
                 .statusCode(HttpStatus.SC_CREATED)
@@ -352,7 +351,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     public void createCardPayment() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
-        connectorMockClient.respondOk_whenCreateCharge(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
+        connectorMockClient.respondCreated_whenCreateCharge(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
                 .withAmount(AMOUNT)
                 .withChargeId(CHARGE_ID)
                 .withState(CREATED)
@@ -421,7 +420,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
 
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
-        connectorMockClient.respondOk_whenCreateCharge(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
+        connectorMockClient.respondCreated_whenCreateCharge(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
                 .withAmount(minimumAmount)
                 .withChargeId(CHARGE_ID)
                 .withState(CREATED)
@@ -464,7 +463,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
 
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
-        connectorMockClient.respondOk_whenCreateCharge(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
+        connectorMockClient.respondCreated_whenCreateCharge(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
                 .withAmount(amount)
                 .withChargeId(CHARGE_ID)
                 .withState(CREATED)
@@ -510,7 +509,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
 
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
-        connectorMockClient.respondOk_whenCreateCharge_withAuthorisationMode_MotoApi(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
+        connectorMockClient.respondCreated_whenCreateCharge_withAuthorisationMode_MotoApi(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
                 .withAmount(amount)
                 .withChargeId(CHARGE_ID)
                 .withState(CREATED)
@@ -559,7 +558,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
 
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
-        connectorMockClient.respondOk_whenCreateCharge_withAuthorisationMode_Agreement(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
+        connectorMockClient.respondCreated_whenCreateCharge_withAuthorisationMode_Agreement(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
                 .withAmount(amount)
                 .withChargeId(CHARGE_ID)
                 .withState(CREATED)
@@ -611,7 +610,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
 
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
-        connectorMockClient.respondOk_whenCreateCharge(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
+        connectorMockClient.respondCreated_whenCreateCharge(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
                 .withAmount(amount)
                 .withChargeId(CHARGE_ID)
                 .withState(CREATED)
@@ -752,30 +751,6 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPayment_responseWith422_whenIdempotencyKeyIsEmpty() {
-        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-
-        postPaymentResponseWithIdempotencyKey(SUCCESS_PAYLOAD, "")
-                .statusCode(422)
-                .contentType(JSON)
-                .body("code", is("P0102"))
-                .body("header", is("Idempotency-Key"))
-                .body("description", is("Header [Idempotency-Key] can have a size between 1 and 255"));
-    }
-
-    @Test
-    public void createPayment_responseWith422_whenIdempotencyKeyIsTooLength() {
-        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-
-        postPaymentResponseWithIdempotencyKey(SUCCESS_PAYLOAD, RandomStringUtils.randomAlphanumeric(256))
-                .statusCode(422)
-                .contentType(JSON)
-                .body("code", is("P0102"))
-                .body("header", is("Idempotency-Key"))
-                .body("description", is("Header [Idempotency-Key] can have a size between 1 and 255"));
-    }
-
-    @Test
     public void createPayment_Returns401_WhenUnauthorised() {
         publicAuthMockClient.respondUnauthorised();
         postPaymentResponse(SUCCESS_PAYLOAD).statusCode(401);
@@ -811,7 +786,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
                 .withReturnUrl(RETURN_URL)
                 .withSource(CARD_PAYMENT_LINK)
                 .build();
-        connectorMockClient.respondOk_whenCreateCharge(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
+        connectorMockClient.respondCreated_whenCreateCharge(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
 
         postPaymentResponse(paymentPayload(createChargeRequestParams))
                 .statusCode(201)
@@ -877,17 +852,6 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
                 .accept(JSON)
                 .contentType(JSON)
                 .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
-                .post(PAYMENTS_PATH)
-                .then();
-    }
-
-    protected ValidatableResponse postPaymentResponseWithIdempotencyKey(String payload, String idempotencyKey) {
-        return given().port(app.getLocalPort())
-                .body(payload)
-                .accept(JSON)
-                .contentType(JSON)
-                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
-                .header("Idempotency-Key", idempotencyKey)
                 .post(PAYMENTS_PATH)
                 .then();
     }
