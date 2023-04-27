@@ -151,6 +151,18 @@ public class PaymentsResourceCreateWithIdempotencyKeyIT extends PaymentResourceI
                 .body("description", is("Header [Idempotency-Key] can have a size between 1 and 255"));
     }
 
+    @Test
+    public void createPayment_responseWith422_whenIdempotencyKeyContainsSpecialCharacters() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+
+        postPaymentResponseWithIdempotencyKey(SUCCESS_PAYLOAD, "123$@!?")
+                .statusCode(422)
+                .contentType(JSON)
+                .body("code", is("P0102"))
+                .body("header", is("Idempotency-Key"))
+                .body("description", is("Header [Idempotency-Key] can only contain alphanumeric characters and hyphens"));
+    }
+
 
     private static String paymentPayload(CreateChargeRequestParams params) {
         JsonStringBuilder payload = new JsonStringBuilder()

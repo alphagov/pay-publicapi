@@ -36,6 +36,7 @@ import uk.gov.pay.api.service.PublicApiUriGenerator;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -297,7 +298,11 @@ public class PaymentsResource {
     public Response createNewPayment(@Parameter(hidden = true) @Auth Account account,
                                      @Parameter(required = true, description = "requestPayload")
                                      @Valid CreateCardPaymentRequest createCardPaymentRequest,
-                                     @Nullable @Length(min = 1, max = 255, message = "Header [Idempotency-Key] can have a size between 1 and 255") @HeaderParam("Idempotency-Key") String idempotencyKey) {
+                                     @Nullable 
+                                     @Length(min = 1, max = 255, message = "Header [Idempotency-Key] can have a size between 1 and 255") 
+                                     @Pattern(regexp = "^[a-zA-Z0-9-]+$", message = "Header [Idempotency-Key] can only contain alphanumeric characters and hyphens") 
+                                     @HeaderParam("Idempotency-Key") 
+                                     String idempotencyKey) {
         logger.info("Payment create request parsed to {}", createCardPaymentRequest);
 
         CreatedPaymentWithAllLinks createdPayment = createPaymentService.create(account, createCardPaymentRequest, idempotencyKey);
