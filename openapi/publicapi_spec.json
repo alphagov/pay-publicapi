@@ -664,7 +664,8 @@
           "in" : "header",
           "name" : "Idempotency-Key",
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "pattern" : "^[a-zA-Z0-9-]+$"
           }
         } ],
         "requestBody" : {

@@ -37,7 +37,7 @@ public class ViolationExceptionMapper implements ExceptionMapper<JerseyViolation
 
         RequestError requestError;
         Matcher matcher = HEADER_VIOLATION_EXCEPTION_MESSAGE.matcher(firstException.getMessage());
-        if (matcher.matches() && isLengthViolation(firstException)) {
+        if (matcher.matches() && isLengthViolationOrPatternViolation(firstException)) {
             String header = matcher.group(1);
             requestError = aHeaderRequestError(header, CREATE_PAYMENT_HEADER_VALIDATION_ERROR, firstException.getMessage());
         } else {
@@ -49,10 +49,11 @@ public class ViolationExceptionMapper implements ExceptionMapper<JerseyViolation
                 .build();
     }
 
-    private static boolean isLengthViolation(ConstraintViolation<?> firstException) {
+    private static boolean isLengthViolationOrPatternViolation(ConstraintViolation<?> firstException) {
         return  firstException.getConstraintDescriptor() != null &&
                 firstException.getConstraintDescriptor().getAnnotation() != null &&
-                firstException.getConstraintDescriptor().getAnnotation().annotationType() == Length.class;
+                (firstException.getConstraintDescriptor().getAnnotation().annotationType() == Length.class 
+                        || firstException.getConstraintDescriptor().getAnnotation().annotationType() == javax.validation.constraints.Pattern.class);
     }
 
     private RequestError getFieldNameRequestError(ConstraintViolation<?> firstException) {
