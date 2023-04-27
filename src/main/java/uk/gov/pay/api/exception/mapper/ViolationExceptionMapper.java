@@ -59,9 +59,9 @@ public class ViolationExceptionMapper implements ExceptionMapper<JerseyViolation
         String fieldName = getApiFieldName(firstException.getPropertyPath());
         if (firstException.getConstraintDescriptor() != null &&
                 firstException.getConstraintDescriptor().getAnnotation() != null &&
-                firstException.getConstraintDescriptor().getAnnotation().annotationType() == NotBlank.class ||
+                (firstException.getConstraintDescriptor().getAnnotation().annotationType() == NotBlank.class ||
                 firstException.getConstraintDescriptor().getAnnotation().annotationType() == NotEmpty.class ||
-                firstException.getConstraintDescriptor().getAnnotation().annotationType() == NotNull.class) {
+                firstException.getConstraintDescriptor().getAnnotation().annotationType() == NotNull.class)) {
             return aRequestError(fieldName, CREATE_PAYMENT_MISSING_FIELD_ERROR);
         }
         return aRequestError(fieldName, CREATE_PAYMENT_VALIDATION_ERROR, StringUtils.capitalize(firstException.getMessage()));
