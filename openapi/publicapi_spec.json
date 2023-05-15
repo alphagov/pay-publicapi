@@ -1414,7 +1414,7 @@
           "status" : {
             "type" : "string",
             "description" : "The status of this agreement. You can [read more about the meanings of each agreement status.](https://docs.payments.service.gov.uk/recurring_payments/#understanding-agreement-status)",
-            "enum" : [ "created", "active", "cancelled", "expired" ]
+            "enum" : [ "created", "active", "cancelled", "expired", "inactive" ]
           },
           "user_identifier" : {
             "type" : "string",
