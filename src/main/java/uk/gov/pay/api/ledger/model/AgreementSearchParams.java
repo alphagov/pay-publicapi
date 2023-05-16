@@ -26,7 +26,7 @@ public class AgreementSearchParams {
             "`status` reflects where an agreement is in its lifecycle. " +
             "You can [read more about the meanings of the different agreement status values]" +
             "(https://docs.payments.service.gov.uk/recurring_payments/#understanding-agreement-status).",
-            schema = @Schema(allowableValues = {"created", "active", "cancelled", "expired"}))
+            schema = @Schema(allowableValues = {"created", "active", "cancelled", "inactive"}))
     private String status;
 
     @QueryParam("page")

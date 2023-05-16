@@ -45,7 +45,7 @@ public class Agreement {
 
     @Schema(description = "The status of this agreement. " +
             "You can [read more about the meanings of each agreement status.](https://docs.payments.service.gov.uk/recurring_payments/#understanding-agreement-status)",
-            allowableValues = {"created", "active", "cancelled", "expired", "inactive"})
+            allowableValues = {"created", "active", "cancelled", "inactive"})
     public String getStatus() {
         return Optional.ofNullable(status).map(String::toLowerCase).orElse(null);
     }
