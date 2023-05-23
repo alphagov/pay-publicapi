@@ -83,6 +83,11 @@ public class PaymentSearchResultBuilder extends PaymentResultBuilder {
         return this;
     }
 
+    public PaymentSearchResultBuilder withRejectedState(String status, String code, String message,  boolean canRetry) {
+        this.state = new TestPaymentRejectedState(status, code, message, canRetry);
+        return this;
+    }
+
     public PaymentSearchResultBuilder withDelayedCapture(boolean delayedCapture) {
         this.delayedCapture = delayedCapture;
         return this;

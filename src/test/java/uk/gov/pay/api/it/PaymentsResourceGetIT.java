@@ -65,6 +65,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     private static final PaymentState CREATED = new PaymentState("created", false, null, null);
     private static final PaymentState CAPTURED = new PaymentState("captured", false, null, null);
     public static final PaymentState AWAITING_CAPTURE_REQUEST = new PaymentState("submitted", false, null, null);
+    public static final PaymentState REJECTED = new PaymentState("declined", true, "Payment method rejected", "P0010",true);
     private static final RefundSummary REFUND_SUMMARY = new RefundSummary("pending", 100L, 50L);
     private static final String PAYMENT_PROVIDER = "Sandbox";
     private static final String CARD_BRAND_LABEL = "Mastercard";
@@ -215,7 +216,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     private void assertCommonPaymentFields(ValidatableResponse paymentResponse) {
         paymentResponse
                 .statusCode(200)
-                .contentType(JSON).log().body()
+                .contentType(JSON)
                 .body("payment_id", is(CHARGE_ID))
                 .body("reference", is(REFERENCE))
                 .body("email", is(EMAIL))
@@ -731,6 +732,36 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
         assertCommonPaymentFields(response);
         assertConnectorOnlyPaymentFields(response);
         response.body("authorisation_summary", is(nullValue()));
+    }
+
+    @Test
+    public void getPaymentShouldIncludeCanRetryIfThePaymentWasRejected() {
+        ledgerMockClient.respondWithTransaction(CHARGE_ID,
+                getLedgerTransaction()
+                        .withState(REJECTED)
+                        .withAuthorisationMode(AuthorisationMode.AGREEMENT)
+                        .build());
+
+        getPaymentResponse(CHARGE_ID, LEDGER_ONLY_STRATEGY)
+                .statusCode(200)
+                .contentType(JSON)
+                .body("authorisation_mode", is("agreement"))
+                .body("state.can_retry", is(true));
+    }
+
+    @Test
+    public void getRejectedPaymentShouldIncludeCanRetryWhenThroughConnector() {
+        connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+                getConnectorCharge()
+                        .withState(REJECTED)
+                        .withAuthorisationMode(AuthorisationMode.AGREEMENT)
+                        .build());
+
+        getPaymentResponse(CHARGE_ID)
+                .statusCode(200)
+                .contentType(JSON)
+                .body("authorisation_mode", is("agreement"))
+                .body("state.can_retry", is(true));;
     }
 
     private ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder getConnectorCharge() {

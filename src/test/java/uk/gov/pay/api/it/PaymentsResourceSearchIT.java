@@ -14,6 +14,7 @@ import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.LedgerMockClient;
+import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.validation.DateTimeUtils;
 
 import java.io.InputStream;
@@ -202,6 +203,29 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
     }
 
     @Test
+    public void searchPayments_ShouldIncludeCanRetryIfThePaymentWasRejected() {
+        String payments = aPaginatedPaymentSearchResult()
+                .withCount(10)
+                .withPage(2)
+                .withTotal(20)
+                .withPayments(aSuccessfulSearchPayment()
+                        .withRejectedState("declined", "P0010", "Payment method rejected", true)
+                        .withReference(TEST_REFERENCE)
+                        .withAuthorisationMode(AuthorisationMode.AGREEMENT)
+                        .withNumberOfResults(1)
+                        .getResults())
+                .build();
+
+        ledgerMockClient.respondOk_whenSearchCharges(payments);
+
+        searchPayments(ImmutableMap.of("reference", TEST_REFERENCE))
+                .statusCode(200)
+                .contentType(JSON)
+                .body("results[0].authorisation_mode", is("agreement"))
+                .body("results[0].state.can_retry", is(true));
+    }
+
+    @Test
     public void searchPayments_getsPaginatedResults() {
         PaymentNavigationLinksFixture links = new PaymentNavigationLinksFixture()
                 .withPrevLink("http://server:port/path?query=prev&from_date=2016-01-01T23:59:59Z")
@@ -371,7 +395,7 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
         ledgerMockClient.respondOk_whenSearchCharges(payments);
 
         searchPayments(Map.of()).statusCode(200)
-                .contentType(JSON).log().body()
+                .contentType(JSON)
                 .body("results[0].settlement_summary.settled_date", is(DEFAULT_SETTLED_DATE))
                 .body("results[0].settlement_summary.captured_date", is(DEFAULT_CAPTURED_DATE))
                 .body("results[0].settlement_summary.capture_submit_time", is(DEFAULT_CAPTURE_SUBMIT_TIME));

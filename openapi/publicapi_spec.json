@@ -2390,6 +2390,12 @@
         "type" : "object",
         "description" : "A structure representing the current state of the payment in its lifecycle.",
         "properties" : {
+          "can_retry" : {
+            "type" : "boolean",
+            "description" : "If `can_retry` is `true`, you can use this agreement to try to take another recurring payment. If `can_retry` is `false`, you cannot take another recurring payment with this agreement. `can_retry` only appears on failed payments that were attempted using an agreement for recurring payments.",
+            "nullable" : true,
+            "readOnly" : true
+          },
           "code" : {
             "type" : "string",
             "description" : "An [API error code](https://docs.payments.service.gov.uk/api_reference/#gov-uk-pay-api-error-codes)that explains why the payment failed. `code` only appears if the payment failed.",

@@ -164,6 +164,21 @@ public abstract class PaymentResultBuilder {
         }
     }
 
+    protected static class TestPaymentRejectedState extends TestPaymentState {
+        private boolean success;
+        private boolean can_retry;
+        private String code;
+        private String message;
+
+        protected TestPaymentRejectedState(String status, String code, String message, boolean canRetry) {
+            super(status, true);
+            this.success = true;
+            this.code = code;
+            this.message = message;
+            this.can_retry = canRetry;
+        }
+    }
+
     protected static final List<TestPaymentState> states = new LinkedList<>();
 
     static {
