@@ -25,14 +25,18 @@ public class PaymentState {
 
     @JsonProperty("code")
     private String code;
-    
+
+    @JsonProperty("can_retry")
+    private Boolean canRetry;
+
 
     public static PaymentState createPaymentState(JsonNode node) {
         return new PaymentState(
                 node.get("status").asText(),
                 node.get("finished").asBoolean(),
                 node.has("message") ? node.get("message").asText() : null,
-                node.has("code") ? node.get("code").asText() : null
+                node.has("code") ? node.get("code").asText() : null,
+                node.has("can_retry") ? node.get("can_retry").asBoolean() : null
         );
     }
 
@@ -44,10 +48,15 @@ public class PaymentState {
     }
 
     public PaymentState(String status, boolean finished, String message, String code) {
+        this(status, finished, message, code, null);
+    }
+
+    public PaymentState(String status, boolean finished, String message, String code, Boolean canRetry) {
         this.status = status;
         this.finished = finished;
         this.message = message;
         this.code = code;
+        this.canRetry = canRetry;
     }
 
     @Schema(description = "Where the payment is in [the payment status lifecycle]" +
@@ -74,7 +83,15 @@ public class PaymentState {
     public String getCode() {
         return code;
     }
-    
+
+    @Schema(description = "If `can_retry` is `true`, you can use this agreement to try to take another recurring payment. " +
+            "If `can_retry` is `false`, you cannot take another recurring payment with this agreement. " +
+            "`can_retry` only appears on failed payments that were attempted using an agreement for recurring payments.",
+            nullable = true, accessMode = READ_ONLY)
+    public Boolean getCanRetry() {
+        return canRetry;
+    }
+
     @Override
     public String toString() {
         return "PaymentState{" +
@@ -82,6 +99,7 @@ public class PaymentState {
                 ", finished='" + finished + '\'' +
                 ", message=" + message +
                 ", code=" + code +
+                (canRetry != null ? ", canRetry=" +canRetry : "") +
                 '}';
     }
 
@@ -93,11 +111,12 @@ public class PaymentState {
         return finished == that.finished &&
                 Objects.equals(status, that.status) &&
                 Objects.equals(message, that.message) &&
-                Objects.equals(code, that.code);
+                Objects.equals(code, that.code) &&
+                Objects.equals(canRetry, that.canRetry);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(status, finished, message, code);
+        return Objects.hash(status, finished, message, code, canRetry);
     }
 }

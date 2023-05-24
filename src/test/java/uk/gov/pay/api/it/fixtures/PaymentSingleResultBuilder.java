@@ -89,8 +89,10 @@ public class PaymentSingleResultBuilder extends PaymentResultBuilder {
     
     public PaymentSingleResultBuilder withState(PaymentState paymentState) {
         this.state = paymentState == null ?
-                new TestPaymentState("submitted", false) :        
-                new TestPaymentState(paymentState.getStatus(), paymentState.isFinished());
+                new TestPaymentState("submitted", false) :
+                paymentState.getCanRetry() == null ?
+                new TestPaymentState(paymentState.getStatus(), paymentState.isFinished()) :
+                new TestPaymentRejectedState(paymentState.getStatus(), paymentState.getCode(), paymentState.getMessage(), paymentState.getCanRetry());
         return this;
     }
     

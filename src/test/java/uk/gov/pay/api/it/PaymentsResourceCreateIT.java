@@ -444,7 +444,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
                 .build();
 
         postPaymentResponse(paymentPayload(params))
-                .statusCode(201).log().body()
+                .statusCode(201)
                 .contentType(JSON)
                 .body("payment_id", is(CHARGE_ID))
                 .body("amount", is(minimumAmount))
