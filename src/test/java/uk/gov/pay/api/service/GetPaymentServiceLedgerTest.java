@@ -176,4 +176,16 @@ public class GetPaymentServiceLedgerTest {
         CardPayment payment = (CardPayment) paymentResponse.getPayment();
         assertThat(payment.getAuthorisationSummary().getThreeDSecure().isRequired(), is(true));
     }
+
+    @Test
+    @PactVerification({"ledger"})
+    @Pacts(pacts = {"publicapi-ledger-get-rejected-recurring-payment-with-can-retry-true"})
+    public void testGetRejectedPaymentWithNoRetryTrueFromLedger() {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, tokenLink);
+
+        PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID_NON_EXISTENT_IN_CONNECTOR);
+        CardPayment payment = (CardPayment) paymentResponse.getPayment();
+        assertThat(payment.getState().getCanRetry(), is(true));
+        assertThat(payment.getAuthorisationMode(), is(AuthorisationMode.AGREEMENT));
+    }
 }

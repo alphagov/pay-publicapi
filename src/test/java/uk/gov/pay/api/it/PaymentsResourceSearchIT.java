@@ -209,7 +209,7 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
                 .withPage(2)
                 .withTotal(20)
                 .withPayments(aSuccessfulSearchPayment()
-                        .withRejectedState("declined", "P0010", "Payment method rejected", true)
+                        .withRejectedState("failed", "P0010", "Payment method rejected", true)
                         .withReference(TEST_REFERENCE)
                         .withAuthorisationMode(AuthorisationMode.AGREEMENT)
                         .withNumberOfResults(1)
