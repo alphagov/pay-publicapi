@@ -139,6 +139,21 @@ public class GetPaymentServiceTest {
 
     @Test
     @PactVerification({"connector"})
+    @Pacts(pacts = {"publicapi-connector-get-rejected-rcp-payment-with-can-retry-true"})
+    public void testGetRejectedRecurringPaymentWithCanRetryTrue() {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "a-token-link");
+        PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID);
+
+        CardPayment payment = (CardPayment) paymentResponse.getPayment();
+
+        assertThat(payment.getState().getCanRetry(), is(true));
+        assertThat(payment.getAuthorisationMode(), is(AuthorisationMode.AGREEMENT));
+        assertThat(paymentResponse.getLinks().getNextUrl(), is(nullValue()));
+        assertThat(paymentResponse.getLinks().getNextUrlPost(), is(nullValue()));
+    }
+
+    @Test
+    @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-get-motoapi-created-payment"})
     public void testGetMotoApiPayment() {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "a-token-link");
