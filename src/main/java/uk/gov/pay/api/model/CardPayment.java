@@ -233,6 +233,7 @@ public class CardPayment extends Payment {
         // Don't include:
         // description - some services include PII
         // reference - can come from user input for payment links, in the past they have mistakenly entered card numbers
+        // return url - services can include identifiers that are incorrectly flagged as PII or card numbers
         return "Card Payment{" +
                 "paymentId='" + super.paymentId + '\'' +
                 ", paymentProvider='" + paymentProvider + '\'' +
@@ -242,7 +243,6 @@ public class CardPayment extends Payment {
                 ", netAmount=" + netAmount +
                 ", corporateCardSurcharge='" + corporateCardSurcharge + '\'' +
                 ", state='" + state + '\'' +
-                ", returnUrl='" + returnUrl + '\'' +
                 ", language='" + language.toString() + '\'' +
                 ", delayedCapture=" + delayedCapture +
                 ", moto=" + moto +
