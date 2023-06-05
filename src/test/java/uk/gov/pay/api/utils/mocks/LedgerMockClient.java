@@ -226,7 +226,6 @@ public class LedgerMockClient {
                 .withQueryParam("status", equalTo("created"))
                 .withQueryParam("account_id", equalTo(gatewayAccountId))
                 .withQueryParam("exact_reference_match", equalTo("true"))
-                .withQueryParam("status_version", equalTo("1"))
                 .willReturn(aResponse()
                         .withStatus(OK_200)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
