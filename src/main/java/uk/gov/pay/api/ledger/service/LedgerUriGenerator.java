@@ -74,7 +74,6 @@ public class LedgerUriGenerator {
     }
 
     public String agreementsURIWithParams(Map<String, String> queryParams) {
-        queryParams.put("status_version", "1");
         return buildLedgerUri("/v1/agreement", queryParams);
     }
 }

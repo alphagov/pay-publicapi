@@ -27,8 +27,7 @@
             "1"
           ],
           "account_id": ["777"],
-          "exact_reference_match": ["true"],
-          "status_version": ["1"]
+          "exact_reference_match": ["true"]
         }
       },
       "response": {
