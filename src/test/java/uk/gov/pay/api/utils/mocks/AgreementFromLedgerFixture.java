@@ -21,6 +21,7 @@ public class AgreementFromLedgerFixture {
     private final String createdDate;
     private final AgreementLedgerResponse.PaymentInstrumentLedgerResponse paymentInstrument;
     private String userIdentifier;
+    private String cancelledDate;
 
     private AgreementFromLedgerFixture(AgreementFromLedgerFixtureBuilder builder) {
         this.externalId = builder.externalId;
@@ -31,6 +32,7 @@ public class AgreementFromLedgerFixture {
         this.createdDate = builder.createdDate;
         this.paymentInstrument = builder.paymentInstrument;
         this.userIdentifier = builder.userIdentifier;
+        this.cancelledDate = builder.cancelledDate;
     }
 
     public String getExternalId() {
@@ -57,6 +59,10 @@ public class AgreementFromLedgerFixture {
         return createdDate;
     }
 
+    public String getCancelledDate() {
+        return cancelledDate;
+    }
+
     public AgreementLedgerResponse.PaymentInstrumentLedgerResponse getPaymentInstrument() {
         return paymentInstrument;
     }
@@ -74,6 +80,7 @@ public class AgreementFromLedgerFixture {
         private String createdDate = ISO_INSTANT_MILLISECOND_PRECISION.format(ZonedDateTime.parse("2022-07-20T11:01:00.132012345Z"));
         private AgreementLedgerResponse.PaymentInstrumentLedgerResponse paymentInstrument;
         private String userIdentifier;
+        private String cancelledDate = null;
 
         private AgreementFromLedgerFixtureBuilder() {
             paymentInstrument = new AgreementLedgerResponse.PaymentInstrumentLedgerResponse.Builder()
@@ -134,7 +141,12 @@ public class AgreementFromLedgerFixture {
             this.userIdentifier = userIdentifier;
             return this;
         }
-        
+
+        public AgreementFromLedgerFixtureBuilder withCancelledDate(String cancelledDate) {
+            this.cancelledDate = cancelledDate;
+            return this;
+        }
+
         public AgreementFromLedgerFixture build() {
             return new AgreementFromLedgerFixture(this);
         }

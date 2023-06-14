@@ -23,6 +23,7 @@ public class Agreement {
     private String createdDate;
     private PaymentInstrument paymentInstrument;
     private String userIdentifier;
+    private String cancelledDate;
 
     @JsonProperty("agreement_id")
     @Schema(description = "The unique ID GOV.UK Pay automatically associated with this agreement when you created it.", 
@@ -64,11 +65,19 @@ public class Agreement {
         return userIdentifier;
     }
 
+    @Schema(description = "The date and time this agreement was cancelled. " +
+            "This value uses Coordinated Universal Time (UTC) and ISO 8601 format – `YYYY-MM-DDThh:mm:ss.sssZ`.",
+            example = "2022-07-08T14:33:00.000Z")
+    public String getCancelledDate() {
+        return cancelledDate;
+    }
+
     public PaymentInstrument getPaymentInstrument() {
         return paymentInstrument;
     }
 
-    public Agreement(String externalId, String reference, String description, String status, String createdDate, PaymentInstrument paymentInstrument, String userIdentifier) {
+    public Agreement(String externalId, String reference, String description, String status, String createdDate,
+                     PaymentInstrument paymentInstrument, String userIdentifier, String cancelledDate) {
         this.externalId = externalId;
         this.reference = reference;
         this.description = description;
@@ -76,6 +85,7 @@ public class Agreement {
         this.createdDate = createdDate;
         this.paymentInstrument = paymentInstrument;
         this.userIdentifier = userIdentifier;
+        this.cancelledDate = cancelledDate;
     }
 
     public static Agreement from(AgreementLedgerResponse agreementLedgerResponse) {
@@ -86,7 +96,8 @@ public class Agreement {
                 agreementLedgerResponse.getStatus(),
                 agreementLedgerResponse.getCreatedDate(),
                 Optional.ofNullable(agreementLedgerResponse.getPaymentInstrument()).map(PaymentInstrument::from).orElse(null),
-                agreementLedgerResponse.getUserIdentifier());
+                agreementLedgerResponse.getUserIdentifier(),
+                agreementLedgerResponse.getCancelledDate());
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)

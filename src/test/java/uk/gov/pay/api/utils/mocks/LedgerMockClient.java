@@ -205,7 +205,7 @@ public class LedgerMockClient {
                         .withBody(body)));
     }
 
-    public void respondWithSearchAgreements(String gatewayAccountId, AgreementFromLedgerFixture... agreements) throws JsonProcessingException {
+    public void respondWithSearchAgreements(String gatewayAccountId, String status, AgreementFromLedgerFixture... agreements) throws JsonProcessingException {
         var links = Map.of(
                 "first_page", new Link("http://server:port/first-link?page=1"),
                 "prev_page", new Link("http://server:port/prev-link?page=2"),
@@ -223,7 +223,7 @@ public class LedgerMockClient {
 
         ledgerMock.stubFor(get(urlPathEqualTo("/v1/agreement"))
                 .withQueryParam("page", equalTo("3"))
-                .withQueryParam("status", equalTo("created"))
+                .withQueryParam("status", equalTo(status))
                 .withQueryParam("account_id", equalTo(gatewayAccountId))
                 .withQueryParam("exact_reference_match", equalTo("true"))
                 .willReturn(aResponse()
