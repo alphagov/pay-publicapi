@@ -1393,6 +1393,11 @@
             "description" : "The unique ID GOV.UK Pay automatically associated with this agreement when you created it.",
             "example" : "cgc1ocvh0pt9fqs0ma67r42l58"
           },
+          "cancelled_date" : {
+            "type" : "string",
+            "description" : "The date and time this agreement was cancelled. This value uses Coordinated Universal Time (UTC) and ISO 8601 format – `YYYY-MM-DDThh:mm:ss.sssZ`.",
+            "example" : "2022-07-08T14:33:00.000Z"
+          },
           "created_date" : {
             "type" : "string",
             "description" : "The date and time you created this agreement. This value uses Coordinated Universal Time (UTC) and ISO 8601 format – `YYYY-MM-DDThh:mm:ss.sssZ`.",

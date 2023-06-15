@@ -19,6 +19,7 @@ public class AgreementLedgerResponse {
     private String createdDate;
     private PaymentInstrumentLedgerResponse paymentInstrument;
     private String userIdentifier;
+    private String cancelledDate;
 
     @JsonProperty("external_id")
     public void setExternalId(String externalId) {
@@ -56,6 +57,10 @@ public class AgreementLedgerResponse {
 
     public String getUserIdentifier() {
         return userIdentifier;
+    }
+
+    public String getCancelledDate() {
+        return cancelledDate;
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -136,9 +141,6 @@ public class AgreementLedgerResponse {
                 this.type = type;
                 return this;
             }
-
         }
-
     }
-
 }

@@ -45,7 +45,7 @@ public class AgreementsApiResourceSearchIT extends PaymentResourceITestBase {
                 .withCreatedDate("2022-07-27T12:30:00Z")
                 .build();
 
-        ledgerMockClient.respondWithSearchAgreements(GATEWAY_ACCOUNT_ID, agreementWithPaymentInstrument, agreementWithoutPaymentInstrument);
+        ledgerMockClient.respondWithSearchAgreements(GATEWAY_ACCOUNT_ID, "created", agreementWithPaymentInstrument, agreementWithoutPaymentInstrument);
 
         given().port(app.getLocalPort())
                 .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
@@ -101,6 +101,47 @@ public class AgreementsApiResourceSearchIT extends PaymentResourceITestBase {
                 .body("results[1].status", is(agreementWithoutPaymentInstrument.getStatus().toLowerCase()))
                 .body("results[1].created_date", is(agreementWithoutPaymentInstrument.getCreatedDate()))
                 .body("results[1]", not(hasKey("payment_instrument")));
+    }
+
+    @Test
+    public void searchCancelledAgreementsFromLedger() throws JsonProcessingException {
+        String agreementId = "an-agreement-id";
+       var agreementWithoutPaymentInstrument = anAgreementFromLedgerWithoutPaymentInstrumentFixture()
+               .withExternalId("another-agreement-id")
+               .withServiceId("service-2")
+               .withReference("ref-2")
+               .withDescription("Description 2")
+               .withStatus("CANCELLED")
+               .withCreatedDate("2022-07-27T12:30:00Z")
+               .withCancelledDate("2023-06-14T16:52:00Z")
+               .build();
+
+        ledgerMockClient.respondWithSearchAgreements(GATEWAY_ACCOUNT_ID, "cancelled", agreementWithoutPaymentInstrument);
+
+        given().port(app.getLocalPort())
+                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .basePath(AGREEMENTS_PATH)
+                .queryParam("status", "cancelled")
+                .queryParam("page", "3")
+                .get()
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .body("total", is(9))
+                .body("count", is(2))
+                .body("page", is(3))
+                .body("_links.self.href", containsString("/v1/agreements?page=3"))
+                .body("_links.first_page.href", containsString("/v1/agreements?page=1"))
+                .body("_links.last_page.href", containsString("/v1/agreements?page=5"))
+                .body("_links.prev_page.href", containsString("/v1/agreements?page=2"))
+                .body("_links.next_page.href", containsString("/v1/agreements?page=4"))
+                .body("results.size()", is(1))
+                .body("results[0].agreement_id", is(agreementWithoutPaymentInstrument.getExternalId()))
+                .body("results[0].reference", is(agreementWithoutPaymentInstrument.getReference()))
+                .body("results[0].description", is(agreementWithoutPaymentInstrument.getDescription()))
+                .body("results[0].status", is(agreementWithoutPaymentInstrument.getStatus().toLowerCase()))
+                .body("results[0].created_date", is(agreementWithoutPaymentInstrument.getCreatedDate()))
+                .body("results[0]", not(hasKey("payment_instrument")));
     }
 
     @Test
