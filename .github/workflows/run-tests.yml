@@ -43,3 +43,9 @@ jobs:
           docker pull redis:5.0.6
       - name: Run unit and integration tests
         run: mvn clean verify
+      - name: Check for generated pacts
+        run: |
+          if [ ! -d target/pacts ]; then
+            echo "The pact files were not generated, this means that no pact results will be published and this build will fail to deploy"
+            exit 1
+          fi
