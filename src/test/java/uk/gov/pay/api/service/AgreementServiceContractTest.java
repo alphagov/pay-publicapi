@@ -1,6 +1,7 @@
 package uk.gov.pay.api.service;
 
 import au.com.dius.pact.consumer.PactVerification;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -12,6 +13,8 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.exception.AuthorisationRequestException;
+import uk.gov.pay.api.exception.CancelAgreementException;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.service.payments.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
@@ -20,7 +23,9 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -50,4 +55,14 @@ public class AgreementServiceContractTest {
         Response cancelAgreementResponse = agreementService.cancel(ACCOUNT, "agreement1234567");
         assertThat(cancelAgreementResponse.getStatus(), is(204));
     }
+
+    @Test
+    @PactVerification({"connector"})
+    @Pacts(pacts = {"publicapi-connector-cancel-agreement-with-cancelled-status"})
+    public void cancelAnAgreementWithCancelledStatus() {
+        CancelAgreementException cancelAgreementException = assertThrows(CancelAgreementException.class,
+                () -> agreementService.cancel(ACCOUNT, "agreement9876543"));
+        assertThat(cancelAgreementException, hasProperty("status", is("400")));
+    }
+    
 }
