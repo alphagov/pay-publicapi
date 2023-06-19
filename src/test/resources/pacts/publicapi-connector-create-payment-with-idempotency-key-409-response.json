@@ -10,13 +10,7 @@
       "description": "a create charge request with idempotency key and different request body",
       "providerStates": [
         {
-          "name": "a gateway account with external id and recurring payment enabled exists",
-          "params": {
-            "gateway_account_id": "123456"
-          }
-        },
-        {
-          "name": "an active agreement exists",
+          "name": "a gateway account and an active agreement exists",
           "params": {
             "agreement_external_id": "abcdefghijklmnopqrstuvwxyz",
             "gateway_account_id": "123456"
