@@ -8,7 +8,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.api.agreement.model.AgreementLedgerResponse;
-import uk.gov.pay.api.agreement.service.AgreementService;
 import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
@@ -19,16 +18,15 @@ import uk.gov.service.payments.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
 
 import javax.ws.rs.client.Client;
-import javax.ws.rs.core.Response;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AgreementServiceLedgerTest {
+public class GetOneAgreementLedgerServicePactTest {
 
-    private final Account ACCOUNT = new Account("123456", TokenPaymentType.CARD, "a-token-link");
+    private final Account ACCOUNT = new Account("3456", TokenPaymentType.CARD, "a-token-link");
 
     @Rule
     public PactProviderRule ledgerRule = new PactProviderRule("ledger", this);
@@ -36,6 +34,7 @@ public class AgreementServiceLedgerTest {
     private LedgerService ledgerService;
     @Mock
     private PublicApiConfig mockConfiguration;
+
 
     @Before
     public void setUp() {
@@ -49,9 +48,10 @@ public class AgreementServiceLedgerTest {
     @PactVerification({"ledger"})
     @Pacts(pacts = {"publicapi-ledger-get-one-agreement"})
     public void getOneAgreement() {
-        AgreementLedgerResponse getAgreementResponse = ledgerService.getAgreement(ACCOUNT, "agreement1234567");
-        assertThat(getAgreementResponse.getStatus(), is(200));
-
+        AgreementLedgerResponse getAgreementResponse = ledgerService.getAgreement(ACCOUNT, "abcdefghijklmnopqrstuvwxyz");
+        assertThat(getAgreementResponse.getStatus(), is("ACTIVE"));
+        assertThat(getAgreementResponse.getExternalId(), is("abcdefghijklmnopqrstuvwxyz"));
+        assertThat(getAgreementResponse.getPaymentInstrument().getAgreementExternalId(), is("abcdefghijklmnopqrstuvwxyz"));
     }
     
 }
