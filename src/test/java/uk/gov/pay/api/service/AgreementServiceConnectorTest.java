@@ -29,7 +29,7 @@ import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AgreementServiceContractTest {
+public class AgreementServiceConnectorTest {
 
     private final Account ACCOUNT = new Account("123456", TokenPaymentType.CARD, "a-token-link");
     
