@@ -26,7 +26,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CreateRefundServiceTest {
+public class CreateRefundServicePactTest {
     
     private CreateRefundService createRefundService;
 

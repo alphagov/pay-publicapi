@@ -41,7 +41,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CreatePaymentServiceTest {
+public class CreatePaymentServicePactTest {
 
     private CreatePaymentService createPaymentService;
 

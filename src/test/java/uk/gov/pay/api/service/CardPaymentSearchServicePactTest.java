@@ -33,7 +33,7 @@ import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CardPaymentSearchServiceTest {
+public class CardPaymentSearchServicePactTest {
 
     @Rule
     public PactProviderRule ledgerRule = new PactProviderRule("ledger", this);

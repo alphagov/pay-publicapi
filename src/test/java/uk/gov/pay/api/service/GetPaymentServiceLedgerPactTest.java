@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.service.payments.commons.testing.port.PortFactory.findFreePort;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GetPaymentServiceLedgerTest {
+public class GetPaymentServiceLedgerPactTest {
 
     private static final String ACCOUNT_ID = "123456";
     private static final String tokenLink = "a-token-link";

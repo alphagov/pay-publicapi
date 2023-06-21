@@ -24,7 +24,7 @@ import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GetPaymentRefundServiceTest {
+public class GetPaymentRefundServicePactTest {
 
     private static final String ACCOUNT_ID = "123456";
     private static final String CHARGE_ID = "123456789";
