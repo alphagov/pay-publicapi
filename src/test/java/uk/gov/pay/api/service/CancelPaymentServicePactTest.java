@@ -23,37 +23,31 @@ import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CapturePaymentServiceTest {
+public class CancelPaymentServicePactTest {
 
-    private static final String ACCOUNT_ID = "123456";
-    private static final String CHARGE_ID = "ch_e36c168c41a0";
-
-    private CapturePaymentService capturePaymentService;
-
+    private final Account ACCOUNT = new Account("123456", TokenPaymentType.CARD, "a-token-link");
+    
+    private CancelPaymentService cancelPaymentService;
+    
     @Rule
     public PactProviderRule connectorRule = new PactProviderRule("connector", this);
 
     @Mock
     private PublicApiConfig mockConfiguration;
-
+    
     @Before
-    public void setup() {
+    public void setUp() {
         when(mockConfiguration.getConnectorUrl()).thenReturn(connectorRule.getUrl());
-
         ConnectorUriGenerator connectorUriGenerator = new ConnectorUriGenerator(mockConfiguration);
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
-        capturePaymentService = new CapturePaymentService(client, connectorUriGenerator);
+        cancelPaymentService = new CancelPaymentService(client, connectorUriGenerator);
     }
 
     @Test
     @PactVerification({"connector"})
-    @Pacts(pacts = {"publicapi-connector-capture-payment-with-delayed-capture-true-and-awaiting-capture-request-status"})
-    public void testCapturePayment() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "a-token-link");
-
-        Response capturePaymentResponse = capturePaymentService.capture(account, CHARGE_ID);
-
-        assertThat(capturePaymentResponse.getStatus(), is(204));
+    @Pacts(pacts = {"publicapi-connector-cancel-payment-with-created-state"})
+    public void cancelAPaymentWithCreatedState() {
+        Response cancelPaymentResponse = cancelPaymentService.cancel(ACCOUNT, "charge8133029783750964639");
+        assertThat(cancelPaymentResponse.getStatus(), is(204));
     }
-
 }

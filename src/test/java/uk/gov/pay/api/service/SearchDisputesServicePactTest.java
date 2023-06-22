@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SearchDisputesServiceTest {
+public class SearchDisputesServicePactTest {
     @Rule
     public PactProviderRule ledgerRule = new PactProviderRule("ledger", this);
 

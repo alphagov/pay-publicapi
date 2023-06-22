@@ -24,7 +24,7 @@ import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GetPaymentEventsServiceTest {
+public class GetPaymentEventsServicePactTest {
 
     @Rule
     public PactProviderRule connectorRule = new PactProviderRule("connector", this);
