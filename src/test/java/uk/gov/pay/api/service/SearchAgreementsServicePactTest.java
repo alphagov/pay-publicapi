@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.pay.api.agreement.model.AgreementSearchResults;
+import uk.gov.pay.api.agreement.service.AgreementsService;
 import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
@@ -32,7 +33,7 @@ public class SearchAgreementsServicePactTest {
     @Mock
     private PublicApiConfig mockConfiguration;
 
-    private SearchAgreementsService searchAgreementsService;
+    private AgreementsService agreementsService;
 
     private static final String PUBLIC_API_URL = "http://publicapi.test.localhost/";
 
@@ -42,9 +43,10 @@ public class SearchAgreementsServicePactTest {
         when(mockConfiguration.getBaseUrl()).thenReturn(PUBLIC_API_URL);
 
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
+        ConnectorUriGenerator connectorUriGenerator = new ConnectorUriGenerator(mockConfiguration);
         LedgerUriGenerator ledgerUriGenerator = new LedgerUriGenerator(mockConfiguration);
 
-        searchAgreementsService = new SearchAgreementsService(
+        agreementsService = new AgreementsService(new ConnectorService(client, connectorUriGenerator),
                 new LedgerService(client, ledgerUriGenerator),
                 new PaginationDecorator(mockConfiguration));
     }
@@ -55,7 +57,7 @@ public class SearchAgreementsServicePactTest {
     public void searchWithPageAndDisplaySize_shouldReturnCorrectPageAndPaginationLinks() {
         AgreementSearchParams params = new AgreementSearchParams(null, null, "2", "1");
         Account account = new Account("777", TokenPaymentType.CARD, "a-token-link");
-        AgreementSearchResults results = searchAgreementsService.searchLedgerAgreements(account, params);
+        AgreementSearchResults results = agreementsService.searchAgreements(account, params);
 
         assertThat(results.getResults().size(), is(1));
         assertThat(results.getCount(), is(1));
