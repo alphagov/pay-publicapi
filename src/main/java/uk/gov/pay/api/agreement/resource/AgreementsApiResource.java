@@ -14,17 +14,11 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.agreement.model.Agreement;
 import uk.gov.pay.api.agreement.model.AgreementSearchResults;
 import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
-import uk.gov.pay.api.agreement.service.AgreementService;
+import uk.gov.pay.api.agreement.service.AgreementsService;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.ledger.model.AgreementSearchParams;
-import uk.gov.pay.api.ledger.model.SearchResults;
-import uk.gov.pay.api.model.CreatePaymentResult;
 import uk.gov.pay.api.model.RequestError;
-import uk.gov.pay.api.model.search.card.GetPaymentResult;
-import uk.gov.pay.api.model.search.card.PaymentSearchResults;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
-import uk.gov.pay.api.service.LedgerService;
-import uk.gov.pay.api.service.SearchAgreementsService;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -45,7 +39,6 @@ import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_201_DESCRIPTION;
 import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_400_DESCRIPTION;
 import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_401_DESCRIPTION;
 import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_404_DESCRIPTION;
-import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_409_DESCRIPTION;
 import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_422_DESCRIPTION;
 import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_429_DESCRIPTION;
 import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_500_DESCRIPTION;
@@ -57,17 +50,11 @@ public class AgreementsApiResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AgreementsApiResource.class);
 
-    private final AgreementService agreementService;
-    private final LedgerService ledgerService;
-    private final SearchAgreementsService searchAgreementsService;
+    private final AgreementsService agreementsService;
 
     @Inject
-    public AgreementsApiResource(AgreementService agreementService,
-                                 LedgerService ledgerService, 
-                                 SearchAgreementsService searchAgreementsService) {
-        this.agreementService = agreementService;
-        this.ledgerService = ledgerService;
-        this.searchAgreementsService = searchAgreementsService;
+    public AgreementsApiResource(AgreementsService agreementsService) {
+        this.agreementsService = agreementsService;
     }
 
     @POST
@@ -97,12 +84,12 @@ public class AgreementsApiResource {
     public Response createAgreement(
             @Parameter(hidden = true) @Auth Account account,
             @Parameter(required = true, description = "requestPayload")
-            @Valid CreateAgreementRequest createAgreementRequest
-    ) {
+            @Valid CreateAgreementRequest createAgreementRequest)
+    {
         LOGGER.info("Creating new agreement for reference {} and gateway accountID {}", 
                 createAgreementRequest.getReference(), account.getAccountId());
-        var agreementCreatedResponse = agreementService.create(account, createAgreementRequest);
-        var agreementLedgerResponse = ledgerService.getAgreement(account, agreementCreatedResponse.getAgreementId());
+        var agreementCreatedResponse = agreementsService.createAgreement(account, createAgreementRequest);
+        var agreementLedgerResponse = agreementsService.getAgreement(account, agreementCreatedResponse.getAgreementId());
         
         LOGGER.info("Agreement returned (created): [ {} ]", agreementCreatedResponse);
         return Response.status(SC_CREATED).entity(Agreement.from(agreementLedgerResponse)).build();
@@ -134,10 +121,10 @@ public class AgreementsApiResource {
             @Parameter(name = "agreementId", 
                     description = "Returns the agreement with the matching `agreement_id`. " +
                             "GOV.UK Pay generated an `agreement_id` when you created the agreement.", 
-                    example = "cgc1ocvh0pt9fqs0ma67r42l58") 
-            String agreementId) {
+                    example = "cgc1ocvh0pt9fqs0ma67r42l58") String agreementId)
+    {
         LOGGER.info("Get agreement {} request", agreementId);
-        var agreementLedgerResponse = ledgerService.getAgreement(account, agreementId);
+        var agreementLedgerResponse = agreementsService.getAgreement(account, agreementId);
         return Agreement.from(agreementLedgerResponse);
     }
 
@@ -167,7 +154,7 @@ public class AgreementsApiResource {
             }
     )
     public AgreementSearchResults getAgreements(@Parameter(hidden = true) @Auth Account account, @BeanParam AgreementSearchParams searchParams) {
-        return searchAgreementsService.searchLedgerAgreements(account, searchParams);
+        return agreementsService.searchAgreements(account, searchParams);
     }
 
     @POST
@@ -193,9 +180,9 @@ public class AgreementsApiResource {
     )
     public Response cancelAgreement(@Parameter(hidden = true) @Auth Account account, @PathParam("agreementId") @Parameter(name = "agreementId",
             description = "The `agreement_id` of the agreement you are cancelling",
-            example = "cgc1ocvh0pt9fqs0ma67r42l58")
-    String agreementId) {
-        agreementService.cancel(account, agreementId);
+            example = "cgc1ocvh0pt9fqs0ma67r42l58") String agreementId)
+    {
+        agreementsService.cancelAgreement(account, agreementId);
         return Response.status(SC_NO_CONTENT).build();
     }
 

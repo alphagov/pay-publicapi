@@ -1,6 +1,11 @@
 package uk.gov.pay.api.service;
 
+import org.apache.http.HttpStatus;
+import uk.gov.pay.api.agreement.model.AgreementCreatedResponse;
+import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
 import uk.gov.pay.api.auth.Account;
+import uk.gov.pay.api.exception.CancelAgreementException;
+import uk.gov.pay.api.exception.CreateAgreementException;
 import uk.gov.pay.api.exception.GetChargeException;
 import uk.gov.pay.api.exception.GetEventsException;
 import uk.gov.pay.api.exception.GetRefundException;
@@ -13,9 +18,11 @@ import uk.gov.pay.api.model.RefundsFromConnector;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import static javax.ws.rs.client.Entity.json;
 import static org.apache.http.HttpStatus.SC_OK;
 
 public class ConnectorService {
@@ -81,5 +88,33 @@ public class ConnectorService {
         }
 
         throw new GetRefundException(connectorResponse);
+    }
+
+    public AgreementCreatedResponse createAgreement(Account account, CreateAgreementRequest createAgreementRequest) {
+        Response response = client
+                .target(connectorUriGenerator.getAgreementURI(account))
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .post(buildCreateAgreementRequestPayload(createAgreementRequest));
+        if (response.getStatus() != HttpStatus.SC_CREATED) {
+            throw new CreateAgreementException(response);
+        }
+        return response.readEntity(AgreementCreatedResponse.class);
+    }
+
+    public void cancelAgreement(Account account, String agreementId) {
+        Response response = client
+                .target(connectorUriGenerator.cancelAgreementURI(account, agreementId))
+                .request()
+                .post(null);
+        if (response.getStatus() != HttpStatus.SC_NO_CONTENT) {
+            throw new CancelAgreementException(response);
+        }
+
+        response.close();
+    }
+
+    private Entity buildCreateAgreementRequestPayload(CreateAgreementRequest requestPayload) {
+        return json(requestPayload.toConnectorPayload());
     }
 }
