@@ -7,30 +7,31 @@
   },
   "interactions": [
     {
-      "description": "cancel an agreement with cancelled status",
+      "description": "a create agreement request for an non RCP account",
       "providerStates": [
         {
-          "name": "a gateway account and an agreement with cancelled status exists",
+          "name": "a gateway account with external id exists",
           "params": {
-            "agreement_external_id": "agreement9876543",
-            "gateway_account_id": "123456"
+            "gateway_account_id": "123456789"
           }
         }
       ],
       "request": {
         "method": "POST",
-        "path": "/v1/api/accounts/123456/agreements/agreement9876543/cancel"
+        "path": "/v1/api/accounts/123456789/agreements",
+        "body": {
+          "description": "Description for the paying user",
+          "reference": "Service agreement reference",
+          "user_identifier": "reference for the paying user"
+        }
       },
       "response": {
-        "status": 400,
+        "status": 422,
         "headers": {
           "Content-Type": "application/json"
         },
         "body": {
-          "error_identifier": "AGREEMENT_NOT_ACTIVE",
-          "message": [
-            "Payment instrument not active."
-          ]
+          "error_identifier": "RECURRING_CARD_PAYMENTS_NOT_ALLOWED"
         }
       }
     }

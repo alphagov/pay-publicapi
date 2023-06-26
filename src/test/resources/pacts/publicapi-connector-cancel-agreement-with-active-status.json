@@ -19,7 +19,7 @@
       ],
       "request": {
         "method": "POST",
-        "path": "/v1/api/accounts/123456/agreements/agreement1234567/cancel",
+        "path": "/v1/api/accounts/123456/agreements/agreement1234567/cancel"
       },
       "response": {
         "status": 204
