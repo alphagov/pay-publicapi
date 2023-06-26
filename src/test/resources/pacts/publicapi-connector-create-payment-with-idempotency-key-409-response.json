@@ -47,7 +47,7 @@
       "response": {
         "status": 409,
         "headers": {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         "body": {
           "message": ["The Idempotency-Key has already been used to create a payment"],
