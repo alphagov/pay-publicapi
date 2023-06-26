@@ -58,10 +58,44 @@ public class SearchAgreementsLedgerServicePactTest {
         assertThat(results.getCount(), is(1));
         assertThat(results.getTotal(), is(3));
         assertThat(results.getPage(), is(2));
-        assertThat(results.getLinks().getSelf().getHref(), is(LEDGER_SERVICE_URL + "v1/agreements?account_id=777&display_size=1&page=2"));
-        assertThat(results.getLinks().getFirstPage().getHref(), is(LEDGER_SERVICE_URL + "v1/agreements?account_id=777&display_size=1&page=1"));
-        assertThat(results.getLinks().getLastPage().getHref(), is(LEDGER_SERVICE_URL + "v1/agreements?account_id=777&display_size=1&page=3"));
-        assertThat(results.getLinks().getPrevPage().getHref(), is(LEDGER_SERVICE_URL + "v1/agreements?account_id=777&display_size=1&page=1"));
-        assertThat(results.getLinks().getNextPage().getHref(), is(LEDGER_SERVICE_URL + "v1/agreements?account_id=777&display_size=1&page=3"));
+        assertThat(results.getLinks().getSelf().getHref(), is(LEDGER_SERVICE_URL + "v1/agreement?account_id=777&display_size=1&page=2"));
+        assertThat(results.getLinks().getFirstPage().getHref(), is(LEDGER_SERVICE_URL + "v1/agreement?account_id=777&display_size=1&page=1"));
+        assertThat(results.getLinks().getLastPage().getHref(), is(LEDGER_SERVICE_URL + "v1/agreement?account_id=777&display_size=1&page=3"));
+        assertThat(results.getLinks().getPrevPage().getHref(), is(LEDGER_SERVICE_URL + "v1/agreement?account_id=777&display_size=1&page=1"));
+        assertThat(results.getLinks().getNextPage().getHref(), is(LEDGER_SERVICE_URL + "v1/agreement?account_id=777&display_size=1&page=3"));
+    }
+
+    @Test
+    @PactVerification({"ledger"})
+    @Pacts(pacts = {"publicapi-ledger-search-agreements-with-status"})
+    public void searchWithStatus_shouldReturnCorrectAgreement() {
+        AgreementSearchParams params = new AgreementSearchParams(null, "active", "1", "20");
+        Account account = new Account("777", TokenPaymentType.CARD, "a-token-link");
+        SearchResults<AgreementLedgerResponse> results = ledgerService.searchAgreements(account, params);
+        assertThat(results.getResults().size(), is(1));
+        assertThat(results.getResults().get(0).getStatus(), is("ACTIVE"));
+    }
+
+    @Test
+    @PactVerification({"ledger"})
+    @Pacts(pacts = {"publicapi-ledger-search-agreements-with-reference"})
+    public void searchWithReference_shouldReturnCorrectAgreement() {
+        AgreementSearchParams params = new AgreementSearchParams("a-valid-reference", null, "1", "20");
+        Account account = new Account("3456", TokenPaymentType.CARD, "a-token-link");
+        SearchResults<AgreementLedgerResponse> results = ledgerService.searchAgreements(account, params);
+        assertThat(results.getResults().size(), is(1));
+        assertThat(results.getResults().get(0).getReference(), is("a-valid-reference"));
+    }
+
+    @Test
+    @PactVerification({"ledger"})
+    @Pacts(pacts = {"publicapi-ledger-search-agreement-not-found"})
+    public void getOneAgreementNotFound() {
+        AgreementSearchParams params = new AgreementSearchParams("invalid-reference", null, "1", "20");
+        Account account = new Account("3456", TokenPaymentType.CARD, "a-token-link");
+        SearchResults<AgreementLedgerResponse> results = ledgerService.searchAgreements(account, params);
+        assertThat(results.getResults().size(), is(0));
+        assertThat(results.getCount(), is(0));
+        assertThat(results.getTotal(), is(0));
     }
 }
