@@ -22,7 +22,7 @@ import java.util.List;
 public class PaymentForSearchResult extends CardPayment {
 
     @JsonProperty(LINKS_JSON_ATTRIBUTE)
-    private PaymentLinksForSearch links = new PaymentLinksForSearch();
+    private PaymentLinksForSearch paymentLinksForSearch = new PaymentLinksForSearch();
 
     public PaymentForSearchResult(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                                   String reference, String email, String paymentProvider, String createdDate, SupportedLanguage language,
@@ -34,15 +34,15 @@ public class PaymentForSearchResult extends CardPayment {
         super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider,
                 createdDate, refundSummary, settlementSummary, cardDetails, language, delayedCapture, moto, corporateCardSurcharge, totalAmount, providerId, externalMetadata,
                 fee, netAmount, authorisationSummary, null, authorisationMode);
-        this.links.addSelf(selfLink.toString());
-        this.links.addEvents(paymentEventsLink.toString());
-        this.links.addRefunds(paymentRefundsLink.toString());
+        this.paymentLinksForSearch.addSelf(selfLink.toString());
+        this.paymentLinksForSearch.addEvents(paymentEventsLink.toString());
+        this.paymentLinksForSearch.addRefunds(paymentRefundsLink.toString());
 
         if (!state.isFinished() && authorisationMode != AuthorisationMode.AGREEMENT) {
-            this.links.addCancel(paymentCancelLink.toString());
+            this.paymentLinksForSearch.addCancel(paymentCancelLink.toString());
         }
         if (links.stream().anyMatch(link -> "capture".equals(link.getRel()))) {
-            this.links.addCapture(paymentCaptureUri.toString());
+            this.paymentLinksForSearch.addCapture(paymentCaptureUri.toString());
         }
     }
 
@@ -86,7 +86,7 @@ public class PaymentForSearchResult extends CardPayment {
                 paymentResult.getAuthorisationMode());
     }
 
-    public PaymentLinksForSearch getLinks() {
-        return links;
+    public PaymentLinksForSearch getPaymentLinksForSearch() {
+        return paymentLinksForSearch;
     }
 }

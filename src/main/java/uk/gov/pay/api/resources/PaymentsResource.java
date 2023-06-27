@@ -15,11 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CaptureChargeException;
-import uk.gov.pay.api.model.CreateCardPaymentRequest;
-import uk.gov.pay.api.model.CreatePaymentResult;
-import uk.gov.pay.api.model.CreatedPaymentWithAllLinks;
-import uk.gov.pay.api.model.PaymentEventsResponse;
-import uk.gov.pay.api.model.RequestError;
+import uk.gov.pay.api.model.*;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.model.search.card.GetPaymentResult;
 import uk.gov.pay.api.model.search.card.PaymentSearchResults;
@@ -307,13 +303,13 @@ public class PaymentsResource {
 
         CreatedPaymentWithAllLinks createdPayment = createPaymentService.create(account, createCardPaymentRequest, idempotencyKey);
 
-        PaymentWithAllLinks paymentWithAllLinks = createdPayment.getPayment();
+        CardPayment cardPayment = createdPayment.getPayment();
         Response.ResponseBuilder response;
 
         switch (createdPayment.getWhenCreated()) {
             case BRAND_NEW:
                 response = Response
-                        .created(publicApiUriGenerator.getPaymentURI(paymentWithAllLinks.getPayment().getPaymentId()));
+                        .created(publicApiUriGenerator.getPaymentURI(cardPayment.getPaymentId()));
                 break;
             case EXISTING:
                 response = Response.ok();
@@ -322,11 +318,11 @@ public class PaymentsResource {
                 throw new IllegalArgumentException(format("Unrecognised WhenCreated enum: %s", createdPayment.getWhenCreated()));
         }
 
-        response.entity(paymentWithAllLinks)
+        response.entity(cardPayment.asEmbedded())
             .header(PRAGMA, "no-cache")
             .header(CACHE_CONTROL, "no-store");
 
-        logger.info("Payment returned (created): [ {} ]", paymentWithAllLinks);
+        logger.info("Payment returned (created): [ {} ]", cardPayment);
         return response.build();
     }
 

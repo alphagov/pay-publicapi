@@ -369,7 +369,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
 
         String responseBody = postPaymentResponse(SUCCESS_PAYLOAD)
                 .statusCode(HttpStatus.SC_CREATED)
-                .contentType(JSON)
+                .contentType(JSON).log().body()
                 .header(HttpHeaders.LOCATION, is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)))
                 .body("payment_id", is(CHARGE_ID))
                 .body("amount", is(9999999))

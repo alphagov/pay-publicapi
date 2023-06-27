@@ -1,9 +1,12 @@
 package uk.gov.pay.api.model.links;
 
+import black.door.hate.JacksonHalResource;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -11,7 +14,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 
 @Schema(name = "Link", description = "A link related to a payment")
 @JsonInclude(Include.NON_NULL)
-public class Link {
+public class Link implements JacksonHalResource {
 
     @JsonProperty(value = "href")
     @Schema(example = "https://an.example.link/from/payment/platform", 
@@ -26,6 +29,11 @@ public class Link {
             accessMode = READ_ONLY)
     private String method;
 
+    public Link(URI href, String method) {
+        this.href = href.toString();
+        this.method = method;
+    }
+    
     public Link(String href, String method) {
         this.href = href;
         this.method = method;
@@ -65,5 +73,14 @@ public class Link {
     @Override
     public int hashCode() {
         return Objects.hash(href, method);
+    }
+
+    @Override
+    public URI location() {
+        try {
+            return new URI(href);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

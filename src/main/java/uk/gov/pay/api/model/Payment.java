@@ -1,5 +1,6 @@
 package uk.gov.pay.api.model;
 
+import black.door.hate.JacksonHalResource;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -8,7 +9,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 
 @JsonInclude(value = JsonInclude.Include.NON_EMPTY)
 @Schema(name = "Payment", subTypes = {CardPayment.class})
-public abstract class Payment {
+public abstract class Payment implements JacksonHalResource {
     public static final String LINKS_JSON_ATTRIBUTE = "_links";
 
     @JsonProperty("payment_id")
@@ -24,7 +25,7 @@ public abstract class Payment {
 
     @JsonProperty("created_date")
     protected String createdDate;
-    
+
     protected Payment() {
         //To enable Jackson serialisation we need a default constructor
     }

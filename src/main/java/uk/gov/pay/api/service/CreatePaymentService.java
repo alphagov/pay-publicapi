@@ -3,10 +3,7 @@ package uk.gov.pay.api.service;
 import org.apache.http.HttpStatus;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateChargeException;
-import uk.gov.pay.api.model.Charge;
-import uk.gov.pay.api.model.ChargeFromResponse;
-import uk.gov.pay.api.model.CreateCardPaymentRequest;
-import uk.gov.pay.api.model.CreatedPaymentWithAllLinks;
+import uk.gov.pay.api.model.*;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 
 import javax.inject.Inject;
@@ -51,8 +48,8 @@ public class CreatePaymentService {
 
         throw new CreateChargeException(connectorResponse);
     }
-   private PaymentWithAllLinks buildResponseModel(Charge chargeFromResponse) {
-        return PaymentWithAllLinks.getPaymentWithLinks(
+   private CardPayment buildResponseModel(Charge chargeFromResponse) {
+        return new CardPayment(
                 chargeFromResponse,
                 publicApiUriGenerator.getPaymentURI(chargeFromResponse.getChargeId()),
                 publicApiUriGenerator.getPaymentEventsURI(chargeFromResponse.getChargeId()),

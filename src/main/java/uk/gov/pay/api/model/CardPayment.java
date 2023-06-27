@@ -1,19 +1,24 @@
 package uk.gov.pay.api.model;
 
+import black.door.hate.HalRepresentation;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
+import uk.gov.pay.api.model.links.Link;
+import uk.gov.pay.api.model.links.PaymentLinks;
 import uk.gov.service.payments.commons.api.json.ExternalMetadataSerialiser;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
 
+import java.net.URI;
 import java.util.Optional;
 
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
+import static javax.ws.rs.HttpMethod.GET;
 
 @JsonInclude(value = JsonInclude.Include.NON_EMPTY)
 @Schema(name = "CardPayment")
@@ -59,6 +64,9 @@ public class CardPayment extends Payment {
     @JsonSerialize(using = ExternalMetadataSerialiser.class)
     @Schema(name = "metadata", example = "{\"property1\": \"value1\", \"property2\": \"value2\"}\"")
     private final ExternalMetadata metadata;
+
+    @JsonProperty(LINKS_JSON_ATTRIBUTE)
+    protected PaymentLinks links = new PaymentLinks();
 
     @JsonProperty("return_url")
     protected String returnUrl;
@@ -108,6 +116,46 @@ public class CardPayment extends Payment {
         this.authorisationMode = authorisationMode;
     }
 
+    public CardPayment(Charge charge, URI self, URI paymentEventsURI, URI paymentCancelURI, URI paymentRefundsURI, 
+                       URI paymentCaptureURI, URI paymentAuthorisationURI) {
+        super(charge.getChargeId(), charge.getAmount(), charge.getDescription(), charge.getReference(), 
+                charge.getPaymentProvider(), charge.getCreatedDate());
+        this.state = charge.getState();
+        this.returnUrl = charge.getReturnUrl();
+        this.email = charge.getEmail();
+        this.language = charge.getLanguage();
+        this.delayedCapture = charge.getDelayedCapture();
+        this.moto = charge.isMoto();
+        this.refundSummary = charge.getRefundSummary();
+        this.settlementSummary = charge.getSettlementSummary();
+        this.cardDetails = charge.getCardDetails();
+        this.corporateCardSurcharge = charge.getCorporateCardSurcharge();
+        this.totalAmount = charge.getTotalAmount();
+        this.providerId = charge.getGatewayTransactionId();
+        this.metadata = charge.getMetadata().orElse(null);
+        this.fee = charge.getFee();
+        this.netAmount = charge.getNetAmount();
+        this.authorisationSummary = charge.getAuthorisationSummary();
+        this.agreementId = charge.getAgreementId();
+        this.authorisationMode = charge.getAuthorisationMode();
+
+        links.addKnownLinksValueOf(charge.getLinks(), paymentAuthorisationURI);
+        links.addEvents(paymentEventsURI.toString());
+        links.addRefunds(paymentRefundsURI.toString());
+        links.addSelf(self.toString());
+        
+        if (!state.isFinished() && authorisationMode != AuthorisationMode.AGREEMENT) {
+            links.addCancel(paymentCancelURI.toString());
+        }
+    }
+    
+    @Override
+    public HalRepresentation.HalRepresentationBuilder representationBuilder() {
+        return super.representationBuilder()
+//                .removeProperty("_links")
+                .addProperty("_links", links);
+    }
+    
     /**
      * card brand is no longer a top level charge property. It is now at `card_details.card_brand` attribute
      * We still need to support `v1` clients with a top level card brand attribute to keep support their integrations.
@@ -249,5 +297,14 @@ public class CardPayment extends Payment {
                 ", createdDate='" + createdDate + '\'' +
                 ", agreementId='" + agreementId + '\'' +
                 '}';
+    }
+
+    @Override
+    public URI location() {
+        return null;
+    }
+
+    public PaymentLinks getLinks() {
+        return links;
     }
 }

@@ -12,14 +12,8 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateChargeException;
-import uk.gov.pay.api.model.Address;
-import uk.gov.pay.api.model.CardPayment;
-import uk.gov.pay.api.model.CreateCardPaymentRequestBuilder;
-import uk.gov.pay.api.model.CreatedPaymentWithAllLinks;
-import uk.gov.pay.api.model.PaymentState;
-import uk.gov.pay.api.model.TokenPaymentType;
+import uk.gov.pay.api.model.*;
 import uk.gov.pay.api.model.links.Link;
-import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.model.links.PostLink;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.ErrorIdentifier;
@@ -79,8 +73,7 @@ public class CreatePaymentServicePactTest {
                 .build();
 
         CreatedPaymentWithAllLinks createdPaymentWithAllLinks = createPaymentService.create(account, requestPayload, null);
-        PaymentWithAllLinks paymentResponse = createdPaymentWithAllLinks.getPayment();
-        CardPayment payment = (CardPayment) paymentResponse.getPayment();
+        CardPayment payment = createdPaymentWithAllLinks.getPayment();
 
         assertThat(payment.getPaymentId(), is("ch_ab2341da231434l"));
         assertThat(payment.getAmount(), is(100L));
@@ -94,10 +87,10 @@ public class CreatePaymentServicePactTest {
         assertThat(payment.getLanguage(), is(SupportedLanguage.ENGLISH));
         assertThat(payment.getDelayedCapture(), is(false));
         assertThat(payment.getMoto(), is(false));
-        assertThat(paymentResponse.getLinks().getSelf(), is(new Link("http://publicapi.test.localhost/v1/payments/ch_ab2341da231434l", "GET")));
-        assertThat(paymentResponse.getLinks().getNextUrl(), is(new Link("http://frontend_connector/charge/token_1234567asdf", "GET")));
+        assertThat(payment.getLinks().getSelf(), is(new Link("http://publicapi.test.localhost/v1/payments/ch_ab2341da231434l", "GET")));
+        assertThat(payment.getLinks().getNextUrl(), is(new Link("http://frontend_connector/charge/token_1234567asdf", "GET")));
         PostLink expectedLink = new PostLink("http://frontend_connector/charge/", "POST", "application/x-www-form-urlencoded", Collections.singletonMap("chargeTokenId", "token_1234567asdf"));
-        assertThat(paymentResponse.getLinks().getNextUrlPost(), is(expectedLink));
+        assertThat(payment.getLinks().getNextUrlPost(), is(expectedLink));
     }
     
     @Test
@@ -127,8 +120,7 @@ public class CreatePaymentServicePactTest {
                 .build();
 
         CreatedPaymentWithAllLinks paymentWithAllLinks = createPaymentService.create(account, requestPayload, null);
-        PaymentWithAllLinks paymentResponse = paymentWithAllLinks.getPayment();
-        CardPayment payment = (CardPayment) paymentResponse.getPayment();
+        CardPayment payment = paymentWithAllLinks.getPayment();
 
         assertThat(payment.getPaymentId(), is("ch_ab2341da231434l"));
         assertThat(payment.getAmount(), is(100L));
@@ -138,10 +130,10 @@ public class CreatePaymentServicePactTest {
         assertThat(payment.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
         assertThat(payment.getPaymentProvider(), is("Sandbox"));
         assertThat(payment.getCreatedDate(), is("2016-01-01T12:00:00Z"));
-        assertThat(paymentResponse.getLinks().getSelf(), is(new Link("http://publicapi.test.localhost/v1/payments/ch_ab2341da231434l", "GET")));
-        assertThat(paymentResponse.getLinks().getNextUrl(), is(new Link("http://frontend_connector/charge/token_1234567asdf", "GET")));
+        assertThat(payment.getLinks().getSelf(), is(new Link("http://publicapi.test.localhost/v1/payments/ch_ab2341da231434l", "GET")));
+        assertThat(payment.getLinks().getNextUrl(), is(new Link("http://frontend_connector/charge/token_1234567asdf", "GET")));
         PostLink expectedLink = new PostLink("http://frontend_connector/charge/", "POST", "application/x-www-form-urlencoded", Collections.singletonMap("chargeTokenId", "token_1234567asdf"));
-        assertThat(paymentResponse.getLinks().getNextUrlPost(), is(expectedLink));
+        assertThat(payment.getLinks().getNextUrlPost(), is(expectedLink));
         assertThat(payment.getMetadata().getMetadata(), is(metadata));
         assertThat(payment.getDelayedCapture(), is(true));
         assertThat(payment.getLanguage(), is(SupportedLanguage.WELSH));
@@ -190,9 +182,8 @@ public class CreatePaymentServicePactTest {
                 .build();
 
         CreatedPaymentWithAllLinks paymentWithAllLinks = createPaymentService.create(account, requestPayload, null);
-        PaymentWithAllLinks paymentResponse = paymentWithAllLinks.getPayment();
-        CardPayment payment = (CardPayment) paymentResponse.getPayment();
-        assertThat(paymentResponse.getLinks().getAuthUrlPost(), is(new PostLink("http://publicapi.test.localhost/v1/auth", "POST", "application/json", Collections.singletonMap("one_time_token", "token_1234567asdf"))));
+        CardPayment payment = paymentWithAllLinks.getPayment();
+        assertThat(payment.getLinks().getAuthUrlPost(), is(new PostLink("http://publicapi.test.localhost/v1/auth", "POST", "application/json", Collections.singletonMap("one_time_token", "token_1234567asdf"))));
         assertThat(payment.getPaymentId(), is("ch_123abc456def"));
         assertThat(payment.getAuthorisationMode(), is(AuthorisationMode.MOTO_API));
     }
@@ -330,8 +321,7 @@ public class CreatePaymentServicePactTest {
                 .build();
 
         CreatedPaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload, idempotencyKey);
-        PaymentWithAllLinks paymentWithAllLinks = paymentResponse.getPayment();
-        CardPayment payment = (CardPayment) paymentWithAllLinks.getPayment();
+        CardPayment payment = paymentResponse.getPayment();
 
         assertThat(payment.getPaymentId(), is("chargeable"));
         assertThat(payment.getAmount(), is(2046L));
@@ -342,8 +332,8 @@ public class CreatePaymentServicePactTest {
         assertThat(payment.getState(), is(new PaymentState("created", false)));
         assertThat(payment.getPaymentProvider(), is("sandbox"));
         assertThat(payment.getCreatedDate(), is("2023-04-20T13:30:00.000Z"));
-        assertThat(paymentWithAllLinks.getLinks().getSelf(), is(new Link("http://publicapi.test.localhost/v1/payments/chargeable", "GET")));
-        assertThat(paymentWithAllLinks.getLinks().getRefunds().getHref(), containsString("v1/payments/chargeable/refunds"));
+        assertThat(payment.getLinks().getSelf(), is(new Link("http://publicapi.test.localhost/v1/payments/chargeable", "GET")));
+        assertThat(payment.getLinks().getRefunds().getHref(), containsString("v1/payments/chargeable/refunds"));
     }
 
     @Test
