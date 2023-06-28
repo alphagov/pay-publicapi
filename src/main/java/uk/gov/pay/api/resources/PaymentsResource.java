@@ -318,7 +318,7 @@ public class PaymentsResource {
                 throw new IllegalArgumentException(format("Unrecognised WhenCreated enum: %s", createdPayment.getWhenCreated()));
         }
 
-        response.entity(cardPayment.asEmbedded())
+        response.entity(cardPayment)
             .header(PRAGMA, "no-cache")
             .header(CACHE_CONTROL, "no-store");
 

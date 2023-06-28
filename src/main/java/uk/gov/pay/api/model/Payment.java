@@ -9,7 +9,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 
 @JsonInclude(value = JsonInclude.Include.NON_EMPTY)
 @Schema(name = "Payment", subTypes = {CardPayment.class})
-public abstract class Payment implements JacksonHalResource {
+public abstract class Payment {
     public static final String LINKS_JSON_ATTRIBUTE = "_links";
 
     @JsonProperty("payment_id")

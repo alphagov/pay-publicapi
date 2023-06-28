@@ -149,13 +149,6 @@ public class CardPayment extends Payment {
         }
     }
     
-    @Override
-    public HalRepresentation.HalRepresentationBuilder representationBuilder() {
-        return super.representationBuilder()
-//                .removeProperty("_links")
-                .addProperty("_links", links);
-    }
-    
     /**
      * card brand is no longer a top level charge property. It is now at `card_details.card_brand` attribute
      * We still need to support `v1` clients with a top level card brand attribute to keep support their integrations.
@@ -297,11 +290,6 @@ public class CardPayment extends Payment {
                 ", createdDate='" + createdDate + '\'' +
                 ", agreementId='" + agreementId + '\'' +
                 '}';
-    }
-
-    @Override
-    public URI location() {
-        return null;
     }
 
     public PaymentLinks getLinks() {
