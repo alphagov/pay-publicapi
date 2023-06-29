@@ -2051,7 +2051,7 @@
         "description" : "Contains payments matching your search criteria.",
         "properties" : {
           "_links" : {
-            "$ref" : "#/components/schemas/PaymentLinksForSearch"
+            "$ref" : "#/components/schemas/PaymentLinks"
           },
           "amount" : {
             "type" : "integer",
@@ -2285,27 +2285,6 @@
         "type" : "object",
         "description" : "links for events resource",
         "properties" : {
-          "self" : {
-            "$ref" : "#/components/schemas/Link"
-          }
-        }
-      },
-      "PaymentLinksForSearch" : {
-        "type" : "object",
-        "description" : "links for search payment resource",
-        "properties" : {
-          "cancel" : {
-            "$ref" : "#/components/schemas/PostLink"
-          },
-          "capture" : {
-            "$ref" : "#/components/schemas/PostLink"
-          },
-          "events" : {
-            "$ref" : "#/components/schemas/Link"
-          },
-          "refunds" : {
-            "$ref" : "#/components/schemas/Link"
-          },
           "self" : {
             "$ref" : "#/components/schemas/Link"
           }

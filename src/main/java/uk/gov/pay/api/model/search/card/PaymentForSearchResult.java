@@ -1,6 +1,5 @@
 package uk.gov.pay.api.model.search.card;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.api.model.AuthorisationSummary;
 import uk.gov.pay.api.model.CardDetails;
@@ -10,7 +9,6 @@ import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.TransactionResponse;
-import uk.gov.pay.api.model.links.PaymentLinksForSearch;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
@@ -20,9 +18,6 @@ import java.util.List;
 
 @Schema(name = "PaymentDetailForSearch")
 public class PaymentForSearchResult extends CardPayment {
-
-    @JsonProperty(LINKS_JSON_ATTRIBUTE)
-    private PaymentLinksForSearch paymentLinksForSearch = new PaymentLinksForSearch();
 
     public PaymentForSearchResult(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                                   String reference, String email, String paymentProvider, String createdDate, SupportedLanguage language,
@@ -34,15 +29,15 @@ public class PaymentForSearchResult extends CardPayment {
         super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider,
                 createdDate, refundSummary, settlementSummary, cardDetails, language, delayedCapture, moto, corporateCardSurcharge, totalAmount, providerId, externalMetadata,
                 fee, netAmount, authorisationSummary, null, authorisationMode);
-        this.paymentLinksForSearch.addSelf(selfLink.toString());
-        this.paymentLinksForSearch.addEvents(paymentEventsLink.toString());
-        this.paymentLinksForSearch.addRefunds(paymentRefundsLink.toString());
+        getLinks().addSelf(selfLink.toString());
+        getLinks().addEvents(paymentEventsLink.toString());
+        getLinks().addRefunds(paymentRefundsLink.toString());
 
         if (!state.isFinished() && authorisationMode != AuthorisationMode.AGREEMENT) {
-            this.paymentLinksForSearch.addCancel(paymentCancelLink.toString());
+            getLinks().addCancel(paymentCancelLink.toString());
         }
         if (links.stream().anyMatch(link -> "capture".equals(link.getRel()))) {
-            this.paymentLinksForSearch.addCapture(paymentCaptureUri.toString());
+            getLinks().addCapture(paymentCaptureUri.toString());
         }
     }
 
@@ -84,9 +79,5 @@ public class PaymentForSearchResult extends CardPayment {
                 paymentResult.getNetAmount(),
                 paymentResult.getAuthorisationSummary(),
                 paymentResult.getAuthorisationMode());
-    }
-
-    public PaymentLinksForSearch getPaymentLinksForSearch() {
-        return paymentLinksForSearch;
     }
 }

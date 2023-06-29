@@ -104,10 +104,10 @@ public class TransactionSearchServiceTest {
         assertThat(address.getCity(), is("London"));
         assertThat(address.getCountry(), is("GB"));
 
-        assertThat(payment.getPaymentLinksForSearch().getSelf().getHref(), containsString("v1/payments/" + CHARGE_ID));
-        assertThat(payment.getPaymentLinksForSearch().getSelf().getMethod(), is("GET"));
-        assertThat(payment.getPaymentLinksForSearch().getRefunds().getHref(), containsString("v1/payments/" + CHARGE_ID + "/refunds"));
-        assertThat(payment.getPaymentLinksForSearch().getRefunds().getMethod(), is("GET"));
+        assertThat(payment.getLinks().getSelf().getHref(), containsString("v1/payments/" + CHARGE_ID));
+        assertThat(payment.getLinks().getSelf().getMethod(), is("GET"));
+        assertThat(payment.getLinks().getRefunds().getHref(), containsString("v1/payments/" + CHARGE_ID + "/refunds"));
+        assertThat(payment.getLinks().getRefunds().getMethod(), is("GET"));
 
         assertThat(searchResults.getCount(), is(1));
         assertThat(searchResults.getTotal(), is(1));

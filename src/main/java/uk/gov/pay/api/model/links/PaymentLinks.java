@@ -3,7 +3,6 @@ package uk.gov.pay.api.model.links;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
-import uk.gov.pay.api.service.PublicApiUriGenerator;
 
 import java.net.URI;
 import java.util.List;
