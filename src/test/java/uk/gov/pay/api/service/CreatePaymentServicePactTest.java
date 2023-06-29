@@ -35,6 +35,7 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
@@ -364,5 +365,34 @@ public class CreatePaymentServicePactTest {
         assertThat(cr.getErrorStatus(), is(409));
         assertThat(cr.getErrorIdentifier(), is(ErrorIdentifier.IDEMPOTENCY_KEY_USED));
         assertThat(cr.getConnectorErrorMessage(), is("The Idempotency-Key has already been used to create a payment"));
+    }
+
+    @Test
+    @PactVerification({"connector"})
+    @Pacts(pacts = "publicapi-connector-take-a-recurring-payment")
+    public void testTakeARecurringPayment() {
+        var requestPayload = CreateCardPaymentRequestBuilder.builder()
+                .amount(2046)
+                .reference("a-reference")
+                .description("a description")
+                .agreementId("abcdefghijklmnopqrstuvwxyz")
+                .authorisationMode(AuthorisationMode.AGREEMENT)
+                .build();
+
+        CreatedPaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload, null);
+        PaymentWithAllLinks paymentWithAllLinks = paymentResponse.getPayment();
+        CardPayment payment = (CardPayment) paymentWithAllLinks.getPayment();
+
+        assertThat(payment.getPaymentId(), is("valid-charge-id"));
+        assertThat(payment.getAmount(), is(2046L));
+        assertThat(payment.getReference(), is("a-reference"));
+        assertThat(payment.getDescription(), is("a description"));
+        assertThat(payment.getAgreementId(), is("abcdefghijklmnopqrstuvwxyz"));
+        assertThat(payment.getAuthorisationMode(), is(AuthorisationMode.AGREEMENT));
+        assertThat(payment.getState(), is(new PaymentState("created", false)));
+        assertThat(payment.getPaymentProvider(), is("sandbox"));
+        assertThat(payment.getCreatedDate(), is(notNullValue()));
+        assertThat(paymentWithAllLinks.getLinks().getSelf(), is(new Link("http://publicapi.test.localhost/v1/payments/valid-charge-id", "GET")));
+        assertThat(paymentWithAllLinks.getLinks().getRefunds().getHref(), containsString("v1/payments/valid-charge-id/refunds"));
     }
 }
