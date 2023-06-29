@@ -2,7 +2,6 @@ package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 
 import java.io.IOException;
 import java.net.URI;
@@ -48,7 +47,7 @@ public class PaymentTest {
                 "  }\n" +
                 "}", ChargeFromResponse.class);
 
-        PaymentWithAllLinks payment = PaymentWithAllLinks.valueOf(Charge.from(paymentFromConnector), selfUri, eventsUri,
+        CardPayment payment = new CardPayment(Charge.from(paymentFromConnector), selfUri, eventsUri,
                 cancelUri, refundsUri, captureUri, authUri);
 
         assertThat(payment.toString(), not(containsString("user@example.com")));

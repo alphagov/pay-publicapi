@@ -116,8 +116,13 @@ public class CardPayment extends Payment {
         this.authorisationMode = authorisationMode;
     }
 
-    public CardPayment(Charge charge, URI self, URI paymentEventsURI, URI paymentCancelURI, URI paymentRefundsURI, 
-                       URI paymentCaptureURI, URI paymentAuthorisationURI) { //TODO delete paymentCaptureURI
+    public CardPayment(Charge charge, 
+                       URI self, 
+                       URI paymentEventsURI, 
+                       URI paymentCancelURI, 
+                       URI paymentRefundsURI, 
+                       URI paymentCaptureURI, 
+                       URI paymentAuthorisationURI) {
         super(charge.getChargeId(), charge.getAmount(), charge.getDescription(), charge.getReference(), 
                 charge.getPaymentProvider(), charge.getCreatedDate());
         this.state = charge.getState();

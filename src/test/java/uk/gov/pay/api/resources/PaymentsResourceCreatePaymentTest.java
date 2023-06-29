@@ -10,14 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.*;
-import uk.gov.pay.api.model.links.PaymentWithAllLinks;
-import uk.gov.pay.api.service.CancelPaymentService;
-import uk.gov.pay.api.service.CapturePaymentService;
-import uk.gov.pay.api.service.CreatePaymentService;
-import uk.gov.pay.api.service.GetPaymentEventsService;
-import uk.gov.pay.api.service.GetPaymentService;
-import uk.gov.pay.api.service.PaymentSearchService;
-import uk.gov.pay.api.service.PublicApiUriGenerator;
+import uk.gov.pay.api.service.*;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 
@@ -27,8 +20,8 @@ import java.util.Collections;
 
 import static org.apache.http.HttpHeaders.CACHE_CONTROL;
 import static org.apache.http.HttpHeaders.PRAGMA;
-import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -97,9 +90,8 @@ public class PaymentsResourceCreatePaymentTest {
 
     @NotNull
     private CardPayment aSuccessfullyCreatedPayment() {
-        final Address cardholderAddress = new Address("123 Acacia Ave", "", "", "London", "GB");
-        return (CardPayment) new PaymentWithAllLinks(
-                "abc123",
+        //TODO use builder pattern
+        Charge charge = new Charge("abc123",
                 100L,
                 new PaymentState("created", false),
                 "https://somewhere.test",
@@ -113,14 +105,10 @@ public class PaymentsResourceCreatePaymentTest {
                 false,
                 new RefundSummary(),
                 new PaymentSettlementSummary(),
-                new CardDetails("9876", "482393", "Anne Onymous", "12/20", cardholderAddress, "visa", null),
+                new CardDetails("9876", "482393", "Anne Onymous",
+                        "12/20", new Address("123 Acacia Ave", "", "", "London", "GB"),
+                        "visa", null),
                 Collections.emptyList(),
-                URI.create(PAYMENT_URI),
-                URI.create(PAYMENT_URI + "/events"),
-                URI.create(PAYMENT_URI + "/cancel"),
-                URI.create(PAYMENT_URI + "/refunds"),
-                URI.create(PAYMENT_URI + "/capture"),
-                URI.create(PAYMENT_URI + "/auth"),
                 null,
                 null,
                 "providerId",
@@ -129,6 +117,12 @@ public class PaymentsResourceCreatePaymentTest {
                 null,
                 null,
                 null,
-                AuthorisationMode.WEB).getPayment();
+                AuthorisationMode.WEB);
+        return new CardPayment(charge, URI.create(PAYMENT_URI),
+                URI.create(PAYMENT_URI + "/events"),
+                URI.create(PAYMENT_URI + "/cancel"),
+                URI.create(PAYMENT_URI + "/refunds"),
+                URI.create(PAYMENT_URI + "/capture"),
+                URI.create(PAYMENT_URI + "/auth"));
     }
 }

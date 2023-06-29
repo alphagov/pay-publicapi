@@ -4,7 +4,6 @@ import org.apache.http.HttpStatus;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateChargeException;
 import uk.gov.pay.api.model.*;
-import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
