@@ -2,8 +2,8 @@ package uk.gov.pay.api.service;
 
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.GetChargeException;
+import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.Charge;
-import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 
 import javax.inject.Inject;
 import java.net.URI;
@@ -22,19 +22,19 @@ public class GetPaymentService {
         this.ledgerService = ledgerService;
     }
 
-    public PaymentWithAllLinks getConnectorCharge(Account account, String paymentId) {
+    public CardPayment getConnectorCharge(Account account, String paymentId) {
         Charge charge = connectorService.getCharge(account, paymentId);
 
         return getPaymentWithAllLinks(charge);
     }
     
-    public PaymentWithAllLinks getLedgerTransaction(Account account, String paymentId) {
+    public CardPayment getLedgerTransaction(Account account, String paymentId) {
         Charge charge = ledgerService.getPaymentTransaction(account, paymentId);
         
         return getPaymentWithAllLinks(charge);
     }
 
-    public PaymentWithAllLinks getPayment(Account account, String paymentId) {
+    public CardPayment getPayment(Account account, String paymentId) {
         try {
             return getConnectorCharge(account, paymentId);
         } catch (GetChargeException ex) {
@@ -42,11 +42,10 @@ public class GetPaymentService {
         }
     }
 
-    private PaymentWithAllLinks getPaymentWithAllLinks(Charge chargeFromResponse) {
+    private CardPayment getPaymentWithAllLinks(Charge chargeFromResponse) {
         URI paymentURI = publicApiUriGenerator.getPaymentURI(chargeFromResponse.getChargeId());
 
-        return PaymentWithAllLinks.getPaymentWithLinks(
-                chargeFromResponse,
+        return new CardPayment(chargeFromResponse,
                 paymentURI,
                 publicApiUriGenerator.getPaymentEventsURI(chargeFromResponse.getChargeId()),
                 publicApiUriGenerator.getPaymentCancelURI(chargeFromResponse.getChargeId()),

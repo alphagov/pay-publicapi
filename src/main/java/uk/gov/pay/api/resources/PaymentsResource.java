@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CaptureChargeException;
 import uk.gov.pay.api.model.*;
-import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.model.search.card.GetPaymentResult;
 import uk.gov.pay.api.model.search.card.PaymentSearchResults;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
@@ -121,7 +120,7 @@ public class PaymentsResource {
         logger.info("Payment request - paymentId={}", paymentId);
 
         var strategy = new GetOnePaymentStrategy(strategyName, account, paymentId, getPaymentService);
-        PaymentWithAllLinks payment = strategy.validateAndExecute();
+        CardPayment payment = strategy.validateAndExecute();
 
         logger.info("Payment returned - [ {} ]", payment);
         return Response.ok(payment)

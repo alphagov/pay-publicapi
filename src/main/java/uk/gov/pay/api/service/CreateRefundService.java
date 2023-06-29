@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateRefundException;
-import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.RefundFromConnector;
 import uk.gov.pay.api.model.RefundResponse;
@@ -69,7 +68,7 @@ public class CreateRefundService {
     }
 
     private int getRefundAmountAvailableFromPayment(GetOnePaymentStrategy strategy) {
-        return Optional.of((CardPayment) strategy.validateAndExecute().getPayment())
+        return Optional.of(strategy.validateAndExecute())
                 .map(p -> p.getRefundSummary()
                         .map(RefundSummary::getAmountAvailable)
                         .orElse(0L))

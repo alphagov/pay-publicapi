@@ -1,10 +1,10 @@
 package uk.gov.pay.api.resources;
 
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.model.links.PaymentWithAllLinks;
+import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.service.GetPaymentService;
 
-public class GetOnePaymentStrategy extends LedgerOrConnectorStrategyTemplate<PaymentWithAllLinks> {
+public class GetOnePaymentStrategy extends LedgerOrConnectorStrategyTemplate<CardPayment> {
 
     private final Account account;
     private final String paymentId;
@@ -18,17 +18,17 @@ public class GetOnePaymentStrategy extends LedgerOrConnectorStrategyTemplate<Pay
     }
 
     @Override
-    protected PaymentWithAllLinks executeLedgerOnlyStrategy() {
+    protected CardPayment executeLedgerOnlyStrategy() {
         return getPaymentService.getLedgerTransaction(account, paymentId);
     }
 
     @Override
-    protected PaymentWithAllLinks executeDefaultStrategy() {
+    protected CardPayment executeDefaultStrategy() {
         return getPaymentService.getPayment(account, paymentId);
     }
 
     @Override
-    protected PaymentWithAllLinks executeConnectorOnlyStrategy() {
+    protected CardPayment executeConnectorOnlyStrategy() {
         return getPaymentService.getConnectorCharge(account, paymentId);
     }
 }

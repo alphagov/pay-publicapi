@@ -117,7 +117,7 @@ public class CardPayment extends Payment {
     }
 
     public CardPayment(Charge charge, URI self, URI paymentEventsURI, URI paymentCancelURI, URI paymentRefundsURI, 
-                       URI paymentCaptureURI, URI paymentAuthorisationURI) {
+                       URI paymentCaptureURI, URI paymentAuthorisationURI) { //TODO delete paymentCaptureURI
         super(charge.getChargeId(), charge.getAmount(), charge.getDescription(), charge.getReference(), 
                 charge.getPaymentProvider(), charge.getCreatedDate());
         this.state = charge.getState();
@@ -146,6 +146,10 @@ public class CardPayment extends Payment {
         
         if (!state.isFinished() && authorisationMode != AuthorisationMode.AGREEMENT) {
             links.addCancel(paymentCancelURI.toString());
+        }
+
+        if (charge.getLinks().stream().anyMatch(link -> "capture".equals(link.getRel()))) {
+            links.addCapture(paymentCaptureURI.toString());
         }
     }
     

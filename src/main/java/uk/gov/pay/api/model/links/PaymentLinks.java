@@ -79,11 +79,11 @@ public class PaymentLinks {
         return capture;
     }
 
+    //TODO refactor this out
     public void addKnownLinksValueOf(List<PaymentConnectorResponseLink> chargeLinks, URI paymentAuthorisationUri) {
         addNextUrlIfPresent(chargeLinks);
         addNextUrlPostIfPresent(chargeLinks);
         addAuthUrlPostIfPresent(chargeLinks, paymentAuthorisationUri);
-        addCaptureUrlIfPresent(chargeLinks);
     }
 
     public void addSelf(String href) {
@@ -125,12 +125,5 @@ public class PaymentLinks {
                 .filter(chargeLink -> NEXT_URL_FIELD.equals(chargeLink.getRel()))
                 .findFirst()
                 .ifPresent(chargeLink -> this.nextUrl = new Link(chargeLink.getHref(), chargeLink.getMethod()));
-    }
-
-    private void addCaptureUrlIfPresent(List<PaymentConnectorResponseLink> chargeLinks) {
-        chargeLinks.stream()
-                .filter(chargeLink -> CAPTURE_FIELD.equals(chargeLink.getRel()))
-                .findFirst()
-                .ifPresent(chargeLink -> this.capture = new PostLink(chargeLink.getHref(), chargeLink.getMethod()));
     }
 }
