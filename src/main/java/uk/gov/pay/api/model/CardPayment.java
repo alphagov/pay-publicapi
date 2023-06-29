@@ -88,7 +88,7 @@ public class CardPayment extends Payment {
     @JsonProperty("authorisation_mode")
     private AuthorisationMode authorisationMode;
 
-    public CardPayment(String chargeId, long amount, PaymentState state, String returnUrl, String description,
+    protected CardPayment(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                        String reference, String email, String paymentProvider, String createdDate,
                        RefundSummary refundSummary, PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
                        SupportedLanguage language, boolean delayedCapture, boolean moto, Long corporateCardSurcharge, Long totalAmount,

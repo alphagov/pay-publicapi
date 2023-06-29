@@ -370,8 +370,7 @@ public class CreatePaymentServicePactTest {
                 .build();
 
         CreatedPaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload, null);
-        PaymentWithAllLinks paymentWithAllLinks = paymentResponse.getPayment();
-        CardPayment payment = (CardPayment) paymentWithAllLinks.getPayment();
+        CardPayment payment = paymentResponse.getPayment();
 
         assertThat(payment.getPaymentId(), is("valid-charge-id"));
         assertThat(payment.getAmount(), is(2046L));
@@ -382,7 +381,7 @@ public class CreatePaymentServicePactTest {
         assertThat(payment.getState(), is(new PaymentState("created", false)));
         assertThat(payment.getPaymentProvider(), is("sandbox"));
         assertThat(payment.getCreatedDate(), is(notNullValue()));
-        assertThat(paymentWithAllLinks.getLinks().getSelf(), is(new Link("http://publicapi.test.localhost/v1/payments/valid-charge-id", "GET")));
-        assertThat(paymentWithAllLinks.getLinks().getRefunds().getHref(), containsString("v1/payments/valid-charge-id/refunds"));
+        assertThat(payment.getLinks().getSelf(), is(new Link("http://publicapi.test.localhost/v1/payments/valid-charge-id", "GET")));
+        assertThat(payment.getLinks().getRefunds().getHref(), containsString("v1/payments/valid-charge-id/refunds"));
     }
 }

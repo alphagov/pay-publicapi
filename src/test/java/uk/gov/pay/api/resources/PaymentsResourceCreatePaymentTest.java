@@ -1,6 +1,5 @@
 package uk.gov.pay.api.resources;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -82,10 +81,8 @@ public class PaymentsResourceCreatePaymentTest {
         assertThat(newPayment.getHeaderString(CACHE_CONTROL), is("no-store"));
         assertThat(newPayment.getStatus(), is(201));
         assertThat(newPayment.getLocation(), is(URI.create(PAYMENT_URI)));
-        Object entity = newPayment.getEntity();
-        //TODO find an elegant fix
-//        CardPayment cardPayment = new ObjectMapper().readValue(entity.toString(), CardPayment.class);
-//        assertThat(entity, sameInstance(injectedResponse));
+        CardPayment entity = (CardPayment) newPayment.getEntity();
+        assertThat(entity, sameInstance(injectedResponse));
     }
 
     @NotNull
