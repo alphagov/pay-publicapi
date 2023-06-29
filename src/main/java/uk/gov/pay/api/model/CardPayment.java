@@ -1,13 +1,11 @@
 package uk.gov.pay.api.model;
 
-import black.door.hate.HalRepresentation;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
-import uk.gov.pay.api.model.links.Link;
 import uk.gov.pay.api.model.links.PaymentLinks;
 import uk.gov.service.payments.commons.api.json.ExternalMetadataSerialiser;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
@@ -18,7 +16,6 @@ import java.net.URI;
 import java.util.Optional;
 
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
-import static javax.ws.rs.HttpMethod.GET;
 
 @JsonInclude(value = JsonInclude.Include.NON_EMPTY)
 @Schema(name = "CardPayment")

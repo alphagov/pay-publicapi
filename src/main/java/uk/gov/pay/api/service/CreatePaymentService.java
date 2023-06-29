@@ -3,7 +3,11 @@ package uk.gov.pay.api.service;
 import org.apache.http.HttpStatus;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateChargeException;
-import uk.gov.pay.api.model.*;
+import uk.gov.pay.api.model.CardPayment;
+import uk.gov.pay.api.model.Charge;
+import uk.gov.pay.api.model.ChargeFromResponse;
+import uk.gov.pay.api.model.CreateCardPaymentRequest;
+import uk.gov.pay.api.model.CreatedPaymentWithAllLinks;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;

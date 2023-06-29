@@ -1,6 +1,5 @@
 package uk.gov.pay.api.model;
 
-import black.door.hate.JacksonHalResource;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
