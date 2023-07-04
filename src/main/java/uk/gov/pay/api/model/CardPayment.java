@@ -33,7 +33,6 @@ public class CardPayment {
     protected String description;
     protected String reference;
 
-
     @JsonProperty("created_date")
     protected String createdDate;
     

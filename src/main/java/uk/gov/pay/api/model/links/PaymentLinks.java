@@ -1,5 +1,6 @@
 package uk.gov.pay.api.model.links;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
@@ -11,6 +12,7 @@ import static javax.ws.rs.HttpMethod.GET;
 import static javax.ws.rs.HttpMethod.POST;
 
 @Schema(name = "PaymentLinks", description = "links for payment")
+@JsonInclude(value = JsonInclude.Include.NON_EMPTY)
 public class PaymentLinks {
     
     private static final String SELF_FIELD = "self";
@@ -78,7 +80,6 @@ public class PaymentLinks {
         return capture;
     }
 
-    //TODO refactor this out
     public void addKnownLinksValueOf(List<PaymentConnectorResponseLink> chargeLinks, URI paymentAuthorisationUri) {
         addNextUrlIfPresent(chargeLinks);
         addNextUrlPostIfPresent(chargeLinks);
