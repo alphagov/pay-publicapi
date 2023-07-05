@@ -9,7 +9,7 @@ import uk.gov.pay.api.model.links.DisputeLinksForSearch;
 import java.net.URI;
 
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
-import static uk.gov.pay.api.model.Payment.LINKS_JSON_ATTRIBUTE;
+import static uk.gov.pay.api.model.CardPayment.LINKS_JSON_ATTRIBUTE;
 
 @Schema(name = "DisputeDetailForSearch")
 public class DisputeForSearchResult {

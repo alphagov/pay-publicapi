@@ -6,7 +6,6 @@ import uk.gov.pay.api.model.AuthorisationSummary;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.Charge;
-import uk.gov.pay.api.model.Payment;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
@@ -21,16 +20,16 @@ import java.util.List;
 public class PaymentWithAllLinks {
 
     @JsonUnwrapped
-    private Payment payment;
+    private CardPayment payment;
 
-    @JsonProperty(Payment.LINKS_JSON_ATTRIBUTE)
+    @JsonProperty(CardPayment.LINKS_JSON_ATTRIBUTE)
     private PaymentLinks links = new PaymentLinks();
 
     public PaymentLinks getLinks() {
         return links;
     }
 
-    public Payment getPayment() {
+    public CardPayment getPayment() {
         return payment;
     }
 
