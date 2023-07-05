@@ -69,7 +69,7 @@ public class CreateRefundService {
     }
 
     private int getRefundAmountAvailableFromPayment(GetOnePaymentStrategy strategy) {
-        return Optional.of((CardPayment) strategy.validateAndExecute().getPayment())
+        return Optional.of((CardPayment) strategy.validateAndExecute())
                 .map(p -> p.getRefundSummary()
                         .map(RefundSummary::getAmountAvailable)
                         .orElse(0L))

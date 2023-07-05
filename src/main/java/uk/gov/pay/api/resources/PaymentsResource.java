@@ -312,7 +312,7 @@ public class PaymentsResource {
         switch (createdPayment.getWhenCreated()) {
             case BRAND_NEW:
                 response = Response
-                        .created(publicApiUriGenerator.getPaymentURI(paymentWithAllLinks.getPayment().getPaymentId()));
+                        .created(publicApiUriGenerator.getPaymentURI(paymentWithAllLinks.getPaymentId()));
                 break;
             case EXISTING:
                 response = Response.ok();
