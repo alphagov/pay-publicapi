@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CaptureChargeException;
-import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.CreateCardPaymentRequest;
 import uk.gov.pay.api.model.CreatePaymentResult;
 import uk.gov.pay.api.model.CreatedPaymentWithAllLinks;
