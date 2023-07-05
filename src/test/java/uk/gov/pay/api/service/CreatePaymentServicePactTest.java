@@ -23,6 +23,7 @@ import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.model.links.PostLink;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.ErrorIdentifier;
+import uk.gov.service.payments.commons.model.Source;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
 import uk.gov.service.payments.commons.testing.pact.consumers.PactProviderRule;
@@ -40,6 +41,8 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_REJECTED;
+import static uk.gov.service.payments.commons.model.Source.CARD_PAYMENT_LINK;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreatePaymentServicePactTest {
@@ -99,7 +102,7 @@ public class CreatePaymentServicePactTest {
         PostLink expectedLink = new PostLink("http://frontend_connector/charge/", "POST", "application/x-www-form-urlencoded", Collections.singletonMap("chargeTokenId", "token_1234567asdf"));
         assertThat(paymentResponse.getLinks().getNextUrlPost(), is(expectedLink));
     }
-    
+
     @Test
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-create-payment"})
@@ -215,7 +218,7 @@ public class CreatePaymentServicePactTest {
             assertThat(e.getErrorIdentifier(), is(ErrorIdentifier.AUTHORISATION_API_NOT_ALLOWED));
         }
     }
-    
+
     @Test
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-create-payment-with-zero-amount-not-allowed"})
@@ -234,7 +237,7 @@ public class CreatePaymentServicePactTest {
             assertThat(e.getErrorIdentifier(), is(ErrorIdentifier.ZERO_AMOUNT_NOT_ALLOWED));
         }
     }
-    
+
     @Test
     @PactVerification({"connector"})
     @Pacts(pacts = {"publicapi-connector-create-payment-with-moto-not-allowed"})
@@ -314,6 +317,27 @@ public class CreatePaymentServicePactTest {
             assertThat(e.getErrorIdentifier(), is(ErrorIdentifier.MISSING_MANDATORY_ATTRIBUTE));
             assertThat(e.getConnectorErrorMessage(), is("Missing mandatory attribute: return_url"));
         }
+    }
+
+    @Test
+    @PactVerification({"connector"})
+    @Pacts(pacts = {"publicapi-connector-create-payment-link-payment-with-card-number-in-reference"})
+    public void shouldThrowExceptionWhenCardNumberIsEnteredInAReferenceForPaymentLinkPayment() {
+        Account account = new Account("444", TokenPaymentType.CARD, "a-token-link");
+        var requestPayload = CreateCardPaymentRequestBuilder.builder()
+                .amount(100)
+                .reference("4242 4242 4242 4242")
+                .description("a description")
+                .returnUrl("https://gov.uk")
+                .source(CARD_PAYMENT_LINK)
+                .build();
+
+        var exception = assertThrows(CreateChargeException.class, () -> {
+            createPaymentService.create(account, requestPayload, null);
+        });
+
+        assertThat(exception.getErrorIdentifier(), is(CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_REJECTED));
+        assertThat(exception.getConnectorErrorMessage(), is("Card number entered in a payment link reference"));
     }
 
     @Test

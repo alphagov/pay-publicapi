@@ -18,6 +18,7 @@ import static uk.gov.pay.api.model.RequestError.Code.ACCOUNT_NOT_LINKED_WITH_PSP
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_ACCOUNT_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_AGREEMENT_ID_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_AUTHORISATION_API_NOT_ENABLED;
+import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_CONNECTOR_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_IDEMPOTENCY_KEY_ALREADY_USED;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_MOTO_NOT_ENABLED;
@@ -106,6 +107,10 @@ public class CreateChargeExceptionMapper implements ExceptionMapper<CreateCharge
                 case IDEMPOTENCY_KEY_USED:
                     statusCode = HttpStatus.CONFLICT_409;
                     requestError = aRequestError(CREATE_PAYMENT_IDEMPOTENCY_KEY_ALREADY_USED);
+                    break;
+                case CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_REJECTED:
+                    statusCode = HttpStatus.BAD_REQUEST_400;
+                    requestError = aRequestError(CREATE_PAYMENT_CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_ERROR, exception.getConnectorErrorMessage());
                     break;
                 default:
                     requestError = aRequestError(CREATE_PAYMENT_CONNECTOR_ERROR);

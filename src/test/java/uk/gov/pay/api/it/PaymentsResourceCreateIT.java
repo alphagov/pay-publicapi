@@ -202,7 +202,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
 
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
     }
-    
+
     @Test
     public void createPayment_responseWith400_whenIncorrectAuthorisationModeForSavePaymentInstrumentToAgreement() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
@@ -548,7 +548,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
                 .body("_links.auth_url_post.method", is("POST"))
                 .body("_links.auth_url_post.href", is("http://publicapi.url/v1/auth"))
                 .body("_links.auth_url_post.params.one_time_token", is(CHARGE_TOKEN_ID));
-                
+
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, params);
     }
 
@@ -770,6 +770,29 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
+    public void createPayment_Returns400_WhenCardNumberIsEnteredInPaymentLinkReference() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+        connectorMockClient.respondCardNumberInReferenceError(GATEWAY_ACCOUNT_ID);
+
+        String payload = paymentPayload(aCreateChargeRequestParams()
+                .withAmount(AMOUNT)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withReturnUrl(RETURN_URL)
+                .withSource(CARD_PAYMENT_LINK)
+                .build());
+        postPaymentResponse(payload)
+                .statusCode(400)
+                .contentType(JSON)
+                .body("code", is("P0105"))
+                .body("description", is("Card number entered in a payment link reference"));
+
+        String connectorPayload = new JsonStringBuilder().add("amount", AMOUNT).add("reference", REFERENCE).add("description", DESCRIPTION)
+                .add("return_url", RETURN_URL).add("source", CARD_PAYMENT_LINK).build();
+        connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, connectorPayload);
+    }
+
+    @Test
     public void createPayment_Returns_WhenPublicAuthInaccessible() {
         publicAuthMockClient.respondWithError();
         postPaymentResponse(SUCCESS_PAYLOAD).statusCode(503);
@@ -835,7 +858,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
         });
 
         params.getAddressCountry().ifPresent(addressCountry -> {
-                payload.addToNestedMap("country", addressCountry, "prefilled_cardholder_details", "billing_address");
+            payload.addToNestedMap("country", addressCountry, "prefilled_cardholder_details", "billing_address");
         });
 
         params.getSource().ifPresent(source -> payload.addToNestedMap("source", source, "internal"));
