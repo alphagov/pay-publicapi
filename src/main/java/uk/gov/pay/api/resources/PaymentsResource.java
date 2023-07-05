@@ -105,7 +105,7 @@ public class PaymentsResource {
                     "(https://docs.payments.service.gov.uk/reporting/#get-information-about-a-single-payment).",
             responses = {
                     @ApiResponse(responseCode = "200", description = RESPONSE_200_DESCRIPTION,
-                            content = @Content(schema = @Schema(implementation = CardPayment.class))),
+                            content = @Content(schema = @Schema(implementation = PaymentWithAllLinks.class))),
                     @ApiResponse(responseCode = "401",
                             description = RESPONSE_401_DESCRIPTION),
                     @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION,
