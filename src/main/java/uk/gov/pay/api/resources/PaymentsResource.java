@@ -21,7 +21,6 @@ import uk.gov.pay.api.model.CreatedPaymentWithAllLinks;
 import uk.gov.pay.api.model.PaymentEventsResponse;
 import uk.gov.pay.api.model.RequestError;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
-import uk.gov.pay.api.model.search.card.GetPaymentResult;
 import uk.gov.pay.api.model.search.card.PaymentSearchResults;
 import uk.gov.pay.api.resources.error.ApiErrorResponse;
 import uk.gov.pay.api.service.CancelPaymentService;
@@ -105,7 +104,7 @@ public class PaymentsResource {
                     "(https://docs.payments.service.gov.uk/reporting/#get-information-about-a-single-payment).",
             responses = {
                     @ApiResponse(responseCode = "200", description = RESPONSE_200_DESCRIPTION,
-                            content = @Content(schema = @Schema(implementation = GetPaymentResult.class))),
+                            content = @Content(schema = @Schema(implementation = PaymentWithAllLinks.class))),
                     @ApiResponse(responseCode = "401",
                             description = RESPONSE_401_DESCRIPTION),
                     @ApiResponse(responseCode = "404", description = RESPONSE_404_DESCRIPTION,
@@ -313,7 +312,7 @@ public class PaymentsResource {
         switch (createdPayment.getWhenCreated()) {
             case BRAND_NEW:
                 response = Response
-                        .created(publicApiUriGenerator.getPaymentURI(paymentWithAllLinks.getPayment().getPaymentId()));
+                        .created(publicApiUriGenerator.getPaymentURI(paymentWithAllLinks.getPaymentId()));
                 break;
             case EXISTING:
                 response = Response.ok();

@@ -79,9 +79,8 @@ public class GetPaymentServiceLedgerPactTest {
     public void testGetPaymentWithMetadataFromLedger() {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, tokenLink);
         PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID_NON_EXISTENT_IN_CONNECTOR);
-        CardPayment payment = (CardPayment) paymentResponse.getPayment();
-        assertThat(payment.getMetadata(), is(notNullValue()));
-        assertThat(payment.getMetadata().getMetadata().isEmpty(), is(false));
+        assertThat(paymentResponse.getMetadata(), is(notNullValue()));
+        assertThat(paymentResponse.getMetadata().getMetadata().isEmpty(), is(false));
     }
 
     @Test
@@ -90,8 +89,7 @@ public class GetPaymentServiceLedgerPactTest {
     public void providerIdIsAvailableWhenPaymentIsSubmitted_Ledger() {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, tokenLink);
         PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID_NON_EXISTENT_IN_CONNECTOR);
-        CardPayment payment = (CardPayment) paymentResponse.getPayment();
-        assertThat(payment.getProviderId(), is("gateway-tx-123456"));
+        assertThat(paymentResponse.getProviderId(), is("gateway-tx-123456"));
     }
 
     @Test
@@ -101,21 +99,20 @@ public class GetPaymentServiceLedgerPactTest {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, tokenLink);
 
         PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID_NON_EXISTENT_IN_CONNECTOR);
-        CardPayment payment = (CardPayment) paymentResponse.getPayment();
 
-        assertThat(payment.getAmount(), is(100L));
-        assertThat(payment.getState(), is(new PaymentState("created", false)));
-        assertThat(payment.getDescription(), is("Test description"));
-        assertThat(payment.getReference(), is("aReference"));
-        assertThat(payment.getLanguage(), is(SupportedLanguage.ENGLISH));
-        assertThat(payment.getPaymentId(), is(CHARGE_ID_NON_EXISTENT_IN_CONNECTOR));
-        assertThat(payment.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(payment.getPaymentProvider(), is("sandbox"));
-        assertThat(payment.getCreatedDate(), is("2018-09-07T13:12:02.121Z"));
-        assertThat(payment.getDelayedCapture(), is(true));
-        assertThat(payment.getCorporateCardSurcharge(), is(Optional.empty()));
-        assertThat(payment.getTotalAmount(), is(Optional.empty()));
-        assertThat(payment.getAuthorisationMode(), is(AuthorisationMode.WEB));
+        assertThat(paymentResponse.getAmount(), is(100L));
+        assertThat(paymentResponse.getState(), is(new PaymentState("created", false)));
+        assertThat(paymentResponse.getDescription(), is("Test description"));
+        assertThat(paymentResponse.getReference(), is("aReference"));
+        assertThat(paymentResponse.getLanguage(), is(SupportedLanguage.ENGLISH));
+        assertThat(paymentResponse.getPaymentId(), is(CHARGE_ID_NON_EXISTENT_IN_CONNECTOR));
+        assertThat(paymentResponse.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentResponse.getPaymentProvider(), is("sandbox"));
+        assertThat(paymentResponse.getCreatedDate(), is("2018-09-07T13:12:02.121Z"));
+        assertThat(paymentResponse.getDelayedCapture(), is(true));
+        assertThat(paymentResponse.getCorporateCardSurcharge(), is(Optional.empty()));
+        assertThat(paymentResponse.getTotalAmount(), is(Optional.empty()));
+        assertThat(paymentResponse.getAuthorisationMode(), is(AuthorisationMode.WEB));
         assertThat(paymentResponse.getLinks().getSelf().getHref(), containsString("v1/payments/" + CHARGE_ID_NON_EXISTENT_IN_CONNECTOR));
         assertThat(paymentResponse.getLinks().getSelf().getMethod(), is("GET"));
         assertThat(paymentResponse.getLinks().getRefunds().getHref(), containsString("v1/payments/" + CHARGE_ID_NON_EXISTENT_IN_CONNECTOR + "/refunds"));
@@ -132,9 +129,8 @@ public class GetPaymentServiceLedgerPactTest {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, tokenLink);
 
         PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID_NON_EXISTENT_IN_CONNECTOR);
-        CardPayment payment = (CardPayment) paymentResponse.getPayment();
-        assertThat(payment.getCorporateCardSurcharge().get(), is(250L));
-        assertThat(payment.getTotalAmount().get(), is(2250L));
+        assertThat(paymentResponse.getCorporateCardSurcharge().get(), is(250L));
+        assertThat(paymentResponse.getTotalAmount().get(), is(2250L));
         assertThat(paymentResponse.getLinks().getCapture(), is(nullValue()));
     }
 
@@ -145,13 +141,12 @@ public class GetPaymentServiceLedgerPactTest {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, tokenLink);
 
         PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID_NON_EXISTENT_IN_CONNECTOR);
-        CardPayment payment = (CardPayment) paymentResponse.getPayment();
 
-        assertThat(payment.getPaymentId(), is(CHARGE_ID_NON_EXISTENT_IN_CONNECTOR));
-        assertThat(payment.getPaymentProvider(), is("sandbox"));
-        assertThat(payment.getAmount(), is(100L));
-        assertThat(payment.getFee().get(), is(5L));
-        assertThat(payment.getNetAmount().get(), is(95L));
+        assertThat(paymentResponse.getPaymentId(), is(CHARGE_ID_NON_EXISTENT_IN_CONNECTOR));
+        assertThat(paymentResponse.getPaymentProvider(), is("sandbox"));
+        assertThat(paymentResponse.getAmount(), is(100L));
+        assertThat(paymentResponse.getFee().get(), is(5L));
+        assertThat(paymentResponse.getNetAmount().get(), is(95L));
     }
 
     @Test
@@ -161,9 +156,8 @@ public class GetPaymentServiceLedgerPactTest {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, tokenLink);
 
         PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, "ch_123abc456settlement");
-        CardPayment payment = (CardPayment) paymentResponse.getPayment();
-        assertThat(payment.getSettlementSummary().isPresent(), is(true));
-        assertThat(payment.getSettlementSummary().get().getSettledDate(), is("2020-09-19"));
+        assertThat(paymentResponse.getSettlementSummary().isPresent(), is(true));
+        assertThat(paymentResponse.getSettlementSummary().get().getSettledDate(), is("2020-09-19"));
     }
 
     @Test
@@ -173,8 +167,7 @@ public class GetPaymentServiceLedgerPactTest {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, tokenLink);
 
         PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID_NON_EXISTENT_IN_CONNECTOR);
-        CardPayment payment = (CardPayment) paymentResponse.getPayment();
-        assertThat(payment.getAuthorisationSummary().getThreeDSecure().isRequired(), is(true));
+        assertThat(paymentResponse.getAuthorisationSummary().getThreeDSecure().isRequired(), is(true));
     }
 
     @Test
@@ -184,8 +177,7 @@ public class GetPaymentServiceLedgerPactTest {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, tokenLink);
 
         PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID_NON_EXISTENT_IN_CONNECTOR);
-        CardPayment payment = (CardPayment) paymentResponse.getPayment();
-        assertThat(payment.getState().getCanRetry(), is(true));
-        assertThat(payment.getAuthorisationMode(), is(AuthorisationMode.AGREEMENT));
+        assertThat(paymentResponse.getState().getCanRetry(), is(true));
+        assertThat(paymentResponse.getAuthorisationMode(), is(AuthorisationMode.AGREEMENT));
     }
 }

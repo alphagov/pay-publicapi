@@ -1,12 +1,10 @@
 package uk.gov.pay.api.model.links;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import uk.gov.pay.api.model.AuthorisationSummary;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.Charge;
-import uk.gov.pay.api.model.Payment;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
@@ -18,20 +16,13 @@ import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
 import java.net.URI;
 import java.util.List;
 
-public class PaymentWithAllLinks {
+public class PaymentWithAllLinks extends CardPayment {
 
-    @JsonUnwrapped
-    private Payment payment;
-
-    @JsonProperty(Payment.LINKS_JSON_ATTRIBUTE)
+    @JsonProperty(CardPayment.LINKS_JSON_ATTRIBUTE)
     private PaymentLinks links = new PaymentLinks();
 
     public PaymentLinks getLinks() {
         return links;
-    }
-
-    public Payment getPayment() {
-        return payment;
     }
 
     public PaymentWithAllLinks(String chargeId, long amount, PaymentState state, String returnUrl, String description,
@@ -40,7 +31,7 @@ public class PaymentWithAllLinks {
                                List<PaymentConnectorResponseLink> paymentConnectorResponseLinks, URI selfLink, URI paymentEventsUri, URI paymentCancelUri,
                                URI paymentRefundsUri, URI paymentCaptureUri, URI paymentAuthorisationUri,  Long corporateCardSurcharge, Long totalAmount, String providerId, ExternalMetadata metadata,
                                Long fee, Long netAmount, AuthorisationSummary authorisationSummary, String agreementId, AuthorisationMode authorisationMode) {
-        this.payment = new CardPayment(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate,
+        super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate,
                 refundSummary, settlementSummary, cardDetails, language, delayedCapture, moto, corporateCardSurcharge, totalAmount,
                 providerId, metadata, fee, netAmount, authorisationSummary, agreementId, authorisationMode);
         this.links.addSelf(selfLink.toString());
@@ -108,10 +99,5 @@ public class PaymentWithAllLinks {
             URI paymentAuthorisationUri) {
         
         return PaymentWithAllLinks.valueOf(paymentConnector, selfLink, paymentEventsUri, paymentCancelUri, paymentRefundsUri, paymentsCaptureUri, paymentAuthorisationUri);
-    }
-
-    @Override
-    public String toString() {
-        return getPayment().toString();
     }
 }

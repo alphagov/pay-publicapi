@@ -68,22 +68,21 @@ public class GetPaymentServicePactTest {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "a-token-link");
 
         PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID);
-        CardPayment payment = (CardPayment) paymentResponse.getPayment();
 
-        assertThat(payment.getAmount(), is(100L));
-        assertThat(payment.getState(), is(new PaymentState("created", false)));
-        assertThat(payment.getDescription(), is("Test description"));
-        assertThat(payment.getReference(), is("aReference"));
-        assertThat(payment.getLanguage(), is(SupportedLanguage.ENGLISH));
-        assertThat(payment.getPaymentId(), is(CHARGE_ID));
-        assertThat(payment.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
-        assertThat(payment.getPaymentProvider(), is("sandbox"));
-        assertThat(payment.getCreatedDate(), is("2018-09-07T13:12:02.121Z"));
-        assertThat(payment.getMoto(), is (false));
-        assertThat(payment.getDelayedCapture(), is(true));
-        assertThat(payment.getCorporateCardSurcharge(), is(Optional.empty()));
-        assertThat(payment.getTotalAmount(), is(Optional.empty()));
-        assertThat(payment.getAuthorisationMode(), is(AuthorisationMode.WEB));
+        assertThat(paymentResponse.getAmount(), is(100L));
+        assertThat(paymentResponse.getState(), is(new PaymentState("created", false)));
+        assertThat(paymentResponse.getDescription(), is("Test description"));
+        assertThat(paymentResponse.getReference(), is("aReference"));
+        assertThat(paymentResponse.getLanguage(), is(SupportedLanguage.ENGLISH));
+        assertThat(paymentResponse.getPaymentId(), is(CHARGE_ID));
+        assertThat(paymentResponse.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentResponse.getPaymentProvider(), is("sandbox"));
+        assertThat(paymentResponse.getCreatedDate(), is("2018-09-07T13:12:02.121Z"));
+        assertThat(paymentResponse.getMoto(), is (false));
+        assertThat(paymentResponse.getDelayedCapture(), is(true));
+        assertThat(paymentResponse.getCorporateCardSurcharge(), is(Optional.empty()));
+        assertThat(paymentResponse.getTotalAmount(), is(Optional.empty()));
+        assertThat(paymentResponse.getAuthorisationMode(), is(AuthorisationMode.WEB));
         assertThat(paymentResponse.getLinks().getSelf().getHref(), containsString("v1/payments/" + CHARGE_ID));
         assertThat(paymentResponse.getLinks().getSelf().getMethod(), is("GET"));
         assertThat(paymentResponse.getLinks().getRefunds().getHref(), containsString("v1/payments/" + CHARGE_ID + "/refunds"));
@@ -106,19 +105,17 @@ public class GetPaymentServicePactTest {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "a-token-link");
         PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID);
         
-        CardPayment payment = (CardPayment) paymentResponse.getPayment();
-
-        assertThat(payment.getProviderId(), is("gateway-tx-123456"));
-        assertThat(payment.getCorporateCardSurcharge().get(), is(250L));
-        assertThat(payment.getTotalAmount().get(), is(350L));
+        assertThat(paymentResponse.getProviderId(), is("gateway-tx-123456"));
+        assertThat(paymentResponse.getCorporateCardSurcharge().get(), is(250L));
+        assertThat(paymentResponse.getTotalAmount().get(), is(350L));
         assertThat(paymentResponse.getLinks().getCapture().getHref(),
                 containsString("v1/payments/" + CHARGE_ID + "/capture"));
         assertThat(paymentResponse.getLinks().getCapture().getMethod(), is("POST"));
-        assertThat(payment.getMetadata(), is(notNullValue()));
-        assertThat(payment.getMetadata().getMetadata().isEmpty(), is(false));
+        assertThat(paymentResponse.getMetadata(), is(notNullValue()));
+        assertThat(paymentResponse.getMetadata().getMetadata().isEmpty(), is(false));
         assertThat(paymentResponse.getLinks().getNextUrl(), is(nullValue()));
         assertThat(paymentResponse.getLinks().getNextUrlPost(), is(nullValue()));
-        assertThat(payment.getAuthorisationSummary().getThreeDSecure().isRequired(), is(true));
+        assertThat(paymentResponse.getAuthorisationSummary().getThreeDSecure().isRequired(), is(true));
     }
 
     @Test
@@ -128,11 +125,9 @@ public class GetPaymentServicePactTest {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "a-token-link");
         PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID);
 
-        CardPayment payment = (CardPayment) paymentResponse.getPayment();
-
-        assertThat(payment.getProviderId(), is("gateway-tx-123456"));
-        assertThat(payment.getFee().get(), is(5L));
-        assertThat(payment.getNetAmount().get(), is(345L));
+        assertThat(paymentResponse.getProviderId(), is("gateway-tx-123456"));
+        assertThat(paymentResponse.getFee().get(), is(5L));
+        assertThat(paymentResponse.getNetAmount().get(), is(345L));
         assertThat(paymentResponse.getLinks().getNextUrl(), is(nullValue()));
         assertThat(paymentResponse.getLinks().getNextUrlPost(), is(nullValue()));
     }
@@ -144,10 +139,8 @@ public class GetPaymentServicePactTest {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "a-token-link");
         PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID);
 
-        CardPayment payment = (CardPayment) paymentResponse.getPayment();
-
-        assertThat(payment.getState().getCanRetry(), is(true));
-        assertThat(payment.getAuthorisationMode(), is(AuthorisationMode.AGREEMENT));
+        assertThat(paymentResponse.getState().getCanRetry(), is(true));
+        assertThat(paymentResponse.getAuthorisationMode(), is(AuthorisationMode.AGREEMENT));
         assertThat(paymentResponse.getLinks().getNextUrl(), is(nullValue()));
         assertThat(paymentResponse.getLinks().getNextUrlPost(), is(nullValue()));
     }
@@ -159,15 +152,14 @@ public class GetPaymentServicePactTest {
         Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "a-token-link");
 
         PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID);
-        CardPayment payment = (CardPayment) paymentResponse.getPayment();
 
-        assertThat(payment.getAmount(), is(100L));
-        assertThat(payment.getState(), is(new PaymentState("created", false)));
-        assertThat(payment.getDescription(), is("a description"));
-        assertThat(payment.getReference(), is("a reference"));
-        assertThat(payment.getPaymentId(), is(CHARGE_ID));
-        assertThat(payment.getMoto(), is (true));
-        assertThat(payment.getAuthorisationMode(), is(AuthorisationMode.MOTO_API));
+        assertThat(paymentResponse.getAmount(), is(100L));
+        assertThat(paymentResponse.getState(), is(new PaymentState("created", false)));
+        assertThat(paymentResponse.getDescription(), is("a description"));
+        assertThat(paymentResponse.getReference(), is("a reference"));
+        assertThat(paymentResponse.getPaymentId(), is(CHARGE_ID));
+        assertThat(paymentResponse.getMoto(), is (true));
+        assertThat(paymentResponse.getAuthorisationMode(), is(AuthorisationMode.MOTO_API));
         assertThat(paymentResponse.getLinks().getSelf().getHref(), containsString("v1/payments/" + CHARGE_ID));
         assertThat(paymentResponse.getLinks().getSelf().getMethod(), is("GET"));
         assertThat(paymentResponse.getLinks().getRefunds().getHref(), containsString("v1/payments/" + CHARGE_ID + "/refunds"));

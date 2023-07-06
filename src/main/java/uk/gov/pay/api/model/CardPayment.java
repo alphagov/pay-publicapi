@@ -17,48 +17,64 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 
 @JsonInclude(value = JsonInclude.Include.NON_EMPTY)
 @Schema(name = "CardPayment")
-public class CardPayment extends Payment {
+public class CardPayment {
 
+    public static final String LINKS_JSON_ATTRIBUTE = "_links";
+
+    @JsonProperty("payment_id")
+    protected String paymentId;
+
+    @JsonProperty("payment_provider")
+    protected String paymentProvider;
+
+    protected long amount;
+    
+    protected String description;
+    
+    protected String reference;
+    
+    @JsonProperty("created_date")
+    protected String createdDate;
     @JsonProperty("refund_summary")
-    private final RefundSummary refundSummary;
+    private RefundSummary refundSummary;
 
     @JsonProperty("settlement_summary")
-    private final PaymentSettlementSummary settlementSummary;
+    private PaymentSettlementSummary settlementSummary;
 
     @JsonProperty("card_details")
-    private final CardDetails cardDetails;
+    private CardDetails cardDetails;
 
     @JsonSerialize(using = ToStringSerializer.class)
-    private final SupportedLanguage language;
+    private SupportedLanguage language;
 
     @JsonProperty("delayed_capture")
-    private final boolean delayedCapture;
+    private boolean delayedCapture;
     
     @JsonProperty("moto")
-    private final boolean moto;
+    private boolean moto;
 
     @JsonProperty("corporate_card_surcharge")
-    private final Long corporateCardSurcharge;
+    private Long corporateCardSurcharge;
 
     @JsonProperty("total_amount")
-    private final Long totalAmount;
+    private Long totalAmount;
 
     @JsonProperty("fee")
-    private final Long fee;
+    private Long fee;
 
     @JsonProperty("net_amount")
-    private final Long netAmount;
+    private Long netAmount;
 
     @JsonProperty("provider_id")
     @Schema(example = "reference-from-payment-gateway",
             description = "The unique ID your payment service provider generated for this payment. " +
                     "This is not the same as the `payment_id`.",
             accessMode = READ_ONLY)
-    private final String providerId;
+    private String providerId;
 
     @JsonSerialize(using = ExternalMetadataSerialiser.class)
     @Schema(name = "metadata", example = "{\"property1\": \"value1\", \"property2\": \"value2\"}\"")
-    private final ExternalMetadata metadata;
+    private ExternalMetadata metadata;
 
     @JsonProperty("return_url")
     protected String returnUrl;
@@ -86,7 +102,12 @@ public class CardPayment extends Payment {
                        SupportedLanguage language, boolean delayedCapture, boolean moto, Long corporateCardSurcharge, Long totalAmount,
                        String providerId, ExternalMetadata metadata, Long fee, Long netAmount, AuthorisationSummary authorisationSummary, String agreementId,
                        AuthorisationMode authorisationMode) {
-        super(chargeId, amount, description, reference, paymentProvider, createdDate);
+        this.paymentId = chargeId;
+        this.amount = amount;
+        this.description = description;
+        this.reference = reference;
+        this.paymentProvider = paymentProvider;
+        this.createdDate = createdDate;
         this.state = state;
         this.refundSummary = refundSummary;
         this.settlementSummary = settlementSummary;
@@ -228,6 +249,43 @@ public class CardPayment extends Payment {
         return authorisationMode;
     }
 
+    @Schema(example = "2016-01-21T17:15:00.000Z", accessMode = READ_ONLY)
+    public String getCreatedDate() {
+        return createdDate;
+    }
+
+    @Schema(example = "hu20sqlact5260q2nanm0q8u93",
+            description = "The unique ID GOV.UK Pay automatically associated " +
+                    "with this payment when you created it.",
+            accessMode = READ_ONLY)
+    public String getPaymentId() {
+        return paymentId;
+    }
+
+    @Schema(example = "1200", description = "The description assigned to the payment when it was created.")
+    public long getAmount() {
+        return amount;
+    }
+
+    @Schema(example = "Your Service Description", description = "The description assigned to the payment when it was created.")
+    public String getDescription() {
+        return description;
+    }
+
+    @Schema(example = "your-reference",
+            description = "The reference associated with the payment when it was created. " +
+                    "`reference` is not unique - multiple payments can have the same `reference` value.")
+    public String getReference() {
+        return reference;
+    }
+
+    @Schema(example = "worldpay",
+            description = "The payment service provider that processed this payment.",
+            accessMode = READ_ONLY)
+    public String getPaymentProvider() {
+        return paymentProvider;
+    }
+
     @Override
     public String toString() {
         // Don't include:
@@ -235,7 +293,7 @@ public class CardPayment extends Payment {
         // reference - can come from user input for payment links, in the past they have mistakenly entered card numbers
         // return url - services can include identifiers that are incorrectly flagged as PII or card numbers
         return "Card Payment{" +
-                "paymentId='" + super.paymentId + '\'' +
+                "paymentId='" + paymentId + '\'' +
                 ", paymentProvider='" + paymentProvider + '\'' +
                 ", cardBrandLabel='" + getCardBrand() + '\'' +
                 ", amount=" + amount +

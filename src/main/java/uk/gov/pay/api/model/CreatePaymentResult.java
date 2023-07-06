@@ -7,7 +7,7 @@ import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
 
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
-import static uk.gov.pay.api.model.Payment.LINKS_JSON_ATTRIBUTE;
+import static uk.gov.pay.api.model.CardPayment.LINKS_JSON_ATTRIBUTE;
 
 /**
  * Defines swagger specs for create payment
