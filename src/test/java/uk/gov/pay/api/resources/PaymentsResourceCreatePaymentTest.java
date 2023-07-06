@@ -101,37 +101,38 @@ public class PaymentsResourceCreatePaymentTest {
     @NotNull
     private PaymentWithAllLinks aSuccessfullyCreatedPayment() {
         final Address cardholderAddress = new Address("123 Acacia Ave", "", "", "London", "GB");
-        return new PaymentWithAllLinks(
-                "abc123",
-                100L,
-                new PaymentState("created", false),
-                "https://somewhere.test",
-                "New Passport",
-                "my_ref",
-                "made.up@example.com",
-                "sandbox",
-                "2018-01-01T11:12:13Z",
-                SupportedLanguage.ENGLISH,
-                false,
-                false,
-                new RefundSummary(),
-                new PaymentSettlementSummary(),
-                new CardDetails("9876", "482393", "Anne Onymous", "12/20", cardholderAddress, "visa", null),
-                Collections.emptyList(),
-                URI.create(PAYMENT_URI),
-                URI.create(PAYMENT_URI + "/events"),
-                URI.create(PAYMENT_URI + "/cancel"),
-                URI.create(PAYMENT_URI + "/refunds"),
-                URI.create(PAYMENT_URI + "/capture"),
-                URI.create(PAYMENT_URI + "/auth"),
-                null,
-                null,
-                "providerId",
-                null,
-                null,
-                null,
-                null,
-                null,
-                AuthorisationMode.WEB);
+        return new PaymentWithAllLinks.PaymentWithAllLinksBuilder()
+                .setChargeId("abc123")
+                .setAmount(100L)
+                .setState(new PaymentState("created", false))
+                .setReturnUrl("https://somewhere.test")
+                .setDescription("New Passport")
+                .setReference("my_ref")
+                .setEmail("made.up@example.com")
+                .setPaymentProvider("sandbox")
+                .setCreatedDate("2018-01-01T11:12:13Z")
+                .setLanguage(SupportedLanguage.ENGLISH)
+                .setDelayedCapture(false)
+                .setMoto(false)
+                .setRefundSummary(new RefundSummary())
+                .setSettlementSummary(new PaymentSettlementSummary())
+                .setCardDetails(new CardDetails("9876", "482393", "Anne Onymous", "12/20", cardholderAddress, "visa", null))
+                .setPaymentConnectorResponseLinks(Collections.emptyList())
+                .setSelfLink(URI.create(PAYMENT_URI))
+                .setPaymentEventsUri(URI.create(PAYMENT_URI + "/events"))
+                .setPaymentCancelUri(URI.create(PAYMENT_URI + "/cancel"))
+                .setPaymentRefundsUri(URI.create(PAYMENT_URI + "/refunds"))
+                .setPaymentCaptureUri(URI.create(PAYMENT_URI + "/capture"))
+                .setPaymentAuthorisationUri(URI.create(PAYMENT_URI + "/auth"))
+                .setCorporateCardSurcharge(null)
+                .setTotalAmount(null)
+                .setProviderId("providerId")
+                .setMetadata(null)
+                .setFee(null)
+                .setNetAmount(null)
+                .setAuthorisationSummary(null)
+                .setAgreementId(null)
+                .setAuthorisationMode(AuthorisationMode.WEB)
+                .createPaymentWithAllLinks();
     }
 }

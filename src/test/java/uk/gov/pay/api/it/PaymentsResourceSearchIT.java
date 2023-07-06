@@ -1,7 +1,6 @@
 package uk.gov.pay.api.it;
 
 import com.google.common.collect.ImmutableMap;
-import com.jayway.jsonassert.JsonAssert;
 import io.restassured.response.ValidatableResponse;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -17,7 +16,6 @@ import uk.gov.pay.api.utils.mocks.LedgerMockClient;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.validation.DateTimeUtils;
 
-import java.io.InputStream;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +33,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.it.fixtures.PaginatedPaymentSearchResultFixture.aPaginatedPaymentSearchResult;
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.DEFAULT_AMOUNT;
@@ -127,7 +125,7 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
 
         ledgerMockClient.respondOk_whenSearchCharges(payments);
 
-        String responseBody = searchPayments(ImmutableMap.of("reference", TEST_REFERENCE))
+        searchPayments(ImmutableMap.of("reference", TEST_REFERENCE))
                 .statusCode(200)
                 .contentType(JSON)
                 .body("results[0].created_date", is(DEFAULT_CREATED_DATE))
@@ -146,12 +144,15 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
                 .body("results[0].provider_id", is("gateway-tx-123456"))
                 .body("results[0]._links.self.method", is("GET"))
                 .body("results[0]._links.self.href", is(paymentLocationFor(configuration.getBaseUrl(), "0")))
+                .body("results[0]._links.self", not(hasKey("type")))
+                .body("results[0]._links.self", not(hasKey("params")))
                 .body("results[0]._links.events.href", is(paymentEventsLocationFor("0")))
                 .body("results[0]._links.events.method", is("GET"))
                 .body("results[0]._links.cancel.href", is(paymentCancelLocationFor("0")))
                 .body("results[0]._links.cancel.method", is("POST"))
                 .body("results[0]._links.refunds.href", is(paymentRefundsLocationFor("0")))
                 .body("results[0]._links.refunds.method", is("GET"))
+                .body("results[0]._links", not(hasKey("next_url")))
                 .body("results[0].refund_summary.status", is("available"))
                 .body("results[0].refund_summary.amount_available", is(100))
                 .body("results[0].refund_summary.amount_submitted", is(300))
@@ -169,16 +170,7 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
                 .body("results[0].card_details.card_brand", is(CARD_DETAILS.getCardBrand()))
                 .body("results[0].card_details", hasKey("card_type"))
                 .body("results[0].metadata", is(nullValue()))
-                .body("results[0].authorisation_mode", is("web"))
-                .extract().asString();
-
-        JsonAssert.with(responseBody)
-                .assertNotDefined("_links.self.type")
-                .assertNotDefined("_links.self.params")
-                .assertNotDefined("_links.next_url.type")
-                .assertNotDefined("_links.next_url.params")
-                .assertNotDefined("_links.events.type")
-                .assertNotDefined("_links.events.params");
+                .body("results[0].authorisation_mode", is("web"));
     }
 
     @Test
@@ -282,17 +274,14 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_errorIfLedgerRespondsWith404() throws Exception {
-        InputStream body = searchPayments(
+    public void searchPayments_errorIfLedgerRespondsWith404() {
+        searchPayments(
                 ImmutableMap.of("reference", TEST_REFERENCE, "state", TEST_STATE, "from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
                 .statusCode(404)
-                .contentType(JSON).extract()
-                .body().asInputStream();
-
-        JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0402"))
-                .assertThat("$.description", is("Page not found"));
+                .contentType(JSON)
+                .body("size()", is(2))
+                .body("code", is("P0402"))
+                .body("description", is("Page not found"));
     }
 
     @Test
@@ -300,7 +289,7 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
         ledgerMockClient.whenSearchTransactions(
                 aResponse().withStatus(OK_200).withHeader(CONTENT_TYPE, APPLICATION_JSON).withBody("wtf"));
 
-        InputStream body = searchPayments(
+        searchPayments(
                 ImmutableMap.of(
                         "reference", TEST_REFERENCE,
                         "email", TEST_EMAIL,
@@ -308,26 +297,21 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
                         "from_date", TEST_FROM_DATE,
                         "to_date", TEST_TO_DATE))
                 .statusCode(500)
-                .contentType(JSON).extract()
-                .body().asInputStream();
-
-        JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.code", is("P0498"))
-                .assertThat("$.description", is("Downstream system error"));
+                .contentType(JSON)
+                .body("size()", is(2))
+                .body("code", is("P0498"))
+                .body("description", is("Downstream system error"))
+                .extract();
     }
 
     @Test
     public void searchPayments_filterByInvalidCardBrand() throws Exception {
-        InputStream body = searchPayments(
+        searchPayments(
                 ImmutableMap.of("card_brand", "my_credit_card"))
                 .statusCode(404)
-                .contentType(JSON).extract()
-                .body().asInputStream();
-
-        JsonAssert.with(body)
-                .assertThat("$.*", hasSize(2))
-                .assertThat("$.description", is("Page not found"));
+                .contentType(JSON)
+                .body("size()", is(2))
+                .body("description", is("Page not found"));
     }
 
     @Test
