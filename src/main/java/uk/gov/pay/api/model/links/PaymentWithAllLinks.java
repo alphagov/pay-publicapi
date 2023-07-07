@@ -56,38 +56,38 @@ public class PaymentWithAllLinks extends CardPayment {
                                               URI paymentsCaptureUri,
                                               URI paymentAuthorisationUri) {
         return new PaymentWithAllLinksBuilder()
-                .setChargeId(paymentConnector.getChargeId())
-                .setAmount(paymentConnector.getAmount())
-                .setState(paymentConnector.getState())
-                .setReturnUrl(paymentConnector.getReturnUrl())
-                .setDescription(paymentConnector.getDescription())
-                .setReference(paymentConnector.getReference())
-                .setEmail(paymentConnector.getEmail())
-                .setPaymentProvider(paymentConnector.getPaymentProvider())
-                .setCreatedDate(paymentConnector.getCreatedDate())
-                .setLanguage(paymentConnector.getLanguage())
-                .setDelayedCapture(paymentConnector.getDelayedCapture())
-                .setMoto(paymentConnector.isMoto())
-                .setRefundSummary(paymentConnector.getRefundSummary())
-                .setSettlementSummary(paymentConnector.getSettlementSummary())
-                .setCardDetails(paymentConnector.getCardDetails())
-                .setPaymentConnectorResponseLinks(paymentConnector.getLinks())
-                .setSelfLink(selfLink)
-                .setPaymentEventsUri(paymentEventsUri)
-                .setPaymentCancelUri(paymentCancelUri)
-                .setPaymentRefundsUri(paymentRefundsUri)
-                .setPaymentCaptureUri(paymentsCaptureUri)
-                .setPaymentAuthorisationUri(paymentAuthorisationUri)
-                .setCorporateCardSurcharge(paymentConnector.getCorporateCardSurcharge())
-                .setTotalAmount(paymentConnector.getTotalAmount())
-                .setProviderId(paymentConnector.getGatewayTransactionId())
-                .setMetadata(paymentConnector.getMetadata().orElse(null))
-                .setFee(paymentConnector.getFee())
-                .setNetAmount(paymentConnector.getNetAmount())
-                .setAuthorisationSummary(paymentConnector.getAuthorisationSummary())
-                .setAgreementId(paymentConnector.getAgreementId())
-                .setAuthorisationMode(paymentConnector.getAuthorisationMode())
-                .createPaymentWithAllLinks();
+                .withChargeId(paymentConnector.getChargeId())
+                .withAmount(paymentConnector.getAmount())
+                .withState(paymentConnector.getState())
+                .withReturnUrl(paymentConnector.getReturnUrl())
+                .withDescription(paymentConnector.getDescription())
+                .withReference(paymentConnector.getReference())
+                .withEmail(paymentConnector.getEmail())
+                .withPaymentProvider(paymentConnector.getPaymentProvider())
+                .withCreatedDate(paymentConnector.getCreatedDate())
+                .withLanguage(paymentConnector.getLanguage())
+                .withDelayedCapture(paymentConnector.getDelayedCapture())
+                .withMoto(paymentConnector.isMoto())
+                .withRefundSummary(paymentConnector.getRefundSummary())
+                .withSettlementSummary(paymentConnector.getSettlementSummary())
+                .withCardDetails(paymentConnector.getCardDetails())
+                .withPaymentConnectorResponseLinks(paymentConnector.getLinks())
+                .withSelfLink(selfLink)
+                .withPaymentEventsUri(paymentEventsUri)
+                .withPaymentCancelUri(paymentCancelUri)
+                .withPaymentRefundsUri(paymentRefundsUri)
+                .withPaymentCaptureUri(paymentsCaptureUri)
+                .withPaymentAuthorisationUri(paymentAuthorisationUri)
+                .withCorporateCardSurcharge(paymentConnector.getCorporateCardSurcharge())
+                .withTotalAmount(paymentConnector.getTotalAmount())
+                .withProviderId(paymentConnector.getGatewayTransactionId())
+                .withMetadata(paymentConnector.getMetadata().orElse(null))
+                .withFee(paymentConnector.getFee())
+                .withNetAmount(paymentConnector.getNetAmount())
+                .withAuthorisationSummary(paymentConnector.getAuthorisationSummary())
+                .withAgreementId(paymentConnector.getAgreementId())
+                .withAuthorisationMode(paymentConnector.getAuthorisationMode())
+                .build();
     }
 
     public static PaymentWithAllLinks getPaymentWithLinks(
@@ -135,162 +135,162 @@ public class PaymentWithAllLinks extends CardPayment {
         private String agreementId;
         private AuthorisationMode authorisationMode;
 
-        public PaymentWithAllLinksBuilder setChargeId(String chargeId) {
+        public PaymentWithAllLinksBuilder withChargeId(String chargeId) {
             this.chargeId = chargeId;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setAmount(long amount) {
+        public PaymentWithAllLinksBuilder withAmount(long amount) {
             this.amount = amount;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setState(PaymentState state) {
+        public PaymentWithAllLinksBuilder withState(PaymentState state) {
             this.state = state;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setReturnUrl(String returnUrl) {
+        public PaymentWithAllLinksBuilder withReturnUrl(String returnUrl) {
             this.returnUrl = returnUrl;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setDescription(String description) {
+        public PaymentWithAllLinksBuilder withDescription(String description) {
             this.description = description;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setReference(String reference) {
+        public PaymentWithAllLinksBuilder withReference(String reference) {
             this.reference = reference;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setEmail(String email) {
+        public PaymentWithAllLinksBuilder withEmail(String email) {
             this.email = email;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setPaymentProvider(String paymentProvider) {
+        public PaymentWithAllLinksBuilder withPaymentProvider(String paymentProvider) {
             this.paymentProvider = paymentProvider;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setCreatedDate(String createdDate) {
+        public PaymentWithAllLinksBuilder withCreatedDate(String createdDate) {
             this.createdDate = createdDate;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setLanguage(SupportedLanguage language) {
+        public PaymentWithAllLinksBuilder withLanguage(SupportedLanguage language) {
             this.language = language;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setDelayedCapture(boolean delayedCapture) {
+        public PaymentWithAllLinksBuilder withDelayedCapture(boolean delayedCapture) {
             this.delayedCapture = delayedCapture;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setMoto(boolean moto) {
+        public PaymentWithAllLinksBuilder withMoto(boolean moto) {
             this.moto = moto;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setRefundSummary(RefundSummary refundSummary) {
+        public PaymentWithAllLinksBuilder withRefundSummary(RefundSummary refundSummary) {
             this.refundSummary = refundSummary;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setSettlementSummary(PaymentSettlementSummary settlementSummary) {
+        public PaymentWithAllLinksBuilder withSettlementSummary(PaymentSettlementSummary settlementSummary) {
             this.settlementSummary = settlementSummary;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setCardDetails(CardDetails cardDetails) {
+        public PaymentWithAllLinksBuilder withCardDetails(CardDetails cardDetails) {
             this.cardDetails = cardDetails;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setPaymentConnectorResponseLinks(List<PaymentConnectorResponseLink> paymentConnectorResponseLinks) {
+        public PaymentWithAllLinksBuilder withPaymentConnectorResponseLinks(List<PaymentConnectorResponseLink> paymentConnectorResponseLinks) {
             this.paymentConnectorResponseLinks = paymentConnectorResponseLinks;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setSelfLink(URI selfLink) {
+        public PaymentWithAllLinksBuilder withSelfLink(URI selfLink) {
             this.selfLink = selfLink;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setPaymentEventsUri(URI paymentEventsUri) {
+        public PaymentWithAllLinksBuilder withPaymentEventsUri(URI paymentEventsUri) {
             this.paymentEventsUri = paymentEventsUri;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setPaymentCancelUri(URI paymentCancelUri) {
+        public PaymentWithAllLinksBuilder withPaymentCancelUri(URI paymentCancelUri) {
             this.paymentCancelUri = paymentCancelUri;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setPaymentRefundsUri(URI paymentRefundsUri) {
+        public PaymentWithAllLinksBuilder withPaymentRefundsUri(URI paymentRefundsUri) {
             this.paymentRefundsUri = paymentRefundsUri;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setPaymentCaptureUri(URI paymentCaptureUri) {
+        public PaymentWithAllLinksBuilder withPaymentCaptureUri(URI paymentCaptureUri) {
             this.paymentCaptureUri = paymentCaptureUri;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setPaymentAuthorisationUri(URI paymentAuthorisationUri) {
+        public PaymentWithAllLinksBuilder withPaymentAuthorisationUri(URI paymentAuthorisationUri) {
             this.paymentAuthorisationUri = paymentAuthorisationUri;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setCorporateCardSurcharge(Long corporateCardSurcharge) {
+        public PaymentWithAllLinksBuilder withCorporateCardSurcharge(Long corporateCardSurcharge) {
             this.corporateCardSurcharge = corporateCardSurcharge;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setTotalAmount(Long totalAmount) {
+        public PaymentWithAllLinksBuilder withTotalAmount(Long totalAmount) {
             this.totalAmount = totalAmount;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setProviderId(String providerId) {
+        public PaymentWithAllLinksBuilder withProviderId(String providerId) {
             this.providerId = providerId;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setMetadata(ExternalMetadata metadata) {
+        public PaymentWithAllLinksBuilder withMetadata(ExternalMetadata metadata) {
             this.metadata = metadata;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setFee(Long fee) {
+        public PaymentWithAllLinksBuilder withFee(Long fee) {
             this.fee = fee;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setNetAmount(Long netAmount) {
+        public PaymentWithAllLinksBuilder withNetAmount(Long netAmount) {
             this.netAmount = netAmount;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setAuthorisationSummary(AuthorisationSummary authorisationSummary) {
+        public PaymentWithAllLinksBuilder withAuthorisationSummary(AuthorisationSummary authorisationSummary) {
             this.authorisationSummary = authorisationSummary;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setAgreementId(String agreementId) {
+        public PaymentWithAllLinksBuilder withAgreementId(String agreementId) {
             this.agreementId = agreementId;
             return this;
         }
 
-        public PaymentWithAllLinksBuilder setAuthorisationMode(AuthorisationMode authorisationMode) {
+        public PaymentWithAllLinksBuilder withAuthorisationMode(AuthorisationMode authorisationMode) {
             this.authorisationMode = authorisationMode;
             return this;
         }
 
-        public PaymentWithAllLinks createPaymentWithAllLinks() {
+        public PaymentWithAllLinks build() {
             return new PaymentWithAllLinks(chargeId, amount, state, returnUrl, description, reference, email, 
                     paymentProvider, createdDate, language, delayedCapture, moto, refundSummary, settlementSummary, 
                     cardDetails, paymentConnectorResponseLinks, selfLink, paymentEventsUri, paymentCancelUri, 
