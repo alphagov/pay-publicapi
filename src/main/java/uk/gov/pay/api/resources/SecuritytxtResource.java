@@ -26,7 +26,12 @@ public class SecuritytxtResource {
     }
 
     private static Response redirectToCabinetOfficeSecuritytxt() {
-        return Response.temporaryRedirect(CABINET_OFFICE_SECURITY_TXT).cacheControl(CacheControl.valueOf("no-cache")).expires(new Date()).build();
+        return Response
+                .status(Response.Status.FOUND)
+                .location(CABINET_OFFICE_SECURITY_TXT)
+                .cacheControl(CacheControl.valueOf("no-cache"))
+                .expires(new Date())
+                .build();
     }
 
 }
