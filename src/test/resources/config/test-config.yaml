@@ -54,3 +54,5 @@ apiKeyHmacSecret: qwer9yuhgf
 
 # Caching authenticator.
 authenticationCachePolicy: expireAfterWrite=3s
+
+ecsContainerMetadataUriV4: ${ECS_CONTAINER_METADATA_URI_V4:-}

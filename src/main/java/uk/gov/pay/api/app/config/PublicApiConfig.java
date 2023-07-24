@@ -6,6 +6,8 @@ import io.dropwizard.Configuration;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.net.URI;
+import java.util.Optional;
 
 public class PublicApiConfig extends Configuration {
 
@@ -47,6 +49,9 @@ public class PublicApiConfig extends Configuration {
     @NotNull
     @JsonProperty("rateLimiter")
     private RateLimiterConfig rateLimiterConfig;
+
+    @JsonProperty("ecsContainerMetadataUriV4")
+    private URI ecsContainerMetadataUriV4;
 
     public String getBaseUrl() {
         return baseUrl;
@@ -96,4 +101,7 @@ public class PublicApiConfig extends Configuration {
         return redis;
     }
 
+    public Optional<URI> getEcsContainerMetadataUriV4() {
+        return Optional.ofNullable(ecsContainerMetadataUriV4);
+    }
 }

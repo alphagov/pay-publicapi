@@ -15,7 +15,12 @@ import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.dropwizard.DropwizardExports;
+import io.prometheus.client.exporter.MetricsServlet;
 import org.glassfish.jersey.CommonProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.agreement.resource.AgreementsApiResource;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.PublicApiModule;
@@ -63,12 +68,14 @@ import uk.gov.pay.api.resources.SearchRefundsResource;
 import uk.gov.pay.api.resources.SecuritytxtResource;
 import uk.gov.pay.api.resources.telephone.TelephonePaymentNotificationResource;
 import uk.gov.pay.api.validation.InjectingValidationFeature;
+import uk.gov.service.payments.commons.utils.prometheus.PrometheusDefaultLabelSampleBuilder;
 import uk.gov.service.payments.logging.GovUkPayDropwizardRequestJsonLogLayoutFactory;
 import uk.gov.service.payments.logging.LoggingFilter;
 import uk.gov.service.payments.logging.LogstashConsoleAppenderFactory;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.FilterRegistration;
+import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.EnumSet.of;
@@ -76,6 +83,8 @@ import static javax.servlet.DispatcherType.REQUEST;
 
 public class PublicApi extends Application<PublicApiConfig> {
 
+    private static final Logger logger = LoggerFactory.getLogger(PublicApi.class);
+    
     private static final String SERVICE_METRICS_NODE = "publicapi";
     private static final int GRAPHITE_SENDING_PERIOD_SECONDS = 10;
 
@@ -147,8 +156,16 @@ public class PublicApi extends Application<PublicApiConfig> {
         attachExceptionMappersTo(environment.jersey());
 
         initialiseMetrics(configuration, environment);
+        configuration.getEcsContainerMetadataUriV4().ifPresent(uri -> initialisePrometheusMetrics(environment, uri));
 
         environment.lifecycle().manage(injector.getInstance(RedisClientManager.class));
+    }
+
+    private void initialisePrometheusMetrics(Environment environment, URI ecsContainerMetadataUri) {
+        logger.info("Initialising prometheus metrics.");
+        CollectorRegistry collectorRegistry = new CollectorRegistry();
+        collectorRegistry.register(new DropwizardExports(environment.metrics(), new PrometheusDefaultLabelSampleBuilder(ecsContainerMetadataUri)));
+        environment.admin().addServlet("prometheusMetrics", new MetricsServlet(collectorRegistry)).addMapping("/metrics");
     }
 
     /**
@@ -188,6 +205,9 @@ public class PublicApi extends Application<PublicApiConfig> {
         jersey.register(SearchDisputesExceptionMapper.class);
     }
 
+    /**
+     * Graphtie metric config to be deleted when we've completely moved to Prometheus
+     */
     private void initialiseMetrics(PublicApiConfig configuration, Environment environment) {
         GraphiteSender graphiteUDP = new GraphiteUDP(configuration.getGraphiteHost(), Integer.parseInt(configuration.getGraphitePort()));
         GraphiteReporter.forRegistry(environment.metrics())
