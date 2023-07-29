@@ -1,0 +1,21 @@
+name: Lint OpenAPI specification
+
+on:
+  push:
+    branches:
+      - master
+  pull_request: {}
+
+permissions:
+  checks: write
+
+jobs:
+  build:
+    name: Run Spectral
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: stoplightio/spectral-action@latest
+        with:
+          file_glob: 'openapi/publicapi_spec.json'
