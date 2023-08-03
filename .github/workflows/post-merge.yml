@@ -41,7 +41,7 @@ jobs:
           key: ${{ runner.os }}-build-id-${{ github.head_ref }}-${{ github.sha }}-pacts
       - name: Publish and tag publicapi consumer pact
         run: |
-          mvn pact:publish -DPACT_BROKER_URL=https://pact-broker-test.cloudapps.digital \
+          mvn pact:publish -DPACT_BROKER_URL=https://pact-broker.deploy.payments.service.gov.uk \
           -DPACT_BROKER_USERNAME=${{ secrets.pact_broker_username }} \
           -DPACT_BROKER_PASSWORD=${{ secrets.pact_broker_password }} -DPACT_CONSUMER_TAG=master \
           -DPACT_CONSUMER_VERSION=${{ github.sha }}
