@@ -11,9 +11,7 @@ Configuration of the application is performed via environment variables, some of
 | `ADMIN_PORT`                | No        | 8081           | The port number to listen for Dropwizard admin requests on.                                                |
 | `ALLOW_HTTP_FOR_RETURN_URL` | No        | false          | Whether to allow service return URLs to be non-HTTPS                                                       |
 | `CONNECTOR_URL`             | Yes       | N/A            | The URL to the [connector](https://github.com/alphagov/pay-connector) service                              |
-| `DISABLE_INTERNAL_HTTPS`    | No        | false          | The port number to send graphite metrics to.                                                               |
-| `METRICS_HOST`              | No        | localhost      | The hostname to send graphite metrics to.                                                                  |
-| `METRICS_PORT`              | No        | 8092           | The port number to send graphite metrics to.                                                               |
+| `DISABLE_INTERNAL_HTTPS`    | No        | false          | Disable secure connection for calls to internal APIs                                                       |
 | `PORT`                      | No        | 8080           | The port number to listen for requests on.                                                                 |
 | `PUBLICAPI_BASE`            | Yes       | N/A            | The base URL clients can use to reach the API. e.g. http://api.example.org:1234/                           |
 | `PUBLIC_AUTH_URL`           | Yes       | N/A            | The URL to the [publicauth](https://github.com/alphagov/pay-publicauth) service                            |

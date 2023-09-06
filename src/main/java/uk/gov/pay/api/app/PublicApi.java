@@ -1,8 +1,5 @@
 package uk.gov.pay.api.app;
 
-import com.codahale.metrics.graphite.GraphiteReporter;
-import com.codahale.metrics.graphite.GraphiteSender;
-import com.codahale.metrics.graphite.GraphiteUDP;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import io.dropwizard.Application;
@@ -86,7 +83,6 @@ public class PublicApi extends Application<PublicApiConfig> {
     private static final Logger logger = LoggerFactory.getLogger(PublicApi.class);
     
     private static final String SERVICE_METRICS_NODE = "publicapi";
-    private static final int GRAPHITE_SENDING_PERIOD_SECONDS = 10;
 
     @Override
     public void initialize(Bootstrap<PublicApiConfig> bootstrap) {
@@ -155,7 +151,6 @@ public class PublicApi extends Application<PublicApiConfig> {
 
         attachExceptionMappersTo(environment.jersey());
 
-        initialiseMetrics(configuration, environment);
         configuration.getEcsContainerMetadataUriV4().ifPresent(uri -> initialisePrometheusMetrics(environment, uri));
 
         environment.lifecycle().manage(injector.getInstance(RedisClientManager.class));
@@ -203,17 +198,6 @@ public class PublicApi extends Application<PublicApiConfig> {
         jersey.register(InternalServerExceptionMapper.class);
         jersey.register(DisputeValidationExceptionMapper.class);
         jersey.register(SearchDisputesExceptionMapper.class);
-    }
-
-    /**
-     * Graphtie metric config to be deleted when we've completely moved to Prometheus
-     */
-    private void initialiseMetrics(PublicApiConfig configuration, Environment environment) {
-        GraphiteSender graphiteUDP = new GraphiteUDP(configuration.getGraphiteHost(), Integer.parseInt(configuration.getGraphitePort()));
-        GraphiteReporter.forRegistry(environment.metrics())
-                .prefixedWith(SERVICE_METRICS_NODE)
-                .build(graphiteUDP)
-                .start(GRAPHITE_SENDING_PERIOD_SECONDS, TimeUnit.SECONDS);
     }
 
     public static void main(String[] args) throws Exception {
