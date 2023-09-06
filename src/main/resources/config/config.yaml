@@ -33,9 +33,6 @@ connectorUrl: ${CONNECTOR_URL}
 publicAuthUrl: ${PUBLIC_AUTH_URL}
 ledgerUrl: ${LEDGER_URL}
 
-graphiteHost: ${METRICS_HOST:-localhost}
-graphitePort: ${METRICS_PORT:-8092}
-
 jerseyClientConfig:
   disabledSecureConnection: ${DISABLE_INTERNAL_HTTPS:-false}
 

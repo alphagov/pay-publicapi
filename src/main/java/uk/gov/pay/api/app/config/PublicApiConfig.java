@@ -24,11 +24,6 @@ public class PublicApiConfig extends Configuration {
     private String publicAuthUrl;
 
     @NotNull
-    private String graphiteHost;
-    @NotNull
-    private String graphitePort;
-
-    @NotNull
     private Boolean allowHttpForReturnUrl;
 
     private String apiKeyHmacSecret;
@@ -67,14 +62,6 @@ public class PublicApiConfig extends Configuration {
 
     public String getPublicAuthUrl() {
         return publicAuthUrl;
-    }
-
-    public String getGraphiteHost() {
-        return graphiteHost;
-    }
-
-    public String getGraphitePort() {
-        return graphitePort;
     }
 
     public Boolean getAllowHttpForReturnUrl() {

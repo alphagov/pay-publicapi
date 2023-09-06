@@ -22,9 +22,6 @@ connectorUrl: http://connector_card.url/
 publicAuthUrl: http://publicauth.url/v1/auth
 ledgerUrl: http://ledger.url/
 
-graphiteHost: ${METRICS_HOST:-localhost}
-graphitePort: ${METRICS_PORT:-8092}
-
 jerseyClientConfig:
   disabledSecureConnection: "true"
 
