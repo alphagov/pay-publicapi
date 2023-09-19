@@ -65,15 +65,12 @@ import uk.gov.pay.api.resources.SearchRefundsResource;
 import uk.gov.pay.api.resources.SecuritytxtResource;
 import uk.gov.pay.api.resources.telephone.TelephonePaymentNotificationResource;
 import uk.gov.pay.api.validation.InjectingValidationFeature;
-import uk.gov.service.payments.commons.utils.prometheus.PrometheusDefaultLabelSampleBuilder;
 import uk.gov.service.payments.logging.GovUkPayDropwizardRequestJsonLogLayoutFactory;
 import uk.gov.service.payments.logging.LoggingFilter;
 import uk.gov.service.payments.logging.LogstashConsoleAppenderFactory;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.FilterRegistration;
-import java.net.URI;
-import java.util.concurrent.TimeUnit;
 
 import static java.util.EnumSet.of;
 import static javax.servlet.DispatcherType.REQUEST;
@@ -151,16 +148,11 @@ public class PublicApi extends Application<PublicApiConfig> {
 
         attachExceptionMappersTo(environment.jersey());
 
-        configuration.getEcsContainerMetadataUriV4().ifPresent(uri -> initialisePrometheusMetrics(environment, uri));
+        CollectorRegistry collectorRegistry = CollectorRegistry.defaultRegistry;
+        collectorRegistry.register(new DropwizardExports(environment.metrics()));
+        environment.admin().addServlet("prometheusMetrics", new MetricsServlet(collectorRegistry)).addMapping("/metrics");
 
         environment.lifecycle().manage(injector.getInstance(RedisClientManager.class));
-    }
-
-    private void initialisePrometheusMetrics(Environment environment, URI ecsContainerMetadataUri) {
-        logger.info("Initialising prometheus metrics.");
-        CollectorRegistry collectorRegistry = new CollectorRegistry();
-        collectorRegistry.register(new DropwizardExports(environment.metrics(), new PrometheusDefaultLabelSampleBuilder(ecsContainerMetadataUri)));
-        environment.admin().addServlet("prometheusMetrics", new MetricsServlet(collectorRegistry)).addMapping("/metrics");
     }
 
     /**
