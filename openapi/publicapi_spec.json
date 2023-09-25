@@ -1549,6 +1549,12 @@
             "type" : "string",
             "example" : "1234",
             "readOnly" : true
+          },
+          "wallet_type" : {
+            "type" : "string",
+            "description" : "The digital wallet type that the user paid with",
+            "enum" : [ "Apple Pay", "Google Pay" ],
+            "example" : "Apple Pay"
           }
         }
       },

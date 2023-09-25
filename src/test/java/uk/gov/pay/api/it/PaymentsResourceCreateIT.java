@@ -6,7 +6,7 @@ import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 import org.junit.Test;
 import uk.gov.pay.api.model.Address;
-import uk.gov.pay.api.model.CardDetails;
+import uk.gov.pay.api.model.CardDetailsFromResponse;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.utils.JsonStringBuilder;
@@ -55,7 +55,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     private static final String DESCRIPTION = "Some description <script> alert('This is a ?{simple} XSS attack.')</script>";
     private static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(TIMESTAMP);
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
-    private static final CardDetails CARD_DETAILS = new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, CARD_TYPE);
+    private static final CardDetailsFromResponse CARD_DETAILS = new CardDetailsFromResponse("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, CARD_TYPE);
     public static final String VALID_AGREEMENT_ID = "12345678901234567890123456";
     public static final String TOO_SHORT_AGREEMENT_ID = "1234567890";
     public static final String TOO_LONG_AGREEMENT_ID = "1234567890123456789012345699999";

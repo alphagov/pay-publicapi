@@ -3,6 +3,7 @@ package uk.gov.pay.api.it.fixtures;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import uk.gov.pay.api.model.CardDetailsFromResponse;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 
@@ -33,7 +34,7 @@ public class PaymentSearchResultBuilder extends PaymentResultBuilder {
         return this;
     }
 
-    public PaymentSearchResultBuilder withCardDetails(uk.gov.pay.api.model.CardDetails cardDetails) {
+    public PaymentSearchResultBuilder withCardDetails(CardDetailsFromResponse cardDetails) {
         this.cardDetails = new CardDetails(cardDetails);
         return this;
     }
@@ -116,6 +117,11 @@ public class PaymentSearchResultBuilder extends PaymentResultBuilder {
     
     public PaymentSearchResultBuilder withAuthorisationMode(AuthorisationMode authorisationMode) {
         this.authorisationMode = authorisationMode;
+        return this;
+    }
+
+    public PaymentSearchResultBuilder withWalletType(String walletType) {
+        this.walletType = walletType;
         return this;
     }
 

@@ -21,8 +21,8 @@ import static uk.gov.pay.api.utils.mocks.CreateChargeRequestParams.CreateChargeR
 @RunWith(JUnitParamsRunner.class)
 public class CreatePaymentWithPrefilledCardholderDetailsValidationIT extends PaymentResourceITestBase {
 
-    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
-    private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
+    private final PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    private final ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
     private JsonStringBuilder payload;
 
     @Before

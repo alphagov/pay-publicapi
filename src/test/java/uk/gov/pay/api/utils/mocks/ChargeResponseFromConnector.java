@@ -1,7 +1,7 @@
 package uk.gov.pay.api.utils.mocks;
 
 import uk.gov.pay.api.model.AuthorisationSummary;
-import uk.gov.pay.api.model.CardDetails;
+import uk.gov.pay.api.model.CardDetailsFromResponse;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
@@ -25,14 +25,15 @@ public class ChargeResponseFromConnector {
     private final boolean moto;
     private final RefundSummary refundSummary; 
     private final PaymentSettlementSummary settlementSummary;
-    private final CardDetails cardDetails;
+    private final CardDetailsFromResponse cardDetails;
     private final List<Map<?, ?>> links;
     private final Optional<Map<String, Object>> metadata;
     private final Long fee;
     private final Long netAmount;
     private final AuthorisationSummary authorisationSummary;
-    private String agreementId;
-    private AuthorisationMode authorisationMode;
+    private final String agreementId;
+    private final AuthorisationMode authorisationMode;
+    private final String walletType;
 
     public Long getAmount() {
         return amount;
@@ -126,7 +127,7 @@ public class ChargeResponseFromConnector {
         return settlementSummary;
     }
 
-    public CardDetails getCardDetails() {
+    public CardDetailsFromResponse getCardDetails() {
         return cardDetails;
     }
 
@@ -157,6 +158,8 @@ public class ChargeResponseFromConnector {
     public AuthorisationMode getAuthorisationMode() {
         return authorisationMode;
     }
+    
+    public String getWalletType() { return walletType; }
 
     private ChargeResponseFromConnector(ChargeResponseFromConnectorBuilder builder) {
         this.amount = builder.amount;
@@ -190,6 +193,7 @@ public class ChargeResponseFromConnector {
         this.authorisationSummary = builder.authorisationSummary;
         this.agreementId = builder.agreementId;
         this.authorisationMode = builder.authorisationMode;
+        this.walletType = builder.walletType;
     }
 
     public static final class ChargeResponseFromConnectorBuilder {
@@ -202,7 +206,7 @@ public class ChargeResponseFromConnector {
         private boolean moto;
         private RefundSummary refundSummary;
         private PaymentSettlementSummary settlementSummary;
-        private CardDetails cardDetails;
+        private CardDetailsFromResponse cardDetails;
         private List<Map<?, ?>> links = new ArrayList<>();
         private Map<String, Object> metadata = Map.of();
         private Long fee = null;
@@ -210,6 +214,7 @@ public class ChargeResponseFromConnector {
         private AuthorisationSummary authorisationSummary = null;
         private String agreementId;
         private AuthorisationMode authorisationMode = AuthorisationMode.WEB;
+        private String walletType = null;
         
         private ChargeResponseFromConnectorBuilder() {
         }
@@ -243,7 +248,8 @@ public class ChargeResponseFromConnector {
                     .withFee(responseFromConnector.getFee())
                     .withAuthorisationSummary(responseFromConnector.getAuthorisationSummary())
                     .withAgreementId(responseFromConnector.getAgreementId())
-                    .withAuthorisationMode(responseFromConnector.getAuthorisationMode());
+                    .withAuthorisationMode(responseFromConnector.getAuthorisationMode())
+                    .withWalletType(responseFromConnector.walletType);
         }
 
         public ChargeResponseFromConnectorBuilder withAmount(long amount) {
@@ -361,7 +367,7 @@ public class ChargeResponseFromConnector {
             return this;
         }
 
-        public ChargeResponseFromConnectorBuilder withCardDetails(CardDetails cardDetails) {
+        public ChargeResponseFromConnectorBuilder withCardDetails(CardDetailsFromResponse cardDetails) {
             this.cardDetails = cardDetails;
             return this;
         }
@@ -408,6 +414,11 @@ public class ChargeResponseFromConnector {
         
         public ChargeResponseFromConnectorBuilder withAuthorisationMode(AuthorisationMode authorisationMode) {
             this.authorisationMode = authorisationMode;
+            return this;
+        }
+        
+        public ChargeResponseFromConnectorBuilder withWalletType(String walletType) {
+            this.walletType = walletType;
             return this;
         }
     }

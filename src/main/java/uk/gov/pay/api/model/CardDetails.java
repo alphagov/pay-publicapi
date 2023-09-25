@@ -17,32 +17,30 @@ public class CardDetails {
 
     @JsonProperty("last_digits_card_number")
     private final String lastDigitsCardNumber;
-
     @JsonProperty("first_digits_card_number")
     private final String firstDigitsCardNumber;
-
     @JsonProperty("cardholder_name")
     private final String cardHolderName;
-
     @JsonProperty("expiry_date")
     private final String expiryDate;
-
     @JsonProperty("billing_address")
     private final Address billingAddress;
-
     @JsonProperty("card_brand")
     private final String cardBrand;
-    
     @JsonProperty("card_type")
     private final String cardType;
+    @JsonProperty("wallet_type")
+    private String walletType;
 
-    public CardDetails(@JsonProperty("last_digits_card_number") String lastDigitsCardNumber,
-                       @JsonProperty("first_digits_card_number") String firstDigitsCardNumber,
-                       @JsonProperty("cardholder_name") String cardHolderName,
-                       @JsonProperty("expiry_date") String expiryDate,
-                       @JsonProperty("billing_address") Address billingAddress,
-                       @JsonProperty("card_brand") String cardBrand,
-                       @JsonProperty("card_type") String cardType) {
+    public CardDetails(String lastDigitsCardNumber,
+                       String firstDigitsCardNumber,
+                       String cardHolderName,
+                       String expiryDate,
+                       Address billingAddress,
+                       String cardBrand,
+                       String cardType,
+                       String walletType
+    ) {
         this.lastDigitsCardNumber = lastDigitsCardNumber;
         this.firstDigitsCardNumber = firstDigitsCardNumber;
         this.cardHolderName = cardHolderName;
@@ -50,7 +48,27 @@ public class CardDetails {
         this.billingAddress = billingAddress;
         this.cardBrand = cardBrand;
         this.cardType = cardType;
+        this.walletType = walletType;
     }
+
+    public static CardDetails from(CardDetailsFromResponse cardDetailsFromResponse, String walletType) {
+        if (cardDetailsFromResponse == null) {
+            return null;
+        } else {
+            return new CardDetails(
+                    cardDetailsFromResponse.getLastDigitsCardNumber(),
+                    cardDetailsFromResponse.getFirstDigitsCardNumber(),
+                    cardDetailsFromResponse.getCardHolderName(),
+                    cardDetailsFromResponse.getExpiryDate(),
+                    cardDetailsFromResponse.getBillingAddress().orElse(null),
+                    cardDetailsFromResponse.getCardBrand(),
+                    cardDetailsFromResponse.getCardType(),
+                    walletType
+            );
+        }
+        
+    }
+
 
     @Schema(example = "1234", accessMode = READ_ONLY)
     public String getLastDigitsCardNumber() {
@@ -83,9 +101,18 @@ public class CardDetails {
 
     @Schema(description = "The type of card the user paid with." +
             "`null` means your user paid with Google Pay or " +
-            "we did not recognise which type of card they paid with.", 
-            allowableValues = {"debit","credit","null"}, example = "debit", accessMode = READ_ONLY)
+            "we did not recognise which type of card they paid with.",
+            allowableValues = {"debit", "credit", "null"}, example = "debit", accessMode = READ_ONLY)
     public String getCardType() {
         return cardType;
+    }
+
+    public void setWalletType(String walletType) {
+        this.walletType = walletType;
+    }
+
+    @Schema(example = "Apple Pay", description = "The digital wallet type that the user paid with", allowableValues = {"Apple Pay", "Google Pay"})
+    public Optional<String> getWalletType() {
+        return Optional.ofNullable(walletType);
     }
 }

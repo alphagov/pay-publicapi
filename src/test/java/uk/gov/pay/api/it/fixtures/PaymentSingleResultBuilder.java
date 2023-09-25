@@ -2,6 +2,7 @@ package uk.gov.pay.api.it.fixtures;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.gson.Gson;
+import uk.gov.pay.api.model.CardDetailsFromResponse;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
@@ -17,7 +18,7 @@ public class PaymentSingleResultBuilder extends PaymentResultBuilder {
     }
 
 
-    public PaymentSingleResultBuilder withCardDetails(uk.gov.pay.api.model.CardDetails cardDetails) {
+    public PaymentSingleResultBuilder withCardDetails(CardDetailsFromResponse cardDetails) {
         this.cardDetails = new CardDetails(cardDetails);
         return this;
     }
@@ -144,7 +145,12 @@ public class PaymentSingleResultBuilder extends PaymentResultBuilder {
     public PaymentSingleResultBuilder withAuthorisationMode(AuthorisationMode authorisationMode) {
         this.authorisationMode = authorisationMode;
         return this;
-    } 
+    }
+
+    public PaymentSingleResultBuilder withWalletType(String walletType) {
+        this.walletType = walletType;
+        return this;
+    }
 
     public String build() {
         TestPayment result = getPayment();

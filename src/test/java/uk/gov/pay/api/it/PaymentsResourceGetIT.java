@@ -6,11 +6,12 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.AuthorisationSummary;
-import uk.gov.pay.api.model.CardDetails;
+import uk.gov.pay.api.model.CardDetailsFromResponse;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.ThreeDSecure;
+import uk.gov.pay.api.model.Wallet;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector;
@@ -39,6 +40,7 @@ import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
@@ -65,7 +67,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     private static final PaymentState CREATED = new PaymentState("created", false, null, null);
     private static final PaymentState CAPTURED = new PaymentState("captured", false, null, null);
     public static final PaymentState AWAITING_CAPTURE_REQUEST = new PaymentState("submitted", false, null, null);
-    public static final PaymentState REJECTED = new PaymentState("failed", true, "Payment method rejected", "P0010",true);
+    public static final PaymentState REJECTED = new PaymentState("failed", true, "Payment method rejected", "P0010", true);
     private static final RefundSummary REFUND_SUMMARY = new RefundSummary("pending", 100L, 50L);
     private static final String PAYMENT_PROVIDER = "Sandbox";
     private static final String CARD_BRAND_LABEL = "Mastercard";
@@ -79,11 +81,11 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     private static final Map<String, String> PAYMENT_CREATED = new ChargeEventBuilder(CREATED, CREATED_DATE).build();
     private static final List<Map<String, String>> EVENTS = Collections.singletonList(PAYMENT_CREATED);
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
-    private static final CardDetails CARD_DETAILS = new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, CARD_TYPE);
+    private static final CardDetailsFromResponse CARD_DETAILS = new CardDetailsFromResponse("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, CARD_TYPE);
 
-    private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
-    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
-    private LedgerMockClient ledgerMockClient = new LedgerMockClient(ledgerMock);
+    private final ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
+    private final PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    private final LedgerMockClient ledgerMockClient = new LedgerMockClient(ledgerMock);
 
     @Before
     public void setUp() {
@@ -118,7 +120,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
         assertCommonPaymentFields(response);
         assertPaymentWithMetadata(response);
     }
-    
+
     private void assertPaymentWithMetadata(ValidatableResponse response) {
         response
                 .body("metadata.reconciled", is(true))
@@ -277,7 +279,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     
     @Test
     public void getPaymentThroughConnector_DoesNotReturnCardDigits_IfNotPresentInCardDetails() {
-        CardDetails cardDetails = new CardDetails(null, null, "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, CARD_TYPE);
+        CardDetailsFromResponse cardDetails = new CardDetailsFromResponse(null, null, "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, CARD_TYPE);
 
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 getConnectorCharge()
@@ -289,7 +291,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
 
     @Test
     public void getPaymentThroughLedger_DoesNotReturnCardDigits_IfNotPresentInCardDetails() {
-        CardDetails cardDetails = new CardDetails(null, null, "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, CARD_TYPE);
+        CardDetailsFromResponse cardDetails = new CardDetailsFromResponse(null, null, "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, CARD_TYPE);
 
         ledgerMockClient.respondWithTransaction(CHARGE_ID,
                 getLedgerTransaction()
@@ -388,8 +390,8 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
                 LEDGER_ONLY_STRATEGY);
     }
 
-    private void getPayment_BillingAddressShouldBeNullWhenNotPresentInServiceResponse(Consumer<CardDetails> mockResponseFunction, String strategy) {
-        CardDetails cardDetails = new CardDetails("1234",
+    private void getPayment_BillingAddressShouldBeNullWhenNotPresentInServiceResponse(Consumer<CardDetailsFromResponse> mockResponseFunction, String strategy) {
+        CardDetailsFromResponse cardDetails = new CardDetailsFromResponse("1234",
                 "123456",
                 "Mr. Payment",
                 "12/19",
@@ -648,7 +650,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 getConnectorCharge()
                         .withState(AWAITING_CAPTURE_REQUEST)
-                        .withCardDetails(new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, null))
+                        .withCardDetails(new CardDetailsFromResponse("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, null))
                         .withCorporateCardSurcharge(0L)
                         .withTotalAmount(0L)
                         .build());
@@ -664,7 +666,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
         ledgerMockClient.respondWithTransaction(CHARGE_ID,
                 getLedgerTransaction()
                         .withState(AWAITING_CAPTURE_REQUEST)
-                        .withCardDetails(new CardDetails("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, null))
+                        .withCardDetails(new CardDetailsFromResponse("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, null))
                         .withCorporateCardSurcharge(0L)
                         .withTotalAmount(0L)
                         .build());
@@ -721,6 +723,35 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
+    public void getPaymentWithWalletTypeThroughLedger() {
+        ledgerMockClient.respondWithTransaction(CHARGE_ID,
+                getLedgerTransaction()
+                        .withWalletType(Wallet.GOOGLE_PAY.toString())
+                        .build());
+
+        ValidatableResponse response = getPaymentResponse(CHARGE_ID, LEDGER_ONLY_STRATEGY);
+
+        // PublicAPI expected response behaviour is to move wallet type into card_details
+        response.body(not(hasKey("wallet_type")));
+        response.body("card_details.wallet_type", is(Wallet.GOOGLE_PAY.getTitleCase()));
+    }
+
+    @Test
+    public void getPaymentWithWalletTypeThroughConnector() {
+        connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+                getConnectorCharge()
+                        .withWalletType(Wallet.APPLE_PAY.toString())
+                        .build());
+ 
+        ValidatableResponse response = getPaymentResponse(CHARGE_ID);
+        
+        assertConnectorOnlyPaymentFields(response);
+        // PublicAPI expected response behaviour is to move wallet type into card_details
+        response.body(not(hasKey("wallet_type")));
+        response.body("card_details.wallet_type", is(Wallet.APPLE_PAY.getTitleCase()));
+    }
+
+    @Test
     public void getPaymentWithNoAuthorisationSummaryThroughConnector() {
         AuthorisationSummary authorisationSummary = new AuthorisationSummary(new ThreeDSecure(true));
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
@@ -761,7 +792,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
                 .statusCode(200)
                 .contentType(JSON)
                 .body("authorisation_mode", is("agreement"))
-                .body("state.can_retry", is(true));;
+                .body("state.can_retry", is(true));
     }
 
     private ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder getConnectorCharge() {

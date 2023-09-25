@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import uk.gov.pay.api.utils.CustomSupportedLanguageDeserializer;
+import uk.gov.pay.api.utils.WalletDeserializer;
 import uk.gov.service.payments.commons.api.json.ExternalMetadataDeserialiser;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
@@ -37,7 +38,7 @@ public class TransactionResponse {
     private PaymentSettlementSummary settlementSummary;
 
     @JsonProperty(value = "card_details")
-    private CardDetails cardDetails;
+    private CardDetailsFromResponse cardDetails;
 
     private Long amount;
 
@@ -83,6 +84,10 @@ public class TransactionResponse {
     
     @JsonProperty("authorisation_mode")
     private AuthorisationMode authorisationMode;
+
+    @JsonProperty("wallet_type")
+    @JsonDeserialize(using = WalletDeserializer.class)
+    private Wallet walletType;
 
     public Optional<ExternalMetadata> getMetadata() {
         return Optional.ofNullable(metadata);
@@ -171,7 +176,7 @@ public class TransactionResponse {
         return settlementSummary;
     }
 
-    public CardDetails getCardDetails() {
+    public CardDetailsFromResponse getCardDetailsFromResponse() {
         return cardDetails;
     }
 
@@ -189,5 +194,9 @@ public class TransactionResponse {
 
     public AuthorisationMode getAuthorisationMode() {
         return authorisationMode;
+    }
+
+    public Optional<Wallet> getWalletType() {
+        return Optional.ofNullable(walletType);
     }
 }

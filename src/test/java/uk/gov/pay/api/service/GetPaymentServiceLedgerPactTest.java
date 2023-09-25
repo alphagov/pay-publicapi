@@ -17,6 +17,7 @@ import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.TokenPaymentType;
+import uk.gov.pay.api.model.Wallet;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
@@ -120,6 +121,31 @@ public class GetPaymentServiceLedgerPactTest {
         assertThat(paymentResponse.getLinks().getNextUrl(), is(nullValue()));
         assertThat(paymentResponse.getLinks().getNextUrlPost(), is(nullValue()));
         assertThat(paymentResponse.getLinks().getCapture(), is(nullValue()));
+    }
+
+    @Test
+    @PactVerification({"ledger"})
+    @Pacts(pacts = {"publicapi-ledger-get-wallet-payment"})
+    public void testGetPaymentFromLedgerWithWalletType() {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, tokenLink);
+
+        PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID_NON_EXISTENT_IN_CONNECTOR);
+
+        assertThat(paymentResponse.getAmount(), is(100L));
+        assertThat(paymentResponse.getState(), is(new PaymentState("capturable", false)));
+        assertThat(paymentResponse.getDescription(), is("Test description"));
+        assertThat(paymentResponse.getReference(), is("aReference"));
+        assertThat(paymentResponse.getPaymentId(), is(CHARGE_ID_NON_EXISTENT_IN_CONNECTOR));
+        assertThat(paymentResponse.getReturnUrl().get(), is("https://somewhere.gov.uk/rainbow/1"));
+        assertThat(paymentResponse.getPaymentProvider(), is("sandbox"));
+        assertThat(paymentResponse.getCreatedDate(), is("2018-09-07T13:12:02.121Z"));
+        assertThat(paymentResponse.getDelayedCapture(), is(true));
+        assertThat(paymentResponse.getAuthorisationMode(), is(AuthorisationMode.WEB));
+        assertThat(paymentResponse.getCardDetails().get().getCardHolderName(), is("aName"));
+        assertThat(paymentResponse.getCardDetails().get().getCardBrand(), is("visa"));
+        assertThat(paymentResponse.getCardDetails().get().getLastDigitsCardNumber(), is("0001"));
+        assertThat(paymentResponse.getCardDetails().get().getFirstDigitsCardNumber(), is("123456"));
+        assertThat(paymentResponse.getCardDetails().get().getWalletType().get(), is(Wallet.APPLE_PAY.getTitleCase()));
     }
 
     @Test

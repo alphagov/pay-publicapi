@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import uk.gov.pay.api.agreement.model.AgreementLedgerResponse;
 import uk.gov.pay.api.model.Address;
-import uk.gov.pay.api.model.CardDetails;
+import uk.gov.pay.api.model.CardDetailsFromResponse;
 
 import java.time.ZonedDateTime;
 
@@ -88,7 +88,7 @@ public class AgreementFromLedgerFixture {
                     .withAgreementExternalId("agreement-external-id")
                     .withCreatedDate("2022-08-02T15:20:00.000Z")
                     .withType("card")
-                    .withCardDetails(new CardDetails("1234", "123456", "Rio Curring", "12/27",
+                    .withCardDetails(new CardDetailsFromResponse("1234", "123456", "Rio Curring", "12/27",
                             new Address("Line 1", "Line 2", "E1 8QS", "London", "GB"),
                             "Mastercard", "debit"))
                     .build();

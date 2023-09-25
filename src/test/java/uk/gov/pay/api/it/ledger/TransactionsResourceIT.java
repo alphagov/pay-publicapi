@@ -14,7 +14,7 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.it.fixtures.PaymentNavigationLinksFixture;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.AuthorisationSummary;
-import uk.gov.pay.api.model.CardDetails;
+import uk.gov.pay.api.model.CardDetailsFromResponse;
 import uk.gov.pay.api.model.ThreeDSecure;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
@@ -76,7 +76,7 @@ public class TransactionsResourceIT {
     @Test
     public void shouldReturnAListOfTransactions() {
         Address billingAddress = new Address("line1", null, "AB1 CD2", "London", "GB");
-        CardDetails cardDetails = new CardDetails(null, null, "J. Doe",
+        CardDetailsFromResponse cardDetails = new CardDetailsFromResponse(null, null, "J. Doe",
                 null, billingAddress, "", null);
         PaymentNavigationLinksFixture fixture = new PaymentNavigationLinksFixture();
         fixture.withSelfLink("https://ledger/v1/transaction?account_id=1&reference=reference&page=1&display_size=500");

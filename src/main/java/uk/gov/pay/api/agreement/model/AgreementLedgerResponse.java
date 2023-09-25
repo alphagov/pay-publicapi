@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import uk.gov.pay.api.model.CardDetails;
+import uk.gov.pay.api.model.CardDetailsFromResponse;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -70,7 +70,7 @@ public class AgreementLedgerResponse {
 
         private String externalId;
         private String agreementExternalId;
-        private CardDetails cardDetails;
+        private CardDetailsFromResponse cardDetails;
         private String createdDate;
         private String type;
 
@@ -94,7 +94,7 @@ public class AgreementLedgerResponse {
             return agreementExternalId;
         }
 
-        public CardDetails getCardDetails() {
+        public CardDetailsFromResponse getCardDetails() {
             return cardDetails;
         }
 
@@ -109,7 +109,7 @@ public class AgreementLedgerResponse {
         public static class Builder {
             private String externalId;
             private String agreementExternalId;
-            private CardDetails cardDetails;
+            private CardDetailsFromResponse cardDetails;
             private String createdDate;
             private String type;
 
@@ -127,7 +127,7 @@ public class AgreementLedgerResponse {
                 return this;
             }
 
-            public Builder withCardDetails(CardDetails cardDetails) {
+            public Builder withCardDetails(CardDetailsFromResponse cardDetails) {
                 this.cardDetails = cardDetails;
                 return this;
             }

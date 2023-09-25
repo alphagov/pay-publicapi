@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import io.swagger.v3.oas.annotations.media.Schema;
-import uk.gov.pay.api.model.CardDetails;
+import uk.gov.pay.api.model.CardDetailsFromResponse;
 
 import java.util.Optional;
 
@@ -104,11 +104,11 @@ public class Agreement {
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public static class PaymentInstrument {
-        private final CardDetails cardDetails;
+        private final CardDetailsFromResponse cardDetails;
         private final String createdDate;
         private final String type;
 
-        public PaymentInstrument(CardDetails cardDetails, String createdDate, String type) {
+        public PaymentInstrument(CardDetailsFromResponse cardDetails, String createdDate, String type) {
             this.cardDetails = cardDetails;
             this.createdDate = createdDate;
             this.type = type;
@@ -120,7 +120,7 @@ public class Agreement {
 
         
         @Schema(name = "CardDetails")
-        public CardDetails getCardDetails() {
+        public CardDetailsFromResponse getCardDetails() {
             return cardDetails;
         }
 
