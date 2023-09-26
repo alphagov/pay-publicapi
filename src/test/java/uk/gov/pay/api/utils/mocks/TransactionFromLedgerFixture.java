@@ -3,7 +3,7 @@ package uk.gov.pay.api.utils.mocks;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import uk.gov.pay.api.model.AuthorisationSummary;
-import uk.gov.pay.api.model.CardDetails;
+import uk.gov.pay.api.model.CardDetailsFromResponse;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
@@ -14,6 +14,7 @@ import uk.gov.service.payments.commons.model.SupportedLanguage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class TransactionFromLedgerFixture {
@@ -23,7 +24,7 @@ public class TransactionFromLedgerFixture {
     private List<PaymentConnectorResponseLink> links;
     private RefundSummary refundSummary;
     private PaymentSettlementSummary settlementSummary;
-    private CardDetails cardDetails;
+    private CardDetailsFromResponse cardDetails;
     private Long amount;
     private PaymentState state;
     private String description;
@@ -41,6 +42,7 @@ public class TransactionFromLedgerFixture {
     private Map<String, Object> metadata;
     private AuthorisationSummary authorisationSummary;
     private AuthorisationMode authorisationMode;
+    private final Optional<String> walletType;
 
     public String getReturnUrl() {
         return returnUrl;
@@ -62,7 +64,7 @@ public class TransactionFromLedgerFixture {
         return settlementSummary;
     }
 
-    public CardDetails getCardDetails() {
+    public CardDetailsFromResponse getCardDetails() {
         return cardDetails;
     }
 
@@ -122,6 +124,8 @@ public class TransactionFromLedgerFixture {
         return authorisationMode;
     }
 
+    public Optional<String> getWalletType() { return walletType; }
+
     public TransactionFromLedgerFixture(TransactionFromLedgerBuilder builder) {
         this.amount = builder.amount;
         this.state = builder.state;
@@ -147,6 +151,7 @@ public class TransactionFromLedgerFixture {
         this.metadata = builder.metadata;
         this.authorisationSummary = builder.authorisationSummary;
         this.authorisationMode = builder.authorisationMode;
+        this.walletType = builder.walletType == null || builder.walletType.isEmpty() ? Optional.empty() : Optional.of(builder.walletType);
     }
 
     public Long getAmount() {
@@ -173,7 +178,7 @@ public class TransactionFromLedgerFixture {
         private List<PaymentConnectorResponseLink> links = new ArrayList<>();
         private RefundSummary refundSummary;
         private PaymentSettlementSummary settlementSummary;
-        private CardDetails cardDetails;
+        private CardDetailsFromResponse cardDetails;
         private Long amount;
         private PaymentState state;
         private String description;
@@ -191,6 +196,8 @@ public class TransactionFromLedgerFixture {
         private Map<String, Object> metadata;
         private AuthorisationSummary authorisationSummary;
         private AuthorisationMode authorisationMode = AuthorisationMode.WEB;
+        private String walletType;
+
 
         private TransactionFromLedgerBuilder() {
         }
@@ -244,7 +251,7 @@ public class TransactionFromLedgerFixture {
             return this;
         }
 
-        public TransactionFromLedgerBuilder withCardDetails(CardDetails cardDetails) {
+        public TransactionFromLedgerBuilder withCardDetails(CardDetailsFromResponse cardDetails) {
             this.cardDetails = cardDetails;
             return this;
         }
@@ -316,6 +323,11 @@ public class TransactionFromLedgerFixture {
         
         public TransactionFromLedgerBuilder withAuthorisationMode(AuthorisationMode authorisationMode) {
             this.authorisationMode = authorisationMode;
+            return this;
+        }
+
+        public TransactionFromLedgerBuilder withWalletType(String walletType) {
+            this.walletType = walletType;
             return this;
         }
 

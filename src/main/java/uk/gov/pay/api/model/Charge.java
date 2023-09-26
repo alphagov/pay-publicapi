@@ -36,7 +36,7 @@ public class Charge {
     private SupportedLanguage language;
 
     private boolean delayedCapture;
-    
+
     private boolean moto;
 
     private String agreementId;
@@ -56,7 +56,7 @@ public class Charge {
     private ExternalMetadata metadata;
 
     private AuthorisationSummary authorisationSummary;
-    
+
     private AuthorisationMode authorisationMode;
 
     public Charge(String chargeId, Long amount, PaymentState state, String returnUrl, String description,
@@ -109,7 +109,9 @@ public class Charge {
                 chargeFromResponse.isMoto(),
                 chargeFromResponse.getRefundSummary(),
                 chargeFromResponse.getSettlementSummary(),
-                chargeFromResponse.getCardDetails(),
+                chargeFromResponse.getWalletType()
+                        .map(wallet -> CardDetails.from(chargeFromResponse.getCardDetailsFromResponse(), wallet.getTitleCase()))
+                        .orElse(CardDetails.from(chargeFromResponse.getCardDetailsFromResponse(), null)),
                 chargeFromResponse.getLinks(),
                 chargeFromResponse.getCorporateCardSurcharge(),
                 chargeFromResponse.getTotalAmount(),
@@ -139,7 +141,9 @@ public class Charge {
                 transactionResponse.isMoto(),
                 transactionResponse.getRefundSummary(),
                 transactionResponse.getSettlementSummary(),
-                transactionResponse.getCardDetails(),
+                transactionResponse.getWalletType()
+                        .map(wallet -> CardDetails.from(transactionResponse.getCardDetailsFromResponse(), wallet.getTitleCase()))
+                        .orElse(CardDetails.from(transactionResponse.getCardDetailsFromResponse(), null)),
                 transactionResponse.getLinks(),
                 transactionResponse.getCorporateCardSurcharge(),
                 transactionResponse.getTotalAmount(),

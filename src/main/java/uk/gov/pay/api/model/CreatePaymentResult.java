@@ -93,5 +93,5 @@ public class CreatePaymentResult {
 
     @JsonProperty(value = "card_details")
     @Schema(name = "card_details")
-    private CardDetails cardDetails;
+    private CardDetailsFromResponse cardDetails;
 }

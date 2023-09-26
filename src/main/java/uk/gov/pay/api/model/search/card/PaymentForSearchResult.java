@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.api.model.AuthorisationSummary;
 import uk.gov.pay.api.model.CardDetails;
+import uk.gov.pay.api.model.CardDetailsFromResponse;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
@@ -53,7 +54,7 @@ public class PaymentForSearchResult extends CardPayment {
             URI paymentCancelLink,
             URI paymentRefundsLink,
             URI paymentCaptureUri) {
-
+        
         return new PaymentForSearchResult(
                 paymentResult.getTransactionId(),
                 paymentResult.getAmount(),
@@ -69,7 +70,9 @@ public class PaymentForSearchResult extends CardPayment {
                 paymentResult.isMoto(),
                 paymentResult.getRefundSummary(),
                 paymentResult.getSettlementSummary(),
-                paymentResult.getCardDetails(),
+                paymentResult.getWalletType()
+                        .map(wallet -> CardDetails.from(paymentResult.getCardDetailsFromResponse(), wallet.getTitleCase()))
+                        .orElse(CardDetails.from(paymentResult.getCardDetailsFromResponse(), null)),
                 paymentResult.getLinks(),
                 selfLink,
                 paymentEventsLink,

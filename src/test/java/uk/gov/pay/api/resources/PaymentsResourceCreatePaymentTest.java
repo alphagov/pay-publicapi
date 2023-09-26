@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetails;
+import uk.gov.pay.api.model.CardDetailsFromResponse;
 import uk.gov.pay.api.model.CreateCardPaymentRequestBuilder;
 import uk.gov.pay.api.model.CreatedPaymentWithAllLinks;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
@@ -116,7 +117,7 @@ public class PaymentsResourceCreatePaymentTest {
                 .withMoto(false)
                 .withRefundSummary(new RefundSummary())
                 .withSettlementSummary(new PaymentSettlementSummary())
-                .withCardDetails(new CardDetails("9876", "482393", "Anne Onymous", "12/20", cardholderAddress, "visa", null))
+                .withCardDetails(new CardDetails("9876", "482393", "Anne Onymous", "12/20", cardholderAddress, "visa", null, null))
                 .withPaymentConnectorResponseLinks(Collections.emptyList())
                 .withSelfLink(URI.create(PAYMENT_URI))
                 .withPaymentEventsUri(URI.create(PAYMENT_URI + "/events"))

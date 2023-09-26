@@ -1,5 +1,6 @@
 package uk.gov.pay.api.it.fixtures;
 
+import uk.gov.pay.api.model.CardDetailsFromResponse;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
@@ -56,11 +57,10 @@ public abstract class PaymentResultBuilder {
         public Address billing_address;
         public String card_brand;
         public String card_type;
-
         public CardDetails() {
         }
 
-        public CardDetails(uk.gov.pay.api.model.CardDetails cardDetails) {
+        public CardDetails(CardDetailsFromResponse cardDetails) {
             this.last_digits_card_number = cardDetails.getLastDigitsCardNumber();
             this.first_digits_card_number = cardDetails.getFirstDigitsCardNumber();
             this.cardholder_name = cardDetails.getCardHolderName();
@@ -143,6 +143,7 @@ public abstract class PaymentResultBuilder {
         public AuthorisationSummary authorisation_summary;
         public String agreement_id;
         public String authorisation_mode;
+        public String wallet_type;
     }
 
     protected static class TestPaymentState {
@@ -215,6 +216,7 @@ public abstract class PaymentResultBuilder {
     protected Map<String, Object> metadata;
     protected AuthorisationSummary authorisationSummary;
     protected AuthorisationMode authorisationMode = AuthorisationMode.WEB;
+    protected String walletType = null;
 
     public abstract String build();
     
@@ -260,6 +262,7 @@ public abstract class PaymentResultBuilder {
         payment.metadata = metadata;
         payment.authorisation_summary = authorisationSummary;
         payment.authorisation_mode = authorisationMode.getName();
+        payment.wallet_type = walletType;
 
         return payment;
     }

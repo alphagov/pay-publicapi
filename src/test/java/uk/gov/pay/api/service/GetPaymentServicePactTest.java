@@ -15,6 +15,7 @@ import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.TokenPaymentType;
+import uk.gov.pay.api.model.Wallet;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.model.links.PostLink;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
@@ -96,6 +97,23 @@ public class GetPaymentServicePactTest {
                 Collections.singletonMap("chargeTokenId", "ae749781-6562-4e0e-8f56-32d9639079dc")
         )));
         assertThat(paymentResponse.getLinks().getCapture(), is(nullValue()));
+    }
+
+    @Test
+    @PactVerification({"connector"})
+    @Pacts(pacts = {"publicapi-connector-get-wallet-payment"})
+    public void testGetPaymentWithWalletType() {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "a-token-link");
+
+        PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID);
+
+        assertThat(paymentResponse.getAmount(), is(100L));
+        assertThat(paymentResponse.getState(), is(new PaymentState("success", true)));
+        assertThat(paymentResponse.getPaymentId(), is(CHARGE_ID));
+        assertThat(paymentResponse.getPaymentProvider(), is("sandbox"));
+        assertThat(paymentResponse.getAuthorisationMode(), is(AuthorisationMode.WEB));
+        assertThat(paymentResponse.getCardDetails().get().getCardHolderName(), is("aName"));
+        assertThat(paymentResponse.getCardDetails().get().getWalletType().get(), is(Wallet.APPLE_PAY.getTitleCase()));
     }
     
     @Test

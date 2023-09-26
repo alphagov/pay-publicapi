@@ -17,6 +17,7 @@ import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.TokenPaymentType;
+import uk.gov.pay.api.model.Wallet;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
@@ -120,6 +121,23 @@ public class GetPaymentServiceLedgerPactTest {
         assertThat(paymentResponse.getLinks().getNextUrl(), is(nullValue()));
         assertThat(paymentResponse.getLinks().getNextUrlPost(), is(nullValue()));
         assertThat(paymentResponse.getLinks().getCapture(), is(nullValue()));
+    }
+
+    @Test
+    @PactVerification({"ledger"})
+    @Pacts(pacts = {"publicapi-ledger-get-wallet-payment"})
+    public void testGetPaymentFromLedgerWithWalletType() {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, tokenLink);
+
+        PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID_NON_EXISTENT_IN_CONNECTOR);
+
+        assertThat(paymentResponse.getAmount(), is(100L));
+        assertThat(paymentResponse.getState(), is(new PaymentState("capturable", false)));
+        assertThat(paymentResponse.getPaymentId(), is(CHARGE_ID_NON_EXISTENT_IN_CONNECTOR));
+        assertThat(paymentResponse.getPaymentProvider(), is("sandbox"));
+        assertThat(paymentResponse.getAuthorisationMode(), is(AuthorisationMode.WEB));
+        assertThat(paymentResponse.getCardDetails().get().getCardHolderName(), is("J Doe"));
+        assertThat(paymentResponse.getCardDetails().get().getWalletType().get(), is(Wallet.APPLE_PAY.getTitleCase()));
     }
 
     @Test

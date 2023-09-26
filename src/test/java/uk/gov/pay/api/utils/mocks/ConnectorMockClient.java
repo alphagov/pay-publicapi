@@ -7,7 +7,7 @@ import com.google.gson.GsonBuilder;
 import uk.gov.pay.api.it.fixtures.PaymentRefundJsonFixture;
 import uk.gov.pay.api.it.fixtures.PaymentSingleResultBuilder;
 import uk.gov.pay.api.model.Address;
-import uk.gov.pay.api.model.CardDetails;
+import uk.gov.pay.api.model.CardDetailsFromResponse;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.links.Link;
 import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
@@ -106,8 +106,9 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         ofNullable(responseFromConnector.getFee()).ifPresent(resultBuilder::withFee);
         ofNullable(responseFromConnector.getNetAmount()).ifPresent(resultBuilder::withNetAmount);
         ofNullable(responseFromConnector.getAuthorisationSummary()).ifPresent(resultBuilder::withAuthorisationSummary);
+        ofNullable(responseFromConnector.getWalletType()).ifPresent(resultBuilder::withWalletType);
         responseFromConnector.getMetadata().ifPresent(resultBuilder::withMetadata);
-        
+
         return resultBuilder.build();
     }
 
@@ -117,7 +118,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .add("agreement_id", responseFromConnector.getAgreementId())
                 .add("service_id", responseFromConnector.getServiceId())
                 .add("created_date", responseFromConnector.getCreatedDate())
-                .add("live",responseFromConnector.isLive()).build();
+                .add("live", responseFromConnector.isLive()).build();
     }
 
     private String buildTelephoneChargeResponse(ChargeResponseFromConnector responseFromConnector) {
@@ -189,7 +190,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withReference(requestParams.getReference())
                 .withProcessorId(requestParams.getProcessorId())
                 .withProviderId(requestParams.getProviderId())
-                .withCardDetails(new CardDetails(
+                .withCardDetails(new CardDetailsFromResponse(
                                 requestParams.getLastFourDigits().orElse(null),
                                 requestParams.getFirstSixDigits().orElse(null),
                                 requestParams.getNameOnCard().orElse(null),
@@ -225,7 +226,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withReference(requestParams.getReference())
                 .withProcessorId(requestParams.getProcessorId())
                 .withProviderId(requestParams.getProviderId())
-                .withCardDetails(new CardDetails(
+                .withCardDetails(new CardDetailsFromResponse(
                                 requestParams.getLastFourDigits().orElse(null),
                                 requestParams.getFirstSixDigits().orElse(null),
                                 requestParams.getNameOnCard().orElse(null),
@@ -267,7 +268,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withCreatedDate(SDF.format(new Date()))
                 .withLanguage(SupportedLanguage.ENGLISH)
                 .withDelayedCapture(false)
-                .withCardDetails(new CardDetails("1234", "123456", "Mr. Payment", "12/19", null, "Mastercard", "debit"))
+                .withCardDetails(new CardDetailsFromResponse("1234", "123456", "Mr. Payment", "12/19", null, "Mastercard", "debit"))
                 .withLink(validGetLink(chargeLocation(gatewayAccountId, "chargeId"), "self"))
                 .withLink(validGetLink(nextUrl("chargeTokenId"), "next_url"))
                 .withLink(validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap("chargeTokenId", false)));
@@ -286,7 +287,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 requestParams.getAddressCity().isPresent() || requestParams.getAddressCountry().isPresent()) {
             Address billingAddress = new Address(requestParams.getAddressLine1().orElse(null), requestParams.getAddressLine2().orElse(null),
                     requestParams.getAddressPostcode().orElse(null), requestParams.getAddressCity().orElse(null), requestParams.getAddressCountry().orElse(null));
-            CardDetails cardDetails = new CardDetails(null, null, requestParams.getCardholderName().orElse(null),
+            CardDetailsFromResponse cardDetails = new CardDetailsFromResponse(null, null, requestParams.getCardholderName().orElse(null),
                     null, billingAddress, null, null);
             responseFromConnector.withCardDetails(cardDetails);
         }
@@ -303,7 +304,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withLink(validGetLink(chargeLocation(gatewayAccountId, responseFromConnector.getChargeId()), "self"))
                 .withLink(validGetLink(nextUrl(chargeTokenId), "next_url"))
                 .withLink(validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap(chargeTokenId, false))).build();
-        
+
         mockCreateCharge(gatewayAccountId,
                 aResponse().withStatus(CREATED_201)
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
@@ -348,7 +349,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                         .withHeader(LOCATION, chargeLocation(gatewayAccountId, responseFromConnector.getChargeId()))
                         .withBody(buildChargeResponse(build)));
     }
-    
+
     public void respondCreated_whenCreateAgreement(String gatewayAccountId, CreateAgreementRequestParams requestParams) {
         var responseFromConnector = aCreateAgreementResponseFromConnector()
                 .withReference(requestParams.getReference())
@@ -359,7 +360,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         mockCreateAgreement(gatewayAccountId, aResponse()
                 .withStatus(CREATED_201)
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON)
-                .withBody(buildAgreementResponse(responseFromConnector.build()))); 
+                .withBody(buildAgreementResponse(responseFromConnector.build())));
     }
 
     public void respondOk_whenCancelAgreement(String agreementId, String accountId) {
@@ -433,11 +434,11 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     public void respondGatewayAccountCredentialNotConfigured(String gatewayAccountId) {
         mockCreateCharge(gatewayAccountId, withStatusAndErrorMessage(BAD_REQUEST_400, "Payment provider details are not configured on this account", ACCOUNT_NOT_LINKED_WITH_PSP));
     }
-    
+
     public void respondCardNumberInReferenceError(String gatewayAccountId) {
         mockCreateCharge(gatewayAccountId, withStatusAndErrorMessage(BAD_REQUEST_400, "Card number entered in a payment link reference", CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_REJECTED));
     }
-    
+
     public void respondWithChargeFound(String chargeTokenId, String gatewayAccountId, ChargeResponseFromConnector chargeResponseFromConnector) {
         respondWithChargeFound(chargeTokenId, gatewayAccountId, chargeResponseFromConnector, false);
     }
@@ -455,7 +456,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                     .withLink(validPostLink(chargeLocation(gatewayAccountId, chargeId) + "/capture", "capture", "application/x-www-form-urlencoded", new HashMap<>()))
                     .build();
         } else {
-            if(isMotoApi) {
+            if (isMotoApi) {
                 responseFromConnector
                         .withLink(validPostLink(CONNECTOR_MOCK_AUTHORISATION_PATH, "auth_url_post", "application/json", getChargeIdTokenMap(chargeTokenId, true)))
                         .build();
@@ -582,7 +583,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         wireMockClassRule.stubFor(post(urlPathEqualTo(format(CONNECTOR_MOCK_CHARGES_PATH, gatewayAccountId)))
                 .withHeader(CONTENT_TYPE, matching(APPLICATION_JSON)).willReturn(responseDefinitionBuilder));
     }
-    
+
     public void mockCreateAgreement(String gatewayAccountId, ResponseDefinitionBuilder responseDefinitionBuilder) {
         wireMockClassRule.stubFor(post(urlPathEqualTo(format(CONNECTOR_MOCK_AGREEMENTS_PATH, gatewayAccountId)))
                 .withHeader(CONTENT_TYPE, matching(APPLICATION_JSON)).willReturn(responseDefinitionBuilder));
