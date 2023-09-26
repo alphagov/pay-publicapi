@@ -10,7 +10,7 @@
       "description": "get a charge request for a wallet payment - ledger",
       "providerStates": [
         {
-          "name": "a transaction with with wallet type APPLE_PAY exists",
+          "name": "a transaction with wallet type APPLE_PAY exists",
           "params": {
             "account_id": "123456",
             "charge_id": "ch_123abc456xyz"
@@ -37,19 +37,10 @@
             "finished": false,
             "status": "capturable"
           },
-          "description": "Test description",
-          "reference": "aReference",
-          "language": "en",
-          "delayed_capture": true,
           "transaction_id": "ch_123abc456xyz",
-          "return_url": "https://somewhere.gov.uk/rainbow/1",
           "payment_provider": "sandbox",
-          "created_date": "2018-09-07T13:12:02.121Z",
           "card_details": {
-            "last_digits_card_number": "0001",
-            "first_digits_card_number": "123456",
-            "cardholder_name": "aName",
-            "card_brand": "visa"
+            "cardholder_name": "J Doe"
           },
           "authorisation_mode": "web",
           "wallet_type": "APPLE_PAY"

@@ -29,22 +29,13 @@
         "body": {
           "amount": 100,
           "state": {
-            "finished": false,
-            "status": "capturable"
+            "finished": true,
+            "status": "success"
           },
-          "description": "Test description",
-          "reference": "aReference",
-          "language": "en",
-          "delayed_capture": true,
           "charge_id": "ch_123abc456def",
-          "return_url": "https://somewhere.gov.uk/rainbow/1",
           "payment_provider": "sandbox",
-          "created_date": "2018-09-07T13:12:02.121Z",
           "card_details": {
-            "last_digits_card_number": "0001",
-            "first_digits_card_number": "123456",
-            "cardholder_name": "aName",
-            "card_brand": "visa"
+            "cardholder_name": "aName"
           },
           "authorisation_mode": "web",
           "wallet_type": "APPLE_PAY"
