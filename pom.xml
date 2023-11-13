@@ -19,7 +19,7 @@
         <junit5.version>5.10.1</junit5.version>
         <pact.version>3.6.15</pact.version>
         <prometheus.version>0.16.0</prometheus.version>
-        <swagger.lib.version>2.2.18</swagger.lib.version>
+        <swagger.lib.version>2.2.19</swagger.lib.version>
         <PACT_BROKER_URL/>
         <PACT_BROKER_USERNAME/>
         <PACT_BROKER_PASSWORD/>
