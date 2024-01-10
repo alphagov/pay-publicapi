@@ -15,7 +15,7 @@
         <hamcrest.version>2.2</hamcrest.version>
         <jackson.version>2.16.1</jackson.version>
         <logback.version>1.2.13</logback.version>
-        <pay-java-commons.version>1.0.20231204114304</pay-java-commons.version>
+        <pay-java-commons.version>1.0.20240109102542</pay-java-commons.version>
         <junit5.version>5.10.1</junit5.version>
         <pact.version>3.6.15</pact.version>
         <prometheus.version>0.16.0</prometheus.version>
