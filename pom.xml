@@ -138,7 +138,7 @@
         <dependency>
             <groupId>org.dhatim</groupId>
             <artifactId>dropwizard-sentry</artifactId>
-            <version>2.1.2-4</version>
+            <version>4.0.5</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
