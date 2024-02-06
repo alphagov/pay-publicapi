@@ -22,6 +22,9 @@ public class PublicApiConfig extends Configuration {
 
     @NotNull
     private String publicAuthUrl;
+    
+    @NotNull
+    private String paymentsUrl;
 
     @NotNull
     private Boolean allowHttpForReturnUrl;
@@ -62,6 +65,10 @@ public class PublicApiConfig extends Configuration {
 
     public String getPublicAuthUrl() {
         return publicAuthUrl;
+    }
+
+    public String getPaymentsUrl() {
+        return paymentsUrl;
     }
 
     public Boolean getAllowHttpForReturnUrl() {

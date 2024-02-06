@@ -21,6 +21,7 @@ baseUrl: http://publicapi.url/
 connectorUrl: http://connector_card.url/
 publicAuthUrl: http://publicauth.url/v1/auth
 ledgerUrl: http://ledger.url/
+paymentsUrl: http://payments.url/
 
 jerseyClientConfig:
   disabledSecureConnection: "true"

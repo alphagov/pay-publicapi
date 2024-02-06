@@ -125,6 +125,38 @@ public class Charge {
         );
     }
 
+    public static Charge from(PaymentServicePaymentResponse paymentServicePaymentResponse) {
+        return new Charge(
+                paymentServicePaymentResponse.getExternalId(),
+                paymentServicePaymentResponse.getAmount(),
+                new PaymentState("created", false),
+                paymentServicePaymentResponse.getReturnUrl(),
+                paymentServicePaymentResponse.getDescription(),
+                paymentServicePaymentResponse.getReference(),
+                paymentServicePaymentResponse.getEmail(),
+                paymentServicePaymentResponse.getPaymentProvider(),
+                paymentServicePaymentResponse.getCreatedDate(),
+                SupportedLanguage.ENGLISH,
+                paymentServicePaymentResponse.getDelayedCapture(),
+                paymentServicePaymentResponse.isMoto(),
+                paymentServicePaymentResponse.getRefundSummary(),
+                paymentServicePaymentResponse.getSettlementSummary(),
+                paymentServicePaymentResponse.getWalletType()
+                        .map(wallet -> CardDetails.from(paymentServicePaymentResponse.getCardDetailsFromResponse(), wallet.getTitleCase()))
+                        .orElse(CardDetails.from(paymentServicePaymentResponse.getCardDetailsFromResponse(), null)),
+                paymentServicePaymentResponse.getLinks(),
+                paymentServicePaymentResponse.getCorporateCardSurcharge(),
+                paymentServicePaymentResponse.getTotalAmount(),
+                paymentServicePaymentResponse.getGatewayTransactionId(),
+                paymentServicePaymentResponse.getMetadata().orElse(null),
+                paymentServicePaymentResponse.getFee(),
+                paymentServicePaymentResponse.getNetAmount(),
+                paymentServicePaymentResponse.getAuthorisationSummary(),
+                paymentServicePaymentResponse.getAgreementId(),
+                paymentServicePaymentResponse.getAuthorisationMode()
+        );
+    }
+
     public static Charge from(TransactionResponse transactionResponse) {
         return new Charge(
                 transactionResponse.getTransactionId(),

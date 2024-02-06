@@ -11,7 +11,6 @@ import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.CreateCardPaymentRequestBuilder;
 import uk.gov.pay.api.model.CreatedPaymentWithAllLinks;
 import uk.gov.pay.api.model.TokenPaymentType;
@@ -49,7 +48,7 @@ public class SetUpAgreementWithPaymentConnectorServicePactTest {
         ConnectorUriGenerator connectorUriGenerator = new ConnectorUriGenerator(mockConfiguration);
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
         connectorService = new ConnectorService(client, connectorUriGenerator);
-        createPaymentService = new CreatePaymentService(client, publicApiUriGenerator, connectorUriGenerator);
+        createPaymentService = new CreatePaymentService(client, publicApiUriGenerator, connectorUriGenerator, mockConfiguration);
     }
     
     @Test

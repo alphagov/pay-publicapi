@@ -63,7 +63,7 @@ public class CreatePaymentServicePactTest {
         PublicApiUriGenerator publicApiUriGenerator = new PublicApiUriGenerator(configuration);
         ConnectorUriGenerator connectorUriGenerator = new ConnectorUriGenerator(configuration);
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
-        createPaymentService = new CreatePaymentService(client, publicApiUriGenerator, connectorUriGenerator);
+        createPaymentService = new CreatePaymentService(client, publicApiUriGenerator, connectorUriGenerator, configuration);
         account = new Account("123456", TokenPaymentType.CARD, "a-token-link");
     }
 

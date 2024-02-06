@@ -261,6 +261,17 @@ public class CreateCardPaymentRequest {
 
         return request.build();
     }
+    
+    public String toPaymentsPayload() {
+        JsonStringBuilder request = new JsonStringBuilder()
+                .add("amount", this.getAmount())
+                .add("reference", this.getReference())
+                .add("description", this.getDescription())
+                .add("return_url", this.getReturnUrl());
+        getDelayedCapture().ifPresent(delayedCapture -> request.add("delayed_capture", delayedCapture));
+        getMoto().ifPresent(moto -> request.add("moto", moto));
+        return request.build();
+    }
 
     /**
      * This looks JSONesque but is not identical to the received request
