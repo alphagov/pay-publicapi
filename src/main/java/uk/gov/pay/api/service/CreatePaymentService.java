@@ -13,7 +13,6 @@ import javax.inject.Inject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.*;
-
 import java.util.Optional;
 
 import static javax.ws.rs.client.Entity.json;
