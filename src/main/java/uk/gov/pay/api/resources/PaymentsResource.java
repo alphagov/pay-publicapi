@@ -297,7 +297,7 @@ public class PaymentsResource {
     public Response createNewPayment(@Parameter(hidden = true) @Auth Account account,
                                      @Parameter(required = true, description = "requestPayload")
                                      @Valid CreateCardPaymentRequest createCardPaymentRequest,
-                                     @Nullable 
+                                     @Nullable
                                      @Length(min = 1, max = 255, message = "Header [Idempotency-Key] can have a size between 1 and 255") 
                                      @Pattern(regexp = "^$|^[a-zA-Z0-9-]+$", message = "Header [Idempotency-Key] can only contain alphanumeric characters and hyphens")
                                      @HeaderParam("Idempotency-Key") 

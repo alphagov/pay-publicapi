@@ -2,7 +2,7 @@ package uk.gov.pay.api.app.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
-import io.dropwizard.Configuration;
+import io.dropwizard.core.Configuration;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;

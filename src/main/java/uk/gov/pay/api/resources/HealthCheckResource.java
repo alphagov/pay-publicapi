@@ -3,7 +3,7 @@ package uk.gov.pay.api.resources;
 import com.codahale.metrics.annotation.Timed;
 import com.codahale.metrics.health.HealthCheck;
 import com.google.common.collect.ImmutableMap;
-import io.dropwizard.setup.Environment;
+import io.dropwizard.core.setup.Environment;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;

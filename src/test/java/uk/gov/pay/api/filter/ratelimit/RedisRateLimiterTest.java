@@ -7,7 +7,7 @@ import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import io.dropwizard.setup.Environment;
+import io.dropwizard.core.setup.Environment;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import org.junit.jupiter.api.BeforeEach;
