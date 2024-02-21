@@ -2500,6 +2500,12 @@
             "example" : "2017-01-10T16:52:07.855Z",
             "readOnly" : true
           },
+          "payment_id" : {
+            "type" : "string",
+            "description" : "The unique ID GOV.UK Pay automatically associated with this payment when you created it.",
+            "example" : "hu20sqlact5260q2nanm0q8u93",
+            "readOnly" : true
+          },
           "refund_id" : {
             "type" : "string",
             "description" : "The unique ID GOV.UK Pay automatically associated with this refund when you created it.",
@@ -2536,6 +2542,12 @@
             "type" : "string",
             "description" : "The date and time you created this refund. This value uses Coordinated Universal Time (UTC) and ISO 8601 format - `YYYY-MM-DDThh:mm:ss.SSSZ`.",
             "example" : "2017-01-10T16:52:07.855Z",
+            "readOnly" : true
+          },
+          "payment_id" : {
+            "type" : "string",
+            "description" : "The unique ID GOV.UK Pay automatically associated with this payment when you created it.",
+            "example" : "hu20sqlact5260q2nanm0q8u93",
             "readOnly" : true
           },
           "refund_id" : {
