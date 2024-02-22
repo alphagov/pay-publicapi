@@ -23,7 +23,7 @@ logging:
       customFields:
         container: "publicapi"
         environment: ${ENVIRONMENT}
-    - type: sentry
+    - type: pay-dropwizard-3-sentry
       threshold: ERROR
       dsn: ${SENTRY_DSN:-https://example.com@dummy/1}
       environment: ${ENVIRONMENT}

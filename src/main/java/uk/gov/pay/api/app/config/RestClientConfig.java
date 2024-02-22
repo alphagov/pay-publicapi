@@ -1,6 +1,7 @@
 package uk.gov.pay.api.app.config;
 
-import io.dropwizard.Configuration;
+
+import io.dropwizard.core.Configuration;
 
 public class RestClientConfig extends Configuration {
     
