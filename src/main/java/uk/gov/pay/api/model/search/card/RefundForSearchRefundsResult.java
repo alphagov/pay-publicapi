@@ -73,7 +73,9 @@ public class RefundForSearchRefundsResult {
     }
 
     @JsonProperty("payment_id")
-    @Schema(hidden = true)
+    @Schema(example = "hu20sqlact5260q2nanm0q8u93",
+            description = "The unique ID GOV.UK Pay automatically associated " +
+                    "with this payment when you created it.", accessMode = READ_ONLY)
     public String getChargeId() {
         return chargeId;
     }
