@@ -53,3 +53,7 @@ apiKeyHmacSecret: qwer9yuhgf
 authenticationCachePolicy: expireAfterWrite=3s
 
 ecsContainerMetadataUriV4: ${ECS_CONTAINER_METADATA_URI_V4:-}
+
+tinkConfiguration:
+  clientId: ${TINK_CLIENT_ID:-}
+  clientSecret: ${TINK_CLIENT_SECRET:-}
