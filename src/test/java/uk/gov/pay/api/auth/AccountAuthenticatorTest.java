@@ -79,9 +79,9 @@ public class AccountAuthenticatorTest {
         logger.setLevel(Level.INFO);
         logger.addAppender(mockAppender);
         
-        when(mockConfiguration.getPublicAuthUrl()).thenReturn("");
+        when(mockConfiguration.getPublicAuthUrl()).thenReturn("/v1/api/auth");
         accountAuthenticator = new AccountAuthenticator(publicAuthMock, mockConfiguration);
-        when(publicAuthMock.target("")).thenReturn(mockTarget);
+        when(publicAuthMock.target("/v1/api/auth")).thenReturn(mockTarget);
         when(mockTarget.request()).thenReturn(mockRequest);
         when(mockRequest.header(AUTHORIZATION, "Bearer " + bearerToken)).thenReturn(mockRequest);
         when(mockRequest.accept(MediaType.APPLICATION_JSON)).thenReturn(mockRequest);

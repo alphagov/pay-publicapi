@@ -19,7 +19,7 @@ logging:
 
 baseUrl: http://publicapi.url/
 connectorUrl: http://connector_card.url/
-publicAuthUrl: http://publicauth.url/v1/auth
+publicAuthUrl: http://publicauth.url/v1/api/auth
 ledgerUrl: http://ledger.url/
 
 jerseyClientConfig:
