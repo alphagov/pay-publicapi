@@ -1,0 +1,14 @@
+name: PR
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    uses: ./.github/workflows/_run-tests.yml
+    secrets:
+      pact_broker_username: ${{ secrets.pact_broker_username }}
+      pact_broker_password: ${{ secrets.pact_broker_password }}
