@@ -1,0 +1,48 @@
+name: Github Actions Tests
+
+on:
+  workflow_call:
+    secrets:
+      pact_broker_username:
+        required: true
+      pact_broker_password:
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  detect-secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b
+      - name: Detect secrets
+        uses: alphagov/pay-ci/actions/detect-secrets@master
+
+  integration-tests:
+    name: "Integration tests and publish pacts"
+    uses: alphagov/pay-ci/.github/workflows/_run-java-tests-and-publish-pacts.yml@master
+    with:
+      publish_pacts: true
+      check_for_openapi_file_changes: false
+      requires_redis_image: true
+      requires_postgres_image: false
+    secrets:
+      pact_broker_username: ${{ secrets.pact_broker_username }}
+      pact_broker_password: ${{ secrets.pact_broker_password }}
+
+  pact-providers-contract-tests:
+    name: "Provider tests"
+    needs: integration-tests
+    uses: alphagov/pay-ci/.github/workflows/_run-provider-pact-tests-for-consumer.yml@master
+    strategy:
+      matrix:
+        provider: [ 'connector', 'ledger' ]
+    with:
+      consumer: "publicapi"
+      provider: ${{ matrix.provider }}
+    secrets:
+      pact_broker_username: ${{ secrets.pact_broker_username }}
+      pact_broker_password: ${{ secrets.pact_broker_password }}
+
