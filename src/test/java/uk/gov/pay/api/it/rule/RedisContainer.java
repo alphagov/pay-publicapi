@@ -16,7 +16,7 @@ public class RedisContainer {
     
     static GenericContainer<?> getOrCreateRedisContainer() {
         if (REDIS_CONTAINER == null) {
-            REDIS_CONTAINER = new GenericContainer<>("redis:5.0.6") // elasticache engine version
+            REDIS_CONTAINER = new GenericContainer<>("redis:7") // elasticache engine version
                     .withExposedPorts(PORT)
                     .waitingFor(Wait.forLogMessage(".*Ready to accept connections.*", 1));
 
