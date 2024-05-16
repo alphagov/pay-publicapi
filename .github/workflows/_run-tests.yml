@@ -26,7 +26,7 @@ jobs:
     with:
       publish_pacts: true
       check_for_openapi_file_changes: false
-      requires_redis_image: true
+      requires_redis_image: false
       requires_postgres_image: false
     secrets:
       pact_broker_username: ${{ secrets.pact_broker_username }}
