@@ -5,7 +5,7 @@ COPY . .
 
 RUN ["mvn", "clean", "--no-transfer-progress", "package", "-DskipTests"]
 
-FROM eclipse-temurin:11-jre@sha256:b074dd1f14c752c818fd2bf118db451b19b207700e52383bdf7a31412c876a90 AS final
+FROM eclipse-temurin:11-jre@sha256:f31717a7a4c0d7cc9e50008544d269c90d6894dd70cdcbb28da8060913fcf8ad AS final
 
 RUN ["apt-get", "update"]
 RUN ["apt-get", "upgrade", "-y"]
