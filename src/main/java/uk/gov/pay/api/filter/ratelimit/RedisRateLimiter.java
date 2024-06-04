@@ -42,7 +42,7 @@ public class RedisRateLimiter {
             int rateLimitInterval = rateLimitManager.getRateLimitInterval(accountId);
             count = updateAllowance(key.getKey(), rateLimitInterval);
         } catch (Exception e) {
-            LOGGER.info("Failed to update allowance. Cause of error: " + e.getMessage());
+            LOGGER.info(String.format("Failed to update allowance. Cause of error: %s", e));
             // Exception possible if redis is unavailable or perMillis is too high        
             throw new RedisException();
         }
