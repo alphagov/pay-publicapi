@@ -12,7 +12,7 @@
         <pay-java-commons.version>1.0.20240603094506</pay-java-commons.version>
         <prometheus.version>0.16.0</prometheus.version>
         <swagger.lib.version>2.2.22</swagger.lib.version>
-        <pact.version>3.6.15</pact.version>
+        <pact.version>4.6.10</pact.version>
         <PACT_BROKER_URL/>
         <PACT_BROKER_USERNAME/>
         <PACT_BROKER_PASSWORD/>
@@ -282,9 +282,15 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>au.com.dius</groupId>
-            <artifactId>pact-jvm-provider-junit</artifactId>
-            <version>4.0.10</version>
+            <groupId>au.com.dius.pact.consumer</groupId>
+            <artifactId>junit</artifactId>
+            <version>${pact.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <version>3.0.21</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -334,8 +340,8 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>au.com.dius</groupId>
-                <artifactId>pact-jvm-provider-maven_2.12</artifactId>
+                <groupId>au.com.dius.pact.provider</groupId>
+                <artifactId>maven</artifactId>
                 <version>${pact.version}</version>
                 <configuration>
                     <pactDirectory>target/pacts</pactDirectory>
