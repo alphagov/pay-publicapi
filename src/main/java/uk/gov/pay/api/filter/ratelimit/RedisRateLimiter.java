@@ -11,6 +11,8 @@ import uk.gov.pay.api.filter.RateLimiterKey;
 import uk.gov.pay.api.managed.RedisClientManager;
 
 import javax.inject.Singleton;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
 import java.util.concurrent.Callable;
@@ -18,6 +20,8 @@ import java.util.concurrent.Callable;
 @Singleton
 public class RedisRateLimiter {
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisRateLimiter.class);
+    private static final StringWriter stringWriter = new StringWriter();
+    private static final PrintWriter printWriter = new PrintWriter(stringWriter);
     private final MetricRegistry metricsRegistry;
 
     private RateLimitManager rateLimitManager;
@@ -43,6 +47,10 @@ public class RedisRateLimiter {
             count = updateAllowance(key.getKey(), rateLimitInterval);
         } catch (Exception e) {
             LOGGER.info(String.format("Failed to update allowance. Cause of error: %s", e));
+            e.printStackTrace(printWriter);
+            LOGGER.info(stringWriter.toString());
+            stringWriter.flush();
+            
             // Exception possible if redis is unavailable or perMillis is too high        
             throw new RedisException();
         }
