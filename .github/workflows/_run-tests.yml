@@ -28,6 +28,7 @@ jobs:
       check_for_openapi_file_changes: false
       requires_redis_image: true
       requires_postgres_image: false
+      java_version: "21"
     secrets:
       pact_broker_username: ${{ secrets.pact_broker_username }}
       pact_broker_password: ${{ secrets.pact_broker_password }}
@@ -42,7 +43,15 @@ jobs:
     with:
       consumer: "publicapi"
       provider: ${{ matrix.provider }}
+      java_version: "21"
     secrets:
       pact_broker_username: ${{ secrets.pact_broker_username }}
       pact_broker_password: ${{ secrets.pact_broker_password }}
 
+  check-docker-base-images-are-manifests:
+    uses: alphagov/pay-ci/.github/workflows/_validate_docker_image_is_manifest.yml@master
+
+  check-docker-base-images-for-m1-are-manifests:
+    uses: alphagov/pay-ci/.github/workflows/_validate_docker_image_is_manifest.yml@master
+    with:
+      dockerfile: "m1/arm64.Dockerfile"
