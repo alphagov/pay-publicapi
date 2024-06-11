@@ -30,22 +30,13 @@ public class RedisRateLimiter {
         this.metricsRegistry = environment.metrics();
     }
 
-    /**
-     * @throws RateLimitException
-     */
     void checkRateOf(String accountId, RateLimiterKey key)
             throws RedisException, RateLimitException {
 
         Long count;
 
-        try {
-            int rateLimitInterval = rateLimitManager.getRateLimitInterval(accountId);
-            count = updateAllowance(key.getKey(), rateLimitInterval);
-        } catch (Exception e) {
-            LOGGER.info(String.format("Failed to update allowance. Cause of error: %s", e));
-            // Exception possible if redis is unavailable or perMillis is too high        
-            throw new RedisException();
-        }
+        int rateLimitInterval = rateLimitManager.getRateLimitInterval(accountId);
+        count = updateAllowance(key.getKey(), rateLimitInterval);
 
         if (count != null) {
             int allowedNumberOfRequests = rateLimitManager.getAllowedNumberOfRequests(key, accountId);
@@ -57,10 +48,24 @@ public class RedisRateLimiter {
         }
     }
 
-    private Long updateAllowance(String key, int rateLimitInterval) throws Exception {
+    private Long updateAllowance(String key, int rateLimitInterval) throws RedisException {
         String derivedKey = getKeyForWindow(key, rateLimitInterval);
-        Long count = time("redis.incr", () -> redisClientManager.getRedisConnection().sync().incr(derivedKey));
-        time("redis.expire", () -> redisClientManager.getRedisConnection().sync().expire(derivedKey, rateLimitInterval / 1000));
+        
+        Long count = 0L;
+        try {
+            count = time("redis.incr", () -> redisClientManager.getRedisConnection().sync().incr(derivedKey));
+        } catch (Exception e) {
+            LOGGER.info(String.format("Failed to increment redis key %s. Cause of error: %s", derivedKey, e));
+            throw new RedisException();
+        }
+        
+        try {
+            time("redis.expire", () -> redisClientManager.getRedisConnection().sync().expire(derivedKey, rateLimitInterval / 1000));
+        } catch (Exception e) {
+            LOGGER.info(String.format("Failed to expire redis key %s. Cause of error: %s", derivedKey, e));
+            throw new RedisException();
+        }
+        
         return count;
     }
 
