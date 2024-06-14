@@ -39,6 +39,9 @@ public class PublicApiConfig extends Configuration {
     @NotNull
     @JsonProperty
     private RedisConfiguration redis;
+    
+    @JsonProperty
+    private TinkConfiguration tinkConfiguration;
 
     @Valid
     @NotNull
@@ -86,6 +89,10 @@ public class PublicApiConfig extends Configuration {
 
     public RedisConfiguration getRedisConfiguration() {
         return redis;
+    }
+
+    public TinkConfiguration getTinkConfiguration() {
+        return tinkConfiguration;
     }
 
     public Optional<URI> getEcsContainerMetadataUriV4() {
