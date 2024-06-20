@@ -51,7 +51,3 @@ jobs:
   check-docker-base-images-are-manifests:
     uses: alphagov/pay-ci/.github/workflows/_validate_docker_image_is_manifest.yml@master
 
-  check-docker-base-images-for-m1-are-manifests:
-    uses: alphagov/pay-ci/.github/workflows/_validate_docker_image_is_manifest.yml@master
-    with:
-      dockerfile: "m1/arm64.Dockerfile"
