@@ -118,7 +118,7 @@ public class PaymentsResource {
     public Response getPayment(@Parameter(hidden = true) @Auth Account account,
                                @PathParam("paymentId")
                                @Parameter(name = "paymentId", description = "Returns the payment with the matching `payment_id`.", example = "hu20sqlact5260q2nanm0q8u93")
-                                       String paymentId,
+                               String paymentId,
                                @Parameter(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
 
         logger.info("Payment request - paymentId={}", paymentId);
@@ -159,7 +159,7 @@ public class PaymentsResource {
     public PaymentEventsResponse getPaymentEvents(@Parameter(hidden = true) @Auth Account account,
                                                   @PathParam("paymentId")
                                                   @Parameter(name = "paymentId", description = "Payment identifier", example = "hu20sqlact5260q2nanm0q8u93")
-                                                          String paymentId,
+                                                  String paymentId,
                                                   @Parameter(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
 
         logger.info("Payment events request - payment_id={}", paymentId);
@@ -225,7 +225,7 @@ public class PaymentsResource {
                                            + "`first_digits_card_number` value must be 6 digits.")
                                    @QueryParam("first_digits_card_number") String firstDigitsCardNumber,
                                    @Parameter(description = "Returns payments paid by cards ending with the `last_digits_card_number` value. " +
-                                           "`last_digits_card_number` value must be 4 digits.", hidden = false)
+                                           "`last_digits_card_number` value must be 4 digits.")
                                    @QueryParam("last_digits_card_number") String lastDigitsCardNumber,
                                    @Parameter(description = "Returns payments settled on or after the `from_settled_date` value. " +
                                            "You can only search by settled date if your payment service provider is Stripe. " +
@@ -237,17 +237,13 @@ public class PaymentsResource {
                                            "Date must be in ISO 8601 format to date-level accuracy - `YYYY-MM-DD`. " +
                                            "Payments are settled when your payment service provider sends funds to your bank account.")
                                    @QueryParam("to_settled_date") String toSettledDate,
-                                   @Parameter(description = "Returns payments that were authorised using the agreement with this `agreement_id`. " + 
+                                   @Parameter(description = "Returns payments that were authorised using the agreement with this `agreement_id`. " +
                                            "Must be an exact match.", example = "abcefghjklmnopqr1234567890")
                                    @QueryParam("agreement_id") String agreementId,
                                    @Context UriInfo uriInfo) {
 
-        logger.info("Payments search request - [ {} ]",
-                format("reference:%s, email: %s, status: %s, card_brand %s, fromDate: %s, toDate: %s, page: %s, " +
-                                "display_size: %s, cardholder_name: %s, first_digits_card_number: %s, " +
-                                "last_digits_card_number: %s, from_settled_date: %s, to_settled_date: %s, agreement_id: %s",
-                        reference, email, state, cardBrand, fromDate, toDate, pageNumber, displaySize,
-                        cardHolderName, firstDigitsCardNumber, lastDigitsCardNumber, fromSettledDate, toSettledDate, agreementId));
+        logger.info("Payments search request - [ reference: {}, email: REDACTED, status: {}, card_brand {}, fromDate: {}, toDate: {}, page: {}, display_size: {}, cardholder_name: REDACTED, first_digits_card_number: {}, last_digits_card_number: {}, from_settled_date: {}, to_settled_date: {}, agreement_id: {} ]",
+                reference, state, cardBrand, fromDate, toDate, pageNumber, displaySize, firstDigitsCardNumber, lastDigitsCardNumber, fromSettledDate, toSettledDate, agreementId);
 
         var paymentSearchParams = new PaymentSearchParams.Builder()
                 .withReference(reference)
@@ -298,9 +294,9 @@ public class PaymentsResource {
                                      @Parameter(required = true, description = "requestPayload")
                                      @Valid CreateCardPaymentRequest createCardPaymentRequest,
                                      @Nullable
-                                     @Length(min = 1, max = 255, message = "Header [Idempotency-Key] can have a size between 1 and 255") 
+                                     @Length(min = 1, max = 255, message = "Header [Idempotency-Key] can have a size between 1 and 255")
                                      @Pattern(regexp = "^$|^[a-zA-Z0-9-]+$", message = "Header [Idempotency-Key] can only contain alphanumeric characters and hyphens")
-                                     @HeaderParam("Idempotency-Key") 
+                                     @HeaderParam("Idempotency-Key")
                                      String idempotencyKey) {
         logger.info("Payment create request parsed to {}", createCardPaymentRequest);
 
@@ -310,20 +306,16 @@ public class PaymentsResource {
         Response.ResponseBuilder response;
 
         switch (createdPayment.getWhenCreated()) {
-            case BRAND_NEW:
-                response = Response
-                        .created(publicApiUriGenerator.getPaymentURI(paymentWithAllLinks.getPaymentId()));
-                break;
-            case EXISTING:
-                response = Response.ok();
-                break;
-            default:
-                throw new IllegalArgumentException(format("Unrecognised WhenCreated enum: %s", createdPayment.getWhenCreated()));
+            case BRAND_NEW -> response = Response
+                    .created(publicApiUriGenerator.getPaymentURI(paymentWithAllLinks.getPaymentId()));
+            case EXISTING -> response = Response.ok();
+            default ->
+                    throw new IllegalArgumentException(format("Unrecognised WhenCreated enum: %s", createdPayment.getWhenCreated()));
         }
 
         response.entity(paymentWithAllLinks)
-            .header(PRAGMA, "no-cache")
-            .header(CACHE_CONTROL, "no-store");
+                .header(PRAGMA, "no-cache")
+                .header(CACHE_CONTROL, "no-store");
 
         logger.info("Payment returned (created): [ {} ]", paymentWithAllLinks);
         return response.build();
@@ -357,7 +349,7 @@ public class PaymentsResource {
     public Response cancelPayment(@Parameter(hidden = true) @Auth Account account,
                                   @PathParam("paymentId")
                                   @Parameter(name = "paymentId", description = "The `payment_id` of the payment you’re cancelling.", example = "hu20sqlact5260q2nanm0q8u93")
-                                          String paymentId) {
+                                  String paymentId) {
 
         logger.info("Payment cancel request - payment_id=[{}]", paymentId);
 
@@ -392,7 +384,7 @@ public class PaymentsResource {
     public Response capturePayment(@Parameter(hidden = true) @Auth Account account,
                                    @PathParam("paymentId")
                                    @Parameter(name = "paymentId", description = "The `payment_id` of the payment you’re capturing.", example = "hu20sqlact5260q2nanm0q8u93")
-                                           String paymentId) {
+                                   String paymentId) {
         logger.info("Payment capture request - payment_id=[{}]", paymentId);
 
         Response connectorResponse = capturePaymentService.capture(account, paymentId);
