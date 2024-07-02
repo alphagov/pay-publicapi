@@ -91,11 +91,7 @@ public class SearchDisputesResource {
                                                 @QueryParam("page") String pageNumber,
                                                 @Parameter(description = "The number of disputes returned per results page. Defaults to `500`. Maximum value is `500`.")
                                                 @QueryParam("display_size") String displaySize) {
-        logger.info("Disputes search request - [ {} ]",
-                format("from_date: %s, to_date: %s, from_settled_date: %s, to_settled_date: %s, " +
-                                "status: s, page: %s, display_size: %s",
-                        fromDate, toDate, fromSettledDate, toSettledDate, status, pageNumber, displaySize));
-
+        
         DisputesSearchParams params = new DisputesSearchParams.Builder()
                 .withFromDate(fromDate)
                 .withToDate(toDate)
@@ -108,6 +104,11 @@ public class SearchDisputesResource {
 
         validateDisputeParameters(params);
 
+        logger.info("Disputes search request - [ {} ]",
+                format("from_date: %s, to_date: %s, from_settled_date: %s, to_settled_date: %s, " +
+                                "status: s, page: %s, display_size: %s",
+                        fromDate, toDate, fromSettledDate, toSettledDate, status, pageNumber, displaySize));
+        
         return searchDisputesService.searchDisputes(account, params);
     }
 }
