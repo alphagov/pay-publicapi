@@ -121,11 +121,9 @@ public class PaymentsResource {
                                String paymentId,
                                @Parameter(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
 
-        logger.info("Payment request - paymentId={}", paymentId);
-
         var strategy = new GetOnePaymentStrategy(strategyName, account, paymentId, getPaymentService);
         PaymentWithAllLinks payment = strategy.validateAndExecute();
-
+        
         logger.info("Payment returned - [ {} ]", payment);
         return Response.ok(payment)
                 .header(PRAGMA, "no-cache")
@@ -162,13 +160,10 @@ public class PaymentsResource {
                                                   String paymentId,
                                                   @Parameter(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
 
-        logger.info("Payment events request - payment_id={}", paymentId);
-
         var strategy = new GetPaymentEventsStrategy(strategyName, account, paymentId, getPaymentEventsService);
         PaymentEventsResponse paymentEventsResponse = strategy.validateAndExecute();
-
+        
         logger.info("Payment events returned - [ {} ]", paymentEventsResponse);
-
         return paymentEventsResponse;
     }
 
@@ -351,8 +346,6 @@ public class PaymentsResource {
                                   @Parameter(name = "paymentId", description = "The `payment_id` of the payment you’re cancelling.", example = "hu20sqlact5260q2nanm0q8u93")
                                   String paymentId) {
 
-        logger.info("Payment cancel request - payment_id=[{}]", paymentId);
-
         return cancelPaymentService.cancel(account, paymentId);
     }
 
@@ -385,15 +378,12 @@ public class PaymentsResource {
                                    @PathParam("paymentId")
                                    @Parameter(name = "paymentId", description = "The `payment_id` of the payment you’re capturing.", example = "hu20sqlact5260q2nanm0q8u93")
                                    String paymentId) {
-        logger.info("Payment capture request - payment_id=[{}]", paymentId);
-
         Response connectorResponse = capturePaymentService.capture(account, paymentId);
 
         if (connectorResponse.getStatus() == HttpStatus.SC_NO_CONTENT) {
             connectorResponse.close();
             return Response.noContent().build();
         }
-
         throw new CaptureChargeException(connectorResponse);
     }
 }

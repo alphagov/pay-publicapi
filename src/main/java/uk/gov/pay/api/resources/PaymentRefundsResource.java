@@ -89,12 +89,9 @@ public class PaymentRefundsResource {
                                       @PathParam("paymentId") @Parameter(name = "paymentId", 
                                               description = "The unique `payment_id` of the payment you want a list of refunds for.") String paymentId,
                                       @Parameter(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
-
-        logger.info("Get refunds for payment request - paymentId={} using strategy={}", paymentId, strategyName);
-
+        
         GetPaymentRefundsStrategy strategy = new GetPaymentRefundsStrategy(strategyName, account, paymentId, getPaymentRefundsService);
         RefundsResponse refundsResponse = strategy.validateAndExecute();
-
         logger.debug("refund returned - [ {} ]", refundsResponse);
         return refundsResponse;
     }
@@ -129,13 +126,9 @@ public class PaymentRefundsResource {
                                                         "If one payment has multiple refunds, each refund has a different `refund_id`.") String refundId,
                                         @Parameter(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
 
-        logger.info("Payment refund request - paymentId={}, refundId={}", paymentId, refundId);
-
         var strategy = new GetPaymentRefundStrategy(strategyName, account, paymentId, refundId, getPaymentRefundService);
         RefundResponse refundResponse = strategy.validateAndExecute();
-
         logger.info("refund returned - [ {} ]", refundResponse);
-
         return refundResponse;
     }
 
@@ -167,8 +160,7 @@ public class PaymentRefundsResource {
                                          description = "The unique `payment_id` of the payment you want to refund.") String paymentId,
                                  @Parameter(required = true, description = "requestPayload")
                                  CreatePaymentRefundRequest requestPayload) {
-
-        logger.info("Create a refund for payment request - paymentId={}", paymentId);
+        
         RefundResponse refundResponse = createRefundService.createRefund(account, paymentId, requestPayload);
         return Response.accepted(refundResponse).build();
     }
