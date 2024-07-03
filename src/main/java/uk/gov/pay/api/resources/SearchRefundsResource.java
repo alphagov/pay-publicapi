@@ -29,6 +29,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_200_DESCRIPTION;
 import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_401_DESCRIPTION;
 import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_500_DESCRIPTION;
+import static uk.gov.pay.api.validation.RefundSearchValidator.validateSearchParameters;
 
 @Path("/")
 @Tag(name = "Refunding card payments")
@@ -89,13 +90,17 @@ public class SearchRefundsResource {
                                           "Defaults to `500`. Maximum value is `500`.", hidden = false)
                                   @QueryParam("display_size") String displaySize) {
 
+        
+        RefundsParams refundsParams = new RefundsParams(fromDate, toDate, pageNumber, displaySize,
+                fromSettledDate, toSettledDate);
+        
+        validateSearchParameters(refundsParams);
+
         logger.info("Refunds search request - [ {} ]",
                 format("from_date: %s, to_date: %s, page: %s, display_size: %s," +
                                 "from_settled_date: %s, to_settled_date: %s",
                         fromDate, toDate, pageNumber, displaySize, fromSettledDate, toSettledDate));
 
-        RefundsParams refundsParams = new RefundsParams(fromDate, toDate, pageNumber, displaySize,
-                fromSettledDate, toSettledDate);
 
         return searchRefundsService.searchLedgerRefunds(account, refundsParams);
     }
