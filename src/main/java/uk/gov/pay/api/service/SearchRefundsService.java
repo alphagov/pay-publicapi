@@ -10,8 +10,6 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static uk.gov.pay.api.validation.RefundSearchValidator.validateSearchParameters;
-
 public class SearchRefundsService {
 
     private static final String REFUNDS_PATH = "/v1/refunds";
@@ -30,7 +28,6 @@ public class SearchRefundsService {
     }
 
     public SearchRefundsResults searchLedgerRefunds(Account account, RefundsParams params) {
-        validateSearchParameters(params);
         SearchRefundsResponseFromLedger refunds
                 = ledgerService.searchRefunds(account, params.getParamsAsMap());
         return processLedgerResponse(refunds);

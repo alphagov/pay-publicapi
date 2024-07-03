@@ -11,6 +11,7 @@ import uk.gov.pay.api.utils.mocks.RefundTransactionFromLedgerFixture;
 import uk.gov.service.payments.commons.validation.DateTimeUtils;
 
 import java.time.ZonedDateTime;
+import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
@@ -94,6 +95,31 @@ public class SearchRefundsResourceIT extends PaymentResourceITestBase {
                 .body("description", is("Page not found"));
     }
 
+    @Test
+    public void searchRefunds_shouldReturn422_whenInvalidSearchParams() {
+
+        Map<String, String> invalidQueryParams = Map.of(
+                "from_date", "27th of July, 2022, 11:23",
+                "to_date", "27th of July, 2022, 13:05",
+                "from_settled_date", "3rd of July",
+                "to_settled_date", "30th of July",
+                "status", "disputed",
+                "page", "second",
+                "display_size", "short"
+        );
+
+        given().port(app.getLocalPort())
+                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .queryParams(invalidQueryParams)
+                .get("/v1/refunds")
+                .then()
+                .statusCode(422)
+                .contentType(JSON)
+                .body("code", is("P1101"))
+                .body("description", is("Invalid parameters: from_date, to_date, from_settled_date, to_settled_date, page, display_size. See Public API documentation for the correct data formats"));
+
+    }
+    
     private ValidatableResponse getRefundsSearchResponse() {
         return given().port(app.getLocalPort())
                 .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
