@@ -23,10 +23,9 @@ updates:
         versions:
           - ">= 4"
       - dependency-name: "com.google.inject:guice-bom"
-        # Guice 6.x requires compatibility work on our side
         # Guice 7.x only works with Jakarta EE and not Java EE
         versions:
-          - ">= 6"
+          - ">= 7"
     open-pull-requests-limit: 10
     labels:
       - dependencies
