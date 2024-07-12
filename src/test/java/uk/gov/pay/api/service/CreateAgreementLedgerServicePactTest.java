@@ -1,6 +1,6 @@
 package uk.gov.pay.api.service;
 
-import au.com.dius.pact.consumer.PactVerification;
+import au.com.dius.pact.consumer.junit.PactVerification;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,8 +16,8 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateAgreementException;
 import uk.gov.pay.api.model.CreateAgreementRequestBuilder;
 import uk.gov.pay.api.model.TokenPaymentType;
-import uk.gov.service.payments.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
+import uk.gov.service.payments.commons.testing.pact.consumers.PayPactProviderRule;
 
 import javax.ws.rs.client.Client;
 
@@ -31,7 +31,7 @@ import static uk.gov.service.payments.commons.model.ErrorIdentifier.RECURRING_CA
 public class CreateAgreementLedgerServicePactTest {
 
     @Rule
-    public PactProviderRule connectorRule = new PactProviderRule("connector", this);
+    public PayPactProviderRule connectorRule = new PayPactProviderRule("connector", this);
 
     @Mock
     private PublicApiConfig configuration;

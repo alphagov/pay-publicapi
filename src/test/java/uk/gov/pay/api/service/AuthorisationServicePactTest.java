@@ -1,6 +1,6 @@
 package uk.gov.pay.api.service;
 
-import au.com.dius.pact.consumer.PactVerification;
+import au.com.dius.pact.consumer.junit.PactVerification;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
@@ -14,8 +14,8 @@ import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.exception.AuthorisationRequestException;
 import uk.gov.pay.api.exception.mapper.AuthorisationRequestExceptionMapper;
 import uk.gov.pay.api.model.AuthorisationRequest;
-import uk.gov.service.payments.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
+import uk.gov.service.payments.commons.testing.pact.consumers.PayPactProviderRule;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
@@ -33,7 +33,7 @@ public class AuthorisationServicePactTest {
     private AuthorisationRequestExceptionMapper mapper;
 
     @Rule
-    public PactProviderRule connectorRule = new PactProviderRule("connector", this);
+    public PayPactProviderRule connectorRule = new PayPactProviderRule("connector", this);
 
     @Mock
     private PublicApiConfig mockConfiguration;

@@ -1,6 +1,6 @@
 package uk.gov.pay.api.service;
 
-import au.com.dius.pact.consumer.PactVerification;
+import au.com.dius.pact.consumer.junit.PactVerification;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
@@ -15,8 +15,8 @@ import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CancelAgreementException;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.service.payments.commons.model.ErrorIdentifier;
-import uk.gov.service.payments.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
+import uk.gov.service.payments.commons.testing.pact.consumers.PayPactProviderRule;
 
 import javax.ws.rs.client.Client;
 
@@ -32,7 +32,7 @@ public class CancelAgreementConnectorServicePactTest {
     private final Account ACCOUNT = new Account("123456", TokenPaymentType.CARD, "a-token-link");
     
     @Rule
-    public PactProviderRule connectorRule = new PactProviderRule("connector", this);
+    public PayPactProviderRule connectorRule = new PayPactProviderRule("connector", this);
 
     private ConnectorService connectorService;
     @Mock

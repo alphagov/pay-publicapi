@@ -1,6 +1,6 @@
 package uk.gov.pay.api.service;
 
-import au.com.dius.pact.consumer.PactVerification;
+import au.com.dius.pact.consumer.junit.PactVerification;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -15,7 +15,7 @@ import uk.gov.pay.api.exception.CreateRefundException;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.service.payments.commons.model.ErrorIdentifier;
-import uk.gov.service.payments.commons.testing.pact.consumers.PactProviderRule;
+import uk.gov.service.payments.commons.testing.pact.consumers.PayPactProviderRule;
 import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
 
 import javax.ws.rs.client.Client;
@@ -31,7 +31,7 @@ public class CreateRefundServicePactTest {
     private CreateRefundService createRefundService;
 
     @Rule
-    public PactProviderRule connectorRule = new PactProviderRule("connector", this);
+    public PayPactProviderRule connectorRule = new PayPactProviderRule("connector", this);
 
     @Mock
     private PublicApiConfig configuration;

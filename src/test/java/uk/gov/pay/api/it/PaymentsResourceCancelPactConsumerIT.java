@@ -1,6 +1,6 @@
 package uk.gov.pay.api.it;
 
-import au.com.dius.pact.consumer.PactVerification;
+import au.com.dius.pact.consumer.junit.PactVerification;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 import org.apache.http.HttpStatus;
@@ -11,8 +11,8 @@ import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
-import uk.gov.service.payments.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
+import uk.gov.service.payments.commons.testing.pact.consumers.PayPactProviderRule;
 
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
@@ -33,7 +33,7 @@ public class PaymentsResourceCancelPactConsumerIT {
     public WireMockRule publicAuth = new WireMockRule(publicAuthPort);
 
     @Rule
-    public PactProviderRule connector = new PactProviderRule("connector", this);
+    public PayPactProviderRule connector = new PayPactProviderRule("connector", this);
 
     @Rule
     public DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(

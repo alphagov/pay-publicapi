@@ -1,6 +1,6 @@
 package uk.gov.pay.api.service;
 
-import au.com.dius.pact.consumer.PactVerification;
+import au.com.dius.pact.consumer.junit.PactVerification;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -12,7 +12,6 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
-import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.Wallet;
@@ -20,8 +19,8 @@ import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.model.links.PostLink;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
-import uk.gov.service.payments.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
+import uk.gov.service.payments.commons.testing.pact.consumers.PayPactProviderRule;
 
 import javax.ws.rs.client.Client;
 import java.util.Collections;
@@ -43,7 +42,7 @@ public class GetPaymentServicePactTest {
     private GetPaymentService getPaymentService;
 
     @Rule
-    public PactProviderRule connectorRule = new PactProviderRule("connector", this);
+    public PayPactProviderRule connectorRule = new PayPactProviderRule("connector", this);
 
     @Mock
     private PublicApiConfig mockConfiguration;
