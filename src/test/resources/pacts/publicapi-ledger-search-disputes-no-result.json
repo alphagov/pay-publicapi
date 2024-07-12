@@ -7,7 +7,7 @@
   },
   "interactions": [
     {
-      "description": "search payments",
+      "description": "search disputed payments",
       "providerStates": [
         {
           "name": "a dispute lost transaction exists",
@@ -56,7 +56,28 @@
         },
         "matchingRules": {
           "body": {
-            "results": {
+            "$.total": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.count": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.page": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.results[*]": {
               "matchers": [
                 {
                   "match": "type"
