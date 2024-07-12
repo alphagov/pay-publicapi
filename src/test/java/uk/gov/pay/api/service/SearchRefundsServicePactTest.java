@@ -1,6 +1,6 @@
 package uk.gov.pay.api.service;
 
-import au.com.dius.pact.consumer.PactVerification;
+import au.com.dius.pact.consumer.junit.PactVerification;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,8 +16,8 @@ import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.search.PaginationDecorator;
 import uk.gov.pay.api.model.search.card.SearchRefundsResults;
-import uk.gov.service.payments.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
+import uk.gov.service.payments.commons.testing.pact.consumers.PayPactProviderRule;
 
 import javax.ws.rs.client.Client;
 
@@ -32,9 +32,9 @@ import static org.mockito.Mockito.when;
 public class SearchRefundsServicePactTest {
 
     @Rule
-    public PactProviderRule connectorRule = new PactProviderRule("connector", this);
+    public PayPactProviderRule connectorRule = new PayPactProviderRule("connector", this);
     @Rule
-    public PactProviderRule ledgerRule = new PactProviderRule("ledger", this);
+    public PayPactProviderRule ledgerRule = new PayPactProviderRule("ledger", this);
     @Mock
     private PublicApiConfig mockConfiguration;
 

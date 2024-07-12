@@ -1,6 +1,6 @@
 package uk.gov.pay.api.ledger.service;
 
-import au.com.dius.pact.consumer.PactVerification;
+import au.com.dius.pact.consumer.junit.PactVerification;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,8 +20,8 @@ import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.search.card.PaymentForSearchResult;
 import uk.gov.pay.api.service.PaymentUriGenerator;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
-import uk.gov.service.payments.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
+import uk.gov.service.payments.commons.testing.pact.consumers.PayPactProviderRule;
 
 import javax.ws.rs.client.Client;
 import java.util.Map;
@@ -46,7 +46,7 @@ public class TransactionSearchServiceTest {
     private static final String CHARGE_ID = "charge97837509646393e3C";
 
     @Rule
-    public PactProviderRule ledgerRule = new PactProviderRule("ledger", this);
+    public PayPactProviderRule ledgerRule = new PayPactProviderRule("ledger", this);
 
     @Before
     public void setup() {

@@ -1,6 +1,6 @@
 package uk.gov.pay.api.service;
 
-import au.com.dius.pact.consumer.PactVerification;
+import au.com.dius.pact.consumer.junit.PactVerification;
 import com.jayway.jsonassert.JsonAssert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -17,8 +17,8 @@ import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.search.PaginationDecorator;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
-import uk.gov.service.payments.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
+import uk.gov.service.payments.commons.testing.pact.consumers.PayPactProviderRule;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 public class CardPaymentSearchServicePactTest {
 
     @Rule
-    public PactProviderRule ledgerRule = new PactProviderRule("ledger", this);
+    public PayPactProviderRule ledgerRule = new PayPactProviderRule("ledger", this);
 
     @Mock
     private PublicApiConfig configuration;

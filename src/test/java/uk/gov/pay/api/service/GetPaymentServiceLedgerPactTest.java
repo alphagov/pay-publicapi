@@ -1,6 +1,6 @@
 package uk.gov.pay.api.service;
 
-import au.com.dius.pact.consumer.PactVerification;
+import au.com.dius.pact.consumer.junit.PactVerification;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -14,7 +14,6 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
-import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.Wallet;
@@ -22,8 +21,8 @@ import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
-import uk.gov.service.payments.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
+import uk.gov.service.payments.commons.testing.pact.consumers.PayPactProviderRule;
 
 import javax.ws.rs.client.Client;
 import java.util.Optional;
@@ -50,7 +49,7 @@ public class GetPaymentServiceLedgerPactTest {
     public static WireMockClassRule connectorRule = new WireMockClassRule(CONNECTOR_PORT);
 
     @Rule
-    public PactProviderRule ledgerRule = new PactProviderRule("ledger", this);
+    public PayPactProviderRule ledgerRule = new PayPactProviderRule("ledger", this);
 
     @Mock
     private PublicApiConfig mockConfiguration;

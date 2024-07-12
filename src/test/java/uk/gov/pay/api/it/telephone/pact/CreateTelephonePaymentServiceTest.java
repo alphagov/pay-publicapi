@@ -1,6 +1,6 @@
 package uk.gov.pay.api.it.telephone.pact;
 
-import au.com.dius.pact.consumer.PactVerification;
+import au.com.dius.pact.consumer.junit.PactVerification;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Rule;
@@ -19,8 +19,8 @@ import uk.gov.pay.api.model.telephone.Supplemental;
 import uk.gov.pay.api.model.telephone.TelephonePaymentResponse;
 import uk.gov.pay.api.service.ConnectorUriGenerator;
 import uk.gov.pay.api.service.telephone.CreateTelephonePaymentService;
-import uk.gov.service.payments.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
+import uk.gov.service.payments.commons.testing.pact.consumers.PayPactProviderRule;
 
 import javax.ws.rs.client.Client;
 import java.util.Optional;
@@ -36,7 +36,7 @@ public class CreateTelephonePaymentServiceTest {
     private static CreateTelephonePaymentRequest.Builder builder = new CreateTelephonePaymentRequest.Builder();
 
     @Rule
-    public PactProviderRule connectorRule = new PactProviderRule("connector", this);
+    public PayPactProviderRule connectorRule = new PayPactProviderRule("connector", this);
 
     @Mock
     private PublicApiConfig configuration;

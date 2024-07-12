@@ -1,6 +1,6 @@
 package uk.gov.pay.api.service;
 
-import au.com.dius.pact.consumer.PactVerification;
+import au.com.dius.pact.consumer.junit.PactVerification;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
@@ -18,8 +18,8 @@ import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.search.PaginationDecorator;
 import uk.gov.pay.api.model.search.dispute.DisputeForSearchResult;
 import uk.gov.pay.api.model.search.dispute.DisputesSearchResults;
-import uk.gov.service.payments.commons.testing.pact.consumers.PactProviderRule;
 import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
+import uk.gov.service.payments.commons.testing.pact.consumers.PayPactProviderRule;
 
 import javax.ws.rs.client.Client;
 
@@ -32,7 +32,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class SearchDisputesServicePactTest {
     @Rule
-    public PactProviderRule ledgerRule = new PactProviderRule("ledger", this);
+    public PayPactProviderRule ledgerRule = new PayPactProviderRule("ledger", this);
 
     @Mock
     private PublicApiConfig mockConfiguration;
