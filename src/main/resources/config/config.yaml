@@ -16,8 +16,6 @@ server:
 
 logging:
   level: INFO
-  loggers:
-    "io.lettuce.core.protocol": DEBUG
   appenders:
     - type: logstash-console
       threshold: ALL
