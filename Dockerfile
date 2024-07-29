@@ -5,7 +5,7 @@ COPY . .
 
 RUN ["mvn", "clean", "--no-transfer-progress", "package", "-DskipTests"]
 
-FROM eclipse-temurin:21-jre-alpine@sha256:f05c742dd20051b104b939370f7db4d6eb420cc7fd842aeb4e2446837da3bd03 AS final
+FROM eclipse-temurin:21-jre-alpine@sha256:86f4793ae9ed7d77596df70178090c1c1b627e4d7d56444eda8e69f70419cc86 AS final
 
 RUN ["apk", "--no-cache", "upgrade"]
 
