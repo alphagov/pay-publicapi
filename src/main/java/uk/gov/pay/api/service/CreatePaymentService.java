@@ -51,7 +51,8 @@ public class CreatePaymentService {
 
         throw new CreateChargeException(connectorResponse);
     }
-   private PaymentWithAllLinks buildResponseModel(Charge chargeFromResponse) {
+
+    private PaymentWithAllLinks buildResponseModel(Charge chargeFromResponse) {
         return PaymentWithAllLinks.getPaymentWithLinks(
                 chargeFromResponse,
                 publicApiUriGenerator.getPaymentURI(chargeFromResponse.getChargeId()),
@@ -69,7 +70,6 @@ public class CreatePaymentService {
     private boolean connectorReturnedExistingPayment(Response connectorResponse) {
         return connectorResponse.getStatus() == HttpStatus.SC_OK;
     }
-
 
     private Response createCharge(Account account, CreateCardPaymentRequest createCardPaymentRequest, String idempotencyKey) {
         MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
