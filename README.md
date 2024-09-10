@@ -10,6 +10,7 @@ Configuration of the application is performed via environment variables, some of
 | --------------------------- | --------- | -------------- | ---------------------------------------------------------------------------------------------------------- |
 | `ADMIN_PORT`                | No        | 8081           | The port number to listen for Dropwizard admin requests on.                                                |
 | `ALLOW_HTTP_FOR_RETURN_URL` | No        | false          | Whether to allow service return URLs to be non-HTTPS                                                       |
+| `BIND_HOST`                 | No        | 127.0.0.1      | The IP address for the application to bind to.                                                           |
 | `CONNECTOR_URL`             | Yes       | N/A            | The URL to the [connector](https://github.com/alphagov/pay-connector) service                              |
 | `DISABLE_INTERNAL_HTTPS`    | No        | false          | Disable secure connection for calls to internal APIs                                                       |
 | `PORT`                      | No        | 8080           | The port number to listen for requests on.                                                                 |
