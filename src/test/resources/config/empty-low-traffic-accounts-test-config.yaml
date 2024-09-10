@@ -1,9 +1,11 @@
 server:
   applicationConnectors:
     - type: http
+      bindHost: ${BIND_HOST:-127.0.0.1}
       port: 0
   adminConnectors:
     - type: http
+      bindHost: ${BIND_HOST:-127.0.0.1}
       port: 0
 
 logging:
