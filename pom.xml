@@ -225,7 +225,7 @@
         <dependency>
             <groupId>jakarta.inject</groupId>
             <artifactId>jakarta.inject-api</artifactId>
-            <version>2.0.1</version>
+            <version>2.0.1.MR</version>
         </dependency>
 
         <!-- Test dependencies that are imported from one of the BOMs specified
