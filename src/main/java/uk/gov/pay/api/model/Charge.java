@@ -1,5 +1,6 @@
 package uk.gov.pay.api.model;
 
+import uk.gov.pay.api.utils.AuthorisationSummaryHelper;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
@@ -119,7 +120,7 @@ public class Charge {
                 chargeFromResponse.getMetadata().orElse(null),
                 chargeFromResponse.getFee(),
                 chargeFromResponse.getNetAmount(),
-                chargeFromResponse.getAuthorisationSummary(),
+                AuthorisationSummaryHelper.includeAuthorisationSummaryWhen3dsRequired(chargeFromResponse.getAuthorisationSummary()),
                 chargeFromResponse.getAgreementId(),
                 chargeFromResponse.getAuthorisationMode()
         );
@@ -151,7 +152,7 @@ public class Charge {
                 transactionResponse.getMetadata().orElse(null),
                 transactionResponse.getFee(),
                 transactionResponse.getNetAmount(),
-                transactionResponse.getAuthorisationSummary(),
+                AuthorisationSummaryHelper.includeAuthorisationSummaryWhen3dsRequired(transactionResponse.getAuthorisationSummary()),
                 null,
                 transactionResponse.getAuthorisationMode());
     }

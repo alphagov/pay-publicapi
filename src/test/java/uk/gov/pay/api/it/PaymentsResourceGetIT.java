@@ -694,7 +694,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentWithAuthorisationSummaryThroughLedger() {
+    public void getPaymentWithAuthorisationSummaryAndThreeDSecureRequiredIsTrueThroughLedger() {
         AuthorisationSummary authorisationSummary = new AuthorisationSummary(new ThreeDSecure(true));
         ledgerMockClient.respondWithTransaction(CHARGE_ID,
                 getLedgerTransaction()
@@ -705,6 +705,20 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
 
         assertCommonPaymentFields(response);
         assertPaymentWithAuthorisationSummary(response);
+    }
+
+    @Test
+    public void getPaymentWithAuthorisationSummaryAndThreeDSecureRequiredIsFalseThroughLedger() {
+        AuthorisationSummary authorisationSummary = new AuthorisationSummary(new ThreeDSecure(false));
+        ledgerMockClient.respondWithTransaction(CHARGE_ID,
+                getLedgerTransaction()
+                        .withAuthorisationSummary(authorisationSummary)
+                        .build());
+
+        ValidatableResponse response = getPaymentResponse(CHARGE_ID, LEDGER_ONLY_STRATEGY);
+
+        assertCommonPaymentFields(response);
+        response.body("authorisation_summary", is(nullValue()));
     }
 
     @Test
@@ -753,9 +767,35 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
 
     @Test
     public void getPaymentWithNoAuthorisationSummaryThroughConnector() {
-        AuthorisationSummary authorisationSummary = new AuthorisationSummary(new ThreeDSecure(true));
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 getConnectorCharge()
+                        .build());
+
+        ValidatableResponse response = getPaymentResponse(CHARGE_ID);
+
+        assertCommonPaymentFields(response);
+        assertConnectorOnlyPaymentFields(response);
+        response.body("authorisation_summary", is(nullValue()));
+    }
+
+    @Test
+    public void getPaymentWithNoAuthorisationSummaryThroughLedger() {
+        ledgerMockClient.respondWithTransaction(CHARGE_ID,
+                getLedgerTransaction()
+                        .build());
+
+        ValidatableResponse response = getPaymentResponse(CHARGE_ID, LEDGER_ONLY_STRATEGY);
+
+        assertCommonPaymentFields(response);
+        response.body("authorisation_summary", is(nullValue()));
+    }
+
+    @Test
+    public void getPaymentShouldNotIncludeAuthorisationSummaryThroughConnectorWhenThreeDSecureRequiredIsFalse() {
+        AuthorisationSummary authorisationSummary = new AuthorisationSummary(new ThreeDSecure(false));
+        connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
+                getConnectorCharge()
+                        .withAuthorisationSummary(authorisationSummary)
                         .build());
 
         ValidatableResponse response = getPaymentResponse(CHARGE_ID);

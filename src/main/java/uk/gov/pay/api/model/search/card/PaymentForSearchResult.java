@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.api.model.AuthorisationSummary;
 import uk.gov.pay.api.model.CardDetails;
-import uk.gov.pay.api.model.CardDetailsFromResponse;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
@@ -12,6 +11,7 @@ import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.TransactionResponse;
 import uk.gov.pay.api.model.links.PaymentLinksForSearch;
+import uk.gov.pay.api.utils.AuthorisationSummaryHelper;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
@@ -85,7 +85,7 @@ public class PaymentForSearchResult extends CardPayment {
                 paymentResult.getMetadata().orElse(null),
                 paymentResult.getFee(),
                 paymentResult.getNetAmount(),
-                paymentResult.getAuthorisationSummary(),
+                AuthorisationSummaryHelper.includeAuthorisationSummaryWhen3dsRequired(paymentResult.getAuthorisationSummary()),
                 paymentResult.getAuthorisationMode());
     }
 
