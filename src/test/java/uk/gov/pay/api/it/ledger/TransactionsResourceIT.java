@@ -139,6 +139,38 @@ public class TransactionsResourceIT {
                 .body("_links.last_page.href", is(expectedChargesLocationFor("?reference=reference&display_size=500&page=1")));
     }
 
+    @Test
+    public void shouldReturnAListOfTransactionsWithoutAuthorisationSummaryWhenThreeDSecureRequiredFalse() {
+        Address billingAddress = new Address("line1", null, "AB1 CD2", "London", "GB");
+        CardDetailsFromResponse cardDetails = new CardDetailsFromResponse(null, null, "J. Doe",
+                null, billingAddress, "", null);
+        PaymentNavigationLinksFixture fixture = new PaymentNavigationLinksFixture();
+        fixture.withSelfLink("https://ledger/v1/transaction?account_id=1&reference=reference&page=1&display_size=500");
+        fixture.withFirstLink("https://ledger/v1/transaction?account_id=1&reference=reference&page=1&display_size=500");
+        fixture.withLastLink("https://ledger/v1/transaction?account_id=1&reference=reference&page=1&display_size=500");
+        String transactions = aPaginatedTransactionSearchResult()
+                .withCount(1)
+                .withPage(1)
+                .withTotal(1)
+                .withLinks(fixture)
+                .withPayments(aSuccessfulSearchPayment()
+                        .withInProgressState("created")
+                        .withReference("reference")
+                        .withReturnUrl(DEFAULT_RETURN_URL)
+                        .withCardDetails(cardDetails)
+                        .withNumberOfResults(2)
+                        .withEmail("j.doe@example.org")
+                        .withAuthorisationSummary(new AuthorisationSummary(new ThreeDSecure(false)))
+                        .getResults())
+                .build();
+        ledgerMockClient.respondOk_whenSearchCharges(transactions);
+
+        searchTransactions(ImmutableMap.of("reference", "reference"))
+                .statusCode(200)
+                .contentType(JSON)
+                .body("results[0].authorisation_summary", is(nullValue()));
+    }
+
     private ValidatableResponse searchTransactions(Map<String, String> queryParams) {
         return given().port(app.getLocalPort())
                 .accept(JSON)
