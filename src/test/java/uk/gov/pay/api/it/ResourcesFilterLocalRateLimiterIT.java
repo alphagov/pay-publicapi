@@ -39,7 +39,7 @@ import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
-import static uk.gov.service.payments.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
+import static uk.gov.service.payments.commons.model.CommonDateTimeFormatters.ISO_INSTANT_MILLISECOND_PRECISION;
 import static uk.gov.service.payments.commons.testing.port.PortFactory.findFreePort;
 
 public class ResourcesFilterLocalRateLimiterIT {

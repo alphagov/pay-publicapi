@@ -48,7 +48,7 @@ import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 import static uk.gov.pay.api.utils.mocks.TransactionEventFixture.TransactionEventFixtureBuilder.aTransactionEventFixture;
 import static uk.gov.pay.api.utils.mocks.TransactionFromLedgerFixture.TransactionFromLedgerBuilder.aTransactionFromLedgerFixture;
-import static uk.gov.service.payments.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
+import static uk.gov.service.payments.commons.model.CommonDateTimeFormatters.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public class PaymentsResourceGetIT extends PaymentResourceITestBase {
 

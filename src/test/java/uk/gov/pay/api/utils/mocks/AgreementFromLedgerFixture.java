@@ -8,7 +8,7 @@ import uk.gov.pay.api.model.CardDetailsFromResponse;
 
 import java.time.ZonedDateTime;
 
-import static uk.gov.service.payments.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
+import static uk.gov.service.payments.commons.model.CommonDateTimeFormatters.ISO_INSTANT_MILLISECOND_PRECISION;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class AgreementFromLedgerFixture {
