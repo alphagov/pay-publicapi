@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Random;
 
 import static java.util.UUID.randomUUID;
-import static uk.gov.service.payments.commons.model.ApiResponseDateTimeFormatter.ISO_INSTANT_MILLISECOND_PRECISION;
+import static uk.gov.service.payments.commons.model.CommonDateTimeFormatters.ISO_INSTANT_MILLISECOND_PRECISION;
 
 public abstract class PaymentResultBuilder {
 
