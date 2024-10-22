@@ -45,20 +45,6 @@ updates:
       - dependencies
       - govuk-pay
       - docker
-  - package-ecosystem: docker
-    directory: "/m1"
-    schedule:
-      interval: daily
-      time: "03:00"
-    ignore:
-      - dependency-name: "eclipse-temurin"
-        versions:
-          - "> 21"
-    open-pull-requests-limit: 10
-    labels:
-      - dependencies
-      - govuk-pay
-      - docker
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
