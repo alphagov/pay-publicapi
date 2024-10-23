@@ -11,42 +11,12 @@ on:
     # Weekly schedule
     - cron: '43 7 * * 1'
 
+permissions:
+  security-events: write
+
 jobs:
   analyze:
-    name: Analyze
-    runs-on: 'ubuntu-latest'
-    timeout-minutes: 360
-    permissions:
-      # required for CodeQL to raise security issues on the repo
-      security-events: write
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
-        with:
-          fetch-depth: '0'
-
-      # Initializes the CodeQL tools for scanning.
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@379614612a29c9e28f31f39a59013eb8012a51f0
-        with:
-          # CodeQL options: [ 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'swift' ]
-          languages: 'java-kotlin'
-          config: |
-            paths:
-              - 'src/**'
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@387ac29b308b003ca37ba93a6cab5eb57c8f5f93
-        with:
-          java-version: '21'
-          distribution: 'adopt'
-
-      - name: Compile project
-        run: mvn clean compile
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@379614612a29c9e28f31f39a59013eb8012a51f0
-        with:
-          category: "/language:java-kotlin"
-
+    name: "Run CodeQL"
+    uses: alphagov/pay-ci/.github/workflows/_run-codeql-scan.yml@master
+    with:
+      is_java_repo: true
