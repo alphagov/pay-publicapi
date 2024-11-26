@@ -22,6 +22,7 @@ import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_CARD_NUMBER_
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_CONNECTOR_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_IDEMPOTENCY_KEY_ALREADY_USED;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_MOTO_NOT_ENABLED;
+import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_NON_HTTPS_RETURN_URL_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_UNEXPECTED_FIELD_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_VALIDATION_ERROR;
 import static uk.gov.pay.api.model.RequestError.Code.GENERIC_MISSING_FIELD_ERROR_MESSAGE_FROM_CONNECTOR;
@@ -51,6 +52,11 @@ public class CreateChargeExceptionMapper implements ExceptionMapper<CreateCharge
         } else {
             ErrorIdentifier errorIdentifier = exception.getErrorIdentifier();
             switch (errorIdentifier) {
+                case NON_HTTPS_RETURN_URL_NOT_ALLOWED_FOR_A_LIVE_ACCOUNT:
+                    statusCode = HttpStatus.UNPROCESSABLE_ENTITY_422;
+                    requestError = aRequestError("return_url", CREATE_PAYMENT_NON_HTTPS_RETURN_URL_ERROR,
+                            "Must begin with https:// for a live gateway account");
+                    break;
                 case ZERO_AMOUNT_NOT_ALLOWED:
                     statusCode = HttpStatus.UNPROCESSABLE_ENTITY_422;
                     requestError = aRequestError("amount", CREATE_PAYMENT_VALIDATION_ERROR,

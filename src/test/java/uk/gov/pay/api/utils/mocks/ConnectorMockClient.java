@@ -5,8 +5,6 @@ import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
 import uk.gov.pay.api.it.fixtures.PaymentRefundJsonFixture;
-import uk.gov.pay.api.it.fixtures.PaymentSingleResultBuilder;
-import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetailsFromResponse;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.links.Link;
@@ -14,13 +12,9 @@ import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.ErrorIdentifier;
-import uk.gov.service.payments.commons.model.SupportedLanguage;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,9 +44,16 @@ import static org.eclipse.jetty.http.HttpStatus.OK_200;
 import static org.eclipse.jetty.http.HttpStatus.PRECONDITION_FAILED_412;
 import static org.eclipse.jetty.http.HttpStatus.UNPROCESSABLE_ENTITY_422;
 import static uk.gov.pay.api.it.PaymentsResourceGetIT.AWAITING_CAPTURE_REQUEST;
-import static uk.gov.pay.api.it.fixtures.PaymentSingleResultBuilder.aSuccessfulSinglePayment;
 import static uk.gov.pay.api.utils.mocks.AgreementResponseFromConnector.AgreementResponseFromConnectorBuilder.aCreateAgreementResponseFromConnector;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
+import static uk.gov.pay.api.utils.mocks.MockHelperFunctions.buildChargeResponse;
+import static uk.gov.pay.api.utils.mocks.MockHelperFunctions.chargeLocation;
+import static uk.gov.pay.api.utils.mocks.MockHelperFunctions.fromCreateChargeRequestParams;
+import static uk.gov.pay.api.utils.mocks.MockHelperFunctions.getChargeIdTokenMap;
+import static uk.gov.pay.api.utils.mocks.MockHelperFunctions.nextUrl;
+import static uk.gov.pay.api.utils.mocks.MockHelperFunctions.nextUrlPost;
+import static uk.gov.pay.api.utils.mocks.MockHelperFunctions.validGetLink;
+import static uk.gov.pay.api.utils.mocks.MockHelperFunctions.validPostLink;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.ACCOUNT_NOT_LINKED_WITH_PSP;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.AGREEMENT_NOT_ACTIVE;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.AGREEMENT_NOT_FOUND;
@@ -72,46 +73,12 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
     private static final String CONNECTOR_MOCK_CHARGE_EVENTS_PATH = CONNECTOR_MOCK_CHARGE_PATH + "/events";
     private static final String CONNECTOR_MOCK_CHARGE_REFUNDS_PATH = CONNECTOR_MOCK_CHARGE_PATH + "/refunds";
     private static final String CONNECTOR_MOCK_CHARGE_REFUND_BY_ID_PATH = CONNECTOR_MOCK_CHARGE_REFUNDS_PATH + "/%s";
-    private static final DateFormat SDF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
     public static final String VALID_AGREEMENT_ID = "12345678901234567890123456";
 
     public ConnectorMockClient(WireMockClassRule connectorMock) {
         super(connectorMock);
     }
-
-    private String buildChargeResponse(ChargeResponseFromConnector responseFromConnector) {
-        PaymentSingleResultBuilder resultBuilder = aSuccessfulSinglePayment()
-                .withChargeId(responseFromConnector.getChargeId())
-                .withAmount(responseFromConnector.getAmount())
-                .withMatchingReference(responseFromConnector.getReference())
-                .withEmail(responseFromConnector.getEmail())
-                .withDescription(responseFromConnector.getDescription())
-                .withState(responseFromConnector.getState())
-                .withReturnUrl(responseFromConnector.getReturnUrl())
-                .withCreatedDate(responseFromConnector.getCreatedDate())
-                .withLanguage(responseFromConnector.getLanguage())
-                .withPaymentProvider(responseFromConnector.getPaymentProvider())
-                .withDelayedCapture(responseFromConnector.isDelayedCapture())
-                .withMoto(responseFromConnector.isMoto())
-                .withAgreementId(responseFromConnector.getAgreementId())
-                .withLinks(responseFromConnector.getLinks())
-                .withSettlementSummary(responseFromConnector.getSettlementSummary())
-                .withAuthorisationMode(responseFromConnector.getAuthorisationMode());
-        
-        ofNullable(responseFromConnector.getCardDetails()).ifPresent(resultBuilder::withCardDetails);
-        ofNullable(responseFromConnector.getRefundSummary()).ifPresent(resultBuilder::withRefundSummary);
-        ofNullable(responseFromConnector.getGatewayTransactionId()).ifPresent(resultBuilder::withGatewayTransactionId);
-        ofNullable(responseFromConnector.getCorporateCardSurcharge()).ifPresent(resultBuilder::withCorporateCardSurcharge);
-        ofNullable(responseFromConnector.getTotalAmount()).ifPresent(resultBuilder::withTotalAmount);
-        ofNullable(responseFromConnector.getFee()).ifPresent(resultBuilder::withFee);
-        ofNullable(responseFromConnector.getNetAmount()).ifPresent(resultBuilder::withNetAmount);
-        ofNullable(responseFromConnector.getAuthorisationSummary()).ifPresent(resultBuilder::withAuthorisationSummary);
-        ofNullable(responseFromConnector.getWalletType()).ifPresent(resultBuilder::withWalletType);
-        responseFromConnector.getMetadata().ifPresent(resultBuilder::withMetadata);
-
-        return resultBuilder.build();
-    }
-
+    
     private String buildAgreementResponse(AgreementResponseFromConnector responseFromConnector) {
         return new JsonStringBuilder()
                 .add("reference", responseFromConnector.getReference())
@@ -166,19 +133,14 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         return jsonStringBuilder.build();
     }
 
-    private String buildChargeEventsResponse(String chargeId, List<Map<String, String>> events, ImmutableMap<?, ?>... links) {
+    private String buildChargeEventsResponse(String chargeId, List<Map<String, String>> events, Map<?, ?>... links) {
         return new JsonStringBuilder()
                 .add("charge_id", chargeId)
                 .add("events", events)
                 .add("links", asList(links))
                 .build();
     }
-
-    @Override
-    String nextUrlPost() {
-        return "http://frontend_card/charge/";
-    }
-
+    
     private String chargeEventsLocation(String accountId, String chargeId) {
         return format(CONNECTOR_MOCK_CHARGE_EVENTS_PATH, accountId, chargeId);
     }
@@ -256,47 +218,13 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     public void respondCreated_whenCreateCharge(String gatewayAccountId, CreateChargeRequestParams requestParams) {
 
-        var responseFromConnector = aCreateOrGetChargeResponseFromConnector()
-                .withAmount(requestParams.getAmount())
-                .withChargeId("chargeId")
-                .withState(new PaymentState("created", false, null, null))
-                .withReturnUrl(requestParams.getReturnUrl())
-                .withDescription(requestParams.getDescription())
-                .withReference(requestParams.getReference())
-                .withPaymentProvider("Sandbox")
-                .withGatewayTransactionId("gatewayTransactionId")
-                .withCreatedDate(SDF.format(new Date()))
-                .withLanguage(SupportedLanguage.ENGLISH)
-                .withDelayedCapture(false)
-                .withCardDetails(new CardDetailsFromResponse("1234", "123456", "Mr. Payment", "12/19", null, "Mastercard", "debit"))
-                .withLink(validGetLink(chargeLocation(gatewayAccountId, "chargeId"), "self"))
-                .withLink(validGetLink(nextUrl("chargeTokenId"), "next_url"))
-                .withLink(validPostLink(nextUrlPost(), "next_url_post", "application/x-www-form-urlencoded", getChargeIdTokenMap("chargeTokenId", false)));
-
-        requestParams.getSetUpAgreement().ifPresent(responseFromConnector::withAgreementId);
-
-        if (!requestParams.getMetadata().isEmpty())
-            responseFromConnector.withMetadata(requestParams.getMetadata());
-
-        if (requestParams.getEmail() != null) {
-            responseFromConnector.withEmail(requestParams.getEmail());
-        }
-
-        if (requestParams.getCardholderName().isPresent() || requestParams.getAddressLine1().isPresent() ||
-                requestParams.getAddressLine2().isPresent() || requestParams.getAddressPostcode().isPresent() ||
-                requestParams.getAddressCity().isPresent() || requestParams.getAddressCountry().isPresent()) {
-            Address billingAddress = new Address(requestParams.getAddressLine1().orElse(null), requestParams.getAddressLine2().orElse(null),
-                    requestParams.getAddressPostcode().orElse(null), requestParams.getAddressCity().orElse(null), requestParams.getAddressCountry().orElse(null));
-            CardDetailsFromResponse cardDetails = new CardDetailsFromResponse(null, null, requestParams.getCardholderName().orElse(null),
-                    null, billingAddress, null, null);
-            responseFromConnector.withCardDetails(cardDetails);
-        }
+        var responseFromConnector = fromCreateChargeRequestParams(gatewayAccountId, requestParams);
 
         mockCreateCharge(gatewayAccountId, aResponse()
                 .withStatus(CREATED_201)
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                 .withHeader(LOCATION, chargeLocation(gatewayAccountId, "chargeId"))
-                .withBody(buildChargeResponse(responseFromConnector.build())));
+                .withBody(buildChargeResponse(responseFromConnector)));
     }
 
     public void respondCreated_whenCreateCharge(String chargeTokenId, String gatewayAccountId, ChargeResponseFromConnector responseFromConnector) {
@@ -649,13 +577,6 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
                 .withStatus(statusCode)
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON)
                 .withBody(new GsonBuilder().create().toJson(payload));
-    }
-
-    //"Gson can not automatically deserialize the pure inner classes since their no-args constructor"
-    private Map<String, String> getChargeIdTokenMap(String chargeTokenId, boolean isMotoApi) {
-        final Map<String, String> chargeTokenIdMap = new HashMap<>();
-        chargeTokenIdMap.put(isMotoApi ? "one_time_token" : "chargeTokenId", chargeTokenId);
-        return chargeTokenIdMap;
     }
 
     public void verifyCancelCharge(String paymentId, String accountId) {
