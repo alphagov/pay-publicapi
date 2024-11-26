@@ -1,14 +1,9 @@
 package uk.gov.pay.api.utils.mocks;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
-import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
 import uk.gov.pay.api.utils.JsonStringBuilder;
-
-import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -16,8 +11,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static java.lang.String.format;
-import static javax.ws.rs.HttpMethod.GET;
-import static javax.ws.rs.HttpMethod.POST;
 import static uk.gov.service.payments.commons.model.Source.CARD_API;
 
 public abstract class BaseConnectorMockClient {
@@ -31,37 +24,9 @@ public abstract class BaseConnectorMockClient {
     static String CONNECTOR_MOCK_AUTHORISATION_PATH = "/v1/api/charges/authorise";
 
     WireMockClassRule wireMockClassRule;
-    Gson gson = new Gson();
-    ObjectMapper objectMapper = new ObjectMapper();
 
     BaseConnectorMockClient(WireMockClassRule wireMockClassRule) {
         this.wireMockClassRule = wireMockClassRule;
-    }
-
-    ImmutableMap<String, String> validGetLink(String href, String rel) {
-        return ImmutableMap.of(
-                "href", href,
-                "rel", rel,
-                "method", GET);
-    }
-
-    ImmutableMap<String, Object> validPostLink(String href, String rel, String type, Map<String, String> params) {
-        return ImmutableMap.of(
-                "href", href,
-                "rel", rel,
-                "type", type,
-                "params", params,
-                "method", POST);
-    }
-
-    String chargeLocation(String accountId, String chargeId) {
-        return format(CONNECTOR_MOCK_CHARGE_PATH, accountId, chargeId);
-    }
-    
-    abstract String nextUrlPost();
-
-    String nextUrl(String tokenId) {
-        return nextUrlPost() + tokenId;
     }
 
     void whenGetCharge(String gatewayAccountId, String chargeId, ResponseDefinitionBuilder response) {
