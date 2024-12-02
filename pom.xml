@@ -265,7 +265,7 @@
         <dependency>
             <groupId>io.dropwizard.modules</groupId>
             <artifactId>dropwizard-testing-junit4</artifactId>
-            <version>3.0.10</version>
+            <version>3.0.11</version>
             <scope>test</scope>
         </dependency>
         <dependency>
