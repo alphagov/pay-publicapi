@@ -76,13 +76,14 @@ public class PublicApiModule extends AbstractModule {
     public RateLimiterConfig getRateLimiterConfig() {
         return configuration.getRateLimiterConfig();
     }
-    
+
     @Provides
     @Singleton
     public RedisClient getRedisClient() {
         RedisClient client = RedisClient.create(configuration.getRedisConfiguration().getUrl());
         SocketOptions socketOptions = SocketOptions
                 .builder()
+                .keepAlive(true)
                 .connectTimeout(Duration.ofMillis(configuration.getRedisConfiguration().getConnectTimeout()))
                 .build();
         ClientOptions clientOptions = ClientOptions
