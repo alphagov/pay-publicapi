@@ -1,15 +1,15 @@
 package uk.gov.pay.api.app.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.dropwizard.util.Duration;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import io.dropwizard.util.Duration;
 
 import static java.lang.String.format;
 
 public class RedisConfiguration {
-    
+
     @Valid
     @NotNull
     @JsonProperty("endpoint")
@@ -18,7 +18,7 @@ public class RedisConfiguration {
     @Valid
     @JsonProperty("ssl")
     private boolean ssl;
-    
+
     @Valid
     @JsonProperty("commandTimeout")
     private Duration commandTimeout;
@@ -26,6 +26,21 @@ public class RedisConfiguration {
     @Valid
     @JsonProperty("connectTimeout")
     private Duration connectTimeout;
+
+    @Valid
+    @NotNull
+    @JsonProperty("exponentialReconnectDelayLowerBound")
+    private Duration exponentialReconnectDelayLowerBound;
+
+    @Valid
+    @NotNull
+    @JsonProperty("exponentialReconnectDelayUpperBound")
+    private Duration exponentialReconnectDelayUpperBound;
+
+    @Valid
+    @NotNull
+    @JsonProperty("reconnectDelayExponentBase")
+    private long reconnectDelayExponentBase;
 
     public String getUrl() {
         return format("%s://%s", ssl ? "rediss" : "redis", endpoint);
@@ -37,5 +52,17 @@ public class RedisConfiguration {
 
     public Long getConnectTimeout() {
         return connectTimeout.toMilliseconds();
+    }
+
+    public Long getExponentialReconnectDelayLowerBound() {
+        return exponentialReconnectDelayLowerBound.toMilliseconds();
+    }
+
+    public Long getExponentialReconnectDelayUpperBound() {
+        return exponentialReconnectDelayUpperBound.toMilliseconds();
+    }
+
+    public long getReconnectDelayExponentBase() {
+        return reconnectDelayExponentBase;
     }
 }

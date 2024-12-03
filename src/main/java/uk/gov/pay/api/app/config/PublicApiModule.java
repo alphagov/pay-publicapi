@@ -11,6 +11,9 @@ import io.dropwizard.core.setup.Environment;
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.SocketOptions;
+import io.lettuce.core.resource.ClientResources;
+import io.lettuce.core.resource.DefaultClientResources;
+import io.lettuce.core.resource.Delay;
 import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
 import uk.gov.pay.api.app.RestClientFactory;
 import uk.gov.pay.api.json.CreateAgreementRequestDeserializer;
@@ -24,6 +27,7 @@ import uk.gov.pay.api.validation.URLValidator;
 
 import javax.ws.rs.client.Client;
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 import static uk.gov.pay.api.validation.URLValidator.urlValidatorValueOf;
 
@@ -57,10 +61,10 @@ public class PublicApiModule extends AbstractModule {
         CreateAgreementRequestDeserializer agreementRequestDeserializer = new CreateAgreementRequestDeserializer();
         CreateCardPaymentRequestDeserializer cardPaymentRequestDeserializer = new CreateCardPaymentRequestDeserializer();
         CreatePaymentRefundRequestDeserializer paymentRefundRequestDeserializer = new CreatePaymentRefundRequestDeserializer(new PaymentRefundRequestValidator());
-        StringDeserializer stringDeserializer = new StringDeserializer(); 
+        StringDeserializer stringDeserializer = new StringDeserializer();
 
         SimpleModule publicApiDeserializationModule = new SimpleModule("publicApiDeserializationModule");
-        publicApiDeserializationModule.addDeserializer(CreateAgreementRequest.class, agreementRequestDeserializer); 
+        publicApiDeserializationModule.addDeserializer(CreateAgreementRequest.class, agreementRequestDeserializer);
         publicApiDeserializationModule.addDeserializer(CreateCardPaymentRequest.class, cardPaymentRequestDeserializer);
         publicApiDeserializationModule.addDeserializer(CreatePaymentRefundRequest.class, paymentRefundRequestDeserializer);
         publicApiDeserializationModule.addDeserializer(String.class, stringDeserializer);
@@ -80,7 +84,17 @@ public class PublicApiModule extends AbstractModule {
     @Provides
     @Singleton
     public RedisClient getRedisClient() {
-        RedisClient client = RedisClient.create(configuration.getRedisConfiguration().getUrl());
+        ClientResources clientResources = DefaultClientResources.builder()
+                .reconnectDelay(
+                        Delay.fullJitter(
+                                configuration.getRedisConfiguration().getExponentialReconnectDelayLowerBound(),
+                                configuration.getRedisConfiguration().getExponentialReconnectDelayUpperBound(),
+                                configuration.getRedisConfiguration().getReconnectDelayExponentBase(),
+                                TimeUnit.MILLISECONDS))
+                .build();
+
+        RedisClient client = RedisClient.create(clientResources, configuration.getRedisConfiguration().getUrl());
+
         SocketOptions socketOptions = SocketOptions
                 .builder()
                 .keepAlive(true)

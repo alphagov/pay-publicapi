@@ -45,7 +45,10 @@ redis:
   endpoint: localhost:6379
   ssl: false
   commandTimeout: 250ms
-  connectTimeout: 500ms
+  connectTimeout: 100ms
+  exponentialReconnectDelayLowerBound: 100ms
+  exponentialReconnectDelayUpperBound: 10000ms
+  reconnectDelayExponentBase: 10
 
 allowHttpForReturnUrl: false
 

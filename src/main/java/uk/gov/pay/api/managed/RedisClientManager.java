@@ -16,7 +16,7 @@ public class RedisClientManager implements Managed {
     public RedisClientManager(RedisClient redisClient) {
         this.redisClient = redisClient;
     }
-    
+
     public StatefulRedisConnection getRedisConnection() {
         if (statefulRedisConnection == null) {
             statefulRedisConnection = redisClient.connect();
@@ -28,10 +28,11 @@ public class RedisClientManager implements Managed {
     public void start() throws Exception {}
 
     @Override
-    public void stop() throws Exception {
+    public void stop() {
         if (statefulRedisConnection != null) {
             statefulRedisConnection.close();
         }
+        redisClient.getResources().shutdown();
         redisClient.shutdown();
     }
 }
