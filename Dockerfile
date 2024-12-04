@@ -9,7 +9,7 @@ FROM eclipse-temurin:21-jre-alpine@sha256:2a0bbb1db6d8db42c66ed00c43d954cf458066
 
 RUN ["apk", "--no-cache", "upgrade"]
 
-ARG DNS_TTL=15
+ARG DNS_TTL=10
 
 # Default to UTF-8 file.encoding
 ENV LANG C.UTF-8
