@@ -44,9 +44,9 @@ redis:
   ssl: false
   commandTimeout: 250ms
   connectTimeout: 500ms
-  exponentialReconnectDelayLowerBound: 100ms
-  exponentialReconnectDelayUpperBound: 10000ms
-  reconnectDelayExponentBase: 10
+  reconnectDelayLowerBound: 100ms
+  reconnectDelayUpperBound: 10000ms
+  reconnectDelayBase: 100
 
 allowHttpForReturnUrl: false
 

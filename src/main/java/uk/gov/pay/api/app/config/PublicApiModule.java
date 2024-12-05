@@ -87,9 +87,9 @@ public class PublicApiModule extends AbstractModule {
         ClientResources clientResources = DefaultClientResources.builder()
                 .reconnectDelay(
                         Delay.fullJitter(
-                                configuration.getRedisConfiguration().getExponentialReconnectDelayLowerBound(),
-                                configuration.getRedisConfiguration().getExponentialReconnectDelayUpperBound(),
-                                configuration.getRedisConfiguration().getReconnectDelayExponentBase(),
+                                configuration.getRedisConfiguration().getReconnectDelayLowerBound(),
+                                configuration.getRedisConfiguration().getReconnectDelayUpperBound(),
+                                configuration.getRedisConfiguration().getReconnectDelayBase(),
                                 TimeUnit.MILLISECONDS))
                 .build();
 
