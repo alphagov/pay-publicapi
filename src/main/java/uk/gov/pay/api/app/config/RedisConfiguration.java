@@ -29,18 +29,18 @@ public class RedisConfiguration {
 
     @Valid
     @NotNull
-    @JsonProperty("exponentialReconnectDelayLowerBound")
-    private Duration exponentialReconnectDelayLowerBound;
+    @JsonProperty("reconnectDelayLowerBound")
+    private Duration reconnectDelayLowerBound;
 
     @Valid
     @NotNull
-    @JsonProperty("exponentialReconnectDelayUpperBound")
-    private Duration exponentialReconnectDelayUpperBound;
+    @JsonProperty("reconnectDelayUpperBound")
+    private Duration reconnectDelayUpperBound;
 
     @Valid
     @NotNull
-    @JsonProperty("reconnectDelayExponentBase")
-    private long reconnectDelayExponentBase;
+    @JsonProperty("reconnectDelayBase")
+    private long reconnectDelayBase;
 
     public String getUrl() {
         return format("%s://%s", ssl ? "rediss" : "redis", endpoint);
@@ -54,15 +54,15 @@ public class RedisConfiguration {
         return connectTimeout.toMilliseconds();
     }
 
-    public Long getExponentialReconnectDelayLowerBound() {
-        return exponentialReconnectDelayLowerBound.toMilliseconds();
+    public Long getReconnectDelayLowerBound() {
+        return reconnectDelayLowerBound.toMilliseconds();
     }
 
-    public Long getExponentialReconnectDelayUpperBound() {
-        return exponentialReconnectDelayUpperBound.toMilliseconds();
+    public Long getReconnectDelayUpperBound() {
+        return reconnectDelayUpperBound.toMilliseconds();
     }
 
-    public long getReconnectDelayExponentBase() {
-        return reconnectDelayExponentBase;
+    public long getReconnectDelayBase() {
+        return reconnectDelayBase;
     }
 }

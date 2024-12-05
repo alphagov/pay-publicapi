@@ -57,9 +57,9 @@ redis:
   ssl: false
   commandTimeout: ${REDIS_COMMAND_TIMEOUT:-250ms}
   connectTimeout: ${REDIS_CONNECT_TIMEOUT:-100ms}
-  exponentialReconnectDelayLowerBound: ${REDIS_RECONNECT_DELAY_LOWER_BOUND:-100ms}
-  exponentialReconnectDelayUpperBound: ${REDIS_RECONNECT_DELAY_UPPER_BOUND:-10000ms}
-  reconnectDelayExponentBase: ${REDIS_RECONNECT_DELAY_EXPONENT_BASE:-10}
+  reconnectDelayLowerBound: ${REDIS_RECONNECT_DELAY_LOWER_BOUND:-100ms}
+  reconnectDelayUpperBound: ${REDIS_RECONNECT_DELAY_UPPER_BOUND:-10000ms}
+  reconnectDelayBase: ${REDIS_RECONNECT_DELAY_BASE:-100}
 
 allowHttpForReturnUrl: ${ALLOW_HTTP_FOR_RETURN_URL:-false}
 
