@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import uk.gov.pay.api.model.CardDetailsFromResponse;
+import uk.gov.pay.api.model.Exemption;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 
@@ -122,6 +123,11 @@ public class PaymentSearchResultBuilder extends PaymentResultBuilder {
 
     public PaymentSearchResultBuilder withWalletType(String walletType) {
         this.walletType = walletType;
+        return this;
+    }
+
+    public PaymentSearchResultBuilder withExemption(Exemption exemption) {
+        this.exemption = exemption;
         return this;
     }
 
