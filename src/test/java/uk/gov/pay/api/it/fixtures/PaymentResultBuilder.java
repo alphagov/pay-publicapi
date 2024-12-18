@@ -1,7 +1,6 @@
 package uk.gov.pay.api.it.fixtures;
 
 import uk.gov.pay.api.model.CardDetailsFromResponse;
-import uk.gov.pay.api.model.Exemption;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
@@ -145,7 +144,6 @@ public abstract class PaymentResultBuilder {
         public String agreement_id;
         public String authorisation_mode;
         public String wallet_type;
-        public Exemption exemption;
     }
 
     protected static class TestPaymentState {
@@ -219,7 +217,6 @@ public abstract class PaymentResultBuilder {
     protected AuthorisationSummary authorisationSummary;
     protected AuthorisationMode authorisationMode = AuthorisationMode.WEB;
     protected String walletType = null;
-    protected Exemption exemption;
 
     public abstract String build();
     
@@ -266,7 +263,6 @@ public abstract class PaymentResultBuilder {
         payment.authorisation_summary = authorisationSummary;
         payment.authorisation_mode = authorisationMode.getName();
         payment.wallet_type = walletType;
-        payment.exemption = exemption;
 
         return payment;
     }

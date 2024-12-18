@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import uk.gov.pay.api.model.AuthorisationSummary;
 import uk.gov.pay.api.model.CardDetailsFromResponse;
-import uk.gov.pay.api.model.Exemption;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
@@ -44,7 +43,6 @@ public class TransactionFromLedgerFixture {
     private AuthorisationSummary authorisationSummary;
     private AuthorisationMode authorisationMode;
     private final Optional<String> walletType;
-    private Exemption exemption;
 
     public String getReturnUrl() {
         return returnUrl;
@@ -128,10 +126,6 @@ public class TransactionFromLedgerFixture {
 
     public Optional<String> getWalletType() { return walletType; }
 
-    public Exemption getExemption() {
-        return exemption;
-    }
-
     public TransactionFromLedgerFixture(TransactionFromLedgerBuilder builder) {
         this.amount = builder.amount;
         this.state = builder.state;
@@ -158,7 +152,6 @@ public class TransactionFromLedgerFixture {
         this.authorisationSummary = builder.authorisationSummary;
         this.authorisationMode = builder.authorisationMode;
         this.walletType = builder.walletType == null || builder.walletType.isEmpty() ? Optional.empty() : Optional.of(builder.walletType);
-        this.exemption = builder.exemption;
     }
 
     public Long getAmount() {
@@ -204,7 +197,6 @@ public class TransactionFromLedgerFixture {
         private AuthorisationSummary authorisationSummary;
         private AuthorisationMode authorisationMode = AuthorisationMode.WEB;
         private String walletType;
-        private Exemption exemption;
 
 
         private TransactionFromLedgerBuilder() {
@@ -336,11 +328,6 @@ public class TransactionFromLedgerFixture {
 
         public TransactionFromLedgerBuilder withWalletType(String walletType) {
             this.walletType = walletType;
-            return this;
-        }
-
-        public TransactionFromLedgerBuilder withExemption(Exemption exemption) {
-            this.exemption = exemption;
             return this;
         }
 
