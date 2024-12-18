@@ -2,7 +2,6 @@ package uk.gov.pay.api.utils.mocks;
 
 import uk.gov.pay.api.model.AuthorisationSummary;
 import uk.gov.pay.api.model.CardDetailsFromResponse;
-import uk.gov.pay.api.model.Exemption;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
@@ -35,7 +34,6 @@ public class ChargeResponseFromConnector {
     private final String agreementId;
     private final AuthorisationMode authorisationMode;
     private final String walletType;
-    private final Exemption exemption;
 
     public Long getAmount() {
         return amount;
@@ -163,10 +161,6 @@ public class ChargeResponseFromConnector {
     
     public String getWalletType() { return walletType; }
 
-    public Exemption getExemption() {
-        return exemption;
-    }
-
     private ChargeResponseFromConnector(ChargeResponseFromConnectorBuilder builder) {
         this.amount = builder.amount;
         this.chargeId = builder.chargeId;
@@ -200,7 +194,6 @@ public class ChargeResponseFromConnector {
         this.agreementId = builder.agreementId;
         this.authorisationMode = builder.authorisationMode;
         this.walletType = builder.walletType;
-        this.exemption = builder.exemption;
     }
 
     public static final class ChargeResponseFromConnectorBuilder {
@@ -222,7 +215,6 @@ public class ChargeResponseFromConnector {
         private String agreementId;
         private AuthorisationMode authorisationMode = AuthorisationMode.WEB;
         private String walletType = null;
-        private Exemption exemption = null;
         
         private ChargeResponseFromConnectorBuilder() {
         }
@@ -257,8 +249,7 @@ public class ChargeResponseFromConnector {
                     .withAuthorisationSummary(responseFromConnector.getAuthorisationSummary())
                     .withAgreementId(responseFromConnector.getAgreementId())
                     .withAuthorisationMode(responseFromConnector.getAuthorisationMode())
-                    .withWalletType(responseFromConnector.walletType)
-                    .withExemption(responseFromConnector.exemption);
+                    .withWalletType(responseFromConnector.walletType);
         }
 
         public ChargeResponseFromConnectorBuilder withAmount(long amount) {
@@ -428,11 +419,6 @@ public class ChargeResponseFromConnector {
         
         public ChargeResponseFromConnectorBuilder withWalletType(String walletType) {
             this.walletType = walletType;
-            return this;
-        }
-
-        public ChargeResponseFromConnectorBuilder withExemption(Exemption exemption) {
-            this.exemption = exemption;
             return this;
         }
     }

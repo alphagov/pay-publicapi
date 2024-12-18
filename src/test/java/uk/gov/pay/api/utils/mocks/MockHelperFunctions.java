@@ -132,7 +132,6 @@ public class MockHelperFunctions {
         ofNullable(responseFromConnector.getNetAmount()).ifPresent(resultBuilder::withNetAmount);
         ofNullable(responseFromConnector.getAuthorisationSummary()).ifPresent(resultBuilder::withAuthorisationSummary);
         ofNullable(responseFromConnector.getWalletType()).ifPresent(resultBuilder::withWalletType);
-        ofNullable(responseFromConnector.getExemption()).ifPresent(resultBuilder::withExemption);
         responseFromConnector.getMetadata().ifPresent(resultBuilder::withMetadata);
 
         return resultBuilder.build();

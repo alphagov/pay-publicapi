@@ -7,8 +7,6 @@ import org.junit.Test;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.AuthorisationSummary;
 import uk.gov.pay.api.model.CardDetailsFromResponse;
-import uk.gov.pay.api.model.Exemption;
-import uk.gov.pay.api.model.ExemptionOutcome;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
@@ -835,94 +833,6 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
                 .contentType(JSON)
                 .body("authorisation_mode", is("agreement"))
                 .body("state.can_retry", is(true));
-    }
-
-    @Test
-    public void getPaymentShouldIncludeExemptionWhenCorporateExemptionRequestedThroughConnector() {
-        ExemptionOutcome exemptionOutcome = new ExemptionOutcome("honoured");
-        Exemption exemption = new Exemption(true, "corporate", exemptionOutcome);
-        connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
-                getConnectorCharge()
-                        .withExemption(exemption)
-                        .build());
-
-        getPaymentResponse(CHARGE_ID)
-                .statusCode(200)
-                .contentType(JSON)
-                .body("exemption.requested", is(true))
-                .body("exemption.type", is("corporate"))
-                .body("exemption.outcome.result", is("honoured"));
-    }
-
-    @Test
-    public void getPaymentShouldNotIncludeExemptionWhenNoExemptionTypeThroughConnector() {
-        ExemptionOutcome exemptionOutcome = new ExemptionOutcome("honoured");
-        Exemption exemption = new Exemption(true, null, exemptionOutcome);
-        connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
-                getConnectorCharge()
-                        .withExemption(exemption)
-                        .build());
-
-        getPaymentResponse(CHARGE_ID)
-                .statusCode(200)
-                .contentType(JSON)
-                .body("exemption", is(nullValue()));
-    }
-
-    @Test
-    public void getPaymentShouldNotIncludeExemptionWhenNoExemptionThroughConnector() {
-        connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
-                getConnectorCharge()
-                        .build());
-
-        getPaymentResponse(CHARGE_ID)
-                .statusCode(200)
-                .contentType(JSON)
-                .body("exemption", is(nullValue()));
-    }
-
-    @Test
-    public void getPaymentShouldIncludeExemptionWhenCorporateExemptionRequestedThroughLedger() {
-        ExemptionOutcome exemptionOutcome = new ExemptionOutcome("honoured");
-        Exemption exemption = new Exemption(true, "corporate", exemptionOutcome);
-        ledgerMockClient.respondWithTransaction(CHARGE_ID,
-                getLedgerTransaction()
-                        .withExemption(exemption)
-                        .build());
-
-        getPaymentResponse(CHARGE_ID, LEDGER_ONLY_STRATEGY)
-                .statusCode(200)
-                .contentType(JSON)
-                .body("exemption.requested", is(true))
-                .body("exemption.type", is("corporate"))
-                .body("exemption.outcome.result", is("honoured"));
-    }
-
-    @Test
-    public void getPaymentShouldNotIncludeExemptionWhenNoExemptionTypeThroughLedger() {
-        ExemptionOutcome exemptionOutcome = new ExemptionOutcome("honoured");
-        Exemption exemption = new Exemption(true, null, exemptionOutcome);
-        ledgerMockClient.respondWithTransaction(CHARGE_ID,
-                getLedgerTransaction()
-                        .withExemption(exemption)
-                        .build());
-
-        getPaymentResponse(CHARGE_ID)
-                .statusCode(200)
-                .contentType(JSON)
-                .body("exemption", is(nullValue()));
-    }
-
-    @Test
-    public void getPaymentShouldNotIncludeExemptionWhenNoExemptionThroughLedger() {
-        ledgerMockClient.respondWithTransaction(CHARGE_ID,
-                getLedgerTransaction()
-                        .build());
-
-        getPaymentResponse(CHARGE_ID)
-                .statusCode(200)
-                .contentType(JSON)
-                .body("exemption", is(nullValue()));
     }
 
     private ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder getConnectorCharge() {

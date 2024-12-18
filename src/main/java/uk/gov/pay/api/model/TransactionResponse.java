@@ -89,9 +89,6 @@ public class TransactionResponse {
     @JsonDeserialize(using = WalletDeserializer.class)
     private Wallet walletType;
 
-    @JsonProperty("exemption")
-    private Exemption exemption;
-
     public Optional<ExternalMetadata> getMetadata() {
         return Optional.ofNullable(metadata);
     }
@@ -201,9 +198,5 @@ public class TransactionResponse {
 
     public Optional<Wallet> getWalletType() {
         return Optional.ofNullable(walletType);
-    }
-
-    public Exemption getExemption() {
-        return exemption;
     }
 }

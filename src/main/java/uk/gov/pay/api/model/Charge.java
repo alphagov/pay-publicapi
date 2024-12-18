@@ -1,7 +1,6 @@
 package uk.gov.pay.api.model;
 
 import uk.gov.pay.api.utils.AuthorisationSummaryHelper;
-import uk.gov.pay.api.utils.ExemptionEvaluator;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
@@ -61,16 +60,13 @@ public class Charge {
 
     private AuthorisationMode authorisationMode;
 
-    private Exemption exemption;
-
     public Charge(String chargeId, Long amount, PaymentState state, String returnUrl, String description,
                   String reference, String email, String paymentProvider, String createdDate,
                   SupportedLanguage language, boolean delayedCapture, boolean moto, RefundSummary refundSummary,
                   PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
                   List<PaymentConnectorResponseLink> links, Long corporateCardSurcharge, Long totalAmount,
                   String gatewayTransactionId, ExternalMetadata metadata, Long fee, Long netAmount,
-                  AuthorisationSummary authorisationSummary, String agreementId, AuthorisationMode authorisationMode,
-                  Exemption exemption) {
+                  AuthorisationSummary authorisationSummary, String agreementId, AuthorisationMode authorisationMode) {
         this.chargeId = chargeId;
         this.amount = amount;
         this.state = state;
@@ -96,7 +92,6 @@ public class Charge {
         this.authorisationSummary = authorisationSummary;
         this.agreementId = agreementId;
         this.authorisationMode = authorisationMode;
-        this.exemption = exemption;
     }
 
     public static Charge from(ChargeFromResponse chargeFromResponse) {
@@ -127,8 +122,7 @@ public class Charge {
                 chargeFromResponse.getNetAmount(),
                 AuthorisationSummaryHelper.includeAuthorisationSummaryWhen3dsRequired(chargeFromResponse.getAuthorisationSummary()),
                 chargeFromResponse.getAgreementId(),
-                chargeFromResponse.getAuthorisationMode(),
-                ExemptionEvaluator.evaluateExemption(chargeFromResponse.getExemption())
+                chargeFromResponse.getAuthorisationMode()
         );
     }
 
@@ -160,9 +154,7 @@ public class Charge {
                 transactionResponse.getNetAmount(),
                 AuthorisationSummaryHelper.includeAuthorisationSummaryWhen3dsRequired(transactionResponse.getAuthorisationSummary()),
                 null,
-                transactionResponse.getAuthorisationMode(),
-                ExemptionEvaluator.evaluateExemption(transactionResponse.getExemption())
-        );
+                transactionResponse.getAuthorisationMode());
     }
 
     public Optional<ExternalMetadata> getMetadata() {
@@ -267,9 +259,5 @@ public class Charge {
 
     public AuthorisationMode getAuthorisationMode() {
         return authorisationMode;
-    }
-
-    public Exemption getExemption() {
-        return exemption;
     }
 }

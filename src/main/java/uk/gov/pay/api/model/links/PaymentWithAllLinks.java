@@ -5,7 +5,6 @@ import uk.gov.pay.api.model.AuthorisationSummary;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.CardPayment;
 import uk.gov.pay.api.model.Charge;
-import uk.gov.pay.api.model.Exemption;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
@@ -27,15 +26,14 @@ public class PaymentWithAllLinks extends CardPayment {
     }
 
     private PaymentWithAllLinks(String chargeId, long amount, PaymentState state, String returnUrl, String description,
-                                String reference, String email, String paymentProvider, String createdDate, SupportedLanguage language,
-                                boolean delayedCapture, boolean moto, RefundSummary refundSummary, PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
-                                List<PaymentConnectorResponseLink> paymentConnectorResponseLinks, URI selfLink, URI paymentEventsUri, URI paymentCancelUri,
-                                URI paymentRefundsUri, URI paymentCaptureUri, URI paymentAuthorisationUri, Long corporateCardSurcharge, Long totalAmount, String providerId, ExternalMetadata metadata,
-                                Long fee, Long netAmount, AuthorisationSummary authorisationSummary, String agreementId, AuthorisationMode authorisationMode,
-                                Exemption exemption) {
+                               String reference, String email, String paymentProvider, String createdDate, SupportedLanguage language,
+                               boolean delayedCapture, boolean moto, RefundSummary refundSummary, PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
+                               List<PaymentConnectorResponseLink> paymentConnectorResponseLinks, URI selfLink, URI paymentEventsUri, URI paymentCancelUri,
+                               URI paymentRefundsUri, URI paymentCaptureUri, URI paymentAuthorisationUri,  Long corporateCardSurcharge, Long totalAmount, String providerId, ExternalMetadata metadata,
+                               Long fee, Long netAmount, AuthorisationSummary authorisationSummary, String agreementId, AuthorisationMode authorisationMode) {
         super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate,
                 refundSummary, settlementSummary, cardDetails, language, delayedCapture, moto, corporateCardSurcharge, totalAmount,
-                providerId, metadata, fee, netAmount, authorisationSummary, agreementId, authorisationMode, exemption);
+                providerId, metadata, fee, netAmount, authorisationSummary, agreementId, authorisationMode);
         this.links.addSelf(selfLink.toString());
         this.links.addKnownLinksValueOf(paymentConnectorResponseLinks, paymentAuthorisationUri);
         this.links.addEvents(paymentEventsUri.toString());
@@ -89,7 +87,6 @@ public class PaymentWithAllLinks extends CardPayment {
                 .withAuthorisationSummary(paymentConnector.getAuthorisationSummary())
                 .withAgreementId(paymentConnector.getAgreementId())
                 .withAuthorisationMode(paymentConnector.getAuthorisationMode())
-                .withExemption(paymentConnector.getExemption())
                 .build();
     }
 
@@ -137,7 +134,6 @@ public class PaymentWithAllLinks extends CardPayment {
         private AuthorisationSummary authorisationSummary;
         private String agreementId;
         private AuthorisationMode authorisationMode;
-        private Exemption exemption;
 
         public PaymentWithAllLinksBuilder withChargeId(String chargeId) {
             this.chargeId = chargeId;
@@ -294,17 +290,12 @@ public class PaymentWithAllLinks extends CardPayment {
             return this;
         }
 
-        public PaymentWithAllLinksBuilder withExemption(Exemption exemption) {
-            this.exemption = exemption;
-            return this;
-        }
-
         public PaymentWithAllLinks build() {
-            return new PaymentWithAllLinks(chargeId, amount, state, returnUrl, description, reference, email,
+            return new PaymentWithAllLinks(chargeId, amount, state, returnUrl, description, reference, email, 
                     paymentProvider, createdDate, language, delayedCapture, moto, refundSummary, settlementSummary, 
                     cardDetails, paymentConnectorResponseLinks, selfLink, paymentEventsUri, paymentCancelUri, 
                     paymentRefundsUri, paymentCaptureUri, paymentAuthorisationUri, corporateCardSurcharge, totalAmount, 
-                    providerId, metadata, fee, netAmount, authorisationSummary, agreementId, authorisationMode, exemption);
+                    providerId, metadata, fee, netAmount, authorisationSummary, agreementId, authorisationMode);
         }
     }
 }

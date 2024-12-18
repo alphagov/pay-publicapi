@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.api.model.AuthorisationSummary;
 import uk.gov.pay.api.model.CardDetails;
 import uk.gov.pay.api.model.CardPayment;
-import uk.gov.pay.api.model.Exemption;
 import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
@@ -31,12 +30,11 @@ public class PaymentForSearchResult extends CardPayment {
                                   boolean delayedCapture, boolean moto, RefundSummary refundSummary, PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
                                   List<PaymentConnectorResponseLink> links, URI selfLink, URI paymentEventsLink, URI paymentCancelLink, URI paymentRefundsLink, URI paymentCaptureUri,
                                   Long corporateCardSurcharge, Long totalAmount, String providerId, ExternalMetadata externalMetadata,
-                                  Long fee, Long netAmount, AuthorisationSummary authorisationSummary, AuthorisationMode authorisationMode,
-                                  Exemption exemption) {
+                                  Long fee, Long netAmount, AuthorisationSummary authorisationSummary, AuthorisationMode authorisationMode) {
         
         super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider,
                 createdDate, refundSummary, settlementSummary, cardDetails, language, delayedCapture, moto, corporateCardSurcharge, totalAmount, providerId, externalMetadata,
-                fee, netAmount, authorisationSummary, null, authorisationMode, exemption);
+                fee, netAmount, authorisationSummary, null, authorisationMode);
         this.links.addSelf(selfLink.toString());
         this.links.addEvents(paymentEventsLink.toString());
         this.links.addRefunds(paymentRefundsLink.toString());
@@ -88,8 +86,7 @@ public class PaymentForSearchResult extends CardPayment {
                 paymentResult.getFee(),
                 paymentResult.getNetAmount(),
                 AuthorisationSummaryHelper.includeAuthorisationSummaryWhen3dsRequired(paymentResult.getAuthorisationSummary()),
-                paymentResult.getAuthorisationMode(),
-                paymentResult.getExemption());
+                paymentResult.getAuthorisationMode());
     }
 
     public PaymentLinksForSearch getLinks() {
