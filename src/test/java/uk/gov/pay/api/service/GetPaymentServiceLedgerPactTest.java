@@ -197,4 +197,18 @@ public class GetPaymentServiceLedgerPactTest {
         assertThat(paymentResponse.getState().getCanRetry(), is(true));
         assertThat(paymentResponse.getAuthorisationMode(), is(AuthorisationMode.AGREEMENT));
     }
+
+    @Test
+    @PactVerification({"ledger"})
+    @Pacts(pacts = {"publicapi-ledger-get-payment-with-honoured-exemption"})
+    public void testGetPaymentWithExemptionFromLedger() {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, tokenLink);
+
+        PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID_NON_EXISTENT_IN_CONNECTOR);
+
+        assertThat(paymentResponse.getExemption(), is(notNullValue()));
+        assertThat(paymentResponse.getExemption().getRequested(), is(true));
+        assertThat(paymentResponse.getExemption().getType(), is("corporate"));
+        assertThat(paymentResponse.getExemption().getOutcome().getResult(), is("honoured"));
+    }
 }
