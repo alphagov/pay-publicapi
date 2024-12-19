@@ -96,12 +96,14 @@ public class CardPayment {
     @JsonProperty("authorisation_mode")
     private AuthorisationMode authorisationMode;
 
+    private Exemption exemption;
+
     public CardPayment(String chargeId, long amount, PaymentState state, String returnUrl, String description,
                        String reference, String email, String paymentProvider, String createdDate,
                        RefundSummary refundSummary, PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
                        SupportedLanguage language, boolean delayedCapture, boolean moto, Long corporateCardSurcharge, Long totalAmount,
                        String providerId, ExternalMetadata metadata, Long fee, Long netAmount, AuthorisationSummary authorisationSummary, String agreementId,
-                       AuthorisationMode authorisationMode) {
+                       AuthorisationMode authorisationMode, Exemption exemption) {
         this.paymentId = chargeId;
         this.amount = amount;
         this.description = description;
@@ -127,6 +129,7 @@ public class CardPayment {
         this.authorisationSummary = authorisationSummary;
         this.agreementId = agreementId;
         this.authorisationMode = authorisationMode;
+        this.exemption = exemption;
     }
 
     /**
@@ -284,6 +287,11 @@ public class CardPayment {
             accessMode = READ_ONLY)
     public String getPaymentProvider() {
         return paymentProvider;
+    }
+
+    @Schema(description = "Object containing information about 3DS exemption requests")
+    public Exemption getExemption() {
+        return exemption;
     }
 
     @Override
