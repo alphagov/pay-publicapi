@@ -183,4 +183,18 @@ public class GetPaymentServicePactTest {
         assertThat(paymentResponse.getLinks().getRefunds().getMethod(), is("GET"));
         assertThat(paymentResponse.getLinks().getAuthUrlPost(), is(new PostLink("http://publicapi.test.localhost/v1/auth", "POST", "application/json", Collections.singletonMap("one_time_token", "token_1234567asdf"))));
     }
+
+    @Test
+    @PactVerification({"connector"})
+    @Pacts(pacts = {"publicapi-connector-get-payment-with-honoured-corporate-exemption"})
+    public void testGetPaymentWithExemptionFromConnector() {
+        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "a-token-link");
+
+        PaymentWithAllLinks paymentResponse = getPaymentService.getPayment(account, CHARGE_ID);
+
+        assertThat(paymentResponse.getExemption(), is(notNullValue()));
+        assertThat(paymentResponse.getExemption().getRequested(), is(true));
+        assertThat(paymentResponse.getExemption().getType(), is("corporate"));
+        assertThat(paymentResponse.getExemption().getOutcome().getResult(), is("honoured"));
+    }
 }
