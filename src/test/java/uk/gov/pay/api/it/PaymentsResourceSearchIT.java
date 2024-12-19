@@ -10,6 +10,8 @@ import org.junit.Test;
 import uk.gov.pay.api.it.fixtures.PaymentNavigationLinksFixture;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetailsFromResponse;
+import uk.gov.pay.api.model.Exemption;
+import uk.gov.pay.api.model.ExemptionOutcome;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.Wallet;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
@@ -405,6 +407,28 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
                 .body("results[0].settlement_summary.settled_date", is(DEFAULT_SETTLED_DATE))
                 .body("results[0].settlement_summary.captured_date", is(DEFAULT_CAPTURED_DATE))
                 .body("results[0].settlement_summary.capture_submit_time", is(DEFAULT_CAPTURE_SUBMIT_TIME));
+    }
+
+    @Test
+    public void searchPayments_getsResults_withExemption() {
+        ExemptionOutcome exemptionOutcome = new ExemptionOutcome("honoured");
+        Exemption exemption = new Exemption(true, "corporate", exemptionOutcome);
+        String payments = aPaginatedPaymentSearchResult()
+                .withPayments(aSuccessfulSearchPayment()
+                        .withExemption(exemption)
+                        .withNumberOfResults(1)
+                        .getResults())
+                .build();
+
+        ledgerMockClient.respondOk_whenSearchCharges(payments);
+
+        ImmutableMap<String, String> queryParams = ImmutableMap.of();
+        searchPayments(queryParams)
+                .statusCode(200)
+                .contentType(JSON)
+                .body("results[0].exemption.requested", is(true))
+                .body("results[0].exemption.type", is("corporate"))
+                .body("results[0].exemption.outcome.result", is("honoured"));
     }
 
     private Matcher<? super List<Map<String, Object>>> matchesState(final String state) {
