@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.service.payments.commons.model.ErrorIdentifier;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 import java.util.List;
 
 public class ConnectorResponseErrorException extends RuntimeException {

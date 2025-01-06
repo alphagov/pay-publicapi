@@ -7,9 +7,9 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.RateLimiterConfig;
 import uk.gov.pay.api.filter.RateLimiterKey;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.ws.rs.HttpMethod;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
+import jakarta.ws.rs.HttpMethod;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 

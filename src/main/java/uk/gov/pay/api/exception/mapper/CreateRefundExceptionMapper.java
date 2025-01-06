@@ -6,14 +6,14 @@ import uk.gov.pay.api.exception.CreateRefundException;
 import uk.gov.pay.api.model.RequestError;
 import uk.gov.service.payments.commons.model.ErrorIdentifier;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.FORBIDDEN;
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.FORBIDDEN;
+import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
+import static jakarta.ws.rs.core.Response.Status.PRECONDITION_FAILED;
 import static uk.gov.pay.api.model.RequestError.Code.ACCOUNT_DISABLED;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_REFUND_AMOUNT_AVAILABLE_MISMATCH;
 import static uk.gov.pay.api.model.RequestError.Code.CREATE_PAYMENT_REFUND_CONNECTOR_ERROR;

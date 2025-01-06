@@ -3,7 +3,7 @@ package uk.gov.pay.api.filter.ratelimit;
 import uk.gov.pay.api.app.config.RateLimiterConfig;
 import uk.gov.pay.api.filter.RateLimiterKey;
 
-import javax.ws.rs.HttpMethod;
+import jakarta.ws.rs.HttpMethod;
 
 public class RateLimitManager {
 

@@ -15,8 +15,8 @@ import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
 import uk.gov.service.payments.commons.testing.pact.consumers.PayPactProviderRule;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.core.Response;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;

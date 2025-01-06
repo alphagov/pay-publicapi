@@ -3,11 +3,11 @@ package uk.gov.pay.api.filter;
 import org.slf4j.MDC;
 import uk.gov.pay.api.auth.Account;
 
-import javax.annotation.Priority;
-import javax.ws.rs.Priorities;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.ext.Provider;
+import jakarta.annotation.Priority;
+import jakarta.ws.rs.Priorities;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.ext.Provider;
 import java.security.Principal;
 import java.util.Optional;
 

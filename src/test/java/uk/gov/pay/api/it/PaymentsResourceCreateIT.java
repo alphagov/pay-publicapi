@@ -17,7 +17,7 @@ import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.validation.DateTimeUtils;
 
-import javax.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.HttpHeaders;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.ZonedDateTime;
@@ -25,7 +25,7 @@ import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
-import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.hasKey;

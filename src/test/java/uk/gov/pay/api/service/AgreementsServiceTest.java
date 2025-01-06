@@ -18,14 +18,14 @@ import uk.gov.pay.api.model.CreateAgreementRequestBuilder;
 import uk.gov.pay.api.model.search.PaginationDecorator;
 import uk.gov.pay.api.utils.mocks.CreateAgreementRequestParams;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.Invocation;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
-import static javax.ws.rs.client.Entity.json;
-import static javax.ws.rs.core.Response.Status.NO_CONTENT;
+import static jakarta.ws.rs.client.Entity.json;
+import static jakarta.ws.rs.core.Response.Status.NO_CONTENT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;

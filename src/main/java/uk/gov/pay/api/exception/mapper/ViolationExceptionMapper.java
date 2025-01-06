@@ -8,14 +8,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.model.RequestError;
 
-import javax.annotation.Priority;
-import javax.validation.ConstraintViolation;
-import javax.validation.Path;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
+import jakarta.annotation.Priority;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Path;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,7 +53,7 @@ public class ViolationExceptionMapper implements ExceptionMapper<JerseyViolation
         return  firstException.getConstraintDescriptor() != null &&
                 firstException.getConstraintDescriptor().getAnnotation() != null &&
                 (firstException.getConstraintDescriptor().getAnnotation().annotationType() == Length.class 
-                        || firstException.getConstraintDescriptor().getAnnotation().annotationType() == javax.validation.constraints.Pattern.class);
+                        || firstException.getConstraintDescriptor().getAnnotation().annotationType() == jakarta.validation.constraints.Pattern.class);
     }
 
     private RequestError getFieldNameRequestError(ConstraintViolation<?> firstException) {

@@ -8,8 +8,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.UriInfo;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;

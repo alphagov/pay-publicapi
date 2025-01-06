@@ -7,8 +7,8 @@ import uk.gov.pay.api.model.search.PaginationDecorator;
 import uk.gov.pay.api.model.search.card.PaymentForSearchResult;
 import uk.gov.pay.api.model.search.card.PaymentSearchResponse;
 
-import javax.inject.Inject;
-import javax.ws.rs.core.Response;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;

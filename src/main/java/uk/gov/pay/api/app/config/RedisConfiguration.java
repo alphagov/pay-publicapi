@@ -3,8 +3,8 @@ package uk.gov.pay.api.app.config;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.util.Duration;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import static java.lang.String.format;
 

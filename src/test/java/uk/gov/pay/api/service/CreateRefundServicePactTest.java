@@ -18,7 +18,7 @@ import uk.gov.service.payments.commons.model.ErrorIdentifier;
 import uk.gov.service.payments.commons.testing.pact.consumers.PayPactProviderRule;
 import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
 
-import javax.ws.rs.client.Client;
+import jakarta.ws.rs.client.Client;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;

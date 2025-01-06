@@ -15,8 +15,8 @@ import uk.gov.pay.api.model.search.PaginationDecorator;
 import uk.gov.pay.api.service.ConnectorService;
 import uk.gov.pay.api.service.LedgerService;
 
-import javax.inject.Inject;
-import javax.ws.rs.core.Response;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 import java.util.stream.Collectors;
 
 public class AgreementsService {

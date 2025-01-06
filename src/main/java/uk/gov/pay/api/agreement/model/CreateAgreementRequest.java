@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.api.model.CreateAgreementRequestBuilder;
 import uk.gov.pay.api.utils.JsonStringBuilder;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 import java.util.Objects;
 
 @Schema(description = "The Agreement Request Payload")

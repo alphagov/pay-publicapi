@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.exception.DisputesValidationException;
 import uk.gov.pay.api.model.RequestError;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
 
 public class DisputeValidationExceptionMapper implements ExceptionMapper<DisputesValidationException> {
 

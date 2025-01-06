@@ -8,17 +8,17 @@ import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.model.publicauth.AuthResponse;
 import uk.gov.service.payments.commons.model.ErrorIdentifier;
 
-import javax.inject.Inject;
-import javax.ws.rs.ServiceUnavailableException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.ServiceUnavailableException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.util.Optional;
 
 import static java.lang.String.format;
-import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
-import static javax.ws.rs.core.Response.Status.OK;
-import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static jakarta.ws.rs.core.Response.Status.OK;
+import static jakarta.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static net.logstash.logback.argument.StructuredArguments.kv;
 
 public class AccountAuthenticator implements Authenticator<String, Account> {

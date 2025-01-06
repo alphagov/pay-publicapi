@@ -3,10 +3,10 @@ package uk.gov.pay.api.service;
 import uk.gov.pay.api.exception.AuthorisationRequestException;
 import uk.gov.pay.api.model.AuthorisationRequest;
 
-import javax.inject.Inject;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Response;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.Response;
 
 import static org.apache.http.HttpStatus.SC_NO_CONTENT;
 

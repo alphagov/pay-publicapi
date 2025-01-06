@@ -5,9 +5,9 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.model.RequestError;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.ext.ExceptionMapper;
 
 public class BadRequestExceptionMapper implements ExceptionMapper<BadRequestException> {
 

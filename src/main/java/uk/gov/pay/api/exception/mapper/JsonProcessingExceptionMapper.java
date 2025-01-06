@@ -8,8 +8,8 @@ import uk.gov.pay.api.exception.AgreementValidationException;
 import uk.gov.pay.api.exception.PaymentValidationException;
 import uk.gov.pay.api.model.RequestError;
 
-import javax.annotation.Priority;
-import javax.ws.rs.core.Response;
+import jakarta.annotation.Priority;
+import jakarta.ws.rs.core.Response;
 
 import static uk.gov.pay.api.model.RequestError.aRequestError;
 

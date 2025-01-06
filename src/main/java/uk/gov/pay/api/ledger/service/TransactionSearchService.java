@@ -19,12 +19,12 @@ import uk.gov.pay.api.model.search.card.PaymentForSearchResult;
 import uk.gov.pay.api.model.search.card.PaymentSearchResponse;
 import uk.gov.pay.api.service.PaymentUriGenerator;
 
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.http.HttpStatus.SC_OK;
 import static uk.gov.pay.api.common.SearchConstants.CARDHOLDER_NAME_KEY;

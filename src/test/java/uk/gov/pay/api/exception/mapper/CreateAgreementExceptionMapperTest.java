@@ -9,7 +9,7 @@ import uk.gov.pay.api.exception.CreateAgreementException;
 import uk.gov.pay.api.model.RequestError;
 import uk.gov.service.payments.commons.model.ErrorIdentifier;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 import static org.apache.hc.core5.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 import static org.apache.hc.core5.http.HttpStatus.SC_UNPROCESSABLE_ENTITY;

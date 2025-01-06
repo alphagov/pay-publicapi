@@ -14,7 +14,7 @@ import io.dropwizard.core.setup.Environment;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.dropwizard.DropwizardExports;
-import io.prometheus.client.exporter.MetricsServlet;
+import io.prometheus.client.servlet.jakarta.exporter.MetricsServlet;
 import org.glassfish.jersey.CommonProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,10 +71,10 @@ import uk.gov.service.payments.logging.LogstashConsoleAppenderFactory;
 import uk.gov.service.payments.logging.SentryAppenderFactory;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.servlet.FilterRegistration;
+import jakarta.servlet.FilterRegistration;
 
 import static java.util.EnumSet.of;
-import static javax.servlet.DispatcherType.REQUEST;
+import static jakarta.servlet.DispatcherType.REQUEST;
 
 public class PublicApi extends Application<PublicApiConfig> {
 
