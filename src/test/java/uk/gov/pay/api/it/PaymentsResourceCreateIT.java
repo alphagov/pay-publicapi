@@ -745,7 +745,23 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
                 .contentType(JSON)
                 .body("code", is("P0102"))
                 .body("field", is("amount"))
-                .body("description", is("Invalid attribute value: amount. Must be greater than or equal to 1"));
+                .body("description", is("Invalid attribute value: amount. Must be greater than or equal to 1. Refer to https://docs.payments.service.gov.uk/making_payments/#amount/ ."));
+
+        connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, SUCCESS_PAYLOAD);
+    }
+
+    @Test
+    public void createPayment_responseWith422_whenAmountBelowMinimum() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+
+        connectorMockClient.respondAmountBelowMinimum(GATEWAY_ACCOUNT_ID);
+
+        postPaymentResponse(SUCCESS_PAYLOAD)
+                .statusCode(422)
+                .contentType(JSON)
+                .body("code", is("P0102"))
+                .body("field", is("amount"))
+                .body("description", is("Invalid attribute value: amount. Must be greater than or equal to 30. Refer to https://docs.payments.service.gov.uk/making_payments/#amount/ ."));
 
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, SUCCESS_PAYLOAD);
     }

@@ -60,7 +60,12 @@ public class CreateChargeExceptionMapper implements ExceptionMapper<CreateCharge
                 case ZERO_AMOUNT_NOT_ALLOWED:
                     statusCode = HttpStatus.UNPROCESSABLE_ENTITY_422;
                     requestError = aRequestError("amount", CREATE_PAYMENT_VALIDATION_ERROR,
-                            "Must be greater than or equal to 1");
+                            "Must be greater than or equal to 1. Refer to https://docs.payments.service.gov.uk/making_payments/#amount/ .");
+                    break;
+                case AMOUNT_BELOW_MINIMUM:
+                    statusCode = HttpStatus.UNPROCESSABLE_ENTITY_422;
+                    requestError = aRequestError("amount", CREATE_PAYMENT_VALIDATION_ERROR,
+                            "Must be greater than or equal to 30. Refer to https://docs.payments.service.gov.uk/making_payments/#amount/ .");
                     break;
                 case MOTO_NOT_ALLOWED:
                     statusCode = HttpStatus.UNPROCESSABLE_ENTITY_422;

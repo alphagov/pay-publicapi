@@ -57,6 +57,7 @@ import static uk.gov.pay.api.utils.mocks.MockHelperFunctions.validPostLink;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.ACCOUNT_NOT_LINKED_WITH_PSP;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.AGREEMENT_NOT_ACTIVE;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.AGREEMENT_NOT_FOUND;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.AMOUNT_BELOW_MINIMUM;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.AUTHORISATION_API_NOT_ALLOWED;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.CARD_NUMBER_IN_PAYMENT_LINK_REFERENCE_REJECTED;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.GENERIC;
@@ -345,6 +346,10 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     public void respondZeroAmountNotAllowed(String gatewayAccountId) {
         mockCreateCharge(gatewayAccountId, withStatusAndErrorMessage(UNPROCESSABLE_ENTITY_422, "anything", ZERO_AMOUNT_NOT_ALLOWED));
+    }
+
+    public void respondAmountBelowMinimum(String gatewayAccountId) {
+        mockCreateCharge(gatewayAccountId, withStatusAndErrorMessage(UNPROCESSABLE_ENTITY_422, "anything", AMOUNT_BELOW_MINIMUM));
     }
 
     public void respondMotoPaymentNotAllowed(String gatewayAccountId) {
