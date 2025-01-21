@@ -59,8 +59,8 @@ class CreateChargeExceptionMapperTest {
 
     static Stream<Arguments> testExceptionMapping() {
         return Stream.of(
-                arguments(ZERO_AMOUNT_NOT_ALLOWED, false, "Invalid attribute value: amount. Must be greater than or equal to 1. Refer to https://docs.payments.service.gov.uk/making_payments/#amount/ .", 422, "P0102"),
-                arguments(AMOUNT_BELOW_MINIMUM, false, "Invalid attribute value: amount. Must be greater than or equal to 30. Refer to https://docs.payments.service.gov.uk/making_payments/#amount/ .", 422, "P0102"),
+                arguments(ZERO_AMOUNT_NOT_ALLOWED, false, "Invalid attribute value: amount. Must be greater than or equal to 1. Refer to https://docs.payments.service.gov.uk/making_payments/#amount .", 422, "P0102"),
+                arguments(AMOUNT_BELOW_MINIMUM, false, "Invalid attribute value: amount. Must be greater than or equal to 30. Refer to https://docs.payments.service.gov.uk/making_payments/#amount .", 422, "P0102"),
                 arguments(MOTO_NOT_ALLOWED, false, "MOTO payments are not enabled for this account. Please contact support if you would like to process MOTO payments - https://www.payments.service.gov.uk/support/ .", 422, "P0196"),
                 arguments(ACCOUNT_DISABLED, false, "GOV.UK Pay has disabled payment and refund creation on this account. Contact support with your error code - https://www.payments.service.gov.uk/support/ .", 403, "P0941"),
                 arguments(TELEPHONE_PAYMENT_NOTIFICATIONS_NOT_ALLOWED, false, "Access to this resource is not enabled for this account. Contact support with your error code - https://www.payments.service.gov.uk/support/ .", 403, "P0930"),
