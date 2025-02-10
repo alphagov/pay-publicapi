@@ -1916,6 +1916,27 @@
           }
         }
       },
+      "Exemption" : {
+        "type" : "object",
+        "description" : "A structure representing that 3DS exemption was requested and the outcome of the exemption, if applicable.",
+        "properties" : {
+          "outcome" : {
+            "$ref" : "#/components/schemas/Outcome"
+          },
+          "requested" : {
+            "type" : "boolean",
+            "description" : "Indicates whether an exemption was requested for the given payment.",
+            "example" : true,
+            "readOnly" : true
+          },
+          "type" : {
+            "type" : "string",
+            "description" : "Indicates the type of exemption. Only present for corporate exemption",
+            "example" : "corporate",
+            "readOnly" : true
+          }
+        }
+      },
       "ExternalMetadata" : {
         "type" : "object",
         "example" : "{\"property1\": \"value1\", \"property2\": \"value2\"}\"",
@@ -1945,6 +1966,19 @@
             "readOnly" : true
           }
         }
+      },
+      "Outcome" : {
+        "type" : "object",
+        "description" : "A structure representing the outcome of a 3DS exemption, if known.",
+        "properties" : {
+          "result" : {
+            "type" : "string",
+            "description" : "The outcome of the requested exemption",
+            "example" : "honoured",
+            "readOnly" : true
+          }
+        },
+        "readOnly" : true
       },
       "PaymentDetailForSearch" : {
         "type" : "object",
@@ -2003,6 +2037,9 @@
           "email" : {
             "type" : "string",
             "example" : "The paying user’s email address."
+          },
+          "exemption" : {
+            "$ref" : "#/components/schemas/Exemption"
           },
           "fee" : {
             "type" : "integer",
@@ -2382,6 +2419,9 @@
           "email" : {
             "type" : "string",
             "example" : "The paying user’s email address."
+          },
+          "exemption" : {
+            "$ref" : "#/components/schemas/Exemption"
           },
           "fee" : {
             "type" : "integer",

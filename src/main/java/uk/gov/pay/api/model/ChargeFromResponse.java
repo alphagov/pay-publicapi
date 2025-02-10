@@ -94,6 +94,8 @@ public class ChargeFromResponse {
     @JsonDeserialize(using = WalletDeserializer.class)
     private Wallet walletType;
 
+    private Exemption exemption;
+
     public Optional<ExternalMetadata> getMetadata() {
         return Optional.ofNullable(metadata);
     }
@@ -231,5 +233,9 @@ public class ChargeFromResponse {
 
     public Optional<Wallet> getWalletType() {
         return Optional.ofNullable(walletType);
+    }
+
+    public Exemption getExemption() {
+        return exemption;
     }
 }
