@@ -28,6 +28,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.when;
@@ -225,5 +226,27 @@ public class CardPaymentSearchServicePactTest {
                 .assertThat("page", is(1))
                 .assertThat("results", hasSize(equalTo(1)))
                 .assertThat("results[0].authorisation_mode", is(AuthorisationMode.AGREEMENT.getName()));
+    }
+
+    @Test
+    @PactVerification({"ledger"})
+    @Pacts(pacts = {"publicapi-ledger-search-payment-with-charge-in-success-state-that-has-exemption-honoured"})
+    public void searchShouldReturnAResponseWithOneTransactionThatHasHonouredExemption_whenFilteringByStateFromLedger() {
+        Account account = new Account("123456", TokenPaymentType.CARD, tokenLink);
+        var searchParams = new PaymentSearchParams.Builder()
+                .withState("success")
+                .withPageNumber("1")
+                .withDisplaySize("500")
+                .build();
+        Response response = paymentSearchService.searchLedgerPayments(account, searchParams);
+        JsonAssert.with(response.getEntity().toString())
+                .assertThat("count", is(1))
+                .assertThat("total", is(1))
+                .assertThat("page", is(1))
+                .assertThat("results", hasSize(equalTo(1)))
+                .assertThat("results[0].exemption", is(notNullValue()))
+                .assertThat("results[0].exemption.requested", is(true))
+                .assertThat("results[0].exemption.type", is("corporate"))
+                .assertThat("results[0].exemption.outcome.result", is("honoured"));
     }
 }
