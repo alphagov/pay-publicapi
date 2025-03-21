@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.RateLimiterConfig;
 import uk.gov.pay.api.filter.RateLimiterKey;
 
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -65,7 +66,7 @@ public class LocalRateLimiterTest {
         when(rateLimiterConfig.getPerMillis()).thenReturn(1000);
         
         String key = "key1";
-        var rateLimiterKey = new RateLimiterKey(key, "key-type", POST);
+        var rateLimiterKey = createRateLimiterKey(key, "key-type", POST);
         localRateLimiter = new LocalRateLimiter(rateLimiterConfig);
 
         localRateLimiter.checkRateOf(accountId, rateLimiterKey);
@@ -73,13 +74,13 @@ public class LocalRateLimiterTest {
     }
 
     @Test
-    public void rateLimiterSetTo_1CallPer300Millis_shouldAFailWhen2ConsecutiveCallsWithSameKeysAreMade() throws RateLimitException {
+    public void rateLimiterSetTo_1CallPer300Millis_shouldAFailWhen2ConsecutiveCallsWithSameKeysAreMade() throws Exception {
         when(rateLimiterConfig.getNoOfReqPerNode()).thenReturn(1);
         when(rateLimiterConfig.getNoOfReqForPostPerNode()).thenReturn(1);
         when(rateLimiterConfig.getPerMillis()).thenReturn(300);
         
         String key = "key2";
-        var rateLimiterKey = new RateLimiterKey(key, "key-type", POST);
+        var rateLimiterKey = createRateLimiterKey(key, "key-type", POST);
         localRateLimiter = new LocalRateLimiter(rateLimiterConfig);
 
         localRateLimiter.checkRateOf(accountId, rateLimiterKey);
@@ -99,7 +100,7 @@ public class LocalRateLimiterTest {
         when(rateLimiterConfig.getPerMillis()).thenReturn(1000);
         
         String key = "key3";
-        var rateLimiterKey = new RateLimiterKey(key, "key-type", POST);
+        var rateLimiterKey = createRateLimiterKey(key, "key-type", POST);
         localRateLimiter = new LocalRateLimiter(rateLimiterConfig);
 
         ExecutorService executor = Executors.newFixedThreadPool(3);
@@ -141,5 +142,11 @@ public class LocalRateLimiterTest {
         assertThat(successfulTasks.size(), is(3));
     }
 
+    public static RateLimiterKey createRateLimiterKey(String key, String type, String method) throws Exception {
+        Class<RateLimiterKey> clazz = RateLimiterKey.class;
+        Constructor<RateLimiterKey> constructor = clazz.getDeclaredConstructor(String.class, String.class, String.class);
+        constructor.setAccessible(true);
+        return constructor.newInstance(key, type, method);
 
+    }
 }

@@ -6,11 +6,11 @@ import javax.ws.rs.container.ContainerRequestContext;
 
 public class RateLimiterKey {
 
-    private String method;
-    private String key;
-    private String keyType;
+    private final String method;
+    private final String key;
+    private final String keyType;
 
-    public RateLimiterKey(String key, String keyType, String method) {
+    private RateLimiterKey(String key, String keyType, String method) {
         this.key = key;
         this.keyType = keyType;
         this.method = method;
