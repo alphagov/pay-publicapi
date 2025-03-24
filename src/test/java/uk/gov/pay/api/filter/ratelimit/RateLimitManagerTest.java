@@ -12,6 +12,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
+import static uk.gov.pay.api.filter.ratelimit.LocalRateLimiterTest.createRateLimiterKey;
 
 @ExtendWith(MockitoExtension.class)
 public class RateLimitManagerTest {
@@ -22,8 +23,8 @@ public class RateLimitManagerTest {
     private RateLimitManager rateLimitManager;
 
     @Test
-    public void returnsNumberOfAllowedRequestsForNoAccount() {
-        var rateLimiterKey = new RateLimiterKey("path", "key-type", "PUT");
+    public void returnsNumberOfAllowedRequestsForNoAccount() throws Exception {
+        var rateLimiterKey = createRateLimiterKey("path", "key-type", "PUT");
         when(rateLimiterConfig.getNoOfReq()).thenReturn(1);
 
         rateLimitManager = new RateLimitManager(rateLimiterConfig);
@@ -31,8 +32,8 @@ public class RateLimitManagerTest {
     }
 
     @Test
-    public void returnsNumberOfAllowedRequestsForPostForAccount1() {
-        var rateLimiterKey = new RateLimiterKey("path", "key-type", "POST");
+    public void returnsNumberOfAllowedRequestsForPostForAccount1() throws Exception {
+        var rateLimiterKey = createRateLimiterKey("path", "key-type", "POST");
         when(rateLimiterConfig.getElevatedAccounts()).thenReturn(List.of("1"));
         when(rateLimiterConfig.getNoOfPostReqForElevatedAccounts()).thenReturn(4);
 
@@ -41,8 +42,8 @@ public class RateLimitManagerTest {
     }
 
     @Test
-    public void returnsNumberOfAllowedRequestsForGetForAccount1() {
-        var rateLimiterKey = new RateLimiterKey("path", "key-type", "GET");
+    public void returnsNumberOfAllowedRequestsForGetForAccount1() throws Exception {
+        var rateLimiterKey = createRateLimiterKey("path", "key-type", "GET");
         when(rateLimiterConfig.getElevatedAccounts()).thenReturn(List.of("1"));
         when(rateLimiterConfig.getNoOfReqForElevatedAccounts()).thenReturn(3);
 
@@ -51,8 +52,8 @@ public class RateLimitManagerTest {
     }
 
     @Test
-    public void returnsNumberOfAllowedRequestsForPostForAccount2() {
-        var rateLimiterKey = new RateLimiterKey("path", "key-type", "POST");
+    public void returnsNumberOfAllowedRequestsForPostForAccount2() throws Exception {
+        var rateLimiterKey = createRateLimiterKey("path", "key-type", "POST");
         when(rateLimiterConfig.getNoOfReqForPost()).thenReturn(2);
 
         rateLimitManager = new RateLimitManager(rateLimiterConfig);
@@ -60,8 +61,8 @@ public class RateLimitManagerTest {
     }
 
     @Test
-    public void returnsNumberOfAllowedRequestsForGetForAccount2() {
-        var rateLimiterKey = new RateLimiterKey("path", "key-type", "GET");
+    public void returnsNumberOfAllowedRequestsForGetForAccount2() throws Exception {
+        var rateLimiterKey = createRateLimiterKey("path", "key-type", "GET");
         when(rateLimiterConfig.getNoOfReq()).thenReturn(1);
 
         rateLimitManager = new RateLimitManager(rateLimiterConfig);
@@ -69,8 +70,8 @@ public class RateLimitManagerTest {
     }
 
     @Test
-    public void shouldReturnNumberOfAllowedPostRequestsCorrectlyForLowTrafficAccounts() {
-        var rateLimiterKey = new RateLimiterKey("path", "key-type", "POST");
+    public void shouldReturnNumberOfAllowedPostRequestsCorrectlyForLowTrafficAccounts() throws Exception {
+        var rateLimiterKey = createRateLimiterKey("path", "key-type", "POST");
         when(rateLimiterConfig.getLowTrafficAccounts()).thenReturn(List.of("10"));
         when(rateLimiterConfig.getNoOfPostReqForLowTrafficAccounts()).thenReturn(7);
 
@@ -79,8 +80,8 @@ public class RateLimitManagerTest {
     }
 
     @Test
-    public void shouldReturnNumberOfAllowedGetRequestsCorrectlyForLowTrafficAccounts() {
-        var rateLimiterKey = new RateLimiterKey("path", "key-type", "GET");
+    public void shouldReturnNumberOfAllowedGetRequestsCorrectlyForLowTrafficAccounts() throws Exception {
+        var rateLimiterKey = createRateLimiterKey("path", "key-type", "GET");
         when(rateLimiterConfig.getLowTrafficAccounts()).thenReturn(List.of("10"));
         when(rateLimiterConfig.getNoOfReqForLowTrafficAccounts()).thenReturn(100);
 

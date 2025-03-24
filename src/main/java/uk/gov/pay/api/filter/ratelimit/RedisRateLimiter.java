@@ -48,6 +48,12 @@ public class RedisRateLimiter {
         }
     }
 
+    /**
+     * @param key the {@link RateLimiterKey#getKey()} key
+     * @param rateLimitInterval in milliseconds
+     * @return the count so far within the rateLimitInterval
+     * @throws RedisException
+     */
     private Long updateAllowance(String key, int rateLimitInterval) throws RedisException {
         String derivedKey = getKeyForWindow(key, rateLimitInterval);
         
@@ -60,6 +66,7 @@ public class RedisRateLimiter {
         }
         
         try {
+            // expire key after a (rateLimitInterval / 1000) so they are not on redis forever
             time("redis.expire", () -> redisClientManager.getRedisConnection().sync().expire(derivedKey, rateLimitInterval / 1000));
         } catch (Exception e) {
             LOGGER.info(String.format("Failed to expire redis key %s. Cause of error: %s", derivedKey, e));
@@ -83,7 +90,7 @@ public class RedisRateLimiter {
      * - perMillis >=1000 && <60000 : Window considered for seconds(s)
      * - perMillis >=60000 && <3600000 : Window considered for minute(s)
      *
-     * @return new key based on perMillis (works for second/minute/hour windows only)
+     * @return key based on {@link RateLimiterKey#getKey()} and current second/minute/hour window 
      */
     private String getKeyForWindow(String key, int rateLimitInterval) throws OutOfScopeException {
 

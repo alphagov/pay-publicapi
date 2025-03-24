@@ -10,6 +10,7 @@ import uk.gov.pay.api.filter.RateLimiterKey;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static uk.gov.pay.api.filter.ratelimit.LocalRateLimiterTest.createRateLimiterKey;
 
 @ExtendWith(MockitoExtension.class)
 public class RateLimiterTest {
@@ -25,8 +26,8 @@ public class RateLimiterTest {
     private RateLimiter rateLimiter;
 
     @BeforeEach
-    public void setup() {
-        rateLimiterKey = new RateLimiterKey("key2", "key-type", POST);
+    public void setup() throws Exception {
+        rateLimiterKey = createRateLimiterKey("key2", "key-type", POST);
         rateLimiter = new RateLimiter(localRateLimiter, redisRateLimiter);
     }
 
