@@ -25,7 +25,7 @@
             <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-dependencies</artifactId>
-                <version>3.0.12</version>
+                <version>3.0.13</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
