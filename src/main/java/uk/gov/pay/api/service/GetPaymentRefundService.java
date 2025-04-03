@@ -7,7 +7,7 @@ import uk.gov.pay.api.model.RefundFromConnector;
 import uk.gov.pay.api.model.RefundResponse;
 import uk.gov.pay.api.model.ledger.RefundTransactionFromLedger;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 public class GetPaymentRefundService {
 

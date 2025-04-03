@@ -8,8 +8,8 @@ import uk.gov.pay.api.service.PublicApiUriGenerator;
 import java.net.URI;
 import java.util.List;
 
-import static javax.ws.rs.HttpMethod.GET;
-import static javax.ws.rs.HttpMethod.POST;
+import static jakarta.ws.rs.HttpMethod.GET;
+import static jakarta.ws.rs.HttpMethod.POST;
 
 @Schema(name = "PaymentLinks", description = "links for payment")
 public class PaymentLinks {

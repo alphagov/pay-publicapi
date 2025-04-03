@@ -3,7 +3,7 @@ package uk.gov.pay.api.ledger.model;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import javax.ws.rs.QueryParam;
+import jakarta.ws.rs.QueryParam;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;

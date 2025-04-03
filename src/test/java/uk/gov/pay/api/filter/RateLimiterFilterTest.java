@@ -11,11 +11,11 @@ import uk.gov.pay.api.filter.ratelimit.RateLimitException;
 import uk.gov.pay.api.filter.ratelimit.RateLimiter;
 import uk.gov.pay.api.model.TokenPaymentType;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
+import jakarta.ws.rs.core.UriInfo;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;

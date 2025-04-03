@@ -2,7 +2,7 @@ package uk.gov.pay.api.filter;
 
 import uk.gov.pay.api.utils.PathHelper;
 
-import javax.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerRequestContext;
 
 public class RateLimiterKey {
 

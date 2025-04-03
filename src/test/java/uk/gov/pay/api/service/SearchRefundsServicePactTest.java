@@ -19,7 +19,7 @@ import uk.gov.pay.api.model.search.card.SearchRefundsResults;
 import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
 import uk.gov.service.payments.commons.testing.pact.consumers.PayPactProviderRule;
 
-import javax.ws.rs.client.Client;
+import jakarta.ws.rs.client.Client;
 
 import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.is;

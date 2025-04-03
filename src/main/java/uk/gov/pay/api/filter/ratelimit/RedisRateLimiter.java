@@ -10,7 +10,7 @@ import uk.gov.pay.api.app.config.RateLimiterConfig;
 import uk.gov.pay.api.filter.RateLimiterKey;
 import uk.gov.pay.api.managed.RedisClientManager;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
 import java.util.concurrent.Callable;

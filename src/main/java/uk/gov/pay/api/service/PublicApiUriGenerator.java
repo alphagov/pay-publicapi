@@ -2,8 +2,8 @@ package uk.gov.pay.api.service;
 
 import uk.gov.pay.api.app.config.PublicApiConfig;
 
-import javax.inject.Inject;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;

@@ -5,7 +5,7 @@ import uk.gov.pay.api.exception.GetChargeException;
 import uk.gov.pay.api.model.Charge;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.net.URI;
 
 public class GetPaymentService {

@@ -2,8 +2,8 @@ package uk.gov.pay.api.validation;
 
 import uk.gov.service.payments.commons.model.CardExpiryDate;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class CardExpiryValidator implements ConstraintValidator<ValidCardExpiryDate, String> {
 

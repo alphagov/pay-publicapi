@@ -6,7 +6,7 @@ import uk.gov.pay.api.model.search.PaginationDecorator;
 import uk.gov.pay.api.model.search.dispute.DisputeForSearchResult;
 import uk.gov.pay.api.model.search.dispute.DisputesSearchResults;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 import java.util.stream.Collectors;
 

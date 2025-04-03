@@ -6,7 +6,7 @@ import uk.gov.pay.api.model.RefundsFromConnector;
 import uk.gov.pay.api.model.RefundsResponse;
 import uk.gov.pay.api.model.ledger.RefundsFromLedger;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 import java.util.stream.Collectors;
 

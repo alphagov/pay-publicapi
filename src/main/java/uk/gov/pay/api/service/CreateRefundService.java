@@ -14,15 +14,15 @@ import uk.gov.pay.api.model.RefundResponse;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.resources.GetOnePaymentStrategy;
 
-import javax.inject.Inject;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.core.Response;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.core.Response;
 import java.util.Optional;
 
 import static java.lang.String.format;
-import static javax.ws.rs.client.Entity.json;
-import static javax.ws.rs.core.Response.Status.ACCEPTED;
-import static javax.ws.rs.core.UriBuilder.fromPath;
+import static jakarta.ws.rs.client.Entity.json;
+import static jakarta.ws.rs.core.Response.Status.ACCEPTED;
+import static jakarta.ws.rs.core.UriBuilder.fromPath;
 
 public class CreateRefundService {
 

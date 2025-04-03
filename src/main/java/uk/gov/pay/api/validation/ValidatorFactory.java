@@ -2,10 +2,10 @@ package uk.gov.pay.api.validation;
 
 import org.glassfish.hk2.api.Factory;
 
-import javax.inject.Inject;
-import javax.validation.ConstraintValidatorFactory;
-import javax.validation.Validation;
-import javax.validation.Validator;
+import jakarta.inject.Inject;
+import jakarta.validation.ConstraintValidatorFactory;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 
 public class ValidatorFactory implements Factory<Validator> {
 

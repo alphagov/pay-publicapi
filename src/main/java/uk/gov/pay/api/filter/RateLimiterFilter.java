@@ -9,16 +9,16 @@ import uk.gov.pay.api.filter.ratelimit.RateLimitException;
 import uk.gov.pay.api.filter.ratelimit.RateLimiter;
 import uk.gov.pay.api.resources.error.ApiErrorResponse.Code;
 
-import javax.annotation.Priority;
-import javax.inject.Inject;
-import javax.ws.rs.Priorities;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Variant;
-import javax.ws.rs.ext.Provider;
+import jakarta.annotation.Priority;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.Priorities;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Variant;
+import jakarta.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.util.Optional;
 

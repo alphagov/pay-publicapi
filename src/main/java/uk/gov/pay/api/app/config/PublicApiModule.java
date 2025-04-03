@@ -25,7 +25,7 @@ import uk.gov.pay.api.model.CreatePaymentRefundRequest;
 import uk.gov.pay.api.validation.PaymentRefundRequestValidator;
 import uk.gov.pay.api.validation.URLValidator;
 
-import javax.ws.rs.client.Client;
+import jakarta.ws.rs.client.Client;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 

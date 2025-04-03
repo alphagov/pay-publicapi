@@ -16,13 +16,13 @@ import uk.gov.pay.api.model.PaymentEvents;
 import uk.gov.pay.api.model.RefundFromConnector;
 import uk.gov.pay.api.model.RefundsFromConnector;
 
-import javax.inject.Inject;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
-import static javax.ws.rs.client.Entity.json;
+import static jakarta.ws.rs.client.Entity.json;
 import static org.apache.http.HttpStatus.SC_OK;
 
 public class ConnectorService {

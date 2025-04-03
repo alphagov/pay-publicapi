@@ -4,9 +4,9 @@ import org.apache.http.HttpStatus;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CancelChargeException;
 
-import javax.inject.Inject;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.core.Response;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.core.Response;
 
 public class CancelPaymentService {
 

@@ -20,7 +20,7 @@ import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
-import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 import static uk.gov.service.payments.commons.testing.port.PortFactory.findFreePort;
 

@@ -22,7 +22,7 @@ import uk.gov.pay.api.service.telephone.CreateTelephonePaymentService;
 import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
 import uk.gov.service.payments.commons.testing.pact.consumers.PayPactProviderRule;
 
-import javax.ws.rs.client.Client;
+import jakarta.ws.rs.client.Client;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;

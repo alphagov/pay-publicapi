@@ -6,7 +6,7 @@ import uk.gov.pay.api.utils.PublicAuthMockClient;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
-import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static uk.gov.pay.api.utils.Payloads.aSuccessfulPaymentPayload;
 
 public class AuthorisationIT extends PaymentResourceITestBase {

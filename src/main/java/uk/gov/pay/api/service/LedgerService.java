@@ -26,17 +26,17 @@ import uk.gov.pay.api.model.ledger.SearchRefundsResponseFromLedger;
 import uk.gov.pay.api.model.search.card.PaymentSearchResponse;
 import uk.gov.pay.api.validation.AgreementSearchValidator;
 
-import javax.inject.Inject;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Map;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.http.HttpStatus.SC_OK;
 import static uk.gov.pay.api.common.SearchConstants.GATEWAY_ACCOUNT_ID;
 
