@@ -34,7 +34,7 @@ import java.util.function.Consumer;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
-import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.apache.http.HttpHeaders.CACHE_CONTROL;
 import static org.apache.http.HttpHeaders.PRAGMA;
 import static org.apache.http.HttpStatus.SC_NOT_ACCEPTABLE;

@@ -6,8 +6,8 @@ import uk.gov.pay.api.exception.SearchPaymentsException;
 import uk.gov.pay.api.model.links.Link;
 import uk.gov.pay.api.model.links.SearchNavigationLinks;
 
-import javax.inject.Inject;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;

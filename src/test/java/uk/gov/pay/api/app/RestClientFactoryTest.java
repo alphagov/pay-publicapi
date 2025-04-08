@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import uk.gov.pay.api.app.config.RestClientConfig;
 
 import javax.net.ssl.SSLContext;
-import javax.ws.rs.client.Client;
+import jakarta.ws.rs.client.Client;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;

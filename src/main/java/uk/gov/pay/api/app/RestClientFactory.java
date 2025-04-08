@@ -4,8 +4,8 @@ import uk.gov.pay.api.app.config.RestClientConfig;
 import uk.gov.service.payments.logging.RestClientLoggingFilter;
 
 import javax.net.ssl.SSLContext;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 

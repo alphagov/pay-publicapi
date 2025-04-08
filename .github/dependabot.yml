@@ -7,14 +7,6 @@ updates:
       interval: daily
       time: "03:00"
     ignore:
-      - dependency-name: "io.dropwizard:dropwizard-dependencies"
-        # Dropwizard 4.x only works with Jakarta EE and not Java EE
-        versions:
-          - ">= 4"
-      - dependency-name: "io.dropwizard.modules:dropwizard-testing-junit4"
-        # dropwizard-testing-junit4 4.x only works with Dropwizard 4.x
-        versions:
-          - ">= 4"
       - dependency-name: "org.dhatim:dropwizard-sentry"
         # We essentially forked Dropwizard Sentry because it did not support
         # Dropwizard 3.x — there is now a Dropwizard Sentry 4.x, which supports
@@ -22,10 +14,6 @@ updates:
         # to go back to using an unmodified version
         versions:
           - ">= 4"
-      - dependency-name: "com.google.inject:guice-bom"
-        # Guice 7.x only works with Jakarta EE and not Java EE
-        versions:
-          - ">= 7"
     open-pull-requests-limit: 10
     labels:
       - dependencies

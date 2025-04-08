@@ -3,9 +3,9 @@ package uk.gov.pay.api.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 @Schema(name = "AuthorisationRequest", description = "Contains the user's payment information. This information will be sent to the payment service provider to authorise the payment.")
 public class AuthorisationRequest {
     @JsonProperty("one_time_token")

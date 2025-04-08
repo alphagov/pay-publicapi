@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.pay.api.model.links.RefundLinksForSearch;
 import uk.gov.pay.api.model.ledger.RefundTransactionFromLedger;
 
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilder;
 import java.net.URI;
 
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;

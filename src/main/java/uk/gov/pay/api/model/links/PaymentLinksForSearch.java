@@ -3,8 +3,8 @@ package uk.gov.pay.api.model.links;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import static javax.ws.rs.HttpMethod.GET;
-import static javax.ws.rs.HttpMethod.POST;
+import static jakarta.ws.rs.HttpMethod.GET;
+import static jakarta.ws.rs.HttpMethod.POST;
 
 @Schema(name = "PaymentLinksForSearch", description = "links for search payment resource")
 public class PaymentLinksForSearch {

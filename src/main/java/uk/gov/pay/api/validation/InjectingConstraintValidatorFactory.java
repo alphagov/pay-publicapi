@@ -2,9 +2,9 @@ package uk.gov.pay.api.validation;
 
 import com.google.inject.Injector;
 
-import javax.inject.Singleton;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorFactory;
+import jakarta.inject.Singleton;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorFactory;
 
 @Singleton
 public class InjectingConstraintValidatorFactory implements ConstraintValidatorFactory {

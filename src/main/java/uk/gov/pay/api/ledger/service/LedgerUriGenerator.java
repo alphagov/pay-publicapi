@@ -3,8 +3,8 @@ package uk.gov.pay.api.ledger.service;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.auth.Account;
 
-import javax.inject.Inject;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.UriBuilder;
 import java.util.Map;
 
 import static java.lang.String.format;

@@ -8,13 +8,13 @@ import uk.gov.pay.api.ledger.model.TransactionSearchParams;
 import uk.gov.pay.api.ledger.service.TransactionSearchService;
 import uk.gov.pay.api.model.search.card.PaymentForSearchResult;
 
-import javax.inject.Inject;
-import javax.ws.rs.BeanParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.BeanParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @Path("/")
 @Produces({"application/json"})

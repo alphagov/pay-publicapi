@@ -6,7 +6,7 @@ import uk.gov.pay.api.model.PaymentEvents;
 import uk.gov.pay.api.model.PaymentEventsResponse;
 import uk.gov.pay.api.model.TransactionEvents;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.net.URI;
 
 public class GetPaymentEventsService {
