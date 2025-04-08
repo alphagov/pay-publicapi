@@ -5,7 +5,6 @@ import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import org.junit.Before;
 import org.junit.Test;
-import uk.gov.pay.api.it.fixtures.PaymentRefundJsonFixture;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetailsFromResponse;
 import uk.gov.pay.api.model.RefundSummary;
@@ -18,18 +17,17 @@ import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.validation.DateTimeUtils;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
-import static java.lang.String.format;
 import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static jakarta.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import static jakarta.ws.rs.core.Response.Status.ACCEPTED;
 import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
 import static jakarta.ws.rs.core.Response.Status.PRECONDITION_FAILED;
+import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.core.Is.is;
@@ -59,14 +57,6 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getRefundByIdThroughConnector_shouldGetValidResponse() {
-        connectorMockClient.respondWithGetRefundById(GATEWAY_ACCOUNT_ID, CHARGE_ID, REFUND_ID, AMOUNT, REFUND_AMOUNT_AVAILABLE, "available", CREATED_DATE);
-
-        assertSingleRefund(getPaymentRefundByIdResponse(CHARGE_ID, REFUND_ID))
-        .body("$", hasKey("settlement_summary"));
-    }
-
-    @Test
     public void getRefundByIdThroughLedger_shouldGetValidResponse() {
         ledgerMockClient.respondWithRefund(REFUND_ID, aRefundTransactionFromLedgerFixture()
                 .withAmount((long) AMOUNT)
@@ -77,7 +67,7 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
                 .build());
 
         assertSingleRefund(getPaymentRefundByIdResponse(CHARGE_ID, REFUND_ID, "ledger-only"))
-        .body("$", hasKey("settlement_summary"));
+                .body("$", hasKey("settlement_summary"));
     }
 
     @Test
@@ -117,17 +107,6 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getRefundByIdThroughConnector_shouldReturnNotFound_whenRefundDoesNotExist() {
-        connectorMockClient.respondRefundNotFound(GATEWAY_ACCOUNT_ID, CHARGE_ID, "unknown-refund-id");
-
-        getPaymentRefundByIdResponse(CHARGE_ID, REFUND_ID)
-                .statusCode(404)
-                .contentType(JSON)
-                .body("code", is("P0700"))
-                .body("description", is("Not found"));
-    }
-
-    @Test
     public void getRefundByIdThroughLedger_shouldReturnNotFound_whenRefundDoesNotExist() {
         ledgerMockClient.respondRefundNotFound("unknown-refund-id");
 
@@ -139,17 +118,6 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getRefundById_returns500_whenConnectorRespondsWithResponseOtherThan200Or404() {
-        connectorMockClient.respondRefundWithError(GATEWAY_ACCOUNT_ID, CHARGE_ID, REFUND_ID);
-
-        getPaymentRefundByIdResponse(CHARGE_ID, REFUND_ID, CONNECTOR_ONLY_STRATEGY)
-                .statusCode(500)
-                .contentType(JSON)
-                .body("code", is("P0798"))
-                .body("description", is("Downstream system error"));
-    }
-
-    @Test
     public void getRefundById_returns500_whenLedgerRespondsWithResponseOtherThan200Or404() {
         ledgerMockClient.respondRefundWithError(REFUND_ID);
 
@@ -158,16 +126,6 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
                 .contentType(JSON)
                 .body("code", is("P0798"))
                 .body("description", is("Downstream system error"));
-    }
-
-    @Test
-    public void getRefundsThroughConnector_shouldGetValidResponse() {
-        PaymentRefundJsonFixture refund1 = new PaymentRefundJsonFixture(100L, CREATED_DATE, "100", "available", new ArrayList<>());
-        PaymentRefundJsonFixture refund2 = new PaymentRefundJsonFixture(300L, CREATED_DATE, "300", "pending", new ArrayList<>());
-
-        connectorMockClient.respondWithGetAllRefunds(GATEWAY_ACCOUNT_ID, CHARGE_ID, refund1, refund2);
-
-        assertRefundsResponse(getPaymentRefundsResponse(CHARGE_ID, CONNECTOR_ONLY_STRATEGY));
     }
 
     @Test
@@ -188,7 +146,7 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
 
         ledgerMockClient.respondWithGetAllRefunds(CHARGE_ID, refund1, refund2);
 
-        assertRefundsResponse(getPaymentRefundsResponse(CHARGE_ID, "ledger-only"));
+        assertRefundsResponse(getPaymentRefundsResponse(CHARGE_ID));
     }
 
     @Test
@@ -210,7 +168,7 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
 
         ledgerMockClient.respondWithGetAllRefunds(CHARGE_ID, refund1, refund2);
 
-        getPaymentRefundsResponse(CHARGE_ID, "ledger-only")
+        getPaymentRefundsResponse(CHARGE_ID)
                 .statusCode(200)
                 .contentType(JSON)
                 .body("_embedded.refunds[0].settlement_summary.settled_date", is(CREATED_DATE))
@@ -244,17 +202,10 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getRefunds_shouldGetValidResponse_whenListReturnedIsEmpty() {
-        connectorMockClient.respondWithGetAllRefunds(GATEWAY_ACCOUNT_ID, CHARGE_ID);
-
-        assertEmptyRefundsResponse(getPaymentRefundsResponse(CHARGE_ID, CONNECTOR_ONLY_STRATEGY));
-    }
-
-    @Test
     public void getRefundsThroughLedger_shouldGetValidResponse_whenListReturnedIsEmpty() {
         ledgerMockClient.respondWithGetAllRefunds(CHARGE_ID);
 
-        assertEmptyRefundsResponse(getPaymentRefundsResponse(CHARGE_ID, "ledger-only"));
+        assertEmptyRefundsResponse(getPaymentRefundsResponse(CHARGE_ID));
     }
 
     private void assertEmptyRefundsResponse(ValidatableResponse paymentRefundsResponse) {
@@ -373,12 +324,7 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
     }
 
     private ValidatableResponse getPaymentRefundsResponse(String paymentId) {
-        return getPaymentRefundsResponse(paymentId, "default");
-    }
-
-    private ValidatableResponse getPaymentRefundsResponse(String paymentId, String strategy) {
         return given().port(app.getLocalPort())
-                .header("X-Ledger", strategy)
                 .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
                 .get(format("/v1/payments/%s/refunds", paymentId))
                 .then();

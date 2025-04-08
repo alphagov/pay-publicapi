@@ -12,24 +12,13 @@ import java.util.stream.Collectors;
 
 public class GetPaymentRefundsService {
 
-    private final ConnectorService connectorService;
     private final LedgerService ledgerService;
     private PublicApiUriGenerator publicApiUriGenerator;
 
     @Inject
-    public GetPaymentRefundsService(ConnectorService connectorService,
-                                    LedgerService ledgerService,
-                                    PublicApiUriGenerator publicApiUriGenerator) {
-        this.connectorService = connectorService;
+    public GetPaymentRefundsService(LedgerService ledgerService, PublicApiUriGenerator publicApiUriGenerator) {
         this.ledgerService = ledgerService;
         this.publicApiUriGenerator = publicApiUriGenerator;
-    }
-
-    public RefundsResponse getConnectorPaymentRefunds(Account account, String paymentId) {
-        RefundsFromConnector refundsFromConnector = connectorService.getPaymentRefunds(account.getAccountId(), paymentId);
-        List<RefundResponse> refundResponses = processRefunds(paymentId, refundsFromConnector);
-        
-        return getRefundsResponse(paymentId, refundResponses);
     }
 
     public RefundsResponse getLedgerTransactionTransactions(Account account, String paymentId) {

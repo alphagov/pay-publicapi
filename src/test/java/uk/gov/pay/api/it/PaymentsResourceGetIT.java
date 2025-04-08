@@ -54,6 +54,7 @@ import static uk.gov.service.payments.commons.model.CommonDateTimeFormatters.ISO
 
 public class PaymentsResourceGetIT extends PaymentResourceITestBase {
 
+    private static final String CONNECTOR_ONLY_STRATEGY = "connector-only";
     private static final ZonedDateTime CAPTURED_DATE = ZonedDateTime.parse("2016-01-02T14:03:00Z");
     private static final ZonedDateTime CAPTURE_SUBMIT_TIME = ZonedDateTime.parse("2016-01-02T15:02:00Z");
     private static final ZonedDateTime SETTLED_DATE = ZonedDateTime.parse("2016-01-06T15:02:00Z");

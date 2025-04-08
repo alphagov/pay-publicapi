@@ -40,7 +40,6 @@ public class GetPaymentRefundsServicePactTest {
     @Before
     public void setUp() {
         when(mockConfiguration.getLedgerUrl()).thenReturn(ledgerRule.getUrl());
-        when(mockConfiguration.getConnectorUrl()).thenReturn(connectorRule.getUrl());
         when(mockConfiguration.getBaseUrl()).thenReturn("http://publicapi.test.localhost/");
 
         PublicApiUriGenerator publicApiUriGenerator = new PublicApiUriGenerator(mockConfiguration);
@@ -49,10 +48,7 @@ public class GetPaymentRefundsServicePactTest {
         Client client = RestClientFactory.buildClient(new RestClientConfig(false));
         LedgerService ledgerService = new LedgerService(client, ledgerUriGenerator);
 
-        ConnectorUriGenerator connectorUriGenerator = new ConnectorUriGenerator(mockConfiguration);
-        ConnectorService connectorService = new ConnectorService(client, connectorUriGenerator);
-
-        getPaymentRefundsService = new GetPaymentRefundsService(connectorService, ledgerService, publicApiUriGenerator);
+        getPaymentRefundsService = new GetPaymentRefundsService(ledgerService, publicApiUriGenerator);
     }
 
     @Test
@@ -81,33 +77,5 @@ public class GetPaymentRefundsServicePactTest {
         assertThat(refunds.get(1).getCreatedDate(), is("2018-09-22T10:16:16.067Z"));
         assertThat(refunds.get(1).getLinks().getPayment().getHref(), is("http://publicapi.test.localhost/v1/payments/ch_123abc456xyz"));
         assertThat(refunds.get(1).getLinks().getSelf().getHref(), is("http://publicapi.test.localhost/v1/payments/ch_123abc456xyz/refunds/refund-transaction-id2"));
-    }
-
-    @Test
-    @PactVerification("connector")
-    @Pacts(pacts = {"publicapi-connector-get-payment-refunds"})
-    public void shouldReturnRefundsForPaymentCorrectlyFromConnector() {
-        Account account = new Account(ACCOUNT_ID, TokenPaymentType.CARD, "a-token-link");
-        RefundsResponse response = getPaymentRefundsService.getConnectorPaymentRefunds(account, "charge8133029783750222");
-        assertThat(response.getPaymentId(), is("charge8133029783750222"));
-        assertThat(response.getLinks().getSelf().getHref(), is("http://publicapi.test.localhost/v1/payments/charge8133029783750222/refunds"));
-        assertThat(response.getLinks().getPayment().getHref(), is("http://publicapi.test.localhost/v1/payments/charge8133029783750222"));
-
-        List<RefundResponse> refunds = response.getEmbedded().getRefunds();
-        assertThat(refunds.size(), is(2));
-
-        assertThat(refunds.get(0).getRefundId(), is("di0qnu9ucdo7aslhatci6h90jk"));
-        assertThat(refunds.get(0).getStatus(), is("success"));
-        assertThat(refunds.get(0).getAmount(), is(1L));
-        assertThat(refunds.get(0).getCreatedDate(), is("2016-01-25T13:23:55.000Z"));
-        assertThat(refunds.get(0).getLinks().getPayment().getHref(), is("http://publicapi.test.localhost/v1/payments/charge8133029783750222"));
-        assertThat(refunds.get(0).getLinks().getSelf().getHref(), is("http://publicapi.test.localhost/v1/payments/charge8133029783750222/refunds/di0qnu9ucdo7aslhatci6h90jk"));
-
-        assertThat(refunds.get(1).getRefundId(), is("m16ufgc3t23l766ljhv9eicsn5"));
-        assertThat(refunds.get(1).getStatus(), is("error"));
-        assertThat(refunds.get(1).getAmount(), is(1L));
-        assertThat(refunds.get(1).getCreatedDate(), is("2016-01-25T16:23:55.000Z"));
-        assertThat(refunds.get(1).getLinks().getPayment().getHref(), is("http://publicapi.test.localhost/v1/payments/charge8133029783750222"));
-        assertThat(refunds.get(1).getLinks().getSelf().getHref(), is("http://publicapi.test.localhost/v1/payments/charge8133029783750222/refunds/m16ufgc3t23l766ljhv9eicsn5"));
     }
 }
