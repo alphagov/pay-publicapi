@@ -31,7 +31,6 @@ public abstract class PaymentResourceITestBase {
     protected static final String PAYMENTS_PATH = "/v1/payments/";
     protected static final String AGREEMENTS_PATH = "/v1/agreements/";
     protected static final String LEDGER_ONLY_STRATEGY = "ledger-only";
-    protected static final String CONNECTOR_ONLY_STRATEGY = "connector-only";
 
     @ClassRule
     public static RedisDockerRule redisDockerRule = new RedisDockerRule();

@@ -9,6 +9,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.app.config.PublicApiConfig;
@@ -25,16 +34,6 @@ import uk.gov.pay.api.service.CreateRefundService;
 import uk.gov.pay.api.service.GetPaymentRefundService;
 import uk.gov.pay.api.service.GetPaymentRefundsService;
 import uk.gov.pay.api.service.GetPaymentService;
-
-import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.HeaderParam;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Response;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_200_DESCRIPTION;
@@ -87,11 +86,10 @@ public class PaymentRefundsResource {
     )
     public RefundsResponse getRefunds(@Parameter(hidden = true) @Auth Account account,
                                       @PathParam("paymentId") @Parameter(name = "paymentId", 
-                                              description = "The unique `payment_id` of the payment you want a list of refunds for.") String paymentId,
-                                      @Parameter(hidden = true) @HeaderParam("X-Ledger") String strategyName) {
+                                              description = "The unique `payment_id` of the payment you want a list of refunds for.") 
+                                      String paymentId) {
         
-        GetPaymentRefundsStrategy strategy = new GetPaymentRefundsStrategy(strategyName, account, paymentId, getPaymentRefundsService);
-        RefundsResponse refundsResponse = strategy.validateAndExecute();
+        RefundsResponse refundsResponse = getPaymentRefundsService.getLedgerTransactionTransactions(account, paymentId);
         logger.debug("refund returned - [ {} ]", refundsResponse);
         return refundsResponse;
     }

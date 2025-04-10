@@ -73,7 +73,7 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     private static final String CONNECTOR_MOCK_CHARGE_EVENTS_PATH = CONNECTOR_MOCK_CHARGE_PATH + "/events";
     private static final String CONNECTOR_MOCK_CHARGE_REFUNDS_PATH = CONNECTOR_MOCK_CHARGE_PATH + "/refunds";
-    private static final String CONNECTOR_MOCK_CHARGE_REFUND_BY_ID_PATH = CONNECTOR_MOCK_CHARGE_REFUNDS_PATH + "/%s";
+    private static final String CONNECTOR_MOCK_CHARGE_REFUND_BY_ID_PATH = CONNECTOR_MOCK_CHARGE_REFUNDS_PATH + "/%s"; // TODO spell out the API
     public static final String VALID_AGREEMENT_ID = "12345678901234567890123456";
 
     public ConnectorMockClient(WireMockClassRule connectorMock) {
