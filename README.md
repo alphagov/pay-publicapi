@@ -17,6 +17,7 @@ Configuration of the application is performed via environment variables, some of
 | `PUBLICAPI_BASE`            | Yes       | N/A            | The base URL clients can use to reach the API. e.g. http://api.example.org:1234/                           |
 | `PUBLIC_AUTH_URL`           | Yes       | N/A            | The URL to the [publicauth](https://github.com/alphagov/pay-publicauth) service                            |
 | `REDIS_URL`                 | No        | localhost:6379 | The location of the redis endpoint to store rate-limiter information in                                    |
+|  REDIS_SSL                  | No        | false          | Whether to establish TLS encrypted connections to the redis instance
 | `TOKEN_API_HMAC_SECRET`     | Yes       | N/A            | Hmac secret to be used to validate that the given token is genuine (Api Key = Token + Hmac (Token, Secret) |
 
 ## Rate limiting
