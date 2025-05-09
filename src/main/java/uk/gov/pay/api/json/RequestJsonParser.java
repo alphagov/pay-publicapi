@@ -68,6 +68,7 @@ import static uk.gov.service.payments.commons.model.Source.CARD_PAYMENT_LINK;
 
 class RequestJsonParser {
 
+    public static final char[] NAXSI_NOT_ALLOWED_CHARACTERS = {'<', '>', '|'};
     private static final Set<Source> ALLOWED_SOURCES = EnumSet.of(CARD_PAYMENT_LINK, CARD_AGENT_INITIATED_MOTO);
     public static final Set<AuthorisationMode> ALLOWED_AUTHORISATION_MODES = EnumSet.of(AuthorisationMode.WEB, AuthorisationMode.MOTO_API, AuthorisationMode.AGREEMENT);
 
@@ -199,10 +200,12 @@ class RequestJsonParser {
     }
 
     private static String validateAndGetDescription(JsonNode request, RequestError.Code validationError, RequestError.Code missingFieldError) {
-        return validateAndGetString(
+        String description = validateAndGetString(
                 request.get(DESCRIPTION_FIELD_NAME),
                 aRequestError(DESCRIPTION_FIELD_NAME, validationError, "Must be a valid string format"),
                 aRequestError(DESCRIPTION_FIELD_NAME, missingFieldError));
+        validateNoIllegalCharacters(description, DESCRIPTION_FIELD_NAME, validationError);
+        return description;
     }
 
     private static String validateAndGetPaymentReference(JsonNode paymentRequest) {
@@ -214,10 +217,22 @@ class RequestJsonParser {
     }
 
     private static String validateAndGetReference(JsonNode request, RequestError.Code validationError, RequestError.Code missingFieldError) {
-        return validateAndGetString(
+        String reference = validateAndGetString(
                 request.get(REFERENCE_FIELD_NAME),
                 aRequestError(REFERENCE_FIELD_NAME, validationError, "Must be a valid string format"),
                 aRequestError(REFERENCE_FIELD_NAME, missingFieldError));
+        validateNoIllegalCharacters(reference, REFERENCE_FIELD_NAME, validationError);
+        return reference;
+    }
+
+    private static void validateNoIllegalCharacters(String fieldValue, String fieldName, RequestError.Code validationError) {
+        if (fieldValue != null) {
+            for (char illegalChar : NAXSI_NOT_ALLOWED_CHARACTERS) {
+                if (fieldValue.indexOf(illegalChar) >= 0) {
+                    throw new BadRequestException(aRequestError(fieldName, validationError, "Must be a valid string format"));
+                }
+            }
+        }
     }
 
     private static String validateAndGetString(JsonNode jsonNode, RequestError validationError, RequestError missingError) {

@@ -131,6 +131,26 @@ class RequestJsonParserTest {
     }
 
     @Test
+    void parsePaymentRequest_whenReferenceFieldContainsIllegalCharacters() throws Exception {
+        for (char illegalChar : RequestJsonParser.NAXSI_NOT_ALLOWED_CHARACTERS) {
+            String payload = "{\n" +
+                    "  \"amount\": 1000,\n" +
+                    "  \"reference\": \"Reference with " + illegalChar + " character\",\n" +
+                    "  \"description\": \"Some description\",\n" +
+                    "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
+                    "}";
+
+            JsonNode jsonNode = objectMapper.readTree(payload);
+
+            BadRequestException exception = assertThrows(BadRequestException.class,
+                    () -> parsePaymentRequest(jsonNode));
+
+            assertThat(exception, aBadRequestExceptionWithError("P0102",
+                    "Invalid attribute value: reference. Must be a valid string format"));
+        }
+    }
+
+    @Test
     void parsePaymentRequest_whenDescriptionFieldIsNotAString() throws Exception {
         // language=JSON
         String payload = "{\n" +
@@ -145,6 +165,26 @@ class RequestJsonParserTest {
         BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parsePaymentRequest(jsonNode));
         assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
                 "Invalid attribute value: description. Must be a valid string format"));
+    }
+
+    @Test
+    void parsePaymentRequest_whenDescriptionFieldContainsIllegalCharacters() throws Exception {
+        for (char illegalChar : RequestJsonParser.NAXSI_NOT_ALLOWED_CHARACTERS) {
+            String payload = "{\n" +
+                    "  \"amount\": 1000,\n" +
+                    "  \"reference\": \"Valid reference\",\n" +
+                    "  \"description\": \"Description with " + illegalChar + " character\",\n" +
+                    "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
+                    "}";
+
+            JsonNode jsonNode = objectMapper.readTree(payload);
+
+            BadRequestException exception = assertThrows(BadRequestException.class,
+                    () -> parsePaymentRequest(jsonNode));
+
+            assertThat(exception, aBadRequestExceptionWithError("P0102",
+                    "Invalid attribute value: description. Must be a valid string format"));
+        }
     }
 
     @Test
