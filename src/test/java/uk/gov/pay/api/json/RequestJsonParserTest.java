@@ -167,25 +167,25 @@ class RequestJsonParserTest {
                 "Invalid attribute value: description. Must be a valid string format"));
     }
 
-    @Test
-    void parsePaymentRequest_whenDescriptionFieldContainsIllegalCharacters() throws Exception {
-        for (char illegalChar : RequestJsonParser.NAXSI_NOT_ALLOWED_CHARACTERS) {
-            String payload = "{\n" +
-                    "  \"amount\": 1000,\n" +
-                    "  \"reference\": \"Valid reference\",\n" +
-                    "  \"description\": \"Description with " + illegalChar + " character\",\n" +
-                    "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
-                    "}";
+    // @Test
+    // void parsePaymentRequest_whenDescriptionFieldContainsIllegalCharacters() throws Exception {
+    //     for (char illegalChar : RequestJsonParser.NAXSI_NOT_ALLOWED_CHARACTERS) {
+    //         String payload = "{\n" +
+    //                 "  \"amount\": 1000,\n" +
+    //                 "  \"reference\": \"Valid reference\",\n" +
+    //                 "  \"description\": \"Description with " + illegalChar + " character\",\n" +
+    //                 "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
+    //                 "}";
 
-            JsonNode jsonNode = objectMapper.readTree(payload);
+    //         JsonNode jsonNode = objectMapper.readTree(payload);
 
-            BadRequestException exception = assertThrows(BadRequestException.class,
-                    () -> parsePaymentRequest(jsonNode));
+    //         BadRequestException exception = assertThrows(BadRequestException.class,
+    //                 () -> parsePaymentRequest(jsonNode));
 
-            assertThat(exception, aBadRequestExceptionWithError("P0102",
-                    "Invalid attribute value: description. Must be a valid string format"));
-        }
-    }
+    //         assertThat(exception, aBadRequestExceptionWithError("P0102",
+    //                 "Invalid attribute value: description. Must be a valid string format"));
+    //     }
+    // }
 
     @Test
     void parsePaymentRequest_whenLanguageFieldIsNotAString() throws Exception {
