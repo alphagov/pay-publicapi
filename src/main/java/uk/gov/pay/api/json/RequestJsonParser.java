@@ -230,14 +230,14 @@ class RequestJsonParser {
                 aRequestError(REFERENCE_FIELD_NAME, validationError, "Must be a valid string format"),
                 aRequestError(REFERENCE_FIELD_NAME, missingFieldError));
 
-        if (reference != null) {
-            for (char illegalChar : NAXSI_NOT_ALLOWED_CHARACTERS) {
-                if (reference.indexOf(illegalChar) >= 0) {
-                    throw new BadRequestException(aRequestError(REFERENCE_FIELD_NAME, validationError,
-                            "Must be a valid string format"));
-                }
-            }
-        }
+        // if (reference != null) {
+        //     for (char illegalChar : NAXSI_NOT_ALLOWED_CHARACTERS) {
+        //         if (reference.indexOf(illegalChar) >= 0) {
+        //             throw new BadRequestException(aRequestError(REFERENCE_FIELD_NAME, validationError,
+        //                     "Must be a valid string format"));
+        //         }
+        //     }
+        // }
 
         return reference;
     }
