@@ -143,15 +143,15 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_whenReferenceFieldContainsIllegalCharacters() throws Exception {
         String payload = null;
-        for (char illegalChar : RequestJsonParser.NAXSI_NOT_ALLOWED_CHARACTERS) {
-            payload = """
+        for (Character illegalChar : RequestJsonParser.NAXSI_NOT_ALLOWED_CHARACTERS) {
+            payload = String.format("""
                     {
-                      "amount": 1000,
-                      "reference": "Reference with """ + illegalChar + """ character",
-                      "description": "Some description",
-                      "return_url": "https://somewhere.gov.uk/rainbow/1"
+                    "amount": 1000,
+                    "reference": "Reference with %s character",
+                    "description": "Some description",
+                    "return_url": "https://somewhere.gov.uk/rainbow/1"
                     }
-                    """;
+                    """, illegalChar);
 
             JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -185,15 +185,15 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_whenDescriptionFieldContainsIllegalCharacters() throws Exception {
         String payload = null;
-        for (char illegalChar : RequestJsonParser.NAXSI_NOT_ALLOWED_CHARACTERS) {
-            payload = """
+        for (Character illegalChar : RequestJsonParser.NAXSI_NOT_ALLOWED_CHARACTERS) {
+            payload = String.format("""
                     {
-                      "amount": 1000,
-                      "reference": "Valid reference",
-                      "description": "Description with """ + illegalChar + """ character",
-                      "return_url": "https://somewhere.gov.uk/rainbow/1"
+                    "amount": 1000,
+                    "reference": "Valid reference",
+                    "description": "Description with %s character",
+                    "return_url": "https://somewhere.gov.uk/rainbow/1"
                     }
-                    """;
+                    """, illegalChar);
 
             JsonNode jsonNode = objectMapper.readTree(payload);
 

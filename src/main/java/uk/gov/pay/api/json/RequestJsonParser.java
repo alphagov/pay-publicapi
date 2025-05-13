@@ -68,7 +68,7 @@ import static uk.gov.service.payments.commons.model.Source.CARD_PAYMENT_LINK;
 
 class RequestJsonParser {
 
-    public static final char[] NAXSI_NOT_ALLOWED_CHARACTERS = {'<', '>', '|'};
+    public static final Set<Character> NAXSI_NOT_ALLOWED_CHARACTERS = Set.of('<', '>', '|');
     private static final Set<Source> ALLOWED_SOURCES = EnumSet.of(CARD_PAYMENT_LINK, CARD_AGENT_INITIATED_MOTO);
     public static final Set<AuthorisationMode> ALLOWED_AUTHORISATION_MODES = EnumSet.of(AuthorisationMode.WEB, AuthorisationMode.MOTO_API, AuthorisationMode.AGREEMENT);
 
@@ -227,8 +227,8 @@ class RequestJsonParser {
 
     private static void validateNoIllegalCharacters(String fieldValue, String fieldName, RequestError.Code validationError) {
         if (fieldValue != null) {
-            for (char illegalChar : NAXSI_NOT_ALLOWED_CHARACTERS) {
-                if (fieldValue.indexOf(illegalChar) >= 0) {
+            for (int i = 0; i < fieldValue.length(); i++) {
+                if (NAXSI_NOT_ALLOWED_CHARACTERS.contains(fieldValue.charAt(i))) {
                     throw new BadRequestException(aRequestError(fieldName, validationError, "Must be a valid string format"));
                 }
             }
