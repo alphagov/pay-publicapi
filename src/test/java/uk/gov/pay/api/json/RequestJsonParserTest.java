@@ -33,12 +33,14 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_withReturnUrl_shouldParseSuccessfully() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
-                "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1"
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -54,11 +56,13 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_withoutReturnUrl_shouldParseSuccessfully() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\"\n" +
-                "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": "Some description"
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -74,15 +78,17 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_withReturnUrlAndLanguageAndDelayedCaptureAndMoto_shouldParseSuccessfully() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "  \"language\": \"en\",\n" +
-                "  \"delayed_capture\": true,\n" +
-                "  \"moto\": true\n" +
-                "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1",
+                  "language": "en",
+                  "delayed_capture": true,
+                  "moto": true
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -101,9 +107,11 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRefundRequest_shouldParseSuccessfully() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000\n" +
-                "}";
+        String payload = """
+                {
+                  "amount": 1000
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -116,12 +124,14 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_whenReferenceFieldIsNotAString() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": 1234,\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
-                "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": 1234,
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1"
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -132,13 +142,16 @@ class RequestJsonParserTest {
 
     @Test
     void parsePaymentRequest_whenReferenceFieldContainsIllegalCharacters() throws Exception {
+        String payload = null;
         for (char illegalChar : RequestJsonParser.NAXSI_NOT_ALLOWED_CHARACTERS) {
-            String payload = "{\n" +
-                    "  \"amount\": 1000,\n" +
-                    "  \"reference\": \"Reference with " + illegalChar + " character\",\n" +
-                    "  \"description\": \"Some description\",\n" +
-                    "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
-                    "}";
+            payload = """
+                    {
+                      "amount": 1000,
+                      "reference": "Reference with """ + illegalChar + """ character",
+                      "description": "Some description",
+                      "return_url": "https://somewhere.gov.uk/rainbow/1"
+                    }
+                    """;
 
             JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -153,12 +166,14 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_whenDescriptionFieldIsNotAString() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": 1234,\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
-                "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": 1234,
+                  "return_url": "https://somewhere.gov.uk/rainbow/1"
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -169,13 +184,16 @@ class RequestJsonParserTest {
 
     @Test
     void parsePaymentRequest_whenDescriptionFieldContainsIllegalCharacters() throws Exception {
+        String payload = null;
         for (char illegalChar : RequestJsonParser.NAXSI_NOT_ALLOWED_CHARACTERS) {
-            String payload = "{\n" +
-                    "  \"amount\": 1000,\n" +
-                    "  \"reference\": \"Valid reference\",\n" +
-                    "  \"description\": \"Description with " + illegalChar + " character\",\n" +
-                    "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
-                    "}";
+            payload = """
+                    {
+                      "amount": 1000,
+                      "reference": "Valid reference",
+                      "description": "Description with """ + illegalChar + """ character",
+                      "return_url": "https://somewhere.gov.uk/rainbow/1"
+                    }
+                    """;
 
             JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -190,13 +208,15 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_whenLanguageFieldIsNotAString() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "  \"language\": 0\n" +
-                "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1",
+                  "language": 0
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -208,13 +228,15 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_whenDelayedCaptureFieldIsNotABoolean() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "  \"delayed_capture\": \"true\"\n" +
-                "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1",
+                  "delayed_capture": "true"
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -226,12 +248,14 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_whenReturnUrlIsNotAString_shouldOverrideFormattingErrorMessage() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": 1234\n" +
-                "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": 1234
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -243,12 +267,14 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_whenReferenceFieldIsNullValue() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": null,\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
-                "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": null,
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1"
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -260,12 +286,14 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_whenDescriptionFieldIsNullValue() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": null,\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\"\n" +
-                "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": null,
+                  "return_url": "https://somewhere.gov.uk/rainbow/1"
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -277,13 +305,15 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_whenLanguageFieldIsNullValue() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "  \"language\": null\n" +
-                "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1",
+                  "language": null
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -295,9 +325,11 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRefundRequest_whenAmountFieldIsNullValue() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": null\n" +
-                "}";
+        String payload = """
+                {
+                  "amount": null
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -309,11 +341,13 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_whenAmountFieldIsMissing() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": 1234\n" +
-                "}";
+        String payload = """
+                {
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": 1234
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -325,11 +359,13 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_whenReferenceFieldIsMissing() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": 1234\n" +
-                "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "description": "Some description",
+                  "return_url": 1234
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -341,11 +377,13 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_whenDescriptionFieldIsMissing() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"return_url\": 1234\n" +
-                "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "return_url": 1234
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -357,7 +395,9 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRefundRequest_whenAmountFieldIsMissing() throws Exception {
         // language=JSON
-        String payload = "{}";
+        String payload = """
+                {}
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -369,21 +409,25 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_withAllPrefilledCardholderDetails_shouldParseSuccessfully() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "\"email\": \"j.bogs@example.org\",\n" +
-                "\"prefilled_cardholder_details\": {\n" +
-                "\"cardholder_name\": \"J Bogs\",\n" +
-                "\"billing_address\": {\n" +
-                "\"line1\": \"address line 1\",\n" +
-                "\"line2\": \"address line 2\",\n" +
-                "\"city\": \"address city\",\n" +
-                "\"postcode\": \"AB1 CD2\",\n" +
-                "\"country\": \"GB\"\n" +
-                "}" + "}" + "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1",
+                  "email": "j.bogs@example.org",
+                  "prefilled_cardholder_details": {
+                    "cardholder_name": "J Bogs",
+                    "billing_address": {
+                      "line1": "address line 1",
+                      "line2": "address line 2",
+                      "city": "address city",
+                      "postcode": "AB1 CD2",
+                      "country": "GB"
+                    }
+                  }
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -411,21 +455,25 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_withSomePrefilledCardholderDetails_shouldParseSuccessfully() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "\"email\": null,\n" +
-                "\"prefilled_cardholder_details\": {\n" +
-                "\"cardholder_name\": null,\n" +
-                "\"billing_address\": {\n" +
-                "\"line1\": \"address line 1\",\n" +
-                "\"line2\": null,\n" +
-                "\"city\": \"address city\",\n" +
-                "\"postcode\": \"AB1 CD2\",\n" +
-                "\"country\": \"GB\"\n" +
-                "}" + "}" + "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1",
+                  "email": null,
+                  "prefilled_cardholder_details": {
+                    "cardholder_name": null,
+                    "billing_address": {
+                      "line1": "address line 1",
+                      "line2": null,
+                      "city": "address city",
+                      "postcode": "AB1 CD2",
+                      "country": "GB"
+                    }
+                  }
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -453,21 +501,25 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_withEmailFieldIsNotAString() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "\"email\": false,\n" +
-                "\"prefilled_cardholder_details\": {\n" +
-                "\"cardholder_name\": \"J Bogs\",\n" +
-                "\"billing_address\": {\n" +
-                "\"line1\": \"address line 1\",\n" +
-                "\"line2\": \"address line 2\",\n" +
-                "\"city\": \"address city\",\n" +
-                "\"postcode\": \"AB1 CD2\",\n" +
-                "\"country\": \"GB\"\n" +
-                "}" + "}" + "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1",
+                  "email": false,
+                  "prefilled_cardholder_details": {
+                    "cardholder_name": "J Bogs",
+                    "billing_address": {
+                      "line1": "address line 1",
+                      "line2": "address line 2",
+                      "city": "address city",
+                      "postcode": "AB1 CD2",
+                      "country": "GB"
+                    }
+                  }
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -479,21 +531,25 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_withLine1FieldIsNotAString() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "\"email\": \"j.bogs@example.com\",\n" +
-                "\"prefilled_cardholder_details\": {\n" +
-                "\"cardholder_name\": \"J Bogs\",\n" +
-                "\"billing_address\": {\n" +
-                "\"line1\": 182,\n" +
-                "\"line2\": \"address line 2\",\n" +
-                "\"city\": \"address city\",\n" +
-                "\"postcode\": \"AB1 CD2\",\n" +
-                "\"country\": \"GB\"\n" +
-                "}" + "}" + "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1",
+                  "email": "j.bogs@example.com",
+                  "prefilled_cardholder_details": {
+                    "cardholder_name": "J Bogs",
+                    "billing_address": {
+                      "line1": 182,
+                      "line2": "address line 2",
+                      "city": "address city",
+                      "postcode": "AB1 CD2",
+                      "country": "GB"
+                    }
+                  }
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -505,13 +561,15 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_shouldSetSourceToDefaultIfNotInPayload() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 27432,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "  \"language\": \"en\"\n" +
-                "}";
+        String payload = """
+                {
+                  "amount": 27432,
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1",
+                  "language": "en"
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -522,14 +580,17 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_shouldParseCardPaymentLinkSourceCorrectly() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "\"internal\": {\n" +
-                "\"source\": \"CARD_PAYMENT_LINK\"\n" +
-                "}" + "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1",
+                  "internal": {
+                    "source": "CARD_PAYMENT_LINK"
+                  }
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
         CreateCardPaymentRequest paymentRequest = parsePaymentRequest(jsonNode);
@@ -539,14 +600,17 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_shouldCardAgentInitiatedMotoSourceCorrectly() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "\"internal\": {\n" +
-                "\"source\": \"CARD_AGENT_INITIATED_MOTO\"\n" +
-                "}" + "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1",
+                  "internal": {
+                    "source": "CARD_AGENT_INITIATED_MOTO"
+                  }
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
         CreateCardPaymentRequest paymentRequest = parsePaymentRequest(jsonNode);
@@ -556,14 +620,17 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_shouldThrowValidationException_whenSourceIsInvalidType() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "\"internal\": {\n" +
-                "\"source\": true\n" +
-                "}" + "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1",
+                  "internal": {
+                    "source": true
+                  }
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -575,14 +642,17 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_shouldThrowValidationException_whenSourceIsValidEnumTypeButNotAccepted() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "\"internal\": {\n" +
-                "\"source\": \"CARD_EXTERNAL_TELEPHONE\"\n" +
-                "}" + "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1",
+                  "internal": {
+                    "source": "CARD_EXTERNAL_TELEPHONE"
+                  }
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -594,13 +664,15 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_shouldParseValidAuthorisationMode() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "  \"authorisation_mode\": \"moto_api\"\n" +
-                "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1",
+                  "authorisation_mode": "moto_api"
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
         CreateCardPaymentRequest paymentRequest = parsePaymentRequest(jsonNode);
@@ -610,13 +682,15 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_shouldThrowValidationException_whenAuthorisationModeIsNotValidEnumValue() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "  \"authorisation_mode\": \"foo\"\n" +
-                "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1",
+                  "authorisation_mode": "foo"
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -628,13 +702,15 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_shouldThrowValidationException_whenAuthorisationModeIsValidEnumValueButNotAccepted() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "  \"authorisation_mode\": \"external\"\n" +
-                "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1",
+                  "authorisation_mode": "external"
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -646,14 +722,16 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_shouldParseAgreementId_whenAuthorisationModeAgreement() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "  \"authorisation_mode\": \"agreement\",\n" +
-                "  \"agreement_id\": \"abcdefghijklmnopqrstuvwxyz\"\n" +
-                "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1",
+                  "authorisation_mode": "agreement",
+                  "agreement_id": "abcdefghijklmnopqrstuvwxyz"
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
         CreateCardPaymentRequest paymentRequest = parsePaymentRequest(jsonNode);
@@ -663,14 +741,16 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_shouldThrowValidationException_whenAgreementIdIsInvalidType_butAuthorisationModeIsAgreement() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "  \"authorisation_mode\": \"agreement\",\n" +
-                "  \"agreement_id\": true\n" +
-                "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1",
+                  "authorisation_mode": "agreement",
+                  "agreement_id": true
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -682,14 +762,16 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_shouldThrowValidationException_whenAgreementIdIsProvidedAndAuthorisationModeIsNotAgreement() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "  \"authorisation_mode\": \"web\",\n" +
-                "  \"agreement_id\": \"abcdefgklmnopqrstuvwxyz\"\n" +
-                "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1",
+                  "authorisation_mode": "web",
+                  "agreement_id": "abcdefgklmnopqrstuvwxyz"
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -701,13 +783,15 @@ class RequestJsonParserTest {
     @Test
     void parsePaymentRequest_shouldThrowValidationException_whenAgreementIdIsProvidedAndAuthorisationModeIsNotSpecified() throws Exception {
         // language=JSON
-        String payload = "{\n" +
-                "  \"amount\": 1000,\n" +
-                "  \"reference\": \"Some reference\",\n" +
-                "  \"description\": \"Some description\",\n" +
-                "  \"return_url\": \"https://somewhere.gov.uk/rainbow/1\",\n" +
-                "  \"agreement_id\": \"abcdefgklmnopqrstuvwxyz\"\n" +
-                "}";
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1",
+                  "agreement_id": "abcdefgklmnopqrstuvwxyz"
+                }
+                """;
 
         JsonNode jsonNode = objectMapper.readTree(payload);
 
@@ -715,5 +799,4 @@ class RequestJsonParserTest {
         assertThat(badRequestException.getRequestError().getCode(), is("P0104"));
         assertThat(badRequestException.getRequestError().getDescription(), is("Unexpected attribute: agreement_id"));
     }
-
 }
