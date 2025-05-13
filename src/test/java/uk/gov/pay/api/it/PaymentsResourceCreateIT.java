@@ -51,8 +51,10 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     private static final String CARD_BRAND_LABEL = "Mastercard";
     private static final String CARD_TYPE = "credit";
     private static final String RETURN_URL = "https://somewhere.gov.uk/rainbow/1";
-    private static final String REFERENCE = "Some reference <script> alert('This is a ?{simple} XSS attack.')</script>";
-    private static final String DESCRIPTION = "Some description <script> alert('This is a ?{simple} XSS attack.')</script>";
+    private static final String ILLEGAL_REFERENCE = "Some reference <script> alert('This is a ?{simple} XSS attack.')</script>";
+    private static final String ILLEGAL_DESCRIPTION = "Some description <script> alert('This is a ?{simple} XSS attack.')</script>";
+    private static final String REFERENCE = "Some reference";
+    private static final String DESCRIPTION = "Some description";
     private static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(TIMESTAMP);
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
     private static final CardDetailsFromResponse CARD_DETAILS = new CardDetailsFromResponse("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, CARD_TYPE);
@@ -832,6 +834,44 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
                 .contentType(JSON);
 
         connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, createChargeRequestParams);
+    }
+
+    @Test
+    public void shouldReturnBadRequestWhenPaymentReferenceContainsIllegalCharacters() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+
+        CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
+                .withAmount(100)
+                .withDescription(DESCRIPTION)
+                .withReference(ILLEGAL_REFERENCE)
+                .withReturnUrl(RETURN_URL)
+                .build();
+
+        postPaymentResponse(paymentPayload(createChargeRequestParams))
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .contentType(JSON)
+                .body("field", is("reference"))
+                .body("code", is("P0102"))
+                .body("description", is("Invalid attribute value: reference. Must be a valid string format"));
+    }
+
+    @Test
+    public void shouldReturnBadRequestWhenPaymentDescriptionContainsIllegalCharacters() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+
+        CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
+                .withAmount(100)
+                .withDescription(ILLEGAL_DESCRIPTION)
+                .withReference(REFERENCE)
+                .withReturnUrl(RETURN_URL)
+                .build();
+
+        postPaymentResponse(paymentPayload(createChargeRequestParams))
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .contentType(JSON)
+                .body("field", is("description"))
+                .body("code", is("P0102"))
+                .body("description", is("Invalid attribute value: description. Must be a valid string format"));
     }
 
     public static String paymentPayload(CreateChargeRequestParams params) {

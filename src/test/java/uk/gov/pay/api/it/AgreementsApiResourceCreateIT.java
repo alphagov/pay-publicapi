@@ -23,7 +23,9 @@ import static uk.gov.pay.api.utils.mocks.CreateAgreementRequestParams.CreateAgre
 
 public class AgreementsApiResourceCreateIT extends PaymentResourceITestBase {
    
-    private static final String REFERENCE = "Some reference <script> alert('This is a ?{simple} XSS attack.')</script>";
+    private static final String ILLEGAL_REFERENCE = "Some reference <script> alert('This is a ?{simple} XSS attack.')</script>";
+    private static final String REFERENCE = "A valid reference";
+    private static final String ILLEGAL_DESCRIPTION = "Some description <script> alert('This is a ?{simple} XSS attack.')</script>";
     private static final String DESCRIPTION = "A valid description";
     private static final String USER_IDENTIFIER = "a-valid-user-identifier";
     public static final String VALID_AGREEMENT_ID = "12345678901234567890123456";
@@ -213,6 +215,40 @@ public class AgreementsApiResourceCreateIT extends PaymentResourceITestBase {
                 .withReference(REFERENCE)
                 .build();
         postAgreementRequest(agreementPayload(createAgreementRequestParams)).statusCode(503);
+    }
+
+    @Test
+    public void shouldReturnBadRequestWhenAgreementReferenceContainsIllegalCharacters() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+
+        CreateAgreementRequestParams createAgreementRequestParams = aCreateAgreementRequestParams()
+                .withReference(ILLEGAL_REFERENCE)
+                .withDescription(DESCRIPTION)
+                .build();
+
+        postAgreementRequest(agreementPayload(createAgreementRequestParams))
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .contentType(JSON)
+                .body("field", is("reference"))
+                .body("code", is("P2102"))
+                .body("description", is("Invalid attribute value: reference. Must be a valid string format"));
+    }
+
+    @Test
+    public void shouldReturnBadRequestWhenAgreementDescriptionContainsIllegalCharacters() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
+
+        CreateAgreementRequestParams createAgreementRequestParams = aCreateAgreementRequestParams()
+                .withReference(REFERENCE)
+                .withDescription(ILLEGAL_DESCRIPTION)
+                .build();
+
+        postAgreementRequest(agreementPayload(createAgreementRequestParams))
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .contentType(JSON)
+                .body("field", is("description"))
+                .body("code", is("P2102"))
+                .body("description", is("Invalid attribute value: description. Must be a valid string format"));
     }
 
     protected ValidatableResponse postAgreementRequest(String payload) {

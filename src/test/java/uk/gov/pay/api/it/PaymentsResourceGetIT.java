@@ -45,6 +45,10 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
+import static uk.gov.pay.api.model.CreateCardPaymentRequest.REFERENCE_FIELD_NAME;
+import static uk.gov.pay.api.model.CreateCardPaymentRequest.DESCRIPTION_FIELD_NAME;
+import static uk.gov.pay.api.model.CreateCardPaymentRequest.AMOUNT_FIELD_NAME;
+import static uk.gov.pay.api.model.CreateCardPaymentRequest.RETURN_URL_FIELD_NAME;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
@@ -76,10 +80,12 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     private static final String CARD_BRAND_LABEL = "Mastercard";
     private static final String CARD_TYPE = "debit";
     private static final String RETURN_URL = "https://somewhere.gov.uk/rainbow/1";
-    private static final String REFERENCE = "Some reference <script> alert('This is a ?{simple} XSS attack.')</script>";
+    private static final String ILLEGAL_REFERENCE = "Some reference <script> alert('This is a ?{simple} XSS attack.')</script>";
+    private static final String REFERENCE = "Valid reference";
     private static final String EMAIL = "alice.111@mail.fake";
     private static final String GATEWAY_TRANSACTION_ID = "gateway-tx-123456";
-    private static final String DESCRIPTION = "Some description <script> alert('This is a ?{simple} XSS attack.')</script>";
+    private static final String ILLEGAL_DESCRIPTION = "Some description <script> alert('This is a ?{simple} XSS attack.')</script>";
+    private static final String DESCRIPTION = "Valid description";
     private static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(ZonedDateTime.parse("2010-12-31T22:59:59.132012345Z"));
     private static final Map<String, String> PAYMENT_CREATED = new ChargeEventBuilder(CREATED, CREATED_DATE).build();
     private static final List<Map<String, String>> EVENTS = Collections.singletonList(PAYMENT_CREATED);
@@ -924,6 +930,50 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
                 .statusCode(200)
                 .contentType(JSON)
                 .body("exemption", is(nullValue()));
+    }
+
+    @Test
+    public void shouldReturnBadRequestWhenPaymentReferenceContainsIllegalCharacters() {
+        Map<String, Object> payload = Map.of(
+                REFERENCE_FIELD_NAME, ILLEGAL_REFERENCE,
+                DESCRIPTION_FIELD_NAME, DESCRIPTION,
+                AMOUNT_FIELD_NAME, 1000,
+                RETURN_URL_FIELD_NAME, RETURN_URL
+        );
+
+        given().port(app.getLocalPort())
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
+                .contentType(JSON)
+                .body(payload)
+                .post(PAYMENTS_PATH)
+                .then()
+                .statusCode(400)
+                .contentType(JSON)
+                .body("code", is("P0102"))
+                .body("field", is(REFERENCE_FIELD_NAME))
+                .body("description", is("Invalid attribute value: reference. Must be a valid string format"));
+    }
+
+    @Test
+    public void shouldReturnBadRequestWhenPaymentDescriptionContainsIllegalCharacters() {
+        Map<String, Object> payload = Map.of(
+            REFERENCE_FIELD_NAME, REFERENCE,
+            DESCRIPTION_FIELD_NAME, ILLEGAL_DESCRIPTION,
+            AMOUNT_FIELD_NAME, 1000,
+            RETURN_URL_FIELD_NAME, RETURN_URL
+        );
+
+        given().port(app.getLocalPort())
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
+                .contentType(JSON)
+                .body(payload)
+                .post(PAYMENTS_PATH)
+                .then()
+                .statusCode(400)
+                .contentType(JSON)
+                .body("code", is("P0102"))
+                .body("field", is(DESCRIPTION_FIELD_NAME))
+                .body("description", is("Invalid attribute value: description. Must be a valid string format"));
     }
 
     private ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder getConnectorCharge() {
