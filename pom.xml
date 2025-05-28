@@ -482,7 +482,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.5.1</version>
                 <configuration>
                     <mainClass>uk.gov.pay.api.app.PublicApi</mainClass>
                     <arguments>
