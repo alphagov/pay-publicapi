@@ -209,6 +209,11 @@
             <artifactId>jakarta.annotation-api</artifactId>
             <version>3.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-core</artifactId>
+            <version>1.15.0</version>
+        </dependency>
 
         <!-- Test dependencies that are imported from one of the BOMs specified
              in <dependencyManagement> so no explicit versions needed -->
@@ -332,7 +337,7 @@
         <dependency>
             <groupId>io.lettuce</groupId>
             <artifactId>lettuce-core</artifactId>
-            <version>6.6.0.RELEASE</version>
+            <version>6.7.0.RELEASE</version>
         </dependency>
     </dependencies>
 
