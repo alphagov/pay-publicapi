@@ -87,7 +87,7 @@ public class AgreementsApiResource {
             @Valid CreateAgreementRequest createAgreementRequest)
     {
         LOGGER.info("Creating new agreement for reference {} and gateway accountID {}", 
-                createAgreementRequest.getReference(), account.getAccountId());
+                createAgreementRequest.getReference(), account.accountId());
         var agreementCreatedResponse = agreementsService.createAgreement(account, createAgreementRequest);
         var agreementLedgerResponse = agreementsService.getAgreement(account, agreementCreatedResponse.getAgreementId());
         

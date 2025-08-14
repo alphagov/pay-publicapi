@@ -55,7 +55,7 @@ public class CreateRefundService {
         String connectorPayload = new GsonBuilder().create().toJson(payloadMap);
 
         Response connectorResponse = client
-                .target(getConnectorUrl(format("/v1/api/accounts/%s/charges/%s/refunds", account.getAccountId(), paymentId)))
+                .target(getConnectorUrl(format("/v1/api/accounts/%s/charges/%s/refunds", account.accountId(), paymentId)))
                 .request()
                 .post(json(connectorPayload));
 

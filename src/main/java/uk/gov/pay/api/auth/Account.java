@@ -4,32 +4,11 @@ import uk.gov.pay.api.model.TokenPaymentType;
 
 import java.security.Principal;
 
-public class Account implements Principal {
-
-    private final String accountId;
-    private final TokenPaymentType paymentType;
-    private final String tokenLink;
-
-    public Account(String accountId, TokenPaymentType paymentType, String tokenLink) {
-        this.accountId = accountId;
-        this.paymentType = paymentType;
-        this.tokenLink = tokenLink;
-    }
+public record Account(String accountId, TokenPaymentType paymentType, String tokenLink) implements Principal {
 
     @Override
     public String getName() {
-        return getAccountId();
+        return accountId();
     }
 
-    public String getTokenLink() {
-        return tokenLink;
-    }
-
-    public String getAccountId() {
-        return accountId;
-    }
-
-    public TokenPaymentType getPaymentType() {
-        return paymentType;
-    }
 }

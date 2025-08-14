@@ -19,30 +19,30 @@ public class ConnectorUriGenerator {
     }
 
     String chargesURI(Account account) {
-        return buildConnectorUri(format("/v1/api/accounts/%s/charges", account.getAccountId()));
+        return buildConnectorUri(format("/v1/api/accounts/%s/charges", account.accountId()));
     }
 
     String chargeURI(Account account, String chargeId) {
-        String path = format("/v1/api/accounts/%s/charges/%s", account.getAccountId(), chargeId); //TODO rename to /payments instead /charges
+        String path = format("/v1/api/accounts/%s/charges/%s", account.accountId(), chargeId); //TODO rename to /payments instead /charges
         return buildConnectorUri(path);
     }
 
     public String chargeEventsURI(Account account, String paymentId) {
-        String path = format("/v1/api/accounts/%s/charges/%s/events", account.getAccountId(), paymentId);
+        String path = format("/v1/api/accounts/%s/charges/%s/events", account.accountId(), paymentId);
         return buildConnectorUri(path);
     }
 
     String cancelURI(Account account, String paymentId) {
-        String path = format("/v1/api/accounts/%s/charges/%s/cancel", account.getAccountId(), paymentId);
+        String path = format("/v1/api/accounts/%s/charges/%s/cancel", account.accountId(), paymentId);
         return buildConnectorUri(path, Collections.emptyMap());
     }
 
     public String telephoneChargesURI(Account account) {
-        return buildConnectorUri(format("/v1/api/accounts/%s/telephone-charges", account.getAccountId()));
+        return buildConnectorUri(format("/v1/api/accounts/%s/telephone-charges", account.accountId()));
     }
 
     String captureURI(Account account, String chargeId) {
-        String path = format("/v1/api/accounts/%s/charges/%s/capture", account.getAccountId(), chargeId);
+        String path = format("/v1/api/accounts/%s/charges/%s/capture", account.accountId(), chargeId);
         return buildConnectorUri(path);
     }
 
@@ -57,12 +57,12 @@ public class ConnectorUriGenerator {
     }
 
     public String getAgreementURI(Account account) {
-        String path = format("/v1/api/accounts/%s/agreements", account.getAccountId());
+        String path = format("/v1/api/accounts/%s/agreements", account.accountId());
         return buildConnectorUri(path);
     }
 
     public String cancelAgreementURI(Account account, String agreementId) {
-        String path = format("/v1/api/accounts/%s/agreements/%s/cancel", account.getAccountId(), agreementId);
+        String path = format("/v1/api/accounts/%s/agreements/%s/cancel", account.accountId(), agreementId);
         return buildConnectorUri(path, Collections.emptyMap());
     }
 

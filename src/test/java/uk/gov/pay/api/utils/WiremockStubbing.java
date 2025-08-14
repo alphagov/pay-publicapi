@@ -18,7 +18,7 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 public class WiremockStubbing {
     
     public static void stubPublicAuthV1ApiAuth(WireMockRule wireMockRule, Account account, String token) throws JsonProcessingException {
-        Map<String, String> entity = ImmutableMap.of("account_id", account.getAccountId(), "token_type", account.getPaymentType().name());
+        Map<String, String> entity = ImmutableMap.of("account_id", account.accountId(), "token_type", account.paymentType().name());
         String json = new ObjectMapper().writeValueAsString(entity);
         wireMockRule.stubFor(get(urlEqualTo("/v1/api/auth"))
                 .withHeader(AUTHORIZATION, equalTo("Bearer " + token))
