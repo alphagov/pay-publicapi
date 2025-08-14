@@ -80,7 +80,7 @@ public class RateLimiterFilter implements ContainerRequestFilter {
     private String getAccountId(ContainerRequestContext requestContext) {
         Account account = (Account) requestContext.getSecurityContext().getUserPrincipal();
         return Optional.ofNullable(account)
-                .map(Account::getAccountId)
+                .map(Account::accountId)
                 .orElse(StringUtils.EMPTY);
     }
 }

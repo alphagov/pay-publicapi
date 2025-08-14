@@ -25,7 +25,7 @@ public class GetPaymentRefundService {
     }
 
     public RefundResponse getConnectorPaymentRefund(Account account, String paymentId, String refundId) {
-        RefundFromConnector refundFromConnector = connectorService.getPaymentRefund(account.getAccountId(), paymentId, refundId);
+        RefundFromConnector refundFromConnector = connectorService.getPaymentRefund(account.accountId(), paymentId, refundId);
 
         return RefundResponse.from(
                 refundFromConnector,

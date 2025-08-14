@@ -57,7 +57,7 @@ public class ConnectorUriGeneratorTest {
     @Test
     public void shouldGenerateTheRightCaptureURI() {
         String uri = connectorUriGenerator.captureURI(cardAccount, chargeId);
-        assertThat(uri, is("https://bla.test/v1/api/accounts/" + cardAccount.getAccountId() + "/charges/" + chargeId + "/capture"));
+        assertThat(uri, is("https://bla.test/v1/api/accounts/" + cardAccount.accountId() + "/charges/" + chargeId + "/capture"));
     }
 
     @Test

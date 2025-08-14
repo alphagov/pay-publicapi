@@ -22,7 +22,7 @@ public class GetPaymentRefundsService {
     }
 
     public RefundsResponse getLedgerTransactionTransactions(Account account, String paymentId) {
-        RefundsFromLedger refundsFromLedger = ledgerService.getPaymentRefunds(account.getAccountId(), paymentId);
+        RefundsFromLedger refundsFromLedger = ledgerService.getPaymentRefunds(account.accountId(), paymentId);
         List<RefundResponse> refundResponses = processRefunds(paymentId, refundsFromLedger);
         
         return getRefundsResponse(paymentId, refundResponses);

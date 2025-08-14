@@ -114,7 +114,7 @@ public class LedgerService {
 
     public SearchRefundsResponseFromLedger searchRefunds(Account account, Map<String, String> paramsAsMap) {
 
-        paramsAsMap.put(PARAM_ACCOUNT_ID, account.getAccountId());
+        paramsAsMap.put(PARAM_ACCOUNT_ID, account.accountId());
         paramsAsMap.put(PARAM_TRANSACTION_TYPE, REFUND_TRANSACTION_TYPE);
 
         Response response = client
@@ -135,7 +135,7 @@ public class LedgerService {
     }
 
     public SearchDisputesResponseFromLedger searchDisputes(Account account, Map<String, String> paramsAsMap) {
-        paramsAsMap.put(PARAM_ACCOUNT_ID, account.getAccountId());
+        paramsAsMap.put(PARAM_ACCOUNT_ID, account.accountId());
         paramsAsMap.put(PARAM_TRANSACTION_TYPE, DISPUTE_TRANSACTION_TYPE);
 
         if (paramsAsMap.containsKey("status")) {
@@ -161,7 +161,7 @@ public class LedgerService {
 
     public PaymentSearchResponse<TransactionResponse> searchPayments(Account account, Map<String, String> paramsAsMap) {
 
-        paramsAsMap.put(PARAM_ACCOUNT_ID, account.getAccountId());
+        paramsAsMap.put(PARAM_ACCOUNT_ID, account.accountId());
         paramsAsMap.put(PARAM_TRANSACTION_TYPE, PAYMENT_TRANSACTION_TYPE);
         paramsAsMap.put(PARAM_EXACT_REFERENCE_MATCH, "true");
 
@@ -201,7 +201,7 @@ public class LedgerService {
         AgreementSearchValidator.validateSearchParameters(searchParams);
 
         var params = new HashMap<>(searchParams.getQueryMap());
-        params.put(GATEWAY_ACCOUNT_ID, account.getAccountId());
+        params.put(GATEWAY_ACCOUNT_ID, account.accountId());
         params.put(PARAM_EXACT_REFERENCE_MATCH, "true");
 
         String url = ledgerUriGenerator.agreementsURIWithParams(params);

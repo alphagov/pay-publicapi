@@ -34,7 +34,7 @@ public class LedgerUriGenerator {
     public String transactionURI(Account gatewayAccountId, String paymentId, String transactionType) {
         String path = format("/v1/transaction/%s", paymentId);
         return buildLedgerUri(path, Map.of(
-                "account_id", gatewayAccountId.getAccountId(),
+                "account_id", gatewayAccountId.accountId(),
                 "transaction_type", transactionType,
                 "status_version", "1"
         ));
@@ -43,7 +43,7 @@ public class LedgerUriGenerator {
     public String transactionURI(Account gatewayAccountId, String refundId, String transactionType, String paymentId) {
         String path = format("/v1/transaction/%s", refundId);
         return buildLedgerUri(path, Map.of(
-                "account_id", gatewayAccountId.getAccountId(),
+                "account_id", gatewayAccountId.accountId(),
                 "transaction_type", transactionType,
                 "parent_external_id", paymentId,
                 "status_version", "1")
@@ -53,7 +53,7 @@ public class LedgerUriGenerator {
     public String transactionEventsURI(Account gatewayAccountId, String paymentId) {
         String path = format("/v1/transaction/%s/event", paymentId);
         return buildLedgerUri(path, Map.of(
-                "gateway_account_id", gatewayAccountId.getAccountId(),
+                "gateway_account_id", gatewayAccountId.accountId(),
                 "status_version", "1")
         );
     }
@@ -69,7 +69,7 @@ public class LedgerUriGenerator {
     public String agreementURI(Account account, String agreementId) {
         String path = format("/v1/agreement/%s", agreementId);
         return buildLedgerUri(path, Map.of(
-                "account_id", account.getAccountId()
+                "account_id", account.accountId()
         ));
     }
 

@@ -95,8 +95,8 @@ public class AccountAuthenticatorTest {
         when(mockResponse.readEntity(AuthResponse.class)).thenReturn(authResponse);
         Optional<Account> maybeAccount = accountAuthenticator.authenticate(bearerToken);
         assertThat(maybeAccount.get().getName(), is(accountId));
-        assertThat(maybeAccount.get().getAccountId(), is(accountId));
-        assertThat(maybeAccount.get().getPaymentType(), is(CARD));
+        assertThat(maybeAccount.get().accountId(), is(accountId));
+        assertThat(maybeAccount.get().paymentType(), is(CARD));
         
         verify(mockAppender).doAppend(loggingEventArgumentCaptor.capture());
         List<LoggingEvent> logEvents = loggingEventArgumentCaptor.getAllValues();

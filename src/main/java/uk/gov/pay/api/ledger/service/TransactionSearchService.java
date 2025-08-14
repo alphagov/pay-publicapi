@@ -75,7 +75,7 @@ public class TransactionSearchService {
                 searchParams.getFromSettledDate(), searchParams.getToSettledDate());
         validateSupportedSearchParams(searchParams.getQueryMap());
 
-        searchParams.setAccountId(account.getAccountId());
+        searchParams.setAccountId(account.accountId());
         String url = ledgerUriGenerator.transactionsURIWithParams(searchParams.getQueryMap());
         Response ledgerResponse = client
                 .target(url)
