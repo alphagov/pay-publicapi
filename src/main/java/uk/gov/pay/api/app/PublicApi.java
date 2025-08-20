@@ -15,6 +15,7 @@ import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.dropwizard.DropwizardExports;
 import io.prometheus.client.servlet.jakarta.exporter.MetricsServlet;
+import org.dhatim.dropwizard.sentry.logging.SentryAppenderFactory;
 import org.glassfish.jersey.CommonProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +69,6 @@ import uk.gov.pay.api.validation.InjectingValidationFeature;
 import uk.gov.service.payments.logging.GovUkPayDropwizardRequestJsonLogLayoutFactory;
 import uk.gov.service.payments.logging.LoggingFilter;
 import uk.gov.service.payments.logging.LogstashConsoleAppenderFactory;
-import uk.gov.service.payments.logging.SentryAppenderFactory;
 
 import javax.net.ssl.HttpsURLConnection;
 import jakarta.servlet.FilterRegistration;
