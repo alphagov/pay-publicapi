@@ -242,7 +242,7 @@
         <dependency>
             <groupId>io.dropwizard.modules</groupId>
             <artifactId>dropwizard-testing-junit4</artifactId>
-            <version>4.0.15</version>
+            <version>4.0.16</version>
             <scope>test</scope>
         </dependency>
         <dependency>
