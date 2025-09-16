@@ -22,6 +22,7 @@ import static uk.gov.pay.api.json.RequestJsonParser.parsePaymentRequest;
 import static uk.gov.pay.api.json.RequestJsonParser.parseRefundRequest;
 import static uk.gov.pay.api.matcher.BadRequestExceptionMatcher.aBadRequestExceptionWithError;
 import static uk.gov.service.payments.commons.model.AuthorisationMode.MOTO_API;
+import static uk.gov.service.payments.commons.model.AgreementPaymentType.INSTALMENT;
 import static uk.gov.service.payments.commons.model.Source.CARD_AGENT_INITIATED_MOTO;
 import static uk.gov.service.payments.commons.model.Source.CARD_API;
 import static uk.gov.service.payments.commons.model.Source.CARD_PAYMENT_LINK;
@@ -798,5 +799,84 @@ class RequestJsonParserTest {
         BadRequestException badRequestException = assertThrows(BadRequestException.class, () -> parsePaymentRequest(jsonNode));
         assertThat(badRequestException.getRequestError().getCode(), is("P0104"));
         assertThat(badRequestException.getRequestError().getDescription(), is("Unexpected attribute: agreement_id"));
+    }
+    
+    @Test
+    void parsePaymentRequest_shouldParseValidAgreementPaymentType_whenSetUpAgreementPropertyPresent() throws Exception {
+        // language=JSON
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1",
+                  "set_up_agreement" : "agreement",
+                  "agreement_payment_type": "instalment"
+                }
+                """;
+
+        JsonNode jsonNode = objectMapper.readTree(payload);
+        CreateCardPaymentRequest paymentRequest = parsePaymentRequest(jsonNode);
+        assertThat(paymentRequest.getAgreementPaymentType().get(), is(INSTALMENT));
+    }
+    
+    @Test
+    void parsePaymentRequest_shouldThrowValidationException_whenRequestForFirstRecurringPaymentRejectsInvalidReasonValues() throws Exception {
+        // language=JSON
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1",
+                  "set_up_agreement": "agreement",
+                  "agreement_payment_type": "Invalid reason"
+                }
+                """;
+
+        JsonNode jsonNode = objectMapper.readTree(payload);
+
+        PaymentValidationException paymentValidationException = assertThrows(PaymentValidationException.class, () -> parsePaymentRequest(jsonNode));
+        assertThat(paymentValidationException.getRequestError().getCode(), is("P0102"));
+        assertThat(paymentValidationException.getRequestError().getDescription(), is("Invalid attribute value: agreement_payment_type. Must be one of instalment, recurring, unscheduled"));
+    }
+    
+    @Test
+    void parsePaymentRequest_shouldParseValidAgreementPaymentType_whenAuthorisationModeIsAgreement() throws Exception {
+        // language=JSON
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1",
+                  "authorisation_mode": "agreement",
+                  "agreement_payment_type": "instalment"
+                }
+                """;
+
+        JsonNode jsonNode = objectMapper.readTree(payload);
+        CreateCardPaymentRequest paymentRequest = parsePaymentRequest(jsonNode);
+        assertThat(paymentRequest.getAgreementPaymentType().get(), is(INSTALMENT));
+    }
+
+    @Test
+    void parsePaymentRequest_shouldThrowValidationException_whenUnexpectedAgreementPaymentTypeAttribute() throws Exception {
+        // language=JSON
+        String payload = """
+                {
+                  "amount": 1000,
+                  "reference": "Some reference",
+                  "description": "Some description",
+                  "return_url": "https://somewhere.gov.uk/rainbow/1",
+                  "agreement_payment_type": "instalment"
+                }
+                """;
+
+        JsonNode jsonNode = objectMapper.readTree(payload);
+
+        PaymentValidationException paymentValidationException = assertThrows(PaymentValidationException.class, () -> parsePaymentRequest(jsonNode));
+        assertThat(paymentValidationException.getRequestError().getCode(), is("P0104"));
+        assertThat(paymentValidationException.getRequestError().getDescription(), is("Unexpected attribute: agreement_payment_type"));
     }
 }

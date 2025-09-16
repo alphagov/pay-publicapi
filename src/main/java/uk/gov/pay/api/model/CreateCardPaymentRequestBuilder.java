@@ -1,5 +1,6 @@
 package uk.gov.pay.api.model;
 
+import uk.gov.service.payments.commons.model.AgreementPaymentType;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.Source;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
@@ -26,6 +27,7 @@ public class CreateCardPaymentRequestBuilder {
     private Internal internal;
     private String setUpAgreement;
     private AuthorisationMode authorisationMode;
+    private AgreementPaymentType agreementPaymentType;
     private String agreementId;
 
     public static CreateCardPaymentRequestBuilder builder() {
@@ -118,6 +120,11 @@ public class CreateCardPaymentRequestBuilder {
     
     public CreateCardPaymentRequestBuilder authorisationMode(AuthorisationMode authorisationMode) {
         this.authorisationMode = authorisationMode;
+        return this;
+    }
+    
+    public CreateCardPaymentRequestBuilder agreementPaymentType(AgreementPaymentType agreementPaymentType) {
+        this.agreementPaymentType = agreementPaymentType;
         return this;
     }
 
@@ -217,6 +224,10 @@ public class CreateCardPaymentRequestBuilder {
 
     public AuthorisationMode getAuthorisationMode() {
         return authorisationMode;
+    }
+    
+    public AgreementPaymentType getAgreementPaymentType() {
+        return agreementPaymentType;
     }
 
     public String getSetUpAgreement() {
