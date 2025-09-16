@@ -10,6 +10,7 @@ import uk.gov.pay.api.model.telephone.PaymentOutcome;
 import uk.gov.pay.api.utils.CustomSupportedLanguageDeserializer;
 import uk.gov.pay.api.utils.WalletDeserializer;
 import uk.gov.service.payments.commons.api.json.ExternalMetadataDeserialiser;
+import uk.gov.service.payments.commons.model.AgreementPaymentType;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
@@ -88,6 +89,8 @@ public class ChargeFromResponse {
     private AuthorisationSummary authorisationSummary;
     
     private AuthorisationMode authorisationMode;
+    
+    private AgreementPaymentType agreementPaymentType;
 
     // wallet_type is a top level charge property but is returned as part of the card_details object
     @JsonProperty("wallet_type")
@@ -229,6 +232,10 @@ public class ChargeFromResponse {
 
     public AuthorisationMode getAuthorisationMode() {
         return authorisationMode;
+    }
+    
+    public AgreementPaymentType getAgreementPaymentType() {
+        return agreementPaymentType;
     }
 
     public Optional<Wallet> getWalletType() {

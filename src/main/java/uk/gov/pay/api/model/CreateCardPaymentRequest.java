@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.hibernate.validator.constraints.Length;
 import uk.gov.pay.api.utils.JsonStringBuilder;
+import uk.gov.service.payments.commons.model.AgreementPaymentType;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
@@ -46,6 +47,7 @@ public class CreateCardPaymentRequest {
     public static final String METADATA = "metadata";
     public static final String INTERNAL = "internal";
     public static final String AUTHORISATION_MODE = "authorisation_mode";
+    public static final String AGREEMENT_PAYMENT_TYPE = "agreement_payment_type";
     private static final String PREFILLED_CARDHOLDER_DETAILS = "prefilled_cardholder_details";
     private static final String BILLING_ADDRESS = "billing_address";
     
@@ -97,6 +99,8 @@ public class CreateCardPaymentRequest {
 
     private final AuthorisationMode authorisationMode;
     
+    private final AgreementPaymentType agreementPaymentType;
+    
     public CreateCardPaymentRequest(CreateCardPaymentRequestBuilder builder) {
         this.amount = builder.getAmount();
         this.reference = builder.getReference();
@@ -111,6 +115,7 @@ public class CreateCardPaymentRequest {
         this.internal = builder.getInternal();
         this.setUpAgreement = builder.getSetUpAgreement();
         this.authorisationMode = builder.getAuthorisationMode();
+        this.agreementPaymentType = builder.getAgreementPaymentType();
         this.agreementId = builder.getAgreementId();
     }
     
@@ -228,6 +233,16 @@ public class CreateCardPaymentRequest {
     public Optional<AuthorisationMode> getAuthorisationMode() {
         return Optional.ofNullable(authorisationMode);
     }
+    
+    @JsonProperty("agreement_payment_type")
+    @Schema(description = "When a standing order agreement transaction is initiated we have to include an initiated reason attribute." + 
+            "This can have a value of `instalment`, `recurring`, or `unscheduled`."+
+            "We must have a `set_up_agreement` property or you set `authorisation_mode` to `agreement` for the API to accept the AgreementPaymentType.",
+            type = "String", allowableValues = {"instalment", "recurring", "unscheduled"}, 
+            required = false)
+    public Optional<AgreementPaymentType> getAgreementPaymentType() {
+        return Optional.ofNullable(agreementPaymentType);
+    }
 
     public String toConnectorPayload() {
         JsonStringBuilder request = new JsonStringBuilder()
@@ -242,6 +257,7 @@ public class CreateCardPaymentRequest {
         getEmail().ifPresent(email -> request.add("email", email));
         getInternal().flatMap(Internal::getSource).ifPresent(source -> request.add("source", source));
         getAuthorisationMode().ifPresent(authorisationMode -> request.add("authorisation_mode", authorisationMode.getName()));
+        getAgreementPaymentType().ifPresent(agreementPaymentType -> request.add("agreement_payment_type", agreementPaymentType.getName()));
         getAgreementId().ifPresent(agreementId -> request.add("agreement_id", agreementId));
         getSetUpAgreement().ifPresent(setUpAgreement -> {
             request.add("agreement_id", setUpAgreement);
@@ -279,6 +295,7 @@ public class CreateCardPaymentRequest {
         getMoto().ifPresent(value -> joiner.add("moto: " + value));
         getMetadata().ifPresent(value -> joiner.add("metadata: " + value));
         getAuthorisationMode().ifPresent(authorisationMode -> joiner.add("authorisation_mode: " + authorisationMode));
+        getAgreementPaymentType().ifPresent(agreementPaymentType -> joiner.add("agreement_payment_type: " + agreementPaymentType));
         getSetUpAgreement().ifPresent(setUpAgreement -> joiner.add("set_up_agreement: " + setUpAgreement));
         getAgreementId().ifPresent(agreementId -> joiner.add("agreement_id: " + agreementId));
 

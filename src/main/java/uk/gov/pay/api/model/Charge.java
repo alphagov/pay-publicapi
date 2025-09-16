@@ -2,6 +2,7 @@ package uk.gov.pay.api.model;
 
 import uk.gov.pay.api.utils.AuthorisationSummaryHelper;
 import uk.gov.pay.api.utils.InternalExemptionToPublicApiExemptionConverter;
+import uk.gov.service.payments.commons.model.AgreementPaymentType;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
@@ -60,6 +61,8 @@ public class Charge {
     private AuthorisationSummary authorisationSummary;
 
     private AuthorisationMode authorisationMode;
+    
+    private AgreementPaymentType agreementPaymentType;
 
     private Exemption exemption;
 
@@ -70,7 +73,7 @@ public class Charge {
                   List<PaymentConnectorResponseLink> links, Long corporateCardSurcharge, Long totalAmount,
                   String gatewayTransactionId, ExternalMetadata metadata, Long fee, Long netAmount,
                   AuthorisationSummary authorisationSummary, String agreementId, AuthorisationMode authorisationMode,
-                  Exemption exemption) {
+                  AgreementPaymentType agreementPaymentType, Exemption exemption) {
         this.chargeId = chargeId;
         this.amount = amount;
         this.state = state;
@@ -96,6 +99,7 @@ public class Charge {
         this.authorisationSummary = authorisationSummary;
         this.agreementId = agreementId;
         this.authorisationMode = authorisationMode;
+        this.agreementPaymentType = agreementPaymentType;
         this.exemption = exemption;
     }
 
@@ -128,6 +132,7 @@ public class Charge {
                 AuthorisationSummaryHelper.includeAuthorisationSummaryWhen3dsRequired(chargeFromResponse.getAuthorisationSummary()),
                 chargeFromResponse.getAgreementId(),
                 chargeFromResponse.getAuthorisationMode(),
+                chargeFromResponse.getAgreementPaymentType(),
                 InternalExemptionToPublicApiExemptionConverter.convertExemption(chargeFromResponse.getExemption())
         );
     }
@@ -161,6 +166,7 @@ public class Charge {
                 AuthorisationSummaryHelper.includeAuthorisationSummaryWhen3dsRequired(transactionResponse.getAuthorisationSummary()),
                 null,
                 transactionResponse.getAuthorisationMode(),
+                transactionResponse.getAgreementPaymentType(),
                 InternalExemptionToPublicApiExemptionConverter.convertExemption(transactionResponse.getExemption())
         );
     }
@@ -267,6 +273,10 @@ public class Charge {
 
     public AuthorisationMode getAuthorisationMode() {
         return authorisationMode;
+    }
+    
+    public AgreementPaymentType getAgreementPaymentType() {
+        return agreementPaymentType;
     }
 
     public Exemption getExemption() {
