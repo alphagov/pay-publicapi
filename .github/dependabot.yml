@@ -7,13 +7,14 @@ updates:
       interval: daily
       time: "03:00"
     ignore:
-      - dependency-name: "org.dhatim:dropwizard-sentry"
-        # We essentially forked Dropwizard Sentry because it did not support
-        # Dropwizard 3.x — there is now a Dropwizard Sentry 4.x, which supports
-        # Dropwizard 4.x (and maybe Dropwizard 3.x), but we’d need to do work
-        # to go back to using an unmodified version
+      - dependency-name: "io.dropwizard:dropwizard-dependencies"
+        # We don't want to upgrade to Dropwizard 5.x just yet
         versions:
-          - ">= 4"
+          - ">= 5"
+      - dependency-name: "io.dropwizard.modules:dropwizard-testing-junit4"
+        # We don't want to upgrade to Dropwizard 5.x just yet
+        versions:
+          - ">= 5"
     open-pull-requests-limit: 10
     labels:
       - dependencies
