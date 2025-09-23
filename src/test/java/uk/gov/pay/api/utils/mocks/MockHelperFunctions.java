@@ -121,7 +121,8 @@ public class MockHelperFunctions {
                 .withAgreementId(responseFromConnector.getAgreementId())
                 .withLinks(responseFromConnector.getLinks())
                 .withSettlementSummary(responseFromConnector.getSettlementSummary())
-                .withAuthorisationMode(responseFromConnector.getAuthorisationMode());
+                .withAuthorisationMode(responseFromConnector.getAuthorisationMode())
+                .withAgreementPaymentType(responseFromConnector.getAgreementPaymentType());
 
         ofNullable(responseFromConnector.getCardDetails()).ifPresent(resultBuilder::withCardDetails);
         ofNullable(responseFromConnector.getRefundSummary()).ifPresent(resultBuilder::withRefundSummary);

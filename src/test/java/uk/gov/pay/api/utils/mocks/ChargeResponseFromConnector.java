@@ -7,6 +7,7 @@ import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.telephone.PaymentOutcome;
+import uk.gov.service.payments.commons.model.AgreementPaymentType;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 
@@ -34,6 +35,7 @@ public class ChargeResponseFromConnector {
     private final AuthorisationSummary authorisationSummary;
     private final String agreementId;
     private final AuthorisationMode authorisationMode;
+    private final AgreementPaymentType agreementPaymentType;
     private final String walletType;
     private final Exemption exemption;
 
@@ -161,6 +163,8 @@ public class ChargeResponseFromConnector {
         return authorisationMode;
     }
     
+    public AgreementPaymentType getAgreementPaymentType() { return agreementPaymentType; }
+    
     public String getWalletType() { return walletType; }
 
     public Exemption getExemption() {
@@ -199,6 +203,7 @@ public class ChargeResponseFromConnector {
         this.authorisationSummary = builder.authorisationSummary;
         this.agreementId = builder.agreementId;
         this.authorisationMode = builder.authorisationMode;
+        this.agreementPaymentType = builder.agreementPaymentType;
         this.walletType = builder.walletType;
         this.exemption = builder.exemption;
     }
@@ -221,6 +226,7 @@ public class ChargeResponseFromConnector {
         private AuthorisationSummary authorisationSummary = null;
         private String agreementId;
         private AuthorisationMode authorisationMode = AuthorisationMode.WEB;
+        private AgreementPaymentType agreementPaymentType = AgreementPaymentType.INSTALMENT;
         private String walletType = null;
         private Exemption exemption = null;
         
@@ -257,6 +263,7 @@ public class ChargeResponseFromConnector {
                     .withAuthorisationSummary(responseFromConnector.getAuthorisationSummary())
                     .withAgreementId(responseFromConnector.getAgreementId())
                     .withAuthorisationMode(responseFromConnector.getAuthorisationMode())
+                    .withAgreementPaymentType(responseFromConnector.getAgreementPaymentType())
                     .withWalletType(responseFromConnector.walletType)
                     .withExemption(responseFromConnector.exemption);
         }
@@ -423,6 +430,11 @@ public class ChargeResponseFromConnector {
         
         public ChargeResponseFromConnectorBuilder withAuthorisationMode(AuthorisationMode authorisationMode) {
             this.authorisationMode = authorisationMode;
+            return this;
+        }
+        
+        public ChargeResponseFromConnectorBuilder withAgreementPaymentType(AgreementPaymentType agreementPaymentType) {
+            this.agreementPaymentType = agreementPaymentType;
             return this;
         }
         
