@@ -10,6 +10,7 @@ import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.links.Link;
 import uk.gov.pay.api.model.telephone.CreateTelephonePaymentRequest;
 import uk.gov.pay.api.utils.JsonStringBuilder;
+import uk.gov.service.payments.commons.model.AgreementPaymentType;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.ErrorIdentifier;
 
@@ -67,6 +68,7 @@ import static uk.gov.service.payments.commons.model.ErrorIdentifier.MOTO_NOT_ALL
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.REFUND_AMOUNT_AVAILABLE_MISMATCH;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.REFUND_NOT_AVAILABLE;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.TELEPHONE_PAYMENT_NOTIFICATIONS_NOT_ALLOWED;
+import static uk.gov.service.payments.commons.model.ErrorIdentifier.UNEXPECTED_ATTRIBUTE;
 import static uk.gov.service.payments.commons.model.ErrorIdentifier.ZERO_AMOUNT_NOT_ALLOWED;
 
 public class ConnectorMockClient extends BaseConnectorMockClient {
@@ -340,6 +342,10 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
         mockCreateCharge(gatewayAccountId, withStatusAndErrorMessage(BAD_REQUEST_400, format(errorMsg, agreementId), INCORRECT_AUTHORISATION_MODE_FOR_SAVE_PAYMENT_INSTRUMENT_TO_AGREEMENT));
     }
 
+    public void respondUnexpectedAttributesForAgreementPaymentType_whenCreatedCharge(String gatewayAccountId, String agreementId, String errorMsg) {
+        mockCreateCharge(gatewayAccountId, withStatusAndErrorMessage(UNPROCESSABLE_ENTITY_422, format(errorMsg, agreementId), UNEXPECTED_ATTRIBUTE));
+    }
+
     public void respondPreconditionFailed_whenCreateRefund(String gatewayAccountId, String errorMsg, String chargeId) {
         whenCreateRefund(gatewayAccountId, chargeId, withStatusAndErrorMessage(PRECONDITION_FAILED_412, errorMsg, REFUND_AMOUNT_AVAILABLE_MISMATCH));
     }
@@ -564,6 +570,20 @@ public class ConnectorMockClient extends BaseConnectorMockClient {
 
     private String connectorCancelAgreementPathFor(String agreementId, String accountId) {
         return format(CONNECTOR_MOCK_AGREEMENT_PATH + "/cancel", accountId, agreementId);
+    }
+
+    public void respondCreated_whenCreateCharge_withAgreementPaymentType_Instalment(String chargeTokenId, String gatewayAccountId, ChargeResponseFromConnector responseFromConnector) {
+        ChargeResponseFromConnector build = aCreateOrGetChargeResponseFromConnector(responseFromConnector)
+                .withAuthorisationMode(AuthorisationMode.AGREEMENT)
+                .withAgreementPaymentType(AgreementPaymentType.INSTALMENT)
+                .withLink(validGetLink(chargeLocation(gatewayAccountId, responseFromConnector.getChargeId()), "self"))
+                .build();
+
+        mockCreateCharge(gatewayAccountId,
+                aResponse().withStatus(CREATED_201)
+                        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                        .withHeader(LOCATION, chargeLocation(gatewayAccountId, responseFromConnector.getChargeId()))
+                        .withBody(buildChargeResponse(build)));
     }
 
     private ResponseDefinitionBuilder withStatusAndErrorMessage(int statusCode, String errorMsg, ErrorIdentifier errorIdentifier) {

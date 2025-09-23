@@ -6,6 +6,7 @@ import uk.gov.pay.api.model.CardDetailsFromResponse;
 import uk.gov.pay.api.model.Exemption;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
+import uk.gov.service.payments.commons.model.AgreementPaymentType;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 
@@ -145,6 +146,11 @@ public class PaymentSingleResultBuilder extends PaymentResultBuilder {
     
     public PaymentSingleResultBuilder withAuthorisationMode(AuthorisationMode authorisationMode) {
         this.authorisationMode = authorisationMode;
+        return this;
+    }
+    
+    public PaymentSingleResultBuilder withAgreementPaymentType(AgreementPaymentType agreementPaymentType) {
+        this.agreementPaymentType = agreementPaymentType;
         return this;
     }
 
