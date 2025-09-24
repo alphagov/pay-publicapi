@@ -17,12 +17,12 @@ import java.util.List;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static java.lang.String.format;
-import static java.util.Optional.ofNullable;
 import static jakarta.ws.rs.HttpMethod.GET;
 import static jakarta.ws.rs.HttpMethod.POST;
 import static jakarta.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import static java.lang.String.format;
+import static java.util.Optional.ofNullable;
 import static uk.gov.pay.api.it.fixtures.PaymentSingleResultBuilder.aSuccessfulSinglePayment;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 

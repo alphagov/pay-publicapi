@@ -2,6 +2,7 @@ package uk.gov.pay.api.it;
 
 import com.jayway.jsonassert.JsonAssert;
 import io.restassured.response.ValidatableResponse;
+import jakarta.ws.rs.core.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -13,12 +14,11 @@ import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 import uk.gov.pay.api.utils.mocks.CreateChargeRequestParams;
-import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.AgreementPaymentType;
+import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.validation.DateTimeUtils;
 
-import jakarta.ws.rs.core.HttpHeaders;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.ZonedDateTime;
