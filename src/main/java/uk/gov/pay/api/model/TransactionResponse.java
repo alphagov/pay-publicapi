@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import uk.gov.pay.api.utils.CustomSupportedLanguageDeserializer;
 import uk.gov.pay.api.utils.WalletDeserializer;
 import uk.gov.service.payments.commons.api.json.ExternalMetadataDeserialiser;
+import uk.gov.service.payments.commons.model.AgreementPaymentType;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
@@ -84,6 +85,9 @@ public class TransactionResponse {
     
     @JsonProperty("authorisation_mode")
     private AuthorisationMode authorisationMode;
+    
+    @JsonProperty("agreement_payment_type")
+    private AgreementPaymentType agreementPaymentType;
 
     @JsonProperty("wallet_type")
     @JsonDeserialize(using = WalletDeserializer.class)
@@ -197,6 +201,10 @@ public class TransactionResponse {
 
     public AuthorisationMode getAuthorisationMode() {
         return authorisationMode;
+    }
+    
+    public AgreementPaymentType getAgreementPaymentType() {
+        return agreementPaymentType;
     }
 
     public Optional<Wallet> getWalletType() {

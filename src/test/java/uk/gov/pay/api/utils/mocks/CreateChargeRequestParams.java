@@ -1,5 +1,6 @@
 package uk.gov.pay.api.utils.mocks;
 
+import uk.gov.service.payments.commons.model.AgreementPaymentType;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.Source;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
@@ -26,6 +27,7 @@ public class CreateChargeRequestParams {
     private final Source source;
     private final String setUpAgreement;
     private final AuthorisationMode authorisationMode;
+    private final AgreementPaymentType agreementPaymentType;
     private final String agreementId;
 
     private CreateChargeRequestParams(CreateChargeRequestParamsBuilder builder) {
@@ -46,6 +48,7 @@ public class CreateChargeRequestParams {
         this.source = builder.source;
         this.setUpAgreement = builder.setUpAgreement;
         this.authorisationMode = builder.authorisationMode;
+        this.agreementPaymentType = builder.agreementPaymentType;
         this.agreementId = builder.agreementId;
     }
 
@@ -116,6 +119,10 @@ public class CreateChargeRequestParams {
     public Optional<AuthorisationMode> getAuthorisationMode() {
         return Optional.ofNullable(authorisationMode);
     }
+    
+    public Optional<AgreementPaymentType> getAgreementPaymentType() {
+        return Optional.ofNullable(agreementPaymentType);
+    }
 
     public Optional<String> getAgreementId() {
         return Optional.ofNullable(agreementId);
@@ -139,6 +146,7 @@ public class CreateChargeRequestParams {
         private Source source;
         public String setUpAgreement;
         public AuthorisationMode authorisationMode;
+        public AgreementPaymentType agreementPaymentType;
         public String agreementId;
 
         private CreateChargeRequestParamsBuilder() {
@@ -235,6 +243,11 @@ public class CreateChargeRequestParams {
         
         public CreateChargeRequestParamsBuilder withAuthorisationMode(AuthorisationMode authorisationMode) {
             this.authorisationMode = authorisationMode;
+            return this;
+        }
+        
+        public CreateChargeRequestParamsBuilder withAgreementPaymentType(AgreementPaymentType agreementPaymentType) {
+            this.agreementPaymentType = agreementPaymentType;
             return this;
         }
 

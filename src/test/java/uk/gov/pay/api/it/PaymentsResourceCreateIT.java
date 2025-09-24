@@ -2,6 +2,7 @@ package uk.gov.pay.api.it;
 
 import com.jayway.jsonassert.JsonAssert;
 import io.restassured.response.ValidatableResponse;
+import jakarta.ws.rs.core.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -13,11 +14,11 @@ import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.pay.api.utils.PublicAuthMockClient;
 import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
 import uk.gov.pay.api.utils.mocks.CreateChargeRequestParams;
+import uk.gov.service.payments.commons.model.AgreementPaymentType;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.validation.DateTimeUtils;
 
-import jakarta.ws.rs.core.HttpHeaders;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.ZonedDateTime;
@@ -873,6 +874,94 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
                 .body("code", is("P0102"))
                 .body("description", is("Invalid attribute value: description. Must be a valid string format"));
     }
+    
+    @Test
+    public void createPaymentWithAgreementPaymentTypeInstalment() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+
+        connectorMockClient.respondCreated_whenCreateCharge_withAgreementPaymentType_Instalment(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
+                .withAmount(100)
+                .withChargeId(CHARGE_ID)
+                .withState(CREATED)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withPaymentProvider(PAYMENT_PROVIDER)
+                .withGatewayTransactionId(GATEWAY_TRANSACTION_ID)
+                .withCreatedDate(CREATED_DATE)
+                .withLanguage(SupportedLanguage.ENGLISH)
+                .withDelayedCapture(false)
+                .withCardDetails(CARD_DETAILS)
+                .withAuthorisationMode(AuthorisationMode.AGREEMENT)
+                .withAgreementPaymentType(AgreementPaymentType.INSTALMENT)
+                .build());
+
+        CreateChargeRequestParams params = aCreateChargeRequestParams()
+                .withAmount(100)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withAuthorisationMode(AuthorisationMode.AGREEMENT)
+                .withAgreementPaymentType(AgreementPaymentType.INSTALMENT)
+                .withAgreementId(VALID_AGREEMENT_ID)
+                .build();
+
+        postPaymentResponse(paymentPayload(params))
+                .statusCode(201)
+                .contentType(JSON)
+                .body("$", not(hasKey("return_url")))
+                .body("$_links", not(hasKey("cancel")))
+                .body("payment_id", is(CHARGE_ID))
+                .body("amount", is(100))
+                .body("reference", is(REFERENCE))
+                .body("description", is(DESCRIPTION))
+                .body("payment_provider", is(PAYMENT_PROVIDER))
+                .body("created_date", is(CREATED_DATE))
+                .body("authorisation_mode", is(AuthorisationMode.AGREEMENT.getName()))
+                .body("agreement_payment_type", is(AgreementPaymentType.INSTALMENT.getName()));
+
+        connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, params);
+    }
+
+    @Test
+    public void createPaymentWithAgreementPaymentType_responseWith422_whenNoAuthorisationModeOrSetUpAgreement() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+
+        connectorMockClient.respondUnexpectedAttributesForAgreementPaymentType_whenCreatedCharge(GATEWAY_ACCOUNT_ID, VALID_AGREEMENT_ID, "error message from connector");
+
+        CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
+                .withAmount(100)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withAgreementPaymentType(AgreementPaymentType.INSTALMENT)
+                .build();
+
+        postPaymentResponse(paymentPayload(createChargeRequestParams))
+                .statusCode(422)
+                .contentType(JSON)
+                .body("field", is(nullValue()))
+                .body("code", is("P0104"))
+                .body("description", is("Unexpected attribute: agreement_payment_type"));
+    }
+
+    @Test
+    public void createPaymentWithAgreementPaymentType_responseWith422_whenAuthorisationModeNotAgreement() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+
+        CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
+                .withAmount(100)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withAuthorisationMode(AuthorisationMode.WEB)
+                .withAgreementPaymentType(AgreementPaymentType.INSTALMENT)
+                .build();
+        connectorMockClient.respondUnexpectedAttributesForAgreementPaymentType_whenCreatedCharge(GATEWAY_ACCOUNT_ID, VALID_AGREEMENT_ID, "error message from connector");
+
+        postPaymentResponse(paymentPayload(createChargeRequestParams))
+                .statusCode(422)
+                .contentType(JSON)
+                .body("field", is(nullValue()))
+                .body("code", is("P0104"))
+                .body("description", is("Unexpected attribute: agreement_payment_type"));
+    }
 
     public static String paymentPayload(CreateChargeRequestParams params) {
         JsonStringBuilder payload = new JsonStringBuilder()
@@ -921,6 +1010,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
         params.getSetUpAgreement().ifPresent(setUpAgreement -> payload.add("set_up_agreement", setUpAgreement));
         params.getAgreementId().ifPresent(agreementId -> payload.add("agreement_id", agreementId));
         params.getAuthorisationMode().ifPresent(authorisationMode -> payload.add("authorisation_mode", authorisationMode));
+        params.getAgreementPaymentType().ifPresent(agreementPaymentType -> payload.add("agreement_payment_type", agreementPaymentType));
 
         return payload.build();
     }
