@@ -12,7 +12,6 @@ import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.service.payments.commons.model.AgreementPaymentType;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
-import uk.gov.service.payments.commons.model.AgreementPaymentType;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
 

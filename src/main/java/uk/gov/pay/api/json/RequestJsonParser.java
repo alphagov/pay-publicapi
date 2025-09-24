@@ -2,6 +2,11 @@ package uk.gov.pay.api.json;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
 import uk.gov.pay.api.exception.BadRequestException;
@@ -18,11 +23,6 @@ import uk.gov.service.payments.commons.model.Source;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.Response;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
@@ -33,9 +33,9 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.http.HttpStatus.SC_UNPROCESSABLE_ENTITY;
 import static uk.gov.pay.api.agreement.model.CreateAgreementRequest.USER_IDENTIFIER_FIELD;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.AGREEMENT_ID_FIELD_NAME;
+import static uk.gov.pay.api.model.CreateCardPaymentRequest.AGREEMENT_PAYMENT_TYPE;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.AMOUNT_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.AUTHORISATION_MODE;
-import static uk.gov.pay.api.model.CreateCardPaymentRequest.AGREEMENT_PAYMENT_TYPE;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.DELAYED_CAPTURE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.DESCRIPTION_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.EMAIL_FIELD_NAME;
@@ -73,7 +73,7 @@ class RequestJsonParser {
     public static final Set<Character> NAXSI_NOT_ALLOWED_CHARACTERS = Set.of('<', '>', '|');
     private static final Set<Source> ALLOWED_SOURCES = EnumSet.of(CARD_PAYMENT_LINK, CARD_AGENT_INITIATED_MOTO);
     public static final Set<AuthorisationMode> ALLOWED_AUTHORISATION_MODES = EnumSet.of(AuthorisationMode.WEB, AuthorisationMode.MOTO_API, AuthorisationMode.AGREEMENT);
-    public static final Set<AgreementPaymentType> ALLOWED_AGREEMENT_PAYMENT_TYPES = EnumSet.of(AgreementPaymentType.INSTALMENT, AgreementPaymentType.RECURRING, AgreementPaymentType.UNSCHEDULED);
+    public static final Set<AgreementPaymentType> ALLOWED_AGREEMENT_PAYMENT_TYPES = EnumSet.allOf(AgreementPaymentType.class);
 
     private static ObjectMapper objectMapper = new ObjectMapper();
     private static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
@@ -207,20 +207,22 @@ class RequestJsonParser {
         RequestError requestError = aRequestError(AGREEMENT_PAYMENT_TYPE, CREATE_PAYMENT_VALIDATION_ERROR, errorMessage);
         String value = validateAndGetString(paymentRequest.get(AGREEMENT_PAYMENT_TYPE), requestError, requestError);
         
+        AgreementPaymentType agreementPaymentType;
         if(!paymentRequest.has(SET_UP_AGREEMENT_FIELD_NAME) && !AuthorisationMode.AGREEMENT.equals(authorisationMode)) {
             throw new PaymentValidationException(aRequestError(CREATE_PAYMENT_UNEXPECTED_FIELD_ERROR, AGREEMENT_PAYMENT_TYPE));
-        } else {
-            try {
-                AgreementPaymentType agreementPaymentType = AgreementPaymentType.of(value);
-                if (ALLOWED_AGREEMENT_PAYMENT_TYPES.contains(agreementPaymentType)) {
-                    return agreementPaymentType;
-                } else {
-                    throw new PaymentValidationException(requestError);
-                }
-            } catch (IllegalArgumentException e) {
-                throw new PaymentValidationException(requestError);
-            }
+        } 
+        
+        try {
+            agreementPaymentType = AgreementPaymentType.of(value);
+        } catch (IllegalArgumentException e) {
+            throw new PaymentValidationException(requestError);
         }
+        
+        if(!ALLOWED_AGREEMENT_PAYMENT_TYPES.contains(agreementPaymentType)) {
+            throw new PaymentValidationException(requestError);
+        }
+        
+        return agreementPaymentType;
     }
 
     private static String validateAndGetPaymentDescription(JsonNode paymentRequest) {

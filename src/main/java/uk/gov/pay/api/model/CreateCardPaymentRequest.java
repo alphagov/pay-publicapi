@@ -2,6 +2,10 @@ package uk.gov.pay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.Length;
 import uk.gov.pay.api.utils.JsonStringBuilder;
 import uk.gov.service.payments.commons.model.AgreementPaymentType;
@@ -9,10 +13,6 @@ import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Size;
 import java.util.Optional;
 import java.util.StringJoiner;
 
