@@ -10,6 +10,7 @@ import uk.gov.pay.api.model.PaymentConnectorResponseLink;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
+import uk.gov.service.payments.commons.model.AgreementPaymentType;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
@@ -32,10 +33,10 @@ public class PaymentWithAllLinks extends CardPayment {
                                 List<PaymentConnectorResponseLink> paymentConnectorResponseLinks, URI selfLink, URI paymentEventsUri, URI paymentCancelUri,
                                 URI paymentRefundsUri, URI paymentCaptureUri, URI paymentAuthorisationUri, Long corporateCardSurcharge, Long totalAmount, String providerId, ExternalMetadata metadata,
                                 Long fee, Long netAmount, AuthorisationSummary authorisationSummary, String agreementId, AuthorisationMode authorisationMode,
-                                Exemption exemption) {
+                                AgreementPaymentType agreementPaymentType, Exemption exemption) {
         super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider, createdDate,
                 refundSummary, settlementSummary, cardDetails, language, delayedCapture, moto, corporateCardSurcharge, totalAmount,
-                providerId, metadata, fee, netAmount, authorisationSummary, agreementId, authorisationMode, exemption);
+                providerId, metadata, fee, netAmount, authorisationSummary, agreementId, authorisationMode, agreementPaymentType, exemption);
         this.links.addSelf(selfLink.toString());
         this.links.addKnownLinksValueOf(paymentConnectorResponseLinks, paymentAuthorisationUri);
         this.links.addEvents(paymentEventsUri.toString());
@@ -89,6 +90,7 @@ public class PaymentWithAllLinks extends CardPayment {
                 .withAuthorisationSummary(paymentConnector.getAuthorisationSummary())
                 .withAgreementId(paymentConnector.getAgreementId())
                 .withAuthorisationMode(paymentConnector.getAuthorisationMode())
+                .withAgreementPaymentType(paymentConnector.getAgreementPaymentType())
                 .withExemption(paymentConnector.getExemption())
                 .build();
     }
@@ -137,6 +139,7 @@ public class PaymentWithAllLinks extends CardPayment {
         private AuthorisationSummary authorisationSummary;
         private String agreementId;
         private AuthorisationMode authorisationMode;
+        private AgreementPaymentType agreementPaymentType;
         private Exemption exemption;
 
         public PaymentWithAllLinksBuilder withChargeId(String chargeId) {
@@ -293,6 +296,11 @@ public class PaymentWithAllLinks extends CardPayment {
             this.authorisationMode = authorisationMode;
             return this;
         }
+        
+        public PaymentWithAllLinksBuilder withAgreementPaymentType(AgreementPaymentType agreementPaymentType) {
+            this.agreementPaymentType = agreementPaymentType;
+            return this;
+        }
 
         public PaymentWithAllLinksBuilder withExemption(Exemption exemption) {
             this.exemption = exemption;
@@ -304,7 +312,7 @@ public class PaymentWithAllLinks extends CardPayment {
                     paymentProvider, createdDate, language, delayedCapture, moto, refundSummary, settlementSummary, 
                     cardDetails, paymentConnectorResponseLinks, selfLink, paymentEventsUri, paymentCancelUri, 
                     paymentRefundsUri, paymentCaptureUri, paymentAuthorisationUri, corporateCardSurcharge, totalAmount, 
-                    providerId, metadata, fee, netAmount, authorisationSummary, agreementId, authorisationMode, exemption);
+                    providerId, metadata, fee, netAmount, authorisationSummary, agreementId, authorisationMode, agreementPaymentType, exemption);
         }
     }
 }

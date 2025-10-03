@@ -13,6 +13,7 @@ import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.TransactionResponse;
 import uk.gov.pay.api.model.links.PaymentLinksForSearch;
 import uk.gov.pay.api.utils.AuthorisationSummaryHelper;
+import uk.gov.service.payments.commons.model.AgreementPaymentType;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
@@ -32,11 +33,11 @@ public class PaymentForSearchResult extends CardPayment {
                                   List<PaymentConnectorResponseLink> links, URI selfLink, URI paymentEventsLink, URI paymentCancelLink, URI paymentRefundsLink, URI paymentCaptureUri,
                                   Long corporateCardSurcharge, Long totalAmount, String providerId, ExternalMetadata externalMetadata,
                                   Long fee, Long netAmount, AuthorisationSummary authorisationSummary, AuthorisationMode authorisationMode,
-                                  Exemption exemption) {
+                                  AgreementPaymentType agreementPaymentType , Exemption exemption) {
         
         super(chargeId, amount, state, returnUrl, description, reference, email, paymentProvider,
                 createdDate, refundSummary, settlementSummary, cardDetails, language, delayedCapture, moto, corporateCardSurcharge, totalAmount, providerId, externalMetadata,
-                fee, netAmount, authorisationSummary, null, authorisationMode, exemption);
+                fee, netAmount, authorisationSummary, null, authorisationMode, agreementPaymentType, exemption);
         this.links.addSelf(selfLink.toString());
         this.links.addEvents(paymentEventsLink.toString());
         this.links.addRefunds(paymentRefundsLink.toString());
@@ -89,6 +90,7 @@ public class PaymentForSearchResult extends CardPayment {
                 paymentResult.getNetAmount(),
                 AuthorisationSummaryHelper.includeAuthorisationSummaryWhen3dsRequired(paymentResult.getAuthorisationSummary()),
                 paymentResult.getAuthorisationMode(),
+                paymentResult.getAgreementPaymentType(),
                 paymentResult.getExemption());
     }
 

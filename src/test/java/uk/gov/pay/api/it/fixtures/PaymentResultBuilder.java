@@ -3,6 +3,7 @@ package uk.gov.pay.api.it.fixtures;
 import uk.gov.pay.api.model.CardDetailsFromResponse;
 import uk.gov.pay.api.model.Exemption;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
+import uk.gov.service.payments.commons.model.AgreementPaymentType;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.validation.DateTimeUtils;
@@ -144,6 +145,7 @@ public abstract class PaymentResultBuilder {
         public AuthorisationSummary authorisation_summary;
         public String agreement_id;
         public String authorisation_mode;
+        public String agreement_payment_type;
         public String wallet_type;
         public Exemption exemption;
     }
@@ -218,6 +220,7 @@ public abstract class PaymentResultBuilder {
     protected Map<String, Object> metadata;
     protected AuthorisationSummary authorisationSummary;
     protected AuthorisationMode authorisationMode = AuthorisationMode.WEB;
+    protected AgreementPaymentType agreementPaymentType = AgreementPaymentType.INSTALMENT;
     protected String walletType = null;
     protected Exemption exemption;
 
@@ -265,6 +268,7 @@ public abstract class PaymentResultBuilder {
         payment.metadata = metadata;
         payment.authorisation_summary = authorisationSummary;
         payment.authorisation_mode = authorisationMode.getName();
+        payment.agreement_payment_type = agreementPaymentType.getName();
         payment.wallet_type = walletType;
         payment.exemption = exemption;
 

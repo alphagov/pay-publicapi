@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.service.payments.commons.api.json.ExternalMetadataSerialiser;
+import uk.gov.service.payments.commons.model.AgreementPaymentType;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
@@ -95,6 +96,9 @@ public class CardPayment {
     
     @JsonProperty("authorisation_mode")
     private AuthorisationMode authorisationMode;
+    
+    @JsonProperty("agreement_payment_type")
+    private AgreementPaymentType agreementPaymentType;
 
     private Exemption exemption;
 
@@ -103,7 +107,7 @@ public class CardPayment {
                        RefundSummary refundSummary, PaymentSettlementSummary settlementSummary, CardDetails cardDetails,
                        SupportedLanguage language, boolean delayedCapture, boolean moto, Long corporateCardSurcharge, Long totalAmount,
                        String providerId, ExternalMetadata metadata, Long fee, Long netAmount, AuthorisationSummary authorisationSummary, String agreementId,
-                       AuthorisationMode authorisationMode, Exemption exemption) {
+                       AuthorisationMode authorisationMode, AgreementPaymentType agreementPaymentType, Exemption exemption) {
         this.paymentId = chargeId;
         this.amount = amount;
         this.description = description;
@@ -129,6 +133,7 @@ public class CardPayment {
         this.authorisationSummary = authorisationSummary;
         this.agreementId = agreementId;
         this.authorisationMode = authorisationMode;
+        this.agreementPaymentType = agreementPaymentType;
         this.exemption = exemption;
     }
 
@@ -251,6 +256,11 @@ public class CardPayment {
     public AuthorisationMode getAuthorisationMode() {
         return authorisationMode;
     }
+    
+    @Schema(type = "String", description = "When the customer initiates a standing order agreement transaction we have to include a customerInitiatedReason attribute. " +
+            "This can have a value of `instalment`, `recurring`, or `unscheduled`.", 
+        allowableValues = {"instalment", "recurring", "unscheduled"})
+    public AgreementPaymentType getAgreementPaymentType() { return agreementPaymentType; }
 
     @Schema(example = "2016-01-21T17:15:00.000Z", accessMode = READ_ONLY)
     public String getCreatedDate() {
