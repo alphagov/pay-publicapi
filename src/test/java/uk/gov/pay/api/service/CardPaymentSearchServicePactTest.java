@@ -16,6 +16,7 @@ import uk.gov.pay.api.exception.SearchPaymentsException;
 import uk.gov.pay.api.ledger.service.LedgerUriGenerator;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.search.PaginationDecorator;
+import uk.gov.service.payments.commons.model.AgreementPaymentType;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
 import uk.gov.service.payments.commons.testing.pact.consumers.PayPactProviderRule;
@@ -225,7 +226,8 @@ public class CardPaymentSearchServicePactTest {
                 .assertThat("total", is(1))
                 .assertThat("page", is(1))
                 .assertThat("results", hasSize(equalTo(1)))
-                .assertThat("results[0].authorisation_mode", is(AuthorisationMode.AGREEMENT.getName()));
+                .assertThat("results[0].authorisation_mode", is(AuthorisationMode.AGREEMENT.getName()))
+                .assertThat("results[0].agreement_payment_type", is(AgreementPaymentType.RECURRING.getName()));
     }
 
     @Test

@@ -65,7 +65,8 @@
               "transaction_id": "charge97837509646393e3C",
               "payment_provider": "sandbox",
               "created_date": "2018-09-22T10:13:16.067Z",
-              "authorisation_mode": "agreement"
+              "authorisation_mode": "agreement",
+              "agreement_payment_type": "recurring"
             }
           ],
           "_links": {
