@@ -1,6 +1,7 @@
 package uk.gov.pay.api.service;
 
 import au.com.dius.pact.consumer.junit.PactVerification;
+import jakarta.ws.rs.client.Client;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,6 +21,7 @@ import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.links.Link;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
 import uk.gov.pay.api.model.links.PostLink;
+import uk.gov.service.payments.commons.model.AgreementPaymentType;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.ErrorIdentifier;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
@@ -27,7 +29,6 @@ import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
 import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
 import uk.gov.service.payments.commons.testing.pact.consumers.PayPactProviderRule;
 
-import jakarta.ws.rs.client.Client;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -357,6 +358,7 @@ public class CreatePaymentServicePactTest {
         assertThat(paymentWithAllLinks.getDescription(), is("describable"));
         assertThat(paymentWithAllLinks.getAgreementId(), is("abcdefghijklmnopqrstuvwxyz"));
         assertThat(paymentWithAllLinks.getAuthorisationMode(), is(AuthorisationMode.AGREEMENT));
+        assertThat(paymentWithAllLinks.getAgreementPaymentType(), is(AgreementPaymentType.RECURRING));
         assertThat(paymentWithAllLinks.getState(), is(new PaymentState("created", false)));
         assertThat(paymentWithAllLinks.getPaymentProvider(), is("sandbox"));
         assertThat(paymentWithAllLinks.getCreatedDate(), is("2023-04-20T13:30:00.000Z"));
@@ -395,6 +397,7 @@ public class CreatePaymentServicePactTest {
                 .description("a description")
                 .agreementId("abcdefghijklmnopqrstuvwxyz")
                 .authorisationMode(AuthorisationMode.AGREEMENT)
+                .agreementPaymentType(AgreementPaymentType.INSTALMENT)
                 .build();
 
         CreatedPaymentWithAllLinks paymentResponse = createPaymentService.create(account, requestPayload, null);
@@ -408,6 +411,7 @@ public class CreatePaymentServicePactTest {
         assertThat(paymentWithAllLinks.getAuthorisationMode(), is(AuthorisationMode.AGREEMENT));
         assertThat(paymentWithAllLinks.getState(), is(new PaymentState("created", false)));
         assertThat(paymentWithAllLinks.getPaymentProvider(), is("sandbox"));
+        assertThat(paymentWithAllLinks.getAgreementPaymentType(), is(AgreementPaymentType.INSTALMENT));
         assertThat(paymentWithAllLinks.getCreatedDate(), is(notNullValue()));
         assertThat(paymentWithAllLinks.getLinks().getSelf(), is(new Link("http://publicapi.test.localhost/v1/payments/valid-charge-id", "GET")));
         assertThat(paymentWithAllLinks.getLinks().getRefunds().getHref(), containsString("v1/payments/valid-charge-id/refunds"));
