@@ -28,7 +28,8 @@
           "reference": "a-reference",
           "description": "a description",
           "agreement_id": "abcdefghijklmnopqrstuvwxyz",
-          "authorisation_mode": "agreement"
+          "authorisation_mode": "agreement",
+          "agreement_payment_type": "instalment"
         }
       },
       "response": {
@@ -49,6 +50,7 @@
           "created_date": "2023-04-20T13:30:00.000Z",
           "agreement_id": "abcdefghijklmnopqrstuvwxyz",
           "authorisation_mode": "agreement",
+          "agreement_payment_type": "instalment",
           "links": [
             {
               "href": "http://connector.service.backend/v1/api/accounts/123456/charges/valid-charge-id",
