@@ -268,7 +268,7 @@ public abstract class PaymentResultBuilder {
         payment.metadata = metadata;
         payment.authorisation_summary = authorisationSummary;
         payment.authorisation_mode = authorisationMode.getName();
-        payment.agreement_payment_type = agreementPaymentType.getName();
+        payment.agreement_payment_type = agreementPaymentType == null ? null : agreementPaymentType.getName();
         payment.wallet_type = walletType;
         payment.exemption = exemption;
 

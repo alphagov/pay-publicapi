@@ -922,6 +922,50 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
+    public void createPaymentWithAgreementWithoutAgreementPaymentType() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+
+        connectorMockClient.respondCreated_whenCreateCharge_withAuthorisationMode_Agreement(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
+                .withAmount(100)
+                .withChargeId(CHARGE_ID)
+                .withState(CREATED)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withPaymentProvider(PAYMENT_PROVIDER)
+                .withGatewayTransactionId(GATEWAY_TRANSACTION_ID)
+                .withCreatedDate(CREATED_DATE)
+                .withLanguage(SupportedLanguage.ENGLISH)
+                .withDelayedCapture(false)
+                .withCardDetails(CARD_DETAILS)
+                .withAuthorisationMode(AuthorisationMode.AGREEMENT)
+                .build());
+
+        CreateChargeRequestParams params = aCreateChargeRequestParams()
+                .withAmount(100)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withAuthorisationMode(AuthorisationMode.AGREEMENT)
+                .withAgreementId(VALID_AGREEMENT_ID)
+                .build();
+
+        postPaymentResponse(paymentPayload(params))
+                .statusCode(201)
+                .contentType(JSON)
+                .body("$", not(hasKey("return_url")))
+                .body("$_links", not(hasKey("cancel")))
+                .body("payment_id", is(CHARGE_ID))
+                .body("amount", is(100))
+                .body("reference", is(REFERENCE))
+                .body("description", is(DESCRIPTION))
+                .body("payment_provider", is(PAYMENT_PROVIDER))
+                .body("created_date", is(CREATED_DATE))
+                .body("authorisation_mode", is(AuthorisationMode.AGREEMENT.getName()))
+                .body("agreement_payment_type", is(nullValue()));
+
+        connectorMockClient.verifyCreateChargeConnectorRequest(GATEWAY_ACCOUNT_ID, params);
+    }
+
+    @Test
     public void createPaymentWithAgreementPaymentType_responseWith422_whenNoAuthorisationModeOrSetUpAgreement() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 

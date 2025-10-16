@@ -16,6 +16,7 @@ import uk.gov.pay.api.model.CreatedPaymentWithAllLinks;
 import uk.gov.pay.api.model.TokenPaymentType;
 import uk.gov.pay.api.model.links.Link;
 import uk.gov.pay.api.model.links.PaymentWithAllLinks;
+import uk.gov.service.payments.commons.model.AgreementPaymentType;
 import uk.gov.service.payments.commons.testing.pact.consumers.Pacts;
 import uk.gov.service.payments.commons.testing.pact.consumers.PayPactProviderRule;
 
@@ -61,7 +62,9 @@ public class SetUpAgreementWithPaymentConnectorServicePactTest {
                 .reference("a-valid-reference")
                 .description("a-valid-description");
         
+        buildRequestPayload.agreementPaymentType(AgreementPaymentType.INSTALMENT);
         buildRequestPayload.setUpAgreement("i6sjhoa36s1lhtjl07vuuhbm72");
+        
         var requestPayload = buildRequestPayload.build();
         
         CreatedPaymentWithAllLinks createdPaymentWithAllLinks = createPaymentService.create(ACCOUNT, requestPayload, null);
@@ -73,5 +76,6 @@ public class SetUpAgreementWithPaymentConnectorServicePactTest {
         assertThat(paymentResponse.getDescription(), is("a-valid-description"));
         assertThat(paymentResponse.getAgreementId(), is("i6sjhoa36s1lhtjl07vuuhbm72"));
         assertThat(paymentResponse.getLinks().getNextUrl(), is(new Link("http://CardFrontend/secure/efbdf987-3c91-4005-b892-9d056a4bd414", "GET")));
+        assertThat(paymentResponse.getAgreementPaymentType(), is(AgreementPaymentType.INSTALMENT));
     }
 }

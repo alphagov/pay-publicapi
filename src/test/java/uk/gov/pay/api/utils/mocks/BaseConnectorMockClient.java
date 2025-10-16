@@ -86,6 +86,10 @@ public abstract class BaseConnectorMockClient {
         });
 
         payload.add("source", params.getSource().orElse(CARD_API));
+        
+        params.getAgreementPaymentType().ifPresent(agreementPaymentType -> {
+            payload.add("agreement_payment_type", agreementPaymentType);
+        });
 
         return payload.build();
     }
