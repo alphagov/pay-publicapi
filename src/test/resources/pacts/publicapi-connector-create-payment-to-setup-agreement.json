@@ -26,7 +26,8 @@
           "description": "a-valid-description",
           "return_url": "https://www.google.com",
           "agreement_id": "i6sjhoa36s1lhtjl07vuuhbm72",
-          "save_payment_instrument_to_agreement": true
+          "save_payment_instrument_to_agreement": true,
+          "agreement_payment_type": "instalment"
           }
       },
       "response": {
@@ -86,7 +87,8 @@
           "delayed_capture": false,
           "moto": false,
           "agreement_id": "i6sjhoa36s1lhtjl07vuuhbm72",
-          "authorisation_mode": "web"
+          "authorisation_mode": "web",
+          "agreement_payment_type": "instalment"
         },
         "matchingRules": {
           "header": {

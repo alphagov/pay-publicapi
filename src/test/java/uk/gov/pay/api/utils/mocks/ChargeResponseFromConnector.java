@@ -226,7 +226,7 @@ public class ChargeResponseFromConnector {
         private AuthorisationSummary authorisationSummary = null;
         private String agreementId;
         private AuthorisationMode authorisationMode = AuthorisationMode.WEB;
-        private AgreementPaymentType agreementPaymentType = AgreementPaymentType.INSTALMENT;
+        private AgreementPaymentType agreementPaymentType = null;
         private String walletType = null;
         private Exemption exemption = null;
         
