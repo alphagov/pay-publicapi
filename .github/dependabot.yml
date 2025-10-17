@@ -15,6 +15,10 @@ updates:
         # We don't want to upgrade to Dropwizard 5.x just yet
         versions:
           - ">= 5"
+      - dependency-name: "org.testcontainers:testcontainers-bom"
+        # testcontainers v2 needs refactoring on our end
+        versions:
+          - ">= 2"
     open-pull-requests-limit: 10
     labels:
       - dependencies
