@@ -19,6 +19,10 @@ updates:
         # testcontainers v2 needs refactoring on our end
         versions:
           - ">= 2"
+      - dependency-name: "io.lettuce:lettuce-core"
+        # lettuce v7 needs refactoring on our end
+        versions:
+          - ">= 7"
     open-pull-requests-limit: 10
     labels:
       - dependencies
