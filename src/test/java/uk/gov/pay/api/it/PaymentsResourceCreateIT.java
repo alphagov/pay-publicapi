@@ -966,7 +966,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPaymentWithAgreementPaymentType_responseWith422_whenNoAuthorisationModeOrSetUpAgreement() {
+    public void createPaymentWithAgreementPaymentType_responseWith400_whenNoAuthorisationModeOrSetUpAgreement() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         connectorMockClient.respondUnexpectedAttributesForAgreementPaymentType_whenCreatedCharge(GATEWAY_ACCOUNT_ID, VALID_AGREEMENT_ID, "error message from connector");
@@ -979,7 +979,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
                 .build();
 
         postPaymentResponse(paymentPayload(createChargeRequestParams))
-                .statusCode(422)
+                .statusCode(400)
                 .contentType(JSON)
                 .body("field", is(nullValue()))
                 .body("code", is("P0104"))
@@ -987,7 +987,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPaymentWithAgreementPaymentType_responseWith422_whenAuthorisationModeNotAgreement() {
+    public void createPaymentWithAgreementPaymentType_responseWith400_whenAuthorisationModeNotAgreement() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
@@ -1000,11 +1000,33 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
         connectorMockClient.respondUnexpectedAttributesForAgreementPaymentType_whenCreatedCharge(GATEWAY_ACCOUNT_ID, VALID_AGREEMENT_ID, "error message from connector");
 
         postPaymentResponse(paymentPayload(createChargeRequestParams))
-                .statusCode(422)
+                .statusCode(400)
                 .contentType(JSON)
                 .body("field", is(nullValue()))
                 .body("code", is("P0104"))
                 .body("description", is("Unexpected attribute: agreement_payment_type"));
+    }
+
+    @Test
+    public void createPaymentWithUnexpectedAgreementPaymentTypeAndPaymentId_responseWith400() {
+        publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
+
+        connectorMockClient.respondUnexpectedAttributesForAgreementPaymentType_whenCreatedCharge(GATEWAY_ACCOUNT_ID, VALID_AGREEMENT_ID, "Unexpected attribute: agreement_id");
+
+        CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
+                .withAmount(100)
+                .withDescription(DESCRIPTION)
+                .withReference(REFERENCE)
+                .withAgreementPaymentType(AgreementPaymentType.INSTALMENT)
+                .withAgreementId(VALID_AGREEMENT_ID)
+                .build();
+
+        postPaymentResponse(paymentPayload(createChargeRequestParams))
+                .statusCode(400)
+                .contentType(JSON)
+                .body("field", is(nullValue()))
+                .body("code", is("P0104"))
+                .body("description", is("Unexpected attribute: agreement_id"));
     }
 
     public static String paymentPayload(CreateChargeRequestParams params) {

@@ -110,12 +110,6 @@ class RequestJsonParser {
             authorisationMode = validateAndGetAuthorisationMode(paymentRequest);
             builder.authorisationMode(authorisationMode);
         }
-        
-        AgreementPaymentType agreementPaymentType;
-        if (paymentRequest.has(AGREEMENT_PAYMENT_TYPE)) {
-                agreementPaymentType = validateAndGetAgreementPaymentType(paymentRequest, authorisationMode);
-                builder.agreementPaymentType(agreementPaymentType);
-        }
 
         if (paymentRequest.has(AGREEMENT_ID_FIELD_NAME)) {
             if (AuthorisationMode.AGREEMENT == authorisationMode) {
@@ -126,6 +120,12 @@ class RequestJsonParser {
             } else {
                 throw new BadRequestException(aRequestError(CREATE_PAYMENT_UNEXPECTED_FIELD_ERROR, AGREEMENT_ID_FIELD_NAME));
             }
+        }
+
+        AgreementPaymentType agreementPaymentType;
+        if (paymentRequest.has(AGREEMENT_PAYMENT_TYPE)) {
+            agreementPaymentType = validateAndGetAgreementPaymentType(paymentRequest, authorisationMode);
+            builder.agreementPaymentType(agreementPaymentType);
         }
 
         if (paymentRequest.has(LANGUAGE_FIELD_NAME)) {
@@ -209,7 +209,7 @@ class RequestJsonParser {
         
         AgreementPaymentType agreementPaymentType;
         if(!paymentRequest.has(SET_UP_AGREEMENT_FIELD_NAME) && !AuthorisationMode.AGREEMENT.equals(authorisationMode)) {
-            throw new PaymentValidationException(aRequestError(CREATE_PAYMENT_UNEXPECTED_FIELD_ERROR, AGREEMENT_PAYMENT_TYPE));
+            throw new BadRequestException(aRequestError(CREATE_PAYMENT_UNEXPECTED_FIELD_ERROR, AGREEMENT_PAYMENT_TYPE));
         } 
         
         try {
