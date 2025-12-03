@@ -6,6 +6,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 @Schema(name = "AuthorisationRequest", description = "Contains the user's payment information. This information will be sent to the payment service provider to authorise the payment.")
 public class AuthorisationRequest {
     @JsonProperty("one_time_token")
@@ -39,27 +42,27 @@ public class AuthorisationRequest {
         this.cardholderName = cardholderName;
     }
 
-    @Schema(description = "This single use token authorises your request and matches it to a payment. GOV.UK Pay generated the `one_time_token` when the payment was created.", required = true, example = "12345-edsfr-6789-gtyu")
+    @Schema(description = "This single use token authorises your request and matches it to a payment. GOV.UK Pay generated the `one_time_token` when the payment was created.", requiredMode = REQUIRED, example = "12345-edsfr-6789-gtyu")
     public String getOneTimeToken() {
         return oneTimeToken;
     }
 
-    @Schema(description = "The full card number from the paying user's card.", required = true, minLength = 12, maxLength = 19, example = "4242424242424242")
+    @Schema(description = "The full card number from the paying user's card.", requiredMode = REQUIRED, minLength = 12, maxLength = 19, example = "4242424242424242")
     public String getCardNumber() {
         return cardNumber;
     }
 
-    @Schema(description = "The card verification code (CVC) or card verification value (CVV) on the paying user's card.", required = true, minLength = 3, maxLength = 4, example = "123")
+    @Schema(description = "The card verification code (CVC) or card verification value (CVV) on the paying user's card.", requiredMode = REQUIRED, minLength = 3, maxLength = 4, example = "123")
     public String getCvc() {
         return cvc;
     }
 
-    @Schema(description = "The expiry date of the paying user's card. This value must be in `MM/YY` format.", required = true, minLength = 5, maxLength = 5, example = "09/22")
+    @Schema(description = "The expiry date of the paying user's card. This value must be in `MM/YY` format.", requiredMode = REQUIRED, minLength = 5, maxLength = 5, example = "09/22")
     public String getExpiryDate() {
         return expiryDate;
     }
 
-    @Schema(description = "The name on the paying user's card.", required = true, maxLength = 255, example = "J. Citizen")
+    @Schema(description = "The name on the paying user's card.",requiredMode = REQUIRED, maxLength = 255, example = "J. Citizen")
     public String getCardholderName() {
         return cardholderName;
     }
