@@ -16,6 +16,9 @@ import uk.gov.service.payments.commons.model.charge.ExternalMetadata;
 import java.util.Optional;
 import java.util.StringJoiner;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.NOT_REQUIRED;
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 @Schema(description = "The create payment request body")
 public class CreateCardPaymentRequest {
 
@@ -119,22 +122,22 @@ public class CreateCardPaymentRequest {
         this.agreementId = builder.getAgreementId();
     }
     
-    @Schema(description = "Sets the amount the user will pay, in pence.", required = true, minimum = "1", maximum = "10000000", example = "12000")
+    @Schema(description = "Sets the amount the user will pay, in pence.", requiredMode = REQUIRED, minimum = "1", maximum = "10000000", example = "12000")
     public int getAmount() {
         return amount;
     }
 
     @Schema(description = "Associate a reference with this payment. " +
             "`reference` is not unique - multiple payments can have identical `reference` values.",
-            required = true, example = "12345")
+            requiredMode = REQUIRED, example = "12345")
     public String getReference() {
         return reference;
     }
 
     @Schema(description = "A human-readable description of the payment you’re creating. " +
             "Paying users see this description on the payment pages. " +
-            "Service staff see the description in the GOV.UK Pay admin tool", 
-            required = true, example = "New passport application")
+            "Service staff see the description in the GOV.UK Pay admin tool",
+            requiredMode = REQUIRED, example = "New passport application")
     public String getDescription() {
         return description;
     }
@@ -155,7 +158,7 @@ public class CreateCardPaymentRequest {
     
     @Schema(description = "The URL [the paying user is directed to after their payment journey on GOV.UK Pay ends]" +
             "(https://docs.payments.service.gov.uk/making_payments/#choose-the-return-url-and-match-your-users-to-payments).",
-            required = true, example = "https://service-name.gov.uk/transactions/12345")
+            requiredMode = REQUIRED, example = "https://service-name.gov.uk/transactions/12345")
     public String getReturnUrl() {
         return returnUrl;
     }
@@ -204,7 +207,7 @@ public class CreateCardPaymentRequest {
     @JsonProperty("set_up_agreement")
     @Schema(description = "Use this parameter to set up an existing agreement for recurring payments. " +
             "The `set_up_agreement` value you send must be a valid `agreement_id`.", 
-            required = false, example = "abcefghjklmnopqr1234567890")
+            requiredMode = NOT_REQUIRED, example = "abcefghjklmnopqr1234567890")
     public Optional<String> getSetUpAgreement() {
         return Optional.ofNullable(setUpAgreement);
     }
@@ -213,8 +216,8 @@ public class CreateCardPaymentRequest {
     @Schema(description = "The unique ID GOV.UK Pay automatically associated with a recurring payments agreement. " +
             "Including `agreement_id` in your request tells the API to take this payment using the card details that are associated with this agreement. " +
             "`agreement_id` must match an active agreement ID. " +
-            "You must set `authorisation_mode` to `agreement` for the API to accept `agreement_id`.", 
-            required = false, example = "abcefghjklmnopqr1234567890")
+            "You must set `authorisation_mode` to `agreement` for the API to accept `agreement_id`.",
+            requiredMode = NOT_REQUIRED, example = "abcefghjklmnopqr1234567890")
     public Optional<String> getAgreementId() {
         return Optional.ofNullable(agreementId);
     }
@@ -239,7 +242,7 @@ public class CreateCardPaymentRequest {
             "This can have a value of `instalment`, `recurring`, or `unscheduled`."+
             "We must have a `set_up_agreement` property or you set `authorisation_mode` to `agreement` for the API to accept the AgreementPaymentType.",
             type = "String", allowableValues = {"instalment", "recurring", "unscheduled"}, 
-            required = false)
+            requiredMode = NOT_REQUIRED)
     public Optional<AgreementPaymentType> getAgreementPaymentType() {
         return Optional.ofNullable(agreementPaymentType);
     }

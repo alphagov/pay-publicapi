@@ -5,6 +5,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Optional;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.NOT_REQUIRED;
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 @Schema(name = "PaymentRefundRequest", description = "The Payment Refund Request Payload")
 public class CreatePaymentRefundRequest {
 
@@ -12,11 +15,11 @@ public class CreatePaymentRefundRequest {
     public static final int REFUND_MIN_VALUE = 1;
 
     @Schema(description = "The amount you want to [refund to your user]" +
-            "(https://docs.payments.service.gov.uk/refunding_payments/) in pence.", required = true,
+            "(https://docs.payments.service.gov.uk/refunding_payments/) in pence.", requiredMode = REQUIRED,
             example = "150000", minimum = "1", maximum = "10000000")
     private int amount;
     @JsonProperty("refund_amount_available")
-    @Schema(description = "Amount in pence. Total amount still available before issuing the refund", required = false,
+    @Schema(description = "Amount in pence. Total amount still available before issuing the refund", requiredMode = NOT_REQUIRED,
             example = "200000", minimum = "1", maximum = "10000000")
     private Integer refundAmountAvailable;
 
