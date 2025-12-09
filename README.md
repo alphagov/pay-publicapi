@@ -52,7 +52,7 @@ our [OpenAPI specifiation](https://github.com/alphagov/pay-publicapi/blob/master
 
 ## Dependencies
 
-- https://www.mock-server.com/ is used for mocking dependent services
+[WireMock](https://wiremock.org/) is used for mocking dependent services
 
 ## Licence
 
