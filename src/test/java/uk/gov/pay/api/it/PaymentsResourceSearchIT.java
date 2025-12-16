@@ -431,6 +431,18 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
                 .body("results[0].exemption.outcome.result", is("honoured"));
     }
 
+    @Test
+    public void searchPayments_shouldNotReturnBadRequest_whenSearchingWithUrlEncodedQueryParam() throws Exception {
+        String urlEncodedQueryParam = "AD001043%2F22"; // AD001043/22
+        
+        searchPayments(
+                ImmutableMap.of("reference", urlEncodedQueryParam))
+                .statusCode(404)
+                .contentType(JSON)
+                .body("size()", is(2))
+                .body("description", is("Page not found"));
+    }
+
     private Matcher<? super List<Map<String, Object>>> matchesState(final String state) {
         return new TypeSafeMatcher<>() {
             @Override
