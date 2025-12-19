@@ -1,4 +1,4 @@
-FROM maven:3.9.7-eclipse-temurin-21-alpine@sha256:8b762a139e07e874e3830521d97bafaf963cce6bda92afe9fb532def5d011404 AS builder
+FROM maven:3.9.11-eclipse-temurin-25-alpine@sha256:8e5fbd12216e289fe87356e3f534f17188f6fa9bd08ffe29e745fb6bd29e9ae3 AS builder
 
 WORKDIR /home/build
 COPY . .
