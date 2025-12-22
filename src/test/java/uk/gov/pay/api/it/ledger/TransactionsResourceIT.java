@@ -7,7 +7,6 @@ import io.dropwizard.testing.junit.DropwizardAppRule;
 import io.restassured.response.ValidatableResponse;
 import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
@@ -52,19 +51,20 @@ public class TransactionsResourceIT {
     @ClassRule
     public static WireMockClassRule publicAuthMock = new WireMockClassRule(PUBLIC_AUTH_PORT);
 
-    @Rule
-    public DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
+    @ClassRule
+    public static DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
             PublicApi.class,
             resourceFilePath("config/test-config.yaml"),
             config("ledgerUrl", "http://localhost:" + LEDGER_PORT),
-            config("publicAuthUrl", "http://localhost:" + PUBLIC_AUTH_PORT + "/v1/auth")
+            config("publicAuthUrl", "http://localhost:" + PUBLIC_AUTH_PORT + "/v1/auth"),
+            config("rateLimiter.noOfReqPerNode", "2")
     );
 
     private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
-    
+
     private LedgerMockClient ledgerMockClient = new LedgerMockClient(ledgerMock);
     private PublicApiConfig configuration;
-    
+
     @Before
     public void mapBearerTokenToAccountId() {
         configuration = app.getConfiguration();
@@ -72,7 +72,7 @@ public class TransactionsResourceIT {
         ledgerMock.resetAll();
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
     }
-    
+
     @Test
     public void shouldReturnAListOfTransactions() {
         Address billingAddress = new Address("line1", null, "AB1 CD2", "London", "GB");

@@ -7,7 +7,6 @@ import io.dropwizard.testing.junit.DropwizardAppRule;
 import io.restassured.response.ValidatableResponse;
 import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Rule;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.it.rule.RedisDockerRule;
@@ -49,8 +48,8 @@ public abstract class PaymentResourceITestBase {
     @ClassRule
     public static WireMockClassRule ledgerMock = new WireMockClassRule(LEDGER_PORT);
 
-    @Rule
-    public DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
+    @ClassRule
+    public static DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
             PublicApi.class,
             resourceFilePath("config/test-config.yaml"),
             config("connectorUrl", "http://localhost:" + CONNECTOR_PORT),

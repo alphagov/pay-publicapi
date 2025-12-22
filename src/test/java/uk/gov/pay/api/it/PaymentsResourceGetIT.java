@@ -45,9 +45,9 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
-import static uk.gov.pay.api.model.CreateCardPaymentRequest.REFERENCE_FIELD_NAME;
-import static uk.gov.pay.api.model.CreateCardPaymentRequest.DESCRIPTION_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.AMOUNT_FIELD_NAME;
+import static uk.gov.pay.api.model.CreateCardPaymentRequest.DESCRIPTION_FIELD_NAME;
+import static uk.gov.pay.api.model.CreateCardPaymentRequest.REFERENCE_FIELD_NAME;
 import static uk.gov.pay.api.model.CreateCardPaymentRequest.RETURN_URL_FIELD_NAME;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
@@ -285,7 +285,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
                 .body("_links.auth_url_post.type", is("application/json"))
                 .body("_links.auth_url_post.params.one_time_token", is(CHARGE_TOKEN_ID));
     }
-    
+
     @Test
     public void getPaymentThroughConnector_DoesNotReturnCardDigits_IfNotPresentInCardDetails() {
         CardDetailsFromResponse cardDetails = new CardDetailsFromResponse(null, null, "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, CARD_TYPE);
@@ -421,7 +421,6 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     @Test
     public void getPayment_Returns401_WhenUnauthorised() {
         publicAuthMockClient.respondUnauthorised();
-
         getPaymentResponse(CHARGE_ID)
                 .statusCode(401);
     }
@@ -505,7 +504,6 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     @Test
     public void getPaymentEvents_Returns401_WhenUnauthorised() {
         publicAuthMockClient.respondUnauthorised();
-
         getPaymentEventsResponse(CHARGE_ID)
                 .statusCode(401);
     }
@@ -765,9 +763,9 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
                 getConnectorCharge()
                         .withWalletType(Wallet.APPLE_PAY.toString())
                         .build());
- 
+
         ValidatableResponse response = getPaymentResponse(CHARGE_ID);
-        
+
         assertConnectorOnlyPaymentFields(response);
         // PublicAPI expected response behaviour is to move wallet type into card_details
         response.body(not(hasKey("wallet_type")));
@@ -957,10 +955,10 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     @Test
     public void shouldReturnBadRequestWhenPaymentDescriptionContainsIllegalCharacters() {
         Map<String, Object> payload = Map.of(
-            REFERENCE_FIELD_NAME, REFERENCE,
-            DESCRIPTION_FIELD_NAME, ILLEGAL_DESCRIPTION,
-            AMOUNT_FIELD_NAME, 1000,
-            RETURN_URL_FIELD_NAME, RETURN_URL
+                REFERENCE_FIELD_NAME, REFERENCE,
+                DESCRIPTION_FIELD_NAME, ILLEGAL_DESCRIPTION,
+                AMOUNT_FIELD_NAME, 1000,
+                RETURN_URL_FIELD_NAME, RETURN_URL
         );
 
         given().port(app.getLocalPort())

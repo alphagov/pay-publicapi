@@ -21,32 +21,34 @@ import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
-import static java.lang.String.format;
 import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import static java.lang.String.format;
 import static uk.gov.pay.api.model.TokenPaymentType.CARD;
 import static uk.gov.pay.api.utils.WiremockStubbing.stubPublicAuthV1ApiAuth;
 import static uk.gov.service.payments.commons.testing.port.PortFactory.findFreePort;
 
 public class CachingAuthenticatorIT {
-    
+
     private String accountId = "123";
     private String bearerToken = ApiKeyGenerator.apiKeyValueOf("TEST_BEARER_TOKEN", "qwer9yuhgf");
 
     private int publicAuthRulePort = findFreePort();
     private int connectorRulePort = findFreePort();
-    
+
     @Rule
     public WireMockRule publicAuthRule = new WireMockRule(publicAuthRulePort);
 
     @Rule
     public WireMockRule connectorRule = new WireMockRule(connectorRulePort);
-    
+
     @Rule
     public DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
-            PublicApi.class, 
-            resourceFilePath("config/test-config.yaml"), 
+            PublicApi.class,
+            resourceFilePath("config/test-config.yaml"),
             config("publicAuthUrl", "http://localhost:" + publicAuthRulePort + "/v1/api/auth"),
+            config("authenticationCachePolicy", "expireAfterWrite=3s"),
+            config("rateLimiter.noOfReqPerNode", "2"),
             config("connectorUrl", "http://localhost:" + connectorRulePort));
 
     @Before
@@ -55,21 +57,20 @@ public class CachingAuthenticatorIT {
         stubPublicAuthV1ApiAuth(publicAuthRule, new Account(accountId, CARD, tokenLink), bearerToken);
         setUpMockForConnector();
     }
-    
+
     @After
     public void cleanup() {
         publicAuthRule.resetRequests();
     }
-    
+
     @Test
-    public void testAuthenticationRequestsAreCached() throws Exception {
+    public void testAuthenticationRequestsAreCached() {
         makeRequest();
-        Thread.sleep(1000); //pause for 1 second as there's a rate limit of 1 request per second
         makeRequest();
 
         publicAuthRule.verify(1, getRequestedFor(urlEqualTo("/v1/api/auth")));
     }
-    
+
     @Test
     public void testAuthenticationCacheExpires() throws Exception {
         makeRequest();
@@ -95,7 +96,7 @@ public class CachingAuthenticatorIT {
                         .withHeader("Content-Type", APPLICATION_JSON)
                         .withBody(aPayment())));
     }
-    
+
     private String aPayment() {
         JsonStringBuilder jsonStringBuilder = new JsonStringBuilder()
                 .add("charge_id", "chargeId")
