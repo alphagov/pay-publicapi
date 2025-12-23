@@ -5,7 +5,7 @@ import uk.gov.pay.api.exception.RefundsValidationException;
 import uk.gov.pay.api.service.RefundsParams;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.pay.api.matcher.RefundValidationExceptionMatcher.aValidationExceptionContaining;
 
 class RefundSearchValidatorTest {
