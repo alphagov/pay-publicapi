@@ -1,6 +1,6 @@
 package uk.gov.pay.api.validation;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.pay.api.exception.RefundsValidationException;
 import uk.gov.pay.api.service.RefundsParams;
 
@@ -8,21 +8,21 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 import static uk.gov.pay.api.matcher.RefundValidationExceptionMatcher.aValidationExceptionContaining;
 
-public class RefundSearchValidatorTest {
+class RefundSearchValidatorTest {
 
     @Test
-    public void validateSearchParameters_shouldSuccessValidation() {
+    void validateSearchParameters_shouldSuccessValidation() {
         RefundSearchValidator.validateSearchParameters(
                 new RefundsParams("2016-01-25T13:23:55Z", "2016-01-25T13:23:55Z", "1", "1", "2016-01-25", "2016-01-25"));
     }
 
     @Test
-    public void validateParams_shouldNotGiveAnErrorValidation_ForMissingPageDisplaySize() {
+    void validateParams_shouldNotGiveAnErrorValidation_ForMissingPageDisplaySize() {
         RefundSearchValidator.validateSearchParameters(new RefundsParams("2016-01-25T13:23:55Z", "2016-01-25T13:23:55Z", null, null, "2016-01-25", "2016-01-25"));
     }
 
     @Test
-    public void validateSearchParameters_shouldGiveAValidationError_ForNonValidFromDate() {
+    void validateSearchParameters_shouldGiveAValidationError_ForNonValidFromDate() {
         RefundsValidationException validationException = assertThrows(RefundsValidationException.class,
                 () -> RefundSearchValidator.validateSearchParameters(
                         new RefundsParams("nope", "2016-01-25T13:23:55Z", "1", "1", "2016-01-25", "2016-01-25")));
@@ -32,7 +32,7 @@ public class RefundSearchValidatorTest {
     }
 
     @Test
-    public void validateSearchParameters_shouldGiveAValidationError_ForNonValidToDate() {
+    void validateSearchParameters_shouldGiveAValidationError_ForNonValidToDate() {
         RefundsValidationException validationException = assertThrows(RefundsValidationException.class,
                 () -> RefundSearchValidator.validateSearchParameters(
                         new RefundsParams("2016-01-25T13:23:55Z", "nope", "1", "1", "2016-01-25", "2016-01-25")));
@@ -42,7 +42,7 @@ public class RefundSearchValidatorTest {
     }
 
     @Test
-    public void validateSearchParameters_shouldGiveAValidationError_ForNonNumericPageAndSize() {
+    void validateSearchParameters_shouldGiveAValidationError_ForNonNumericPageAndSize() {
         String NON_NUMERIC_STRING = "non-numeric-string";
         RefundsValidationException validationException = assertThrows(RefundsValidationException.class,
                 () -> RefundSearchValidator.validateSearchParameters(new RefundsParams("2016-01-25T13:23:55Z",
@@ -54,7 +54,7 @@ public class RefundSearchValidatorTest {
     }
 
     @Test
-    public void validateParams_shouldGiveAnErrorValidation_forZeroPageDisplay() {
+    void validateParams_shouldGiveAnErrorValidation_forZeroPageDisplay() {
         RefundsValidationException validationException = assertThrows(RefundsValidationException.class,
                 () -> RefundSearchValidator.validateSearchParameters(
                         new RefundsParams("2016-01-25T13:23:55Z", "2016-01-25T13:23:55Z", "0", "0", "2016-01-25", "2016-01-25")));
@@ -64,7 +64,7 @@ public class RefundSearchValidatorTest {
     }
 
     @Test
-    public void validateParams_shouldGiveAnErrorValidation_forMaxedOutValuesPageDisplaySize() {
+    void validateParams_shouldGiveAnErrorValidation_forMaxedOutValuesPageDisplaySize() {
         RefundsValidationException validationException = assertThrows(RefundsValidationException.class,
                 () -> RefundSearchValidator.validateSearchParameters(new RefundsParams("2016-01-25T13:23:55Z",
                         "2016-01-25T13:23:55Z", String.valueOf(Integer.MAX_VALUE + 1), String.valueOf(Integer.MAX_VALUE + 1),
@@ -75,7 +75,7 @@ public class RefundSearchValidatorTest {
     }
 
     @Test
-    public void validateParams_shouldGiveAnErrorValidation_forTooLargePageDisplay() {
+    void validateParams_shouldGiveAnErrorValidation_forTooLargePageDisplay() {
         RefundsValidationException validationException = assertThrows(RefundsValidationException.class,
                 () -> RefundSearchValidator.validateSearchParameters(
                         new RefundsParams("2016-01-25T13:23:55Z", "2016-01-25T13:23:55Z", "0", "501",
@@ -86,7 +86,7 @@ public class RefundSearchValidatorTest {
     }
 
     @Test
-    public void validateSearchParameters_shouldGiveAValidationError_ForNonValidToSettledDate() {
+    void validateSearchParameters_shouldGiveAValidationError_ForNonValidToSettledDate() {
         RefundsValidationException validationException = assertThrows(RefundsValidationException.class,
                 () -> RefundSearchValidator.validateSearchParameters(
                         new RefundsParams("2016-01-25T13:23:55Z", "2016-01-25T13:23:55Z", "1", "1", "2016-01-25", "nope")));
@@ -96,7 +96,7 @@ public class RefundSearchValidatorTest {
     }
 
     @Test
-    public void validateSearchParameters_shouldGiveAValidationError_ForNonValidFromSettledDate() {
+    void validateSearchParameters_shouldGiveAValidationError_ForNonValidFromSettledDate() {
         RefundsValidationException validationException = assertThrows(RefundsValidationException.class,
                 () -> RefundSearchValidator.validateSearchParameters(
                         new RefundsParams("2016-01-25T13:23:55Z", "2016-01-25T13:23:55Z", "1", "1", "nope", "2016-01-25")));
@@ -106,7 +106,7 @@ public class RefundSearchValidatorTest {
     }
 
     @Test
-    public void validateSearchParameters_shouldGiveAValidationError_ForNonValidSettledDates() {
+    void validateSearchParameters_shouldGiveAValidationError_ForNonValidSettledDates() {
         RefundsValidationException validationException = assertThrows(RefundsValidationException.class,
                 () -> RefundSearchValidator.validateSearchParameters(
                         new RefundsParams("2016-01-25T13:23:55Z", "2016-01-25T13:23:55Z", "1", "1", "2016-01-25T13:23:55Z", "2016-01-25T13:23:55Z")));
