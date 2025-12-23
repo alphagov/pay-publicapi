@@ -1,13 +1,15 @@
 package uk.gov.pay.api.it.ledger;
 
 
-import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.google.common.collect.ImmutableMap;
-import io.dropwizard.testing.junit.DropwizardAppRule;
+import io.dropwizard.testing.DropwizardTestSupport;
 import io.restassured.response.ValidatableResponse;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.it.fixtures.PaymentNavigationLinksFixture;
@@ -16,11 +18,12 @@ import uk.gov.pay.api.model.AuthorisationSummary;
 import uk.gov.pay.api.model.CardDetailsFromResponse;
 import uk.gov.pay.api.model.ThreeDSecure;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
-import uk.gov.pay.api.utils.mocks.LedgerMockClient;
+import uk.gov.pay.api.utils.PublicAuthMockClientJUnit5;
+import uk.gov.pay.api.utils.mocks.LedgerMockClientJUnit5;
 
 import java.util.Map;
 
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static io.restassured.RestAssured.given;
@@ -36,45 +39,54 @@ import static uk.gov.pay.api.it.fixtures.PaymentResultBuilder.DEFAULT_CREATED_DA
 import static uk.gov.pay.api.it.fixtures.PaymentResultBuilder.DEFAULT_RETURN_URL;
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.aSuccessfulSearchPayment;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
-import static uk.gov.service.payments.commons.testing.port.PortFactory.findFreePort;
 
-public class TransactionsResourceIT {
+class TransactionsResourceIT {
 
     private static final String API_KEY = ApiKeyGenerator.apiKeyValueOf("TEST_BEARER_TOKEN", "qwer9yuhgf");
-    private static final int LEDGER_PORT = findFreePort();
-    private static final int PUBLIC_AUTH_PORT = findFreePort();
     private static final String GATEWAY_ACCOUNT_ID = "1234";
 
-    @ClassRule
-    public static WireMockClassRule ledgerMock = new WireMockClassRule(LEDGER_PORT);
+    @RegisterExtension
+    private static final WireMockExtension ledgerServer = WireMockExtension.newInstance()
+            .options(wireMockConfig().dynamicPort())
+            .build();
 
-    @ClassRule
-    public static WireMockClassRule publicAuthMock = new WireMockClassRule(PUBLIC_AUTH_PORT);
+    @RegisterExtension
+    private static final WireMockExtension publicAuthServer = WireMockExtension.newInstance()
+            .options(wireMockConfig().dynamicPort())
+            .build();
 
-    @ClassRule
-    public static DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
-            PublicApi.class,
-            resourceFilePath("config/test-config.yaml"),
-            config("ledgerUrl", "http://localhost:" + LEDGER_PORT),
-            config("publicAuthUrl", "http://localhost:" + PUBLIC_AUTH_PORT + "/v1/auth"),
-            config("rateLimiter.noOfReqPerNode", "2")
-    );
+    private static DropwizardTestSupport<PublicApiConfig> app;
 
-    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    private final PublicAuthMockClientJUnit5 publicAuthMockClient = new PublicAuthMockClientJUnit5(publicAuthServer);
 
-    private LedgerMockClient ledgerMockClient = new LedgerMockClient(ledgerMock);
+    private final LedgerMockClientJUnit5 ledgerMockClient = new LedgerMockClientJUnit5(ledgerServer);
     private PublicApiConfig configuration;
 
-    @Before
-    public void mapBearerTokenToAccountId() {
+    @BeforeAll
+    static void startApp() throws Exception {
+        app = new DropwizardTestSupport<>(
+                PublicApi.class,
+                resourceFilePath("config/test-config.yaml"),
+                config("ledgerUrl", ledgerServer.baseUrl()),
+                config("publicAuthUrl", publicAuthServer.baseUrl() + "/v1/auth"),
+                config("rateLimiter.noOfReqPerNode", "2")
+        );
+        app.before();
+    }
+
+    @AfterAll
+    static void stopApp() {
+        app.after();
+    }
+
+    @BeforeEach
+    void mapBearerTokenToAccountId() {
         configuration = app.getConfiguration();
-        publicAuthMock.resetAll();
-        ledgerMock.resetAll();
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
     }
 
     @Test
-    public void shouldReturnAListOfTransactions() {
+    void shouldReturnAListOfTransactions() {
         Address billingAddress = new Address("line1", null, "AB1 CD2", "London", "GB");
         CardDetailsFromResponse cardDetails = new CardDetailsFromResponse(null, null, "J. Doe",
                 null, billingAddress, "", null);
@@ -140,7 +152,7 @@ public class TransactionsResourceIT {
     }
 
     @Test
-    public void shouldReturnAListOfTransactionsWithoutAuthorisationSummaryWhenThreeDSecureRequiredFalse() {
+    void shouldReturnAListOfTransactionsWithoutAuthorisationSummaryWhenThreeDSecureRequiredFalse() {
         Address billingAddress = new Address("line1", null, "AB1 CD2", "London", "GB");
         CardDetailsFromResponse cardDetails = new CardDetailsFromResponse(null, null, "J. Doe",
                 null, billingAddress, "", null);

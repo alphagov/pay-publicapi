@@ -1,15 +1,17 @@
 package uk.gov.pay.api.it;
 
-import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
-import io.dropwizard.testing.junit.DropwizardAppRule;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import io.dropwizard.testing.DropwizardTestSupport;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.model.Address;
@@ -18,8 +20,8 @@ import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
 import uk.gov.pay.api.utils.JsonStringBuilder;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
-import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
+import uk.gov.pay.api.utils.PublicAuthMockClientJUnit5;
+import uk.gov.pay.api.utils.mocks.ConnectorMockClientJUnit5;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.validation.DateTimeUtils;
 
@@ -29,8 +31,8 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static io.restassured.RestAssured.given;
@@ -40,13 +42,9 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 import static uk.gov.service.payments.commons.model.CommonDateTimeFormatters.ISO_INSTANT_MILLISECOND_PRECISION;
-import static uk.gov.service.payments.commons.testing.port.PortFactory.findFreePort;
 
-public class ResourcesFilterLocalRateLimiterIT {
+class ResourcesFilterLocalRateLimiterIT {
 
-    private static final int CONNECTOR_PORT = findFreePort();
-    private static final int PUBLIC_AUTH_PORT = findFreePort();
-    
     private static final String API_KEY = ApiKeyGenerator.apiKeyValueOf("TEST_BEARER_TOKEN", "qwer9yuhgf");
     private static final String GATEWAY_ACCOUNT_ID = "GATEWAY_ACCOUNT_ID";
     private static final String PAYMENTS_PATH = "/v1/payments/";
@@ -66,26 +64,24 @@ public class ResourcesFilterLocalRateLimiterIT {
     private static final CardDetailsFromResponse CARD_DETAILS = new CardDetailsFromResponse("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, "Visa", "credit");
 
     private static final String PAYLOAD = paymentPayload(AMOUNT, RETURN_URL, DESCRIPTION, REFERENCE);
-    private ExecutorService executor = Executors.newFixedThreadPool(2);
+    private final ExecutorService executor = Executors.newFixedThreadPool(2);
 
-    @ClassRule
-    public static WireMockClassRule connectorMock = new WireMockClassRule(CONNECTOR_PORT);
+    @RegisterExtension
+    private static final WireMockExtension publicAuthServer = WireMockExtension.newInstance()
+            .options(wireMockConfig().dynamicPort())
+            .build();
 
-    @ClassRule
-    public static WireMockClassRule publicAuthMock = new WireMockClassRule(PUBLIC_AUTH_PORT);
-    
-    @ClassRule
-    public static DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
-            PublicApi.class
-            , resourceFilePath("config/test-config.yaml")
-            , config("connectorUrl", "http://localhost:" + CONNECTOR_PORT)
-            , config("publicAuthUrl", "http://localhost:" + PUBLIC_AUTH_PORT + "/v1/auth")
-    );
+    @RegisterExtension
+    private static final WireMockExtension connectorServer = WireMockExtension.newInstance()
+            .options(wireMockConfig().dynamicPort())
+            .build();
 
-    @Before
-    public void setup() {
-        ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
-        PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    private static DropwizardTestSupport<PublicApiConfig> app;
+
+    @BeforeEach
+    void setup() {
+        ConnectorMockClientJUnit5 connectorMockClient = new ConnectorMockClientJUnit5(connectorServer);
+        PublicAuthMockClientJUnit5 publicAuthMockClient = new PublicAuthMockClientJUnit5(publicAuthServer);
 
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
@@ -105,8 +101,24 @@ public class ResourcesFilterLocalRateLimiterIT {
                 .build());
     }
 
+    @BeforeAll
+    static void startApp() throws Exception {
+        app = new DropwizardTestSupport<>(
+                PublicApi.class,
+                resourceFilePath("config/test-config.yaml"),
+                config("connectorUrl", connectorServer.baseUrl()),
+                config("publicAuthUrl", publicAuthServer.baseUrl() + "/v1/auth")
+        );
+        app.before();
+    }
+
+    @AfterAll
+    static void stopApp() {
+        app.after();
+    }
+
     @Test
-    public void shouldFallbackToLocalRateLimiter_whenRedisIsUnavailableAndRateLimitIsReached_send429Response() throws Exception {
+    void shouldFallbackToLocalRateLimiter_whenRedisIsUnavailableAndRateLimitIsReached_send429Response() throws Exception {
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> postPaymentResponse(API_KEY, PAYLOAD),
@@ -120,7 +132,7 @@ public class ResourcesFilterLocalRateLimiterIT {
     }
 
     @Test
-    public void shouldFallbackToLocalRateLimiter_whenRedisIsUnavailableAndContinueRequest() {
+    void shouldFallbackToLocalRateLimiter_whenRedisIsUnavailableAndContinueRequest() {
 
         ValidatableResponse response = postPaymentResponse(API_KEY, PAYLOAD);
 
@@ -137,11 +149,11 @@ public class ResourcesFilterLocalRateLimiterIT {
                         return null;
                     }
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private TypeSafeMatcher<ValidatableResponse> anErrorResponse(int statusCode, String publicApiErrorCode, String expectedDescription) {
-        return new TypeSafeMatcher<ValidatableResponse>() {
+        return new TypeSafeMatcher<>() {
             @Override
             protected boolean matchesSafely(ValidatableResponse validatableResponse) {
                 ExtractableResponse<Response> extract = validatableResponse.extract();

@@ -17,14 +17,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @ExtendWith(DropwizardExtensionsSupport.class)
 class PublicApiConfigIT {
 
-    private static final DropwizardAppExtension<PublicApiConfig> app = new DropwizardAppExtension<>(
+    private static final DropwizardAppExtension<PublicApiConfig> EXT = new DropwizardAppExtension<>(
             PublicApi.class,
             resourceFilePath("config/test-config.yaml")
     );
 
     @Test
     void shouldParseConfiguration() {
-        RateLimiterConfig rateLimiterConfig = app.getConfiguration().getRateLimiterConfig();
+        RateLimiterConfig rateLimiterConfig = EXT.getConfiguration().getRateLimiterConfig();
         assertThat(rateLimiterConfig.getNoOfReq(), is(1000));
         assertThat(rateLimiterConfig.getPerMillis(), is(1000));
         assertThat(rateLimiterConfig.getNoOfReqForPost(), is(1000));
