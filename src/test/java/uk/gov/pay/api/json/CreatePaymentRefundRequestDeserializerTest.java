@@ -3,12 +3,12 @@ package uk.gov.pay.api.json;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.exception.PaymentValidationException;
 import uk.gov.pay.api.model.CreatePaymentRefundRequest;
@@ -21,22 +21,22 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.pay.api.matcher.BadRequestExceptionMatcher.aBadRequestExceptionWithError;
 import static uk.gov.pay.api.matcher.PaymentValidationExceptionMatcher.aValidationExceptionContaining;
 
-@RunWith(MockitoJUnitRunner.class)
-public class CreatePaymentRefundRequestDeserializerTest {
+@ExtendWith(MockitoExtension.class)
+class CreatePaymentRefundRequestDeserializerTest {
 
     @Mock
     private DeserializationContext ctx;
 
-    private JsonFactory jsonFactory = new JsonFactory(new ObjectMapper());
+    private final JsonFactory jsonFactory = new JsonFactory(new ObjectMapper());
     private CreatePaymentRefundRequestDeserializer deserializer;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         deserializer = new CreatePaymentRefundRequestDeserializer(new PaymentRefundRequestValidator());
     }
 
     @Test
-    public void deserialize_shouldDeserializeARequestSuccessfully() throws Exception {
+    void deserialize_shouldDeserializeARequestSuccessfully() throws Exception {
 
         String validJson = "{" +
                 "  \"amount\" : 12345" +
@@ -48,7 +48,7 @@ public class CreatePaymentRefundRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowBadRequestException_whenJsonIsNotWellFormed() throws Exception {
+    void deserialize_shouldThrowBadRequestException_whenJsonIsNotWellFormed() {
 
         String invalidJson = "{" +
                 "  \"amount\" : " +
@@ -61,7 +61,7 @@ public class CreatePaymentRefundRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowBadRequestException_whenAmountIsMissing() throws Exception {
+    void deserialize_shouldThrowBadRequestException_whenAmountIsMissing() {
 
         String json = "{}";
 
@@ -72,7 +72,7 @@ public class CreatePaymentRefundRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_asAmountIsMissing_whenAmountIsNullValue() throws Exception {
+    void deserialize_shouldThrowValidationException_asAmountIsMissing_whenAmountIsNullValue() {
 
         String json = "{" +
                 "  \"amount\" : null" +
@@ -85,7 +85,7 @@ public class CreatePaymentRefundRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_whenAmountIsNotInteger() throws Exception {
+    void deserialize_shouldThrowValidationException_whenAmountIsNotInteger() {
 
         String json = "{" +
                 "  \"amount\" : \"\"" +
@@ -99,7 +99,7 @@ public class CreatePaymentRefundRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_whenAmountIsLessThanMinimum() throws Exception {
+    void deserialize_shouldThrowValidationException_whenAmountIsLessThanMinimum() {
 
         String json = "{" +
                 "  \"amount\" : 0" +
@@ -113,7 +113,7 @@ public class CreatePaymentRefundRequestDeserializerTest {
     }
 
     @Test
-    public void deserialize_shouldThrowValidationException_whenAmountIsMoreThanMaximum() throws Exception {
+    void deserialize_shouldThrowValidationException_whenAmountIsMoreThanMaximum() {
 
         String json = "{" +
                 "  \"amount\" : 10000001" +
@@ -126,8 +126,8 @@ public class CreatePaymentRefundRequestDeserializerTest {
                 "Invalid attribute value: amount. Must be less than or equal to 10000000"));
     }
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         verifyNoInteractions(ctx);
     }
 }

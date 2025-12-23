@@ -21,7 +21,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static uk.gov.pay.api.json.RequestJsonParser.parsePaymentRequest;
 import static uk.gov.pay.api.json.RequestJsonParser.parseRefundRequest;
@@ -825,7 +825,7 @@ class RequestJsonParserTest {
         assertThat(badRequestException.getRequestError().getCode(), is("P0104"));
         assertThat(badRequestException.getRequestError().getDescription(), is("Unexpected attribute: agreement_id"));
     }
-    
+
     @Test
     void parsePaymentRequest_shouldThrowValidationException_whenUnexpectedWhenInvalidType() throws Exception {
         String payload = """
@@ -838,7 +838,7 @@ class RequestJsonParserTest {
                           "agreement_payment_type": "Invalid reason"
                         }
                 """;
-        
+
         JsonNode jsonNode = objectMapper.readTree(payload);
 
         PaymentValidationException paymentValidationException = assertThrows(PaymentValidationException.class, () -> parsePaymentRequest(jsonNode));
@@ -868,36 +868,36 @@ class RequestJsonParserTest {
     @MethodSource()
     void parsePaymentRequest_shouldParseValidAgreementPaymentType_whenAuthorisationModeIsAgreementOrSetUpAgreementPropertyPresent(String payload) throws Exception {
         JsonNode jsonNode = objectMapper.readTree(payload);
-        
+
         CreateCardPaymentRequest paymentRequest = parsePaymentRequest(jsonNode);
         assertThat(paymentRequest.getAgreementPaymentType().get(), is(INSTALMENT));
     }
 
-    static Stream<Arguments>parsePaymentRequest_shouldParseValidAgreementPaymentType_whenAuthorisationModeIsAgreementOrSetUpAgreementPropertyPresent(){
+    static Stream<Arguments> parsePaymentRequest_shouldParseValidAgreementPaymentType_whenAuthorisationModeIsAgreementOrSetUpAgreementPropertyPresent() {
         return Stream.of(
                 arguments(
                         """
-                        {
-                          "amount": 1000,
-                          "reference": "Some reference",
-                          "description": "Some description",
-                          "return_url": "https://somewhere.gov.uk/rainbow/1",
-                          "authorisation_mode": "agreement",
-                          "agreement_payment_type": "instalment"
-                        }
-                        """
+                                {
+                                  "amount": 1000,
+                                  "reference": "Some reference",
+                                  "description": "Some description",
+                                  "return_url": "https://somewhere.gov.uk/rainbow/1",
+                                  "authorisation_mode": "agreement",
+                                  "agreement_payment_type": "instalment"
+                                }
+                                """
                 ),
                 arguments(
                         """
-                         {
-                           "amount": 1000,
-                           "reference": "Some reference",
-                           "description": "Some description",
-                           "return_url": "https://somewhere.gov.uk/rainbow/1",
-                           "set_up_agreement" : "agreement",
-                           "agreement_payment_type": "instalment"
-                         }
-                         """ 
+                                {
+                                  "amount": 1000,
+                                  "reference": "Some reference",
+                                  "description": "Some description",
+                                  "return_url": "https://somewhere.gov.uk/rainbow/1",
+                                  "set_up_agreement" : "agreement",
+                                  "agreement_payment_type": "instalment"
+                                }
+                                """
                 )
         );
     }
