@@ -2,11 +2,11 @@ package uk.gov.pay.api.it;
 
 
 import io.restassured.response.ValidatableResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.pay.api.model.ledger.TransactionState;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
-import uk.gov.pay.api.utils.mocks.LedgerMockClient;
+import uk.gov.pay.api.utils.PublicAuthMockClientJUnit5;
+import uk.gov.pay.api.utils.mocks.LedgerMockClientJUnit5;
 import uk.gov.pay.api.utils.mocks.RefundTransactionFromLedgerFixture;
 import uk.gov.service.payments.commons.validation.DateTimeUtils;
 
@@ -21,22 +21,22 @@ import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 import static uk.gov.pay.api.utils.mocks.RefundTransactionFromLedgerFixture.RefundTransactionFromLedgerBuilder.aRefundTransactionFromLedgerFixture;
 import static uk.gov.service.payments.commons.model.CommonDateTimeFormatters.ISO_INSTANT_MILLISECOND_PRECISION;
 
-public class SearchRefundsResourceIT extends PaymentResourceITestBase {
+class SearchRefundsResourceIT extends PaymentResourceITestBase {
 
     private static final String CHARGE_ID = "ch_ab2341da231434l";
     private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
     private static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(TIMESTAMP);
 
-    private LedgerMockClient ledgerMockClient = new LedgerMockClient(ledgerMock);
-    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    private final LedgerMockClientJUnit5 ledgerMockClient = new LedgerMockClientJUnit5(ledgerServer);
+    private final PublicAuthMockClientJUnit5 publicAuthMockClient = new PublicAuthMockClientJUnit5(publicAuthServer);
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
     }
 
     @Test
-    public void searchRefunds_shouldReturnValidResponse() {
+    void searchRefunds_shouldReturnValidResponse() {
         RefundTransactionFromLedgerFixture refund1 = aRefundTransactionFromLedgerFixture()
                 .withAmount(100L)
                 .withCreatedDate(CREATED_DATE)
@@ -85,18 +85,18 @@ public class SearchRefundsResourceIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchRefunds_errorIfLedgerRespondsWith404() {
+    void searchRefunds_errorIfLedgerRespondsWith404() {
         ledgerMockClient.respondWithSearchRefundsNotFound();
-        
+
         getRefundsSearchResponse()
                 .statusCode(404)
                 .contentType(JSON)
-                .body("code", is ("P1100"))
+                .body("code", is("P1100"))
                 .body("description", is("Page not found"));
     }
 
     @Test
-    public void searchRefunds_shouldReturn422_whenInvalidSearchParams() {
+    void searchRefunds_shouldReturn422_whenInvalidSearchParams() {
 
         Map<String, String> invalidQueryParams = Map.of(
                 "from_date", "27th of July, 2022, 11:23",
@@ -109,7 +109,7 @@ public class SearchRefundsResourceIT extends PaymentResourceITestBase {
         );
 
         given().port(app.getLocalPort())
-                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
                 .queryParams(invalidQueryParams)
                 .get("/v1/refunds")
                 .then()
@@ -119,10 +119,10 @@ public class SearchRefundsResourceIT extends PaymentResourceITestBase {
                 .body("description", is("Invalid parameters: from_date, to_date, from_settled_date, to_settled_date, page, display_size. See Public API documentation for the correct data formats"));
 
     }
-    
+
     private ValidatableResponse getRefundsSearchResponse() {
         return given().port(app.getLocalPort())
-                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
                 .get("/v1/refunds")
                 .then();
     }

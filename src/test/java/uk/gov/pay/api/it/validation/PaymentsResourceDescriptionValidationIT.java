@@ -3,10 +3,10 @@ package uk.gov.pay.api.it.validation;
 import com.jayway.jsonassert.JsonAssert;
 import io.restassured.response.ValidatableResponse;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
+import uk.gov.pay.api.utils.PublicAuthMockClientJUnit5;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,17 +17,17 @@ import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 
-public class PaymentsResourceDescriptionValidationIT extends PaymentResourceITestBase {
+class PaymentsResourceDescriptionValidationIT extends PaymentResourceITestBase {
 
-    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
-    
-    @Before
-    public void setUpBearerToken() {
+    private final PublicAuthMockClientJUnit5 publicAuthMockClient = new PublicAuthMockClientJUnit5(publicAuthServer);
+
+    @BeforeEach
+    void setUpBearerToken() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
     }
 
     @Test
-    public void createPayment_responseWith400_whenDescriptionIsNumeric() throws IOException {
+    void createPayment_responseWith400_whenDescriptionIsNumeric() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
@@ -50,7 +50,7 @@ public class PaymentsResourceDescriptionValidationIT extends PaymentResourceITes
     }
 
     @Test
-    public void createPayment_responseWith400_whenDescriptionIsEmpty() throws IOException {
+    void createPayment_responseWith400_whenDescriptionIsEmpty() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
@@ -73,7 +73,7 @@ public class PaymentsResourceDescriptionValidationIT extends PaymentResourceITes
     }
 
     @Test
-    public void createPayment_responseWith400_whenDescriptionIsBlank() throws IOException {
+    void createPayment_responseWith400_whenDescriptionIsBlank() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
@@ -96,7 +96,7 @@ public class PaymentsResourceDescriptionValidationIT extends PaymentResourceITes
     }
 
     @Test
-    public void createPayment_responseWith400_whenDescriptionIsMissing() throws IOException {
+    void createPayment_responseWith400_whenDescriptionIsMissing() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
@@ -118,7 +118,7 @@ public class PaymentsResourceDescriptionValidationIT extends PaymentResourceITes
     }
 
     @Test
-    public void createPayment_responseWith400_whenDescriptionIsNull() throws IOException {
+    void createPayment_responseWith400_whenDescriptionIsNull() throws IOException {
 
 
         String payload = "{" +
@@ -142,7 +142,7 @@ public class PaymentsResourceDescriptionValidationIT extends PaymentResourceITes
     }
 
     @Test
-    public void createPayment_responseWith422_whenDescriptionSizeIsGreaterThanMaxLength() throws IOException {
+    void createPayment_responseWith422_whenDescriptionSizeIsGreaterThanMaxLength() throws IOException {
 
         String aVeryLongReference = RandomStringUtils.randomAlphanumeric(256);
 
@@ -167,7 +167,7 @@ public class PaymentsResourceDescriptionValidationIT extends PaymentResourceITes
     }
 
     @Test
-    public void createPayment_responseWith400_whenDescriptionHasNotAValidJsonValue() throws IOException {
+    void createPayment_responseWith400_whenDescriptionHasNotAValidJsonValue() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +
@@ -189,7 +189,7 @@ public class PaymentsResourceDescriptionValidationIT extends PaymentResourceITes
     }
 
     @Test
-    public void createPayment_responseWith400_whenDescriptionFieldIsNotExpectedJsonField() throws IOException {
+    void createPayment_responseWith400_whenDescriptionFieldIsNotExpectedJsonField() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 9900," +

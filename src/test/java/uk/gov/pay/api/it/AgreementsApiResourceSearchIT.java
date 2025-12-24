@@ -2,11 +2,10 @@ package uk.gov.pay.api.it;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.restassured.http.ContentType;
-import org.junit.Before;
-import org.junit.Test;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
-import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
-import uk.gov.pay.api.utils.mocks.LedgerMockClient;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import uk.gov.pay.api.utils.PublicAuthMockClientJUnit5;
+import uk.gov.pay.api.utils.mocks.LedgerMockClientJUnit5;
 
 import static io.restassured.RestAssured.given;
 import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
@@ -17,19 +16,19 @@ import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.utils.mocks.AgreementFromLedgerFixture.AgreementFromLedgerFixtureBuilder.anAgreementFromLedgerWithPaymentInstrumentFixture;
 import static uk.gov.pay.api.utils.mocks.AgreementFromLedgerFixture.AgreementFromLedgerFixtureBuilder.anAgreementFromLedgerWithoutPaymentInstrumentFixture;
 
-public class AgreementsApiResourceSearchIT extends PaymentResourceITestBase {
+class AgreementsApiResourceSearchIT extends PaymentResourceITestBase {
 
-    private final PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
-    private final LedgerMockClient ledgerMockClient = new LedgerMockClient(ledgerMock);
+    private final PublicAuthMockClientJUnit5 publicAuthMockClient = new PublicAuthMockClientJUnit5(publicAuthServer);
+    private final LedgerMockClientJUnit5 ledgerMockClient = new LedgerMockClientJUnit5(ledgerServer);
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
     }
 
 
     @Test
-    public void searchAgreementsFromLedger() throws JsonProcessingException {
+    void searchAgreementsFromLedger() throws JsonProcessingException {
         String agreementId = "an-agreement-id";
         var agreementWithPaymentInstrument = anAgreementFromLedgerWithPaymentInstrumentFixture()
                 .withExternalId(agreementId)
@@ -48,7 +47,7 @@ public class AgreementsApiResourceSearchIT extends PaymentResourceITestBase {
         ledgerMockClient.respondWithSearchAgreements(GATEWAY_ACCOUNT_ID, "created", agreementWithPaymentInstrument, agreementWithoutPaymentInstrument);
 
         given().port(app.getLocalPort())
-                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
                 .basePath(AGREEMENTS_PATH)
                 .queryParam("status", "created")
                 .queryParam("page", "3")
@@ -104,22 +103,21 @@ public class AgreementsApiResourceSearchIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchCancelledAgreementsFromLedger() throws JsonProcessingException {
-        String agreementId = "an-agreement-id";
-       var agreementWithoutPaymentInstrument = anAgreementFromLedgerWithoutPaymentInstrumentFixture()
-               .withExternalId("another-agreement-id")
-               .withServiceId("service-2")
-               .withReference("ref-2")
-               .withDescription("Description 2")
-               .withStatus("CANCELLED")
-               .withCreatedDate("2022-07-27T12:30:00Z")
-               .withCancelledDate("2023-06-14T16:52:00Z")
-               .build();
+    void searchCancelledAgreementsFromLedger() throws JsonProcessingException {
+        var agreementWithoutPaymentInstrument = anAgreementFromLedgerWithoutPaymentInstrumentFixture()
+                .withExternalId("another-agreement-id")
+                .withServiceId("service-2")
+                .withReference("ref-2")
+                .withDescription("Description 2")
+                .withStatus("CANCELLED")
+                .withCreatedDate("2022-07-27T12:30:00Z")
+                .withCancelledDate("2023-06-14T16:52:00Z")
+                .build();
 
         ledgerMockClient.respondWithSearchAgreements(GATEWAY_ACCOUNT_ID, "cancelled", agreementWithoutPaymentInstrument);
 
         given().port(app.getLocalPort())
-                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
                 .basePath(AGREEMENTS_PATH)
                 .queryParam("status", "cancelled")
                 .queryParam("page", "3")
@@ -145,9 +143,9 @@ public class AgreementsApiResourceSearchIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchAgreementsReturnsErrorWhenValidationError() {
+    void searchAgreementsReturnsErrorWhenValidationError() {
         given().port(app.getLocalPort())
-                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
                 .basePath(AGREEMENTS_PATH)
                 .queryParam("status", "ethereal")
                 .get()
@@ -159,9 +157,9 @@ public class AgreementsApiResourceSearchIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPaymentsAgreements_errorIfLedgerRespondsWith404() {
+    void searchPaymentsAgreements_errorIfLedgerRespondsWith404() {
         given().port(app.getLocalPort())
-                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
                 .basePath(AGREEMENTS_PATH)
                 .get()
                 .then()

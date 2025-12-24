@@ -1,13 +1,13 @@
 package uk.gov.pay.api.it.validation;
 
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
-import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
+import uk.gov.pay.api.utils.PublicAuthMockClientJUnit5;
+import uk.gov.pay.api.utils.mocks.ConnectorMockClientJUnit5;
 
 import java.util.Map;
 
@@ -15,24 +15,23 @@ import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.utils.mocks.CreateChargeRequestParams.CreateChargeRequestParamsBuilder.aCreateChargeRequestParams;
 
-@RunWith(JUnitParamsRunner.class)
-public class PaymentsResourceLanguageValidationIT extends PaymentResourceITestBase {
+class PaymentsResourceLanguageValidationIT extends PaymentResourceITestBase {
 
-    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
-    private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
-    
-    @Before
-    public void setUpBearerToken() {
+    private final PublicAuthMockClientJUnit5 publicAuthMockClient = new PublicAuthMockClientJUnit5(publicAuthServer);
+    private final ConnectorMockClientJUnit5 connectorMockClient = new ConnectorMockClientJUnit5(connectorServer);
+
+    @BeforeEach
+    void setUpBearerToken() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
     }
 
-    @Test
-    @Parameters({"en", "cy"})
-    public void valid(String language) {
+    @ParameterizedTest
+    @ValueSource(strings = {"en", "cy"})
+    void valid(String language) {
         String payload = toJson(
                 Map.of("amount", 100,
                         "reference", "Some ref",
-                        "description","hi", 
+                        "description", "hi",
                         "return_url", "https://somewhere.gov.uk/rainbow/1",
                         "email", "dorothy@rainbow.com",
                         "language", language));
@@ -46,14 +45,14 @@ public class PaymentsResourceLanguageValidationIT extends PaymentResourceITestBa
 
         postPaymentResponse(payload).statusCode(201);
     }
-    
-    @Test
-    @Parameters({"fr,422", " ,400", ",400"})
-    public void invalidLanguage(String language, int statusCode) {
+
+    @ParameterizedTest
+    @CsvSource({"fr,422", "' ',400", "'',400"})
+    void invalidLanguage(String language, int statusCode) {
         String payload = toJson(
                 Map.of("amount", 100,
                         "reference", "Some ref",
-                        "description","hi", 
+                        "description", "hi",
                         "return_url", "https://somewhere.gov.uk/rainbow/1",
                         "email", "dorothy@rainbow.com",
                         "language", language));
@@ -68,7 +67,7 @@ public class PaymentsResourceLanguageValidationIT extends PaymentResourceITestBa
     }
 
     @Test
-    public void createPayment_responseWith400_whenLanguageIsNumeric() {
+    void createPayment_responseWith400_whenLanguageIsNumeric() {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 9900,\n" +
@@ -88,7 +87,7 @@ public class PaymentsResourceLanguageValidationIT extends PaymentResourceITestBa
     }
 
     @Test
-    public void createPayment_responseWith400_whenLanguageIsNull() {
+    void createPayment_responseWith400_whenLanguageIsNull() {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 9900,\n" +
@@ -108,7 +107,7 @@ public class PaymentsResourceLanguageValidationIT extends PaymentResourceITestBa
     }
 
     @Test
-    public void createPayment_responseWith400_whenLanguageHasNotAValidJsonValue() {
+    void createPayment_responseWith400_whenLanguageHasNotAValidJsonValue() {
         String payload = "{" +
                 "  \"amount\" : 9900," +
                 "  \"reference\" : \"Some reference\"," +
@@ -126,7 +125,7 @@ public class PaymentsResourceLanguageValidationIT extends PaymentResourceITestBa
     }
 
     @Test
-    public void createPayment_responseWith400_whenLanguageFieldIsNotExpectedJsonField() {
+    void createPayment_responseWith400_whenLanguageFieldIsNotExpectedJsonField() {
         // language=JSON
         String payload = "{\n" +
                 "  \"amount\": 9900,\n" +

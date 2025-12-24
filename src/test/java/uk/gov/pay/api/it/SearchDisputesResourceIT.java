@@ -1,12 +1,12 @@
 package uk.gov.pay.api.it;
 
 import io.restassured.response.ValidatableResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.pay.api.model.ledger.DisputeSettlementSummary;
 import uk.gov.pay.api.model.ledger.TransactionState;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
-import uk.gov.pay.api.utils.mocks.LedgerMockClient;
+import uk.gov.pay.api.utils.PublicAuthMockClientJUnit5;
+import uk.gov.pay.api.utils.mocks.LedgerMockClientJUnit5;
 
 import java.util.Map;
 
@@ -17,19 +17,19 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.utils.mocks.DisputeTransactionFromLedgerFixture.DisputeTransactionFromLedgerBuilder.aDisputeTransactionFromLedgerFixture;
 
-public class SearchDisputesResourceIT extends PaymentResourceITestBase {
+class SearchDisputesResourceIT extends PaymentResourceITestBase {
 
     private static final String SEARCH_PATH = "/v1/disputes";
-    private LedgerMockClient ledgerMockClient = new LedgerMockClient(ledgerMock);
-    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    private final LedgerMockClientJUnit5 ledgerMockClient = new LedgerMockClientJUnit5(ledgerServer);
+    private final PublicAuthMockClientJUnit5 publicAuthMockClient = new PublicAuthMockClientJUnit5(publicAuthServer);
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
     }
 
     @Test
-    public void searchDisputes_shouldReturnValidResponse() {
+    void searchDisputes_shouldReturnValidResponse() {
         var dispute = aDisputeTransactionFromLedgerFixture()
                 .withTransactionId("a-transaction-id")
                 .withAmount(1000L)
@@ -70,7 +70,7 @@ public class SearchDisputesResourceIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void shouldError_whenInvalidSearchParams() {
+    void shouldError_whenInvalidSearchParams() {
         Map<String, String> queryParams = Map.of(
                 "from_date", "27th of July, 2022, 11:23",
                 "to_date", "27th of July, 2022, 13:05",
@@ -89,7 +89,7 @@ public class SearchDisputesResourceIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchDisputesShouldReturnPageNotFound_whenLedgerRespondsWith404() {
+    void searchDisputesShouldReturnPageNotFound_whenLedgerRespondsWith404() {
         ledgerMockClient.respondWithSearchDisputesNotFound();
 
         searchDisputes(Map.of(
@@ -97,12 +97,12 @@ public class SearchDisputesResourceIT extends PaymentResourceITestBase {
                 "page", "2"))
                 .statusCode(404)
                 .contentType(JSON)
-                .body("code", is ("P0402"))
+                .body("code", is("P0402"))
                 .body("description", is("Page not found"));
     }
 
     @Test
-    public void searchDisputes_shouldReturns401WhenUnauthorised() {
+    void searchDisputes_shouldReturns401WhenUnauthorised() {
         publicAuthMockClient.respondUnauthorised();
 
         searchDisputes(Map.of())
@@ -113,7 +113,7 @@ public class SearchDisputesResourceIT extends PaymentResourceITestBase {
         return given().port(app.getLocalPort())
                 .accept(JSON)
                 .contentType(JSON)
-                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
                 .queryParams(queryParams)
                 .get(SEARCH_PATH)
                 .then();

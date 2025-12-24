@@ -4,15 +4,15 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import io.restassured.response.ValidatableResponse;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetailsFromResponse;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.utils.JsonStringBuilder;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
+import uk.gov.pay.api.utils.PublicAuthMockClientJUnit5;
 import uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector;
-import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
+import uk.gov.pay.api.utils.mocks.ConnectorMockClientJUnit5;
 import uk.gov.pay.api.utils.mocks.CreateChargeRequestParams;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
@@ -29,7 +29,7 @@ import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeRespo
 import static uk.gov.pay.api.utils.mocks.CreateChargeRequestParams.CreateChargeRequestParamsBuilder.aCreateChargeRequestParams;
 import static uk.gov.service.payments.commons.model.CommonDateTimeFormatters.ISO_INSTANT_MILLISECOND_PRECISION;
 
-public class PaymentsResourceCreateWithIdempotencyKeyIT extends PaymentResourceITestBase {
+class PaymentsResourceCreateWithIdempotencyKeyIT extends PaymentResourceITestBase {
 
     private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
     private static final int AMOUNT = 9999999;
@@ -46,7 +46,7 @@ public class PaymentsResourceCreateWithIdempotencyKeyIT extends PaymentResourceI
     private static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(TIMESTAMP);
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
     private static final CardDetailsFromResponse CARD_DETAILS = new CardDetailsFromResponse("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, CARD_TYPE);
-    public static final String VALID_AGREEMENT_ID = "12345678901234567890123456";
+    private static final String VALID_AGREEMENT_ID = "12345678901234567890123456";
     private static final String SUCCESS_PAYLOAD = paymentPayload(aCreateChargeRequestParams()
             .withAmount(AMOUNT)
             .withDescription(DESCRIPTION)
@@ -54,11 +54,11 @@ public class PaymentsResourceCreateWithIdempotencyKeyIT extends PaymentResourceI
             .withReturnUrl(RETURN_URL).build());
     private static final String GATEWAY_TRANSACTION_ID = "gateway-tx-123456";
     private static final String IDEMPOTENCY_KEY = "an-idempotency-key";
-    private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
-    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    private final ConnectorMockClientJUnit5 connectorMockClient = new ConnectorMockClientJUnit5(connectorServer);
+    private final PublicAuthMockClientJUnit5 publicAuthMockClient = new PublicAuthMockClientJUnit5(publicAuthServer);
 
     @Test
-    public void createCardPaymentWithIdempotencyKeyReturns201() {
+    void createCardPaymentWithIdempotencyKeyReturns201() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
         CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
@@ -81,7 +81,7 @@ public class PaymentsResourceCreateWithIdempotencyKeyIT extends PaymentResourceI
     }
 
     @Test
-    public void createPaymentShouldReturn200_whenConnectorReturns200() {
+    void createPaymentShouldReturn200_whenConnectorReturns200() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
         CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
                 .withAmount(100)
@@ -104,7 +104,7 @@ public class PaymentsResourceCreateWithIdempotencyKeyIT extends PaymentResourceI
     }
 
     @Test
-    public void createPaymentShouldReturn409_whenConnectorReturns409() {
+    void createPaymentShouldReturn409_whenConnectorReturns409() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
         CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
                 .withAmount(100)
@@ -128,7 +128,7 @@ public class PaymentsResourceCreateWithIdempotencyKeyIT extends PaymentResourceI
     }
 
     @Test
-    public void createPayment_responseWith422_whenIdempotencyKeyIsEmpty() {
+    void createPayment_responseWith422_whenIdempotencyKeyIsEmpty() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         postPaymentResponseWithIdempotencyKey(SUCCESS_PAYLOAD, "")
@@ -140,10 +140,10 @@ public class PaymentsResourceCreateWithIdempotencyKeyIT extends PaymentResourceI
     }
 
     @Test
-    public void createPayment_responseWith422_whenIdempotencyKeyIsTooLong() {
+    void createPayment_responseWith422_whenIdempotencyKeyIsTooLong() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
-        postPaymentResponseWithIdempotencyKey(SUCCESS_PAYLOAD, RandomStringUtils.randomAlphanumeric(256))
+        postPaymentResponseWithIdempotencyKey(SUCCESS_PAYLOAD, RandomStringUtils.insecure().nextAlphanumeric(256))
                 .statusCode(422)
                 .contentType(JSON)
                 .body("code", is("P0102"))
@@ -152,7 +152,7 @@ public class PaymentsResourceCreateWithIdempotencyKeyIT extends PaymentResourceI
     }
 
     @Test
-    public void createPayment_responseWith422_whenIdempotencyKeyContainsSpecialCharacters() {
+    void createPayment_responseWith422_whenIdempotencyKeyContainsSpecialCharacters() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         postPaymentResponseWithIdempotencyKey(SUCCESS_PAYLOAD, "123$@!?")
@@ -206,7 +206,7 @@ public class PaymentsResourceCreateWithIdempotencyKeyIT extends PaymentResourceI
                 .body(payload)
                 .accept(JSON)
                 .contentType(JSON)
-                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
                 .header("Idempotency-Key", idempotencyKey)
                 .post(PAYMENTS_PATH)
                 .then();
