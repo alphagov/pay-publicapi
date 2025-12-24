@@ -1,20 +1,20 @@
 package uk.gov.pay.api.it.telephone;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import uk.gov.pay.api.utils.PublicAuthMockClientJUnit5;
 
 import java.util.Map;
 
-public class CardExpiryValidationIT extends TelephonePaymentResourceITBase {
-    
-    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
-    
-    @Before
-    public void setUpBearerTokenAndRequestBody() {
+class CardExpiryValidationIT extends TelephonePaymentResourceITBase {
+
+    private final PublicAuthMockClientJUnit5 publicAuthMockClient = new PublicAuthMockClientJUnit5(publicAuthServer);
+
+    @BeforeEach
+    void setUpBearerTokenAndRequestBody() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
-        
+
         requestBody.put("amount", 100);
         requestBody.put("reference", "Some refeerence");
         requestBody.put("description", "Some description");
@@ -25,14 +25,14 @@ public class CardExpiryValidationIT extends TelephonePaymentResourceITBase {
         requestBody.put("last_four_digits", "1234");
         requestBody.put("first_six_digits", "123456");
     }
-    
-    @After
-    public void tearDown() {
+
+    @AfterEach
+    void tearDown() {
         requestBody.clear();
     }
 
     @Test
-    public void respondWith422_whenMonthis00() {
+    void respondWith422_whenMonthis00() {
         requestBody.put("card_expiry", "00/99");
         postPaymentResponse(toJson(requestBody))
                 .statusCode(422);

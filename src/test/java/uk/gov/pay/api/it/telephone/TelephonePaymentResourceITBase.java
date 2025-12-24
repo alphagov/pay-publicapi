@@ -1,12 +1,13 @@
 package uk.gov.pay.api.it.telephone;
 
-import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.dropwizard.testing.junit.DropwizardAppRule;
+import io.dropwizard.testing.DropwizardTestSupport;
 import io.restassured.response.ValidatableResponse;
-import org.junit.Before;
-import org.junit.ClassRule;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.it.rule.RedisDockerRule;
@@ -16,12 +17,12 @@ import uk.gov.pay.api.utils.ApiKeyGenerator;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
-import static uk.gov.service.payments.commons.testing.port.PortFactory.findFreePort;
 
 public abstract class TelephonePaymentResourceITBase {
     //Must use same secret set in test-config.xml's apiKeyHmacSecret
@@ -31,32 +32,38 @@ public abstract class TelephonePaymentResourceITBase {
     protected static final HashMap<String, Object> requestBody = new HashMap<>();
     protected static final CreateTelephonePaymentRequest.Builder createTelephonePaymentRequest = new CreateTelephonePaymentRequest.Builder();
 
-    @ClassRule
+    @RegisterExtension
     public static RedisDockerRule redisDockerRule = new RedisDockerRule();
 
-    private static final int CONNECTOR_PORT = findFreePort();
-    private static final int PUBLIC_AUTH_PORT = findFreePort();
     private static final Gson GSON = new GsonBuilder().serializeNulls().create();
 
-    @ClassRule
-    public static WireMockClassRule connectorMock = new WireMockClassRule(CONNECTOR_PORT);
+    @RegisterExtension
+    static final WireMockExtension connectorServer = WireMockExtension.newInstance()
+            .options(wireMockConfig().dynamicPort())
+            .build();
 
-    @ClassRule
-    public static WireMockClassRule publicAuthMock = new WireMockClassRule(PUBLIC_AUTH_PORT);
+    @RegisterExtension
+    protected static final WireMockExtension publicAuthServer = WireMockExtension.newInstance()
+            .options(wireMockConfig().dynamicPort())
+            .build();
 
-    @ClassRule
-    public static DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
-            PublicApi.class,
-            resourceFilePath("config/test-config.yaml"),
-            config("connectorUrl", "http://localhost:" + CONNECTOR_PORT),
-            config("publicAuthUrl", "http://localhost:" + PUBLIC_AUTH_PORT + "/v1/auth"),
-            config("redis.endpoint", redisDockerRule.getRedisUrl())
-    );
+    public static DropwizardTestSupport<PublicApiConfig> app;
 
-    @Before
-    public void setup() {
-        connectorMock.resetAll();
-        publicAuthMock.resetAll();
+    @BeforeAll
+    static void beforeAll() throws Exception {
+        app = new DropwizardTestSupport<>(
+                PublicApi.class,
+                resourceFilePath("config/test-config.yaml"),
+                config("connectorUrl", connectorServer.baseUrl()),
+                config("publicAuthUrl", publicAuthServer.baseUrl() + "/v1/auth"),
+                config("redis.endpoint", redisDockerRule.getRedisUrl())
+        );
+        app.before();
+    }
+
+    @AfterAll
+    static void afterAll() {
+        app.after();
     }
 
     protected ValidatableResponse postPaymentResponse(String payload) {

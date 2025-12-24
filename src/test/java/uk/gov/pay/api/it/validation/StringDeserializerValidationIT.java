@@ -1,33 +1,30 @@
 package uk.gov.pay.api.it.validation;
 
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import org.apache.http.HttpStatus;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import uk.gov.pay.api.it.telephone.TelephonePaymentResourceITBase;
 import uk.gov.pay.api.model.TokenPaymentType;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
+import uk.gov.pay.api.utils.PublicAuthMockClientJUnit5;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
-import static java.lang.String.format;
 import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static java.lang.String.format;
 import static org.hamcrest.core.Is.is;
 
-@RunWith(JUnitParamsRunner.class)
 public class StringDeserializerValidationIT extends TelephonePaymentResourceITBase {
 
-    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    private final PublicAuthMockClientJUnit5 publicAuthMockClient = new PublicAuthMockClientJUnit5(publicAuthServer);
 
-    @Before
+    @BeforeEach
     public void setup() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, TokenPaymentType.CARD);
     }
-    
-    @Test
-    @Parameters({"2", "2.5", "true"})
+
+    @ParameterizedTest
+    @CsvSource({"2", "2.5", "true"})
     public void shouldFailForConversions(String value) {
 
         String payload = format("{" +
