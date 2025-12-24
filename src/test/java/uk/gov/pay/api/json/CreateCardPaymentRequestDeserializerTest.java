@@ -4,12 +4,14 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import junitparams.converters.Nullable;
-import org.junit.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.pay.api.exception.BadRequestException;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CreateCardPaymentRequest;
@@ -21,17 +23,18 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.pay.api.matcher.BadRequestExceptionMatcher.aBadRequestExceptionWithError;
 import static uk.gov.service.payments.commons.model.Source.CARD_PAYMENT_LINK;
 
+@ExtendWith(MockitoExtension.class)
 class CreateCardPaymentRequestDeserializerTest {
 
     @Mock
     private DeserializationContext ctx;
 
-    private JsonFactory jsonFactory = new JsonFactory(new ObjectMapper());
+    private final JsonFactory jsonFactory = new JsonFactory(new ObjectMapper());
     private CreateCardPaymentRequestDeserializer deserializer;
 
     @BeforeEach
@@ -262,7 +265,7 @@ class CreateCardPaymentRequestDeserializerTest {
         assertThat(badRequestException, aBadRequestExceptionWithError("P0102",
                 "Invalid attribute value: return_url. Must be a valid URL format"));
     }
-    
+
     @Test
     void deserialize_shouldThrowValidationException_whenReferenceIsMissing() throws Exception {
         // language=JSON
@@ -686,7 +689,7 @@ class CreateCardPaymentRequestDeserializerTest {
         assertThat(paymentRequest.getInternal().get().getSource().get(), is(CARD_PAYMENT_LINK));
     }
 
-    @After
+    @AfterEach
     void tearDown() {
         verifyNoInteractions(ctx);
     }

@@ -24,8 +24,8 @@ import uk.gov.pay.api.managed.RedisClientManager;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class RedisRateLimiterTest {
+class RedisRateLimiterTest {
 
     private static final String accountId = "account-id";
     private static final Long perSecondTimeToLiveInSeconds = 1L;
@@ -72,7 +72,7 @@ public class RedisRateLimiterTest {
     private Timer timer;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         timer = new Timer();
         when(statefulRedisConnection.sync()).thenReturn(redisCommands);
         when(redisClientManager.getRedisConnection()).thenReturn(statefulRedisConnection);
@@ -85,7 +85,7 @@ public class RedisRateLimiterTest {
     }
 
     @Test
-    public void rateLimiterSetTo_1CallPerSecond_shouldAllowSingleCall() throws Exception {
+    void rateLimiterSetTo_1CallPerSecond_shouldAllowSingleCall() throws Exception {
         when(rateLimiterConfig.getNoOfReq()).thenReturn(1);
         when(rateLimiterKey.getKey()).thenReturn("Key1");
         when(rateLimiterConfig.getPerMillis()).thenReturn(1000);
@@ -98,7 +98,7 @@ public class RedisRateLimiterTest {
     }
 
     @Test
-    public void rateLimiterSetTo_2CallsPerSecond_shouldAllow2ConsecutiveCallsWithSameKeys() throws Exception {
+    void rateLimiterSetTo_2CallsPerSecond_shouldAllow2ConsecutiveCallsWithSameKeys() throws Exception {
         when(rateLimiterConfig.getNoOfReq()).thenReturn(2);
         when(rateLimiterKey.getKey()).thenReturn("Key2");
         when(rateLimiterConfig.getPerMillis()).thenReturn(1000);
@@ -113,7 +113,7 @@ public class RedisRateLimiterTest {
     }
 
     @Test
-    public void rateLimiterSetTo_2CallsPerSecond_shouldFailWhen3ConsecutiveCallsWithSameKeysAreMade() throws RedisException, RateLimitException {
+    void rateLimiterSetTo_2CallsPerSecond_shouldFailWhen3ConsecutiveCallsWithSameKeysAreMade() throws RedisException, RateLimitException {
         when(rateLimiterConfig.getNoOfReq()).thenReturn(2);
         when(rateLimiterKey.getKey()).thenReturn("Key3");
         when(rateLimiterKey.getKeyType()).thenReturn("POST");
@@ -131,13 +131,12 @@ public class RedisRateLimiterTest {
             verify(redisCommands, times(3)).expire(anyString(), eq(perSecondTimeToLiveInSeconds));
             verify(mockAppender, times(1)).doAppend(loggingEventArgumentCaptor.capture());
             List<LoggingEvent> loggingEvents = loggingEventArgumentCaptor.getAllValues();
-            assertEquals("RedisRateLimiter - Rate limit exceeded for account [account-id] and method [POST] - count: 3, rate allowed: 2",
-                    loggingEvents.get(0).getFormattedMessage());
+            assertEquals("RedisRateLimiter - Rate limit exceeded for account [account-id] and method [POST] - count: 3, rate allowed: 2", loggingEvents.get(0).getFormattedMessage());
         });
     }
 
     @Test
-    public void shouldRateLimitPostRequestsForLowTrafficAccountsCorrectly() throws RedisException, RateLimitException {
+    void shouldRateLimitPostRequestsForLowTrafficAccountsCorrectly() throws RedisException, RateLimitException {
         when(rateLimiterConfig.getLowTrafficAccounts()).thenReturn(List.of(accountId));
         when(rateLimiterConfig.getNoOfPostReqForLowTrafficAccounts()).thenReturn(3);
         when(rateLimiterConfig.getIntervalInMillisForLowTrafficAccounts()).thenReturn(60000);
@@ -154,12 +153,13 @@ public class RedisRateLimiterTest {
         redisRateLimiter.checkRateOf(accountId, rateLimiterKey);
         verify(redisCommands, times(3)).expire(anyString(), eq(perMinuteTimeToLiveInSeconds));
 
-        assertThrows("Excepted to throw exception when rate limit exceeds", RateLimitException.class, () -> {
-            redisRateLimiter.checkRateOf(accountId, rateLimiterKey);
-        });
+        assertThrows(RateLimitException.class,
+                () -> redisRateLimiter.checkRateOf(accountId, rateLimiterKey),
+                "Excepted to throw exception when rate limit exceeds");
     }
+
     @Test
-    public void shouldRateLimitGetRequestsForLowTrafficAccountsCorrectly() throws RedisException, RateLimitException {
+    void shouldRateLimitGetRequestsForLowTrafficAccountsCorrectly() throws RedisException, RateLimitException {
         when(rateLimiterConfig.getLowTrafficAccounts()).thenReturn(List.of(accountId));
         when(rateLimiterConfig.getNoOfReqForLowTrafficAccounts()).thenReturn(1);
         when(rateLimiterConfig.getIntervalInMillisForLowTrafficAccounts()).thenReturn(60000);
@@ -173,9 +173,9 @@ public class RedisRateLimiterTest {
 
         redisRateLimiter.checkRateOf(accountId, rateLimiterKey);
 
-        assertThrows("Excepted to throw exception when rate limit exceeds", RateLimitException.class, () -> {
+        assertThrows(RateLimitException.class, () -> {
             redisRateLimiter.checkRateOf(accountId, rateLimiterKey);
             verify(redisCommands, times(3)).expire(anyString(), eq(perMinuteTimeToLiveInSeconds));
-        });
+        }, "Excepted to throw exception when rate limit exceeds");
     }
 }

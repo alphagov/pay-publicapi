@@ -2,11 +2,11 @@ package uk.gov.pay.api.utils;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class JsonStringBuilderTest {
+class JsonStringBuilderTest {
     @Test
-    public void testObjectToJsonString() {
+    void testObjectToJsonString() {
         String message = "There was an error";
         String code = "#the code of error!";
 
@@ -23,7 +23,7 @@ public class JsonStringBuilderTest {
     }
 
     @Test
-    public void nullValues() {
+    void nullValues() {
         String message = "There was an error";
 
         String result = new JsonStringBuilder()
@@ -39,7 +39,7 @@ public class JsonStringBuilderTest {
     }
 
     @Test
-    public void nestedMaps() {
+    void nestedMaps() {
         String message = "There was an error";
 
         String result = new JsonStringBuilder()
@@ -56,7 +56,7 @@ public class JsonStringBuilderTest {
     }
 
     @Test
-    public void nestedMapsWithMapKeyVarArgs() {
+    void nestedMapsWithMapKeyVarArgs() {
         String message = "There was an error";
 
         String result = new JsonStringBuilder()
