@@ -1,22 +1,22 @@
 package uk.gov.pay.api.it.telephone;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import uk.gov.pay.api.utils.PublicAuthMockClientJUnit5;
 
 import java.util.Map;
 
-public class LastFourCardDigitsValidationIT extends TelephonePaymentResourceITBase {
-    
-    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+class LastFourCardDigitsValidationIT extends TelephonePaymentResourceITBase {
 
-    @Before
-    public void setUpBearerTokenAndRequestBody() {
+    private final PublicAuthMockClientJUnit5 publicAuthMockClient = new PublicAuthMockClientJUnit5(publicAuthServer);
+
+    @BeforeEach
+    void setUpBearerTokenAndRequestBody() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         requestBody.put("amount", 100);
-        requestBody.put("reference", "Some refeerence");
+        requestBody.put("reference", "Some reference");
         requestBody.put("description", "Some description");
         requestBody.put("processor_id", "1PROC");
         requestBody.put("provider_id", "1PROV");
@@ -26,13 +26,13 @@ public class LastFourCardDigitsValidationIT extends TelephonePaymentResourceITBa
         requestBody.put("first_six_digits", "123456");
     }
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         requestBody.clear();
     }
 
     @Test
-    public void respondWith422_whenThreeDigitsProvideOnly() {
+    void respondWith422_whenThreeDigitsProvideOnly() {
         requestBody.put("last_four_digits", "123");
         postPaymentResponse(toJson(requestBody))
                 .statusCode(422);

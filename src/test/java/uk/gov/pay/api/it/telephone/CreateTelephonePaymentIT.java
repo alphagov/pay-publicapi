@@ -1,26 +1,25 @@
 package uk.gov.pay.api.it.telephone;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.pay.api.model.telephone.PaymentOutcome;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
-import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
+import uk.gov.pay.api.utils.PublicAuthMockClientJUnit5;
+import uk.gov.pay.api.utils.mocks.ConnectorMockClientJUnit5;
 
 import java.util.Map;
 
+import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
-import static io.restassured.http.ContentType.JSON;
 
-public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
-    
-    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
-    private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
+class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
 
-    @Before
-    public void setUpBearerTokenAndRequestBody() {
+    private final PublicAuthMockClientJUnit5 publicAuthMockClient = new PublicAuthMockClientJUnit5(publicAuthServer);
+    private final ConnectorMockClientJUnit5 connectorMockClient = new ConnectorMockClientJUnit5(connectorServer);
+
+    @BeforeEach
+    void setUpBearerTokenAndRequestBody() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         requestBody.put("amount", 100);
@@ -39,8 +38,8 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .withPaymentOutcome(new PaymentOutcome("success"));
     }
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         requestBody.clear();
         createTelephonePaymentRequest
                 .withAuthCode(null)
@@ -56,7 +55,7 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
     }
 
     @Test
-    public void createTelephonePaymentWithAllFields() {
+    void createTelephonePaymentWithAllFields() {
         requestBody.put("auth_code", "666");
         requestBody.put("created_date", "2018-02-21T16:04:25Z");
         requestBody.put("authorised_date", "2018-02-21T16:05:33Z");
@@ -79,10 +78,10 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
                 .withCardType("visa")
                 .withLastFourDigits("1234")
                 .withFirstSixDigits("123456");
-        
+
         connectorMockClient.respondCreated_whenCreateTelephoneCharge(GATEWAY_ACCOUNT_ID, createTelephonePaymentRequest
                 .build());
-        
+
         postPaymentResponse(toJson(requestBody))
                 .statusCode(201)
                 .contentType(JSON)
@@ -108,10 +107,10 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
     }
 
     @Test
-    public void createTelephonePaymentWithRequiredFields() {
+    void createTelephonePaymentWithRequiredFields() {
         connectorMockClient.respondCreated_whenCreateTelephoneCharge(GATEWAY_ACCOUNT_ID, createTelephonePaymentRequest
                 .build());
-        
+
         postPaymentResponse(toJson(requestBody))
                 .statusCode(201)
                 .contentType(JSON)
@@ -126,7 +125,7 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
     }
 
     @Test
-    public void returnExistingTelephonePayment() {
+    void returnExistingTelephonePayment() {
         connectorMockClient.respondOk_whenCreateTelephoneCharge(GATEWAY_ACCOUNT_ID, createTelephonePaymentRequest
                 .build());
 
@@ -148,7 +147,7 @@ public class CreateTelephonePaymentIT extends TelephonePaymentResourceITBase {
     }
 
     @Test
-    public void telephonePaymentNotificationsNotEnabledForAccount_shouldRespondWith403() {
+    void telephonePaymentNotificationsNotEnabledForAccount_shouldRespondWith403() {
         connectorMockClient.respondTelephoneNotificationsNotEnabled(GATEWAY_ACCOUNT_ID);
 
         postPaymentResponse(toJson(requestBody))

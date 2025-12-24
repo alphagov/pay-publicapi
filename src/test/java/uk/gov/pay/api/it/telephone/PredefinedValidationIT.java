@@ -1,19 +1,19 @@
 package uk.gov.pay.api.it.telephone;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import uk.gov.pay.api.utils.PublicAuthMockClientJUnit5;
 
 import java.util.Map;
 
-public class PredefinedValidationIT extends TelephonePaymentResourceITBase {
+class PredefinedValidationIT extends TelephonePaymentResourceITBase {
 
-    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    private final PublicAuthMockClientJUnit5 publicAuthMockClient = new PublicAuthMockClientJUnit5(publicAuthServer);
 
-    @Before
-    public void setUpBearerTokenAndRequestBody() {
+    @BeforeEach
+    void setUpBearerTokenAndRequestBody() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         requestBody.put("amount", 100);
@@ -28,48 +28,48 @@ public class PredefinedValidationIT extends TelephonePaymentResourceITBase {
         requestBody.put("first_six_digits", "123456");
     }
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         requestBody.clear();
     }
 
     @Test
-    public void respondWith422_whenReferenceLengthIsGreaterThanMaxValue() {
+    void respondWith422_whenReferenceLengthIsGreaterThanMaxValue() {
         requestBody.replace("reference", StringUtils.repeat("*", 256));
         postPaymentResponse(toJson(requestBody))
                 .statusCode(422);
     }
 
     @Test
-    public void respondWith422_whenDescriptionLengthIsGreaterThanMaxValue() {
+    void respondWith422_whenDescriptionLengthIsGreaterThanMaxValue() {
         requestBody.replace("description", StringUtils.repeat("*", 256));
         postPaymentResponse(toJson(requestBody))
                 .statusCode(422);
     }
 
     @Test
-    public void respondWith422_whenProcessorIdIsMissing() {
+    void respondWith422_whenProcessorIdIsMissing() {
         requestBody.remove("processor_id");
         postPaymentResponse(toJson(requestBody))
                 .statusCode(422);
     }
 
     @Test
-    public void respondWith422_whenProcessorIdIsNull() {
+    void respondWith422_whenProcessorIdIsNull() {
         requestBody.replace("processor_id", null);
         postPaymentResponse(toJson(requestBody))
                 .statusCode(422);
     }
 
     @Test
-    public void respondWith422_whenProviderIdIsMissing() {
+    void respondWith422_whenProviderIdIsMissing() {
         requestBody.remove("provider_id");
         postPaymentResponse(toJson(requestBody))
                 .statusCode(422);
     }
 
     @Test
-    public void respondWith422_whenProviderIdIsNull() {
+    void respondWith422_whenProviderIdIsNull() {
         requestBody.replace("provider_id", null);
         postPaymentResponse(toJson(requestBody))
                 .statusCode(422);
