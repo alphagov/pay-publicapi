@@ -75,7 +75,7 @@ public class ConnectorMockClientJUnit5 extends BaseConnectorMockClientJUnit5 {
 
     private static final String CONNECTOR_MOCK_CHARGE_EVENTS_PATH = CONNECTOR_MOCK_CHARGE_PATH + "/events";
     private static final String CONNECTOR_MOCK_CHARGE_REFUNDS_PATH = CONNECTOR_MOCK_CHARGE_PATH + "/refunds";
-    private static final String CONNECTOR_MOCK_CHARGE_REFUND_BY_ID_PATH = CONNECTOR_MOCK_CHARGE_REFUNDS_PATH + "/%s"; // TODO spell out the API
+    private static final String CONNECTOR_MOCK_CHARGE_REFUND_BY_ID_PATH = CONNECTOR_MOCK_CHARGE_REFUNDS_PATH + "/%s";
     public static final String VALID_AGREEMENT_ID = "12345678901234567890123456";
 
     public ConnectorMockClientJUnit5(WireMockExtension connectorMock) {
