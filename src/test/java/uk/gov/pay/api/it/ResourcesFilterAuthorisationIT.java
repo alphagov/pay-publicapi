@@ -2,16 +2,16 @@ package uk.gov.pay.api.it;
 
 import com.google.common.collect.ImmutableMap;
 import io.restassured.response.ValidatableResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-public class ResourcesFilterAuthorisationIT extends ResourcesFilterITestBase {
+class ResourcesFilterAuthorisationIT extends ResourcesFilterITestBase {
 
     @Test
-    public void createPayment_whenInvalidAuthorizationHeader_shouldReturn401Response() throws Exception {
+    void createPayment_whenInvalidAuthorizationHeader_shouldReturn401Response() throws Exception {
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> postPaymentResponse("InvalidToken", PAYLOAD),
@@ -25,7 +25,7 @@ public class ResourcesFilterAuthorisationIT extends ResourcesFilterITestBase {
     }
 
     @Test
-    public void getPayment_whenInvalidAuthorizationHeader_shouldReturn401Response() throws Exception {
+    void getPayment_whenInvalidAuthorizationHeader_shouldReturn401Response() throws Exception {
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> getPaymentResponse("InvalidToken2"),
@@ -39,7 +39,7 @@ public class ResourcesFilterAuthorisationIT extends ResourcesFilterITestBase {
     }
 
     @Test
-    public void getPaymentEvents_whenInvalidAuthorizationHeader_shouldReturn401Response() throws Exception {
+    void getPaymentEvents_whenInvalidAuthorizationHeader_shouldReturn401Response() throws Exception {
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> getPaymentEventsResponse("InvalidToken3"),
@@ -53,7 +53,7 @@ public class ResourcesFilterAuthorisationIT extends ResourcesFilterITestBase {
     }
 
     @Test
-    public void searchPayments_whenInvalidAuthorizationHeader_shouldReturn401Response() throws Exception {
+    void searchPayments_whenInvalidAuthorizationHeader_shouldReturn401Response() throws Exception {
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> searchPayments("InvalidToken5", ImmutableMap.of("reference", REFERENCE)),
@@ -67,7 +67,7 @@ public class ResourcesFilterAuthorisationIT extends ResourcesFilterITestBase {
     }
 
     @Test
-    public void cancelPayment_whenInvalidAuthorizationHeader_shouldReturn401Response() throws Exception {
+    void cancelPayment_whenInvalidAuthorizationHeader_shouldReturn401Response() throws Exception {
 
         List<Callable<ValidatableResponse>> tasks = Arrays.asList(
                 () -> postCancelPaymentResponse("InvalidToken6"),
