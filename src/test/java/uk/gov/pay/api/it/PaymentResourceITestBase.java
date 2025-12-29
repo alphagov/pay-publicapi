@@ -1,12 +1,14 @@
 package uk.gov.pay.api.it;
 
-import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.dropwizard.testing.junit.DropwizardAppRule;
+import io.dropwizard.testing.DropwizardTestSupport;
 import io.restassured.response.ValidatableResponse;
-import org.junit.Before;
-import org.junit.ClassRule;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.it.rule.RedisDockerRule;
@@ -15,60 +17,70 @@ import uk.gov.pay.api.utils.ApiKeyGenerator;
 
 import java.util.Map;
 
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
-import static uk.gov.service.payments.commons.testing.port.PortFactory.findFreePort;
 
 public abstract class PaymentResourceITestBase {
     //Must use same secret set in test-config.xml's apiKeyHmacSecret
     protected static final String API_KEY = ApiKeyGenerator.apiKeyValueOf("TEST_BEARER_TOKEN", "qwer9yuhgf");
     protected static final String GATEWAY_ACCOUNT_ID = "GATEWAY_ACCOUNT_ID";
     protected static final String PAYMENTS_PATH = "/v1/payments/";
-    protected static final String AGREEMENTS_PATH = "/v1/agreements/";
-    protected static final String LEDGER_ONLY_STRATEGY = "ledger-only";
+    static final String AGREEMENTS_PATH = "/v1/agreements/";
+    static final String LEDGER_ONLY_STRATEGY = "ledger-only";
 
-    @ClassRule
-    public static RedisDockerRule redisDockerRule = new RedisDockerRule();
+    @RegisterExtension
+    private static final RedisDockerRule redisDockerRule = new RedisDockerRule();
 
-    private static final int CONNECTOR_PORT = findFreePort();
-    private static final int PUBLIC_AUTH_PORT = findFreePort();
-    private static final int LEDGER_PORT = findFreePort();
     private static final Gson GSON = new GsonBuilder().create();
 
-    @ClassRule
-    public static WireMockClassRule connectorMock = new WireMockClassRule(CONNECTOR_PORT);
+    @RegisterExtension
+    protected static final WireMockExtension connectorServer = WireMockExtension.newInstance()
+            .options(wireMockConfig().dynamicPort())
+            .build();
 
-    @ClassRule
-    public static WireMockClassRule publicAuthMock = new WireMockClassRule(PUBLIC_AUTH_PORT);
+    @RegisterExtension
+    protected static final WireMockExtension publicAuthServer = WireMockExtension.newInstance()
+            .options(wireMockConfig().dynamicPort())
+            .build();
 
-    @ClassRule
-    public static WireMockClassRule ledgerMock = new WireMockClassRule(LEDGER_PORT);
+    @RegisterExtension
+    static final WireMockExtension ledgerServer = WireMockExtension.newInstance()
+            .options(wireMockConfig().dynamicPort())
+            .build();
 
-    @ClassRule
-    public static DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
-            PublicApi.class,
-            resourceFilePath("config/test-config.yaml"),
-            config("connectorUrl", "http://localhost:" + CONNECTOR_PORT),
-            config("publicAuthUrl", "http://localhost:" + PUBLIC_AUTH_PORT + "/v1/auth"),
-            config("ledgerUrl", "http://localhost:" + LEDGER_PORT),
-            config("redis.endpoint", redisDockerRule.getRedisUrl())
-    );
+    protected static DropwizardTestSupport<PublicApiConfig> app;
 
     PublicApiConfig configuration;
 
-    @Before
-    public void setup() {
-        configuration = app.getConfiguration();
-        connectorMock.resetAll();
-        publicAuthMock.resetAll();
-        ledgerMock.resetAll();
+    @BeforeAll
+    static void startApp() throws Exception {
+        app = new DropwizardTestSupport<>(
+                PublicApi.class,
+                resourceFilePath("config/test-config.yaml"),
+                config("connectorUrl", connectorServer.baseUrl()),
+                config("publicAuthUrl", publicAuthServer.baseUrl() + "/v1/auth"),
+                config("ledgerUrl", ledgerServer.baseUrl()),
+                config("redis.endpoint", redisDockerRule.getRedisUrl())
+        );
+        app.before();
     }
 
-    String frontendUrlFor(TokenPaymentType paymentType) {
+    @AfterAll
+    static void afterAll() {
+        app.after();
+    }
+
+    @BeforeEach
+    void setup() {
+        configuration = app.getConfiguration();
+    }
+
+     String frontendUrlFor(TokenPaymentType paymentType) {
         return "http://frontend_" + paymentType.toString().toLowerCase() + "/charge/";
     }
 

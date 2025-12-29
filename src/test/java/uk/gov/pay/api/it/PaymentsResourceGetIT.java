@@ -2,8 +2,8 @@ package uk.gov.pay.api.it;
 
 import com.jayway.jsonassert.JsonAssert;
 import io.restassured.response.ValidatableResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.AuthorisationSummary;
 import uk.gov.pay.api.model.CardDetailsFromResponse;
@@ -15,10 +15,10 @@ import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.ThreeDSecure;
 import uk.gov.pay.api.model.Wallet;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
+import uk.gov.pay.api.utils.PublicAuthMockClientJUnit5;
 import uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector;
-import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
-import uk.gov.pay.api.utils.mocks.LedgerMockClient;
+import uk.gov.pay.api.utils.mocks.ConnectorMockClientJUnit5;
+import uk.gov.pay.api.utils.mocks.LedgerMockClientJUnit5;
 import uk.gov.pay.api.utils.mocks.TransactionFromLedgerFixture;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
@@ -92,17 +92,17 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
     private static final CardDetailsFromResponse CARD_DETAILS = new CardDetailsFromResponse("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, CARD_TYPE);
 
-    private final ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
-    private final PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
-    private final LedgerMockClient ledgerMockClient = new LedgerMockClient(ledgerMock);
+    private final ConnectorMockClientJUnit5 connectorMockClient = new ConnectorMockClientJUnit5(connectorServer);
+    private final PublicAuthMockClientJUnit5 publicAuthMockClient = new PublicAuthMockClientJUnit5(publicAuthServer);
+    private final LedgerMockClientJUnit5 ledgerMockClient = new LedgerMockClientJUnit5(ledgerServer);
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
     }
 
     @Test
-    public void getPaymentWithMetadataThroughConnector() {
+    void getPaymentWithMetadataThroughConnector() {
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 getConnectorCharge()
                         .withMetadata(Map.of("reconciled", true, "ledger_code", 123, "fuh", "fuh you", "surcharge", 1.23))
@@ -117,7 +117,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentWithMetadataThroughLedger() {
+    void getPaymentWithMetadataThroughLedger() {
         ledgerMockClient.respondWithTransaction(CHARGE_ID,
                 getLedgerTransaction()
                         .withMetadata(Map.of("reconciled", true, "ledger_code", 123, "fuh", "fuh you", "surcharge", 1.23))
@@ -139,7 +139,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentWithMotoThroughConnector() {
+    void getPaymentWithMotoThroughConnector() {
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 getConnectorCharge()
                         .withMoto(true)
@@ -153,7 +153,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentWithMotoThroughLedger() {
+    void getPaymentWithMotoThroughLedger() {
         ledgerMockClient.respondWithTransaction(CHARGE_ID,
                 getLedgerTransaction()
                         .withMoto(true)
@@ -176,7 +176,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentThroughConnector_ReturnsPayment() {
+    void getPaymentThroughConnector_ReturnsPayment() {
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, getConnectorCharge().build());
 
         ValidatableResponse response = getPaymentResponse(CHARGE_ID);
@@ -187,7 +187,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentThroughLedger_ReturnsPayment() {
+    void getPaymentThroughLedger_ReturnsPayment() {
         ledgerMockClient.respondWithTransaction(CHARGE_ID, getLedgerTransaction().build());
 
         ValidatableResponse response = getPaymentResponse(CHARGE_ID, LEDGER_ONLY_STRATEGY);
@@ -200,7 +200,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentWithAuthorisationModeMotoApiThroughConnector_ReturnsPayment() {
+    void getPaymentWithAuthorisationModeMotoApiThroughConnector_ReturnsPayment() {
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, getConnectorCharge()
                 .withAuthorisationMode(AuthorisationMode.MOTO_API)
                 .build(), true);
@@ -213,7 +213,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentWithAuthorisationModeMotoApiThroughLedger_ReturnsPayment() {
+    void getPaymentWithAuthorisationModeMotoApiThroughLedger_ReturnsPayment() {
         ledgerMockClient.respondWithTransaction(CHARGE_ID, getLedgerTransaction()
                 .withAuthorisationMode(AuthorisationMode.MOTO_API)
                 .build());
@@ -287,7 +287,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentThroughConnector_DoesNotReturnCardDigits_IfNotPresentInCardDetails() {
+    void getPaymentThroughConnector_DoesNotReturnCardDigits_IfNotPresentInCardDetails() {
         CardDetailsFromResponse cardDetails = new CardDetailsFromResponse(null, null, "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, CARD_TYPE);
 
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
@@ -299,7 +299,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentThroughLedger_DoesNotReturnCardDigits_IfNotPresentInCardDetails() {
+    void getPaymentThroughLedger_DoesNotReturnCardDigits_IfNotPresentInCardDetails() {
         CardDetailsFromResponse cardDetails = new CardDetailsFromResponse(null, null, "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, CARD_TYPE);
 
         ledgerMockClient.respondWithTransaction(CHARGE_ID,
@@ -320,7 +320,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentThroughConnector_ShouldNotIncludeCancelLinkIfPaymentCannotBeCancelled() {
+    void getPaymentThroughConnector_ShouldNotIncludeCancelLinkIfPaymentCannotBeCancelled() {
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 getConnectorCharge()
                         .withState(new PaymentState("success", true, null, null))
@@ -331,7 +331,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentThroughLedger_ShouldNotIncludeCancelLinkIfPaymentCannotBeCancelled() {
+    void getPaymentThroughLedger_ShouldNotIncludeCancelLinkIfPaymentCannotBeCancelled() {
         ledgerMockClient.respondWithTransaction(CHARGE_ID,
                 getLedgerTransaction()
                         .withState(new PaymentState("success", true, null, null))
@@ -349,7 +349,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentThroughConnector_ShouldNotIncludeSettlementFieldsIfNull() {
+    void getPaymentThroughConnector_ShouldNotIncludeSettlementFieldsIfNull() {
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 getConnectorCharge()
                         .withState(CREATED)
@@ -360,7 +360,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentThroughLedger_ShouldNotIncludeSettlementFieldsIfNull() {
+    void getPaymentThroughLedger_ShouldNotIncludeSettlementFieldsIfNull() {
         ledgerMockClient.respondWithTransaction(CHARGE_ID,
                 getLedgerTransaction()
                         .withState(CREATED)
@@ -380,7 +380,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPayment_BillingAddressShouldBeNullWhenNotPresentInConnectorResponse() {
+    void getPayment_BillingAddressShouldBeNullWhenNotPresentInConnectorResponse() {
         getPayment_BillingAddressShouldBeNullWhenNotPresentInServiceResponse(
                 cd -> connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                         getConnectorCharge()
@@ -390,7 +390,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPayment_BillingAddressShouldBeNullWhenNotPresentInLedgerResponse() {
+    void getPayment_BillingAddressShouldBeNullWhenNotPresentInLedgerResponse() {
         getPayment_BillingAddressShouldBeNullWhenNotPresentInServiceResponse(
                 cd -> ledgerMockClient.respondWithTransaction(CHARGE_ID,
                         getLedgerTransaction()
@@ -419,14 +419,14 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPayment_Returns401_WhenUnauthorised() {
+    void getPayment_Returns401_WhenUnauthorised() {
         publicAuthMockClient.respondUnauthorised();
         getPaymentResponse(CHARGE_ID)
                 .statusCode(401);
     }
 
     @Test
-    public void getPayment_returns404_whenConnectorAndLedgerRespondWith404() throws IOException {
+    void getPayment_returns404_whenConnectorAndLedgerRespondWith404() throws IOException {
         String paymentId = "ds2af2afd3df112";
         String errorMessage = "backend-error-message";
         connectorMockClient.respondChargeNotFound(GATEWAY_ACCOUNT_ID, paymentId, errorMessage);
@@ -444,7 +444,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPayment_returns500_whenConnectorRespondsWithResponseOtherThan200Or404() throws IOException {
+    void getPayment_returns500_whenConnectorRespondsWithResponseOtherThan200Or404() throws IOException {
         String paymentId = "ds2af2afd3df112";
         String errorMessage = "backend-error-message";
         connectorMockClient.respondWhenGetCharge(GATEWAY_ACCOUNT_ID, paymentId, errorMessage, SC_NOT_ACCEPTABLE);
@@ -453,7 +453,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPayment_returns500_whenLedgerRespondsWithResponseOtherThan200Or404() throws IOException {
+    void getPayment_returns500_whenLedgerRespondsWithResponseOtherThan200Or404() throws IOException {
         String paymentId = "ds2af2afd3df112";
         String errorMessage = "backend-error-message";
         ledgerMockClient.respondTransactionWithError(paymentId, errorMessage, SC_NOT_ACCEPTABLE);
@@ -474,14 +474,14 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentEventsThroughConnector_ReturnsPaymentEvents() {
+    void getPaymentEventsThroughConnector_ReturnsPaymentEvents() {
         connectorMockClient.respondWithChargeEventsFound(GATEWAY_ACCOUNT_ID, CHARGE_ID, EVENTS);
 
         assertPaymentEventsResponse(getPaymentEventsResponse(CHARGE_ID));
     }
 
     @Test
-    public void getPaymentEventsThroughLedger_ReturnsPaymentEvents() {
+    void getPaymentEventsThroughLedger_ReturnsPaymentEvents() {
         var eventFixture = aTransactionEventFixture().withState(CREATED).withTimestamp(CREATED_DATE).build();
         ledgerMockClient.respondWithTransactionEvents(CHARGE_ID, eventFixture);
 
@@ -502,14 +502,14 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentEvents_Returns401_WhenUnauthorised() {
+    void getPaymentEvents_Returns401_WhenUnauthorised() {
         publicAuthMockClient.respondUnauthorised();
         getPaymentEventsResponse(CHARGE_ID)
                 .statusCode(401);
     }
 
     @Test
-    public void getPaymentEvents_returns404_whenConnectorRespondsWith404() throws IOException {
+    void getPaymentEvents_returns404_whenConnectorRespondsWith404() throws IOException {
         String paymentId = "ds2af2afd3df112";
         String errorMessage = "backend-error-message";
         connectorMockClient.respondChargeEventsNotFound(GATEWAY_ACCOUNT_ID, paymentId, errorMessage);
@@ -518,7 +518,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentEvents_returns404_whenLedgerRespondsWith404() throws IOException {
+    void getPaymentEvents_returns404_whenLedgerRespondsWith404() throws IOException {
         String paymentId = "ds2af2afd3df112";
         String errorMessage = "backend-error-message";
         ledgerMockClient.respondTransactionEventsWithError(paymentId, errorMessage, SC_NOT_FOUND);
@@ -539,7 +539,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentEvents_returns500_whenConnectorRespondsWithResponseOtherThan200Or404() throws IOException {
+    void getPaymentEvents_returns500_whenConnectorRespondsWithResponseOtherThan200Or404() throws IOException {
         String paymentId = "ds2af2afd3df112";
         String errorMessage = "backend-error-message";
         connectorMockClient.respondWhenGetChargeEvents(GATEWAY_ACCOUNT_ID, paymentId, errorMessage, SC_NOT_ACCEPTABLE);
@@ -548,7 +548,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentEvents_returns500_whenLedgerRespondsWithResponseOtherThan200Or404() throws IOException {
+    void getPaymentEvents_returns500_whenLedgerRespondsWithResponseOtherThan200Or404() throws IOException {
         String paymentId = "ds2af2afd3df112";
         String errorMessage = "backend-error-message";
         ledgerMockClient.respondTransactionEventsWithError(paymentId, errorMessage, SC_NOT_ACCEPTABLE);
@@ -569,7 +569,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentThroughConnector_ReturnsPaymentWithCorporateCardSurcharge() {
+    void getPaymentThroughConnector_ReturnsPaymentWithCorporateCardSurcharge() {
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 getConnectorCharge()
                         .withCorporateCardSurcharge(250L)
@@ -580,7 +580,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentThroughLedger_ReturnsPaymentWithCorporateCardSurcharge() {
+    void getPaymentThroughLedger_ReturnsPaymentWithCorporateCardSurcharge() {
         ledgerMockClient.respondWithTransaction(CHARGE_ID,
                 getLedgerTransaction()
                         .withCorporateCardSurcharge(250L)
@@ -599,7 +599,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentThroughConnector_ReturnsPaymentWithFeeAndNetAmount() {
+    void getPaymentThroughConnector_ReturnsPaymentWithFeeAndNetAmount() {
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 getConnectorCharge()
                         .withFee(FEE)
@@ -610,7 +610,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentThroughLedger_ReturnsPaymentWithFeeAndNetAmount() {
+    void getPaymentThroughLedger_ReturnsPaymentWithFeeAndNetAmount() {
         ledgerMockClient.respondWithTransaction(CHARGE_ID,
                 getLedgerTransaction()
                         .withFee(FEE)
@@ -630,14 +630,14 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPayment_ReturnsPaymentWithOutFeeAndNetAmount_IfNotAvailableFromConnector() {
+    void getPayment_ReturnsPaymentWithOutFeeAndNetAmount_IfNotAvailableFromConnector() {
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, getConnectorCharge().build());
 
         assertPaymentWithoutFeeAndNetAmount(getPaymentResponse(CHARGE_ID));
     }
 
     @Test
-    public void getPaymentThroughLedger_ReturnsPaymentWithOutFeeAndNetAmount_IfNotAvailable() {
+    void getPaymentThroughLedger_ReturnsPaymentWithOutFeeAndNetAmount_IfNotAvailable() {
         ledgerMockClient.respondWithTransaction(CHARGE_ID, getLedgerTransaction().build());
 
         assertPaymentWithoutFeeAndNetAmount(getPaymentResponse(CHARGE_ID, LEDGER_ONLY_STRATEGY));
@@ -653,7 +653,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentWithNullCardTypeThroughConnector_ReturnsPaymentWithNullCardType() {
+    void getPaymentWithNullCardTypeThroughConnector_ReturnsPaymentWithNullCardType() {
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 getConnectorCharge()
                         .withState(AWAITING_CAPTURE_REQUEST)
@@ -669,7 +669,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentWithNullCardTypeThroughLedger_ReturnsPaymentWithNullCardType() {
+    void getPaymentWithNullCardTypeThroughLedger_ReturnsPaymentWithNullCardType() {
         ledgerMockClient.respondWithTransaction(CHARGE_ID,
                 getLedgerTransaction()
                         .withState(AWAITING_CAPTURE_REQUEST)
@@ -685,7 +685,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentThroughConnector_ReturnsPaymentWithCaptureUrl() { // only through connector (based on response links)
+    void getPaymentThroughConnector_ReturnsPaymentWithCaptureUrl() { // only through connector (based on response links)
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 getConnectorCharge()
                         .withState(AWAITING_CAPTURE_REQUEST)
@@ -701,7 +701,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentWithAuthorisationSummaryAndThreeDSecureRequiredIsTrueThroughLedger() {
+    void getPaymentWithAuthorisationSummaryAndThreeDSecureRequiredIsTrueThroughLedger() {
         AuthorisationSummary authorisationSummary = new AuthorisationSummary(new ThreeDSecure(true));
         ledgerMockClient.respondWithTransaction(CHARGE_ID,
                 getLedgerTransaction()
@@ -715,7 +715,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentWithAuthorisationSummaryAndThreeDSecureRequiredIsFalseThroughLedger() {
+    void getPaymentWithAuthorisationSummaryAndThreeDSecureRequiredIsFalseThroughLedger() {
         AuthorisationSummary authorisationSummary = new AuthorisationSummary(new ThreeDSecure(false));
         ledgerMockClient.respondWithTransaction(CHARGE_ID,
                 getLedgerTransaction()
@@ -729,7 +729,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentWithAuthorisationSummaryThroughConnector() {
+    void getPaymentWithAuthorisationSummaryThroughConnector() {
         AuthorisationSummary authorisationSummary = new AuthorisationSummary(new ThreeDSecure(true));
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 getConnectorCharge()
@@ -744,7 +744,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentWithWalletTypeThroughLedger() {
+    void getPaymentWithWalletTypeThroughLedger() {
         ledgerMockClient.respondWithTransaction(CHARGE_ID,
                 getLedgerTransaction()
                         .withWalletType(Wallet.GOOGLE_PAY.toString())
@@ -758,7 +758,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentWithWalletTypeThroughConnector() {
+    void getPaymentWithWalletTypeThroughConnector() {
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 getConnectorCharge()
                         .withWalletType(Wallet.APPLE_PAY.toString())
@@ -773,7 +773,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentWithNoAuthorisationSummaryThroughConnector() {
+    void getPaymentWithNoAuthorisationSummaryThroughConnector() {
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 getConnectorCharge()
                         .build());
@@ -786,7 +786,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentWithNoAuthorisationSummaryThroughLedger() {
+    void getPaymentWithNoAuthorisationSummaryThroughLedger() {
         ledgerMockClient.respondWithTransaction(CHARGE_ID,
                 getLedgerTransaction()
                         .build());
@@ -798,7 +798,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentShouldNotIncludeAuthorisationSummaryThroughConnectorWhenThreeDSecureRequiredIsFalse() {
+    void getPaymentShouldNotIncludeAuthorisationSummaryThroughConnectorWhenThreeDSecureRequiredIsFalse() {
         AuthorisationSummary authorisationSummary = new AuthorisationSummary(new ThreeDSecure(false));
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 getConnectorCharge()
@@ -813,7 +813,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentShouldIncludeCanRetryIfThePaymentWasRejected() {
+    void getPaymentShouldIncludeCanRetryIfThePaymentWasRejected() {
         ledgerMockClient.respondWithTransaction(CHARGE_ID,
                 getLedgerTransaction()
                         .withState(REJECTED)
@@ -828,7 +828,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getRejectedPaymentShouldIncludeCanRetryWhenThroughConnector() {
+    void getRejectedPaymentShouldIncludeCanRetryWhenThroughConnector() {
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 getConnectorCharge()
                         .withState(REJECTED)
@@ -843,7 +843,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentShouldIncludeExemptionWhenCorporateExemptionRequestedThroughConnector() {
+    void getPaymentShouldIncludeExemptionWhenCorporateExemptionRequestedThroughConnector() {
         ExemptionOutcome exemptionOutcome = new ExemptionOutcome("honoured");
         Exemption exemption = new Exemption(true, "corporate", exemptionOutcome);
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
@@ -860,7 +860,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentShouldNotIncludeExemptionWhenNoExemptionTypeThroughConnector() {
+    void getPaymentShouldNotIncludeExemptionWhenNoExemptionTypeThroughConnector() {
         ExemptionOutcome exemptionOutcome = new ExemptionOutcome("honoured");
         Exemption exemption = new Exemption(true, null, exemptionOutcome);
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
@@ -875,7 +875,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentShouldNotIncludeExemptionWhenNoExemptionThroughConnector() {
+    void getPaymentShouldNotIncludeExemptionWhenNoExemptionThroughConnector() {
         connectorMockClient.respondWithChargeFound(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID,
                 getConnectorCharge()
                         .build());
@@ -887,7 +887,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentShouldIncludeExemptionWhenCorporateExemptionRequestedThroughLedger() {
+    void getPaymentShouldIncludeExemptionWhenCorporateExemptionRequestedThroughLedger() {
         ExemptionOutcome exemptionOutcome = new ExemptionOutcome("honoured");
         Exemption exemption = new Exemption(true, "corporate", exemptionOutcome);
         ledgerMockClient.respondWithTransaction(CHARGE_ID,
@@ -904,7 +904,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentShouldNotIncludeExemptionWhenNoExemptionTypeThroughLedger() {
+    void getPaymentShouldNotIncludeExemptionWhenNoExemptionTypeThroughLedger() {
         ExemptionOutcome exemptionOutcome = new ExemptionOutcome("honoured");
         Exemption exemption = new Exemption(true, null, exemptionOutcome);
         ledgerMockClient.respondWithTransaction(CHARGE_ID,
@@ -919,7 +919,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getPaymentShouldNotIncludeExemptionWhenNoExemptionThroughLedger() {
+    void getPaymentShouldNotIncludeExemptionWhenNoExemptionThroughLedger() {
         ledgerMockClient.respondWithTransaction(CHARGE_ID,
                 getLedgerTransaction()
                         .build());
@@ -931,7 +931,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void shouldReturnBadRequestWhenPaymentReferenceContainsIllegalCharacters() {
+    void shouldReturnBadRequestWhenPaymentReferenceContainsIllegalCharacters() {
         Map<String, Object> payload = Map.of(
                 REFERENCE_FIELD_NAME, ILLEGAL_REFERENCE,
                 DESCRIPTION_FIELD_NAME, DESCRIPTION,
@@ -953,7 +953,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void shouldReturnBadRequestWhenPaymentDescriptionContainsIllegalCharacters() {
+    void shouldReturnBadRequestWhenPaymentDescriptionContainsIllegalCharacters() {
         Map<String, Object> payload = Map.of(
                 REFERENCE_FIELD_NAME, REFERENCE,
                 DESCRIPTION_FIELD_NAME, ILLEGAL_DESCRIPTION,
@@ -1021,7 +1021,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     private ValidatableResponse getPaymentResponse(String paymentId, String strategy) {
         return given().port(app.getLocalPort())
                 .header("X-Ledger", strategy)
-                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
                 .get(PAYMENTS_PATH + paymentId)
                 .then();
     }
@@ -1033,7 +1033,7 @@ public class PaymentsResourceGetIT extends PaymentResourceITestBase {
     private ValidatableResponse getPaymentEventsResponse(String paymentId, String strategy) {
         return given().port(app.getLocalPort())
                 .header("X-Ledger", strategy)
-                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
                 .get(String.format("/v1/payments/%s/events", paymentId))
                 .then();
     }

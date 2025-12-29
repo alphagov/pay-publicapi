@@ -1,32 +1,30 @@
 package uk.gov.pay.api.it.validation;
 
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
 import uk.gov.pay.api.utils.JsonStringBuilder;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
-import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
+import uk.gov.pay.api.utils.PublicAuthMockClientJUnit5;
+import uk.gov.pay.api.utils.mocks.ConnectorMockClientJUnit5;
 
 import java.util.Map;
 
 import static io.restassured.http.ContentType.JSON;
 import static java.lang.String.format;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.utils.mocks.CreateChargeRequestParams.CreateChargeRequestParamsBuilder.aCreateChargeRequestParams;
 
-@RunWith(JUnitParamsRunner.class)
-public class CreatePaymentWithPrefilledCardholderDetailsValidationIT extends PaymentResourceITestBase {
+class CreatePaymentWithPrefilledCardholderDetailsValidationIT extends PaymentResourceITestBase {
 
-    private final PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
-    private final ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
+    private final PublicAuthMockClientJUnit5 publicAuthMockClient = new PublicAuthMockClientJUnit5(publicAuthServer);
+    private final ConnectorMockClientJUnit5 connectorMockClient = new ConnectorMockClientJUnit5(connectorServer);
     private JsonStringBuilder payload;
 
-    @Before
-    public void setUpBearerToken() {
+    @BeforeEach
+    void setUpBearerToken() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         payload = new JsonStringBuilder()
                 .add("amount", 100)
@@ -36,8 +34,8 @@ public class CreatePaymentWithPrefilledCardholderDetailsValidationIT extends Pay
     }
 
     @Test
-    public void shouldFailOnInvalidCardHolderName() {
-        payload.add("prefilled_cardholder_details", Map.of("cardholder_name", randomAlphanumeric(256)));
+    void shouldFailOnInvalidCardHolderName() {
+        payload.add("prefilled_cardholder_details", Map.of("cardholder_name", RandomStringUtils.insecure().nextAlphanumeric(256)));
         postPaymentResponse(payload.build())
                 .statusCode(422)
                 .contentType(JSON)
@@ -47,16 +45,16 @@ public class CreatePaymentWithPrefilledCardholderDetailsValidationIT extends Pay
                 .body("description", is("Invalid attribute value: cardholder_name. Must be less than or equal to 255 characters length"));
     }
 
-    @Test
-    @Parameters({
-            "line1, Must be less than or equal to 255 characters length", 
+    @ParameterizedTest
+    @CsvSource({
+            "line1, Must be less than or equal to 255 characters length",
             "line2, Must be less than or equal to 255 characters length",
             "city, Must be less than or equal to 255 characters length",
             "postcode, Must be less than or equal to 25 characters length"
     })
-    public void shouldFailOnInvalidAddress(String addressField, String message) {
-        payload.add("prefilled_cardholder_details", Map.of("billing_address", 
-                Map.of(addressField, randomAlphanumeric(256))));
+    void shouldFailOnInvalidAddress(String addressField, String message) {
+        payload.add("prefilled_cardholder_details", Map.of("billing_address",
+                Map.of(addressField, RandomStringUtils.insecure().nextAlphanumeric(256))));
         postPaymentResponse(payload.build())
                 .statusCode(422)
                 .contentType(JSON)
@@ -67,7 +65,7 @@ public class CreatePaymentWithPrefilledCardholderDetailsValidationIT extends Pay
     }
 
     @Test
-    public void shouldCreateSuccessfullyWithEmptyCountry() {
+    void shouldCreateSuccessfullyWithEmptyCountry() {
         payload.add("prefilled_cardholder_details", Map.of("billing_address",
                 Map.of("country", "")));
 

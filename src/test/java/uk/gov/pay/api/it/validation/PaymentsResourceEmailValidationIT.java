@@ -1,33 +1,33 @@
 package uk.gov.pay.api.it.validation;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
+import uk.gov.pay.api.utils.PublicAuthMockClientJUnit5;
 
 import java.util.Map;
 
 import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.core.Is.is;
 
-public class PaymentsResourceEmailValidationIT extends PaymentResourceITestBase {
+class PaymentsResourceEmailValidationIT extends PaymentResourceITestBase {
 
-    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    private final PublicAuthMockClientJUnit5 publicAuthMockClient = new PublicAuthMockClientJUnit5(publicAuthServer);
 
-    @Before
-    public void setUpBearerToken() {
+    @BeforeEach
+    void setUpBearerToken() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
     }
-    
+
     @Test
-    public void shouldRespondWith422_whenEmailIsGreaterThan254Chars() {
+    void shouldRespondWith422_whenEmailIsGreaterThan254Chars() {
 
         String payload = toJson(
-                Map.of("amount", 100, 
-                        "reference", "Some ref", 
-                        "description", 
+                Map.of("amount", 100,
+                        "reference", "Some ref",
+                        "description",
                         "hi", "return_url", "https://somewhere.gov.uk/rainbow/1",
-                       "email", "aVeryLongEmail".repeat(20) + "@email.invalid"));
+                        "email", "aVeryLongEmail".repeat(20) + "@email.invalid"));
 
         postPaymentResponse(payload)
                 .statusCode(422)

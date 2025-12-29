@@ -3,15 +3,15 @@ package uk.gov.pay.api.it;
 import com.google.gson.GsonBuilder;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetailsFromResponse;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.model.ledger.TransactionState;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
-import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
-import uk.gov.pay.api.utils.mocks.LedgerMockClient;
+import uk.gov.pay.api.utils.PublicAuthMockClientJUnit5;
+import uk.gov.pay.api.utils.mocks.ConnectorMockClientJUnit5;
+import uk.gov.pay.api.utils.mocks.LedgerMockClientJUnit5;
 import uk.gov.pay.api.utils.mocks.RefundTransactionFromLedgerFixture;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 import uk.gov.service.payments.commons.validation.DateTimeUtils;
@@ -36,7 +36,7 @@ import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeRespo
 import static uk.gov.pay.api.utils.mocks.RefundTransactionFromLedgerFixture.RefundTransactionFromLedgerBuilder.aRefundTransactionFromLedgerFixture;
 import static uk.gov.service.payments.commons.model.CommonDateTimeFormatters.ISO_INSTANT_MILLISECOND_PRECISION;
 
-public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
+class PaymentRefundsResourceIT extends PaymentResourceITestBase {
 
     private static final int AMOUNT = 1000;
     private static final int REFUND_AMOUNT_AVAILABLE = 9000;
@@ -47,17 +47,17 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
     private static final CardDetailsFromResponse CARD_DETAILS = new CardDetailsFromResponse("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, "Visa", null);
 
-    private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
-    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
-    private LedgerMockClient ledgerMockClient = new LedgerMockClient(ledgerMock);
+    private final ConnectorMockClientJUnit5 connectorMockClient = new ConnectorMockClientJUnit5(connectorServer);
+    private final PublicAuthMockClientJUnit5 publicAuthMockClient = new PublicAuthMockClientJUnit5(publicAuthServer);
+    private final LedgerMockClientJUnit5 ledgerMockClient = new LedgerMockClientJUnit5(ledgerServer);
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
     }
 
     @Test
-    public void getRefundByIdThroughLedger_shouldGetValidResponse() {
+    void getRefundByIdThroughLedger_shouldGetValidResponse() {
         ledgerMockClient.respondWithRefund(REFUND_ID, aRefundTransactionFromLedgerFixture()
                 .withAmount((long) AMOUNT)
                 .withState(new TransactionState("available", false))
@@ -71,7 +71,7 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getRefundByIdThroughLedger_shouldGetSettlementSummary() {
+    void getRefundByIdThroughLedger_shouldGetSettlementSummary() {
         ledgerMockClient.respondWithRefund(REFUND_ID, aRefundTransactionFromLedgerFixture()
                 .withAmount((long) AMOUNT)
                 .withState(new TransactionState("available", false))
@@ -99,7 +99,7 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getRefundById_shouldGetNonAuthorized_whenPublicAuthRespondsUnauthorised() {
+    void getRefundById_shouldGetNonAuthorized_whenPublicAuthRespondsUnauthorised() {
         publicAuthMockClient.respondUnauthorised();
 
         getPaymentRefundByIdResponse(CHARGE_ID, REFUND_ID)
@@ -107,7 +107,7 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getRefundByIdThroughLedger_shouldReturnNotFound_whenRefundDoesNotExist() {
+    void getRefundByIdThroughLedger_shouldReturnNotFound_whenRefundDoesNotExist() {
         ledgerMockClient.respondRefundNotFound("unknown-refund-id");
 
         getPaymentRefundByIdResponse(CHARGE_ID, REFUND_ID, "ledger-only")
@@ -118,7 +118,7 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getRefundById_returns500_whenLedgerRespondsWithResponseOtherThan200Or404() {
+    void getRefundById_returns500_whenLedgerRespondsWithResponseOtherThan200Or404() {
         ledgerMockClient.respondRefundWithError(REFUND_ID);
 
         getPaymentRefundByIdResponse(CHARGE_ID, REFUND_ID, "ledger-only")
@@ -129,7 +129,7 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getRefundsThroughLedger_shouldGetValidResponse() {
+    void getRefundsThroughLedger_shouldGetValidResponse() {
         RefundTransactionFromLedgerFixture refund1 = aRefundTransactionFromLedgerFixture()
                 .withAmount(100L)
                 .withCreatedDate(CREATED_DATE)
@@ -150,7 +150,7 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getRefundsThroughLedger_shouldGetSettlementSummary() {
+    void getRefundsThroughLedger_shouldGetSettlementSummary() {
         RefundTransactionFromLedgerFixture refund1 = aRefundTransactionFromLedgerFixture()
                 .withAmount(100L)
                 .withCreatedDate(CREATED_DATE)
@@ -202,7 +202,7 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getRefundsThroughLedger_shouldGetValidResponse_whenListReturnedIsEmpty() {
+    void getRefundsThroughLedger_shouldGetValidResponse_whenListReturnedIsEmpty() {
         ledgerMockClient.respondWithGetAllRefunds(CHARGE_ID);
 
         assertEmptyRefundsResponse(getPaymentRefundsResponse(CHARGE_ID));
@@ -219,7 +219,7 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void getRefunds_shouldGetNonAuthorized_whenPublicAuthRespondsUnauthorised() {
+    void getRefunds_shouldGetNonAuthorized_whenPublicAuthRespondsUnauthorised() {
         publicAuthMockClient.respondUnauthorised();
 
         getPaymentRefundsResponse(CHARGE_ID)
@@ -227,13 +227,13 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createRefund_shouldGetAcceptedResponse() {
+    void createRefund_shouldGetAcceptedResponse() {
         String payload = new GsonBuilder().create().toJson(Map.of("amount", AMOUNT, "refund_amount_available", REFUND_AMOUNT_AVAILABLE));
         postRefundRequest(payload);
     }
 
     @Test
-    public void createRefundWithNoRefundAmountAvailable_shouldGetAcceptedResponse() {
+    void createRefundWithNoRefundAmountAvailable_shouldGetAcceptedResponse() {
         String payload = new GsonBuilder().create().toJson(Map.of("amount", AMOUNT));
 
         connectorMockClient.respondWithChargeFound(null, GATEWAY_ACCOUNT_ID,
@@ -251,7 +251,7 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createRefundWhenChargeNotFound_shouldReturn404() {
+    void createRefundWhenChargeNotFound_shouldReturn404() {
         String payload = new GsonBuilder().create().toJson(Map.of("amount", AMOUNT));
 
         connectorMockClient.respondChargeNotFound(CHARGE_ID, GATEWAY_ACCOUNT_ID, "Not found");
@@ -262,7 +262,7 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createRefundWhenRefundAmountAvailableMismatch_shouldReturn412Response() {
+    void createRefundWhenRefundAmountAvailableMismatch_shouldReturn412Response() {
         String payload = new GsonBuilder().create().toJson(
                 Map.of("amount", AMOUNT, "refund_amount_available", REFUND_AMOUNT_AVAILABLE));
         String errorMessage = new GsonBuilder().create().toJson(
@@ -278,7 +278,7 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createRefund_shouldGetNonAuthorized_whenPublicAuthRespondsUnauthorised() {
+    void createRefund_shouldGetNonAuthorized_whenPublicAuthRespondsUnauthorised() {
         publicAuthMockClient.respondUnauthorised();
 
         postRefunds("{\"amount\": 1000}")
@@ -318,14 +318,14 @@ public class PaymentRefundsResourceIT extends PaymentResourceITestBase {
     private ValidatableResponse getPaymentRefundByIdResponse(String paymentId, String refundId, String strategy) {
         return given().port(app.getLocalPort())
                 .header("X-Ledger", strategy)
-                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
                 .get(format("/v1/payments/%s/refunds/%s", paymentId, refundId))
                 .then();
     }
 
     private ValidatableResponse getPaymentRefundsResponse(String paymentId) {
         return given().port(app.getLocalPort())
-                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
                 .get(format("/v1/payments/%s/refunds", paymentId))
                 .then();
     }

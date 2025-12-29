@@ -3,13 +3,13 @@ package uk.gov.pay.api.it;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.restassured.response.ValidatableResponse;
 import org.apache.http.HttpStatus;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
 import uk.gov.pay.api.model.CreateAgreementRequestBuilder;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
-import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
+import uk.gov.pay.api.utils.PublicAuthMockClientJUnit5;
+import uk.gov.pay.api.utils.mocks.ConnectorMockClientJUnit5;
 import uk.gov.pay.api.utils.mocks.CreateAgreementRequestParams;
-import uk.gov.pay.api.utils.mocks.LedgerMockClient;
+import uk.gov.pay.api.utils.mocks.LedgerMockClientJUnit5;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
@@ -21,20 +21,20 @@ import static uk.gov.pay.api.utils.Payloads.agreementPayload;
 import static uk.gov.pay.api.utils.mocks.AgreementFromLedgerFixture.AgreementFromLedgerFixtureBuilder.anAgreementFromLedgerWithoutPaymentInstrumentFixture;
 import static uk.gov.pay.api.utils.mocks.CreateAgreementRequestParams.CreateAgreementRequestParamsBuilder.aCreateAgreementRequestParams;
 
-public class AgreementsApiResourceCreateIT extends PaymentResourceITestBase {
-   
+class AgreementsApiResourceCreateIT extends PaymentResourceITestBase {
+
     private static final String ILLEGAL_REFERENCE = "Some reference <script> alert('This is a ?{simple} XSS attack.')</script>";
     private static final String REFERENCE = "A valid reference";
     private static final String ILLEGAL_DESCRIPTION = "Some description <script> alert('This is a ?{simple} XSS attack.')</script>";
     private static final String DESCRIPTION = "A valid description";
     private static final String USER_IDENTIFIER = "a-valid-user-identifier";
-    public static final String VALID_AGREEMENT_ID = "12345678901234567890123456";
-    private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
-    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
-    private LedgerMockClient ledgerMockClient = new LedgerMockClient(ledgerMock);
+    private static final String VALID_AGREEMENT_ID = "12345678901234567890123456";
+    private final ConnectorMockClientJUnit5 connectorMockClient = new ConnectorMockClientJUnit5(connectorServer);
+    private final PublicAuthMockClientJUnit5 publicAuthMockClient = new PublicAuthMockClientJUnit5(publicAuthServer);
+    private final LedgerMockClientJUnit5 ledgerMockClient = new LedgerMockClientJUnit5(ledgerServer);
 
     @Test
-    public void shouldCreateAgreement() throws JsonProcessingException {
+    void shouldCreateAgreement() throws JsonProcessingException {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
         CreateAgreementRequestParams createAgreementRequestParams = aCreateAgreementRequestParams()
                 .withReference(REFERENCE)
@@ -57,7 +57,7 @@ public class AgreementsApiResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void shouldReturn400WhenWhenReferenceIsEmptyString() {
+    void shouldReturn400WhenWhenReferenceIsEmptyString() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
         CreateAgreementRequestParams createAgreementRequestParams = aCreateAgreementRequestParams()
                 .withReference("")
@@ -71,7 +71,7 @@ public class AgreementsApiResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void shouldReturn400WhenWhenReferenceIsNull() {
+    void shouldReturn400WhenWhenReferenceIsNull() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
         CreateAgreementRequest agreementRequest = new CreateAgreementRequest(CreateAgreementRequestBuilder.builder().reference(null).description(DESCRIPTION));
         postAgreementRequest(agreementRequest.toConnectorPayload())
@@ -83,7 +83,7 @@ public class AgreementsApiResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void shouldReturn400WhenWhenDescriptionIsNull() {
+    void shouldReturn400WhenWhenDescriptionIsNull() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
         CreateAgreementRequest agreementRequest = new CreateAgreementRequest(CreateAgreementRequestBuilder.builder().reference(REFERENCE).description(null));
         postAgreementRequest(agreementRequest.toConnectorPayload())
@@ -95,7 +95,7 @@ public class AgreementsApiResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void shouldReturn400WhenWhenDescriptionIsEmptyString() {
+    void shouldReturn400WhenWhenDescriptionIsEmptyString() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
         CreateAgreementRequest agreementRequest = new CreateAgreementRequest(CreateAgreementRequestBuilder.builder().reference(REFERENCE).description(""));
         postAgreementRequest(agreementRequest.toConnectorPayload())
@@ -107,7 +107,7 @@ public class AgreementsApiResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void shouldReturn422WhenWhenDescriptionIsTooLong() {
+    void shouldReturn422WhenWhenDescriptionIsTooLong() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
         CreateAgreementRequest agreementRequest = new CreateAgreementRequest(CreateAgreementRequestBuilder.builder().reference(REFERENCE).description(random(256, true, true)));
         postAgreementRequest(agreementRequest.toConnectorPayload())
@@ -119,7 +119,7 @@ public class AgreementsApiResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void shouldReturn201WhenWhenOptionalUserIdentifierIsNull() throws JsonProcessingException {
+    void shouldReturn201WhenWhenOptionalUserIdentifierIsNull() throws JsonProcessingException {
         var agreementFixture = anAgreementFromLedgerWithoutPaymentInstrumentFixture()
                 .withExternalId(VALID_AGREEMENT_ID)
                 .withPaymentInstrument(null)
@@ -139,7 +139,7 @@ public class AgreementsApiResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void shouldReturn422WhenWhenUserIdentifierIsEmptyString() {
+    void shouldReturn422WhenWhenUserIdentifierIsEmptyString() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
         CreateAgreementRequest agreementRequest = new CreateAgreementRequest(CreateAgreementRequestBuilder.builder().reference(REFERENCE).description(DESCRIPTION).userIdentifier(""));
         postAgreementRequest(agreementRequest.toConnectorPayload())
@@ -151,7 +151,7 @@ public class AgreementsApiResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void shouldReturn422WhenWhenUserIdentifierIsTooLong() {
+    void shouldReturn422WhenWhenUserIdentifierIsTooLong() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
         CreateAgreementRequest agreementRequest = new CreateAgreementRequest(CreateAgreementRequestBuilder.builder().reference(REFERENCE).description(DESCRIPTION).userIdentifier(random(256, true, true)));
         postAgreementRequest(agreementRequest.toConnectorPayload())
@@ -163,14 +163,14 @@ public class AgreementsApiResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void shouldReturn422WhenWhenReferenceIsTooLong() {
+    void shouldReturn422WhenWhenReferenceIsTooLong() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
         String tooLongReference = random(256, true, true);
         CreateAgreementRequestParams createAgreementRequestParams = aCreateAgreementRequestParams()
                 .withReference(tooLongReference)
                 .withDescription(DESCRIPTION)
                 .build();
-        
+
         postAgreementRequest(agreementPayload(createAgreementRequestParams))
                 .statusCode(HttpStatus.SC_UNPROCESSABLE_ENTITY)
                 .contentType(JSON)
@@ -178,9 +178,9 @@ public class AgreementsApiResourceCreateIT extends PaymentResourceITestBase {
                 .body("code", is("P0102"))
                 .body("description", is("Invalid attribute value: reference. Must be less than or equal to 255 characters length"));
     }
- 
+
     @Test
-  public void createPayment_responseWith500_whenConnectorResponseIsAnUnrecognisedError() throws Exception {
+    void createPayment_responseWith500_whenConnectorResponseIsAnUnrecognisedError() throws Exception {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
         CreateAgreementRequestParams createAgreementRequestParams = aCreateAgreementRequestParams()
@@ -189,17 +189,17 @@ public class AgreementsApiResourceCreateIT extends PaymentResourceITestBase {
                 .build();
         connectorMockClient.respondBadRequest_whenCreateAgreement(GATEWAY_ACCOUNT_ID, "Downstream system error");
 
-       postAgreementRequest(agreementPayload(createAgreementRequestParams))
-               .statusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR)
+        postAgreementRequest(agreementPayload(createAgreementRequestParams))
+                .statusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR)
                 .contentType(JSON)
-               .body("code",is("P2198"))
-               .body("description", is("Downstream system error"));
-      
+                .body("code", is("P2198"))
+                .body("description", is("Downstream system error"));
+
         connectorMockClient.verifyCreateAgreementConnectorRequest(GATEWAY_ACCOUNT_ID, createAgreementRequestParams);
     }
 
     @Test
-    public void createAgreement_Returns401_WhenUnauthorised() {
+    void createAgreement_Returns401_WhenUnauthorised() {
         publicAuthMockClient.respondUnauthorised();
         CreateAgreementRequestParams createAgreementRequestParams = aCreateAgreementRequestParams()
                 .withReference(REFERENCE)
@@ -207,9 +207,9 @@ public class AgreementsApiResourceCreateIT extends PaymentResourceITestBase {
                 .build();
         postAgreementRequest(agreementPayload(createAgreementRequestParams)).statusCode(401);
     }
-    
+
     @Test
-    public void createAgreement_Returns_WhenPublicAuthInaccessible() {
+    void createAgreement_Returns_WhenPublicAuthInaccessible() {
         publicAuthMockClient.respondWithError();
         CreateAgreementRequestParams createAgreementRequestParams = aCreateAgreementRequestParams()
                 .withReference(REFERENCE)
@@ -218,7 +218,7 @@ public class AgreementsApiResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void shouldReturnBadRequestWhenAgreementReferenceContainsIllegalCharacters() {
+    void shouldReturnBadRequestWhenAgreementReferenceContainsIllegalCharacters() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
         CreateAgreementRequestParams createAgreementRequestParams = aCreateAgreementRequestParams()
@@ -235,7 +235,7 @@ public class AgreementsApiResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void shouldReturnBadRequestWhenAgreementDescriptionContainsIllegalCharacters() {
+    void shouldReturnBadRequestWhenAgreementDescriptionContainsIllegalCharacters() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
         CreateAgreementRequestParams createAgreementRequestParams = aCreateAgreementRequestParams()
@@ -251,12 +251,12 @@ public class AgreementsApiResourceCreateIT extends PaymentResourceITestBase {
                 .body("description", is("Invalid attribute value: description. Must be a valid string format"));
     }
 
-    protected ValidatableResponse postAgreementRequest(String payload) {
+    private ValidatableResponse postAgreementRequest(String payload) {
         return given().port(app.getLocalPort())
                 .body(payload)
                 .accept(JSON)
                 .contentType(JSON)
-                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
                 .post("/v1/agreements")
                 .then();
     }

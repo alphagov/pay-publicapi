@@ -3,16 +3,17 @@ package uk.gov.pay.api.it;
 import com.jayway.jsonassert.JsonAssert;
 import io.restassured.response.ValidatableResponse;
 import jakarta.ws.rs.core.HttpHeaders;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.HttpStatus;
 import org.json.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetailsFromResponse;
 import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.model.RefundSummary;
 import uk.gov.pay.api.utils.JsonStringBuilder;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
-import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
+import uk.gov.pay.api.utils.PublicAuthMockClientJUnit5;
+import uk.gov.pay.api.utils.mocks.ConnectorMockClientJUnit5;
 import uk.gov.pay.api.utils.mocks.CreateChargeRequestParams;
 import uk.gov.service.payments.commons.model.AgreementPaymentType;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
@@ -27,7 +28,6 @@ import java.util.Map;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
@@ -42,7 +42,7 @@ import static uk.gov.service.payments.commons.model.Source.CARD_PAYMENT_LINK;
 
 public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
 
-    private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
+    private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").orElseThrow();
     private static final int AMOUNT = 9999999;
     private static final String CHARGE_ID = "ch_ab2341da231434l";
     private static final String CHARGE_TOKEN_ID = "token_1234567asdf";
@@ -59,20 +59,20 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     private static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(TIMESTAMP);
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
     private static final CardDetailsFromResponse CARD_DETAILS = new CardDetailsFromResponse("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, CARD_BRAND_LABEL, CARD_TYPE);
-    public static final String VALID_AGREEMENT_ID = "12345678901234567890123456";
-    public static final String TOO_SHORT_AGREEMENT_ID = "1234567890";
-    public static final String TOO_LONG_AGREEMENT_ID = "1234567890123456789012345699999";
+    private static final String VALID_AGREEMENT_ID = "12345678901234567890123456";
+    private static final String TOO_SHORT_AGREEMENT_ID = "1234567890";
+    private static final String TOO_LONG_AGREEMENT_ID = "1234567890123456789012345699999";
     private static final String SUCCESS_PAYLOAD = paymentPayload(aCreateChargeRequestParams()
             .withAmount(AMOUNT)
             .withDescription(DESCRIPTION)
             .withReference(REFERENCE)
             .withReturnUrl(RETURN_URL).build());
     private static final String GATEWAY_TRANSACTION_ID = "gateway-tx-123456";
-    private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
-    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    private final ConnectorMockClientJUnit5 connectorMockClient = new ConnectorMockClientJUnit5(connectorServer);
+    private final PublicAuthMockClientJUnit5 publicAuthMockClient = new PublicAuthMockClientJUnit5(publicAuthServer);
 
     @Test
-    public void createCardPaymentWithEmptyMetadataDoesNotStoreMetadata() {
+    void createCardPaymentWithEmptyMetadataDoesNotStoreMetadata() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
         String payload = new JsonStringBuilder()
@@ -97,7 +97,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createCardPaymentWithMetadata() {
+    void createCardPaymentWithMetadata() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
         CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
@@ -120,7 +120,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createAChargeWithSetUpAgreementAndSaveAgreement() {
+    void createAChargeWithSetUpAgreementAndSaveAgreement() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
         CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
@@ -140,7 +140,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPayment_responseWith422_whenAgreementIdTooShort() {
+    void createPayment_responseWith422_whenAgreementIdTooShort() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
         CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
@@ -160,7 +160,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPayment_responseWith422_whenAgreementIdTooLong() {
+    void createPayment_responseWith422_whenAgreementIdTooLong() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
         CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
@@ -180,7 +180,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPayment_respondWith400_whenAgreementNotFound() throws IOException {
+    void createPayment_respondWith400_whenAgreementNotFound() throws IOException {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
         CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
@@ -207,7 +207,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPayment_responseWith400_whenIncorrectAuthorisationModeForSavePaymentInstrumentToAgreement() {
+    void createPayment_responseWith400_whenIncorrectAuthorisationModeForSavePaymentInstrumentToAgreement() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
@@ -230,7 +230,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPayment_responseWith400_whenIncorrectAuthorisationModeForSavePaymentInstrumentToAgreementWithAgreementId() {
+    void createPayment_responseWith400_whenIncorrectAuthorisationModeForSavePaymentInstrumentToAgreementWithAgreementId() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
@@ -254,7 +254,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createCardPaymentWithMetadataAsNull_shouldReturn422() {
+    void createCardPaymentWithMetadataAsNull_shouldReturn422() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
         var payload = new JSONObject()
@@ -274,7 +274,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createCardPaymentWithPrefilledCardholderDetails() {
+    void createCardPaymentWithPrefilledCardholderDetails() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
         CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
                 .withAmount(100)
@@ -305,7 +305,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createCardPaymentShouldRespondWith400ErrorWhenNumericFieldInPrefilledCardholderDetails() {
+    void createCardPaymentShouldRespondWith400ErrorWhenNumericFieldInPrefilledCardholderDetails() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
         String payload = new JsonStringBuilder()
                 .add("amount", 1000)
@@ -323,7 +323,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createCardPaymentWithSomePrefilledCardholderDetails() {
+    void createCardPaymentWithSomePrefilledCardholderDetails() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
         CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
                 .withAmount(100)
@@ -351,7 +351,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createCardPayment() {
+    void createCardPayment() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
         connectorMockClient.respondCreated_whenCreateCharge(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
@@ -418,7 +418,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPayment_withMinimumAmount() {
+    void createPayment_withMinimumAmount() {
         int minimumAmount = 1;
 
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
@@ -461,7 +461,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createMOTOPayment() {
+    void createMOTOPayment() {
         int amount = 1;
 
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
@@ -507,7 +507,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPaymentWithAuthorisationModeMotoApi() {
+    void createPaymentWithAuthorisationModeMotoApi() {
         int amount = 1;
 
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
@@ -556,7 +556,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPaymentWithAuthorisationModeAgreement() {
+    void createPaymentWithAuthorisationModeAgreement() {
         int amount = 1;
 
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
@@ -604,12 +604,12 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPayment_withAllFieldsUpToMaxLengthBoundaries_shouldBeAccepted() {
+    void createPayment_withAllFieldsUpToMaxLengthBoundaries_shouldBeAccepted() {
         int amount = 10000000;
-        String reference = randomAlphanumeric(255);
-        String description = randomAlphanumeric(255);
-        String email = randomAlphanumeric(242) + "@example.org";
-        String return_url = "https://govdemopay.gov.uk?data=" + randomAlphanumeric(1969);
+        String reference = RandomStringUtils.insecure().nextAlphanumeric(255);
+        String description = RandomStringUtils.insecure().nextAlphanumeric(255);
+        String email = RandomStringUtils.insecure().nextAlphanumeric(242) + "@example.org";
+        String returnUrl = "https://govdemopay.gov.uk?data=" + RandomStringUtils.insecure().nextAlphanumeric(1969);
 
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
@@ -617,7 +617,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
                 .withAmount(amount)
                 .withChargeId(CHARGE_ID)
                 .withState(CREATED)
-                .withReturnUrl(return_url)
+                .withReturnUrl(returnUrl)
                 .withDescription(description)
                 .withReference(reference)
                 .withEmail(email)
@@ -636,7 +636,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
                 .add("email", email)
                 .add("card_brand", CARD_BRAND_LABEL)
                 .add("description", description)
-                .add("return_url", return_url)
+                .add("return_url", returnUrl)
                 .build();
 
         postPaymentResponse(body)
@@ -647,14 +647,14 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
                 .body("reference", is(reference))
                 .body("email", is(email))
                 .body("description", is(description))
-                .body("return_url", is(return_url))
+                .body("return_url", is(returnUrl))
                 .body("payment_provider", is(PAYMENT_PROVIDER))
                 .body("card_brand", is(CARD_BRAND_LABEL))
                 .body("created_date", is(CREATED_DATE));
     }
 
     @Test
-    public void createPayment_responseWith500_whenConnectorResponseIsAnUnrecognisedError() throws Exception {
+    void createPayment_responseWith500_whenConnectorResponseIsAnUnrecognisedError() throws Exception {
         String gatewayAccountId = "1234567";
         String errorMessage = "something went wrong";
 
@@ -676,7 +676,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPayment_responseWith500_whenTokenForGatewayAccountIsValidButConnectorResponseIsNotFound() {
+    void createPayment_responseWith500_whenTokenForGatewayAccountIsValidButConnectorResponseIsNotFound() {
         String notFoundGatewayAccountId = "9876545";
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, notFoundGatewayAccountId);
 
@@ -692,7 +692,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPayment_responseWith422_whenMotoNotAllowed() {
+    void createPayment_responseWith422_whenMotoNotAllowed() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         connectorMockClient.respondMotoPaymentNotAllowed(GATEWAY_ACCOUNT_ID);
@@ -715,7 +715,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPayment_responseWith422_whenAuthApiNotAllowed() {
+    void createPayment_responseWith422_whenAuthApiNotAllowed() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         connectorMockClient.respondAuthorisationApiNotAllowed(GATEWAY_ACCOUNT_ID);
@@ -738,7 +738,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPayment_responseWith422_whenZeroAmountNotAllowed() {
+    void createPayment_responseWith422_whenZeroAmountNotAllowed() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         connectorMockClient.respondZeroAmountNotAllowed(GATEWAY_ACCOUNT_ID);
@@ -754,7 +754,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPayment_responseWith422_whenAmountBelowMinimum() {
+    void createPayment_responseWith422_whenAmountBelowMinimum() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         connectorMockClient.respondAmountBelowMinimum(GATEWAY_ACCOUNT_ID);
@@ -770,13 +770,13 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPayment_Returns401_WhenUnauthorised() {
+    void createPayment_Returns401_WhenUnauthorised() {
         publicAuthMockClient.respondUnauthorised();
         postPaymentResponse(SUCCESS_PAYLOAD).statusCode(401);
     }
 
     @Test
-    public void createPayment_Returns403_WhenGatewayAccountCredentialsNotFullyConfigured() {
+    void createPayment_Returns403_WhenGatewayAccountCredentialsNotFullyConfigured() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMockClient.respondGatewayAccountCredentialNotConfigured(GATEWAY_ACCOUNT_ID);
         postPaymentResponse(SUCCESS_PAYLOAD)
@@ -789,7 +789,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPayment_Returns400_WhenCardNumberIsEnteredInPaymentLinkReference() {
+    void createPayment_Returns400_WhenCardNumberIsEnteredInPaymentLinkReference() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
         connectorMockClient.respondCardNumberInReferenceError(GATEWAY_ACCOUNT_ID);
 
@@ -812,13 +812,13 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPayment_Returns_WhenPublicAuthInaccessible() {
+    void createPayment_Returns_WhenPublicAuthInaccessible() {
         publicAuthMockClient.respondWithError();
         postPaymentResponse(SUCCESS_PAYLOAD).statusCode(503);
     }
 
     @Test
-    public void createCardPaymentWithSource() {
+    void createCardPaymentWithSource() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
         CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
@@ -838,7 +838,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void shouldReturnBadRequestWhenPaymentReferenceContainsIllegalCharacters() {
+    void shouldReturnBadRequestWhenPaymentReferenceContainsIllegalCharacters() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
         CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
@@ -857,7 +857,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void shouldReturnBadRequestWhenPaymentDescriptionContainsIllegalCharacters() {
+    void shouldReturnBadRequestWhenPaymentDescriptionContainsIllegalCharacters() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID, CARD);
 
         CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
@@ -874,9 +874,9 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
                 .body("code", is("P0102"))
                 .body("description", is("Invalid attribute value: description. Must be a valid string format"));
     }
-    
+
     @Test
-    public void createPaymentWithAgreementPaymentTypeInstalment() {
+    void createPaymentWithAgreementPaymentTypeInstalment() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         connectorMockClient.respondCreated_whenCreateCharge_withAgreementPaymentType_Instalment(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
@@ -922,7 +922,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPaymentWithAgreementWithoutAgreementPaymentType() {
+    void createPaymentWithAgreementWithoutAgreementPaymentType() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         connectorMockClient.respondCreated_whenCreateCharge_withAuthorisationMode_Agreement(CHARGE_TOKEN_ID, GATEWAY_ACCOUNT_ID, aCreateOrGetChargeResponseFromConnector()
@@ -966,7 +966,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPaymentWithAgreementPaymentType_responseWith400_whenNoAuthorisationModeOrSetUpAgreement() {
+    void createPaymentWithAgreementPaymentType_responseWith400_whenNoAuthorisationModeOrSetUpAgreement() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         connectorMockClient.respondUnexpectedAttributesForAgreementPaymentType_whenCreatedCharge(GATEWAY_ACCOUNT_ID, VALID_AGREEMENT_ID, "error message from connector");
@@ -987,7 +987,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPaymentWithAgreementPaymentType_responseWith400_whenAuthorisationModeNotAgreement() {
+    void createPaymentWithAgreementPaymentType_responseWith400_whenAuthorisationModeNotAgreement() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         CreateChargeRequestParams createChargeRequestParams = aCreateChargeRequestParams()
@@ -1008,7 +1008,7 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void createPaymentWithUnexpectedAgreementPaymentTypeAndPaymentId_responseWith400() {
+    void createPaymentWithUnexpectedAgreementPaymentTypeAndPaymentId_responseWith400() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
 
         connectorMockClient.respondUnexpectedAttributesForAgreementPaymentType_whenCreatedCharge(GATEWAY_ACCOUNT_ID, VALID_AGREEMENT_ID, "Unexpected attribute: agreement_id");
@@ -1048,29 +1048,29 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
             payload.add("moto", params.isMoto());
         }
 
-        params.getCardholderName().ifPresent(cardholderName -> {
-            payload.addToNestedMap("cardholder_name", cardholderName, "prefilled_cardholder_details");
-        });
+        params.getCardholderName()
+                .ifPresent(
+                        cardholderName -> payload.addToNestedMap("cardholder_name", cardholderName, "prefilled_cardholder_details"));
 
-        params.getAddressLine1().ifPresent(addressLine1 -> {
-            payload.addToNestedMap("line1", addressLine1, "prefilled_cardholder_details", "billing_address");
-        });
+        params.getAddressLine1()
+                .ifPresent(
+                        addressLine1 -> payload.addToNestedMap("line1", addressLine1, "prefilled_cardholder_details", "billing_address"));
 
-        params.getAddressLine2().ifPresent(addressLine2 -> {
-            payload.addToNestedMap("line2", addressLine2, "prefilled_cardholder_details", "billing_address");
-        });
+        params.getAddressLine2()
+                .ifPresent(
+                        addressLine2 -> payload.addToNestedMap("line2", addressLine2, "prefilled_cardholder_details", "billing_address"));
 
-        params.getAddressPostcode().ifPresent(addressPostcode -> {
-            payload.addToNestedMap("postcode", addressPostcode, "prefilled_cardholder_details", "billing_address");
-        });
+        params.getAddressPostcode()
+                .ifPresent(
+                        addressPostcode -> payload.addToNestedMap("postcode", addressPostcode, "prefilled_cardholder_details", "billing_address"));
 
-        params.getAddressCity().ifPresent(addressCity -> {
-            payload.addToNestedMap("city", addressCity, "prefilled_cardholder_details", "billing_address");
-        });
+        params.getAddressCity()
+                .ifPresent(
+                        addressCity -> payload.addToNestedMap("city", addressCity, "prefilled_cardholder_details", "billing_address"));
 
-        params.getAddressCountry().ifPresent(addressCountry -> {
-            payload.addToNestedMap("country", addressCountry, "prefilled_cardholder_details", "billing_address");
-        });
+        params.getAddressCountry()
+                .ifPresent(
+                        addressCountry -> payload.addToNestedMap("country", addressCountry, "prefilled_cardholder_details", "billing_address"));
 
         params.getSource().ifPresent(source -> payload.addToNestedMap("source", source, "internal"));
         params.getSetUpAgreement().ifPresent(setUpAgreement -> payload.add("set_up_agreement", setUpAgreement));
@@ -1081,12 +1081,13 @@ public class PaymentsResourceCreateIT extends PaymentResourceITestBase {
         return payload.build();
     }
 
+    @Override
     protected ValidatableResponse postPaymentResponse(String payload) {
         return given().port(app.getLocalPort())
                 .body(payload)
                 .accept(JSON)
                 .contentType(JSON)
-                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
                 .post(PAYMENTS_PATH)
                 .then();
     }

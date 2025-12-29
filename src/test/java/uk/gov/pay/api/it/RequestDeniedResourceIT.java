@@ -1,7 +1,7 @@
 package uk.gov.pay.api.it;
 
 import com.jayway.jsonassert.JsonAssert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,10 +11,10 @@ import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 
-public class RequestDeniedResourceIT extends PaymentResourceITestBase {
+class RequestDeniedResourceIT extends PaymentResourceITestBase {
 
     @Test
-    public void requestDeniedPost() throws IOException {
+    void requestDeniedPost() throws IOException {
 
         InputStream body = given().port(app.getLocalPort())
                 .header("x-naxsi_sig", "rules violated")
@@ -32,7 +32,7 @@ public class RequestDeniedResourceIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void requestDeniedGet() throws IOException {
+    void requestDeniedGet() throws IOException {
 
         InputStream body = given().port(app.getLocalPort())
                 .header("x-naxsi_sig", "rules violated")
@@ -50,7 +50,7 @@ public class RequestDeniedResourceIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void requestDeniedPut() throws IOException {
+    void requestDeniedPut() throws IOException {
 
         InputStream body = given().port(app.getLocalPort())
                 .header("x-naxsi_sig", "rules violated")
@@ -68,7 +68,7 @@ public class RequestDeniedResourceIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void requestDeniedDelete() throws IOException {
+    void requestDeniedDelete() throws IOException {
 
         InputStream body = given().port(app.getLocalPort())
                 .header("x-naxsi_sig", "rules violated")

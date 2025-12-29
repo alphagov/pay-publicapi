@@ -2,10 +2,10 @@ package uk.gov.pay.api.it.validation;
 
 import com.jayway.jsonassert.JsonAssert;
 import io.restassured.response.ValidatableResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
+import uk.gov.pay.api.utils.PublicAuthMockClientJUnit5;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,17 +16,17 @@ import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 
-public class PaymentsResourceAmountValidationIT extends PaymentResourceITestBase {
+class PaymentsResourceAmountValidationIT extends PaymentResourceITestBase {
 
-    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
-    
-    @Before
-    public void setUpBearerToken() {
+    private final PublicAuthMockClientJUnit5 publicAuthMockClient = new PublicAuthMockClientJUnit5(publicAuthServer);
+
+    @BeforeEach
+    void setUpBearerToken() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
     }
 
     @Test
-    public void createPayment_responseWith422_whenAmountIsNegative() throws IOException {
+    void createPayment_responseWith422_whenAmountIsNegative() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : -123," +
@@ -49,7 +49,7 @@ public class PaymentsResourceAmountValidationIT extends PaymentResourceITestBase
     }
 
     @Test
-    public void createPayment_responseWith422_whenAmountIsBiggerThanTheMaximumAllowed() throws IOException {
+    void createPayment_responseWith422_whenAmountIsBiggerThanTheMaximumAllowed() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 10000001," +
@@ -72,7 +72,7 @@ public class PaymentsResourceAmountValidationIT extends PaymentResourceITestBase
     }
 
     @Test
-    public void createPayment_responseWith400_whenAmountFieldHasNullValue() throws IOException {
+    void createPayment_responseWith400_whenAmountFieldHasNullValue() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : null," +
@@ -96,7 +96,7 @@ public class PaymentsResourceAmountValidationIT extends PaymentResourceITestBase
     }
 
     @Test
-    public void createPayment_responseWith400_whenAmountFieldIsNotNumeric() throws IOException {
+    void createPayment_responseWith400_whenAmountFieldIsNotNumeric() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : \"hola world!\"," +
@@ -119,7 +119,7 @@ public class PaymentsResourceAmountValidationIT extends PaymentResourceITestBase
     }
 
     @Test
-    public void createPayment_responseWith400_whenAmountFieldIsNotAValidJsonField() throws IOException {
+    void createPayment_responseWith400_whenAmountFieldIsNotAValidJsonField() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : { \"whatever\": 1 }," +
@@ -142,7 +142,7 @@ public class PaymentsResourceAmountValidationIT extends PaymentResourceITestBase
     }
 
     @Test
-    public void createPayment_responseWith400_whenAmountFieldIsBlank() throws IOException {
+    void createPayment_responseWith400_whenAmountFieldIsBlank() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : \"    \"," +
@@ -165,7 +165,7 @@ public class PaymentsResourceAmountValidationIT extends PaymentResourceITestBase
     }
 
     @Test
-    public void createPayment_responseWith400_whenAmountFieldIsMissing() throws IOException {
+    void createPayment_responseWith400_whenAmountFieldIsMissing() throws IOException {
 
         String payload = "{" +
                 "  \"reference\" : \"Some reference\"," +
@@ -187,7 +187,7 @@ public class PaymentsResourceAmountValidationIT extends PaymentResourceITestBase
     }
 
     @Test
-    public void createPayment_responseWith400_whenAmountIsHexadecimal() throws IOException {
+    void createPayment_responseWith400_whenAmountIsHexadecimal() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 0x1000," +
@@ -209,7 +209,7 @@ public class PaymentsResourceAmountValidationIT extends PaymentResourceITestBase
     }
 
     @Test
-    public void createPayment_responseWith400_whenAmountIsBinary() throws IOException {
+    void createPayment_responseWith400_whenAmountIsBinary() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 0B101," +
@@ -231,7 +231,7 @@ public class PaymentsResourceAmountValidationIT extends PaymentResourceITestBase
     }
 
     @Test
-    public void createPayment_responseWith400_whenAmountIsOctal() throws IOException {
+    void createPayment_responseWith400_whenAmountIsOctal() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 017," +
@@ -253,7 +253,7 @@ public class PaymentsResourceAmountValidationIT extends PaymentResourceITestBase
     }
 
     @Test
-    public void createPayment_responseWith400_whenAmountIsNullByteEncoded() throws IOException {
+    void createPayment_responseWith400_whenAmountIsNullByteEncoded() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : %00," +
@@ -275,7 +275,7 @@ public class PaymentsResourceAmountValidationIT extends PaymentResourceITestBase
     }
 
     @Test
-    public void createPayment_responseWith400_whenAmountIsFloat() throws IOException {
+    void createPayment_responseWith400_whenAmountIsFloat() throws IOException {
 
         String payload = "{" +
                 "  \"amount\" : 27.55," +
@@ -298,7 +298,7 @@ public class PaymentsResourceAmountValidationIT extends PaymentResourceITestBase
     }
 
     @Test
-    public void createPayment_responseWith400_whenAmountMissing_failFast() throws IOException {
+    void createPayment_responseWith400_whenAmountMissing_failFast() throws IOException {
 
         String payload = "{" +
                 "  \"reference\" : \"whatever\"," +

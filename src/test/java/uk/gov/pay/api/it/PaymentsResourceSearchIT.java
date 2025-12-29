@@ -5,8 +5,8 @@ import io.restassured.response.ValidatableResponse;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.pay.api.it.fixtures.PaymentNavigationLinksFixture;
 import uk.gov.pay.api.model.Address;
 import uk.gov.pay.api.model.CardDetailsFromResponse;
@@ -14,8 +14,8 @@ import uk.gov.pay.api.model.Exemption;
 import uk.gov.pay.api.model.ExemptionOutcome;
 import uk.gov.pay.api.model.PaymentSettlementSummary;
 import uk.gov.pay.api.model.Wallet;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
-import uk.gov.pay.api.utils.mocks.LedgerMockClient;
+import uk.gov.pay.api.utils.PublicAuthMockClientJUnit5;
+import uk.gov.pay.api.utils.mocks.LedgerMockClientJUnit5;
 import uk.gov.service.payments.commons.model.AuthorisationMode;
 import uk.gov.service.payments.commons.validation.DateTimeUtils;
 
@@ -49,7 +49,7 @@ import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.DEFAULT_SETT
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.aSuccessfulSearchPayment;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 
-public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
+class PaymentsResourceSearchIT extends PaymentResourceITestBase {
 
     private static final String TEST_REFERENCE = "test_reference";
     private static final String TEST_EMAIL = "alice.111@mail.fake";
@@ -65,16 +65,16 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
     private static final CardDetailsFromResponse CARD_DETAILS = new CardDetailsFromResponse(TEST_LAST_DIGITS_CARD_NUMBER, TEST_FIRST_DIGITS_CARD_NUMBER, TEST_CARDHOLDER_NAME, "12/19", BILLING_ADDRESS, TEST_CARD_BRAND_LABEL, TEST_CARD_TYPE);
 
-    private PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
-    private LedgerMockClient ledgerMockClient = new LedgerMockClient(ledgerMock);
+    private final PublicAuthMockClientJUnit5 publicAuthMockClient = new PublicAuthMockClientJUnit5(publicAuthServer);
+    private final LedgerMockClientJUnit5 ledgerMockClient = new LedgerMockClientJUnit5(ledgerServer);
 
-    @Before
-    public void mapBearerTokenToAccountId() {
+    @BeforeEach
+    void mapBearerTokenToAccountId() {
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
     }
 
     @Test
-    public void searchPaymentsWithMetadata() {
+    void searchPaymentsWithMetadata() {
         String payments = aPaginatedPaymentSearchResult()
                 .withCount(2)
                 .withPage(1)
@@ -107,7 +107,7 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_shouldOnlyReturnAllowedProperties() {
+    void searchPayments_shouldOnlyReturnAllowedProperties() {
         String payments = aPaginatedPaymentSearchResult()
                 .withCount(10)
                 .withPage(2)
@@ -177,7 +177,7 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_ShouldNotIncludeCancelLinkIfThePaymentCannotBeCancelled() {
+    void searchPayments_ShouldNotIncludeCancelLinkIfThePaymentCannotBeCancelled() {
         String payments = aPaginatedPaymentSearchResult()
                 .withCount(10)
                 .withPage(2)
@@ -198,7 +198,7 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_ShouldIncludeCanRetryIfThePaymentWasRejected() {
+    void searchPayments_ShouldIncludeCanRetryIfThePaymentWasRejected() {
         String payments = aPaginatedPaymentSearchResult()
                 .withCount(10)
                 .withPage(2)
@@ -221,7 +221,7 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_getsPaginatedResults() {
+    void searchPayments_getsPaginatedResults() {
         PaymentNavigationLinksFixture links = new PaymentNavigationLinksFixture()
                 .withPrevLink("http://server:port/path?query=prev&from_date=2016-01-01T23:59:59Z")
                 .withNextLink("http://server:port/path?query=next&from_date=2016-01-01T23:59:59Z")
@@ -277,7 +277,7 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_errorIfLedgerRespondsWith404() {
+    void searchPayments_errorIfLedgerRespondsWith404() {
         searchPayments(
                 ImmutableMap.of("reference", TEST_REFERENCE, "state", TEST_STATE, "from_date", TEST_FROM_DATE, "to_date", TEST_TO_DATE))
                 .statusCode(404)
@@ -288,7 +288,7 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_errorIfLedgerResponseIsInvalid() throws Exception {
+    void searchPayments_errorIfLedgerResponseIsInvalid() {
         ledgerMockClient.whenSearchTransactions(
                 aResponse().withStatus(OK_200).withHeader(CONTENT_TYPE, APPLICATION_JSON).withBody("wtf"));
 
@@ -308,7 +308,7 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_filterByInvalidCardBrand() throws Exception {
+    void searchPayments_filterByInvalidCardBrand() {
         searchPayments(
                 ImmutableMap.of("card_brand", "my_credit_card"))
                 .statusCode(404)
@@ -318,7 +318,7 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_getsResults_withNoBillingAddressAndNoWalletType() {
+    void searchPayments_getsResults_withNoBillingAddressAndNoWalletType() {
         String payments = aPaginatedPaymentSearchResult()
                 .withPayments(aSuccessfulSearchPayment()
                         .withCardDetails(new CardDetailsFromResponse("1234",
@@ -345,7 +345,7 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_getsResults_withWalletType() {
+    void searchPayments_getsResults_withWalletType() {
         String payments = aPaginatedPaymentSearchResult()
                 .withPayments(aSuccessfulSearchPayment()
                         .withWalletType(Wallet.APPLE_PAY.toString())
@@ -363,9 +363,9 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
                 .body("results[0].card_details", hasKey("wallet_type"))
                 .body("results[0].card_details.wallet_type", is(Wallet.APPLE_PAY.getTitleCase()));
     }
-    
+
     @Test
-    public void shouldReturnEmptyArray_ifLedgerReturnsNoResult() {
+    void shouldReturnEmptyArray_ifLedgerReturnsNoResult() {
         String payments = aPaginatedPaymentSearchResult()
                 .withPage(1)
                 .withPayments(aSuccessfulSearchPayment()
@@ -374,7 +374,7 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
                 .build();
 
         ledgerMockClient.respondOk_whenSearchCharges(payments);
-        
+
         searchPayments(ImmutableMap.of(
                 "reference", "junk yard",
                 "email", TEST_EMAIL,
@@ -391,7 +391,7 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void shouldReturnSettledDate_whenLedgerReturnsSettledDateInSettlementSummary() {
+    void shouldReturnSettledDate_whenLedgerReturnsSettledDateInSettlementSummary() {
         String payments = aPaginatedPaymentSearchResult()
                 .withPage(1)
                 .withPayments(aSuccessfulSearchPayment()
@@ -410,7 +410,7 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_getsResults_withExemption() {
+    void searchPayments_getsResults_withExemption() {
         ExemptionOutcome exemptionOutcome = new ExemptionOutcome("honoured");
         Exemption exemption = new Exemption(true, "corporate", exemptionOutcome);
         String payments = aPaginatedPaymentSearchResult()
@@ -432,9 +432,9 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
     }
 
     @Test
-    public void searchPayments_shouldNotReturnBadRequest_whenSearchingWithUrlEncodedQueryParam() throws Exception {
+    void searchPayments_shouldNotReturnBadRequest_whenSearchingWithUrlEncodedQueryParam() {
         String urlEncodedQueryParam = "AD001043%2F22"; // AD001043/22
-        
+
         searchPayments(
                 ImmutableMap.of("reference", urlEncodedQueryParam))
                 .statusCode(404)
@@ -458,7 +458,7 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
     }
 
     private Matcher<? super List<Map<String, Object>>> matchesField(final String field, final String value) {
-        return new TypeSafeMatcher<List<Map<String, Object>>>() {
+        return new TypeSafeMatcher<>() {
             @Override
             protected boolean matchesSafely(List<Map<String, Object>> maps) {
                 return maps.stream().allMatch(result -> value.equals(result.get(field)));
@@ -472,7 +472,7 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
     }
 
     private Matcher<? super List<Map<String, Object>>> matchesCreatedDateInBetween(final String fromDate, final String toDate) {
-        return new TypeSafeMatcher<List<Map<String, Object>>>() {
+        return new TypeSafeMatcher<>() {
             @Override
             protected boolean matchesSafely(List<Map<String, Object>> results) {
                 return results.stream().allMatch(result -> {
@@ -497,7 +497,7 @@ public class PaymentsResourceSearchIT extends PaymentResourceITestBase {
         return given().port(app.getLocalPort())
                 .accept(JSON)
                 .contentType(JSON)
-                .header(AUTHORIZATION, "Bearer " + PaymentResourceITestBase.API_KEY)
+                .header(AUTHORIZATION, "Bearer " + API_KEY)
                 .queryParams(queryParams)
                 .get(SEARCH_PATH)
                 .then();

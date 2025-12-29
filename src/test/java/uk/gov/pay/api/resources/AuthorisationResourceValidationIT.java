@@ -2,7 +2,7 @@ package uk.gov.pay.api.resources;
 
 import com.google.gson.GsonBuilder;
 import io.restassured.response.ValidatableResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.gov.pay.api.it.PaymentResourceITestBase;
 
 import java.util.HashMap;
@@ -12,12 +12,12 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.core.Is.is;
 
-public class AuthorisationResourceValidationIT extends PaymentResourceITestBase {
+class AuthorisationResourceValidationIT extends PaymentResourceITestBase {
 
     private static final String AUTH_PATH = "/v1/auth";
 
     @Test
-    public void authorisation_responseWith422_whenOneTimeTokenFieldIsNumeric() {
+    void authorisation_responseWith422_whenOneTimeTokenFieldIsNumeric() {
         String payload = toJson(
                 Map.of("one_time_token", 1234567890,
                         "card_number", "1234567890123456",
@@ -34,7 +34,7 @@ public class AuthorisationResourceValidationIT extends PaymentResourceITestBase 
     }
 
     @Test
-    public void authorisation_responseWith422_whenOneTimeTokenFieldIsMissing() {
+    void authorisation_responseWith422_whenOneTimeTokenFieldIsMissing() {
         String payload = toJson(
                 Map.of("card_number", "1234567890123456",
                         "cvc", "123",
@@ -50,7 +50,7 @@ public class AuthorisationResourceValidationIT extends PaymentResourceITestBase 
     }
 
     @Test
-    public void authorisation_responseWith422_whenCardNumberFieldHasNullValue() {
+    void authorisation_responseWith422_whenCardNumberFieldHasNullValue() {
         Map<String, String> payloadMap = new HashMap<>();
         payloadMap.put("one_time_token", "1234567890");
         payloadMap.put("card_number", "1234567890123456");
@@ -74,7 +74,7 @@ public class AuthorisationResourceValidationIT extends PaymentResourceITestBase 
     }
 
     @Test
-    public void authorisation_responseWith422_whenCardholderNameIsEmpty() {
+    void authorisation_responseWith422_whenCardholderNameIsEmpty() {
         String payload = toJson(
                 Map.of("one_time_token", "1234567890",
                         "card_number", "1234567890123456",
@@ -91,7 +91,7 @@ public class AuthorisationResourceValidationIT extends PaymentResourceITestBase 
     }
 
     @Test
-    public void authorisation_responseWith422_whenCvcIsEmpty() {
+    void authorisation_responseWith422_whenCvcIsEmpty() {
         String payload = toJson(
                 Map.of("one_time_token", "1234567890",
                         "card_number", "1234567890123456",
@@ -108,7 +108,7 @@ public class AuthorisationResourceValidationIT extends PaymentResourceITestBase 
     }
 
     @Test
-    public void authorisation_responseWith422_whenCardholderNameIsTooLong() {
+    void authorisation_responseWith422_whenCardholderNameIsTooLong() {
         String payload = toJson(
                 Map.of("one_time_token", "1234567890",
                         "card_number", "1234567890123456",
@@ -125,7 +125,7 @@ public class AuthorisationResourceValidationIT extends PaymentResourceITestBase 
     }
 
     @Test
-    public void authorisation_responseWith422_whenExpiryDateIsTooLong() {
+    void authorisation_responseWith422_whenExpiryDateIsTooLong() {
         String payload = toJson(
                 Map.of("one_time_token", "1234567890",
                         "card_number", "1234567890123456",
@@ -141,7 +141,7 @@ public class AuthorisationResourceValidationIT extends PaymentResourceITestBase 
                 .body("description", is("Invalid attribute value: expiry_date. Must be a valid date with the format MM/YY"));
     }
 
-    protected ValidatableResponse postAuthRequest(String payload) {
+    private ValidatableResponse postAuthRequest(String payload) {
         return given().port(app.getLocalPort())
                 .body(payload)
                 .accept(JSON)

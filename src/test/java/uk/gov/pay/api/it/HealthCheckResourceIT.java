@@ -1,15 +1,15 @@
 package uk.gov.pay.api.it;
 
 import io.restassured.RestAssured;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.is;
 import static uk.gov.pay.api.resources.HealthCheckResource.HEALTHCHECK;
 
-public class HealthCheckResourceIT extends PaymentResourceITestBase {
+class HealthCheckResourceIT extends PaymentResourceITestBase {
 
     @Test
-    public void getAccountShouldReturn404IfAccountIdIsUnknown() {
+    void getAccountShouldReturn404IfAccountIdIsUnknown() {
         RestAssured.given().port(app.getLocalPort())
                 .get(HEALTHCHECK)
                 .then()
