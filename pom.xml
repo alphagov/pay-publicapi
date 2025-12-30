@@ -245,12 +245,12 @@
             <version>4.0.16</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>uk.gov.service.payments</groupId>
-            <artifactId>testing-dropwizard-4</artifactId>
-            <version>${pay-java-commons.version}</version>
-            <scope>test</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>uk.gov.service.payments</groupId>-->
+<!--            <artifactId>testing-dropwizard-4</artifactId>-->
+<!--            <version>${pay-java-commons.version}</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
@@ -281,9 +281,15 @@
             <version>3.13.2</version>
             <scope>test</scope>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>au.com.dius.pact.consumer</groupId>-->
+<!--            <artifactId>junit</artifactId>-->
+<!--            <version>${pact.version}</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>au.com.dius.pact.consumer</groupId>
-            <artifactId>junit</artifactId>
+            <artifactId>junit5</artifactId>
             <version>${pact.version}</version>
             <scope>test</scope>
         </dependency>
