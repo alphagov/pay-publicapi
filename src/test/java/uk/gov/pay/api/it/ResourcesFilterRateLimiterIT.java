@@ -7,13 +7,13 @@ import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
 import com.google.common.collect.ImmutableMap;
 import io.restassured.response.ValidatableResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.LoggerFactory;
 import uk.gov.pay.api.filter.RateLimiterFilter;
 import uk.gov.pay.api.it.fixtures.PaymentNavigationLinksFixture;
-import uk.gov.pay.api.utils.mocks.ConnectorMockClient;
-import uk.gov.pay.api.utils.mocks.LedgerMockClient;
+import uk.gov.pay.api.utils.mocks.ConnectorMockClientJUnit5;
+import uk.gov.pay.api.utils.mocks.LedgerMockClientJUnit5;
 import uk.gov.service.payments.commons.model.SupportedLanguage;
 
 import java.util.Arrays;
@@ -30,15 +30,15 @@ import static uk.gov.pay.api.it.fixtures.PaginatedTransactionSearchResultFixture
 import static uk.gov.pay.api.it.fixtures.PaymentSearchResultBuilder.aSuccessfulSearchPayment;
 import static uk.gov.pay.api.utils.mocks.ChargeResponseFromConnector.ChargeResponseFromConnectorBuilder.aCreateOrGetChargeResponseFromConnector;
 
-public class ResourcesFilterRateLimiterIT extends ResourcesFilterITestBase {
+class ResourcesFilterRateLimiterIT extends ResourcesFilterITestBase {
 
-    private ConnectorMockClient connectorMockClient = new ConnectorMockClient(connectorMock);
-    private LedgerMockClient ledgerMockClient = new LedgerMockClient(ledgerMock);
-    ArgumentCaptor<LoggingEvent> loggingEventArgumentCaptor = ArgumentCaptor.forClass(LoggingEvent.class);
-    private Appender<ILoggingEvent> mockAppender = mock(Appender.class);
+    private final ConnectorMockClientJUnit5 connectorMockClient = new ConnectorMockClientJUnit5(connectorServer);
+    private final LedgerMockClientJUnit5 ledgerMockClient = new LedgerMockClientJUnit5(ledgerServer);
+    private final ArgumentCaptor<LoggingEvent> loggingEventArgumentCaptor = ArgumentCaptor.forClass(LoggingEvent.class);
+    private final Appender<ILoggingEvent> mockAppender = mock(Appender.class);
 
     @Test
-    public void createPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
+    void createPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
         Logger logger = (Logger) LoggerFactory.getLogger(RateLimiterFilter.class);
         logger.setLevel(Level.INFO);
         logger.addAppender(mockAppender);
@@ -72,11 +72,11 @@ public class ResourcesFilterRateLimiterIT extends ResourcesFilterITestBase {
         List<LoggingEvent> logEvents = loggingEventArgumentCaptor.getAllValues();
 
         // ensure api token link is in log MDC when requests are rate limited
-        assertThat(logEvents.get(0).getMDCPropertyMap().get("token_link"), is("a-token-link"));
+        assertThat(logEvents.getFirst().getMDCPropertyMap().get("token_link"), is("a-token-link"));
     }
 
     @Test
-    public void getPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
+    void getPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
 
         connectorMockClient.respondWithChargeFound("token_1234567asdf", GATEWAY_ACCOUNT_ID,
                 aCreateOrGetChargeResponseFromConnector()
@@ -106,7 +106,7 @@ public class ResourcesFilterRateLimiterIT extends ResourcesFilterITestBase {
     }
 
     @Test
-    public void getPaymentEvents_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
+    void getPaymentEvents_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
 
         connectorMockClient.respondWithChargeEventsFound(GATEWAY_ACCOUNT_ID, CHARGE_ID, EVENTS);
 
@@ -124,7 +124,7 @@ public class ResourcesFilterRateLimiterIT extends ResourcesFilterITestBase {
     }
 
     @Test
-    public void searchPayments_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
+    void searchPayments_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
         String payments = aPaginatedTransactionSearchResult()
                 .withCount(10)
                 .withPage(2)
@@ -151,7 +151,7 @@ public class ResourcesFilterRateLimiterIT extends ResourcesFilterITestBase {
     }
 
     @Test
-    public void cancelPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
+    void cancelPayment_whenRateLimitIsReached_shouldReturn429Response() throws Exception {
 
         connectorMockClient.respondOk_whenCancelCharge(CHARGE_ID, GATEWAY_ACCOUNT_ID);
 

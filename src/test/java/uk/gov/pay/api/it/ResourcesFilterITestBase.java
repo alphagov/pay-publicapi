@@ -1,15 +1,17 @@
 package uk.gov.pay.api.it;
 
-import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.google.common.collect.ImmutableMap;
-import io.dropwizard.testing.junit.DropwizardAppRule;
+import io.dropwizard.testing.DropwizardTestSupport;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
-import org.junit.Before;
-import org.junit.ClassRule;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import uk.gov.pay.api.app.PublicApi;
 import uk.gov.pay.api.app.config.PublicApiConfig;
 import uk.gov.pay.api.it.rule.RedisDockerRule;
@@ -17,7 +19,7 @@ import uk.gov.pay.api.model.PaymentState;
 import uk.gov.pay.api.utils.ApiKeyGenerator;
 import uk.gov.pay.api.utils.ChargeEventBuilder;
 import uk.gov.pay.api.utils.JsonStringBuilder;
-import uk.gov.pay.api.utils.PublicAuthMockClient;
+import uk.gov.pay.api.utils.PublicAuthMockClientJUnit5;
 import uk.gov.service.payments.commons.validation.DateTimeUtils;
 
 import java.time.ZonedDateTime;
@@ -26,23 +28,22 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static io.dropwizard.testing.ConfigOverride.config;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static org.eclipse.jetty.http.HttpStatus.TOO_MANY_REQUESTS_429;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static uk.gov.service.payments.commons.model.CommonDateTimeFormatters.ISO_INSTANT_MILLISECOND_PRECISION;
-import static uk.gov.service.payments.commons.testing.port.PortFactory.findFreePort;
 
-abstract public class ResourcesFilterITestBase {
+public abstract class ResourcesFilterITestBase {
 
     static final String API_KEY = ApiKeyGenerator.apiKeyValueOf("TEST_BEARER_TOKEN", "qwer9yuhgf"); //Must use same secret set in test-config.xml's apiKeyHmacSecret
-    static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").get();
-    static final String PAYMENTS_PATH = "/v1/payments/";
+    private static final ZonedDateTime TIMESTAMP = DateTimeUtils.toUTCZonedDateTime("2016-01-01T12:00:00Z").orElseThrow();
+    private static final String PAYMENTS_PATH = "/v1/payments/";
     static final int AMOUNT = 9999999;
     static final String CHARGE_ID = "ch_ab2341da231434l";
     static final PaymentState CREATED = new PaymentState("created", false, null, null);
@@ -54,39 +55,51 @@ abstract public class ResourcesFilterITestBase {
     static final String GATEWAY_ACCOUNT_ID = "GATEWAY_ACCOUNT_ID";
     static final String PAYLOAD = paymentPayload();
 
-    private static final int CONNECTOR_PORT = findFreePort();
-    private static final int PUBLIC_AUTH_PORT = findFreePort();
-    private static final int LEDGER_PORT = findFreePort();
-
     private final ExecutorService executor = Executors.newFixedThreadPool(2);
 
-    @ClassRule
-    public static RedisDockerRule redisDockerRule = new RedisDockerRule();
+    @RegisterExtension
+    private static final RedisDockerRule redisDockerRule = new RedisDockerRule();
 
-    @ClassRule
-    public static WireMockClassRule connectorMock = new WireMockClassRule(CONNECTOR_PORT);
+    @RegisterExtension
+    static final WireMockExtension connectorServer = WireMockExtension.newInstance()
+            .options(wireMockConfig().dynamicPort())
+            .build();
 
-    @ClassRule
-    public static WireMockClassRule ledgerMock = new WireMockClassRule(LEDGER_PORT);
+    @RegisterExtension
+    private static final WireMockExtension publicAuthServer = WireMockExtension.newInstance()
+            .options(wireMockConfig().dynamicPort())
+            .build();
 
-    @ClassRule
-    public static WireMockClassRule publicAuthMock = new WireMockClassRule(PUBLIC_AUTH_PORT);
+    @RegisterExtension
+    static final WireMockExtension ledgerServer = WireMockExtension.newInstance()
+            .options(wireMockConfig().dynamicPort())
+            .build();
 
-    @ClassRule
-    public static DropwizardAppRule<PublicApiConfig> app = new DropwizardAppRule<>(
-            PublicApi.class,
-            resourceFilePath("config/test-config.yaml"),
-            config("connectorUrl", "http://localhost:" + CONNECTOR_PORT),
-            config("publicAuthUrl", "http://localhost:" + PUBLIC_AUTH_PORT + "/v1/auth"),
-            config("redis.endpoint", redisDockerRule.getRedisUrl()),
-            config("ledgerUrl", "http://localhost:" + LEDGER_PORT),
-            config("rateLimiter.noOfReq", "1"),
-            config("rateLimiter.noOfReqForPost", "1")
-    );
+    private static DropwizardTestSupport<PublicApiConfig> app;
 
-    private final PublicAuthMockClient publicAuthMockClient = new PublicAuthMockClient(publicAuthMock);
+    private final PublicAuthMockClientJUnit5 publicAuthMockClient = new PublicAuthMockClientJUnit5(publicAuthServer);
 
-    @Before
+    @BeforeAll
+    static void startApp() throws Exception {
+        app = new DropwizardTestSupport<>(
+                PublicApi.class,
+                resourceFilePath("config/test-config.yaml"),
+                config("connectorUrl", connectorServer.baseUrl()),
+                config("publicAuthUrl", publicAuthServer.baseUrl() + "/v1/auth"),
+                config("redis.endpoint", redisDockerRule.getRedisUrl()),
+                config("ledgerUrl", ledgerServer.baseUrl()),
+                config("rateLimiter.noOfReq", "1"),
+                config("rateLimiter.noOfReqForPost", "1")
+        );
+        app.before();
+    }
+
+    @AfterAll
+    static void afterAll() {
+        app.after();
+    }
+
+    @BeforeEach
     public void setupApiKey() {
         redisDockerRule.clearCache();
         publicAuthMockClient.mapBearerTokenToAccountId(API_KEY, GATEWAY_ACCOUNT_ID);
@@ -103,7 +116,7 @@ abstract public class ResourcesFilterITestBase {
                         return null;
                     }
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     TypeSafeMatcher<ValidatableResponse> aResponse(final int statusCode) {
@@ -146,10 +159,10 @@ abstract public class ResourcesFilterITestBase {
 
     private static String paymentPayload() {
         return new JsonStringBuilder()
-                .add("amount", (long) ResourcesFilterITestBase.AMOUNT)
-                .add("reference", ResourcesFilterITestBase.REFERENCE)
-                .add("description", ResourcesFilterITestBase.DESCRIPTION)
-                .add("return_url", ResourcesFilterITestBase.RETURN_URL)
+                .add("amount", (long) AMOUNT)
+                .add("reference", REFERENCE)
+                .add("description", DESCRIPTION)
+                .add("return_url", RETURN_URL)
                 .build();
     }
 
