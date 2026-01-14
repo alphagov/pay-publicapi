@@ -7,14 +7,6 @@ updates:
       interval: daily
       time: "03:00"
     ignore:
-      - dependency-name: "io.dropwizard:dropwizard-dependencies"
-        # We don't want to upgrade to Dropwizard 5.x just yet
-        versions:
-          - ">= 5"
-      - dependency-name: "io.dropwizard.modules:dropwizard-testing-junit4"
-        # We don't want to upgrade to Dropwizard 5.x just yet
-        versions:
-          - ">= 5"
       - dependency-name: "io.lettuce:lettuce-core"
         # lettuce v7 needs refactoring on our end
         versions:
