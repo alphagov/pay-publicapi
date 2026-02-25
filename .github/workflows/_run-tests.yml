@@ -28,7 +28,7 @@ jobs:
       check_for_openapi_file_changes: false
       requires_redis_image: true
       requires_postgres_image: false
-      java_version: "21"
+      java_version: "25"
     secrets:
       pact_broker_username: ${{ secrets.pact_broker_username }}
       pact_broker_password: ${{ secrets.pact_broker_password }}
@@ -43,7 +43,7 @@ jobs:
     with:
       consumer: "publicapi"
       provider: ${{ matrix.provider }}
-      java_version: "21"
+      java_version: "25"
     secrets:
       pact_broker_username: ${{ secrets.pact_broker_username }}
       pact_broker_password: ${{ secrets.pact_broker_password }}
