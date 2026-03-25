@@ -12,4 +12,5 @@ public final class ResponseConstants {
     public static final String RESPONSE_422_DESCRIPTION = "Your request failed. Check the `code` and `description` in the response to find out why your request failed.";
     public static final String RESPONSE_429_DESCRIPTION = "Too many requests";
     public static final String RESPONSE_500_DESCRIPTION = "Downstream system error";
+    
 }
