@@ -7,6 +7,8 @@ on:
         required: true
       pact_broker_password:
         required: true
+      repos_readonly_token:
+        required: true
 
 permissions:
   contents: read
@@ -47,6 +49,7 @@ jobs:
     secrets:
       pact_broker_username: ${{ secrets.pact_broker_username }}
       pact_broker_password: ${{ secrets.pact_broker_password }}
+      repos_readonly_token: ${{ secrets.repos_readonly_token }}
 
   check-docker-base-images-are-manifests:
     uses: alphagov/pay-ci/.github/workflows/_validate_docker_image_is_manifest.yml@master
