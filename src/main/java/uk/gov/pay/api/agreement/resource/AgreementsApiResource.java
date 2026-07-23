@@ -32,8 +32,8 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Response;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.apache.http.HttpStatus.SC_CREATED;
-import static org.apache.http.HttpStatus.SC_NO_CONTENT;
+import static org.apache.hc.core5.http.HttpStatus.SC_CREATED;
+import static org.apache.hc.core5.http.HttpStatus.SC_NO_CONTENT;
 import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_200_DESCRIPTION;
 import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_201_DESCRIPTION;
 import static uk.gov.pay.api.common.ResponseConstants.RESPONSE_400_DESCRIPTION;
