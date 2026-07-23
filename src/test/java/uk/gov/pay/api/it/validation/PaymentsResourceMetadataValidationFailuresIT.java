@@ -1,7 +1,7 @@
 package uk.gov.pay.api.it.validation;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.apache.http.HttpStatus;
+import org.apache.hc.core5.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.pay.api.it.PaymentResourceITestBase;

@@ -32,8 +32,8 @@ import jakarta.ws.rs.core.Response;
 import java.net.URI;
 import java.util.Collections;
 
-import static org.apache.http.HttpHeaders.CACHE_CONTROL;
-import static org.apache.http.HttpHeaders.PRAGMA;
+import static org.apache.hc.core5.http.HttpHeaders.CACHE_CONTROL;
+import static org.apache.hc.core5.http.HttpHeaders.PRAGMA;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
