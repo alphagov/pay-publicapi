@@ -34,7 +34,7 @@ import java.util.Set;
 import static java.util.stream.Collectors.toList;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.http.HttpStatus.SC_OK;
+import static org.apache.hc.core5.http.HttpStatus.SC_OK;
 import static uk.gov.pay.api.common.SearchConstants.CARDHOLDER_NAME_KEY;
 import static uk.gov.pay.api.common.SearchConstants.CARD_BRAND_KEY;
 import static uk.gov.pay.api.common.SearchConstants.DISPLAY_SIZE;

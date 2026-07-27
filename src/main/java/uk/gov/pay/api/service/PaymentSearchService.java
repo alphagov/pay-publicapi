@@ -12,8 +12,8 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
-import static org.apache.http.HttpHeaders.CACHE_CONTROL;
-import static org.apache.http.HttpHeaders.PRAGMA;
+import static org.apache.hc.core5.http.HttpHeaders.CACHE_CONTROL;
+import static org.apache.hc.core5.http.HttpHeaders.PRAGMA;
 import static uk.gov.pay.api.validation.PaymentSearchValidator.validateSearchParameters;
 
 public class PaymentSearchService {

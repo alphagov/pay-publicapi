@@ -5,7 +5,7 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.apache.http.HttpStatus;
+import org.apache.hc.core5.http.HttpStatus;
 import uk.gov.pay.api.agreement.model.AgreementCreatedResponse;
 import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
 import uk.gov.pay.api.auth.Account;
@@ -20,7 +20,7 @@ import uk.gov.pay.api.model.PaymentEvents;
 import uk.gov.pay.api.model.RefundFromConnector;
 
 import static jakarta.ws.rs.client.Entity.json;
-import static org.apache.http.HttpStatus.SC_OK;
+import static org.apache.hc.core5.http.HttpStatus.SC_OK;
 
 public class ConnectorService {
     private final Client client;

@@ -2,7 +2,7 @@ package uk.gov.pay.api.service.telephone;
 
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.http.HttpStatus;
+import org.apache.hc.core5.http.HttpStatus;
 import uk.gov.pay.api.auth.Account;
 import uk.gov.pay.api.exception.CreateChargeException;
 import uk.gov.pay.api.model.ChargeFromResponse;

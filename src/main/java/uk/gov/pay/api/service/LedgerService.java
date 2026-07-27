@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.apache.http.HttpStatus.SC_OK;
+import static org.apache.hc.core5.http.HttpStatus.SC_OK;
 import static uk.gov.pay.api.common.SearchConstants.GATEWAY_ACCOUNT_ID;
 
 public class LedgerService {

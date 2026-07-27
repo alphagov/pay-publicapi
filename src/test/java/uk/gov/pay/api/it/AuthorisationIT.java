@@ -1,6 +1,6 @@
 package uk.gov.pay.api.it;
 
-import org.apache.http.HttpStatus;
+import org.apache.hc.core5.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 import uk.gov.pay.api.utils.PublicAuthMockClientJUnit5;
 

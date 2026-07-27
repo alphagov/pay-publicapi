@@ -3,7 +3,7 @@ package uk.gov.pay.api.exception.mapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import io.dropwizard.jersey.errors.LoggingExceptionMapper;
-import org.apache.http.HttpStatus;
+import org.apache.hc.core5.http.HttpStatus;
 import uk.gov.pay.api.exception.AgreementValidationException;
 import uk.gov.pay.api.exception.PaymentValidationException;
 import uk.gov.pay.api.model.RequestError;

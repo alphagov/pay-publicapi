@@ -1,22 +1,19 @@
 package uk.gov.pay.api.agreement.service;
 
-import org.apache.http.HttpStatus;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 import uk.gov.pay.api.agreement.model.Agreement;
 import uk.gov.pay.api.agreement.model.AgreementCreatedResponse;
 import uk.gov.pay.api.agreement.model.AgreementLedgerResponse;
 import uk.gov.pay.api.agreement.model.AgreementSearchResults;
 import uk.gov.pay.api.agreement.model.CreateAgreementRequest;
 import uk.gov.pay.api.auth.Account;
-import uk.gov.pay.api.exception.CancelAgreementException;
-import uk.gov.pay.api.exception.CreateAgreementException;
 import uk.gov.pay.api.ledger.model.AgreementSearchParams;
 import uk.gov.pay.api.ledger.model.SearchResults;
 import uk.gov.pay.api.model.search.PaginationDecorator;
 import uk.gov.pay.api.service.ConnectorService;
 import uk.gov.pay.api.service.LedgerService;
 
-import jakarta.inject.Inject;
-import jakarta.ws.rs.core.Response;
 import java.util.stream.Collectors;
 
 public class AgreementsService {

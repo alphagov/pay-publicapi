@@ -4,7 +4,7 @@ import com.jayway.jsonassert.JsonAssert;
 import io.restassured.response.ValidatableResponse;
 import jakarta.ws.rs.core.HttpHeaders;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.http.HttpStatus;
+import org.apache.hc.core5.http.HttpStatus;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import uk.gov.pay.api.model.Address;

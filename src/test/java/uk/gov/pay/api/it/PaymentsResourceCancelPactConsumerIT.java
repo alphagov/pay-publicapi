@@ -3,7 +3,7 @@ package uk.gov.pay.api.it;
 import au.com.dius.pact.consumer.junit.PactVerification;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.dropwizard.testing.junit.DropwizardAppRule;
-import org.apache.http.HttpStatus;
+import org.apache.hc.core5.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
