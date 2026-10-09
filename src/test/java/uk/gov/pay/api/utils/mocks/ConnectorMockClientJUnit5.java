@@ -137,6 +137,24 @@ public class ConnectorMockClientJUnit5 extends BaseConnectorMockClientJUnit5 {
         return jsonStringBuilder.build();
     }
 
+    private String buildGetRefundResponse(String refundId, int amount, int refundAmountAvailable, String status, 
+                                          String createdDate, long fee, long netAmount) {
+        List<Map<String, Link>> links = new ArrayList<>();
+        links.add(ImmutableMap.of("self", new Link("http://server:port/self-link")));
+        links.add(ImmutableMap.of("payment", new Link("http://server:port/payment-link")));
+
+        return new JsonStringBuilder()
+                .add("refund_id", refundId)
+                .add("amount", amount)
+                .add("refund_amount_available", refundAmountAvailable)
+                .add("status", status)
+                .add("created_date", createdDate)
+                .add("fee", fee)
+                .add("net_amount", netAmount)
+                .add("_links", links)
+                .build();
+    }
+
     private String buildChargeEventsResponse(String chargeId, List<Map<String, String>> events, Map<?, ?>... links) {
         return new JsonStringBuilder()
                 .add("charge_id", chargeId)
@@ -427,6 +445,18 @@ public class ConnectorMockClientJUnit5 extends BaseConnectorMockClientJUnit5 {
                 .withBody(refundResponse));
     }
 
+    public void respondWithGetRefundById(String gatewayAccountId, String chargeId, String refundId, int amount,
+                                         int totalRefundAmountAvailable,
+                                         String refundStatus, String createdDate, long fee, long netAmount) {
+        
+        String refundResponse = buildGetRefundResponse(refundId, amount, totalRefundAmountAvailable, refundStatus, createdDate, fee, netAmount);
+
+        whenGetRefundById(gatewayAccountId, chargeId, refundId, aResponse()
+                .withStatus(OK_200)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                .withBody(refundResponse));
+    }
+    
     public void respondWithGetAllRefunds(String gatewayAccountId, String chargeId, PaymentRefundJsonFixture... refunds) {
 
         Map<String, List<PaymentRefundJsonFixture>> refundList = new HashMap<>();

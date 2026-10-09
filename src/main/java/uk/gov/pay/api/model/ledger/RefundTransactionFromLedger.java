@@ -10,6 +10,8 @@ import uk.gov.pay.api.model.RefundSettlementSummary;
 public class RefundTransactionFromLedger {
 
     Long amount;
+    Long fee;
+    Long netAmount;
     String description;
     String reference;
     String createdDate;
@@ -22,6 +24,13 @@ public class RefundTransactionFromLedger {
         return amount;
     }
 
+    public Long getFee() {
+        return fee;
+    }
+
+    public Long getNetAmount() {
+        return netAmount;
+    }
     public String getDescription() {
         return description;
     }

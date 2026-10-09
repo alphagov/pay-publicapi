@@ -31,6 +31,10 @@ public class RefundForSearchRefundsResult {
     private String chargeId;
 
     private Long amount;
+    
+    private Long fee;
+    
+    private Long netAmount;
 
     private RefundLinksForSearch links = new RefundLinksForSearch();
 
@@ -48,13 +52,15 @@ public class RefundForSearchRefundsResult {
     }
 
     public RefundForSearchRefundsResult(String refundId, String createdDate, String status,
-                                        String chargeId, Long amount, URI paymentURI, URI refundsURI,
+                                        String chargeId, Long amount, Long fee, Long netAmount, URI paymentURI, URI refundsURI,
                                         RefundSettlementSummary settlementSummary) {
         this.refundId = refundId;
         this.createdDate = createdDate;
         this.status = status;
         this.chargeId = chargeId;
         this.amount = amount;
+        this.fee = fee;
+        this.netAmount = netAmount;
         this.links.addSelf(refundsURI.toString());
         this.links.addPayment(paymentURI.toString());
         this.settlementSummary = settlementSummary;
@@ -92,6 +98,16 @@ public class RefundForSearchRefundsResult {
         this.amount = amount;
     }
 
+    @JsonProperty("fee")
+    @Schema(example = "2",
+            description = "The fee, in pence, charged for processing the refund.", accessMode = READ_ONLY)
+    public Long getFee() { return fee; }
+
+    @JsonProperty("net_amount")
+    @Schema(example = "-122", 
+            description = "The net amount, in pence, associated with the refund, including any fee applicable.", accessMode = READ_ONLY)
+    public Long getNetAmount() { return netAmount; }
+
     @JsonProperty("amount")
     @Schema(example = "120", description = "The amount refunded to the user in pence.", accessMode = READ_ONLY)
     public Long getAmount() {
@@ -116,6 +132,8 @@ public class RefundForSearchRefundsResult {
                 refundResult.getState().getStatus(),
                 refundResult.getParentTransactionId(),
                 refundResult.getAmount(),
+                refundResult.getFee(),
+                refundResult.getNetAmount(),
                 paymentURI,
                 refundsURI,
                 refundResult.getSettlementSummary());

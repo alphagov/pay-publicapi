@@ -16,10 +16,12 @@ import java.util.Map;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static jakarta.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.pay.api.utils.Urls.paymentLocationFor;
 import static uk.gov.pay.api.utils.mocks.RefundTransactionFromLedgerFixture.RefundTransactionFromLedgerBuilder.aRefundTransactionFromLedgerFixture;
 import static uk.gov.service.payments.commons.model.CommonDateTimeFormatters.ISO_INSTANT_MILLISECOND_PRECISION;
+import static wiremock.org.hamcrest.Matchers.hasKey;
 
 class SearchRefundsResourceIT extends PaymentResourceITestBase {
 
@@ -39,6 +41,8 @@ class SearchRefundsResourceIT extends PaymentResourceITestBase {
     void searchRefunds_shouldReturnValidResponse() {
         RefundTransactionFromLedgerFixture refund1 = aRefundTransactionFromLedgerFixture()
                 .withAmount(100L)
+                .withFee(2L)
+                .withNetAmount(-102L)
                 .withCreatedDate(CREATED_DATE)
                 .withTransactionId("100")
                 .withParentTransactionId(CHARGE_ID)
@@ -66,10 +70,14 @@ class SearchRefundsResourceIT extends PaymentResourceITestBase {
                 .body("results[0].created_date", is("2016-01-01T12:00:00.000Z"))
                 .body("results[0].payment_id", is("ch_ab2341da231434l"))
                 .body("results[0].amount", is(100))
+                .body("results[0].fee", is(2))
+                .body("results[0].net_amount", is(-102))
                 .body("results[0].status", is("available"))
                 .body("results[0]._links.self.href", is(paymentRefundLocationFor(CHARGE_ID, "100")))
                 .body("results[0]._links.payment.href", is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)))
                 .body("results[1].refund_id", is("300"))
+                .body("results[1]", not(hasKey("fee")))
+                .body("results[1]", not(hasKey("net_amount")))
                 .body("results[1].created_date", is("2016-01-01T12:00:00.000Z"))
                 .body("results[1].payment_id", is("ch_ab2341da231434l"))
                 .body("results[1].amount", is(300))

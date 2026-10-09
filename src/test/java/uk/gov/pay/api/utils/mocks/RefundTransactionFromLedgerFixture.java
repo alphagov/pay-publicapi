@@ -8,6 +8,8 @@ import uk.gov.pay.api.model.ledger.TransactionState;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class RefundTransactionFromLedgerFixture {
     private final Long amount;
+    private Long fee;
+    private Long netAmount;
     private final TransactionState state;
     private final String createdDate;
     private final String transactionId;
@@ -16,6 +18,8 @@ public class RefundTransactionFromLedgerFixture {
 
     public RefundTransactionFromLedgerFixture(RefundTransactionFromLedgerBuilder builder) {
         this.amount = builder.amount;
+        this.fee = builder.fee;
+        this.netAmount = builder.netAmount;
         this.state = builder.state;
         this.createdDate = builder.createdDate;
         this.transactionId = builder.transactionId;
@@ -26,6 +30,10 @@ public class RefundTransactionFromLedgerFixture {
     public Long getAmount() {
         return amount;
     }
+    
+    public Long getFee() { return fee;}
+
+    public Long getNetAmount() { return netAmount;}
 
     public TransactionState getState() {
         return state;
@@ -49,6 +57,8 @@ public class RefundTransactionFromLedgerFixture {
 
     public static final class RefundTransactionFromLedgerBuilder {
         private Long amount;
+        private Long fee;
+        private Long netAmount;
         private TransactionState state;
         private String createdDate;
         private String transactionId;
@@ -64,6 +74,16 @@ public class RefundTransactionFromLedgerFixture {
 
         public RefundTransactionFromLedgerBuilder withAmount(Long amount) {
             this.amount = amount;
+            return this;
+        }
+
+        public RefundTransactionFromLedgerBuilder withFee(Long fee) {
+            this.fee = fee;
+            return this;
+        }
+
+        public RefundTransactionFromLedgerBuilder withNetAmount(Long netAmount) {
+            this.netAmount = netAmount;
             return this;
         }
 
