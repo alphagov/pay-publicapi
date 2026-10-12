@@ -76,6 +76,8 @@ public class SearchRefundsServicePactTest {
         assertThat(results.getResults().get(0).getRefundId(), is(refundId1));
         assertThat(results.getResults().get(0).getChargeId(), is("someExternalId1"));
         assertThat(results.getResults().get(0).getAmount(), is(150L));
+        assertThat(results.getResults().get(0).getFee(), is(2L));
+        assertThat(results.getResults().get(0).getNetAmount(), is(-152L));
         assertThat(results.getResults().get(0).getLinks().getSelf().getHref(), is(format("http://publicapi.test.localhost/v1/payments/someExternalId1/refunds/%s", refundId1)));
         assertThat(results.getResults().get(0).getLinks().getPayment().getHref(), is("http://publicapi.test.localhost/v1/payments/someExternalId1"));
 
@@ -84,6 +86,8 @@ public class SearchRefundsServicePactTest {
         assertThat(results.getResults().get(1).getRefundId(), is(refundId2));
         assertThat(results.getResults().get(1).getChargeId(), is("someExternalId2"));
         assertThat(results.getResults().get(1).getAmount(), is(250L));
+        assertThat(results.getResults().get(1).getFee(), is(3L));
+        assertThat(results.getResults().get(1).getNetAmount(), is(-253L));
         assertThat(results.getResults().get(1).getLinks().getSelf().getHref(), is(format("http://publicapi.test.localhost/v1/payments/someExternalId2/refunds/%s", refundId2)));
         assertThat(results.getResults().get(1).getLinks().getPayment().getHref(), is("http://publicapi.test.localhost/v1/payments/someExternalId2"));
 

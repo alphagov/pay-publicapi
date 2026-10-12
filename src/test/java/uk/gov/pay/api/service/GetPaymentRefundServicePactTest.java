@@ -66,6 +66,8 @@ public class GetPaymentRefundServicePactTest {
         assertThat(refund.getRefundId(), is(REFUND_ID));
         assertThat(refund.getStatus(), is("success"));
         assertThat(refund.getAmount(), is(100L));
+        assertThat(refund.getFee(), is(2L));
+        assertThat(refund.getNetAmount(), is(-102L));
         assertThat(refund.getCreatedDate(), is("2018-09-22T10:14:16.067Z"));
         assertThat(refund.getLinks().getPayment().getHref(), is("http://publicapi.test.localhost/v1/payments/123456789"));
         assertThat(refund.getLinks().getSelf().getHref(), is("http://publicapi.test.localhost/v1/payments/123456789/refunds/r_123abc456def"));
@@ -82,6 +84,8 @@ public class GetPaymentRefundServicePactTest {
         assertThat(refund.getRefundId(), is(REFUND_ID));
         assertThat(refund.getStatus(), is("success"));
         assertThat(refund.getAmount(), is(100L));
+        assertThat(refund.getFee(), is(2L));
+        assertThat(refund.getNetAmount(), is(-102L));
         assertThat(refund.getCreatedDate(), is("2018-09-22T10:14:16.067Z"));
         assertThat(refund.getLinks().getPayment().getHref(), is("http://publicapi.test.localhost/v1/payments/123456789"));
         assertThat(refund.getLinks().getSelf().getHref(), is("http://publicapi.test.localhost/v1/payments/123456789/refunds/r_123abc456def"));
