@@ -46,7 +46,9 @@ class PaymentRefundsResourceIT extends PaymentResourceITestBase {
     private static final String CREATED_DATE = ISO_INSTANT_MILLISECOND_PRECISION.format(TIMESTAMP);
     private static final Address BILLING_ADDRESS = new Address("line1", "line2", "NR2 5 6EG", "city", "UK");
     private static final CardDetailsFromResponse CARD_DETAILS = new CardDetailsFromResponse("1234", "123456", "Mr. Payment", "12/19", BILLING_ADDRESS, "Visa", null);
-
+    private static final long FEE = 2L;
+    private static final long NET_AMOUNT = -102L;
+    
     private final ConnectorMockClientJUnit5 connectorMockClient = new ConnectorMockClientJUnit5(connectorServer);
     private final PublicAuthMockClientJUnit5 publicAuthMockClient = new PublicAuthMockClientJUnit5(publicAuthServer);
     private final LedgerMockClientJUnit5 ledgerMockClient = new LedgerMockClientJUnit5(ledgerServer);
@@ -60,6 +62,8 @@ class PaymentRefundsResourceIT extends PaymentResourceITestBase {
     void getRefundByIdThroughLedger_shouldGetValidResponse() {
         ledgerMockClient.respondWithRefund(REFUND_ID, aRefundTransactionFromLedgerFixture()
                 .withAmount((long) AMOUNT)
+                .withFee(FEE)
+                .withNetAmount(NET_AMOUNT)
                 .withState(new TransactionState("available", false))
                 .withParentTransactionId(CHARGE_ID)
                 .withTransactionId(REFUND_ID)
@@ -67,7 +71,29 @@ class PaymentRefundsResourceIT extends PaymentResourceITestBase {
                 .build());
 
         assertSingleRefund(getPaymentRefundByIdResponse(CHARGE_ID, REFUND_ID, "ledger-only"))
-                .body("$", hasKey("settlement_summary"));
+                .body("$", hasKey("settlement_summary"))
+                .body("amount", is(AMOUNT))
+                .body("fee", is((int) FEE))
+                .body("net_amount", is((int) NET_AMOUNT));
+    }
+
+    @Test
+    void getRefundByIdThroughConnector_shouldGetValidResponseWithFeeAndNetAmount() {
+        connectorMockClient.respondWithGetRefundById(
+                GATEWAY_ACCOUNT_ID,
+                CHARGE_ID,
+                REFUND_ID,
+                AMOUNT,
+                REFUND_AMOUNT_AVAILABLE,
+                "available",
+                CREATED_DATE,
+                2L,
+                -1002L
+        );
+
+        assertSingleRefund(getPaymentRefundByIdResponse(CHARGE_ID, REFUND_ID))
+                .body("fee", is(2))
+                .body("net_amount", is(-1002));
     }
 
     @Test
@@ -132,6 +158,8 @@ class PaymentRefundsResourceIT extends PaymentResourceITestBase {
     void getRefundsThroughLedger_shouldGetValidResponse() {
         RefundTransactionFromLedgerFixture refund1 = aRefundTransactionFromLedgerFixture()
                 .withAmount(100L)
+                .withFee(FEE)
+                .withNetAmount(NET_AMOUNT)
                 .withCreatedDate(CREATED_DATE)
                 .withTransactionId("100")
                 .withState(new TransactionState("available", false))
@@ -188,6 +216,8 @@ class PaymentRefundsResourceIT extends PaymentResourceITestBase {
                 .body("_embedded.refunds[0].refund_id", is("100"))
                 .body("_embedded.refunds[0].created_date", is(CREATED_DATE))
                 .body("_embedded.refunds[0].amount", is(100))
+                .body("_embedded.refunds[0].fee", is(2))
+                .body("_embedded.refunds[0].net_amount", is(-102))
                 .body("_embedded.refunds[0].status", is("available"))
                 .body("_embedded.refunds[0]._links.size()", is(2))
                 .body("_embedded.refunds[0]._links.self.href", is(paymentRefundLocationFor(CHARGE_ID, "100")))
@@ -197,6 +227,8 @@ class PaymentRefundsResourceIT extends PaymentResourceITestBase {
                 .body("_embedded.refunds[1].amount", is(300))
                 .body("_embedded.refunds[1].status", is("pending"))
                 .body("_embedded.refunds[1]._links.size()", is(2))
+                .body("_embedded.refunds[1]", not(hasKey("fee")))
+                .body("_embedded.refunds[1]", not(hasKey("net_amount")))
                 .body("_embedded.refunds[1]._links.self.href", is(paymentRefundLocationFor(CHARGE_ID, "300")))
                 .body("_embedded.refunds[1]._links.payment.href", is(paymentLocationFor(configuration.getBaseUrl(), CHARGE_ID)));
     }
