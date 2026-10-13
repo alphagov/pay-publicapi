@@ -57,7 +57,9 @@
                 "finished": true
               },
               "parent_transaction_id": "someExternalId1",
-              "amount": 150
+              "amount": 150,
+              "fee": 2,
+              "net_amount": -152
             },
             {
               "transaction_id": "222222",
@@ -67,7 +69,9 @@
                 "finished": true
               },
               "parent_transaction_id": "someExternalId2",
-              "amount": 250
+              "amount": 250,
+              "fee": 3,
+              "net_amount": -253
             }
           ],
           "_links": {
@@ -128,6 +132,20 @@
               ]
             },
             "$.results[*].amount": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.results[*].fee": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.results[*].net_amount": {
               "matchers": [
                 {
                   "match": "type"

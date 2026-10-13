@@ -63,10 +63,12 @@ public class GetPaymentRefundsServicePactTest {
 
         List<RefundResponse> refunds = response.getEmbedded().getRefunds();
         assertThat(refunds.size(), is(2));
-
+        
         assertThat(refunds.get(0).getRefundId(), is("refund-transaction-id1"));
         assertThat(refunds.get(0).getStatus(), is("submitted"));
         assertThat(refunds.get(0).getAmount(), is(100L));
+        assertThat(refunds.get(0).getFee(), is(2L));
+        assertThat(refunds.get(0).getNetAmount(), is(-102L));
         assertThat(refunds.get(0).getCreatedDate(), is("2018-09-22T10:14:16.067Z"));
         assertThat(refunds.get(0).getLinks().getPayment().getHref(), is("http://publicapi.test.localhost/v1/payments/ch_123abc456xyz"));
         assertThat(refunds.get(0).getLinks().getSelf().getHref(), is("http://publicapi.test.localhost/v1/payments/ch_123abc456xyz/refunds/refund-transaction-id1"));
@@ -74,6 +76,8 @@ public class GetPaymentRefundsServicePactTest {
         assertThat(refunds.get(1).getRefundId(), is("refund-transaction-id2"));
         assertThat(refunds.get(1).getStatus(), is("error"));
         assertThat(refunds.get(1).getAmount(), is(200L));
+        assertThat(refunds.get(1).getFee(), is(3L));
+        assertThat(refunds.get(1).getNetAmount(), is(-203L));
         assertThat(refunds.get(1).getCreatedDate(), is("2018-09-22T10:16:16.067Z"));
         assertThat(refunds.get(1).getLinks().getPayment().getHref(), is("http://publicapi.test.localhost/v1/payments/ch_123abc456xyz"));
         assertThat(refunds.get(1).getLinks().getSelf().getHref(), is("http://publicapi.test.localhost/v1/payments/ch_123abc456xyz/refunds/refund-transaction-id2"));

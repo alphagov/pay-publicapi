@@ -36,6 +36,8 @@
         "body": {
           "transaction_id": "r_123abc456def",
           "amount": 100,
+          "fee": 2,
+          "net_amount": -102,
           "state": {
             "status": "success",
             "finished": true
@@ -45,6 +47,20 @@
         "matchingRules": {
           "body": {
             "$.amount": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.fee": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.net_amount": {
               "matchers": [
                 {
                   "match": "type"

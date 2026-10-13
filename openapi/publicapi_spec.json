@@ -665,6 +665,7 @@
           "name" : "Idempotency-Key",
           "schema" : {
             "type" : "string",
+            "nullable" : true,
             "pattern" : "^$|^[a-zA-Z0-9-]+$"
           }
         } ],
@@ -1953,7 +1954,8 @@
               "type" : "object"
             }
           }
-        }
+        },
+        "required" : [ "metadata" ]
       },
       "Link" : {
         "type" : "object",
@@ -2582,6 +2584,20 @@
             "example" : "2017-01-10T16:52:07.855Z",
             "readOnly" : true
           },
+          "fee" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "The fee, in pence, charged for processing the refund.",
+            "example" : 2,
+            "readOnly" : true
+          },
+          "net_amount" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "The net amount, in pence, associated with the refund, including any fee applicable.",
+            "example" : -122,
+            "readOnly" : true
+          },
           "payment_id" : {
             "type" : "string",
             "description" : "The unique ID GOV.UK Pay automatically associated with this payment when you created it.",
@@ -2624,6 +2640,20 @@
             "type" : "string",
             "description" : "The date and time you created this refund. This value uses Coordinated Universal Time (UTC) and ISO 8601 format - `YYYY-MM-DDThh:mm:ss.SSSZ`.",
             "example" : "2017-01-10T16:52:07.855Z",
+            "readOnly" : true
+          },
+          "fee" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "The fee, in pence, charged for processing the refund.",
+            "example" : 2,
+            "readOnly" : true
+          },
+          "net_amount" : {
+            "type" : "integer",
+            "format" : "int64",
+            "description" : "The net amount, in pence, associated with the refund, including any fee applicable.",
+            "example" : -122,
             "readOnly" : true
           },
           "payment_id" : {
