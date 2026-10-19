@@ -49,5 +49,5 @@ jobs:
       pact_broker_password: ${{ secrets.pact_broker_password }}
 
   check-docker-base-images-are-manifests:
-    uses: govuk-pay/pay-ci/.github/workflows/_validate_docker_image_is_manifest.yml@8597f9957716cb928c22ed66ee0704a24798ce6e
+    uses: govuk-pay/pay-ci/.github/workflows/_validate_docker_image_is_manifest.yml@67c10bdec6dad03624cee4ab798578e1ea429b97
 
