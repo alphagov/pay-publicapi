@@ -18,7 +18,7 @@ jobs:
       - name: Git checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Detect secrets
-        uses: govuk-pay/pay-ci/actions/detect-secrets@8597f9957716cb928c22ed66ee0704a24798ce6e
+        uses: govuk-pay/pay-ci/actions/detect-secrets@042a7e3d823df3b1ba6cbab336f97c07e65dc4e9
 
   integration-tests:
     name: "Integration tests and publish pacts"
